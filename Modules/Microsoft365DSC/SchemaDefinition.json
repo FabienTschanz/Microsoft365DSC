@@ -51,7 +51,7 @@
         ]
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphAccessReviewScheduleSettings",
@@ -135,7 +135,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphAccessReviewApplyAction",
@@ -155,7 +155,11 @@
         ]
       }
     ],
+<<<<<<< Updated upstream
     "Description": "Azure AD Access Review Definition"
+=======
+    "Description": "Azure AD Access Review Definition asdf"
+>>>>>>> Stashed changes
   },
   {
     "ClassName": "MSFT_MicrosoftGraphAccessReviewRecommendationInsightSetting",
@@ -197,7 +201,7 @@
         ]
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphPatternedRecurrence",
@@ -215,7 +219,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphRecurrencePattern",
@@ -293,7 +297,7 @@
         ]
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphRecurrenceRange",
@@ -339,7 +343,7 @@
         ]
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphAccessReviewStageSettings",
@@ -387,7 +391,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_AADAccessReviewDefinitionReviewer",
@@ -417,7 +421,7 @@
         ]
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_AADAccessReviewDefinition",
@@ -533,7 +537,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "Azure AD Access Review Definition"
+    "Description": "Azure AD Access Review Definition asdf"
   },
   {
     "ClassName": "MSFT_AADAccessReviewPolicy",
