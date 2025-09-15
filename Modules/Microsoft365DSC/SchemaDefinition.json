@@ -155,7 +155,7 @@
         ]
       }
     ],
-    "Description": "Azure AD Access Review Definition."
+    "Description": "Azure AD Access Review Definition"
   },
   {
     "ClassName": "MSFT_MicrosoftGraphAccessReviewRecommendationInsightSetting",
@@ -5025,7 +5025,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures the Azure Active Directory Authorization Policy.\r\n\r\nThe policy is managed using the BETA API, some properties may have been added in the API but not in the resource\r\n\r\n## Azure AD Permissions\r\n\r\nTo authenticate via Microsoft Graph, this resource required the following Application permissions:\r\n\r\n* **Automate**\r\n  * Policy.Read.All\r\n  * Policy.ReadWrite.Authorization\r\n\r\n* **Export**\r\n  * Policy.Read.All\r\n\r\nNOTE: All permissions listed above require admin consent."
+    "Description": "This resource configures the Azure Active Directory Authorization Policy."
   },
   {
     "ClassName": "MSFT_AADB2CAuthenticationMethodsPolicy",
@@ -8383,7 +8383,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures an Azure AD Entitlement Management Role assignments."
+    "Description": "This resource configures an Azure AD Entitlement Management Role Assignment."
   },
   {
     "ClassName": "MSFT_AADEntitlementManagementSettings",
@@ -8475,7 +8475,7 @@
       {
         "CIMType": "Boolean",
         "Description": "Defines whether external users can leave the guest tenant. If set to false, self-service controls are disabled, and the admin of the guest tenant must manually remove the external user from the guest tenant. When the external user leaves the tenant, their data in the guest tenant is first soft-deleted then permanently deleted in 30 days.",
-        "Name": "allowExternalIdentitiesToLeave",
+        "Name": "AllowExternalIdentitiesToLeave",
         "Option": "Required"
       },
       {
@@ -15086,6 +15086,12 @@
         "CIMType": "String",
         "Description": "The Office Name of the user",
         "Name": "Office",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The mail address of the user",
+        "Name": "Mail",
         "Option": "Write"
       },
       {
@@ -28758,6 +28764,12 @@
         "Option": "Write"
       },
       {
+        "CIMType": "Boolean",
+        "Description": "This parameter is available only in the cloud-based service.",
+        "Name": "RejectDirectSend",
+        "Option": "Write"
+      },
+      {
         "CIMType": "MSFT_Credential",
         "Description": "Credentials of the Exchange Global Admin",
         "Name": "Credential",
@@ -34722,7 +34734,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. A guide can be found here: [Authenticate to Fabric](https://nik-charlebois.com/blog/posts/2024/authenticating-to-fabric/index.html)"
+    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. Refer to the [Authentication and Permissions](https://microsoft365dsc.com/user-guide/get-started/authentication-and-permissions/#fabric-permissions) page for further information on how to set up your service principal."
   },
   {
     "ClassName": "MSFT_FabricTenantSettingProperty",
@@ -34746,7 +34758,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. A guide can be found here: [Authenticate to Fabric](https://nik-charlebois.com/blog/posts/2024/authenticating-to-fabric/index.html)"
+    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. Refer to the [Authentication and Permissions](https://microsoft365dsc.com/user-guide/get-started/authentication-and-permissions/#fabric-permissions) page for further information on how to set up your service principal."
   },
   {
     "ClassName": "MSFT_FabricTenantSetting",
@@ -34812,7 +34824,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. A guide can be found here: [Authenticate to Fabric](https://nik-charlebois.com/blog/posts/2024/authenticating-to-fabric/index.html)"
+    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. Refer to the [Authentication and Permissions](https://microsoft365dsc.com/user-guide/get-started/authentication-and-permissions/#fabric-permissions) page for further information on how to set up your service principal."
   },
   {
     "ClassName": "MSFT_FabricAdminTenantSettings",
@@ -35664,7 +35676,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. A guide can be found here: [Authenticate to Fabric](https://nik-charlebois.com/blog/posts/2024/authenticating-to-fabric/index.html)"
+    "Description": "This resource configures the tenant settings for Microsoft Fabric.\r\n\r\n**Please note:** For a successful export, you need to use service principals. Refer to the [Authentication and Permissions](https://microsoft365dsc.com/user-guide/get-started/authentication-and-permissions/#fabric-permissions) page for further information on how to set up your service principal."
   },
   {
     "ClassName": "MSFT_IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicyAssignments",
@@ -38207,6 +38219,952 @@
       }
     ],
     "Description": "Intune Antivirus Policy for macOS"
+  },
+  {
+    "ClassName": "MSFT_IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "Policy description",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Policy name",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of Scope Tags for this Entity instance.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Account Protection UI (0: (Disable) The users can see the display of the Account protection area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the Account protection area in Windows Defender Security Center.)",
+        "Name": "DisableAccountProtectionUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable App Browser UI (0: (Disable) The users can see the display of the app and browser protection area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the app and browser protection area in Windows Defender Security Center.)",
+        "Name": "DisableAppBrowserUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Clear Tpm Button (0: (Disabled or not configured) The security processor troubleshooting page shows a button that initiates the process to clear the security processor (TPM)., 1: (Enabled) The security processor troubleshooting page will not show a button to initiate the process to clear the security processor (TPM))",
+        "Name": "DisableClearTpmButton",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Device Security UI (0: (Disable) The users can see the display of the Device security area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the Device security area in Windows Defender Security Center.)",
+        "Name": "DisableDeviceSecurityUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Family UI (0: (Disable) The users can see the display of the family options area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the family options area in Windows Defender Security Center.)",
+        "Name": "DisableFamilyUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Health UI (0: (Disable) The users can see the display of the device performance and health area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the device performance and health area in Windows Defender Security Center.)",
+        "Name": "DisableHealthUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Network UI (0: (Disable) The users can see the display of the firewall and network protection area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the firewall and network protection area in Windows Defender Security Center.)",
+        "Name": "DisableNetworkUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Notifications (0: (Disable) The users can see the display of Windows Defender Security Center notifications., 1: (Enable) The users cannot see the display of Windows Defender Security Center notifications.)",
+        "Name": "DisableNotifications",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Enhanced Notifications (0: (Disable) Windows Defender Security Center will display critical and non-critical notifications to users.., 1: (Enable) Windows Defender Security Center only display notifications which are considered critical on clients.)",
+        "Name": "DisableEnhancedNotifications",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Tpm Firmware Update Warning (0: (Disable or Not configured) A warning will be displayed if the firmware of the security processor (TPM) should be updated for TPMs that have a vulnerability., 1: (Enabled) No warning will be displayed if the firmware of the security processor (TPM) should be updated.)",
+        "Name": "DisableTpmFirmwareUpdateWarning",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Virus UI (0: (Disable) The users can see the display of the virus and threat protection area in Windows Defender Security Center., 1: (Enable) The users cannot see the display of the virus and threat protection area in Windows Defender Security Center.)",
+        "Name": "DisableVirusUI",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Hide Ransomware Data Recovery (0: (Disable or not configured) The Ransomware data recovery area will be visible., 1: (Enable) The Ransomware data recovery area is hidden.)",
+        "Name": "HideRansomwareDataRecovery",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Hide Windows Security Notification Area Control (0: , 1: Enabled)",
+        "Name": "HideWindowsSecurityNotificationAreaControl",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Company Name",
+        "Name": "CompanyName",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Email",
+        "Name": "Email",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Phone",
+        "Name": "Phone",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "URL",
+        "Name": "URL",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "TamperProtection (Device) (1: Offboarding, 0: Onboarding)",
+        "Name": "TamperProtection",
+        "Option": "Write",
+        "ValueMap": [
+          "1",
+          "0"
+        ],
+        "Values": [
+          "1",
+          "0"
+        ]
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementConfigurationPolicyAssignments[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Antivirus Policy Security Experience for Windows10 Config Mgr"
+  },
+  {
+    "ClassName": "MSFT_IntuneAntivirusPolicyWindows10ConfigMgr",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "Policy description",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Policy name",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of Scope Tags for this Entity instance.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Archive Scanning (0: Not allowed. Turns off scanning on archived files., 1: Allowed. Scans the archive files.)",
+        "Name": "AllowArchiveScanning",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Behavior Monitoring (0: Not allowed. Turns off behavior monitoring., 1: Allowed. Turns on real-time behavior monitoring.)",
+        "Name": "AllowBehaviorMonitoring",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Cloud Protection (0: Not allowed. Turns off the Microsoft Active Protection Service., 1: Allowed. Turns on the Microsoft Active Protection Service.)",
+        "Name": "AllowCloudProtection",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Email Scanning (0: Not allowed. Turns off email scanning., 1: Allowed. Turns on email scanning.)",
+        "Name": "AllowEmailScanning",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Full Scan On Mapped Network Drives (0: Not allowed. Disables scanning on mapped network drives., 1: Allowed. Scans mapped network drives.)",
+        "Name": "AllowFullScanOnMappedNetworkDrives",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Full Scan Removable Drive Scanning (0: Not allowed. Turns off scanning on removable drives., 1: Allowed. Scans removable drives.)",
+        "Name": "AllowFullScanRemovableDriveScanning",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "[Deprecated] Allow Intrusion Prevention System (0: Not allowed., 1: Allowed.)",
+        "Name": "AllowIntrusionPreventionSystem",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow scanning of all downloaded files and attachments (0: Not allowed., 1: Allowed.)",
+        "Name": "AllowIOAVProtection",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Realtime Monitoring (0: Not allowed. Turns off the real-time monitoring service., 1: Allowed. Turns on and runs the real-time monitoring service.)",
+        "Name": "AllowRealtimeMonitoring",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Scanning Network Files (0: Not allowed. Turns off scanning of network files., 1: Allowed. Scans network files.)",
+        "Name": "AllowScanningNetworkFiles",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow Script Scanning (0: Not allowed., 1: Allowed.)",
+        "Name": "AllowScriptScanning",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow User UI Access (0: Not allowed. Prevents users from accessing UI., 1: Allowed. Lets users access UI.)",
+        "Name": "AllowUserUIAccess",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Avg CPU Load Factor",
+        "Name": "AvgCPULoadFactor",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Check For Signatures Before Running Scan (0: Disabled, 1: Enabled)",
+        "Name": "CheckForSignaturesBeforeRunningScan",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Cloud Block Level (0: NotConfigured, 2: High, 4: HighPlus, 6: ZeroTolerance)",
+        "Name": "CloudBlockLevel",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          2,
+          4,
+          6
+        ],
+        "Values": [
+          0,
+          2,
+          4,
+          6
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Cloud Extended Timeout",
+        "Name": "CloudExtendedTimeout",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Days To Retain Cleaned Malware",
+        "Name": "DaysToRetainCleanedMalware",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Catchup Full Scan (0: Enabled, 1: Disabled)",
+        "Name": "DisableCatchupFullScan",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Disable Catchup Quick Scan (0: Enabled, 1: Disabled)",
+        "Name": "DisableCatchupQuickScan",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Enable Low CPU Priority (0: Disabled, 1: Enabled)",
+        "Name": "EnableLowCPUPriority",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Excluded Extensions",
+        "Name": "ExcludedExtensions",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Excluded Paths",
+        "Name": "ExcludedPaths",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Excluded Processes",
+        "Name": "ExcludedProcesses",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "PUA Protection (0: PUA Protection off. Windows Defender will not protect against potentially unwanted applications., 1: PUA Protection on. Detected items are blocked. They will show in history along with other threats., 2: Audit mode. Windows Defender will detect potentially unwanted applications, but take no action. You can review information about the applications Windows Defender would have taken action against by searching for events created by Windows Defender in the Event Viewer.)",
+        "Name": "PUAProtection",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1,
+          2
+        ],
+        "Values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Real Time Scan Direction (0: Monitor all files (bi-directional)., 1: Monitor incoming files., 2: Monitor outgoing files.)",
+        "Name": "RealTimeScanDirection",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1,
+          2
+        ],
+        "Values": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Scan Parameter (1: Quick scan, 2: Full scan)",
+        "Name": "ScanParameter",
+        "Option": "Write",
+        "ValueMap": [
+          1,
+          2
+        ],
+        "Values": [
+          1,
+          2
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Schedule Quick Scan Time",
+        "Name": "ScheduleQuickScanTime",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Schedule Scan Day (0: Every day, 1: Sunday, 2: Monday, 3: Tuesday, 4: Wednesday, 5: Thursday, 6: Friday, 7: Saturday, 8: No scheduled scan)",
+        "Name": "ScheduleScanDay",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "Values": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Schedule Scan Time",
+        "Name": "ScheduleScanTime",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Signature Update Fallback Order",
+        "Name": "SignatureUpdateFallbackOrder",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Signature Update File Shares Sources",
+        "Name": "SignatureUpdateFileSharesSources",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Signature Update Interval",
+        "Name": "SignatureUpdateInterval",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Submit Samples Consent (0: Always prompt., 1: Send safe samples automatically., 2: Never send., 3: Send all samples automatically.)",
+        "Name": "SubmitSamplesConsent",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "Values": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow On Access Protection (0: Not allowed., 1: Allowed.)",
+        "Name": "AllowOnAccessProtection",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Remediation action for High severity threats - Depends on ThreatSeverityDefaultAction (clean: Clean, quarantine: Quarantine, remove: Remove, allow: Allow, userdefined: UserDefined, block: Block)",
+        "Name": "HighSeverityThreatDefaultAction",
+        "Option": "Write",
+        "ValueMap": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ],
+        "Values": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Remediation action for Severe threats - Depends on ThreatSeverityDefaultAction (clean: Clean, quarantine: Quarantine, remove: Remove, allow: Allow, userdefined: UserDefined, block: Block)",
+        "Name": "SevereThreatDefaultAction",
+        "Option": "Write",
+        "ValueMap": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ],
+        "Values": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Remediation action for Low severity threats - Depends on ThreatSeverityDefaultAction (clean: Clean, quarantine: Quarantine, remove: Remove, allow: Allow, userdefined: UserDefined, block: Block)",
+        "Name": "LowSeverityThreatDefaultAction",
+        "Option": "Write",
+        "ValueMap": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ],
+        "Values": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Remediation action for Moderate severity threats - Depends on ThreatSeverityDefaultAction (clean: Clean, quarantine: Quarantine, remove: Remove, allow: Allow, userdefined: UserDefined, block: Block)",
+        "Name": "ModerateSeverityThreatDefaultAction",
+        "Option": "Write",
+        "ValueMap": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ],
+        "Values": [
+          "clean",
+          "quarantine",
+          "remove",
+          "allow",
+          "userdefined",
+          "block"
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Allow users to view the full History results (0: No, 1: Yes)",
+        "Name": "DisablePrivacyMode",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Create a system restore point before computers are cleaned. (0: No, 1: Yes)",
+        "Name": "DisableRestorePoint",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "SInt32",
+        "Description": "Randomize scheduled scan and security intelligence update start times. (0: No, 1: Yes)",
+        "Name": "RandomizeScheduleTaskTimes",
+        "Option": "Write",
+        "ValueMap": [
+          0,
+          1
+        ],
+        "Values": [
+          0,
+          1
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Security Intelligence Location",
+        "Name": "SecurityIntelligenceLocation",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementConfigurationPolicyAssignments[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Antivirus Policy for Windows10 Config Mgr"
   },
   {
     "ClassName": "MSFT_IntuneAntivirusPolicyWindows10SettingCatalog",
@@ -43697,6 +44655,230 @@
     "Description": "Intune Device Cleanup Rule V2.\r\n\r\nOnly one instance of each platform can be configured. Multiple cleanup rules for the same platform are not supported."
   },
   {
+    "ClassName": "MSFT_DeviceManagementNotificationMessageTemplate",
+    "Parameters": [
+      {
+        "CIMType": "Boolean",
+        "Description": "If this is the default message template.",
+        "Name": "IsDefault",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The locale of the message template.",
+        "Name": "Locale",
+        "Option": "Write",
+        "ValueMap": [
+          "ar-sa",
+          "bg-bg",
+          "cs-cz",
+          "da-dk",
+          "de-de",
+          "el-gr",
+          "en-gb",
+          "en-us",
+          "es-es",
+          "es-mx",
+          "et-ee",
+          "fi-fi",
+          "fr-ca",
+          "fr-fr",
+          "he-il",
+          "hr-hr",
+          "hu-hu",
+          "it-it",
+          "ja-jp",
+          "ko-kr",
+          "lt-lt",
+          "lv-lv",
+          "nb-no",
+          "nl-nl",
+          "pl-pl",
+          "pt-br",
+          "pt-pt",
+          "ro-ro",
+          "sk-sk",
+          "sl-si",
+          "ru-ru",
+          "sr-Latn-rs",
+          "sv-se",
+          "th-th",
+          "tr-tr",
+          "uk-ua",
+          "zh-cn",
+          "zh-tw"
+        ],
+        "Values": [
+          "ar-sa",
+          "bg-bg",
+          "cs-cz",
+          "da-dk",
+          "de-de",
+          "el-gr",
+          "en-gb",
+          "en-us",
+          "es-es",
+          "es-mx",
+          "et-ee",
+          "fi-fi",
+          "fr-ca",
+          "fr-fr",
+          "he-il",
+          "hr-hr",
+          "hu-hu",
+          "it-it",
+          "ja-jp",
+          "ko-kr",
+          "lt-lt",
+          "lv-lv",
+          "nb-no",
+          "nl-nl",
+          "pl-pl",
+          "pt-br",
+          "pt-pt",
+          "ro-ro",
+          "sk-sk",
+          "sl-si",
+          "ru-ru",
+          "sr-Latn-rs",
+          "sv-se",
+          "th-th",
+          "tr-tr",
+          "uk-ua",
+          "zh-cn",
+          "zh-tw"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "The body of the message template",
+        "Name": "MessageTemplate",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The subject of the message template.",
+        "Name": "Subject",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Device Compliance Notification Message Template"
+  },
+  {
+    "ClassName": "MSFT_IntuneDeviceComplianceNotificationMessageTemplate",
+    "Parameters": [
+      {
+        "CIMType": "String[]",
+        "Description": "The Message Template Branding Options. Branding is defined in the Intune Admin Console. Possible values are: none, includeCompanyLogo, includeCompanyName, includeContactInformation, includeCompanyPortalLink, includeDeviceDetails",
+        "Name": "BrandingOptions",
+        "Option": "Write",
+        "ValueMap": [
+          "none",
+          "includeCompanyLogo",
+          "includeCompanyName",
+          "includeContactInformation",
+          "includeCompanyPortalLink",
+          "includeDeviceDetails"
+        ],
+        "Values": [
+          "none",
+          "includeCompanyLogo",
+          "includeCompanyName",
+          "includeContactInformation",
+          "includeCompanyPortalLink",
+          "includeDeviceDetails"
+        ]
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementNotificationMessageTemplate[]",
+        "Description": "The localized notification message templates.",
+        "Name": "LocalizedNotificationMessages",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Display name for the Notification Message Template.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Display name for the Notification Message Template.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of Scope Tags for this Entity instance.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Device Compliance Notification Message Template"
+  },
+  {
     "ClassName": "MSFT_IntuneDeviceCompliancePolicyAndroid",
     "Parameters": [
       {
@@ -45663,6 +46845,92 @@
       }
     ],
     "Description": "This resource configures the settings of Windows 10 compliance policies\r\nin your cloud-based organization.\r\n\r\n## Parameters\r\n\r\n### Device Health\r\n#### Windows Health Attestation Service evaluation rules\r\n* **Require BitLocker:**\r\n  Windows BitLocker Drive Encryption encrypts all data stored on the Windows operating system volume. BitLocker uses the Trusted Platform Module (TPM) to help protect the Windows operating system and user data. It also helps confirm that a computer isn't tampered with, even if its left unattended, lost, or stolen. If the computer is equipped with a compatible TPM, BitLocker uses the TPM to lock the encryption keys that protect the data. As a result, the keys can't be accessed until the TPM verifies the state of the computer.\r\n  * Not configured _(default)_ - This setting isn't evaluated for compliance or non-compliance.\r\n  * Require - The device can protect data that's stored on the drive from unauthorized access when the system is off, or hibernates.\r\n\r\n  Device HealthAttestation CSP - BitLockerStatus\r\n\r\n* **Require Secure Boot to be enabled on the device:**\r\n  * Not configured _(default)_ - This setting isn't evaluated for compliance or non-compliance.\r\n  * Require - The system is forced to boot to a factory trusted state. The core components that are used to boot the machine must have correct cryptographic signatures that are trusted by the organization that manufactured the device. The UEFI firmware verifies the signature before it lets the machine start. If any files are tampered with, which breaks their signature, the system doesn't boot.\r\n\r\n### Device Properties\r\n#### Operating System Version\r\nTo discover build versions for all Windows 10 Feature Updates and Cumulative Updates (to be used in some of the fields below), see Windows 10 release information. Be sure to include the 10.0. prefix before the build numbers, as the following examples illustrate.\r\n\r\n* **Minimum OS version:**\r\n  Enter the minimum allowed version in the major.minor.build.revision number format. To get the correct value, open a command prompt, and type ver. The ver command returns the version in the following format:\r\n\r\n  Microsoft Windows [Version 10.0.17134.1]\r\n\r\n  When a device has an earlier version than the OS version you enter, it's reported as noncompliant. A link with information on how to upgrade is shown. The end user can choose to upgrade their device. After they upgrade, they can access company resources.\r\n\r\n* **Maximum OS version:**\r\n  Enter the maximum allowed version, in the major.minor.build.revision number format. To get the correct value, open a command prompt, and type ver. The ver command returns the version in the following format:\r\n\r\n  Microsoft Windows [Version 10.0.17134.1]\r\n\r\n  When a device is using an OS version later than the version entered, access to organization resources is blocked. The end user is asked to contact their IT administrator. The device can't access organization resources until the rule is changed to allow the OS version.\r\n\r\n* **Minimum OS required for mobile devices:**\r\n  Enter the minimum allowed version, in the major.minor.build number format.\r\n\r\n  When a device has an earlier version that the OS version you enter, it's reported as noncompliant. A link with information on how to upgrade is shown. The end user can choose to upgrade their device. After they upgrade, they can access company resources.\r\n\r\n* **Maximum OS required for mobile devices:**\r\n  Enter the maximum allowed version, in the major.minor.build number.\r\n\r\n  When a device is using an OS version later than the version entered, access to organization resources is blocked. The end user is asked to contact their IT administrator. The device can't access organization resources until the rule is changed to allow the OS version.\r\n\r\n* **Valid operating system builds:**\r\n  Specify a list of minimum and maximum operating system builds. Valid operating system builds provides additional flexibility when compared against minimum and maximum OS versions. Consider a scenario where minimum OS version is set to 10.0.18362.xxx (Windows 10 1903) and maximum OS version is set to 10.0.18363.xxx (Windows 10 1909). This configuration can allow a Windows 10 1903 device that doesn't have recent cumulative updates installed to be identified as compliant. Minimum and maximum OS versions might be suitable if you have standardized on a single Windows 10 release, but might not address your requirements if you need to use multiple builds, each with specific patch levels. In such a case, consider leveraging valid operating system builds instead, which allows multiple builds to be specified as per the following example.\r\n\r\n  Example:\r\n  The following table is an example of a range for the acceptable operating systems versions for different Windows 10 releases. In this example, three different Feature Updates have been allowed (1809, 1909 and 2004). Specifically, only those versions of Windows and which have applied cumulative updates from June to September 2020 will be considered to be compliant. This is sample data only. The table includes a first column that includes any text you want to describe the entry, followed by the minimum and maximum OS version for that entry. The second and third columns must adhere to valid OS build versions in the major.minor.build.revision number format. After you define one or more entries, you can Export the list as a comma-separated values (CSV) file.\r\n\r\n  | Description                 | Minimum OS version | Maximum OS version |\r\n  |-----------------------------|--------------------|--------------------|\r\n  | Win 10 2004 (Jun-Sept 2020) | 10.0.19041.329     | 10.0.19041.508     |\r\n  | Win 10 1909 (Jun-Sept 2020) | 10.0.18363.900     | 10.0.18363.1110    |\r\n  | Win 10 1809 (Jun-Sept 2020) | 10.0.17763.1282    | 10.0.17763.1490    |\r\n\r\n### Configuration Manager Compliance\r\nApplies only to co-managed devices running Windows 10 and later. Intune-only devices return a not available status.\r\n\r\n* **Require device compliance from Configuration Manager:**\r\n  * Not configured _(default)_ - Intune doesn't check for any of the Configuration Manager settings for compliance.\r\n  * Require - Require all settings (configuration items) in Configuration Manager to be compliant.\r\n\r\n### System Security\r\n#### Password\r\n* **Require a password to unlock mobile devices:**\r\n  * Not configured _(default)_ - This setting isn't evaluated for compliance or non-compliance.\r\n  * Require - Users must enter a password before they can access their device.\r\n\r\n* **Simple passwords:**\r\n  * Not configured _(default)_ - Users can create simple passwords, such as 1234 or 1111.\r\n  * Block - Users can't create simple passwords, such as 1234 or 1111.\r\n\r\n* **Password type:**\r\n  Choose the type of password or PIN required. Your options:\r\n  * Device _(default)_  - Require a password, numeric PIN, or alphanumeric PIN\r\n  * Numeric - Require a password or numeric PIN\r\n  * Alphanumeric - Require a password, or alphanumeric PIN.\r\n  When set to Alphanumeric, the following settings are available:\r\n\r\n  * Password complexity:\r\n    Your options:\r\n    * Require digits and lowercase letters _(default)_\r\n    * Require digits, lowercase letters, and uppercase letters\r\n    * Require digits, lowercase letters, uppercase letters, and special characters\r\n\r\n* **Minimum password length:**\r\n    Enter the minimum number of digits or characters that the password must have.\r\n\r\n* **Maximum minutes of inactivity before password is required:**\r\n    Enter the idle time before the user must reenter their password.\r\n\r\n* **Password expiration (days):**\r\n    Enter the number of days before the password expires, and they must create a new one, from 1-730.\r\n\r\n* **Number of previous passwords to prevent reuse:**\r\n    Enter the number of previously used passwords that can't be used.\r\n\r\n* **Require password when device returns from idle state (Mobile and Holographic):**\r\n    * Not configured _(default)_\r\n    * Require - Require device users to enter the password every time the device returns from an idle state.\r\n\r\n  **Important**\r\n  When the password requirement is changed on a Windows desktop, users are impacted the next time they sign in, as that's when the device goes from idle to active. Users with passwords that meet the requirement are still prompted to change their passwords.\r\n\r\n### Encryption\r\n\r\n* **Encryption of data storage on a device:**\r\n  This setting applies to all drives on a device.\r\n  * Not configured _(default)_\r\n  * Require - Use Require to encrypt data storage on your devices.\r\n\r\n  **Note**\r\n  The Encryption of data storage on a device setting generically checks for the presence of encryption on the device, more specifically at the OS drive level. Currently, Intune supports only the encryption check with BitLocker. For a more robust encryption setting, consider using Require BitLocker, which leverages Windows Device Health Attestation to validate Bitlocker status at the TPM level.\r\n\r\n### Device Security\r\n\r\n* **Firewall:**\r\n  * Not configured _(default)_ - Intune doesn't control the Microsoft Defender Firewall, nor change existing settings.\r\n  * Require - Turn on the Microsoft Defender Firewall, and prevent users from turning it off.\r\n\r\n  **Note**\r\n  If the device immediately syncs after a reboot, or immediately syncs waking from sleep, then this setting may report as an Error. This scenario might not affect the overall device compliance status. To re-evaluate the compliance status, manually sync the device.\r\n\r\n* **Trusted Platform Module (TPM):**\r\n  * Not configured _(default)_ - Intune doesn't check the device for a TPM chip version.\r\n  * Require - Intune checks the TPM chip version for compliance. The device is compliant if the TPM chip version is greater than 0 (zero). The device isn't compliant if there isn't a TPM version on the device.\r\n\r\n* **Antivirus:**\r\n  * Not configured _(default)_ - Intune doesn't check for any antivirus solutions installed on the device.\r\n  * Require - Check compliance using antivirus solutions that are registered with Windows Security Center, such as Symantec and Microsoft Defender.\r\n\r\n* **Antispyware:**\r\n  * Not configured _(default)_ - Intune doesn't check for any antispyware solutions installed on the device.\r\n  * Require - Check compliance using antispyware solutions that are registered with Windows Security Center, such as Symantec and Microsoft Defender.\r\n\r\n### Defender\r\nThe following compliance settings are supported with Windows 10 Desktop.\r\n\r\n* **Microsoft Defender Antimalware:**\r\n  * Not configured _(default)_ - Intune doesn't control the service, nor change existing settings.\r\n  * Require - Turn on the Microsoft Defender anti-malware service, and prevent users from turning it off.\r\n\r\n* **Microsoft Defender Antimalware minimum version:**\r\n  Enter the minimum allowed version of Microsoft Defender anti-malware service. For example, enter 4.11.0.0. When left blank, any version of the Microsoft Defender anti-malware service can be used.\r\n\r\n  By _(default)_, no version is configured.\r\n\r\n* **Microsoft Defender Antimalware security intelligence up-to-date:**\r\n  Controls the Windows Security virus and threat protection updates on the devices.\r\n  * Not configured _(default)_ - Intune doesn't enforce any requirements.\r\n  * Require - Force the Microsoft Defender security intelligence be up-to-date.\r\n\r\n* **Real-time protection:**\r\n  * Not configured (_(default)_) - Intune doesn't control this feature, nor change existing settings.\r\n  * Require - Turn on real-time protection, which scans for malware, spyware, and other unwanted software.\r\n\r\n### Microsoft Defender for Endpoint\r\n#### Microsoft Defender for Endpoint rules\r\nFor additional information on Microsoft Defender for Endpoint integration in conditional access scenarios, see Configure Conditional Access in Microsoft Defender for Endpoint.\r\n\r\n* **Require the device to be at or under the machine risk score:**\r\n  Use this setting to take the risk assessment from your defense threat services as a condition for compliance. Choose the maximum allowed threat level:\r\n  * Not configured (_(default)_)\r\n  * Clear -This option is the most secure, as the device can't have any threats. If the device is detected as having any level of threats, it's evaluated as non-compliant.\r\n  * Low - The device is evaluated as compliant if only low-level threats are present. Anything higher puts the device in a non-compliant status.\r\n  * Medium - The device is evaluated as compliant if existing threats on the device are low or medium level. If the device is detected to have high-level threats, it's determined to be non-compliant.\r\n  * High - This option is the least secure, and allows all threat levels. It may be useful if you're using this solution only for reporting purposes.\r\n\r\n### Windows Holographic for Business\r\nWindows Holographic for Business uses the Windows 10 and later platform. Windows Holographic for Business supports the following setting:\r\n\r\n**System Security > Encryption > Encryption of data storage on device.**\r\nTo verify device encryption on the Microsoft HoloLens, see Verify device encryption.\r\n\r\n### Surface Hub\r\nSurface Hub uses the Windows 10 and later platform. Surface Hubs are supported for both compliance and Conditional Access. To enable these features on Surface Hubs, we recommend you enable Windows 10 automatic enrollment in Intune (requires Azure Active Directory (Azure AD)), and target the Surface Hub devices as device groups. Surface Hubs are required to be Azure AD joined for compliance and Conditional Access to work.\r\n\r\nFor guidance, see set up enrollment for Windows devices.\r\n\r\nSpecial consideration for Surface Hubs running Windows 10 Team OS:\r\nSurface Hubs that run Windows 10 Team OS do not support the Microsoft Defender for Endpoint and Password compliance policies at this time. Therefore, for Surface Hubs that run Windows 10 Team OS set the following two settings to their _(default)_ of _Not configured_:\r\n* In the category Password, set Require a password to unlock mobile devices to the _(default)_ of Not configured.\r\n* In the category Microsoft Defender for Endpoint, set Require the device to be at or under the machine risk score to the _(default)_ of Not configured."
+  },
+  {
+    "ClassName": "MSFT_IntuneDeviceComplianceScriptLinux",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "Description of the compliance script.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Name of the compliance script.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The compliance discovery script. Cannot be empty.",
+        "Name": "DiscoveryScript",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Device Compliance Script for Linux"
   },
   {
     "ClassName": "MSFT_IntuneDeviceComplianceScriptWindows10",
@@ -65721,7 +66989,7 @@
       },
       {
         "CIMType": "UInt32",
-        "Description": "The number of days a device is allowed to go without checking in to remain compliant.",
+        "Description": "The number of days a device is allowed to go without checking in to remain compliant. Must be between 1 and 120.",
         "Name": "DeviceComplianceCheckinThresholdDays",
         "Option": "Write"
       },
@@ -70601,6 +71869,930 @@
     "Description": "Intune Mobile Apps Defender For Endpoint for macOS"
   },
   {
+    "ClassName": "MSFT_MicrosoftGraphAndroidMinimumOperatingSystem",
+    "Parameters": [
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 10.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V10_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 11.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V11_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 12.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V12_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 13.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V13_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 14.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V14_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 15.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V15_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 4.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V4_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 4.0.3 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V4_0_3",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 4.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V4_1",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 4.2 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V4_2",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 4.3 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V4_3",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 4.4 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V4_4",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 5.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V5_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 5.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V5_1",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 6.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V6_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 7.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V7_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 7.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V7_1",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 8.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V8_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 8.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V8_1",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "When TRUE, only Version 9.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V9_0",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for Android"
+  },
+  {
+    "ClassName": "MSFT_IntuneMobileAppsLobAppAndroid",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The admin provided or imported title of the app.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "MSFT_MicrosoftGraphAndroidMinimumOperatingSystem",
+        "Description": "The value for the minimum applicable operating system.",
+        "Name": "MinimumSupportedOperatingSystem",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The package identifier.",
+        "Name": "PackageId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The platforms to which the application can be targeted. If not specified, will defauilt to Android Device Administrator. Cannot be changed after creation. Possible values are: androidDeviceAdministrator, androidOpenSourceProject, unknownFutureValue.",
+        "Name": "TargetedPlatforms",
+        "Option": "Write",
+        "ValueMap": [
+          "androidDeviceAdministrator",
+          "androidOpenSourceProject"
+        ],
+        "Values": [
+          "androidDeviceAdministrator",
+          "androidOpenSourceProject"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "The name of the main Lob application file.",
+        "Name": "FileName",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppCategory[]",
+        "Description": "The list of categories for this app.",
+        "Name": "Categories",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The description of the app.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The developer of the app.",
+        "Name": "Developer",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The more information Url.",
+        "Name": "InformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "The value indicating whether the app is marked as featured by the admin.",
+        "Name": "IsFeatured",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMimeContent",
+        "Description": "The large icon, to be displayed in the app details and used for upload of the icon.",
+        "Name": "LargeIcon",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Notes for the app.",
+        "Name": "Notes",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The owner of the app.",
+        "Name": "Owner",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The privacy statement Url.",
+        "Name": "PrivacyInformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The publisher of the app.",
+        "Name": "Publisher",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of scope tag ids for this mobile app.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppAssignment[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for Android"
+  },
+  {
+    "ClassName": "MSFT_MicrosoftGraphIosMinimumOperatingSystem",
+    "Parameters": [
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 10.0 or later is required to install the app. If 'False', iOS Version 10.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V10_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 11.0 or later is required to install the app. If 'False', iOS Version 11.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V11_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 12.0 or later is required to install the app. If 'False', iOS Version 12.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V12_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 13.0 or later is required to install the app. If 'False', iOS Version 13.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V13_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 14.0 or later is required to install the app. If 'False', iOS Version 14.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V14_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 15.0 or later is required to install the app. If 'False', iOS Version 15.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V15_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 16.0 or later is required to install the app. If 'False', iOS Version 16.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V16_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 17.0 or later is required to install the app. If 'False', iOS Version 17.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V17_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 18.0 or later is required to install the app. If 'False', iOS Version 18.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V18_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 8.0 or later is required to install the app. If 'False', iOS Version 8.0  is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V8_0",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates the minimum iOS version support required for the managed device. When 'True', iOS with OS Version 9.0 or later is required to install the app. If 'False', iOS Version 9.0 is not the minimum version. Default value is False. Exactly one of the minimum operating system boolean values will be TRUE.",
+        "Name": "V9_0",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for iOS"
+  },
+  {
+    "ClassName": "MSFT_IntuneMobileAppsLobAppiOS",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The admin provided or imported title of the app.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "MSFT_MicrosoftGraphIosDeviceType",
+        "Description": "The iOS architecture for which this app can run on.",
+        "Name": "ApplicableDeviceType",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The build number of iOS Line of Business (LoB) app.",
+        "Name": "BuildNumber",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The Identity Name.",
+        "Name": "BundleId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppCategory[]",
+        "Description": "The list of categories for this app.",
+        "Name": "Categories",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_MicrosoftGraphIosMinimumOperatingSystem",
+        "Description": "The value for the minimum applicable operating system.",
+        "Name": "MinimumSupportedOperatingSystem",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The version number of iOS Line of Business (LoB) app.",
+        "Name": "VersionNumber",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The name of the main Lob application file.",
+        "Name": "FileName",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The description of the app.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The developer of the app.",
+        "Name": "Developer",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The more information Url.",
+        "Name": "InformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "The value indicating whether the app is marked as featured by the admin.",
+        "Name": "IsFeatured",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMimeContent",
+        "Description": "The large icon, to be displayed in the app details and used for upload of the icon.",
+        "Name": "LargeIcon",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Notes for the app.",
+        "Name": "Notes",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The owner of the app.",
+        "Name": "Owner",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The privacy statement Url.",
+        "Name": "PrivacyInformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The publisher of the app.",
+        "Name": "Publisher",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of scope tag ids for this mobile app.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppAssignment[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for iOS"
+  },
+  {
+    "ClassName": "MSFT_IntuneMobileAppsLobAppMsiWindows10",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The admin provided or imported title of the app.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The name of the main Lob application file. Required for creating the app.",
+        "Name": "FileName",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The description of the app.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The developer of the app.",
+        "Name": "Developer",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The more information Url.",
+        "Name": "InformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "The value indicating whether the app is marked as featured by the admin.",
+        "Name": "IsFeatured",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_MicrosoftGraphMimeContent",
+        "Description": "The large icon, to be displayed in the app details and used for upload of the icon.",
+        "Name": "LargeIcon",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Notes for the app.",
+        "Name": "Notes",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The owner of the app.",
+        "Name": "Owner",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The privacy statement Url.",
+        "Name": "PrivacyInformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The publisher of the app.",
+        "Name": "Publisher",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of scope tag ids for this mobile app.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppCategory[]",
+        "Description": "The list of categories for this app.",
+        "Name": "Categories",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The command line.",
+        "Name": "CommandLine",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "A boolean to control whether the app's version will be used to detect the app after it is installed on a device. Set this to true for Windows Mobile MSI Line of Business (LoB) apps that use a self update feature.",
+        "Name": "IgnoreVersionDetection",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates whether to install a dual-mode MSI in the device context. If true, app will be installed for all users. If false, app will be installed per-user. If null, service will use the MSI package's default install context. In case of dual-mode MSI, this default will be per-user. Cannot be set for non-dual-mode apps. Cannot be changed after initial creation of the application.",
+        "Name": "UseDeviceContext",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppAssignment[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App MSI for Windows10"
+  },
+  {
+    "ClassName": "MSFT_DeviceManagementMobileAppAssignmentSettings",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "The odata type of the assignment type.",
+        "Name": "odataType",
+        "Option": "Write",
+        "ValueMap": [
+          "#microsoft.graph.win32LobAppAssignmentSettings",
+          "#microsoft.graph.windowsUniversalAppXAppAssignmentSettings"
+        ],
+        "Values": [
+          "#microsoft.graph.win32LobAppAssignmentSettings",
+          "#microsoft.graph.windowsUniversalAppXAppAssignmentSettings"
+        ]
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for Windows10 for Appx, AppxBundle, Msix and MsixBundle applications."
+  },
+  {
+    "ClassName": "MSFT_DeviceManagementAppxMobileAppAssignmentSettings",
+    "Parameters": [
+      {
+        "CIMType": "Boolean",
+        "Description": "If true, uses device execution context for Windows Universal AppX mobile app. Device-context install is not allowed when this type of app is targeted with Available intent. Defaults to false.",
+        "Name": "useDeviceContext",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for Windows10 for Appx, AppxBundle, Msix and MsixBundle applications."
+  },
+  {
+    "ClassName": "MSFT_DeviceManagementAppxMobileAppAssignment",
+    "Parameters": [
+      {
+        "CIMType": "MSFT_DeviceManagementAppxMobileAppAssignmentSettings",
+        "Description": "The settings of the assignment.",
+        "Name": "assignmentSettings",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for Windows10 for Appx, AppxBundle, Msix and MsixBundle applications."
+  },
+  {
+    "ClassName": "MSFT_IntuneMobileAppsLobAppWindows10",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "The admin provided or imported title of the app.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The name of the main Lob application file. Required for creating the resource.",
+        "Name": "FileName",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The description of the app.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The developer of the app.",
+        "Name": "Developer",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The more information Url.",
+        "Name": "InformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "The value indicating whether the app is marked as featured by the admin.",
+        "Name": "IsFeatured",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMimeContent",
+        "Description": "The large icon, to be displayed in the app details and used for upload of the icon.",
+        "Name": "LargeIcon",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Notes for the app.",
+        "Name": "Notes",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The owner of the app.",
+        "Name": "Owner",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The privacy statement Url.",
+        "Name": "PrivacyInformationUrl",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The publisher of the app.",
+        "Name": "Publisher",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of scope tag ids for this mobile app.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppCategory[]",
+        "Description": "The list of categories for this app.",
+        "Name": "Categories",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementMobileAppAssignment[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Mobile Apps Lob App for Windows10 for Appx, AppxBundle, Msix and MsixBundle applications."
+  },
+  {
     "ClassName": "MSFT_DeviceManagementMinimumOperatingSystem",
     "Parameters": [
       {
@@ -71830,7 +74022,7 @@
       {
         "CIMType": "String",
         "Description": "The auto-update superseded apps setting for the app assignment. Possible values are notConfigured and enabled. Default value is notConfigured.",
-        "Name": "autoUpdateSupersededApps",
+        "Name": "autoUpdateSupersededAppsState",
         "Option": "Write",
         "ValueMap": [
           "enabled",
@@ -71864,24 +74056,6 @@
         "Description": "The time at which the app should be installed.",
         "Name": "deadlineDateTime",
         "Option": "Write"
-      }
-    ],
-    "Description": "Intune Mobile Apps Win32 App for Windows10"
-  },
-  {
-    "ClassName": "MSFT_DeviceManagementMobileAppAssignmentSettings",
-    "Parameters": [
-      {
-        "CIMType": "String",
-        "Description": "The odata type of the assignment type.",
-        "Name": "odataType",
-        "Option": "Write",
-        "ValueMap": [
-          "#microsoft.graph.win32LobAppAssignmentSettings"
-        ],
-        "Values": [
-          "#microsoft.graph.win32LobAppAssignmentSettings"
-        ]
       }
     ],
     "Description": "Intune Mobile Apps Win32 App for Windows10"
@@ -72355,7 +74529,7 @@
       },
       {
         "CIMType": "String",
-        "Description": "The file name of the app.",
+        "Description": "The file name of the app. Required for creating the resource.",
         "Name": "FileName",
         "Option": "Write"
       },
@@ -102133,6 +104307,82 @@
     "Description": "Intune Windows Autopilot Deployment Profile Azure AD Joined"
   },
   {
+    "ClassName": "MSFT_IntuneWindowsBackupForOrganizationConfiguration",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "Only valid value is 'Yes'.",
+        "Name": "IsSingleInstance",
+        "Option": "Key",
+        "ValueMap": [
+          "Yes"
+        ],
+        "Values": [
+          "Yes"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Indicates the configuration state of the Windows Restore setting. Possible values are 'notConfigured', 'enabled', and 'disabled'. Default is: notConfigured. This is a tenant level default setting that is not targetable. This property's value is applied during Enrollment. Possible values are: notConfigured, enabled, disabled.",
+        "Name": "State",
+        "Option": "Write",
+        "ValueMap": [
+          "notConfigured",
+          "enabled",
+          "disabled"
+        ],
+        "Values": [
+          "notConfigured",
+          "enabled",
+          "disabled"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Windows Backup For Organization Configuration\r\n\r\n**Attention**: Can only be updated using the delegated `Credentials` authentication method."
+  },
+  {
     "ClassName": "MSFT_IntuneWindowsHelloForBusinessGlobalPolicy",
     "Parameters": [
       {
@@ -103103,6 +105353,104 @@
     "Description": "Intune Windows Update For Business Feature Update Profile for Windows10\r\n\r\n## RolloutSettings\r\n\r\nThe RolloutSettings for this resource have the following constraints and notes:\r\n\r\n* When creating a policy:\r\n    * If only a start date is specified, then the start date must be at least today.\r\n        * If the desired state date is before the current date, it will be adjusted to the current date.\r\n    * If a start and end date is specified, the start date must be the current date + 2 days, and\r\n      the end date must be at least one day after the start date.\r\n        * If the start date is before the current date + 2 days, it will be adjusted to this date.\r\n* When updating a policy:\r\n    * If only a start date is specified, then the start date must either be the date from the current\r\n      configuration or the current date (or later).\r\n        * If the desired state date is before the current date, it will be adjusted to the current date.\r\n    * If a start and end date is specified, the start date must be the current date + 2 days, and\r\n      the end date must be at least one day after the start date.\r\n        * If the start date is before the current date + 2 days, it will be adjusted to this date.\r\n* When testing a policy:\r\n    * If the policy is missing and the start and end date are before the current date, it will return true.\r\n    * If the start date is different but before the current start date or time, it will return true."
   },
   {
+    "ClassName": "MSFT_IntuneWindowsUpdateForBusinessHotpatchProfileWindows10",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "Indicates the display name of the device cleanup rule.",
+        "Name": "DisplayName",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String",
+        "Description": "The unique identifier for an entity. Read-only.",
+        "Name": "Id",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Indicates the description for the device clean up rule.",
+        "Name": "Description",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Indicates if hotpatch is enabled.",
+        "Name": "HotpatchEnabled",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "List of Scope Tags for this Entity instance.",
+        "Name": "RoleScopeTagIds",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_DeviceManagementConfigurationPolicyAssignments[]",
+        "Description": "Represents the assignment to the Intune policy.",
+        "Name": "Assignments",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "string",
+        "Description": "Present ensures the policy exists, absent ensures it is removed.",
+        "Name": "Ensure",
+        "Option": "Write",
+        "ValueMap": [
+          "Present",
+          "Absent"
+        ],
+        "Values": [
+          "Present",
+          "Absent"
+        ]
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory tenant used for authentication.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "Intune Windows Update For Business Hotpatch Profile for Windows10"
+  },
+  {
     "ClassName": "MSFT_MicrosoftGraphExpeditedWindowsQualityUpdateSettings",
     "Parameters": [
       {
@@ -103711,6 +106059,90 @@
     "Description": "Intune Windows Update For Business Ring Update Profile for Windows 10"
   },
   {
+    "ClassName": "MSFT_M365DSCGraphAPIRuleEvaluation",
+    "Parameters": [
+      {
+        "CIMType": "String",
+        "Description": "Url of the REST Endpoint.",
+        "Name": "APIUrl",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Specify the rules to evaluate.",
+        "Name": "RuleDefinition",
+        "Option": "Key"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Name of the parent property of the response, which contains the instances. Default is 'value'.",
+        "Name": "InstancesProperty",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "For logging purposes only. This represents the unique identifier of instances returned by the Graph API call.",
+        "Name": "InstanceIdentifier",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Custom display name for the rule. This will show up in the logs on drift detection.",
+        "Name": "RuleName",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Query to check how many instances exist, using PowerShell format",
+        "Name": "AfterRuleCountQuery",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Credentials of the Azure Active Directory Admin",
+        "Name": "Credential",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Id of the Azure Active Directory tenant used for authentication.",
+        "Name": "TenantId",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "MSFT_Credential",
+        "Description": "Secret of the Azure Active Directory application to authenticate with.",
+        "Name": "ApplicationSecret",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Thumbprint of the Azure Active Directory application's authentication certificate to use for authentication.",
+        "Name": "CertificateThumbprint",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Managed ID being used for authentication.",
+        "Name": "ManagedIdentity",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String[]",
+        "Description": "Access token used for authentication.",
+        "Name": "AccessTokens",
+        "Option": "Write"
+      }
+    ],
+    "Description": "This resource monitors Graph API endpoints against the defined rules."
+  },
+  {
     "ClassName": "MSFT_M365DSCRuleEvaluation",
     "Parameters": [
       {
@@ -103878,7 +106310,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures Security and Compliance Center Admin Audit Log."
+    "Description": "This resource configures a Purview Admin Audit Log."
   },
   {
     "ClassName": "MSFT_O365ExternalConnection",
@@ -106286,7 +108718,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures an Audit ConfigurationPolicy\r\nin Security and Compliance Center."
+    "Description": "This resource configures an Audit ConfigurationPolicy in Purview."
   },
   {
     "ClassName": "MSFT_SCAutoSensitivityLabelPolicy",
@@ -106504,7 +108936,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity label policy in Security and Compliance."
+    "Description": "This resource configures an Auto Sensitivity label policy in Purview."
   },
   {
     "ClassName": "MSFT_SCHeaderPattern",
@@ -106522,7 +108954,7 @@
         "Option": "Required"
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity Label\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures an Auto Sensitivity Label Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCDLPSensitiveInformation",
@@ -106570,7 +109002,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity Label\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures an Auto Sensitivity Label Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCDLPLabel",
@@ -106594,7 +109026,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity Label\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures an Auto Sensitivity Label Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCDLPContainsSensitiveInformationGroup",
@@ -106632,7 +109064,7 @@
         ]
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity Label\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures an Auto Sensitivity Label Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCDLPContainsSensitiveInformation",
@@ -106664,7 +109096,7 @@
         ]
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity Label\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures an Auto Sensitivity Label Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCAutoSensitivityLabelRule",
@@ -106965,18 +109397,26 @@
       },
       {
         "CIMType": "String",
-        "Description": "Workload the rule is associated with. Value can be: Exchange, SharePoint, OneDriveForBusiness",
+        "Description": "Workload the rule is associated with. Value can be: Exchange, SharePoint, OneDriveForBusiness, Applications, Azure, AWS and PowerBI",
         "Name": "Workload",
         "Option": "Key",
         "ValueMap": [
           "Exchange",
           "SharePoint",
-          "OneDriveForBusiness"
+          "OneDriveForBusiness",
+          "Applications",
+          "Azure",
+          "AWS",
+          "PowerBI"
         ],
         "Values": [
           "Exchange",
           "SharePoint",
-          "OneDriveForBusiness"
+          "OneDriveForBusiness",
+          "Applications",
+          "Azure",
+          "AWS",
+          "PowerBI"
         ]
       },
       {
@@ -107036,7 +109476,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Auto Sensitivity Label\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures an Auto Sensitivity Label Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCCaseHoldPolicy",
@@ -107140,7 +109580,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a eDiscovery Case Policy\r\nin Security and Compliance Center."
+    "Description": "This resource configures an eDiscovery Case Policy in Purview."
   },
   {
     "ClassName": "MSFT_SCCaseHoldRule",
@@ -107232,7 +109672,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures an eDiscovery Case Hold Rule\r\nin Security and Compliance."
+    "Description": "This resource configures an eDiscovery Case Hold Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCComplianceCase",
@@ -107320,7 +109760,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures an eDiscovery Case in Security and Compliance."
+    "Description": "This resource configures an eDiscovery Case in Purview."
   },
   {
     "ClassName": "MSFT_SCComplianceSearch",
@@ -107460,7 +109900,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures an Compliance Search (eDiscovery) in Security and Compliance."
+    "Description": "This resource configures an Compliance Search (eDiscovery) in Purview."
   },
   {
     "ClassName": "MSFT_SCComplianceSearchAction",
@@ -107606,7 +110046,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Compliance Search Action in Security and Compliance."
+    "Description": "This resource configures a Compliance Search Action in Purview."
   },
   {
     "ClassName": "MSFT_SCFilePlanProperty",
@@ -107648,7 +110088,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Compliance Tag in Security and Compliance."
+    "Description": "This resource configures a Compliance Tag in Purview."
   },
   {
     "ClassName": "MSFT_SCComplianceTag",
@@ -107798,7 +110238,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Compliance Tag in Security and Compliance."
+    "Description": "This resource configures a Compliance Tag in Purview."
   },
   {
     "ClassName": "MSFT_SCDeviceConditionalAccessPolicy",
@@ -107878,7 +110318,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Device Conditional Access Policy in Security and Compliance."
+    "Description": "This resource configures a Device Conditional Access Policy in Purview."
   },
   {
     "ClassName": "MSFT_SCDeviceConditionalAccessRule",
@@ -108320,7 +110760,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Device Configuration Policy in Security and Compliance."
+    "Description": "This resource configures a Device Configuration Policy in Purview."
   },
   {
     "ClassName": "MSFT_SCDeviceConfigurationRule",
@@ -108878,7 +111318,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Data Loss Prevention Compliance\r\nPolicy in Security and Compliance Center."
+    "Description": "This resource configures a Data Loss Prevention Compliance Policy in Purview."
   },
   {
     "ClassName": "MSFT_SCDLPComplianceRule",
@@ -109430,7 +111870,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Data Loss Prevention Compliance\r\nRule in Security and Compliance Center."
+    "Description": "This resource configures a Data Loss Prevention Compliance Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCFilePlanPropertyAuthority",
@@ -111180,7 +113620,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Sensitivity label policy in Security and Compliance."
+    "Description": "This resource configures a Sensitivity label policy in Purview."
   },
   {
     "ClassName": "MSFT_SCLabelPolicy",
@@ -111350,7 +113790,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Sensitivity label policy in Security and Compliance."
+    "Description": "This resource configures a Sensitivity label policy in Purview."
   },
   {
     "ClassName": "MSFT_PolicyConfigApp",
@@ -112268,7 +114708,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Protection Alert\r\nin Security and Compliance Center."
+    "Description": "This resource configures a Protection Alert in Purview."
   },
   {
     "ClassName": "MSFT_SCRecordReviewNotificationTemplateConfig",
@@ -112528,7 +114968,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Retention Compliance Policy in Security and Compliance."
+    "Description": "This resource configures a Retention Compliance Policy in Purview."
   },
   {
     "ClassName": "MSFT_SCRetentionComplianceRule",
@@ -112672,7 +115112,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Retention Compliance Rule in Security and Compliance."
+    "Description": "This resource configures a Retention Compliance Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCRetentionEventType",
@@ -112746,7 +115186,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Retention Event Type in Security and Compliance."
+    "Description": "This resource configures a Retention Event Type in Purview."
   },
   {
     "ClassName": "MSFT_SCRoleGroup",
@@ -113056,7 +115496,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Security Filter in Security and Compliance."
+    "Description": "This resource configures a Security Filter in Purview."
   },
   {
     "ClassName": "MSFT_SCSLSensitiveInformationType",
@@ -113102,7 +115542,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures Sensitivity labels in Security and Compliance."
+    "Description": "This resource configures Sensitivity labels in Purview."
   },
   {
     "ClassName": "MSFT_SCSLTrainableClassifiers",
@@ -113120,7 +115560,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures Sensitivity labels in Security and Compliance."
+    "Description": "This resource configures Sensitivity labels in Purview."
   },
   {
     "ClassName": "MSFT_SCSLSensitiveInformationGroup",
@@ -113158,7 +115598,7 @@
         ]
       }
     ],
-    "Description": "This resource configures Sensitivity labels in Security and Compliance."
+    "Description": "This resource configures Sensitivity labels in Purview."
   },
   {
     "ClassName": "MSFT_SCSLAutoLabelingSettings",
@@ -113204,7 +115644,7 @@
         ]
       }
     ],
-    "Description": "This resource configures Sensitivity labels in Security and Compliance."
+    "Description": "This resource configures Sensitivity labels in Purview."
   },
   {
     "ClassName": "MSFT_SCLabelLocaleSettings",
@@ -113222,7 +115662,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures Sensitivity labels in Security and Compliance."
+    "Description": "This resource configures Sensitivity labels in Purview."
   },
   {
     "ClassName": "MSFT_SCSensitivityLabel",
@@ -113626,7 +116066,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures Sensitivity labels in Security and Compliance."
+    "Description": "This resource configures Sensitivity labels in Purview."
   },
   {
     "ClassName": "MSFT_SCSupervisoryReviewPolicy",
@@ -113706,7 +116146,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Supervision Policy in Security and Compliance."
+    "Description": "This resource configures a Supervision Policy in Purview."
   },
   {
     "ClassName": "MSFT_SCSupervisoryReviewRule",
@@ -113792,7 +116232,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "This resource configures a Supervision Review Rule in Security and Compliance."
+    "Description": "This resource configures a Supervision Review Rule in Purview."
   },
   {
     "ClassName": "MSFT_SCUnifiedAuditLogRetentionPolicy",
@@ -113908,7 +116348,7 @@
         "Option": "Write"
       }
     ],
-    "Description": "The resource configured the Unified Audit Log Retention Policy in the Security and Compliance."
+    "Description": "The resource configures a Unified Audit Log Retention Policy in the Purview."
   },
   {
     "ClassName": "MSFT_SentinelAlertRuleEventGroupingSettings",
@@ -118408,6 +120848,142 @@
         "Option": "Write"
       },
       {
+        "CIMType": "String",
+        "Description": "Enables the user to use the AI Interpreter related features. Possible values are: Disabled, Enabled",
+        "Name": "AIInterpreter",
+        "Option": "Write",
+        "ValueMap": [
+          "Disabled",
+          "Enabled"
+        ],
+        "Values": [
+          "Disabled",
+          "Enabled"
+        ]
+      },
+      {
+        "CIMType": "UInt32",
+        "Description": "The maximum amount a user can spend on outgoing PSTN calls, including all calls made through Pay-as-you-go Calling Plans and any overages on plans with bundled minutes.",
+        "Name": "CallingSpendUserLimit",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Setting this parameter lets you control how Copilot is used during calls and if transcription is needed to be turned on and saved after the call. Possible values: Enabled, EnabledWithTranscript, Disabled",
+        "Name": "Copilot",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "EnabledWithTranscript",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "EnabledWithTranscript",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "This setting allows an admin to enable or disable spend limits on PSTN calls for their user base.",
+        "Name": "EnableSpendLimits",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Determines if MediaBypass is enabled for PSTN calls on specified Web platforms.",
+        "Name": "EnableWebPstnMediaBypass",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Setting this parameter lets you control how inbound federated calls should be routed. Possible values are: RegularIncoming, Unanswered, Voicemail.",
+        "Name": "InboundFederatedCallRoutingTreatment",
+        "Option": "Write",
+        "ValueMap": [
+          "RegularIncoming",
+          "Unanswered",
+          "Voicemail"
+        ],
+        "Values": [
+          "RegularIncoming",
+          "Unanswered",
+          "Voicemail"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Setting this parameter lets you control how inbound PSTN calls should be routed. Possible values are: RegularIncoming, Unanswered, Voicemail, UserOverride.",
+        "Name": "InboundPstnCallRoutingTreatment",
+        "Option": "Write",
+        "ValueMap": [
+          "RegularIncoming",
+          "Unanswered",
+          "Voicemail",
+          "UserOverride"
+        ],
+        "Values": [
+          "RegularIncoming",
+          "Unanswered",
+          "Voicemail",
+          "UserOverride"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Setting this parameter allows you to set the PopoutForIncomingPstnCalls setting's URL path of the website to launch upon receiving incoming PSTN calls. This parameter accepts an HTTPS URL with less than 1024 characters. The URL can contain a {phone} placeholder that is replaced with the caller's PSTN number in E.164 format when launched.",
+        "Name": "PopoutAppPathForIncomingPstnCalls",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Setting this parameter allows you to control the tenant users' ability to launch an external website URL automatically in the browser window upon incoming PSTN calls for specific users or user groups. Possible values are: Enabled, Disabled.",
+        "Name": "PopoutForIncomingPstnCalls",
+        "Option": "Write",
+        "ValueMap": [
+          "Disabled",
+          "Enabled"
+        ],
+        "Values": [
+          "Disabled",
+          "Enabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Allows users to use real time text during a call, allowing them to communicate by typing their messages in real time. Possible values are: Disabled, Enabled",
+        "Name": "RealTimeText",
+        "Option": "Write",
+        "ValueMap": [
+          "Disabled",
+          "Enabled"
+        ],
+        "Values": [
+          "Disabled",
+          "Enabled"
+        ]
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Controls if Teams calls are shown in the call log.",
+        "Name": "ShowTeamsCallsInCallLog",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Enables the user to use the voice simulation feature while being AI interpreted. Possible values are: Disabled, Enabled",
+        "Name": "VoiceSimulationInInterpreter",
+        "Option": "Write",
+        "ValueMap": [
+          "Disabled",
+          "Enabled"
+        ],
+        "Values": [
+          "Disabled",
+          "Enabled"
+        ]
+      },
+      {
         "CIMType": "Boolean",
         "Description": "Controls all calling capabilities in Teams. Turning this off will turn off all calling functionality in Teams. If you use Skype for Business for calling, this policy will not affect calling functionality in Skype for Business.",
         "Name": "AllowPrivateCalling",
@@ -120341,6 +122917,104 @@
           "InviteOnly",
           "EveryoneInCompanyIncludingGuests",
           "Everyone"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "This setting will enable Tenant Admins to specify if an organizer of a Teams Premium town hall may add an app that is accessible by everyone, including attendees, in a broadcast style Event including a Town hall.",
+        "Name": "BroadcastPremiumApps",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "This setting governs if a user can create Immersive Events using Teams Events.",
+        "Name": "ImmersiveEvents",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Determines whether recording is allowed in a user's townhall.",
+        "Name": "RecordingForTownhall",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Determines whether recording is allowed in a user's webinar.",
+        "Name": "RecordingForWebinar",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "This setting governs what identity types may attend a Town hall that is scheduled by a particular person or group that is assigned this policy.",
+        "Name": "TownhallEventAttendeeAccess",
+        "Option": "Write",
+        "ValueMap": [
+          "Everyone",
+          "EveryoneInOrganizationAndGuests"
+        ],
+        "Values": [
+          "Everyone",
+          "EveryoneInOrganizationAndGuests"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Determines whether transcriptions are allowed in a user's townhall.",
+        "Name": "TranscriptionForTownhall",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "Determines whether transcriptions are allowed in a user's webinar.",
+        "Name": "TranscriptionForWebinar",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
         ]
       },
       {
@@ -122564,6 +125238,104 @@
         "Option": "Key"
       },
       {
+        "CIMType": "Boolean",
+        "Description": "This setting determines if users can chat with groups (Distribution, M365 and Security groups). Possible values: True, False",
+        "Name": "AllowChatWithGroup",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "These settings enables, disables updating or fetching custom group chat avatars for the users included in the messaging policy. Possible values: True, False",
+        "Name": "AllowCustomGroupChatAvatars",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "This setting determines if users with the 'Full permissions' role can delete any group or meeting chat message within their tenant. Possible values: True, False",
+        "Name": "AllowFullChatPermissionUserToDeleteAnyMessage",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Determines if Giphy images should be displayed that had been already sent or received in chat. Possible values: True, False",
+        "Name": "AllowGiphyDisplay",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "This setting determines if users in a group chat can create and share join links for other users within the organization to join that chat. Possible values: True, False",
+        "Name": "AllowGroupChatJoinLinks",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Determines if a user is allowed to paste internet-based images in compose. Possible values: True, False",
+        "Name": "AllowPasteInternetImage",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "Determines the Supervised Chat role of the user. Set this to Full to allow the user to supervise chats. Supervisors have the ability to initiate chats with and invite any user within the environment. Set this to Limited to allow the user to initiate conversations with Full and Limited permissioned users, but not Restricted. Set this to Restricted to block chat creation with anyone other than Full permissioned users.",
+        "Name": "ChatPermissionRole",
+        "Option": "Write",
+        "ValueMap": [
+          "Full",
+          "Limited",
+          "Restricted"
+        ],
+        "Values": [
+          "Full",
+          "Limited",
+          "Restricted"
+        ]
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "This setting enables the creation of custom emojis and reactions within an organization for the specified policy users.",
+        "Name": "CreateCustomEmojis",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "These settings enable and disable the editing and deletion of custom emojis and reactions for the users included in the messaging policy.",
+        "Name": "DeleteCustomEmojis",
+        "Option": "Write"
+      },
+      {
+        "CIMType": "String",
+        "Description": "This setting determines whether a user is allowed to create custom AI-powered backgrounds and images with MS Designer.Possible values are: Enabled, Disabled",
+        "Name": "DesignerForBackgroundsAndImages",
+        "Option": "Write",
+        "ValueMap": [
+          "Enabled",
+          "Disabled"
+        ],
+        "Values": [
+          "Enabled",
+          "Disabled"
+        ]
+      },
+      {
+        "CIMType": "String",
+        "Description": "This setting determines if chat regulation for internal communication in the tenant is allowed. Possible values: BlockingAllowed, BlockingDisallowed",
+        "Name": "InOrganizationChatControl",
+        "Option": "Write",
+        "ValueMap": [
+          "BlockingDisallowed",
+          "BlockingAllowed"
+        ],
+        "Values": [
+          "BlockingDisallowed",
+          "BlockingAllowed"
+        ]
+      },
+      {
+        "CIMType": "Boolean",
+        "Description": "Determines whether a user is allowed to delete messages sent by bots. Possible values are: True, False",
+        "Name": "UsersCanDeleteBotMessages",
+        "Option": "Write"
+      },
+      {
         "CIMType": "boolean",
         "Description": "Report inappropriate content.",
         "Name": "AllowCommunicationComplianceEndUserReporting",
@@ -123591,7 +126363,7 @@
       },
       {
         "CIMType": "string[]",
-        "Description": "Owners of the Team",
+        "Description": "Owners of the Team. At least one entry is required.",
         "Name": "Owner",
         "Option": "Write"
       },
