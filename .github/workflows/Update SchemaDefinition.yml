@@ -1,0 +1,37 @@
+name: Update M365DSC Schema Definition
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  pull_request:
+    branches: [ develop ]
+    types: [ closed ]  # Only when PR is closed
+  workflow_dispatch:   # Still allow manual trigger
+
+jobs:
+  update-schema:
+    #if: github.event.pull_request.merged == true # Only when PR was merged
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Import Module and Generate Schema Definition
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Import-Module ".\Modules\Microsoft365DSC\Modules\M365DSCSchemaHandler.psm1"
+          New-M365DSCSchemaDefinition
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: Update SchemaDefinition.json
+          title: "Update SchemaDefinition.json"
+          body: "Automated update of SchemaDefinition.json using New-M365DSCSchemaDefinition."
+          branch: update/schema-definition
+          branch-suffix: timestamp
+          base: Dev
