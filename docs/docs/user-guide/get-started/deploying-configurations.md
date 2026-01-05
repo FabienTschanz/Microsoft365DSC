@@ -72,6 +72,6 @@ Remove-DSCConfigurationDocument -Stage Current
 ```
 
 <figure markdown>
-  ![Stopping a DSC configuration deployment](../../Images/StopDSCConfiguration.png))
+  ![Stopping a DSC configuration deployment](../../Images/StopDSCConfiguration.png)
   <figcaption>Stopping a DSC configuration deployment</figcaption>
 </figure>

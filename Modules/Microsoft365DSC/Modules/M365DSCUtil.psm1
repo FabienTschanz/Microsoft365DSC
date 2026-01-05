@@ -49,6 +49,25 @@ if ($null -eq $Script:M365DSCDependencies)
     }
     $Script:M365DSCRequiredModules = @($globalRequiredModules.psobject.Properties.Name)
 }
+$Script:M365DSCResourceSettings = @{
+    AADUserApplyMemberOf = $true
+}
+$envM365DscResourceSettings = [System.Environment]::GetEnvironmentVariable('M365DSC_RESOURCE_SETTINGS')
+if (-not [System.String]::IsNullOrEmpty($envM365DscResourceSettings))
+{
+    try
+    {
+        $envSettings = $envM365DscResourceSettings | ConvertFrom-Json
+        foreach ($setting in $envSettings.psobject.Properties)
+        {
+            $Script:M365DSCResourceSettings[$setting.Name] = $setting.Value
+        }
+    }
+    catch
+    {
+        Write-Warning -Message "Failed to parse or assign variables from environment resource settings."
+    }
+}
 
 <#
 .DESCRIPTION
@@ -5583,13 +5602,15 @@ function Invoke-M365DSCGraphBatchRequest
     The maximum number of resources per split configuration file. Default is 0 (no limit).
 
 .EXAMPLE
-    Split-M365DSCConfiguration -Path 'C:\Configs\M365TenantConfig.ps1' -OutputFolder 'C:\Configs\Split' -MaxFileSizeMB 2 -MaxResources 50
+    PS> Split-M365DSCConfiguration -Path 'C:\Configs\M365TenantConfig.ps1' -OutputFolder 'C:\Configs\Split' -MaxFileSizeMB 2 -MaxResources 50
     This example splits the 'M365TenantConfig.ps1' file into smaller files, each with a maximum size of 2 MB and a maximum of 50 resources, saving them in the 'C:\Configs\Split' folder.
 
 .FUNCTIONALITY
     Public
 #>
-function Split-M365DSCConfiguration {
+function Split-M365DSCConfiguration
+{
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -5696,6 +5717,34 @@ function Split-M365DSCConfiguration {
     }
 }
 
+<#
+.DESCRIPTION
+    This function returns the configured settings for Microsoft365DSC resources.
+
+    The resource settings can be configured using the environment variable M365DSC_RESOURCE_SETTINGS.
+    It can contain an array of key/value pairs in a JSON format like the following:
+    [{"Key1": false}, {"Key2": true}]
+
+    The currently available and recognized keys are the following:
+
+    - AADUserApplyMemberOf
+
+.EXAMPLE
+    PS> Get-M365DSCResourceSettings
+    This example returns all of the current settings that are available for Microsoft365DSC resources with their default values.
+
+.FUNCTIONALITY
+    Internal
+#>
+function Get-M365DSCResourceSettings
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    return $Script:M365DSCResourceSettings.Clone()
+}
+
 Export-ModuleMember -Function @(
     'Assert-M365DSCBlueprint',
     'Confirm-ImportedCmdletIsAvailable',
@@ -5715,6 +5764,7 @@ Export-ModuleMember -Function @(
     'Get-M365DSCExportContentForResource',
     'Get-M365DSCOrganization',
     'Get-M365DSCResourcesByExportMode',
+    'Get-M365DSCResourceSettings',
     'Get-M365DSCStringReplacementMap',
     'Get-M365DSCTelemetryConnectionParameter',
     'Get-M365DSCTenantDomain',

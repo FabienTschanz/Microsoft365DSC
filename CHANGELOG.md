@@ -2,8 +2,16 @@
 
 # UNRELEASED
 
+* AADUser
+  * Added functionality to skip `MemberOf` processing using resource settings.
 * EXOPlace
   * Fixes an issue with the export where it was trying to export RoomList.
+* M365DSCUtil
+  * Added the function `Get-M365DSCResourceSettings`, which returns the currently
+    configured resource settings.
+* MISC
+  * Added documentation around resource settings and how they can be used during
+    tenant cloning scenarios.
 
 # 1.25.1203.2
 

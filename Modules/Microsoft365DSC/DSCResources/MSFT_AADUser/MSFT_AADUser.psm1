@@ -638,7 +638,7 @@ function Set-TargetResource
         #endregion
 
         #region Update MemberOf groups - if specified
-        if ($null -ne $MemberOf)
+        if ($null -ne $MemberOf -and (Get-M365DSCResourceSettings).AADUserApplyMemberOf)
         {
             if ($null -eq $user.MemberOf)
             {
