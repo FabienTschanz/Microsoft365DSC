@@ -114,11 +114,12 @@ function Get-TargetResource
         $AccessTokens
     )
 
+    Write-Verbose -Message "Getting configuration of AzureAD Group with DisplayName {$DisplayName}"
+
     try
     {
         if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
         {
-            Write-Verbose -Message 'Getting configuration of AzureAD Group'
             $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
                 -InboundParameters $PSBoundParameters
 
@@ -390,7 +391,7 @@ function Get-TargetResource
             -TenantId $TenantId `
             -Credential $Credential
 
-        throw $_
+        throw
     }
 }
 
@@ -1174,19 +1175,10 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
-    $postProcessingScript = {
-        param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
-        if ($DesiredValues.ContainsKey('GroupLifecyclePolicySelectedEnabled') -and -not $CurrentValues.MailEnabled)
-        {
-            Write-Verbose -Message "Removing 'GroupLifecyclePolicySelectedEnabled' from comparison because group is not a Microsoft 365 Group."
-            $ValuesToCheck.Remove('GroupLifecyclePolicySelectedEnabled') | Out-Null
-        }
-        return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
-    }
-
+    $compareParameters = Get-CompareParameters
     $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-                                         -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-                                         -PostProcessing $postProcessingScript
+                                             -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
+                                             @compareParameters
     return $result
 }
 
@@ -1363,15 +1355,13 @@ function Export-TargetResource
     }
     catch
     {
-        Write-M365DSCHost -Message $Global:M365DSCEmojiRedX -CommitWrite
-
         New-M365DSCLogEntry -Message 'Error during Export:' `
             -Exception $_ `
             -Source $($MyInvocation.MyCommand.Source) `
             -TenantId $TenantId `
             -Credential $Credential
 
-        return ''
+        throw
     }
 }
 
@@ -1492,4 +1482,23 @@ function Get-M365DSCCombinedLicenses
     return $result
 }
 
-Export-ModuleMember -Function *-TargetResource
+function Get-CompareParameters
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    return @{
+        PostProcessing = {
+            param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+            if ($DesiredValues.ContainsKey('GroupLifecyclePolicySelectedEnabled') -and -not $CurrentValues.MailEnabled)
+            {
+                Write-Verbose -Message "Removing 'GroupLifecyclePolicySelectedEnabled' from comparison because group is not a Microsoft 365 Group."
+                $ValuesToCheck.Remove('GroupLifecyclePolicySelectedEnabled') | Out-Null
+            }
+            return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+        }
+    }
+}
+
+Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

@@ -283,7 +283,7 @@ function Get-TargetResource
         }
         if ($null -ne $HeaderMatchesPatterns -and $null -ne $HeaderMatchesPatterns.Name)
         {
-            $HeaderMatchesPatternsValue = @{}
+            $HeaderMatchesPatternsValue = [ordered]@{}
             foreach ($value in $HeaderMatchesPatterns[($HeaderMatchesPatterns.Name)])
             {
                 if ($HeaderMatchesPatternsValue.ContainsKey($HeaderMatchesPatterns.Name))
@@ -298,7 +298,7 @@ function Get-TargetResource
         }
         foreach ($pattern in $PolicyRule.HeaderMatchesPatterns.Keys)
         {
-            $HeaderMatchesPatternsValue += @{
+            $HeaderMatchesPatternsValue += [ordered]@{
                 Name  = $pattern
                 Value = $PolicyRule.HeaderMatchesPatterns.$pattern
             }
@@ -372,19 +372,17 @@ function Get-TargetResource
             $result.Remove($paramName)
         }
 
-        Write-Verbose -Message "Get-TargetResource Result: `n $(Convert-M365DscHashtableToString -Hashtable $result)"
         return $result
     }
     catch
     {
-        Write-Error $_
         New-M365DSCLogEntry -Message 'Error retrieving data:' `
             -Exception $_ `
             -Source $($MyInvocation.MyCommand.Source) `
             -TenantId $TenantId `
             -Credential $Credential
 
-        return $nullReturn
+        throw
     }
 }
 
@@ -1292,16 +1290,14 @@ function Export-TargetResource
         }
         else
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiRedX -CommitWrite
-
             New-M365DSCLogEntry -Message 'Error during Export:' `
                 -Exception $_ `
                 -Source $($MyInvocation.MyCommand.Source) `
                 -TenantId $TenantId `
                 -Credential $Credential
-        }
 
-        return ''
+            throw
+        }
     }
 }
 
@@ -1320,7 +1316,7 @@ function Get-SCDLPSensitiveInformation
 
     foreach ($item in $SensitiveInformationItems.SensitiveInformation)
     {
-        $result = @{
+        $result = [ordered]@{
             name = $item.name
         }
 
@@ -1389,7 +1385,7 @@ function Get-SCDLPSensitiveInformationGroups
         $sits = @()
         foreach ($item in $group.SensitiveInformation)
         {
-            $sit = @{
+            $sit = [ordered]@{
                 name = $item.name
             }
 
@@ -1431,7 +1427,7 @@ function Get-SCDLPSensitiveInformationGroups
         $labels = @()
         foreach ($item in $group.labels)
         {
-            $label = @{
+            $label = [ordered]@{
                 name = $item.name
             }
 

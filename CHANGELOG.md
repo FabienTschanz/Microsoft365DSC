@@ -2,17 +2,105 @@
 
 # UNRELEASED
 
+* AADAuthenticationMethodPolicy
+  * Fixed an issue where empty arrays were not exported.
+    FIXES [#6759](https://github.com/microsoft/Microsoft365DSC/issues/6759)
+* AADConditionalAccessPolicy
+  * Added the property `SecureSignInSessionIsEnabled`.
+    FIXES [#6777](https://github.com/microsoft/Microsoft365DSC/issues/6777)
+  * Fixed an issue where updating a policy would fail.
+    FIXES [#6782](https://github.com/microsoft/Microsoft365DSC/issues/6782)
+* AADNetworkAccessForwardingPolicy
+  * Fixed an issue where empty `PolicyRules` would throw an exception during Get.
 * AADUser
   * Added functionality to skip `MemberOf` processing using resource settings.
+* EXOExternalInOutlook
+  * Fixed an issue where the export would fail.
+    FIXES [#6753](https://github.com/microsoft/Microsoft365DSC/issues/6753)
+* EXOPhishSimOverrideRule
+  * Fixed an issue where the export would fail.
+    FIXES [#6753](https://github.com/microsoft/Microsoft365DSC/issues/6753)
 * EXOPlace
   * Fixes an issue with the export where it was trying to export RoomList.
+* EXOSecOpsOverrideRule
+  * Fixed an issue where the export would fail.
+    FIXES [#6753](https://github.com/microsoft/Microsoft365DSC/issues/6753)
+* IntuneAppConfigurationDevicePolicy
+  * Added error handling with message if targeted app doesn't exist.
+* IntuneAppProtectionPolicyAndroid
+  * Fixed several issues when creating and updating the policy.
+    FIXES [#6746](https://github.com/microsoft/Microsoft365DSC/issues/6746)
+* IntuneAppProtectionPolicyiOS
+  * Fixed several issues when creating and updating the policy.
+* IntuneAzureNetworkConnectionWindows365
+  * Fixed the name of the Azure permission provider.
+* IntuneDeviceCompliancePolicyAndroidDeviceOwner
+  * Fixed an issue where a JSON serialization warning was outputted
+    due to the object depth exceeding two levels.
+* IntuneEpmElevationRulesPolicyWindows10
+  * Added a throw condition if the reusable certiticate policy setting is not found.
+* IntuneMobileAppsManagedGooglePlayApp
+  * Fixed an issue where `AssignmentSettings` was not a valid property.
+    FIXES [#6785](https://github.com/microsoft/Microsoft365DSC/issues/6785)
+* IntuneSettingCatalogCustomPolicyWindows10
+  * Fixed the ability to run Get-TargetResource via the LCM (Get-DscConfiguration) and
+    it's ability to return complex nested objects.
+    FIXES [#6092](https://github.com/microsoft/Microsoft365DSC/issues/6092)
+* O365OrgSettings
+  * Added `CertificatePath` with `CertificatePassword` as an authentication method.
+* PPTenantIsolationSettings
+  * Fixed an issue where updating the policy failed because of an unresolved tenant name.
+    FIXES [#6778](https://github.com/microsoft/Microsoft365DSC/issues/6778)
+* SCSecurityFilter
+  * Added a note that the resource does not support certificate based authentication.
+* TeamsChannel
+  * Updated required permissions for read / update.
+* TeamsEmergencyCallRoutingPolicy
+  * Updated required permissions for read / update.
+* TeamsOrgWideAppSettings
+  * Added a note that the resource does not support certificate based authentication.
+* TeamsTeam
+  * Updated required permissions for read / update.
+* TeamsUser
+  * Updated required permissions for read / update.
+* M365DSCDRGUtil
+  * Added missing `UseBasicParsing` because of Windows PowerShell hardening.
+  * Fixed an issue in `Get-M365DSCDRGComplexTypeToHashtable` not working with arrays.
+    FIXES [#6759](https://github.com/microsoft/Microsoft365DSC/issues/6759)
+  * Fixed an issue where `Rename-M365DSCCimInstanceParameter` omitted values.
+    FIXES [#6727](https://github.com/microsoft/Microsoft365DSC/issues/6727)
+    FIXES [#6779](https://github.com/microsoft/Microsoft365DSC/issues/6779)
+* M365DSCLogEngine
+  * Replaced deprecated Windows Event PowerShell cmdlets with .NET.
+* M365DSCReverse
+  * Added logic to clean up temporary files after export.
+  * Added `TenantGuid` entry to the `ConfigurationData.psd1` file during export.
+    FIXES [#6689](https://github.com/microsoft/Microsoft365DSC/issues/6689)
+  * Fixed an issue when attempting to copy non-downloaded `SPOApp` files.
 * M365DSCUtil
+  * Fixed an issue where multiple installed Microsoft365DSC versions
+    will lead to an error during export.
+    FIXES [#6758](https://github.com/microsoft/Microsoft365DSC/issues/6758)
+  * Added functionality to change M365DSC configuration during runtime.
+  * Added logic to clean up temporary files assertion.
+  * Added missing `UseBasicParsing` because of Windows PowerShell hardening.
   * Added the function `Get-M365DSCResourceSettings`, which returns the currently
     configured resource settings.
+  * Fixed an issue where the export would fail if the name of a resource was not
+    the same case as the name in Microsoft365DSC.
+  * Improved module installation speed for `Update-M365DSCModule`.
 * MISC
   * Added documentation around resource settings and how they can be used during
     tenant cloning scenarios.
-
+  * Applied ordering for CIM instances to minimize Git differences.
+  * Fixed a couple of misaligned export messages on the console.
+  * Generalized custom comparison handling.
+    FIXES [#6765](https://github.com/microsoft/Microsoft365DSC/issues/6765)
+    FIXES [#6756](https://github.com/microsoft/Microsoft365DSC/issues/6756)
+    FIXES [#6584](https://github.com/microsoft/Microsoft365DSC/issues/6584)
+  * Removed verbose output from `Get-TargetResource`.
+  * Updated the error behavior to always throw inside `Get-TargetResource`.
+    
 # 1.25.1203.2
 
 * DEPENDENCIES
@@ -76,6 +164,8 @@
   * Fixed an issue where updating Intune assignments did not include all properties.
     FIXES [#6697](https://github.com/microsoft/Microsoft365DSC/issues/6697)
   * Updated comparison function `Compare-M365DSCComplexObject` to non-recursive.
+* M365DSCResourceGenerator
+  * Updated example generation to always create examples.
 * M365DSCReverse
   * Added handling of custom token replacements.
 * M365DSCUtil
@@ -89,17 +179,19 @@
 * MISC
   * Added and removed mismatches between parameters and their schema.
   * Added quality assurance checks for parameter and schema mismatches.
-  * Refactor EXO resources to align with the default resource code layout.
   * Moved the `Examples` folder to the top of the repository to reduce core module size.
+  * Refactored EXO resources to align with the default resource code layout.
+  * Refactored module structure.
   * Removed internal module `M365DSCExoResourceUtils`.
   * Removed unused internal functions `Remove-M365DSCCimInstanceTrailingCharacterFromExport`,
     `Update-M365DSCExchangeResourcesSettingsJSON`, `Update-M365DSCSharePointResourcesSettingsJSON`,
     `Split-ArrayByParts`, `Get-SPOUserProfilePropertyInstance` and `Remove-M365DSCEmptyValue`.
+  * Streamlined the report generation and added new visual styles.
+  * Updated the `SchemaDefinition.json` to a compressed version.
 * DEPENDENCIES
   * Updated DSCParser to version 2.0.0.21.
   * Updated MSCloudLoginAssistant to version 1.1.55.
     FIXES [#6728](https://github.com/microsoft/Microsoft365DSC/issues/6728)
-  * Streamlined the report generation and added new visual styles.
 
 # 1.25.1112.1
 

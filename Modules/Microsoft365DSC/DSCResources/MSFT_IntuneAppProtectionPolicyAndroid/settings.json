@@ -70,6 +70,7 @@
         "Get-MgBetaDeviceAppManagementAndroidManagedAppProtection",
         "Get-MgBetaDeviceAppManagementAndroidManagedAppProtectionApp",
         "Get-MgBetaDeviceAppManagementAndroidManagedAppProtectionAssignment",
+        "Get-MgBetaDeviceAppManagementManagedAppStatus",
         "New-MgBetaDeviceAppManagementAndroidManagedAppProtection",
         "Remove-MgBetaDeviceAppManagementAndroidManagedAppProtection",
         "Update-MgBetaDeviceAppManagementAndroidManagedAppProtection"

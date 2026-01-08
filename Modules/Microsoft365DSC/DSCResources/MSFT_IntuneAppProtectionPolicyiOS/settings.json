@@ -70,6 +70,7 @@
         "Get-MgBetaDeviceAppManagementiOSManagedAppProtection",
         "Get-MgBetaDeviceAppManagementiOSManagedAppProtectionApp",
         "Get-MgBetaDeviceAppManagementiOSManagedAppProtectionAssignment",
+        "Get-MgBetaDeviceAppManagementManagedAppStatus",
         "New-MgBetaDeviceAppManagementiOSManagedAppProtection",
         "Remove-MgBetaDeviceAppManagementiOSManagedAppProtection",
         "Update-MgBetaDeviceAppManagementiOSManagedAppProtection"
