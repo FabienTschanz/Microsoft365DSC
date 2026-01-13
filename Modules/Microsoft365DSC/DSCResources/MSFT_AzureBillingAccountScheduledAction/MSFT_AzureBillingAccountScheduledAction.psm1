@@ -116,8 +116,8 @@ function Get-TargetResource
                 daysOfWeek   = [Array]($instance.properties.schedule.daysOfWeek)
                 weeksofMonth = [Array]($instance.properties.schedule.weeksofMonth)
                 dayOfMonth   = $instance.properties.schedule.dayOfMonth
-                startDate    = $instance.properties.schedule.startDate.ToString('yyy-MM-ddTHH:mm:ssZ')
-                endDate      = $instance.properties.schedule.endDate.ToString('yyy-MM-ddTHH:mm:ssZ')
+                startDate    = $instance.properties.schedule.startDate.ToString('yyyy-MM-ddTHH:mm:ssZ')
+                endDate      = $instance.properties.schedule.endDate.ToString('yyyy-MM-ddTHH:mm:ssZ')
             }
         }
 

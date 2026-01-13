@@ -225,7 +225,8 @@ function Get-TargetResource
 
         $MembersValues = $null
         $result = @{}
-        if ($Group.MembershipRuleProcessingState -ne 'On')
+        # If the Members parameter is not specified, do not attempt to retrieve them as part of the Get-TargetResource.
+        if ($Group.MembershipRuleProcessingState -ne 'On' -and $Members -ne $null -and $Members.Count -gt 0)
         {
             # Members
             $MembersValues = [System.Collections.Generic.List[System.String]]::new()
@@ -1302,6 +1303,7 @@ function Export-TargetResource
                 ApplicationSecret     = $ApplicationSecret
                 DisplayName           = $group.DisplayName
                 MailNickName          = $group.MailNickName
+                Members               = @('toextract')
                 SecurityEnabled       = $true
                 MailEnabled           = $true
                 Id                    = $group.Id

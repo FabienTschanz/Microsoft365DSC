@@ -312,18 +312,23 @@ function Get-TargetResource
             if ($null -eq $Script:RecipientsCache)
             {
                 $Script:RecipientsCache = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
-                Get-Recipient -ResultSize Unlimited | Foreach-Object {
-                    $Script:RecipientsCache[$_.Name] = @{
-                        PrimarySmtpAddress = $_.PrimarySmtpAddress
-                        WindowsLiveID      = $_.WindowsLiveID
-                    }
-                }
             }
             foreach ($manager in $distributionGroup.ManagedBy)
             {
                 try
                 {
-                    $recipient = $Script:RecipientsCache[$manager]
+                    if ($null -ne $Script:RecipientsCache -and $Script:RecipientsCache[$manager])
+                    {
+                        $recipient = $Script:RecipientsCache[$manager]
+                    }
+                    else
+                    {
+                        $recipient = Get-Recipient -Identity $manager -ErrorAction Stop
+                        $Script:RecipientsCache.Add($recipient.Name, @{
+                            PrimarySmtpAddress = $recipient.PrimarySmtpAddress
+                            WindowsLiveID      = $recipient.WindowsLiveID
+                        })
+                    }
                     if ($null -eq $recipient)
                     {
                         throw "Recipient not found in cache"

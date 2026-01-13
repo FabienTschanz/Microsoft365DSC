@@ -10,10 +10,15 @@
     FIXES [#6777](https://github.com/microsoft/Microsoft365DSC/issues/6777)
   * Fixed an issue where updating a policy would fail.
     FIXES [#6782](https://github.com/microsoft/Microsoft365DSC/issues/6782)
+* AADGroup
+  * Prevents retrieving all members of a group in the Get-TargetResource if
+    the parameter is not specified in the configuration.
 * AADNetworkAccessForwardingPolicy
   * Fixed an issue where empty `PolicyRules` would throw an exception during Get.
 * AADUser
   * Added functionality to skip `MemberOf` processing using resource settings.
+* EXODistributionGroup
+  * Fixed performance issue with the retrieval of managers.
 * EXOExternalInOutlook
   * Fixed an issue where the export would fail.
     FIXES [#6753](https://github.com/microsoft/Microsoft365DSC/issues/6753)
@@ -94,13 +99,14 @@
     tenant cloning scenarios.
   * Applied ordering for CIM instances to minimize Git differences.
   * Fixed a couple of misaligned export messages on the console.
+  * Fixed an issue where not all required modules were specified in resource settings.
   * Generalized custom comparison handling.
     FIXES [#6765](https://github.com/microsoft/Microsoft365DSC/issues/6765)
     FIXES [#6756](https://github.com/microsoft/Microsoft365DSC/issues/6756)
     FIXES [#6584](https://github.com/microsoft/Microsoft365DSC/issues/6584)
   * Removed verbose output from `Get-TargetResource`.
   * Updated the error behavior to always throw inside `Get-TargetResource`.
-    
+
 # 1.25.1203.2
 
 * DEPENDENCIES
