@@ -81,6 +81,14 @@ function Get-TargetResource
         $AssignedLicenses,
 
         [Parameter()]
+        [System.Boolean]
+        $AutoRenewEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $AutoRenewBeforeDays,
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -226,7 +234,7 @@ function Get-TargetResource
         $MembersValues = $null
         $result = @{}
         # If the Members parameter is not specified, do not attempt to retrieve them as part of the Get-TargetResource.
-        if ($Group.MembershipRuleProcessingState -ne 'On' -and $Members -ne $null -and $Members.Count -gt 0)
+        if ($Group.MembershipRuleProcessingState -ne 'On' -and $null -ne $Members -and $Members.Count -gt 0)
         {
             # Members
             $MembersValues = [System.Collections.Generic.List[System.String]]::new()
@@ -351,6 +359,9 @@ function Get-TargetResource
             MailNickname                        = $Group.MailNickname
             Visibility                          = $Group.Visibility
             AssignedLicenses                    = $assignedLicensesValues
+            AutoRenewEnabled                    = $AutoRenewEnabled
+            AutoRenewBeforeDays                 = $AutoRenewBeforeDays
+            ExpirationDateTime                  = $Group.ExpirationDateTime
             Ensure                              = 'Present'
             ApplicationId                       = $ApplicationId
             TenantId                            = $TenantId
@@ -461,6 +472,14 @@ function Set-TargetResource
         $AssignedLicenses,
 
         [Parameter()]
+        [System.Boolean]
+        $AutoRenewEnabled = $false,
+
+        [Parameter()]
+        [System.Int32]
+        $AutoRenewBeforeDays = 0,
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -520,6 +539,9 @@ function Set-TargetResource
     $currentParameters.Remove('GroupAsMembers') | Out-Null
     $currentParameters.Remove('MemberOf') | Out-Null
     $currentParameters.Remove('AssignedToRole') | Out-Null
+    $currentParameters.Remove('AutoRenewEnabled') | Out-Null
+    $currentParameters.Remove('AutoRenewBeforeDays') | Out-Null
+    $currentParameters.Remove('GroupLifecyclePolicySelectedEnabled') | Out-Null
 
     if ($Ensure -eq 'Present' -and `
         ($null -ne $GroupTypes -and $GroupTypes.Contains('Unified')) -and `
@@ -654,6 +676,7 @@ function Set-TargetResource
             }
         }
     }
+
     if ($Ensure -eq 'Present')
     {
         Write-Verbose -Message "Group {$DisplayName} exists and it should."
@@ -676,6 +699,18 @@ function Set-TargetResource
                 $currentParameters.Add('GroupId', $currentGroup.Id)
                 Write-Verbose -Message "Updating Group with Values: $(Convert-M365DscHashtableToString -Hashtable $currentParameters)"
                 Update-MgGroup @currentParameters | Out-Null
+            }
+
+            # Renew group expiration
+            if ($AutoRenewEnabled -and $null -ne $currentGroup.ExpirationDateTime)
+            {
+                $groupExpiration = [System.DateTime]$currentGroup.ExpirationDateTime
+                $renewalDate = $groupExpiration.AddDays(-($AutoRenewBeforeDays))
+                if ($renewalDate -lt (Get-Date))
+                {
+                    Write-Verbose -Message "Renewing expiration for group {$DisplayName}"
+                    Invoke-MgBetaRenewGroup -GroupId $currentGroup.Id | Out-Null
+                }
             }
 
             if (($licensesToAdd.Length -gt 0 -or $licensesToRemove.Length -gt 0) -and $PSBoundParameters.ContainsKey('AssignedLicenses'))
@@ -1119,6 +1154,14 @@ function Test-TargetResource
         $AssignedLicenses,
 
         [Parameter()]
+        [System.Boolean]
+        $AutoRenewEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $AutoRenewBeforeDays,
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -1163,9 +1206,23 @@ function Test-TargetResource
 
     $compareParameters = Get-CompareParameters
     $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-                                             -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-                                             @compareParameters
-    return $result
+                                         -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
+                                         @compareParameters -PassThru
+
+    if ($PSBoundParameters.ContainsKey('AutoRenewEnabled') -and $PSBoundParameters.AutoRenewEnabled)
+    {
+        if ($null -ne $result.CurrentValues.ExpirationDateTime)
+        {
+            $expirationDate = [System.DateTime]$result.CurrentValues.ExpirationDateTime
+            $renewalDate = $expirationDate.AddDays(-($PSBoundParameters.AutoRenewBeforeDays))
+            if ($renewalDate -lt (Get-Date))
+            {
+                Write-Verbose -Message "Group {$DisplayName} is set to auto-renew and the renewal date {$renewalDate} has been reached."
+                $result.TestTargetResource = $false
+            }
+        }
+    }
+    return $result.TestTargetResource
 }
 
 function Export-TargetResource
@@ -1301,6 +1358,10 @@ function Export-TargetResource
             }
             $Script:exportedInstance = $group
             $Results = Get-TargetResource @Params
+            if ($Results.ContainsKey('ExpirationDateTime'))
+            {
+                $Results.Remove('ExpirationDateTime') | Out-Null
+            }
 
             if ($null -ne $Results.AssignedLicenses)
             {
@@ -1476,6 +1537,7 @@ function Get-CompareParameters
     param()
 
     return @{
+        ExcludedProperties = @("AutoRenewBeforeDays", "AutoRenewEnabled")
         PostProcessing = {
             param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
             if ($DesiredValues.ContainsKey('GroupLifecyclePolicySelectedEnabled') -and -not $CurrentValues.MailEnabled)

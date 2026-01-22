@@ -1,5 +1,11 @@
 # Change log for Microsoft365DSC
 
+# UNRELEASED
+
+* AADGroup
+  * Added functionality to automatically renew groups before they expire.
+    FIXES [#6801](https://github.com/microsoft/Microsoft365DSC/issues/6801)
+
 # 1.26.121.1
 
 * AADGroup

@@ -135,6 +135,7 @@
         "Add-MgBetaGroupToLifecyclePolicy",
         "Get-MgBetaGroup",
         "Get-MgBetaGroupLifecyclePolicy",
+        "Invoke-MgBetaRenewGroup",
         "New-MgBetaGroupMemberByRef",
         "Remove-MgBetaGroupFromLifecyclePolicy",
         "Remove-MgBetaGroupMemberDirectoryObjectByRef"

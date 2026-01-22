@@ -5,13 +5,15 @@ class MSFT_AADGroupLicense
     [Write, Description("The unique identifier for the SKU.")] String SkuId;
 };
 
-[ClassVersion("1.0.0.1"), FriendlyName("AADGroup")]
+[ClassVersion("1.0.0.2"), FriendlyName("AADGroup")]
 class MSFT_AADGroup : OMI_BaseResource
 {
     [Key, Description("DisplayName of the Azure Active Directory Group")] String DisplayName;
     [Key, Description("Specifies a mail nickname for the group.")] String MailNickname;
     [Write, Description("Specifies a description for the group.")] String Description;
     [Write, Description("Specifies an ID for the group.")] String Id;
+    [Write, Description("Indicates if automatic renewal of the group is enabled.")] Boolean AutoRenewEnabled;
+    [Write, Description("Indicates when the group should be renewed before it expires in days.")] SInt32 AutoRenewBeforeDays;
     [Write, Description("User Service Principal values for the group's owners.")] String Owners[];
     [Write, Description("User Service Principal values for the group's members.")] String Members[];
     [Write, Description("Displayname values for the groups member of the group.")] String GroupAsMembers[];
