@@ -14,6 +14,7 @@ class MSFT_AADGroup : OMI_BaseResource
     [Write, Description("Specifies an ID for the group.")] String Id;
     [Write, Description("Indicates if automatic renewal of the group is enabled.")] Boolean AutoRenewEnabled;
     [Write, Description("Indicates when the group should be renewed before it expires in days.")] SInt32 AutoRenewBeforeDays;
+    [Write, Description("The expiration date time of the group. This property is not exported and only used internally.")] String ExpirationDateTime;
     [Write, Description("User Service Principal values for the group's owners.")] String Owners[];
     [Write, Description("User Service Principal values for the group's members.")] String Members[];
     [Write, Description("Displayname values for the groups member of the group.")] String GroupAsMembers[];

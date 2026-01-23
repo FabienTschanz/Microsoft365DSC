@@ -19,6 +19,10 @@ function Get-TargetResource
         $Id,
 
         [Parameter()]
+        [System.String]
+        $ExpirationDateTime,
+
+        [Parameter()]
         [System.String[]]
         $Owners,
 
@@ -408,6 +412,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $Id,
+
+        [Parameter()]
+        [System.String]
+        $ExpirationDateTime,
 
         [Parameter()]
         [System.String[]]
@@ -1092,6 +1100,10 @@ function Test-TargetResource
         $Id,
 
         [Parameter()]
+        [System.String]
+        $ExpirationDateTime,
+
+        [Parameter()]
         [System.String[]]
         $Owners,
 
@@ -1537,7 +1549,7 @@ function Get-CompareParameters
     param()
 
     return @{
-        ExcludedProperties = @("AutoRenewBeforeDays", "AutoRenewEnabled")
+        ExcludedProperties = @("AutoRenewBeforeDays", "AutoRenewEnabled", "ExpirationDateTime")
         PostProcessing = {
             param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
             if ($DesiredValues.ContainsKey('GroupLifecyclePolicySelectedEnabled') -and -not $CurrentValues.MailEnabled)
