@@ -1,0 +1,55 @@
+{
+  "resourceName": "O365OrgSettingsV2",
+  "description": "",
+  "roles": {
+    "read": [
+      "Global Reader"
+    ],
+    "update": [
+      "Global Administrator"
+    ]
+  },
+  "permissions": {
+    "graph": {
+      "delegated": {
+        "read": [
+          {
+            "name": "Organization.Read.All"
+          },
+          {
+            "name": "OrgSettings-Microsoft365Install.Read.All"
+          }
+        ],
+        "update": [
+          {
+            "name": "Organization.Read.All"
+          },
+          {
+            "name": "OrgSettings-Microsoft365Install.ReadWrite.All"
+          }
+        ]
+      }
+    }
+  },
+  "requiredModules": [
+    "Microsoft.Graph.Authentication",
+    "Microsoft.Graph.Groups",
+    "MSCloudLoginAssistant"
+  ],
+  "mode": "Configuration",
+  "commands": [
+    {
+      "module": "Microsoft.Graph.Authentication",
+      "cmdlets": [
+        "Connect-MgGraph",
+        "Invoke-MgGraphRequest"
+      ]
+    },
+    {
+      "module": "Microsoft.Graph.Groups",
+      "cmdlets": [
+        "Get-MgGroup"
+      ]
+    }
+  ]
+}

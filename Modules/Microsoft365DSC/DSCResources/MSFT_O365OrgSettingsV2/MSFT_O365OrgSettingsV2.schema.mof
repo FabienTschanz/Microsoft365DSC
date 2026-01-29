@@ -1,0 +1,289 @@
+[ClassVersion("1.0.0.0")]
+class MSFT_O365AdoptionScore
+{
+    [Write, Description("")] Boolean ActionFlowOptedIn;
+    [Write, Description("")] Boolean ProductivityScoreOptedIn;
+    [Write, Description("If all users should be")] Boolean PSGroupsOptedOut;
+    [Write, Description("")] String PSOptedOutGroups[];
+    [Write, Description("")] Boolean CohortInsightOptedIn;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_O365AzureSpeechServices
+{
+    [Write, Description("Allow the organization-wide language model.")] Boolean IsTenantEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_O365DeveloperPortalForTeams
+{
+    [Write, Description("Allow app usage for all custom apps to show in the Developer Portal.")] Boolean AllowDeveloperPortal;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Dynamics365CustomerVoice
+{
+    [Write, Description("Automatically block any internal surveys that request confidential information. Admins will be notified in the Message Center when a survey is blocked.")] Boolean InOrgFormsPhishingScanEnabled;
+    [Write, Description("Capture the first and last names of respondents in your organization that complete a survey. You can still change this for individual surveys.")] Boolean RecordIdentityByDefaultEnabled;
+    [Write, Description("Only allow respondents within my organization to submit a response.")] Boolean RestrictSurveyAccessEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Groups
+{
+    [Write, Description("The Microsoft 365 Groups Guest configuration."), EmbeddedInstance("MSFT_O365GuestUser")] String GuestConfiguration;
+    [Write, Description("The Microsoft 365 Ownerless Groups Configuration."), EmbeddedInstance("MSFT_OwnerlessGroupPolicy")] String OwnerlessGroupConfiguration;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_O365GuestUser
+{
+    [Write, Description("Let guest group members access group content.")] Boolean AllowGuestAccess;
+    [Write, Description("Let group owners add people outside your organization to Microsoft 365 Groups as guests.")] Boolean AllowGuestsAsMembers;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_OwnerlessGroupPolicy
+{
+    [Write, Description("Body of the email.")] String EmailBody;
+    [Write, Description("Subject of the email.")] String EmailSubject;
+    [Write, Description("Indicates if ownerless group notifications are enabled.")] Boolean Enabled;
+    [Write, Description("Microsoft 365 Groups that are targeted by the ownerless group policy.")] String EnabledGroups[];
+    [Write, Description("Indicates if the people receiving ownership notifications are decided by an Allow or Block method.")] Boolean IsRuleAllowType;
+    [Write, Description("Number of active members to notify. A maximum of 90 members is supported.")] SInt32 MaxNoOfMembersToNotify;
+    [Write, Description("Number of weeks to notify most active members for. Supported values range from 1 to 7.")] SInt32 NoOfWeeksToNotify;
+    [Write, Description("Policy guideline URL")] String PolicyUrl;
+    [Write, Description("Security Groups that are either allowed or blocked to receive notifications, based on the value of the IsRuleAllowType property.")] String SecurityGroups;
+    [Write, Description("Email address from which the ownership notifications are being sent from.")] String SenderEmailAddress;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AppInstallOptionsForWindows
+{
+    [Write, Description("Indicates if the entire Microsoft 365 App Suite is enabled.")] Boolean isMicrosoft365AppsEnabled;
+    [Write, Description("Indicates if Project is enabled.")] Boolean isProjectEnabled;
+    [Write, Description("Indicates if Skype for Business is enabled.")] Boolean isSkypeForBusinessEnabled;
+    [Write, Description("Indicates if Visio is enabled.")] Boolean isVisioEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_AppInstallOptionsForMac
+{
+    [Write, Description("Indicates if the entire Microsoft 365 App Suite is enabled.")] Boolean isMicrosoft365AppsEnabled;
+    [Write, Description("Indicates if Project is enabled.")] Boolean isProjectEnabled;
+    [Write, Description("Indicates if Skype for Business is enabled.")] Boolean isSkypeForBusinessEnabled;
+    [Write, Description("Indicates if Visio is enabled.")] Boolean isVisioEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365InstallationOptions
+{
+    [Write, Description("Indicates the update channel for Windows devices. 1 = Current Channel, 2 = Semi-Annual Enterprise Channel, 3 = Monthly Enterprise Channel"), ValueMap{"1", "2", "3"}, Values{"1", "2", "3"}] String UpdateChannel;
+    [Write, Description("Configuration of the App install options for Windows."), EmbeddedInstance("MSFT_AppInstallOptionsForWindows")] String AppsForWindows;
+    [Write, Description("Configuration of the App install options for MacOS."), EmbeddedInstance("MSFT_AppInstallOptionsForMac")] String AppsForMac;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Lighthouse
+{
+    [Write, Description("Allow the use of Microsoft 365 Lighthouse customer management experiences in your tenant.")] Boolean AccountEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365OnTheWeb
+{
+    [Write, Description("Let users open files stored in third-party storage services in Microsoft 365 on the web.")] Boolean Enabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365EndUserCommunications
+{
+    [Write, Description("Let people in my organization receive emails from Microsoft about how to use Microsoft 365 products.")] Boolean ServiceEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Forms
+{
+    [Write, Description("Send a link to the form and collect responses.")] Boolean ExternalSendFormEnabled;
+    [Write, Description("Share to collaborate on the form layout and structure.")] Boolean ExternalShareCollaborationEnabled;
+    [Write, Description("Share the form as a template that can be duplicated.")] Boolean ExternalShareTemplateEnabled;
+    [Write, Description("Share form result summary.")] Boolean ExternalShareResultEnabled;
+    [Write, Description("Record names by default")] Boolean RecordIdentityByDefaultEnabled;
+    [Write, Description("Include Bing search, YouTube videos.")] Boolean BingImageSearchEnabled;
+    [Write, Description("Add internal phishing protection.")] Boolean InOrgFormsPhishingScanEnabled;
+    [Write, Description("Allow respondents to edit their responses.")] Boolean ResponderEditResponse;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_MicrosoftGraphDataConnect
+{
+    [Write, Description("Turn Microsoft Graph Data Connect on or off for your entire organization.")] Boolean ServiceEnabled;
+    [Write, Description("Enable dataset access from Viva Insights.")] Boolean IsVivaInsightsEnabled;
+    [Write, Description("Enable dataset access from SharePoint Online and OneDrive.")] Boolean IsOdspEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Loop
+{
+    [Write, Description("Microsoft Loop workspaces are available to all users in my organization."), ValueMap{"0", "1"}, Values{"0", "1"}] SInt32 LoopPolicy;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Planner
+{
+    [Write, Description("Allow Planner users to publish their plans and assigned tasks to Outlook or other calendars through iCalendar feed.")] Boolean AllowCalendarSharing;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Teams
+{
+    [Write, Description("Allow guest access in Teams.")] Boolean AllowGuestUser;
+    [Write, Description("Turn on Microsoft Teams for all users.")] Boolean IsSkypeTeamsEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Viva
+{
+    [Write, Description("Insights Outlook add-in and inline suggestions")] Boolean IsAddInOptedOut;
+    [Write, Description("Personal and organization insights web experience.")] Boolean IsDashboardOptedOut;
+    [Write, Description("Digest email.")] Boolean IsEmailOptedOut;
+    [Write, Description("Schedule send suggestions.")] Boolean IsScheduleSendOptedOut;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365ModernAuth
+{
+    [Write, Description("Authenticated SMTP. Used by POP and IMAP clients to send email messages.")] Boolean AllowBasicAuthSmtp;
+    [Write, Description("Turn off modern authentication for Outlook 2013 for Windows and later.")] Boolean DisableModernAuth;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365News
+{
+    [Write, Description("Exclude content. News articles that include these terms won't appear on the Bing hompeage or the Microsoft Edge new tab page.")] String ExcludedContent[];
+    [Write, Description("Industry of which news should be visible on the Bing hompeage or the Microsoft Edge new tab page.")] String Industries[];
+    [Write, Description("Topics of which news should be visible on the Bing hompeage or the Microsoft Edge new tab page.")] String Topics[];
+    [Write, Description("Allow users to customize their own topics.")] Boolean IsCustomizationEnabled;
+    [Write, Description("Turn on industry news content in Microsoft Feed.")] Boolean FlagshipOptionsIsEnabled;
+    [Write, Description("Category for Bing homepage settings."), EmbeddedInstance("MSFT_Microsoft365BingHomepage")] String BingHomepage;
+    [Write, Description("Category for Microsoft Edge new tab page settings."), EmbeddedInstance("MSFT_Microsoft365EdgeNewTabPage")] String EdgeNewTabPage;
+    [Write, Description("Category for industry updates."), EmbeddedInstance("MSFT_Microsoft365IndustryUpdates")] String IndustryUpdates;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365IndustryUpdates
+{
+    [Write, Description("Send daily email updates.")] Boolean IsEnabled;
+    [Write, Description("Recipients of the daily news. Valid values are: 1: Send to specific groups or individuals. 3: Send to everyone in your organization."), ValueMap{"1", "3"}, Values{"1", "3"}] SInt32 UserScale;
+    [Write, Description("Groups that are receiving the daily news. Only applicable if UserScale is set to 1.")] String Groups[];
+    [Write, Description("Users that are receiving the daily news. Only applicable if UserScale is set to 1.")] String Persons[];
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365BingHomepage
+{
+    [Write, Description("Include industry news.")] Boolean IsEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365EdgeNewTabPage
+{
+    [Write, Description("Show Microsoft 365 content on the Microsoft Edge new tab page.")] Boolean IsOfficeContentEnabled;
+    [Write, Description("Show My Feed content on the Microsoft Edge new tab page.")] Boolean IsShowCompanyAndIndustry;
+    [Write, Description("Choose default feed for Microsoft Edge new tab page. 1: Users default to My Feed. 2: Users default to Work Feed."), ValueMap{"1", "2"}, Values{"1", "2"}] String DefaultNewsEntry;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365PayAsYouGo
+{
+    [Write, Description("Turn off modern authentication for Outlook 2013 for Windows and later.")] Boolean DisableModernAuth;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365People
+{
+    [Write, Description("Turn off modern authentication for Outlook 2013 for Windows and later.")] Boolean DisableModernAuth;
+    [Write, Description("Turn off modern authentication for Outlook 2013 for Windows and later.")] Boolean DisableModernAuth;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Reports
+{
+    [Write, Description("Make report data available to Microsoft 365 usage analytics for Power BI.")] Boolean PowerBiEnabled;
+    [Write, Description("Display concealed user, group, and site names in all reports.")] Boolean PrivacyEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365UsageAnalytics
+{
+    [Write, Description("Allow usage reports to be filtered by country, occupation, department or division.")] Boolean UserFiltersOptIn;
+    [Write, Description("Receive the monthly digest mail.")] Boolean MonthlyReport;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Sway
+{
+    [Write, Description("Let people in your organization share their sways with people outside your organization.")] Boolean ExternalSharingEnabled;
+    [Write, Description("Indicates that the Flickr content source can be added to sways.")] Boolean FlickrEnabled;
+    [Write, Description("Let people in your organization look up people and security groups.")] Boolean PeoplePickerSearchEnabled;
+    [Write, Description("Indicates that the Pickit content source can be added to sways.")] Boolean PickitEnabled;
+    [Write, Description("Indicates that the Wikipedia content source can be added to sways.")] Boolean WikipediaEnabled;
+    [Write, Description("Indicates that the YouTube content source can be added to sways.")] Boolean YouTubeEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365AppsAndServices
+{
+    [Write, Description("Let users auto-claim licenses the first time they sign in.")] Boolean IsAutoClaimLicensesEnabled;
+    [Write, Description("Let users access the Office Store.")] Boolean IsOfficeStoreAccessEnabled;
+    [Write, Description("Let users start trials on behalf of your organization.")] Boolean IsStartTrialsOnBehalfOfOrganizationEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365VivaLearning
+{
+    [Write, Description("Optional Diagnostic Data. Additional data that helps Microsoft make product improvements and provides enhanced information to help them detect, diagnose and remediate issues.")] Boolean IsOptionalDiagnosticDataEnabled;
+    [Write, Description("Required Diagnostic Data. Send the minimum data necessary to Microsoft to keep Viva Learning secure, up-to-date, and performing as expected.")] Boolean IsRequiredDiagnosticDataEnabled;
+};
+
+[ClassVersion("1.0.0.0")]
+class MSFT_Microsoft365Whiteboard
+{
+    [Write, Description("Allow the use of optional connected experiences in legacy Whiteboard.")] Boolean AreConnectedServicesEnabled;
+    [Write, Description("Enable easy sharing of legacy whiteboards from Surface Hub.")] Boolean IsClaimEnabled;
+    [Write, Description("Turn on Whiteboard for everyone in your org.")] Boolean IsEnabled;
+    [Write, Description("Level of diagnostics data to send to Microsoft. Valid values are: 0: Neither, 1: Required, 2: Optional"), ValueMap{"0", "1", "2"}, Values{"0", "1", "2"}] SInt32 TelemetryPolicy;
+};
+
+[ClassVersion("1.0.0.0"), FriendlyName("O365OrgSettings")]
+class MSFT_O365OrgSettingsV2 : OMI_BaseResource
+{
+    [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"), ValueMap{"Yes"}, Values{"Yes"}] String IsSingleInstance;
+    [Write, Description("Configuration for Adoption Score settings."), EmbeddedInstance("MSFT_O365AdoptionScore")] string AdoptionScore;
+    [Write, Description("Configuration for Azure Speech Services."), EmbeddedInstance("MSFT_O365AzureSpeechServices")] string AzureSpeechServices;
+    [Write, Description("Configuration for Developer Portal for Teams."), EmbeddedInstance("MSFT_O365DeveloperPortalForTeams")] string DeveloperPortalForTeams;
+    [Write, Description("Configuration for Dynamics 365 Customer Voice."), EmbeddedInstance("MSFT_Dynamics365CustomerVoice")] string Dynamics365CustomerVoice;
+    [Write, Description("Configuration for Microsoft 365 Groups."), EmbeddedInstance("MSFT_Microsoft365Groups")] string Microsoft365Groups;
+    [Write, Description("Configuration for Microsoft 365 Installation Options."), EmbeddedInstance("MSFT_Microsoft365InstallationOptions")] string Microsoft365InstallationOptions;
+    [Write, Description("Configuration for Microsoft 365 Lighthouse."), EmbeddedInstance("MSFT_Microsoft365Lighthouse")] string Microsoft365Lighthouse;
+    [Write, Description("Configuration for Microsoft 365 on the web."), EmbeddedInstance("MSFT_Microsoft365OnTheWeb")] string Microsoft365OnTheWeb;
+    [Write, Description("Configuration for Microsoft communication to users."), EmbeddedInstance("MSFT_Microsoft365EndUserCommunications")] string MicrosoftCommunicationToUsers;
+    [Write, Description("Configuration for Microsoft Forms."), EmbeddedInstance("MSFT_Microsoft365Forms")] string MicrosoftForms;
+    [Write, Description("Configuration for Microsoft Graph Data Connect."), EmbeddedInstance("MSFT_MicrosoftGraphDataConnect")] string MicrosoftGraphDataConnect;
+    [Write, Description("Configuration for Microsoft Loop."), EmbeddedInstance("MSFT_Microsoft365Loop")] string MicrosoftLoop;
+    [Write, Description("Configuration for Microsoft Planner."), EmbeddedInstance("MSFT_Microsoft365Planner")] string MicrosoftPlanner;
+    [Write, Description("Configuration for Microsoft Teams."), EmbeddedInstance("MSFT_Microsoft365Teams")] string Microsoft365Teams;
+    [Write, Description("Configuration for Microsoft Viva Insights."), EmbeddedInstance("MSFT_Microsoft365Viva")] string Microsoft365Viva;
+    [Write, Description("Configuration for Microsoft 365 Modern Authentication."), EmbeddedInstance("MSFT_Microsoft365ModernAuth")] string Microsoft365ModernAuth;
+    [Write, Description("Configuration for Microsoft 365 News."), EmbeddedInstance("MSFT_Microsoft365News")] string Microsoft365News;
+    [Write, Description("Configuration for Microsoft 365 Reports."), EmbeddedInstance("MSFT_Microsoft365Reports")] string Microsoft365Reports;
+    [Write, Description("Configuration for Microsoft 365 Usage Analytics."), EmbeddedInstance("MSFT_Microsoft365UsageAnalytics")] string Microsoft365UsageAnalytics;
+    [Write, Description("Configuration for Microsoft Sway."), EmbeddedInstance("MSFT_Microsoft365Sway")] string MicrosoftSway;
+    [Write, Description("Configuration for Microsoft 365 Apps and Services."), EmbeddedInstance("MSFT_Microsoft365AppsAndServices")] string Microsoft365AppsAndServices;
+    [Write, Description("Configuration for Microsoft Viva Learning."), EmbeddedInstance("MSFT_Microsoft365VivaLearning")] string Microsoft365VivaLearning;
+    [Write, Description("Configuration for Microsoft Whiteboard."), EmbeddedInstance("MSFT_Microsoft365Whiteboard")] string Microsoft365Whiteboard;
+    [Write, Description("Credentials of the Global Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
+    [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
+    [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;
+    [Write, Description("Access token used for authentication.")] String AccessTokens[];
+};

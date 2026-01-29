@@ -1,5 +1,10 @@
 # Change log for Microsoft365DSC
 
+# UNRELEASED
+
+* O365OrgSettingsV2
+  * Initial release.
+
 # 1.26.128.1
 
 * EXOMailboxFolderPermission
