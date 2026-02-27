@@ -240,6 +240,11 @@ function Get-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        return Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+    }
+
     Write-Verbose -Message 'Getting configuration for SPO Tenant'
 
     try
@@ -249,7 +254,7 @@ function Get-TargetResource
             $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
                 -InboundParameters $PSBoundParameters
 
-            $null = New-M365DSCConnection -Workload 'PNP' `
+            $null = New-M365DSCConnection -Workload 'PnP2' `
                 -InboundParameters $PSBoundParameters
 
             #Ensure the proper dependencies are installed in the current environment.
@@ -292,7 +297,7 @@ function Get-TargetResource
         )
 
         $response = Invoke-PnPSPRestMethod -Method Get `
-            -Url "$((Get-MSCloudLoginConnectionProfile -Workload PnP).AdminUrl)/_api/SPO.Tenant?`$select=$($parametersToRetrieve -join ',')"
+            -Url "$((Get-MSCloudLoginConnectionProfile -Workload PnP2).AdminUrl)/_api/SPO.Tenant?`$select=$($parametersToRetrieve -join ',')"
 
         $AllowSelectSGsInODBListInTenantValue = @()
         if ($response.AllowSelectSGsInODBListInTenant -ne $null)
@@ -633,6 +638,11 @@ function Set-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        return Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+    }
+
     if ($PSBoundParameters.ContainsKey('OneDriveSharingCapability'))
     {
         Write-Warning -Message "The property 'OneDriveSharingCapability' is deprecated and will be ignored. Please use 'MySiteSharingCapability' in the SPOSharingSettings resource."
@@ -657,7 +667,7 @@ function Set-TargetResource
         $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
             -InboundParameters $PSBoundParameters
     }
-    $null = New-M365DSCConnection -Workload 'PNP' -InboundParameters $PSBoundParameters
+    $null = New-M365DSCConnection -Workload 'PnP2' -InboundParameters $PSBoundParameters
 
     $CurrentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $spoRestParameters = @(
@@ -708,7 +718,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message 'Updating properties via REST PATCH call.'
         Invoke-PnPSPRestMethod -Method PATCH `
-            -Url "$((Get-MSCloudLoginConnectionProfile -Workload PnP).AdminUrl)/_api/SPO.Tenant" `
+            -Url "$((Get-MSCloudLoginConnectionProfile -Workload PnP2).AdminUrl)/_api/SPO.Tenant" `
             -Content $spoRestParametersSplat
     }
     catch
@@ -730,7 +740,6 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [String]
@@ -965,6 +974,11 @@ function Test-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        return Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+    }
+
     if ($PSBoundParameters.ContainsKey('OneDriveSharingCapability'))
     {
         Write-Warning -Message "The property 'OneDriveSharingCapability' is deprecated and will be ignored. Please use 'MySiteSharingCapability' in the SPOSharingSettings resource."
@@ -1029,12 +1043,17 @@ function Export-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        return Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+    }
+
     try
     {
         $ConnectionModeGraph = New-M365DSCConnection -Workload 'MicrosoftGraph' `
             -InboundParameters $PSBoundParameters
 
-        $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
+        $ConnectionMode = New-M365DSCConnection -Workload 'PnP2' `
             -InboundParameters $PSBoundParameters
 
         #Ensure the proper dependencies are installed in the current environment.

@@ -1939,15 +1939,22 @@ function Confirm-M365DSCLoadedModule
             Name             = $ModuleName
             RequiredVersion  = $manifestModule.RequiredVersion
             Global           = $true
-            Alias            = @()
-            Cmdlet           = @()
-            Variable         = @()
             DisableNameChecking = $true
+        }
+        if ($ModuleName -ne 'PnP.PowerShell')
+        {
+            $importModuleSplat.Add('Alias', @())
+            $importModuleSplat.Add('Cmdlet', @())
+            $importModuleSplat.Add('Variable', @())
         }
         if ($manifestModule.Commands.Count -gt 0)
         {
             $importModuleSplat.Add('Function', $manifestModule.Commands)
             $importModuleSplat.Cmdlet = $manifestModule.Commands
+        }
+        if ($PSEdition -eq 'Core')
+        {
+            $importModuleSplat.Add('UseWindowsPowerShell', $manifestModule.InstallLocation -eq 'WindowsPowerShell')
         }
         Import-Module @importModuleSplat
         Write-Verbose -Message "Module '$ModuleName' with version '$($manifestModule.RequiredVersion)' has been imported."
@@ -2276,7 +2283,7 @@ function New-M365DSCConnection
     (
         [Parameter(Mandatory = $true)]
         [ValidateSet('AdminAPI', 'Azure', 'AzureDevOPS', 'DefenderForEndpoint', 'EngageHub', 'ExchangeOnline', 'Fabric', 'Licensing', `
-                'SecurityComplianceCenter', 'PnP', 'PowerPlatforms', 'PowerPlatformREST', `
+                'SecurityComplianceCenter', 'PnP', 'PnP2', 'PowerPlatforms', 'PowerPlatformREST', `
                 'MicrosoftTeams', 'MicrosoftGraph', 'SharePointOnlineREST', 'Tasks')]
         [System.String]
         $Workload,
@@ -5557,6 +5564,10 @@ function Initialize-PowerShellCoreSession
     [CmdletBinding()]
     param ()
 
+    if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+    {
+        throw 'Creating a PowerShell Core session from Windows PowerShell requires administrative permissions. Please start the Windows PowerShell session as administrator.'
+    }
     $script:PSCoreSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess
     $lcmConfig = Get-DscLocalConfigurationManager
     Invoke-Command -Session $script:PSCoreSession -ScriptBlock {
