@@ -10,6 +10,8 @@ namespace Microsoft365DSC.Utilities
 {
     public static class Utilities
     {
+        public static readonly List<string> EscapedCharacters = [ "<", ">", ":", "\"", "/", "\\", "|", "?", "*", "'", "[", "]", "(", ")", "`", " " ];
+
         public static List<string> GetFunctionParameterNamesByAST(string modulePath, string functionName)
         {
             ScriptBlockAst ast = Parser.ParseFile(modulePath, out var tokens, out var errors);
@@ -20,6 +22,33 @@ namespace Microsoft365DSC.Utilities
             return functionAst is null || functionAst.Body.ParamBlock is null
                 ? throw new InvalidOperationException($"Function '{functionName}' not found in module '{modulePath}' or it does not have a parameter block.")
                 : functionAst.Body.ParamBlock.Parameters.Select(param => param.Name.VariablePath.UserPath).ToList();
+        }
+
+        /// <summary>
+        /// Method to replace special characters in strings.
+        /// This function replaces special characters in a string in a DSC configuration with an underscore.
+        /// The function replaces the following characters:
+        ///     - <>:"/\|?*'[]()
+        ///     - 0x2019 = ’
+        ///     - 0x201C = “
+        ///     - 0x201D = ”
+        ///     - 0x201E = „
+        ///     - 0x201F = ‟
+        /// </summary>
+        /// <param name="input">The input string to process</param>
+        /// <returns>The processed string with special characters updated</returns>
+        public static string RemoveSpecialCharacters(string input)
+        {
+            foreach (string character in EscapedCharacters)
+            {
+                input = input.Replace(character, "_");
+            }
+            input = input.Replace(((char)0x2019).ToString(), "_");
+            input = input.Replace(((char)0x201C).ToString(), "_");
+            input = input.Replace(((char)0x201D).ToString(), "_");
+            input = input.Replace(((char)0x201E).ToString(), "_");
+            input = input.Replace(((char)0x201F).ToString(), "_");
+            return input;
         }
 
         /// <summary>

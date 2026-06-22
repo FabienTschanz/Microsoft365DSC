@@ -719,12 +719,13 @@ function Get-M365DSCExportContentForResource
         if ($AllowVariablesInStrings)
         {
             $primaryKey = $primaryKey.Replace('`', '``').Replace('"', '`"')
+            $primaryKey = Update-M365DSCSpecialCharacters -String $primaryKey
         }
         else
         {
-            $primaryKey = $primaryKey.Replace('`', '``').Replace('$', '`$').Replace('"', '`"')
+            $primaryKey = Remove-M365DSCSpecialCharacters -String $primaryKey
+            $primaryKey = $primaryKey.Replace('$', '`$')
         }
-        $primaryKey = Update-M365DSCSpecialCharacters -String $primaryKey
         $instanceName += "-$primaryKey"
     }
 
@@ -1259,10 +1260,12 @@ function Register-M365DSCExportDependency
     if ($null -ne $Global:M365DSCExportDependencies)
     {
         $Global:M365DSCExportDependencies += @{
-            SourceInstanceName = $SourceInstanceName
-            SourceResourceName = $SourceResourceName
-            TargetResourceType = $TargetResourceType
-            TargetKey          = $TargetKey
+            SourceInstanceName          = $SourceInstanceName
+            SourceInstanceNameSanitized = Remove-M365DSCSpecialCharacters -String $SourceInstanceName
+            SourceResourceName          = $SourceResourceName
+            TargetResourceType          = $TargetResourceType
+            TargetKey                   = $TargetKey
+            TargetKeySanitized          = Remove-M365DSCSpecialCharacters -String $TargetKey
         }
     }
 }
@@ -1551,13 +1554,13 @@ function Add-M365DSCExportDependsOn
 
     foreach ($dep in $Global:M365DSCExportDependencies)
     {
-        $lookupKey = "$($dep.TargetResourceType)|$($dep.TargetKey)"
+        $lookupKey = "$($dep.TargetResourceType)|$($dep.TargetKeySanitized)"
         $targetRef = $targetLookup[$lookupKey]
 
         if ($null -ne $targetRef)
         {
             # Target was exported - add DependsOn reference
-            $sourceRef = "[$($dep.SourceResourceName)]$($dep.SourceInstanceName)"
+            $sourceRef = "[$($dep.SourceResourceName)]$($dep.SourceInstanceNameSanitized)"
             if (-not $dependenciesBySource.ContainsKey($sourceRef))
             {
                 $dependenciesBySource[$sourceRef] = @()
@@ -1570,22 +1573,23 @@ function Add-M365DSCExportDependsOn
         else
         {
             # Target was NOT exported - needs a stub
-            $stubKey = "$($dep.TargetResourceType)|$($dep.TargetKey)"
+            $stubKey = "$($dep.TargetResourceType)|$($dep.TargetKeySanitized)"
             if (-not $unresolvedTargets.ContainsKey($stubKey))
             {
                 $unresolvedTargets[$stubKey] = @{
                     ResourceType = $dep.TargetResourceType
                     TargetKey    = $dep.TargetKey
+                    TargetKeySanitized = $dep.TargetKeySanitized
                 }
             }
 
             # Still record the dependency for injection after stub is created
-            $sourceRef = "[$($dep.SourceResourceName)]$($dep.SourceInstanceName)"
+            $sourceRef = "[$($dep.SourceResourceName)]$($dep.SourceInstanceNameSanitized)"
             if (-not $dependenciesBySource.ContainsKey($sourceRef))
             {
                 $dependenciesBySource[$sourceRef] = @()
             }
-            $stubInstanceName = "$($dep.TargetResourceType)-$($dep.TargetKey)"
+            $stubInstanceName = "$($dep.TargetResourceType)-$($dep.TargetKeySanitized)"
             $stubRef = "[$($dep.TargetResourceType)]$stubInstanceName"
             if ($dependenciesBySource[$sourceRef] -notcontains $stubRef)
             {
@@ -1688,8 +1692,9 @@ function Get-M365DSCMinimalExportBlocks
     foreach ($target in $UnresolvedTargets.GetEnumerator())
     {
         $resourceType = $target.Value.ResourceType
-        $targetKey = $target.Value.TargetKey
-        $instanceName = "$resourceType-$targetKey"
+        $targetKey = (Update-M365DSCSpecialCharacters -String $target.Value.TargetKey).Replace('"', '`"')
+        $TargetKeySanitized = $target.Value.TargetKeySanitized
+        $instanceName = "$resourceType-$TargetKeySanitized"
 
         # Get key properties from the resource dictionary
         $resourceInfo = $null

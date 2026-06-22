@@ -247,6 +247,30 @@ function Update-M365DSCSpecialCharacters
     return [Microsoft365DSC.Utilities.Utilities]::UpdateSpecialCharacters($String)
 }
 
+<#
+.SYNOPSIS
+    Replace special characters in a string in a DSC configuration with an underscore.
+
+.PARAMETER String
+    The string to be updated.
+
+.EXAMPLE
+    PS> Remove-M365DSCSpecialCharacters -String 'This is a test string with special characters: „, “, ”'
+#>
+function Remove-M365DSCSpecialCharacters
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $String
+    )
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+    return [Microsoft365DSC.Utilities.Utilities]::RemoveSpecialCharacters($String)
+}
+
 function Test-IsCimInstance
 {
     [CmdletBinding()]
