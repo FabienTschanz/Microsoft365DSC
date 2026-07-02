@@ -1,4 +1,5 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADPIMGroupSetting'
+$Script:IsPowerShell75OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.5'
 
 function Get-TargetResource
 {
@@ -1569,19 +1570,40 @@ function Export-TargetResource
         $batchRequests = @()
         foreach ($group in $Script:exportedGroups)
         {
-            $batchRequests += @{
-                id     = $group.Id
-                method = 'GET'
-                url    = "/policies/roleManagementPolicyAssignments?filter=scopeId eq '$($group.Id)' and scopeType eq 'Group'&`$expand=policy(`$expand=rules)"
+            if ($Script:IsPowerShell75OrGreater)
+            {
+                $batchRequests += "/policies/roleManagementPolicyAssignments?filter=scopeId eq '$($group.Id)' and scopeType eq 'Group'&`$expand=policy(`$expand=rules)"
+            }
+            else
+            {
+                $batchRequests += @{
+                    id     = $group.Id
+                    method = 'GET'
+                    url    = "/policies/roleManagementPolicyAssignments?filter=scopeId eq '$($group.Id)' and scopeType eq 'Group'&`$expand=policy(`$expand=rules)"
+                }
             }
         }
 
-        $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests -AsList
+        if ($Script:IsPowerShell75OrGreater)
+        {
+            $batchResponses = $batchRequests | Invoke-MgxBatchRequest -Method GET -ApiVersion 'beta'
+        }
+        else
+        {
+            $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests -AsList
+        }
 
         $dscContent = [System.Text.StringBuilder]::new()
         foreach ($group in $Script:exportedGroups)
         {
-            $response = $batchResponses.Where({ $_.id -eq $group.Id })
+            if ($Script:IsPowerShell75OrGreater)
+            {
+                $response = $batchResponses | Where-Object { $_.Url -like "*$($group.Id)*" }
+            }
+            else
+            {
+                $response = $batchResponses | Where-Object { $_.id -eq $group.Id }
+            }
             $getValue = $response.body.value
             Write-M365DSCHost -Message "    |---[$j/$($Script:exportedGroups.Count)] $($group.DisplayName)" -DeferWrite
 

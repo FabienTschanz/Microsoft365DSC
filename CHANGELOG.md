@@ -2,6 +2,8 @@
 
 # UNRELEASED
 
+* AADPIMGroupSetting
+  * Improved performance with batch requests.
 * M365DSCGraphShim
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
 * DEPENDENCIES
