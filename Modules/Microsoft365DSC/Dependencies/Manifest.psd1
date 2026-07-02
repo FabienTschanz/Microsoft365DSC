@@ -33,6 +33,10 @@
             RequiredVersion = '3.9.2'
         },
         @{
+            ModuleName      = 'Mgx'
+            RequiredVersion = '1.0.2'
+        },
+        @{
             ModuleName      = 'Microsoft.Graph.Authentication'
             RequiredVersion = '2.35.1'
         },

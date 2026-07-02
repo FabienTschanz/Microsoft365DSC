@@ -9,6 +9,8 @@
 # =============================================================================
 #endregion
 
+$Script:IsPowerShell75OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.5'
+
 #region Shared Helpers
 
 <#
@@ -48,6 +50,7 @@ function Invoke-M365DSCGraphShimRequest
         Method = $Method
         Uri    = $Uri
     }
+
     if ($PSBoundParameters.ContainsKey('Body') -and $null -ne $Body)
     {
         if ($Body -isnot [string])
@@ -121,6 +124,98 @@ function Invoke-M365DSCGraphShimRequest
     }
 }
 
+function Invoke-M365DSCGraphShimRequestV75
+{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Method,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Uri,
+
+        [Parameter()]
+        [System.Object]
+        $Body,
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $Headers,
+
+        [Parameter()]
+        [System.String]
+        $OutputType,
+
+        [Parameter()]
+        [switch]
+        $All,
+
+        [Parameter()]
+        [Switch]
+        $PassThru
+    )
+
+    if ($PSBoundParameters.ContainsKey('OutputType') -and -not [System.String]::IsNullOrEmpty($OutputType))
+    {
+        throw [System.NotSupportedException] 'The OutputType parameter is not supported in PowerShell 7.5 or later.'
+    }
+
+    $invokeParams = @{
+        All        = $All
+        ApiVersion = if ($Uri -match '^/beta') { 'beta' } else { 'v1.0' }
+        Method     = $Method
+        Uri        = $Uri.TrimStart('/beta').TrimStart('/v1.0')
+        ErrorAction = 'Stop'
+    }
+
+    if ($PSBoundParameters.ContainsKey('Body') -and $null -ne $Body)
+    {
+        if ($Body -isnot [string])
+        {
+            $Body = $Body | ConvertTo-Json -Depth 99
+        }
+        $invokeParams['Body'] = $Body
+    }
+    if ($PSBoundParameters.ContainsKey('Headers') -and $Headers.Keys.Count -gt 0)
+    {
+        $invokeParams['Headers'] = $Headers
+    }
+    if ($ErrorActionPreference -eq 'SilentlyContinue')
+    {
+        $invokeParams['SkipForbidden'] = $true
+        $invokeParams['SkipNotFound'] = $true
+        $invokeParams['ErrorAction'] = 'SilentlyContinue'
+    }
+
+    try
+    {
+        return Invoke-MgxRequest @invokeParams
+    }
+    catch
+    {
+        $statusCode = $null
+        if ($_.Exception)
+        {
+            $statusCode = [int]$_.Exception.StatusCode
+        }
+        elseif ($_.Exception.Message -match '(\d{3})')
+        {
+            $statusCode = [int]$Matches[1]
+        }
+
+        if ($statusCode -eq 400 -and $_.Exception.Message -match 'Header ''x-msft-approval-justification'' is required to request approval')
+        {
+            throw [System.InvalidOperationException] 'Multi Admin Approval (MAA) is enabled for this resource type. Microsoft365DSC does not support running with MAA enabled. Please exclude the app registration from MAA or disable MAA for this resource type.'
+        }
+        else
+        {
+            throw
+        }
+    }
+}
+
 <#
 .SYNOPSIS
     Follows @odata.nextLink to retrieve all pages of a Graph API collection.
@@ -188,6 +283,56 @@ function Get-M365DSCGraphShimAllPages
         }
     }
     while (-not [System.String]::IsNullOrEmpty($nextLink))
+
+    return $allResults
+}
+
+function Get-M365DSCGraphShimAllPagesV75
+{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Uri,
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $Headers,
+
+        [Parameter()]
+        [System.Int32]
+        $Top = 0
+    )
+
+    $allResults = [System.Collections.Generic.List[System.Object]]::new()
+    $currentUri = $Uri
+
+    if ($Top -gt 0 -and $currentUri -notmatch '[\?&]\$top=')
+    {
+        $separator = if ($currentUri.Contains('?')) { '&' } else { '?' }
+        $currentUri = "$currentUri$separator`$top=$Top"
+    }
+
+    $requestParams = @{
+        All    = $true
+        Method = 'GET'
+        Uri    = $currentUri
+    }
+    if ($PSBoundParameters.ContainsKey('Headers') -and $Headers.Keys.Count -gt 0)
+    {
+        $requestParams['Headers'] = $Headers
+    }
+
+    $response = Invoke-M365DSCGraphShimRequestV75 @requestParams -PassThru
+    if ($response -is [System.Collections.IEnumerable] -and $response -isnot [string])
+    {
+        $allResults.AddRange([array]$response)
+    }
+    elseif ($null -ne $response)
+    {
+        # Single object response, not a collection
+        $allResults.Add($response)
+    }
 
     return $allResults
 }
@@ -398,6 +543,10 @@ function Invoke-M365DSCGraphShimGetResource
         if ($BoundParameters['ExpandProperty']) { $queryParts += "`$expand=$($BoundParameters['ExpandProperty'] -join ',')" }
         if ($queryParts.Count -gt 0) { $uri = "$uri`?$($queryParts -join '&')" }
 
+        if ($Script:IsPowerShell75OrGreater)
+        {
+            return Invoke-M365DSCGraphShimRequestV75 -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+        }
         return Invoke-M365DSCGraphShimRequest -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
 
@@ -416,10 +565,22 @@ function Invoke-M365DSCGraphShimGetResource
 
     if ($BoundParameters.ContainsKey('All') -and $BoundParameters['All'])
     {
+        if ($Script:IsPowerShell75OrGreater)
+        {
+            return Get-M365DSCGraphShimAllPagesV75 -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+        }
         return Get-M365DSCGraphShimAllPages -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
 
-    $response = Invoke-M365DSCGraphShimRequest -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    if ($Script:IsPowerShell75OrGreater)
+    {
+        $response = Invoke-M365DSCGraphShimRequestV75 -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    }
+    else
+    {
+        $response = Invoke-M365DSCGraphShimRequest -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    }
+
     if ($null -ne $response -and $response -is [hashtable] -and $response.ContainsKey('value'))
     {
         return $response.value
@@ -475,7 +636,14 @@ function Invoke-M365DSCGraphShimWriteResource
         -NamedParams $namedParams `
         -ExcludeParams $excludeFromBody
 
-    return Invoke-M365DSCGraphShimRequest -Method $Method -Uri $Uri -Body $body -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    if ($Script:IsPowerShell75OrGreater)
+    {
+        return Invoke-M365DSCGraphShimRequestV75 -Method $Method -Uri $Uri -Body $body -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    }
+    else
+    {
+        return Invoke-M365DSCGraphShimRequest -Method $Method -Uri $Uri -Body $body -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    }
 }
 
 function Invoke-M365DSCGraphShimDeleteResource
@@ -498,7 +666,14 @@ function Invoke-M365DSCGraphShimDeleteResource
 
     $requestHeaders = @{}
     if ($BoundParameters.ContainsKey('Headers')) { $requestHeaders = $BoundParameters['Headers'] }
-    Invoke-M365DSCGraphShimRequest -Method 'DELETE' -Uri $Uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    if ($Script:IsPowerShell75OrGreater)
+    {
+        Invoke-M365DSCGraphShimRequestV75 -Method 'DELETE' -Uri $Uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    }
+    else
+    {
+        Invoke-M365DSCGraphShimRequest -Method 'DELETE' -Uri $Uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+    }
 }
 
 #endregion Shared Helpers
