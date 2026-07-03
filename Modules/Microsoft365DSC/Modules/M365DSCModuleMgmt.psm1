@@ -698,6 +698,10 @@ function Update-M365DSCDependencies
                         continue
                     }
                     $found = Get-Module $dependency.ModuleName -ListAvailable | Where-Object -FilterScript { $_.Version -eq $dependency.RequiredVersion }
+                    if (-not $found)
+                    {
+                        $found = Get-PSResource -Name $dependency.ModuleName -Version $dependency.RequiredVersion -Scope $Scope -ErrorAction SilentlyContinue
+                    }
                 }
 
                 if ((-not $found -or $Force) -and -not $ValidateOnly)
