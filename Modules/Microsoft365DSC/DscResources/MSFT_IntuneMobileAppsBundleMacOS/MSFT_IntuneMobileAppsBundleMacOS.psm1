@@ -1,4 +1,5 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneMobileAppsBundleMacOS'
+$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
 
 function Get-TargetResource
 {
@@ -134,6 +135,12 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Getting configuration for the Intune Mobile Apps Bundle for macOS with Id {$Id} and DisplayName {$DisplayName}"
 
@@ -439,6 +446,12 @@ function Set-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     Write-Verbose -Message "Setting configuration of the Intune Mobile Apps Bundle for macOS with Id {$Id} and DisplayName {$DisplayName}"
 
     if ($PSBoundParameters.PackageFileType -eq 'Dmg' -and ($PSBoundParameters.ContainsKey('PreInstallScript') -or $PSBoundParameters.ContainsKey('PostInstallScript')))
@@ -687,6 +700,12 @@ function Test-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     if ($PSBoundParameters.PackageFileType -eq 'Dmg' -and ($PSBoundParameters.ContainsKey('PreInstallScript') -or $PSBoundParameters.ContainsKey('PostInstallScript')))
     {
         throw 'PreInstallScript and PostInstallScript are not supported for Dmg package type.'
@@ -754,6 +773,12 @@ function Export-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters

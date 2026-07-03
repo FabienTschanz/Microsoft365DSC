@@ -1,4 +1,5 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADPermissionGrantPolicy'
+$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
 
 # Cache for service principal lookups to avoid redundant Graph API calls
 $Script:ServicePrincipalCache = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
@@ -70,6 +71,12 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Getting configuration of Entra Permission Grant Policy {$Id}"
 
@@ -238,6 +245,12 @@ function Set-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Setting configuration of Entra Permission Grant Policy {$Id}"
 
@@ -492,6 +505,12 @@ function Test-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
 
@@ -558,6 +577,12 @@ function Export-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters

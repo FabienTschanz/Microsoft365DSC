@@ -1,4 +1,5 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADRoleSetting'
+$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
 
 function Get-TargetResource
 {
@@ -219,6 +220,12 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Getting configuration of the AAD Role Setting with Id {$Id} and DisplayName {$DisplayName}"
 
@@ -674,6 +681,12 @@ function Set-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Setting configuration of Role settings: $DisplayName"
 
@@ -1420,6 +1433,12 @@ function Test-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     #region Telemetry
     $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
     $CommandName = $MyInvocation.MyCommand
@@ -1480,6 +1499,12 @@ function Export-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters

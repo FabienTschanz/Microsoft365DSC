@@ -1,4 +1,5 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_SCPolicyConfig'
+$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
 
 function Get-TargetResource
 {
@@ -163,6 +164,12 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Getting configuration of SCFilePlanPropertyReferenceId for $Name"
 
@@ -752,6 +759,12 @@ function Set-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     Write-Verbose -Message "Setting configuration of SCFilePlanPropertyReferenceId for $Name"
 
     $null = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
@@ -1289,6 +1302,12 @@ function Test-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     #region Telemetry
     $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
     $CommandName = $MyInvocation.MyCommand
@@ -1345,6 +1364,12 @@ function Export-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
         -InboundParameters $PSBoundParameters

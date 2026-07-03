@@ -1,4 +1,5 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneDiskEncryptionMacOS'
+$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
 
 function Get-TargetResource
 {
@@ -104,6 +105,12 @@ function Get-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     Write-Verbose -Message "Getting configuration of the Intune Disk Encryption for MacOS with Id {$Id} and DisplayName {$DisplayName}"
 
@@ -327,6 +334,12 @@ function Set-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     Write-Warning -Message "This resource is deprecated. Please use 'IntuneDiskEncryptionFileVaultPolicyMacOS'."
 
     #Ensure the proper dependencies are installed in the current environment.
@@ -539,6 +552,12 @@ function Test-TargetResource
         $AccessTokens
     )
 
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
+
     Write-Warning -Message "This resource is deprecated. Please use 'IntuneDiskEncryptionFileVaultPolicyMacOS'."
 
     #region Telemetry
@@ -603,6 +622,12 @@ function Export-TargetResource
         [System.String[]]
         $AccessTokens
     )
+
+    if ($PSEdition -ne 'Core')
+    {
+        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+        return
+    }
 
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters

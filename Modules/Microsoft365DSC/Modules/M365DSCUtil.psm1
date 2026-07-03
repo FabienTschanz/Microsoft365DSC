@@ -1800,13 +1800,39 @@ function Initialize-PowerShellCoreSession
     [CmdletBinding()]
     param ()
 
-    $script:PSCoreSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess
-    $lcmConfig = Get-DscLocalConfigurationManager
-    Invoke-Command -Session $script:PSCoreSession -ScriptBlock {
-        Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
-        Set-M365DSCLCMConfiguration -LCMConfig $using:lcmConfig
+    if ($script:PSCoreSessionInitialized)
+    {
+        return
     }
-    $script:PSCoreSessionInitialized = $true
+
+    if ($PSEdition -eq 'Core' -and -not $IsWindows)
+    {
+        throw "The function 'Initialize-PowerShellCoreSession' is only supported on Windows."
+    }
+
+    if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+    {
+        throw "The function 'Initialize-PowerShellCoreSession' requires administrative privileges. Either run the current session with administrative privileges or run the command directly in PowerShell Core."
+    }
+
+    try
+    {
+        $script:PSCoreSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess -ErrorAction Stop
+        $lcmConfig = Get-DscLocalConfigurationManager
+        Invoke-Command -Session $script:PSCoreSession -ScriptBlock {
+            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
+            Set-M365DSCLCMConfiguration -LCMConfig $using:lcmConfig
+        }
+        $script:PSCoreSessionInitialized = $true
+    }
+    catch [System.Management.Automation.Remoting.PSRemotingTransportException]
+    {
+        throw "The function 'Initialize-PowerShellCoreSession' requires PowerShell Core to be installed and WinRM to be configured. Please install PowerShell Core and run 'Enable-PSRemoting -Force -SkipNetworkProfileCheck'."
+    }
+    catch
+    {
+        throw
+    }
 }
 
 <#
