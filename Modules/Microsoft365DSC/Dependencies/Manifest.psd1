@@ -35,6 +35,7 @@
         @{
             ModuleName      = 'Mgx'
             RequiredVersion = '1.0.2'
+            PowerShellCore  = $true
         },
         @{
             ModuleName      = 'Microsoft.Graph.Authentication'

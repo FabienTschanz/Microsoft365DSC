@@ -645,7 +645,6 @@ function Install-M365DSCDevBranch
 
     try
     {
-
         $longPathsEnabled = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem').LongPathsEnabled -eq 1
         if (-not $longPathsEnabled)
         {
