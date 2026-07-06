@@ -17,11 +17,6 @@ function Get-TargetResource
         $EnableAzureADB2BIntegration,
 
         [Parameter()]
-        [ValidateSet('ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly', 'ExistingExternalUserSharingOnly')]
-        [System.String]
-        $OneDriveSharingCapability,
-
-        [Parameter()]
         [System.UInt32]
         $MinCompatibilityLevel,
 
@@ -36,6 +31,15 @@ function Get-TargetResource
         [Parameter()]
         [System.Boolean]
         $OfficeClientADALDisabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $OneDriveRequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $OneDriveRequestFilesLinkExpirationInDays,
 
         [Parameter()]
         [System.Boolean]
@@ -71,7 +75,32 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AllowCommentsTextOnEmailEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $ApplyAppEnforcedRestrictionsToAdHocRecipients,
+
+        [Parameter()]
+        [System.String]
+        $ArchiveRedirectUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $BlockSendLabelMismatchEmail,
+
+        [Parameter()]
+        [System.Boolean]
+        $CoreRequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $CoreRequestFilesLinkExpirationInDays,
 
         [Parameter()]
         [System.Boolean]
@@ -90,9 +119,183 @@ function Get-TargetResource
         $HideSyncButtonOnTeamSite,
 
         [Parameter()]
+        [System.Boolean]
+        $LegacyBrowserAuthProtocolsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDiscoverableByOrganizationForVideos,
+
+        [Parameter()]
+        [System.String]
+        $RestrictedAccessControlforSitesErrorHelpLink,
+
+        [Parameter()]
+        [System.Boolean]
+        $Workflow2010Disabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $HideSyncButtonOnDocLib,
+
+        [Parameter()]
+        [System.Int32]
+        $StreamLaunchConfig,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableMediaReactions,
+
+        [Parameter()]
+        [System.Boolean]
+        $ContentSecurityPolicyEnforcement,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSpacesActivation,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowAppsBypassOfUnmanagedDevicePolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $DisabledAdaptiveCardExtensionIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNotificationsSubscriptions,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceRequestDigest,
+
+        [Parameter()]
+        [ValidateSet('Audit', 'None', 'PassiveEnforcement', 'StrictEnforcement')]
+        [System.String]
+        $TlsTokenBindingPolicyValue,
+
+        [Parameter()]
+        [ValidateSet('DefaultAAD', 'Disabled', 'Enabled')]
+        [System.String]
+        $AuthContextResilienceMode,
+
+        [Parameter()]
+        [System.String]
+        $AllOrganizationSecurityGroupId,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileArchive,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileArchiveOnNewSitesByDefault,
+
+        [Parameter()]
+        [System.String[]]
+        $ContentTypeSyncSiteTemplatesList,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDocumentLibraryDefaultLabeling,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsEnableAppAuthPopUpEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ExpireVersionsAfterDays,
+
+        [Parameter()]
+        [System.Int32]
+        $MajorVersionLimit,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableAutoExpirationVersionTrim,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVivaConnectionsAnalytics,
+
+        [Parameter()]
+        [ValidateSet('Unspecified', 'On', 'Off')]
+        [System.String]
+        $CoreBlockGuestsAsSiteAdmin,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsWBFluidEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsCollabMeetingNotesFluidEnabled,
+
+        [Parameter()]
+        [ValidateSet('Unspecified', 'On', 'Off')]
+        [System.String]
+        $AllowAnonymousMeetingParticipantsToAccessWhiteboards,
+
+        [Parameter()]
+        [System.Boolean]
+        $IBImplicitGroupBased,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowOpenInDesktopOptionForSyncedFiles,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowPeoplePickerGroupSuggestionsForIB,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReduceTempTokenLifetimeEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ReduceTempTokenLifetimeValue,
+
+        [Parameter()]
+        [System.Boolean]
+        $ViewersCanCommentOnMediaDisabled,
+
+        [Parameter()]
+        [System.String]
+        $ConditionalAccessPolicyErrorHelpLink,
+
+        [Parameter()]
+        [System.String]
+        $CustomizedExternalSharingServiceUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $IncludeAtAGlanceInShareEmails,
+
+        [Parameter()]
+        [System.Boolean]
+        $MassDeleteNotificationDisabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsDataAccessInCardDesignerEnabled,
+
+        [Parameter()]
         [ValidateSet('AllowExternalSharing', 'BlockExternalSharing')]
         [System.String]
         $MarkNewFilesSensitiveByDefault,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $MediaTranscription,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $MediaTranscriptionAutomaticFeatures,
 
         [Parameter()]
         [System.Guid[]]
@@ -113,6 +316,14 @@ function Get-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableAIPIntegration,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableSensitivityLabelForPDF,
+
+        [Parameter()]
+        [System.Boolean]
+        $SiteOwnerManageLegacyServicePrincipalEnabled,
 
         [Parameter()]
         [System.String]
@@ -152,6 +363,24 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AppBypassInformationBarriers,
+
+        [Parameter()]
+        [ValidateSet('TeamsMeetingRecording')]
+        [System.String[]]
+        $BlockDownloadFileTypeIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $BlockDownloadFileTypePolicy,
+
+        [Parameter()]
+        [ValidateSet('Open', 'Explicit', 'Implicit', 'OwnerModerated', 'Mixed')]
+        [System.String]
+        $DefaultOneDriveInformationBarrierMode,
+
+        [Parameter()]
+        [System.Boolean]
         $DisableCustomAppAuthentication,
 
         [Parameter()]
@@ -167,8 +396,16 @@ function Get-TargetResource
         $DisplayNamesOfFileViewersInSpo,
 
         [Parameter()]
+        [System.String[]]
+        $ExcludedBlockDownloadGroupIds,
+
+        [Parameter()]
         [System.Boolean]
         $IsLoopEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsSharePointAddInsDisabled,
 
         [Parameter()]
         [System.Boolean]
@@ -187,8 +424,26 @@ function Get-TargetResource
         $IsSitePagesCreationEnabled,
 
         [Parameter()]
+        [System.Boolean]
+        $KnowledgeAgentEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $KnowledgeAgentSelectedSitesList,
+
+        [Parameter()]
         [System.String]
         $NoAccessRedirectUrl,
+
+        [Parameter()]
+        [ValidateSet('On', 'Off', 'Unspecified')]
+        [System.String]
+        $OneDriveBlockGuestsAsSiteAdmin,
+
+        [Parameter()]
+        [ValidateRange(14, 93)]
+        [System.Int32]
+        $RecycleBinRetentionPeriod,
 
         [Parameter()]
         [System.Boolean]
@@ -293,7 +548,6 @@ function Get-TargetResource
             'DenySelectSGsInODBListInTenant',
             'DenySelectSecurityGroupsInSPSitesList',
             'AllowSelectSecurityGroupsInSPSitesList',
-            'EnableAzureADB2BIntegration',
             'HideSyncButtonOnODB',
             'MobileFriendlyUrlEnabledInTenant'
         )
@@ -325,68 +579,139 @@ function Get-TargetResource
             $AllowSelectSecurityGroupsInSPSitesListValue = [System.String[]]$response.AllowSelectSecurityGroupsInSPSitesList
         }
 
-        return @{
-            IsSingleInstance                                       = 'Yes'
-            ExemptNativeUsersFromTenantLevelRestricedAccessControl = $response.ExemptNativeUsersFromTenantLevelRestricedAccessControl
-            AllowSelectSGsInODBListInTenant                        = $AllowSelectSGsInODBListInTenantValue
-            DenySelectSGsInODBListInTenant                         = $DenySelectSGsInODBListInTenantValue
-            DenySelectSecurityGroupsInSPSitesList                  = $DenySelectSecurityGroupsInSPSitesListValue
-            AllowSelectSecurityGroupsInSPSitesList                 = $AllowSelectSecurityGroupsInSPSitesListValue
-            EnableAzureADB2BIntegration                            = $response.EnableAzureADB2BIntegration
-            HideSyncButtonOnODB                                    = $response.HideSyncButtonOnODB
-            MobileFriendlyUrlEnabledInTenant                       = $response.MobileFriendlyUrlEnabledInTenant
-            #OneDriveSharingCapability                              = $response.ODBSharingCapability
-            MinCompatibilityLevel                                  = $MinCompat
-            MaxCompatibilityLevel                                  = $MaxCompat
-            AllowDownloadingNonWebViewableFiles                    = $SPOTenantSettings.AllowDownloadingNonWebViewableFiles
-            AllowEditing                                           = $SPOTenantSettings.AllowEditing
-            ApplyAppEnforcedRestrictionsToAdHocRecipients          = $SPOTenantSettings.ApplyAppEnforcedRestrictionsToAdHocRecipients
-            CommentsOnSitePagesDisabled                            = $SPOTenantSettings.CommentsOnSitePagesDisabled
-            DisableCustomAppAuthentication                         = $SPOTenantSettings.DisableCustomAppAuthentication
-            DisabledModernListTemplateIds                          = [System.String[]]$SPOTenantSettings.DisabledModernListTemplateIds
-            DisabledWebPartIds                                     = [System.String[]]$SPOTenantSettings.DisabledWebPartIds
-            DisablePersonalListCreation                            = $SPOTenantSettings.DisablePersonalListCreation
-            #DisableSpacesActivation                                = $SPOTenantSettings.DisableSpacesActivation
-            DisplayNamesOfFileViewersInSpo                         = $SPOTenantSettings.DisplayNamesOfFileViewersInSpo
-            EnableAIPIntegration                                   = $SPOTenantSettings.EnableAIPIntegration
-            FilePickerExternalImageSearchEnabled                   = $SPOTenantSettings.FilePickerExternalImageSearchEnabled
-            HideDefaultThemes                                      = $SPOTenantSettings.HideDefaultThemes
-            HideSyncButtonOnTeamSite                               = $SPOTenantSettings.HideSyncButtonOnTeamSite
-            IsFluidEnabled                                         = $SPOTenantSettings.IsFluidEnabled
-            IsLoopEnabled                                          = $SPOTenantSettings.IsLoopEnabled
-            LegacyAuthProtocolsEnabled                             = $SPOTenantSettings.LegacyAuthProtocolsEnabled
-            MarkNewFilesSensitiveByDefault                         = $SPOTenantSettings.MarkNewFilesSensitiveByDefault
-            NoAccessRedirectUrl                                    = $SPOTenantSettings.NoAccessRedirectUrl
-            NotificationsInSharePointEnabled                       = $SPOTenantSettings.NotificationsInSharePointEnabled
-            OfficeClientADALDisabled                               = $SPOTenantSettings.OfficeClientADALDisabled
-            OwnerAnonymousNotification                             = $SPOTenantSettings.OwnerAnonymousNotification
-            #PermissiveBrowserFileHandlingOverride                  = $SPOTenantSettings.PermissiveBrowserFileHandlingOverride
-            PublicCdnAllowedFileTypes                              = $SPOTenantSettings.PublicCdnAllowedFileTypes
-            PublicCdnEnabled                                       = $SPOTenantSettings.PublicCdnEnabled
-            #PublicCdnOrigins                                       = $SPOTenantSettings.PublicCdnOrigins
-            RequireAcceptingAccountMatchInvitedAccount             = $SPOTenantSettings.RequireAcceptingAccountMatchInvitedAccount
-            SearchResolveExactEmailOrUPN                           = $SPOTenantSettings.SearchResolveExactEmailOrUPN
-            SignInAccelerationDomain                               = $SPOTenantSettings.SignInAccelerationDomain
-            SocialBarOnSitePagesDisabled                           = $SPOTenantSettings.SocialBarOnSitePagesDisabled
-            SpecialCharactersStateInFileFolderNames                = $SPOTenantSettings.SpecialCharactersStateInFileFolderNames
-            UseFindPeopleInPeoplePicker                            = $SPOTenantSettings.UseFindPeopleInPeoplePicker
-            UsePersistentCookiesForExplorerView                    = $SPOTenantSettings.UsePersistentCookiesForExplorerView
-            IsSharePointNewsfeedEnabled                            = $SPOTenantGraphSettings.IsSharePointNewsfeedEnabled
-            IsSiteCreationEnabled                                  = $SPOTenantGraphSettings.IsSiteCreationEnabled
-            IsSiteCreationUiEnabled                                = $SPOTenantGraphSettings.IsSiteCreationUiEnabled
-            IsSitePagesCreationEnabled                             = $SPOTenantGraphSettings.IsSitePagesCreationEnabled
-            TenantDefaultTimezone                                  = $SPOTenantGraphSettings.TenantDefaultTimeZone
-            Credential                                             = $Credential
-            ApplicationId                                          = $ApplicationId
-            TenantId                                               = $TenantId
-            ApplicationSecret                                      = $ApplicationSecret
-            CertificateThumbprint                                  = $CertificateThumbprint
-            CertificatePassword                                    = $CertificatePassword
-            CertificatePath                                        = $CertificatePath
-            ManagedIdentity                                        = $ManagedIdentity.IsPresent
-            Ensure                                                 = 'Present'
-            AccessTokens                                           = $AccessTokens
+        $results = @{
+            IsSingleInstance                                               = 'Yes'
+            ExemptNativeUsersFromTenantLevelRestricedAccessControl         = $response.ExemptNativeUsersFromTenantLevelRestricedAccessControl
+            AllowSelectSGsInODBListInTenant                                = $AllowSelectSGsInODBListInTenantValue
+            DenySelectSGsInODBListInTenant                                 = $DenySelectSGsInODBListInTenantValue
+            DenySelectSecurityGroupsInSPSitesList                          = $DenySelectSecurityGroupsInSPSitesListValue
+            AllowSelectSecurityGroupsInSPSitesList                         = $AllowSelectSecurityGroupsInSPSitesListValue
+            EnableAzureADB2BIntegration                                    = $SPOTenantSettings.EnableAzureADB2BIntegration
+            HideSyncButtonOnODB                                            = $response.HideSyncButtonOnODB
+            MobileFriendlyUrlEnabledInTenant                               = $response.MobileFriendlyUrlEnabledInTenant
+            MinCompatibilityLevel                                          = $MinCompat
+            MaxCompatibilityLevel                                          = $MaxCompat
+            AllOrganizationSecurityGroupId                                 = $SPOTenantSettings.AllOrganizationSecurityGroupId
+            AllowAnonymousMeetingParticipantsToAccessWhiteboards           = $SPOTenantSettings.AllowAnonymousMeetingParticipantsToAccessWhiteboards.ToString()
+            AllowAppsBypassOfUnmanagedDevicePolicy                         = $SPOTenantSettings.AllowAppsBypassOfUnmanagedDevicePolicy
+            AllowCommentsTextOnEmailEnabled                                = $SPOTenantSettings.AllowCommentsTextOnEmailEnabled
+            AllowDownloadingNonWebViewableFiles                            = $SPOTenantSettings.AllowDownloadingNonWebViewableFiles
+            AllowEditing                                                   = $SPOTenantSettings.AllowEditing
+            AllowFileArchive                                               = $SPOTenantSettings.AllowFileArchive
+            AllowFileArchiveOnNewSitesByDefault                            = $SPOTenantSettings.AllowFileArchiveOnNewSitesByDefault
+            AppBypassInformationBarriers                                   = $SPOTenantSettings.AppBypassInformationBarriers
+            AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled = $SPOTenantSettings.AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled
+            ApplyAppEnforcedRestrictionsToAdHocRecipients                  = $SPOTenantSettings.ApplyAppEnforcedRestrictionsToAdHocRecipients
+            ArchiveRedirectUrl                                             = $SPOTenantSettings.ArchiveRedirectUrl
+            AuthContextResilienceMode                                      = $SPOTenantSettings.AuthContextResilienceMode.ToString()
+            BlockDownloadFileTypeIds                                       = Get-M365DSCArrayFromProperty -PropertyValue $SPOTenantSettings.BlockDownloadFileTypeIds -ElementType ([System.String])
+            BlockDownloadFileTypePolicy                                    = $SPOTenantSettings.BlockDownloadFileTypePolicy
+            BlockSendLabelMismatchEmail                                    = $SPOTenantSettings.BlockSendLabelMismatchEmail
+            CommentsOnSitePagesDisabled                                    = $SPOTenantSettings.CommentsOnSitePagesDisabled
+            ConditionalAccessPolicyErrorHelpLink                           = $SPOTenantSettings.ConditionalAccessPolicyErrorHelpLink
+            ContentTypeSyncSiteTemplatesList                               = Get-M365DSCArrayFromProperty -PropertyValue $SPOTenantSettings.ContentTypeSyncSiteTemplatesList -ElementType ([System.String])
+            CoreRequestFilesLinkExpirationInDays                           = $SPOTenantSettings.CoreRequestFilesLinkExpirationInDays
+            CoreRequestFilesLinkEnabled                                    = $SPOTenantSettings.CoreRequestFilesLinkEnabled
+            CoreBlockGuestsAsSiteAdmin                                     = $SPOTenantSettings.CoreBlockGuestsAsSiteAdmin.ToString()
+            ContentSecurityPolicyEnforcement                               = $SPOTenantSettings.ContentSecurityPolicyEnforcement
+            CustomizedExternalSharingServiceUrl                            = $SPOTenantSettings.CustomizedExternalSharingServiceUrl
+            DefaultOneDriveInformationBarrierMode                          = $SPOTenantSettings.DefaultOneDriveInformationBarrierMode
+            DisableCustomAppAuthentication                                 = $SPOTenantSettings.DisableCustomAppAuthentication
+            DisableDocumentLibraryDefaultLabeling                          = $SPOTenantSettings.DisableDocumentLibraryDefaultLabeling
+            DisableSpacesActivation                                        = $SPOTenantSettings.DisableSpacesActivation
+            DisableVivaConnectionsAnalytics                                = $SPOTenantSettings.DisableVivaConnectionsAnalytics
+            DisabledAdaptiveCardExtensionIds                               = Get-M365DSCArrayFromProperty -PropertyValue $SPOTenantSettings.DisabledAdaptiveCardExtensionIds -ElementType ([System.String])
+            DisabledModernListTemplateIds                                  = [System.String[]]$SPOTenantSettings.DisabledModernListTemplateIds
+            DisabledWebPartIds                                             = [System.String[]]$SPOTenantSettings.DisabledWebPartIds
+            DisablePersonalListCreation                                    = $SPOTenantSettings.DisablePersonalListCreation
+            DisplayNamesOfFileViewersInSpo                                 = $SPOTenantSettings.DisplayNamesOfFileViewersInSpo
+            EnableDiscoverableByOrganizationForVideos                      = $SPOTenantSettings.EnableDiscoverableByOrganizationForVideos
+            EnableAIPIntegration                                           = $SPOTenantSettings.EnableAIPIntegration
+            EnableMediaReactions                                           = $SPOTenantSettings.EnableMediaReactions
+            EnableNotificationsSubscriptions                               = $SPOTenantSettings.EnableNotificationsSubscriptions
+            EnableSensitivityLabelForPDF                                   = $SPOTenantSettings.EnableSensitivityLabelForPDF
+            EnforceRequestDigest                                           = $SPOTenantSettings.EnforceRequestDigest
+            # TODO: Add GroupId lookup
+            ExcludedBlockDownloadGroupIds                                  = Get-M365DSCArrayFromProperty -PropertyValue $SPOTenantSettings.ExcludedBlockDownloadGroupIds -ElementType ([System.String])
+            FilePickerExternalImageSearchEnabled                           = $SPOTenantSettings.FilePickerExternalImageSearchEnabled
+            ExpireVersionsAfterDays                                        = $SPOTenantSettings.ExpireVersionsAfterDays
+            HideDefaultThemes                                              = $SPOTenantSettings.HideDefaultThemes
+            HideSyncButtonOnDocLib                                         = $SPOTenantSettings.HideSyncButtonOnDocLib
+            HideSyncButtonOnTeamSite                                       = $SPOTenantSettings.HideSyncButtonOnTeamSite
+            IBImplicitGroupBased                                           = $SPOTenantSettings.IBImplicitGroupBased
+            IncludeAtAGlanceInShareEmails                                  = $SPOTenantSettings.IncludeAtAGlanceInShareEmails
+            IsCollabMeetingNotesFluidEnabled                               = $SPOTenantSettings.IsCollabMeetingNotesFluidEnabled
+            IsDataAccessInCardDesignerEnabled                              = $SPOTenantSettings.IsDataAccessInCardDesignerEnabled
+            IsEnableAppAuthPopUpEnabled                                    = $SPOTenantSettings.IsEnableAppAuthPopUpEnabled
+            EnableAutoExpirationVersionTrim                                = $SPOTenantSettings.EnableAutoExpirationVersionTrim
+            IsFluidEnabled                                                 = $SPOTenantSettings.IsFluidEnabled
+            IsLoopEnabled                                                  = $SPOTenantSettings.IsLoopEnabled
+            IsSharePointAddInsDisabled                                     = $SPOTenantSettings.IsSharePointAddInsDisabled
+            IsWBFluidEnabled                                               = $SPOTenantSettings.IsWBFluidEnabled
+            KnowledgeAgentEnabled                                          = $SPOTenantSettings.KnowledgeAgentEnabled
+            KnowledgeAgentSelectedSitesList                                = Get-M365DSCArrayFromProperty -PropertyValue $SPOTenantSettings.KnowledgeAgentSelectedSitesList -ElementType ([System.String])
+            LegacyBrowserAuthProtocolsEnabled                              = $SPOTenantSettings.LegacyBrowserAuthProtocolsEnabled
+            LegacyAuthProtocolsEnabled                                     = $SPOTenantSettings.LegacyAuthProtocolsEnabled
+            MajorVersionLimit                                              = $SPOTenantSettings.MajorVersionLimit
+            MassDeleteNotificationDisabled                                 = $SPOTenantSettings.MassDeleteNotificationDisabled
+            MarkNewFilesSensitiveByDefault                                 = $SPOTenantSettings.MarkNewFilesSensitiveByDefault
+            MediaTranscription                                             = $SPOTenantSettings.MediaTranscriptionEnabled
+            MediaTranscriptionAutomaticFeatures                            = $SPOTenantSettings.MediaTranscriptionAutomaticFeatures
+            NoAccessRedirectUrl                                            = $SPOTenantSettings.NoAccessRedirectUrl
+            NotificationsInSharePointEnabled                               = $SPOTenantSettings.NotificationsInSharePointEnabled
+            OfficeClientADALDisabled                                       = $SPOTenantSettings.OfficeClientADALDisabled
+            OneDriveBlockGuestsAsSiteAdmin                                 = $SPOTenantSettings.OneDriveBlockGuestsAsSiteAdmin
+            OneDriveRequestFilesLinkEnabled                                = $SPOTenantSettings.OneDriveRequestFilesLinkEnabled
+            OneDriveRequestFilesLinkExpirationInDays                       = $SPOTenantSettings.OneDriveRequestFilesLinkExpirationInDays
+            OwnerAnonymousNotification                                     = $SPOTenantSettings.OwnerAnonymousNotification
+            #PermissiveBrowserFileHandlingOverride                          = $SPOTenantSettings.PermissiveBrowserFileHandlingOverride
+            PublicCdnAllowedFileTypes                                      = $SPOTenantSettings.PublicCdnAllowedFileTypes
+            PublicCdnEnabled                                               = $SPOTenantSettings.PublicCdnEnabled
+            ReduceTempTokenLifetimeEnabled                                 = $SPOTenantSettings.ReduceTempTokenLifetimeEnabled
+            ReduceTempTokenLifetimeValue                                   = $SPOTenantSettings.ReduceTempTokenLifetimeValue
+            RecycleBinRetentionPeriod                                      = $SPOTenantSettings.RecycleBinRetentionPeriod
+            RestrictedAccessControlforSitesErrorHelpLink                   = $SPOTenantSettings.RestrictedAccessControlforSitesErrorHelpLink
+            RequireAcceptingAccountMatchInvitedAccount                     = $SPOTenantSettings.RequireAcceptingAccountMatchInvitedAccount
+            SearchResolveExactEmailOrUPN                                   = $SPOTenantSettings.SearchResolveExactEmailOrUPN
+            ShowOpenInDesktopOptionForSyncedFiles                          = $SPOTenantSettings.ShowOpenInDesktopOptionForSyncedFiles
+            ShowPeoplePickerGroupSuggestionsForIB                          = $SPOTenantSettings.ShowPeoplePickerGroupSuggestionsForIB
+            SignInAccelerationDomain                                       = $SPOTenantSettings.SignInAccelerationDomain
+            SiteOwnerManageLegacyServicePrincipalEnabled                   = $SPOTenantSettings.SiteOwnerManageLegacyServicePrincipalEnabled
+            SocialBarOnSitePagesDisabled                                   = $SPOTenantSettings.SocialBarOnSitePagesDisabled
+            SpecialCharactersStateInFileFolderNames                        = $SPOTenantSettings.SpecialCharactersStateInFileFolderNames
+            StreamLaunchConfig                                             = $SPOTenantSettings.StreamLaunchConfig
+            TlsTokenBindingPolicyValue                                     = $SPOTenantSettings.TlsTokenBindingPolicyValue.ToString()
+            UseFindPeopleInPeoplePicker                                    = $SPOTenantSettings.UseFindPeopleInPeoplePicker
+            UsePersistentCookiesForExplorerView                            = $SPOTenantSettings.UsePersistentCookiesForExplorerView
+            ViewersCanCommentOnMediaDisabled                               = $SPOTenantSettings.ViewersCanCommentOnMediaDisabled
+            Workflow2010Disabled                                           = $SPOTenantSettings.Workflow2010Disabled
+            IsSharePointNewsfeedEnabled                                    = $SPOTenantGraphSettings.IsSharePointNewsfeedEnabled
+            IsSiteCreationEnabled                                          = $SPOTenantGraphSettings.IsSiteCreationEnabled
+            IsSiteCreationUiEnabled                                        = $SPOTenantGraphSettings.IsSiteCreationUiEnabled
+            IsSitePagesCreationEnabled                                     = $SPOTenantGraphSettings.IsSitePagesCreationEnabled
+            TenantDefaultTimezone                                          = $SPOTenantGraphSettings.TenantDefaultTimeZone
+            Credential                                                     = $Credential
+            ApplicationId                                                  = $ApplicationId
+            TenantId                                                       = $TenantId
+            ApplicationSecret                                              = $ApplicationSecret
+            CertificateThumbprint                                          = $CertificateThumbprint
+            CertificatePassword                                            = $CertificatePassword
+            CertificatePath                                                = $CertificatePath
+            ManagedIdentity                                                = $ManagedIdentity.IsPresent
+            Ensure                                                         = 'Present'
+            AccessTokens                                                   = $AccessTokens
         }
+
+        if ($SPOTenantSettings.OneDriveRequestFilesLinkExpirationInDays -eq -1)
+        {
+            $results.Remove('OneDriveRequestFilesLinkExpirationInDays') | Out-Null
+        }
+        if ($SPOTenantSettings.CoreRequestFilesLinkExpirationInDays -eq -1)
+        {
+            $results.Remove('CoreRequestFilesLinkExpirationInDays') | Out-Null
+        }
+
+        return $results
     }
     catch
     {
@@ -405,7 +730,6 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
@@ -414,11 +738,6 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableAzureADB2BIntegration,
-
-        [Parameter()]
-        [ValidateSet('ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly', 'ExistingExternalUserSharingOnly')]
-        [System.String]
-        $OneDriveSharingCapability,
 
         [Parameter()]
         [System.UInt32]
@@ -435,6 +754,15 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $OfficeClientADALDisabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $OneDriveRequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $OneDriveRequestFilesLinkExpirationInDays,
 
         [Parameter()]
         [System.Boolean]
@@ -470,7 +798,32 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AllowCommentsTextOnEmailEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $ApplyAppEnforcedRestrictionsToAdHocRecipients,
+
+        [Parameter()]
+        [System.String]
+        $ArchiveRedirectUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $BlockSendLabelMismatchEmail,
+
+        [Parameter()]
+        [System.Boolean]
+        $CoreRequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $CoreRequestFilesLinkExpirationInDays,
 
         [Parameter()]
         [System.Boolean]
@@ -489,9 +842,183 @@ function Set-TargetResource
         $HideSyncButtonOnTeamSite,
 
         [Parameter()]
+        [System.Boolean]
+        $LegacyBrowserAuthProtocolsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDiscoverableByOrganizationForVideos,
+
+        [Parameter()]
+        [System.String]
+        $RestrictedAccessControlforSitesErrorHelpLink,
+
+        [Parameter()]
+        [System.Boolean]
+        $Workflow2010Disabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $HideSyncButtonOnDocLib,
+
+        [Parameter()]
+        [System.Int32]
+        $StreamLaunchConfig,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableMediaReactions,
+
+        [Parameter()]
+        [System.Boolean]
+        $ContentSecurityPolicyEnforcement,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSpacesActivation,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowAppsBypassOfUnmanagedDevicePolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $DisabledAdaptiveCardExtensionIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNotificationsSubscriptions,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceRequestDigest,
+
+        [Parameter()]
+        [ValidateSet('Audit', 'None', 'PassiveEnforcement', 'StrictEnforcement')]
+        [System.String]
+        $TlsTokenBindingPolicyValue,
+
+        [Parameter()]
+        [ValidateSet('DefaultAAD', 'Disabled', 'Enabled')]
+        [System.String]
+        $AuthContextResilienceMode,
+
+        [Parameter()]
+        [System.String]
+        $AllOrganizationSecurityGroupId,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileArchive,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileArchiveOnNewSitesByDefault,
+
+        [Parameter()]
+        [System.String[]]
+        $ContentTypeSyncSiteTemplatesList,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDocumentLibraryDefaultLabeling,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsEnableAppAuthPopUpEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ExpireVersionsAfterDays,
+
+        [Parameter()]
+        [System.Int32]
+        $MajorVersionLimit,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableAutoExpirationVersionTrim,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVivaConnectionsAnalytics,
+
+        [Parameter()]
+        [ValidateSet('Unspecified', 'On', 'Off')]
+        [System.String]
+        $CoreBlockGuestsAsSiteAdmin,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsWBFluidEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsCollabMeetingNotesFluidEnabled,
+
+        [Parameter()]
+        [ValidateSet('Unspecified', 'On', 'Off')]
+        [System.String]
+        $AllowAnonymousMeetingParticipantsToAccessWhiteboards,
+
+        [Parameter()]
+        [System.Boolean]
+        $IBImplicitGroupBased,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowOpenInDesktopOptionForSyncedFiles,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowPeoplePickerGroupSuggestionsForIB,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReduceTempTokenLifetimeEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ReduceTempTokenLifetimeValue,
+
+        [Parameter()]
+        [System.Boolean]
+        $ViewersCanCommentOnMediaDisabled,
+
+        [Parameter()]
+        [System.String]
+        $ConditionalAccessPolicyErrorHelpLink,
+
+        [Parameter()]
+        [System.String]
+        $CustomizedExternalSharingServiceUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $IncludeAtAGlanceInShareEmails,
+
+        [Parameter()]
+        [System.Boolean]
+        $MassDeleteNotificationDisabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsDataAccessInCardDesignerEnabled,
+
+        [Parameter()]
         [ValidateSet('AllowExternalSharing', 'BlockExternalSharing')]
         [System.String]
         $MarkNewFilesSensitiveByDefault,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $MediaTranscription,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $MediaTranscriptionAutomaticFeatures,
 
         [Parameter()]
         [System.Guid[]]
@@ -512,6 +1039,14 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableAIPIntegration,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableSensitivityLabelForPDF,
+
+        [Parameter()]
+        [System.Boolean]
+        $SiteOwnerManageLegacyServicePrincipalEnabled,
 
         [Parameter()]
         [System.String]
@@ -551,6 +1086,24 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AppBypassInformationBarriers,
+
+        [Parameter()]
+        [ValidateSet('TeamsMeetingRecording')]
+        [System.String[]]
+        $BlockDownloadFileTypeIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $BlockDownloadFileTypePolicy,
+
+        [Parameter()]
+        [ValidateSet('Open', 'Explicit', 'Implicit', 'OwnerModerated', 'Mixed')]
+        [System.String]
+        $DefaultOneDriveInformationBarrierMode,
+
+        [Parameter()]
+        [System.Boolean]
         $DisableCustomAppAuthentication,
 
         [Parameter()]
@@ -566,8 +1119,16 @@ function Set-TargetResource
         $DisplayNamesOfFileViewersInSpo,
 
         [Parameter()]
+        [System.String[]]
+        $ExcludedBlockDownloadGroupIds,
+
+        [Parameter()]
         [System.Boolean]
         $IsLoopEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsSharePointAddInsDisabled,
 
         [Parameter()]
         [System.Boolean]
@@ -586,8 +1147,26 @@ function Set-TargetResource
         $IsSitePagesCreationEnabled,
 
         [Parameter()]
+        [System.Boolean]
+        $KnowledgeAgentEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $KnowledgeAgentSelectedSitesList,
+
+        [Parameter()]
         [System.String]
         $NoAccessRedirectUrl,
+
+        [Parameter()]
+        [ValidateSet('On', 'Off', 'Unspecified')]
+        [System.String]
+        $OneDriveBlockGuestsAsSiteAdmin,
+
+        [Parameter()]
+        [ValidateRange(14, 93)]
+        [System.Int32]
+        $RecycleBinRetentionPeriod,
 
         [Parameter()]
         [System.Boolean]
@@ -646,11 +1225,6 @@ function Set-TargetResource
         return
     }
 
-    if ($PSBoundParameters.ContainsKey('OneDriveSharingCapability'))
-    {
-        Write-Warning -Message "The property 'OneDriveSharingCapability' is deprecated and will be ignored. Please use 'MySiteSharingCapability' in the SPOSharingSettings resource."
-    }
-
     if ($PSBoundParameters.ContainsKey('IsFluidEnabled') -and $PSBoundParameters.ContainsKey('IsLoopEnabled') -and $IsFluidEnabled -ne $IsLoopEnabled)
     {
         Write-Warning -Message "The 'IsFluidEnabled' property is present together with the 'IsLoopEnabled' property but they have different values. Both parameters refer to the same functionality and should be set to the same value if both are specified. Please update your configuration to ensure only one of the parameters is specified in order to avoid unexpected results."
@@ -678,7 +1252,6 @@ function Set-TargetResource
         'DenySelectSGsInODBListInTenant',
         'DenySelectSecurityGroupsInSPSitesList',
         'AllowSelectSecurityGroupsInSPSitesList',
-        'EnableAzureADB2BIntegration',
         'HideSyncButtonOnODB',
         'MobileFriendlyUrlEnabledInTenant'
     )
@@ -754,7 +1327,6 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
@@ -763,11 +1335,6 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableAzureADB2BIntegration,
-
-        [Parameter()]
-        [ValidateSet('ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly', 'ExistingExternalUserSharingOnly')]
-        [System.String]
-        $OneDriveSharingCapability,
 
         [Parameter()]
         [System.UInt32]
@@ -784,6 +1351,15 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $OfficeClientADALDisabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $OneDriveRequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $OneDriveRequestFilesLinkExpirationInDays,
 
         [Parameter()]
         [System.Boolean]
@@ -819,7 +1395,32 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AllowCommentsTextOnEmailEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $ApplyAppEnforcedRestrictionsToAdHocRecipients,
+
+        [Parameter()]
+        [System.String]
+        $ArchiveRedirectUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $BlockSendLabelMismatchEmail,
+
+        [Parameter()]
+        [System.Boolean]
+        $CoreRequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $CoreRequestFilesLinkExpirationInDays,
 
         [Parameter()]
         [System.Boolean]
@@ -838,9 +1439,183 @@ function Test-TargetResource
         $HideSyncButtonOnTeamSite,
 
         [Parameter()]
+        [System.Boolean]
+        $LegacyBrowserAuthProtocolsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableDiscoverableByOrganizationForVideos,
+
+        [Parameter()]
+        [System.String]
+        $RestrictedAccessControlforSitesErrorHelpLink,
+
+        [Parameter()]
+        [System.Boolean]
+        $Workflow2010Disabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $HideSyncButtonOnDocLib,
+
+        [Parameter()]
+        [System.Int32]
+        $StreamLaunchConfig,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableMediaReactions,
+
+        [Parameter()]
+        [System.Boolean]
+        $ContentSecurityPolicyEnforcement,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableSpacesActivation,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowAppsBypassOfUnmanagedDevicePolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $DisabledAdaptiveCardExtensionIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNotificationsSubscriptions,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceRequestDigest,
+
+        [Parameter()]
+        [ValidateSet('Audit', 'None', 'PassiveEnforcement', 'StrictEnforcement')]
+        [System.String]
+        $TlsTokenBindingPolicyValue,
+
+        [Parameter()]
+        [ValidateSet('DefaultAAD', 'Disabled', 'Enabled')]
+        [System.String]
+        $AuthContextResilienceMode,
+
+        [Parameter()]
+        [System.String]
+        $AllOrganizationSecurityGroupId,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileArchive,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileArchiveOnNewSitesByDefault,
+
+        [Parameter()]
+        [System.String[]]
+        $ContentTypeSyncSiteTemplatesList,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableDocumentLibraryDefaultLabeling,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsEnableAppAuthPopUpEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ExpireVersionsAfterDays,
+
+        [Parameter()]
+        [System.Int32]
+        $MajorVersionLimit,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableAutoExpirationVersionTrim,
+
+        [Parameter()]
+        [System.Boolean]
+        $DisableVivaConnectionsAnalytics,
+
+        [Parameter()]
+        [ValidateSet('Unspecified', 'On', 'Off')]
+        [System.String]
+        $CoreBlockGuestsAsSiteAdmin,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsWBFluidEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsCollabMeetingNotesFluidEnabled,
+
+        [Parameter()]
+        [ValidateSet('Unspecified', 'On', 'Off')]
+        [System.String]
+        $AllowAnonymousMeetingParticipantsToAccessWhiteboards,
+
+        [Parameter()]
+        [System.Boolean]
+        $IBImplicitGroupBased,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowOpenInDesktopOptionForSyncedFiles,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowPeoplePickerGroupSuggestionsForIB,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReduceTempTokenLifetimeEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ReduceTempTokenLifetimeValue,
+
+        [Parameter()]
+        [System.Boolean]
+        $ViewersCanCommentOnMediaDisabled,
+
+        [Parameter()]
+        [System.String]
+        $ConditionalAccessPolicyErrorHelpLink,
+
+        [Parameter()]
+        [System.String]
+        $CustomizedExternalSharingServiceUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $IncludeAtAGlanceInShareEmails,
+
+        [Parameter()]
+        [System.Boolean]
+        $MassDeleteNotificationDisabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsDataAccessInCardDesignerEnabled,
+
+        [Parameter()]
         [ValidateSet('AllowExternalSharing', 'BlockExternalSharing')]
         [System.String]
         $MarkNewFilesSensitiveByDefault,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $MediaTranscription,
+
+        [Parameter()]
+        [ValidateSet('Disabled', 'Enabled')]
+        [System.String]
+        $MediaTranscriptionAutomaticFeatures,
 
         [Parameter()]
         [System.Guid[]]
@@ -861,6 +1636,14 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableAIPIntegration,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableSensitivityLabelForPDF,
+
+        [Parameter()]
+        [System.Boolean]
+        $SiteOwnerManageLegacyServicePrincipalEnabled,
 
         [Parameter()]
         [System.String]
@@ -900,6 +1683,24 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AppBypassInformationBarriers,
+
+        [Parameter()]
+        [ValidateSet('TeamsMeetingRecording')]
+        [System.String[]]
+        $BlockDownloadFileTypeIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $BlockDownloadFileTypePolicy,
+
+        [Parameter()]
+        [ValidateSet('Open', 'Explicit', 'Implicit', 'OwnerModerated', 'Mixed')]
+        [System.String]
+        $DefaultOneDriveInformationBarrierMode,
+
+        [Parameter()]
+        [System.Boolean]
         $DisableCustomAppAuthentication,
 
         [Parameter()]
@@ -915,8 +1716,16 @@ function Test-TargetResource
         $DisplayNamesOfFileViewersInSpo,
 
         [Parameter()]
+        [System.String[]]
+        $ExcludedBlockDownloadGroupIds,
+
+        [Parameter()]
         [System.Boolean]
         $IsLoopEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsSharePointAddInsDisabled,
 
         [Parameter()]
         [System.Boolean]
@@ -935,8 +1744,26 @@ function Test-TargetResource
         $IsSitePagesCreationEnabled,
 
         [Parameter()]
+        [System.Boolean]
+        $KnowledgeAgentEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $KnowledgeAgentSelectedSitesList,
+
+        [Parameter()]
         [System.String]
         $NoAccessRedirectUrl,
+
+        [Parameter()]
+        [ValidateSet('On', 'Off', 'Unspecified')]
+        [System.String]
+        $OneDriveBlockGuestsAsSiteAdmin,
+
+        [Parameter()]
+        [ValidateRange(14, 93)]
+        [System.Int32]
+        $RecycleBinRetentionPeriod,
 
         [Parameter()]
         [System.Boolean]
@@ -993,11 +1820,6 @@ function Test-TargetResource
     {
         Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
         return
-    }
-
-    if ($PSBoundParameters.ContainsKey('OneDriveSharingCapability'))
-    {
-        Write-Warning -Message "The property 'OneDriveSharingCapability' is deprecated and will be ignored. Please use 'MySiteSharingCapability' in the SPOSharingSettings resource."
     }
 
     #region Telemetry
@@ -1145,7 +1967,7 @@ function Get-CompareParameters
     param()
 
     return @{
-        ExcludedProperties = @('OneDriveSharingCapability')
+        ExcludedProperties = @()
     }
 }
 

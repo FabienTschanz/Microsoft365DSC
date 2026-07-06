@@ -4,10 +4,23 @@
 
 * AADPIMGroupSetting
   * Improved performance with batch requests.
+* SPOSharingSettings
+  * Added properties `AllowGuestUserShareToUsersNotInSiteCollection`, `CoreDefaultShareLinkRole`, `CoreDefaultShareLinkScope`, `CoreLoopSharingCapability`, `CoreLoopDefaultSharingLinkScope`, `CoreLoopDefaultSharingLinkRole`, `CoreDefaultLinkToExistingAccess`, `GuestSharingGroupAllowListInTenantByPrincipalIdentity`, `OneDriveLoopSharingCapability`, `OneDriveLoopDefaultSharingLinkScope`, `OneDriveLoopDefaultSharingLinkRole`, `OneDriveOrganizationSharingLinkMaxExpirationInDays`, `OneDriveOrganizationSharingLinkRecommendedExpirationInDays`, `RestrictExternalSharing`, `WhoCanShareAllowListInTenant`.
+* SPOSite
+  * Added properties `AllowFileArchive`, `AllowFileArchiveOnNewSitesByDefault`, `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`, `DefaultShareLinkScope`, `DefaultShareLinkRole`, `DisableClassicPageBaselineSecurityMode`, `HidePeoplePreviewingFiles`, `HidePeopleWhoHaveListsOpen`, `InheritVersionPolicyFromTenant`, `ListsShowHeaderAndNavigation`, `LoopDefaultSharingLinkScope`, `LoopDefaultSharingLinkRole`, `OverrideSharingCapability`, `RequestFilesLinkEnabled`, `RequestFilesLinkExpirationInDays`, `ReadOnlyForUnmanagedDevices`, `RestrictContentOrgWideSearch`, `RestrictedAccessControl`, `RestrictedAccessControlGroups`.
+* SPOTenantSettings
+  * Added properties `AllowAnonymousMeetingParticipantsToAccessWhiteboards`, `AllowAppsBypassOfUnmanagedDevicePolicy`, `AllowCommentsTextOnEmailEnabled`, `AllowFileArchive`,  `AllOrganizationSecurityGroupId`, `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`, `AppBypassInformationBarriers`, `ArchiveRedirectUrl`, `AuthContextResilienceMode`, `BlockDownloadFileTypeIds`, `BlockDownloadFileTypePolicy`, `BlockSendLabelMismatchEmail`, `ConditionalAccessPolicyErrorHelpLink`, `ContentSecurityPolicyEnforcement`, `ContentTypeSyncSiteTemplatesList`, `CoreBlockGuestsAsSiteAdmin`, `CoreRequestFilesLinkEnabled`, `CoreRequestFilesLinkExpirationInDays`, `CustomizedExternalSharingServiceUrl`, `DefaultOneDriveInformationBarrierMode`, `DisabledAdaptiveCardExtensionIds`, `DisableDocumentLibraryDefaultLabeling`, `DisableSpacesActivation`, `DisableVivaConnectionsAnalytics`, `EnableAutoExpirationVersionTrim`, `EnableDiscoverableByOrganizationForVideos`, `EnableMediaReactions`, `EnableNotificationsSubscriptions`, `EnableSensitivityLabelForPDF`, `EnforceRequestDigest`, `ExpireVersionsAfterDays`, `HideSyncButtonOnDocLib`, `HideSyncButtonOnODB`, `HideSyncButtonOnTeamSite`, `IBImplicitGroupBased`, `IncludeAtAGlanceInShareEmails`, `IsCollabMeetingNotesFluidEnabled`, `IsDataAccessInCardDesignerEnabled`, `IsEnableAppAuthPopUpEnabled`, `IsSharePointAddInsDisabled`, `IsWBFluidEnabled`, `KnowledgeAgentEnabled`, `KnowledgeAgentSelectedSitesList`, `LegacyBrowserAuthProtocolsEnabled`, `MajorVersionLimit`, `MassDeleteNotificationDisabled`,  `MediaTranscription`, `MediaTranscriptionAutomaticFeatures`, `OneDriveBlockGuestsAsSiteAdmin`, `OneDriveRequestFilesLinkEnabled`, `OneDriveRequestFilesLinkExpirationInDays`, `RecycleBinRetentionPeriod`, `ReduceTempTokenLifetimeEnabled`, `ReduceTempTokenLifetimeValue`, `RestrictedAccessControlforSitesErrorHelpLink`, `ShowPeoplePickerGroupSuggestionsForIB`, `ShowOpenInDesktopOptionForSyncedFiles`, `SiteOwnerManageLegacyServicePrincipalEnabled`, `StreamLaunchConfig`, `TlsTokenBindingPolicyValue`, `ViewersCanCommentOnMediaDisabled`, `Workflow2010Disabled`.
+  * [BREAKING CHANGE] Removed property `OneDriveSharingCapability`. Is is replaced
+    with `MySiteSharingCapability` in the `SPOSharingSettings` resource.
+* SPOUserProfileProperty
+  * Updated fetching of user profile properties.
 * M365DSCGraphShim
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
+* M365DSCModuleMgmt
+  * Added automatic dependency update for both Windows PowerShell and PowerShell 7.
 * DEPENDENCIES
-  * Added `Mgx` with version `1.0.2`.
+  * Added `Mgx` with version 1.0.2.
+  * Updated `PnP.PowerShell` to version 3.2.0.
 * MISC
   * Invoke PowerShell 7 for all resources if not already running under it.
 

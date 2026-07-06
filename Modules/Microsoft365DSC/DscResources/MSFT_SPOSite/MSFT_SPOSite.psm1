@@ -50,7 +50,15 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AllowFileArchive,
+
+        [Parameter()]
+        [System.Boolean]
         $AllowSelfServiceUpgrade,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -77,12 +85,77 @@ function Get-TargetResource
         $DisableCompanyWideSharingLinks,
 
         [Parameter()]
+        [System.Boolean]
+        $ListsShowHeaderAndNavigation,
+
+        [Parameter()]
         [System.UInt32]
         $LocaleId,
 
         [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $DefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $DefaultShareLinkScope,
+
+        [Parameter()]
         [System.Boolean]
         $DenyAddAndCustomizePages,
+
+        [Parameter()]
+        [System.Boolean]
+        $HidePeoplePreviewingFiles,
+
+        [Parameter()]
+        [System.Boolean]
+        $HidePeopleWhoHaveListsOpen,
+
+        [Parameter()]
+        [System.Boolean]
+        $InheritVersionPolicyFromTenant,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $LoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $LoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [System.Boolean]
+        $OverrideSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $RequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $RequestFilesLinkExpirationInDays,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReadOnlyForUnmanagedDevices,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictContentOrgWideSearch,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictedAccessControl,
+
+        [Parameter()]
+        [System.String[]]
+        $RestrictedAccessControlGroups,
 
         [Parameter()]
         [System.Boolean]
@@ -250,43 +323,60 @@ function Get-TargetResource
         }
 
         return @{
-            Url                                         = $Url
-            Title                                       = $site.Title
-            Template                                    = $site.Template
-            TimeZoneId                                  = $Script:PnPWeb.RegionalSettings.TimeZone.Id
-            HubUrl                                      = $CurrentHubUrl
-            Classification                              = $site.Classification
-            DisableFlows                                = $DisableFlowValue
-            SharingCapability                           = $site.SharingCapability
-            StorageMaximumLevel                         = $site.StorageQuota
-            StorageWarningLevel                         = $site.StorageQuotaWarningLevel
-            AllowSelfServiceUpgrade                     = $site.AllowSelfServiceUpgrade
-            Owner                                       = $siteOwnerEmail
-            CommentsOnSitePagesDisabled                 = $site.CommentsOnSitePagesDisabled
-            DefaultLinkPermission                       = $site.DefaultLinkPermission
-            DefaultSharingLinkType                      = $site.DefaultSharingLinkType
-            DisableAppViews                             = $site.DisableAppViews
-            DisableCompanyWideSharingLinks              = $site.DisableCompanyWideSharingLinks
-            LocaleId                                    = $site.LocaleId
-            RestrictedToRegion                          = $site.RestrictedToGeo
-            SocialBarOnSitePagesDisabled                = $site.SocialBarOnSitePagesDisabled
-            DenyAddAndCustomizePages                    = $DenyAddAndCustomizePagesValue
-            SharingAllowedDomainList                    = $site.SharingAllowedDomainList
-            SharingBlockedDomainList                    = $site.SharingBlockedDomainList
-            SharingDomainRestrictionMode                = $site.SharingDomainRestrictionMode
-            ShowPeoplePickerSuggestionsForGuestUsers    = $site.ShowPeoplePickerSuggestionsForGuestUsers
-            AnonymousLinkExpirationInDays               = $site.AnonymousLinkExpirationInDays
-            OverrideTenantAnonymousLinkExpirationPolicy = $site.OverrideTenantAnonymousLinkExpirationPolicy
-            Ensure                                      = 'Present'
-            Credential                                  = $Credential
-            ApplicationId                               = $ApplicationId
-            TenantId                                    = $TenantId
-            ApplicationSecret                           = $ApplicationSecret
-            CertificateThumbprint                       = $CertificateThumbprint
-            CertificatePath                             = $CertificatePath
-            CertificatePassword                         = $CertificatePassword
-            ManagedIdentity                             = $ManagedIdentity.IsPresent
-            AccessTokens                                = $AccessTokens
+            Url                                                            = $Url
+            Title                                                          = $site.Title
+            Template                                                       = $site.Template
+            TimeZoneId                                                     = $Script:PnPWeb.RegionalSettings.TimeZone.Id
+            HubUrl                                                         = $CurrentHubUrl
+            Classification                                                 = $site.Classification
+            DisableFlows                                                   = $DisableFlowValue
+            SharingCapability                                              = $site.SharingCapability
+            StorageMaximumLevel                                            = $site.StorageQuota
+            StorageWarningLevel                                            = $site.StorageQuotaWarningLevel
+            AllowFileArchive                                               = $site.AllowFileArchive
+            AllowSelfServiceUpgrade                                        = $site.AllowSelfServiceUpgrade
+            AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled = $site.AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled
+            Owner                                                          = $siteOwnerEmail
+            CommentsOnSitePagesDisabled                                    = $site.CommentsOnSitePagesDisabled
+            DefaultLinkPermission                                          = $site.DefaultLinkPermission
+            DefaultShareLinkRole                                           = $site.DefaultShareLinkRole.ToString()
+            DefaultShareLinkScope                                          = $site.DefaultShareLinkScope.ToString()
+            DefaultSharingLinkType                                         = $site.DefaultSharingLinkType
+            DisableAppViews                                                = $site.DisableAppViews
+            DisableCompanyWideSharingLinks                                 = $site.DisableCompanyWideSharingLinks
+            HidePeoplePreviewingFiles                                      = $site.HidePeoplePreviewingFiles
+            HidePeopleWhoHaveListsOpen                                     = $site.HidePeopleWhoHaveListsOpen
+            InheritVersionPolicyFromTenant                                 = $site.InheritVersionPolicyFromTenant
+            ListsShowHeaderAndNavigation                                   = $site.ListsShowHeaderAndNavigation
+            LoopDefaultSharingLinkRole                                     = $site.LoopDefaultSharingLinkRole.ToString()
+            LoopDefaultSharingLinkScope                                    = $site.LoopDefaultSharingLinkScope.ToString()
+            LocaleId                                                       = $site.LocaleId
+            RestrictedToRegion                                             = $site.RestrictedToGeo
+            SocialBarOnSitePagesDisabled                                   = $site.SocialBarOnSitePagesDisabled
+            DenyAddAndCustomizePages                                       = $DenyAddAndCustomizePagesValue
+            OverrideSharingCapability                                      = $site.OverrideSharingCapability
+            ReadOnlyForUnmanagedDevices                                    = $site.ReadOnlyForUnmanagedDevices
+            RequestFilesLinkExpirationInDays                               = $site.RequestFilesLinkExpirationInDays
+            RestrictContentOrgWideSearch                                   = $site.RestrictContentOrgWideSearch
+            RestrictedAccessControl                                        = $site.RestrictedAccessControl
+            # TODO: Resolve Groups
+            RestrictedAccessControlGroups                                  = Get-M365DSCArrayFromProperty -PropertyValue $site.RestrictedAccessControlGroups -ElementType ([System.String])
+            SharingAllowedDomainList                                       = $site.SharingAllowedDomainList
+            SharingBlockedDomainList                                       = $site.SharingBlockedDomainList
+            SharingDomainRestrictionMode                                   = $site.SharingDomainRestrictionMode
+            ShowPeoplePickerSuggestionsForGuestUsers                       = $site.ShowPeoplePickerSuggestionsForGuestUsers
+            AnonymousLinkExpirationInDays                                  = $site.AnonymousLinkExpirationInDays
+            OverrideTenantAnonymousLinkExpirationPolicy                    = $site.OverrideTenantAnonymousLinkExpirationPolicy
+            Ensure                                                         = 'Present'
+            Credential                                                     = $Credential
+            ApplicationId                                                  = $ApplicationId
+            TenantId                                                       = $TenantId
+            ApplicationSecret                                              = $ApplicationSecret
+            CertificateThumbprint                                          = $CertificateThumbprint
+            CertificatePath                                                = $CertificatePath
+            CertificatePassword                                            = $CertificatePassword
+            ManagedIdentity                                                = $ManagedIdentity.IsPresent
+            AccessTokens                                                   = $AccessTokens
         }
     }
     catch
@@ -349,7 +439,15 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AllowFileArchive,
+
+        [Parameter()]
+        [System.Boolean]
         $AllowSelfServiceUpgrade,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -376,12 +474,77 @@ function Set-TargetResource
         $DisableCompanyWideSharingLinks,
 
         [Parameter()]
+        [System.Boolean]
+        $ListsShowHeaderAndNavigation,
+
+        [Parameter()]
         [System.UInt32]
         $LocaleId,
 
         [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $DefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $DefaultShareLinkScope,
+
+        [Parameter()]
         [System.Boolean]
         $DenyAddAndCustomizePages,
+
+        [Parameter()]
+        [System.Boolean]
+        $HidePeoplePreviewingFiles,
+
+        [Parameter()]
+        [System.Boolean]
+        $HidePeopleWhoHaveListsOpen,
+
+        [Parameter()]
+        [System.Boolean]
+        $InheritVersionPolicyFromTenant,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $LoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $LoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [System.Boolean]
+        $OverrideSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $RequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $RequestFilesLinkExpirationInDays,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReadOnlyForUnmanagedDevices,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictContentOrgWideSearch,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictedAccessControl,
+
+        [Parameter()]
+        [System.String[]]
+        $RestrictedAccessControlGroups,
 
         [Parameter()]
         [System.Boolean]
@@ -586,7 +749,14 @@ function Set-TargetResource
         }
         $UpdateParams = @{
             Url                                         = $Url
+            AllowFileArchive                            = $AllowFileArchive
+            AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled = $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled
             DisableFlows                                = $DisableFlowsValue
+            InheritVersionPolicyFromTenant              = $InheritVersionPolicyFromTenant
+            OverrideSharingCapability                   = $OverrideSharingCapability
+            ReadOnlyForUnmanagedDevices                 = $ReadOnlyForUnmanagedDevices
+            RestrictContentOrgWideSearch                = $RestrictContentOrgWideSearch
+            RestrictedAccessControl                     = $RestrictedAccessControl
             SharingCapability                           = $SharingCapability
             StorageMaximumLevel                         = $StorageMaximumLevel
             StorageWarningLevel                         = $StorageWarningLevel
@@ -595,9 +765,16 @@ function Set-TargetResource
             Owners                                      = $Owner
             CommentsOnSitePagesDisabled                 = $CommentsOnSitePagesDisabled
             DefaultLinkPermission                       = $DefaultLinkPermission
+            DefaultShareLinkRole                        = $DefaultShareLinkRole
+            DefaultShareLinkScope                       = $DefaultShareLinkScope
             DefaultSharingLinkType                      = $DefaultSharingLinkType
             DisableAppViews                             = $DisableAppViews
             DisableCompanyWideSharingLinks              = $DisableCompanyWideSharingLinks
+            ListsShowHeaderAndNavigation                = $ListsShowHeaderAndNavigation
+            LoopDefaultSharingLinkRole                  = $LoopDefaultSharingLinkRole
+            LoopDefaultSharingLinkScope                 = $LoopDefaultSharingLinkScope
+            RequestFilesLinkEnabled                     = $RequestFilesLinkEnabled
+            RequestFilesLinkExpirationInDays            = $RequestFilesLinkExpirationInDays
             #LCID Cannot be set after a Template has been applied;
             #LocaleId                       = $LocaleId
             RestrictedToGeo                             = $RestrictedToRegion
@@ -612,6 +789,27 @@ function Set-TargetResource
         }
         $UpdateParams = Remove-NullEntriesFromHashtable -Hash $UpdateParams
 
+        if ($PSBoundParameters.ContainsKey('RestrictedAccessControl'))
+        {
+            $diff = Compare-Object -ReferenceObject $RestrictedAccessControlGroups -DifferenceObject $CurrentValues.RestrictedAccessControl
+            $groupsToAdd = @()
+            $groupsToRemove = @()
+            foreach ($delta in $diff)
+            {
+                if ($delta.SideIndicator -eq "<=")
+                {
+                    $groupsToAdd += $delta.InputObject
+                }
+                elseif ($delta.SideIndicator -eq "=>")
+                {
+                    $groupsToRemove += $delta.InputObject
+                }
+            }
+
+            $UpdateParams.Add('RemoveRestrictedAccessControlGroups', $groupsToRemove)
+            $UpdateParams.Add('AddRestrictedAccessControlGroups', $groupsToAdd)
+        }
+
         $UpdateParams.Add('StorageQuota', $StorageMaximumLevel)
         $UpdateParams.Remove('StorageMaximumLevel') | Out-Null
         $UpdateParams.Add('StorageQuotaWarningLevel', $StorageWarningLevel)
@@ -621,8 +819,9 @@ function Set-TargetResource
 
         Set-PnPTenantSite @UpdateParams -ErrorAction Stop
 
-        $UpdateParams = @{}
         $UpdateParams = @{
+            HidePeoplePreviewingFiles    = $HidePeoplePreviewingFiles
+            HidePeopleWhoHaveListsOpen   = $HidePeopleWhoHaveListsOpen
             SocialBarOnSitePagesDisabled = $SocialBarOnSitePagesDisabled
         }
         $UpdateParams = Remove-NullEntriesFromHashtable -Hash $UpdateParams
@@ -743,7 +942,15 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AllowFileArchive,
+
+        [Parameter()]
+        [System.Boolean]
         $AllowSelfServiceUpgrade,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -770,12 +977,77 @@ function Test-TargetResource
         $DisableCompanyWideSharingLinks,
 
         [Parameter()]
+        [System.Boolean]
+        $ListsShowHeaderAndNavigation,
+
+        [Parameter()]
         [System.UInt32]
         $LocaleId,
 
         [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $DefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $DefaultShareLinkScope,
+
+        [Parameter()]
         [System.Boolean]
         $DenyAddAndCustomizePages,
+
+        [Parameter()]
+        [System.Boolean]
+        $HidePeoplePreviewingFiles,
+
+        [Parameter()]
+        [System.Boolean]
+        $HidePeopleWhoHaveListsOpen,
+
+        [Parameter()]
+        [System.Boolean]
+        $InheritVersionPolicyFromTenant,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $LoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $LoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [System.Boolean]
+        $OverrideSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $RequestFilesLinkEnabled,
+
+        [Parameter()]
+        [ValidateRange(0, 730)]
+        [System.Int32]
+        $RequestFilesLinkExpirationInDays,
+
+        [Parameter()]
+        [System.Boolean]
+        $ReadOnlyForUnmanagedDevices,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictContentOrgWideSearch,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictedAccessControl,
+
+        [Parameter()]
+        [System.String[]]
+        $RestrictedAccessControlGroups,
 
         [Parameter()]
         [System.Boolean]

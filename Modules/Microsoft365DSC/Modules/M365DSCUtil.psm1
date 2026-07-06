@@ -147,9 +147,12 @@ function Get-M365DSCArrayFromProperty
     )
 
     $array = [System.Array]::CreateInstance($ElementType, 0)
-    foreach ($item in $PropertyValue)
+    if (-not [System.String]::IsNullOrEmpty($PropertyValue))
     {
-        $array += $item
+        foreach ($item in $PropertyValue)
+        {
+            $array += $item
+        }
     }
 
     ,$array
@@ -1777,12 +1780,34 @@ function Invoke-PowerShellCoreResource
         Initialize-PowerShellCoreSession
     }
 
-    $output = Invoke-Command -Session $PSCoreSession -ScriptBlock {
+    $output = Invoke-Command -Session $Script:PSCoreSession -ScriptBlock {
         Import-Module -Name $using:Path
         & $using:FunctionName @using:Parameters
     }
 
     return $output
+}
+
+function Get-PowerShellSession
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.Runspaces.PSSession])]
+    param
+    (
+        [Parameter(Mandatory = $false)]
+        [ValidateSet('PowerShell7', 'WindowsPowerShell')]
+        [System.String]
+        $PowerShellVersion
+    )
+
+    if ($PowerShellVersion -eq 'WindowsPowerShell')
+    {
+        return $Script:WinPSSession
+    }
+    else
+    {
+        return $Script:PSCoreSession
+    }
 }
 
 <#
@@ -1828,6 +1853,54 @@ function Initialize-PowerShellCoreSession
     catch [System.Management.Automation.Remoting.PSRemotingTransportException]
     {
         throw "The function 'Initialize-PowerShellCoreSession' requires PowerShell Core to be installed and WinRM to be configured. Please install PowerShell Core and run 'Enable-PSRemoting -Force -SkipNetworkProfileCheck'."
+    }
+    catch
+    {
+        throw
+    }
+}
+
+<#
+.DESCRIPTION
+    Initializes a Windows PowerShell session.
+
+.FUNCTIONALITY
+    Private
+
+.EXAMPLE
+    Initialize-WindowsPowerShellSession
+#>
+function Initialize-WindowsPowerShellSession
+{
+    [CmdletBinding()]
+    param ()
+
+    if ($script:WinPSSessionInitialized)
+    {
+        return
+    }
+
+    if ($PSEdition -eq 'Core' -and -not $IsWindows)
+    {
+        throw "The function 'Initialize-WindowsPowerShellSession' is only supported on Windows."
+    }
+
+    if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+    {
+        throw "The function 'Initialize-WindowsPowerShellSession' requires administrative privileges. Either run the current session with administrative privileges or run the command directly in Windows PowerShell."
+    }
+
+    try
+    {
+        $script:WinPSSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess -ErrorAction Stop
+        Invoke-Command -Session $script:WinPSSession -ScriptBlock {
+            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
+        }
+        $script:WinPSSessionInitialized = $true
+    }
+    catch [System.Management.Automation.Remoting.PSRemotingTransportException]
+    {
+        throw "The function 'Initialize-WindowsPowerShellSession' requires Windows PowerShell 5.1 to be installed and WinRM to be configured. Please run 'Enable-PSRemoting -Force -SkipNetworkProfileCheck'."
     }
     catch
     {
@@ -2412,6 +2485,8 @@ Export-ModuleMember -Function @(
     'Get-M365DSCWorkloadForResource',
     'Get-TeamByName',
     'Initialize-M365DSCAllResourcesDictionary',
+    'Initialize-PowerShellCoreSession',
+    'Initialize-WindowsPowerShellSession',
     'Install-M365DSCDevBranch',
     'Invoke-M365DSCGraphBatchRequest',
     'Invoke-PowerShellCoreResource',

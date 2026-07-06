@@ -96,14 +96,29 @@ function Get-TargetResource
         {
             return $nullReturn
         }
-        $currentProperties = $currentProperties.UserProfileProperties
-        $propertiesValue = @()
 
+        # Remove generic properties
+        $currentProperties.Remove('AccountName') | Out-Null
+        $currentProperties.Remove('DirectReports') | Out-Null
+        $currentProperties.Remove('DisplayName') | Out-Null
+        $currentProperties.Remove('Email') | Out-Null
+        $currentProperties.Remove('DirectReports') | Out-Null
+        $currentProperties.Remove('ExtendedManagers') | Out-Null
+        $currentProperties.Remove('ExtendedReports') | Out-Null
+        $currentProperties.Remove('IsFollowed') | Out-Null
+        $currentProperties.Remove('LatestPost') | Out-Null
+        $currentProperties.Remove('Peers') | Out-Null
+        $currentProperties.Remove('PersonalSiteHostUrl') | Out-Null
+        $currentProperties.Remove('PersonalUrl') | Out-Null
+        $currentProperties.Remove('PictureUrl') | Out-Null
+        $currentProperties.Remove('UserUrl') | Out-Null
+
+        $propertiesValue = @()
         foreach ($key in $currentProperties.Keys)
         {
             $convertedProperty = [ordered]@{
                 Key   = $Key
-                Value = $Value
+                Value = $currentProperties[$Key]
             }
             $propertiesValue += $convertedProperty
         }

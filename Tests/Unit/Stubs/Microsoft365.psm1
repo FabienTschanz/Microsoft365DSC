@@ -82104,6 +82104,10 @@ function Add-PnPApp
         $Publish,
 
         [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force,
+
+        [Parameter()]
         [System.Int32]
         $Timeout,
 
@@ -82954,7 +82958,11 @@ function Remove-PnPApp
 
         [Parameter()]
         [PSObject]
-        $Connection
+        $Connection,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force,
     )
 }
 function Remove-PnPGroup
@@ -83429,7 +83437,11 @@ function Set-PnPPropertyBagValue
 
         [Parameter()]
         [System.String]
-        $Key
+        $Key,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 }
 function Set-PnPSearchConfiguration
@@ -84012,10 +84024,6 @@ function Set-PnPTenant
         [Parameter()]
         [System.Boolean]
         $OneDriveRequestFilesLinkEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $UserVoiceForFeedbackEnabled,
 
         [Parameter()]
         [System.Guid[]]

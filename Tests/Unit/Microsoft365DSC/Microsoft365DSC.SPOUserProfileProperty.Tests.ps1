@@ -41,6 +41,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return 'contoso.com'
             }
 
+            Mock -CommandName Get-PnPUserProfileProperty -MockWith {
+                return @{
+                    AccountName = 'john.smith@contoso.com'
+                    MyOldKey = 'MyValue'
+                }
+            }
+
             Mock -CommandName Start-Job -MockWith {
             }
 
@@ -69,13 +76,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                     Ensure     = 'Present'
                 }
-
-                Mock -CommandName Get-PnPUserProfileProperty -MockWith {
-                    return @{
-                        AccountName           = 'john.smith@contoso.com'
-                        UserProfileProperties = @{'MyOldKey' = 'MyValue' }
-                    }
-                }
             }
 
             It 'Should return Present from the Get method' {
@@ -94,17 +94,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                     Ensure     = 'Present'
                 }
-
-                Mock -CommandName Get-PnPUserProfileProperty -MockWith {
-                    return @{
-                        AccountName           = 'john.smith@contoso.com'
-                        UserProfileProperties = @(
-                            @{
-                                MyOldKey = 'MyValue'
-                            }
-                        )
-                    }
-                }
             }
 
             It 'Should return false from the Test method' {
@@ -122,13 +111,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $Global:PartialExportFileName = "$(New-Guid).partial.ps1"
                 $testParams = @{
                     Credential = $Credential
-                }
-
-                Mock -CommandName Get-PnPUserProfileProperty -MockWith {
-                    return @{
-                        AccountName           = 'john.smith@contoso.com'
-                        UserProfileProperties = @{MyOldKey = 'MyValue' }
-                    }
                 }
 
                 Mock -CommandName Get-PnPUser -MockWith {

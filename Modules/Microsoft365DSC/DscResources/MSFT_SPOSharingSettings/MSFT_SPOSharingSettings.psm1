@@ -13,6 +13,16 @@ function Get-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $CoreDefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $CoreDefaultShareLinkScope,
+
+        [Parameter()]
         [System.String]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
         $SharingCapability,
@@ -42,6 +52,14 @@ function Get-TargetResource
         [System.Boolean]
         $EnableGuestSignInAcceleration,
 
+        [Parameter]
+        [System.Boolean]
+        $AllowGuestUserShareToUsersNotInSiteCollection,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowSharingOutsideRestrictedAccessControlGroups,
+
         [Parameter()]
         [System.Boolean]
         $BccExternalSharingInvitations,
@@ -51,12 +69,74 @@ function Get-TargetResource
         $BccExternalSharingInvitationsList,
 
         [Parameter()]
-        [System.Uint32]
+        [System.Boolean]
+        $CoreDefaultLinkToExistingAccess,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $OneDriveLoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateRange(7, 720)]
+        [System.Int32]
+        $OneDriveOrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [ValidateRange(7, 720)]
+        [System.Int32]
+        $OneDriveOrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $CoreLoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $OneDriveLoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $CoreLoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
+        $OneDriveLoopSharingCapability,
+
+        [Parameter()]
+        [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
+        $CoreLoopSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $OneDriveDefaultLinkToExistingAccess,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $OneDriveDefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $OneDriveDefaultShareLinkScope,
+
+        [Parameter()]
+        [System.UInt32]
         $RequireAnonymousLinksExpireInDays,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ExternalUserExpireInDays,
+
+        [Parameter()]
+        [System.String[]]
+        $RestrictExternalSharing,
 
         [Parameter()]
         [System.String[]]
@@ -67,13 +147,13 @@ function Get-TargetResource
         $SharingBlockedDomainList,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AllowList', 'BlockList')]
+        [System.String]
         $SharingDomainRestrictionMode,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'Direct', 'Internal', 'AnonymousAccess')]
+        [System.String]
         $DefaultSharingLinkType,
 
         [Parameter()]
@@ -85,12 +165,16 @@ function Get-TargetResource
         $ExternalUserExpirationRequired,
 
         [Parameter()]
+        [System.String[]]
+        $GuestSharingGroupAllowListInTenantByPrincipalIdentity,
+
+        [Parameter()]
         [System.Boolean]
         $ShowPeoplePickerSuggestionsForGuestUsers,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('View', 'Edit')]
+        [System.String]
         $FileAnonymousLinkType,
 
         [Parameter()]
@@ -103,9 +187,13 @@ function Get-TargetResource
         $NotifyOwnersWhenItemsReshared,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'View', 'Edit')]
+        [System.String]
         $DefaultLinkPermission,
+
+        [Parameter()]
+        [System.String[]]
+        $WhoCanShareAllowListInTenant,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -249,38 +337,58 @@ function Get-TargetResource
             $DefaultLinkPermission = $SPOSharingSettings.DefaultLinkPermission
         }
         $results = @{
-            IsSingleInstance                         = 'Yes'
-            SharingCapability                        = $SPOSharingSettings.SharingCapability.ToString()
-            ShowEveryoneClaim                        = $SPOSharingSettings.ShowEveryoneClaim
-            ShowAllUsersClaim                        = $SPOSharingSettings.ShowAllUsersClaim
-            ShowEveryoneExceptExternalUsersClaim     = $SPOSharingSettings.ShowEveryoneExceptExternalUsersClaim
-            ProvisionSharedWithEveryoneFolder        = $SPOSharingSettings.ProvisionSharedWithEveryoneFolder
-            EnableGuestSignInAcceleration            = $SPOSharingSettings.EnableGuestSignInAcceleration
-            BccExternalSharingInvitations            = $SPOSharingSettings.BccExternalSharingInvitations
-            BccExternalSharingInvitationsList        = $SPOSharingSettings.BccExternalSharingInvitationsList
-            RequireAnonymousLinksExpireInDays        = $SPOSharingSettings.RequireAnonymousLinksExpireInDays
-            ExternalUserExpireInDays                 = $SPOSharingSettings.ExternalUserExpireInDays
-            ExternalUserExpirationRequired           = $SPOSharingSettings.ExternalUserExpirationRequired
-            SharingAllowedDomainList                 = $allowDomains
-            SharingBlockedDomainList                 = $blockDomains
-            SharingDomainRestrictionMode             = $SPOSharingSettings.SharingDomainRestrictionMode.ToString()
-            DefaultSharingLinkType                   = $SPOSharingSettings.DefaultSharingLinkType.ToString()
-            PreventExternalUsersFromResharing        = $SPOSharingSettings.PreventExternalUsersFromResharing
-            ShowPeoplePickerSuggestionsForGuestUsers = $SPOSharingSettings.ShowPeoplePickerSuggestionsForGuestUsers
-            FileAnonymousLinkType                    = $SPOSharingSettings.FileAnonymousLinkType.ToString()
-            FolderAnonymousLinkType                  = $SPOSharingSettings.FolderAnonymousLinkType.ToString()
-            NotifyOwnersWhenItemsReshared            = $SPOSharingSettings.NotifyOwnersWhenItemsReshared
-            DefaultLinkPermission                    = $DefaultLinkPermission
-            Ensure                                   = 'Present'
-            Credential                               = $Credential
-            ApplicationId                            = $ApplicationId
-            TenantId                                 = $TenantId
-            ApplicationSecret                        = $ApplicationSecret
-            CertificateThumbprint                    = $CertificateThumbprint
-            CertificatePath                          = $CertificatePath
-            CertificatePassword                      = $CertificatePassword
-            ManagedIdentity                          = $ManagedIdentity.IsPresent
-            AccessTokens                             = $AccessTokens
+            IsSingleInstance                                           = 'Yes'
+            AllowGuestUserShareToUsersNotInSiteCollection              = $SPOSharingSettings.AllowGuestUserShareToUsersNotInSiteCollection
+            AllowSharingOutsideRestrictedAccessControlGroups           = $SPOSharingSettings.AllowSharingOutsideRestrictedAccessControlGroups
+            CoreDefaultShareLinkRole                                   = $SPOSharingSettings.CoreDefaultShareLinkRole.ToString()
+            CoreDefaultShareLinkScope                                  = $SPOSharingSettings.CoreDefaultShareLinkScope.ToString()
+            SharingCapability                                          = $SPOSharingSettings.SharingCapability.ToString()
+            ShowEveryoneClaim                                          = $SPOSharingSettings.ShowEveryoneClaim
+            ShowAllUsersClaim                                          = $SPOSharingSettings.ShowAllUsersClaim
+            ShowEveryoneExceptExternalUsersClaim                       = $SPOSharingSettings.ShowEveryoneExceptExternalUsersClaim
+            ProvisionSharedWithEveryoneFolder                          = $SPOSharingSettings.ProvisionSharedWithEveryoneFolder
+            EnableGuestSignInAcceleration                              = $SPOSharingSettings.EnableGuestSignInAcceleration
+            BccExternalSharingInvitations                             = $SPOSharingSettings.BccExternalSharingInvitations
+            BccExternalSharingInvitationsList                          = $SPOSharingSettings.BccExternalSharingInvitationsList
+            RequireAnonymousLinksExpireInDays                          = $SPOSharingSettings.RequireAnonymousLinksExpireInDays
+            ExternalUserExpireInDays                                   = $SPOSharingSettings.ExternalUserExpireInDays
+            ExternalUserExpirationRequired                             = $SPOSharingSettings.ExternalUserExpirationRequired
+            # TODO: Look up the principal id
+            GuestSharingGroupAllowListInTenantByPrincipalIdentity      = Get-M365DSCArrayFromProperty -PropertyValue $SPOSharingSettings.GuestSharingGroupAllowListInTenantByPrincipalIdentity -ElementType ([System.String])
+            OneDriveDefaultLinkToExistingAccess                        = $SPOSharingSettings.OneDriveDefaultLinkToExistingAccess
+            OneDriveDefaultShareLinkRole                               = $SPOSharingSettings.OneDriveDefaultShareLinkRole.ToString()
+            OneDriveDefaultShareLinkScope                              = $SPOSharingSettings.OneDriveDefaultShareLinkScope.ToString()
+            OneDriveLoopSharingCapability                              = $SPOSharingSettings.OneDriveLoopSharingCapability.ToString()
+            OneDriveLoopDefaultSharingLinkScope                        = $SPOSharingSettings.OneDriveLoopDefaultSharingLinkScope.ToString()
+            OneDriveLoopDefaultSharingLinkRole                         = $SPOSharingSettings.OneDriveLoopDefaultSharingLinkRole.ToString()
+            OneDriveOrganizationSharingLinkMaxExpirationInDays         = $SPOSharingSettings.OneDriveOrganizationSharingLinkMaxExpirationInDays
+            OneDriveOrganizationSharingLinkRecommendedExpirationInDays = $SPOSharingSettings.OneDriveOrganizationSharingLinkRecommendedExpirationInDays
+            CoreLoopSharingCapability                                  = $SPOSharingSettings.CoreLoopSharingCapability.ToString()
+            CoreLoopDefaultSharingLinkScope                            = $SPOSharingSettings.CoreLoopDefaultSharingLinkScope.ToString()
+            CoreLoopDefaultSharingLinkRole                             = $SPOSharingSettings.CoreLoopDefaultSharingLinkRole.ToString()
+            CoreDefaultLinkToExistingAccess                            = $SPOSharingSettings.CoreDefaultLinkToExistingAccess
+            RestrictExternalSharing                                    = Get-M365DSCArrayFromProperty -PropertyValue $SPOSharingSettings.RestrictExternalSharing -ElementType ([System.String])
+            SharingAllowedDomainList                                   = $allowDomains
+            SharingBlockedDomainList                                   = $blockDomains
+            SharingDomainRestrictionMode                               = $SPOSharingSettings.SharingDomainRestrictionMode.ToString()
+            DefaultSharingLinkType                                     = $SPOSharingSettings.DefaultSharingLinkType.ToString()
+            PreventExternalUsersFromResharing                          = $SPOSharingSettings.PreventExternalUsersFromResharing
+            ShowPeoplePickerSuggestionsForGuestUsers                   = $SPOSharingSettings.ShowPeoplePickerSuggestionsForGuestUsers
+            FileAnonymousLinkType                                      = $SPOSharingSettings.FileAnonymousLinkType.ToString()
+            FolderAnonymousLinkType                                    = $SPOSharingSettings.FolderAnonymousLinkType.ToString()
+            NotifyOwnersWhenItemsReshared                              = $SPOSharingSettings.NotifyOwnersWhenItemsReshared
+            DefaultLinkPermission                                      = $DefaultLinkPermission
+            WhoCanShareAllowListInTenant                               = Get-M365DSCArrayFromProperty -PropertyValue $SPOSharingSettings.WhoCanShareAllowListInTenant -ElementType ([System.String])
+            Ensure                                                     = 'Present'
+            Credential                                                 = $Credential
+            ApplicationId                                              = $ApplicationId
+            TenantId                                                   = $TenantId
+            ApplicationSecret                                          = $ApplicationSecret
+            CertificateThumbprint                                      = $CertificateThumbprint
+            CertificatePath                                            = $CertificatePath
+            CertificatePassword                                        = $CertificatePassword
+            ManagedIdentity                                            = $ManagedIdentity.IsPresent
+            AccessTokens                                               = $AccessTokens
         }
 
         if (-not [System.String]::IsNullOrEmpty($MySiteSharingCapability))
@@ -306,11 +414,20 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
         $IsSingleInstance,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $CoreDefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $CoreDefaultShareLinkScope,
 
         [Parameter()]
         [System.String]
@@ -342,6 +459,14 @@ function Set-TargetResource
         [System.Boolean]
         $EnableGuestSignInAcceleration,
 
+        [Parameter]
+        [System.Boolean]
+        $AllowGuestUserShareToUsersNotInSiteCollection,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowSharingOutsideRestrictedAccessControlGroups,
+
         [Parameter()]
         [System.Boolean]
         $BccExternalSharingInvitations,
@@ -351,12 +476,74 @@ function Set-TargetResource
         $BccExternalSharingInvitationsList,
 
         [Parameter()]
-        [System.Uint32]
+        [System.Boolean]
+        $CoreDefaultLinkToExistingAccess,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $OneDriveLoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateRange(7, 720)]
+        [System.Int32]
+        $OneDriveOrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [ValidateRange(7, 720)]
+        [System.Int32]
+        $OneDriveOrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $CoreLoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $OneDriveLoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $CoreLoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
+        $OneDriveLoopSharingCapability,
+
+        [Parameter()]
+        [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
+        $CoreLoopSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $OneDriveDefaultLinkToExistingAccess,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $OneDriveDefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $OneDriveDefaultShareLinkScope,
+
+        [Parameter()]
+        [System.UInt32]
         $RequireAnonymousLinksExpireInDays,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ExternalUserExpireInDays,
+
+        [Parameter()]
+        [System.String[]]
+        $RestrictExternalSharing,
 
         [Parameter()]
         [System.String[]]
@@ -367,13 +554,13 @@ function Set-TargetResource
         $SharingBlockedDomainList,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AllowList', 'BlockList')]
+        [System.String]
         $SharingDomainRestrictionMode,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'Direct', 'Internal', 'AnonymousAccess')]
+        [System.String]
         $DefaultSharingLinkType,
 
         [Parameter()]
@@ -385,12 +572,16 @@ function Set-TargetResource
         $ExternalUserExpirationRequired,
 
         [Parameter()]
+        [System.String[]]
+        $GuestSharingGroupAllowListInTenantByPrincipalIdentity,
+
+        [Parameter()]
         [System.Boolean]
         $ShowPeoplePickerSuggestionsForGuestUsers,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('View', 'Edit')]
+        [System.String]
         $FileAnonymousLinkType,
 
         [Parameter()]
@@ -403,9 +594,13 @@ function Set-TargetResource
         $NotifyOwnersWhenItemsReshared,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'View', 'Edit')]
+        [System.String]
         $DefaultLinkPermission,
+
+        [Parameter()]
+        [System.String[]]
+        $WhoCanShareAllowListInTenant,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -528,7 +723,7 @@ function Set-TargetResource
             $allowed += $allowedDomain
             $allowed += ' '
         }
-        $CurrentParameters['SharingAllowedDomainList'] = $allowed.trim()
+        $CurrentParameters['SharingAllowedDomainList'] = $allowed.Trim()
     }
 
     if ($null -ne $CurrentParameters['SharingBlockedDomainList'])
@@ -561,11 +756,20 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
         $IsSingleInstance,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $CoreDefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $CoreDefaultShareLinkScope,
 
         [Parameter()]
         [System.String]
@@ -597,6 +801,14 @@ function Test-TargetResource
         [System.Boolean]
         $EnableGuestSignInAcceleration,
 
+        [Parameter]
+        [System.Boolean]
+        $AllowGuestUserShareToUsersNotInSiteCollection,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowSharingOutsideRestrictedAccessControlGroups,
+
         [Parameter()]
         [System.Boolean]
         $BccExternalSharingInvitations,
@@ -606,12 +818,74 @@ function Test-TargetResource
         $BccExternalSharingInvitationsList,
 
         [Parameter()]
-        [System.Uint32]
+        [System.Boolean]
+        $CoreDefaultLinkToExistingAccess,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $OneDriveLoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateRange(7, 720)]
+        [System.Int32]
+        $OneDriveOrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [ValidateRange(7, 720)]
+        [System.Int32]
+        $OneDriveOrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $CoreLoopDefaultSharingLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $OneDriveLoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $CoreLoopDefaultSharingLinkScope,
+
+        [Parameter()]
+        [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
+        $OneDriveLoopSharingCapability,
+
+        [Parameter()]
+        [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
+        $CoreLoopSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $OneDriveDefaultLinkToExistingAccess,
+
+        [Parameter()]
+        [ValidateSet('None', 'View', 'Edit', 'Review', 'RestrictedView')]
+        [System.String]
+        $OneDriveDefaultShareLinkRole,
+
+        [Parameter()]
+        [ValidateSet('Anyone', 'Organization', 'SpecificPeople', 'Uninitialized')]
+        [System.String]
+        $OneDriveDefaultShareLinkScope,
+
+        [Parameter()]
+        [System.UInt32]
         $RequireAnonymousLinksExpireInDays,
 
         [Parameter()]
-        [System.Uint32]
+        [System.UInt32]
         $ExternalUserExpireInDays,
+
+        [Parameter()]
+        [System.String[]]
+        $RestrictExternalSharing,
 
         [Parameter()]
         [System.String[]]
@@ -622,13 +896,13 @@ function Test-TargetResource
         $SharingBlockedDomainList,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AllowList', 'BlockList')]
+        [System.String]
         $SharingDomainRestrictionMode,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'Direct', 'Internal', 'AnonymousAccess')]
+        [System.String]
         $DefaultSharingLinkType,
 
         [Parameter()]
@@ -640,12 +914,16 @@ function Test-TargetResource
         $ExternalUserExpirationRequired,
 
         [Parameter()]
+        [System.String[]]
+        $GuestSharingGroupAllowListInTenantByPrincipalIdentity,
+
+        [Parameter()]
         [System.Boolean]
         $ShowPeoplePickerSuggestionsForGuestUsers,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('View', 'Edit')]
+        [System.String]
         $FileAnonymousLinkType,
 
         [Parameter()]
@@ -658,9 +936,13 @@ function Test-TargetResource
         $NotifyOwnersWhenItemsReshared,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'View', 'Edit')]
+        [System.String]
         $DefaultLinkPermission,
+
+        [Parameter()]
+        [System.String[]]
+        $WhoCanShareAllowListInTenant,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]

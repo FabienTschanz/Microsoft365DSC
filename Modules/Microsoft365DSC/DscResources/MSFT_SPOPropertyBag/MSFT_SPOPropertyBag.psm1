@@ -257,7 +257,7 @@ function Set-TargetResource
             Key   = $Key
             Value = $Value
         }
-        Set-PnPPropertyBagValue @CreationParams
+        Set-PnPPropertyBagValue @CreationParams -Force
     }
     elseif ($Ensure -eq 'Absent' -and $CurrentPolicy.Ensure -eq 'Present')
     {
