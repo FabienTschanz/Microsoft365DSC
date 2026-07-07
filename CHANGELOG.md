@@ -11,9 +11,12 @@
   * Added properties `AllowGuestUserShareToUsersNotInSiteCollection`,
     `CoreDefaultShareLinkRole`, `CoreDefaultShareLinkScope`,
     `CoreLoopSharingCapability`, `CoreLoopDefaultSharingLinkScope`,
-    `CoreLoopDefaultSharingLinkRole`, `CoreDefaultLinkToExistingAccess`, `GuestSharingGroupAllowListInTenantByPrincipalIdentity`,
+    `CoreLoopDefaultSharingLinkRole`, `CoreDefaultLinkToExistingAccess`,
+    `GuestSharingGroupAllowListInTenantByPrincipalIdentity`,
     `OneDriveLoopSharingCapability`, `OneDriveLoopDefaultSharingLinkScope`,
-    `OneDriveLoopDefaultSharingLinkRole`, `OneDriveOrganizationSharingLinkMaxExpirationInDays`, `OneDriveOrganizationSharingLinkRecommendedExpirationInDays`, `RestrictExternalSharing`, `WhoCanShareAllowListInTenant`.
+    `OneDriveLoopDefaultSharingLinkRole`, `OneDriveOrganizationSharingLinkMaxExpirationInDays`,
+    `OneDriveOrganizationSharingLinkRecommendedExpirationInDays`, `RestrictExternalSharing`,
+    `WhoCanShareAllowListInTenant`.
 * SPOSite
   * Added properties `AllowFileArchive`, `AllowFileArchiveOnNewSitesByDefault`,
     `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`,
@@ -28,22 +31,26 @@
 * SPOTenantSettings
   * Added properties `AllowAnonymousMeetingParticipantsToAccessWhiteboards`,
     `AllowAppsBypassOfUnmanagedDevicePolicy`, `AllowCommentsTextOnEmailEnabled`,
-    `AllowFileArchive`, `AllOrganizationSecurityGroupId`, `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`,
+    `AllowFileArchive`, `AllOrganizationSecurityGroupId`,
+    `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`,
     `AppBypassInformationBarriers`, `ArchiveRedirectUrl`, `AuthContextResilienceMode`,
-    `BlockDownloadFileTypeIds`, `BlockDownloadFileTypePolicy`, `BlockSendLabelMismatchEmail`, `ConditionalAccessPolicyErrorHelpLink`, `ContentSecurityPolicyEnforcement`,
+    `BlockDownloadFileTypeIds`, `BlockDownloadFileTypePolicy`, `BlockSendLabelMismatchEmail`,
+    `ConditionalAccessPolicyErrorHelpLink`, `ContentSecurityPolicyEnforcement`,
     `ContentTypeSyncSiteTemplatesList`, `CoreBlockGuestsAsSiteAdmin`,
     `CoreRequestFilesLinkEnabled`, `CoreRequestFilesLinkExpirationInDays`,
     `CustomizedExternalSharingServiceUrl`, `DefaultOneDriveInformationBarrierMode`,
     `DisabledAdaptiveCardExtensionIds`, `DisableDocumentLibraryDefaultLabeling`,
     `DisableSpacesActivation`, `DisableVivaConnectionsAnalytics`,
     `EnableAutoExpirationVersionTrim`, `EnableDiscoverableByOrganizationForVideos`,
-    `EnableMediaReactions`, `EnableNotificationsSubscriptions`, `EnableSensitivityLabelForPDF`, `EnforceRequestDigest`, `ExpireVersionsAfterDays`, `HideSyncButtonOnDocLib`,
+    `EnableMediaReactions`, `EnableNotificationsSubscriptions`, `EnableSensitivityLabelForPDF`,
+    `EnforceRequestDigest`, `ExpireVersionsAfterDays`, `HideSyncButtonOnDocLib`,
     `HideSyncButtonOnODB`, `HideSyncButtonOnTeamSite`, `IBImplicitGroupBased`,
     `IncludeAtAGlanceInShareEmails`, `IsCollabMeetingNotesFluidEnabled`,
     `IsDataAccessInCardDesignerEnabled`, `IsEnableAppAuthPopUpEnabled`,
     `IsSharePointAddInsDisabled`, `IsWBFluidEnabled`, `KnowledgeAgentEnabled`,
     `KnowledgeAgentSelectedSitesList`, `LegacyBrowserAuthProtocolsEnabled`,
-    `MajorVersionLimit`, `MassDeleteNotificationDisabled`, `MediaTranscription`, `MediaTranscriptionAutomaticFeatures`, `OneDriveBlockGuestsAsSiteAdmin`,
+    `MajorVersionLimit`, `MassDeleteNotificationDisabled`, `MediaTranscription`,
+     `MediaTranscriptionAutomaticFeatures`, `OneDriveBlockGuestsAsSiteAdmin`,
     `OneDriveRequestFilesLinkEnabled`, `OneDriveRequestFilesLinkExpirationInDays`,
     `RecycleBinRetentionPeriod`, `ReduceTempTokenLifetimeEnabled`,
     `ReduceTempTokenLifetimeValue`, `RestrictedAccessControlforSitesErrorHelpLink`,
@@ -66,6 +73,10 @@
 
 # UNRELEASED
 
+* AADAdministrativeUnit
+  * Fixed issue that made unit tests under Windows PowerShell fail.
+* AADEntitlementManagementAccessPackageCatalog
+  * Fixed issue that made unit tests under Windows PowerShell fail.
 * AADGroup
   * Fixed an issue where `GroupTypes` would be returned as a null object.
     FIXES [#7253](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7253)
@@ -73,6 +84,8 @@
   * Fixed an issue where the `RestrictForAppsCreatedAfterDateTime` timestamp
     was incorrectly converted to a DateTime object.
     FIXES [#7291](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7291)
+* AzureBillingAccountScheduledAction
+  * Fixed issue that made unit tests under Windows PowerShell fail
 * IntuneDeviceCompliancePolicyMacOS
   * Fixed an issue where `ScheduledActionsForRule` was not compared correctly.
 * M365DSCExportUtil
@@ -80,6 +93,9 @@
     resource import.
 * M365DSCReport
   * Removed check for PowerShell remoting.
+* M365DSCTelemetryEngine
+  * Removed the output when connecting to Microsoft Graph for telemetry.
+    FIXES [#7302](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7302)
 * M365DSCUtil
   * Added `ApplicationSecret`, `ManagedIdentity` `AccessTokens` to the
     `Assert-M365DSCBlueprint` function.
@@ -90,6 +106,8 @@
     resources that were not of the `IntunePolicySets` type.
   * Added Dockerfile and an ancillary script which is used to install
     Microsoft365Dsc module and its dependencies on that Windows docker image
+  * Fixed unit tests so that they all pass under both Windows PowerShell and
+    PowerShell 7
 
 # 1.26.701.1
 
