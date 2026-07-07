@@ -18,7 +18,7 @@ function Get-TargetResource
         $AccessMethod,
 
         [Parameter()]
-        [System.String]
+        [System.Management.Automation.PSCredential]
         $Credentials,
 
         [Parameter()]
@@ -134,7 +134,6 @@ function Get-TargetResource
         $result = @{
             Identity              = $Identity
             AccessMethod          = $AvailabilityAddressSpace.AccessMethod
-            Credentials           = $AvailabilityAddressSpace.Credentials
             TargetServiceEpr      = $AvailabilityAddressSpace.TargetServiceEpr
             TargetTenantId        = $AvailabilityAddressSpace.TargetTenantId
             ForestName            = $AvailabilityAddressSpace.ForestName
@@ -180,7 +179,7 @@ function Set-TargetResource
         $AccessMethod,
 
         [Parameter()]
-        [System.String]
+        [System.Management.Automation.PSCredential]
         $Credentials,
 
         [Parameter()]
@@ -341,7 +340,7 @@ function Test-TargetResource
         $AccessMethod,
 
         [Parameter()]
-        [System.String]
+        [System.Management.Automation.PSCredential]
         $Credentials,
 
         [Parameter()]
@@ -413,8 +412,10 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
+    $compareParameters = Get-CompareParameters
     $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
+        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
+        @compareParameters
     return $result
 }
 
@@ -553,4 +554,16 @@ function Export-TargetResource
         throw
     }
 }
-Export-ModuleMember -Function *-TargetResource
+
+function Get-CompareParameters
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    return @{
+        ExcludedProperties = @('Credentials')
+    }
+}
+
+Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

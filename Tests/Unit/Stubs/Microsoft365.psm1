@@ -82962,7 +82962,7 @@ function Remove-PnPApp
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force,
+        $Force
     )
 }
 function Remove-PnPGroup

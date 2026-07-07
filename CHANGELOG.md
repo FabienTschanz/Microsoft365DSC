@@ -4,12 +4,52 @@
 
 * AADPIMGroupSetting
   * Improved performance with batch requests.
+* EXOAvailabilityAddressSpace
+  * [BREAKING CHANGE] Changed type for `Credentials` from String
+    to PSCredential and removed it from the export output.
 * SPOSharingSettings
-  * Added properties `AllowGuestUserShareToUsersNotInSiteCollection`, `CoreDefaultShareLinkRole`, `CoreDefaultShareLinkScope`, `CoreLoopSharingCapability`, `CoreLoopDefaultSharingLinkScope`, `CoreLoopDefaultSharingLinkRole`, `CoreDefaultLinkToExistingAccess`, `GuestSharingGroupAllowListInTenantByPrincipalIdentity`, `OneDriveLoopSharingCapability`, `OneDriveLoopDefaultSharingLinkScope`, `OneDriveLoopDefaultSharingLinkRole`, `OneDriveOrganizationSharingLinkMaxExpirationInDays`, `OneDriveOrganizationSharingLinkRecommendedExpirationInDays`, `RestrictExternalSharing`, `WhoCanShareAllowListInTenant`.
+  * Added properties `AllowGuestUserShareToUsersNotInSiteCollection`,
+    `CoreDefaultShareLinkRole`, `CoreDefaultShareLinkScope`,
+    `CoreLoopSharingCapability`, `CoreLoopDefaultSharingLinkScope`,
+    `CoreLoopDefaultSharingLinkRole`, `CoreDefaultLinkToExistingAccess`, `GuestSharingGroupAllowListInTenantByPrincipalIdentity`,
+    `OneDriveLoopSharingCapability`, `OneDriveLoopDefaultSharingLinkScope`,
+    `OneDriveLoopDefaultSharingLinkRole`, `OneDriveOrganizationSharingLinkMaxExpirationInDays`, `OneDriveOrganizationSharingLinkRecommendedExpirationInDays`, `RestrictExternalSharing`, `WhoCanShareAllowListInTenant`.
 * SPOSite
-  * Added properties `AllowFileArchive`, `AllowFileArchiveOnNewSitesByDefault`, `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`, `DefaultShareLinkScope`, `DefaultShareLinkRole`, `DisableClassicPageBaselineSecurityMode`, `HidePeoplePreviewingFiles`, `HidePeopleWhoHaveListsOpen`, `InheritVersionPolicyFromTenant`, `ListsShowHeaderAndNavigation`, `LoopDefaultSharingLinkScope`, `LoopDefaultSharingLinkRole`, `OverrideSharingCapability`, `RequestFilesLinkEnabled`, `RequestFilesLinkExpirationInDays`, `ReadOnlyForUnmanagedDevices`, `RestrictContentOrgWideSearch`, `RestrictedAccessControl`, `RestrictedAccessControlGroups`.
+  * Added properties `AllowFileArchive`, `AllowFileArchiveOnNewSitesByDefault`,
+    `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`,
+    `DefaultShareLinkScope`, `DefaultShareLinkRole`,
+    `DisableClassicPageBaselineSecurityMode`, `HidePeoplePreviewingFiles`,
+    `HidePeopleWhoHaveListsOpen`, `InheritVersionPolicyFromTenant`,
+    `ListsShowHeaderAndNavigation`, `LoopDefaultSharingLinkScope`,
+    `LoopDefaultSharingLinkRole`, `OverrideSharingCapability`,
+    `RequestFilesLinkEnabled`, `RequestFilesLinkExpirationInDays`,
+    `ReadOnlyForUnmanagedDevices`, `RestrictContentOrgWideSearch`,
+    `RestrictedAccessControl`, `RestrictedAccessControlGroups`.
 * SPOTenantSettings
-  * Added properties `AllowAnonymousMeetingParticipantsToAccessWhiteboards`, `AllowAppsBypassOfUnmanagedDevicePolicy`, `AllowCommentsTextOnEmailEnabled`, `AllowFileArchive`,  `AllOrganizationSecurityGroupId`, `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`, `AppBypassInformationBarriers`, `ArchiveRedirectUrl`, `AuthContextResilienceMode`, `BlockDownloadFileTypeIds`, `BlockDownloadFileTypePolicy`, `BlockSendLabelMismatchEmail`, `ConditionalAccessPolicyErrorHelpLink`, `ContentSecurityPolicyEnforcement`, `ContentTypeSyncSiteTemplatesList`, `CoreBlockGuestsAsSiteAdmin`, `CoreRequestFilesLinkEnabled`, `CoreRequestFilesLinkExpirationInDays`, `CustomizedExternalSharingServiceUrl`, `DefaultOneDriveInformationBarrierMode`, `DisabledAdaptiveCardExtensionIds`, `DisableDocumentLibraryDefaultLabeling`, `DisableSpacesActivation`, `DisableVivaConnectionsAnalytics`, `EnableAutoExpirationVersionTrim`, `EnableDiscoverableByOrganizationForVideos`, `EnableMediaReactions`, `EnableNotificationsSubscriptions`, `EnableSensitivityLabelForPDF`, `EnforceRequestDigest`, `ExpireVersionsAfterDays`, `HideSyncButtonOnDocLib`, `HideSyncButtonOnODB`, `HideSyncButtonOnTeamSite`, `IBImplicitGroupBased`, `IncludeAtAGlanceInShareEmails`, `IsCollabMeetingNotesFluidEnabled`, `IsDataAccessInCardDesignerEnabled`, `IsEnableAppAuthPopUpEnabled`, `IsSharePointAddInsDisabled`, `IsWBFluidEnabled`, `KnowledgeAgentEnabled`, `KnowledgeAgentSelectedSitesList`, `LegacyBrowserAuthProtocolsEnabled`, `MajorVersionLimit`, `MassDeleteNotificationDisabled`,  `MediaTranscription`, `MediaTranscriptionAutomaticFeatures`, `OneDriveBlockGuestsAsSiteAdmin`, `OneDriveRequestFilesLinkEnabled`, `OneDriveRequestFilesLinkExpirationInDays`, `RecycleBinRetentionPeriod`, `ReduceTempTokenLifetimeEnabled`, `ReduceTempTokenLifetimeValue`, `RestrictedAccessControlforSitesErrorHelpLink`, `ShowPeoplePickerGroupSuggestionsForIB`, `ShowOpenInDesktopOptionForSyncedFiles`, `SiteOwnerManageLegacyServicePrincipalEnabled`, `StreamLaunchConfig`, `TlsTokenBindingPolicyValue`, `ViewersCanCommentOnMediaDisabled`, `Workflow2010Disabled`.
+  * Added properties `AllowAnonymousMeetingParticipantsToAccessWhiteboards`,
+    `AllowAppsBypassOfUnmanagedDevicePolicy`, `AllowCommentsTextOnEmailEnabled`,
+    `AllowFileArchive`, `AllOrganizationSecurityGroupId`, `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`,
+    `AppBypassInformationBarriers`, `ArchiveRedirectUrl`, `AuthContextResilienceMode`,
+    `BlockDownloadFileTypeIds`, `BlockDownloadFileTypePolicy`, `BlockSendLabelMismatchEmail`, `ConditionalAccessPolicyErrorHelpLink`, `ContentSecurityPolicyEnforcement`,
+    `ContentTypeSyncSiteTemplatesList`, `CoreBlockGuestsAsSiteAdmin`,
+    `CoreRequestFilesLinkEnabled`, `CoreRequestFilesLinkExpirationInDays`,
+    `CustomizedExternalSharingServiceUrl`, `DefaultOneDriveInformationBarrierMode`,
+    `DisabledAdaptiveCardExtensionIds`, `DisableDocumentLibraryDefaultLabeling`,
+    `DisableSpacesActivation`, `DisableVivaConnectionsAnalytics`,
+    `EnableAutoExpirationVersionTrim`, `EnableDiscoverableByOrganizationForVideos`,
+    `EnableMediaReactions`, `EnableNotificationsSubscriptions`, `EnableSensitivityLabelForPDF`, `EnforceRequestDigest`, `ExpireVersionsAfterDays`, `HideSyncButtonOnDocLib`,
+    `HideSyncButtonOnODB`, `HideSyncButtonOnTeamSite`, `IBImplicitGroupBased`,
+    `IncludeAtAGlanceInShareEmails`, `IsCollabMeetingNotesFluidEnabled`,
+    `IsDataAccessInCardDesignerEnabled`, `IsEnableAppAuthPopUpEnabled`,
+    `IsSharePointAddInsDisabled`, `IsWBFluidEnabled`, `KnowledgeAgentEnabled`,
+    `KnowledgeAgentSelectedSitesList`, `LegacyBrowserAuthProtocolsEnabled`,
+    `MajorVersionLimit`, `MassDeleteNotificationDisabled`, `MediaTranscription`, `MediaTranscriptionAutomaticFeatures`, `OneDriveBlockGuestsAsSiteAdmin`,
+    `OneDriveRequestFilesLinkEnabled`, `OneDriveRequestFilesLinkExpirationInDays`,
+    `RecycleBinRetentionPeriod`, `ReduceTempTokenLifetimeEnabled`,
+    `ReduceTempTokenLifetimeValue`, `RestrictedAccessControlforSitesErrorHelpLink`,
+    `ShowPeoplePickerGroupSuggestionsForIB`, `ShowOpenInDesktopOptionForSyncedFiles`,
+    `SiteOwnerManageLegacyServicePrincipalEnabled`, `StreamLaunchConfig`,
+    `TlsTokenBindingPolicyValue`, `ViewersCanCommentOnMediaDisabled`, `Workflow2010Disabled`.
   * [BREAKING CHANGE] Removed property `OneDriveSharingCapability`. Is is replaced
     with `MySiteSharingCapability` in the `SPOSharingSettings` resource.
 * SPOUserProfileProperty
