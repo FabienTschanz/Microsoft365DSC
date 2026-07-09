@@ -78,13 +78,12 @@ function Get-TargetResource
         $AccessTokens
     )
 
-    Write-Verbose -Message "Getting configuration of the Intune Security Baseline for Windows10 with Id {$Id} and Name {$DisplayName}"
+    Write-Verbose -Message "Getting configuration for the Intune Security Baseline for Windows10 with Id {$Id} and DisplayName {$DisplayName}"
 
     try
     {
         if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
         {
-
             $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
                 -InboundParameters $PSBoundParameters
 
@@ -108,7 +107,9 @@ function Get-TargetResource
             #region resource generator code
             if (-not [System.String]::IsNullOrEmpty($Id))
             {
-                $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id -ErrorAction SilentlyContinue
+                $getValue = Invoke-M365DSCCommand -ScriptBlock {
+                    Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id  -ErrorAction Stop
+                } -SuppressNotFoundError
             }
 
             if ($null -eq $getValue)
@@ -148,7 +149,7 @@ function Get-TargetResource
         $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings -ContainsDeviceAndUserSettings
 
         #region resource generator code
-        $complexDeviceSettings = @{}
+        $complexDeviceSettings = [ordered]@{}
         $complexDeviceSettings.Add('CPL_Personalization_NoLockScreenCamera', $policySettings.DeviceSettings.cPL_Personalization_NoLockScreenCamera)
         $complexDeviceSettings.Add('CPL_Personalization_NoLockScreenSlideshow', $policySettings.DeviceSettings.cPL_Personalization_NoLockScreenSlideshow)
         $complexDeviceSettings.Add('Pol_SecGuide_0201_LATFP', $policySettings.DeviceSettings.pol_SecGuide_0201_LATFP)
@@ -156,7 +157,6 @@ function Get-TargetResource
         $complexDeviceSettings.Add('Pol_SecGuide_SMB1ClientDriver', $policySettings.DeviceSettings.pol_SecGuide_SMB1ClientDriver)
         $complexDeviceSettings.Add('Pol_SecGuide_0001_SMBv1_Server', $policySettings.DeviceSettings.pol_SecGuide_0001_SMBv1_Server)
         $complexDeviceSettings.Add('Pol_SecGuide_0102_SEHOP', $policySettings.DeviceSettings.pol_SecGuide_0102_SEHOP)
-        $complexDeviceSettings.Add('Pol_SecGuide_0202_WDigestAuthn', $policySettings.DeviceSettings.pol_SecGuide_0202_WDigestAuthn)
         $complexDeviceSettings.Add('Pol_MSS_DisableIPSourceRoutingIPv6', $policySettings.DeviceSettings.pol_MSS_DisableIPSourceRoutingIPv6)
         $complexDeviceSettings.Add('DisableIPSourceRoutingIPv6', $policySettings.DeviceSettings.disableIPSourceRoutingIPv6)
         $complexDeviceSettings.Add('Pol_MSS_DisableIPSourceRouting', $policySettings.DeviceSettings.pol_MSS_DisableIPSourceRouting)
@@ -198,6 +198,7 @@ function Get-TargetResource
         $complexDeviceSettings.Add('RestrictDriverInstallationToAdministrators', $policySettings.DeviceSettings.restrictDriverInstallationToAdministrators)
         $complexDeviceSettings.Add('ConfigureCopyFilesPolicy', $policySettings.DeviceSettings.configureCopyFilesPolicy)
         $complexDeviceSettings.Add('CopyFilesPolicy_Enum', $policySettings.DeviceSettings.copyFilesPolicy_Enum)
+        $complexDeviceSettings.Add('IncludeCmdLine', $policySettings.DeviceSettings.includeCmdLine)
         $complexDeviceSettings.Add('AllowEncryptionOracle', $policySettings.DeviceSettings.allowEncryptionOracle)
         $complexDeviceSettings.Add('AllowEncryptionOracleDrop', $policySettings.DeviceSettings.allowEncryptionOracleDrop)
         $complexDeviceSettings.Add('AllowProtectedCreds', $policySettings.DeviceSettings.allowProtectedCreds)
@@ -449,7 +450,6 @@ function Get-TargetResource
         $complexDeviceSettings.Add('Disable_Security_Settings_Check', $policySettings.DeviceSettings.disable_Security_Settings_Check)
         $complexDeviceSettings.Add('DisableBlockAtFirstSeen', $policySettings.DeviceSettings.disableBlockAtFirstSeen)
         $complexDeviceSettings.Add('RealtimeProtection_DisableScanOnRealtimeEnable', $policySettings.DeviceSettings.realtimeProtection_DisableScanOnRealtimeEnable)
-        $complexDeviceSettings.Add('Scan_DisablePackedExeScanning', $policySettings.DeviceSettings.scan_DisablePackedExeScanning)
         $complexDeviceSettings.Add('DisableRoutinelyTakingAction', $policySettings.DeviceSettings.disableRoutinelyTakingAction)
         $complexDeviceSettings.Add('TS_CLIENT_DISABLE_PASSWORD_SAVING_2', $policySettings.DeviceSettings.tS_CLIENT_DISABLE_PASSWORD_SAVING_2)
         $complexDeviceSettings.Add('TS_CLIENT_DRIVE_M', $policySettings.DeviceSettings.tS_CLIENT_DRIVE_M)
@@ -519,12 +519,12 @@ function Get-TargetResource
         $complexDeviceSettings.Add('BlockJavaScriptOrVBScriptFromLaunchingDownloadedExecutableContent_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockJavaScriptOrVBScriptFromLaunchingDownloadedExecutableContent_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockUntrustedUnsignedProcessesThatRunFromUSB', $policySettings.DeviceSettings.blockUntrustedUnsignedProcessesThatRunFromUSB)
         $complexDeviceSettings.Add('BlockUntrustedUnsignedProcessesThatRunFromUSB_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockUntrustedUnsignedProcessesThatRunFromUSB_ASROnlyPerRuleExclusions)
+        $complexDeviceSettings.Add('BlockWebshellCreationForServers', $policySettings.DeviceSettings.blockWebshellCreationForServers)
+        $complexDeviceSettings.Add('BlockWebshellCreationForServers_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockWebshellCreationForServers_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockAdobeReaderFromCreatingChildProcesses', $policySettings.DeviceSettings.blockAdobeReaderFromCreatingChildProcesses)
         $complexDeviceSettings.Add('BlockAdobeReaderFromCreatingChildProcesses_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockAdobeReaderFromCreatingChildProcesses_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem', $policySettings.DeviceSettings.blockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem)
         $complexDeviceSettings.Add('BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem_ASROnlyPerRuleExclusions)
-        $complexDeviceSettings.Add('BlockWebshellCreationForServers', $policySettings.DeviceSettings.blockWebshellCreationForServers)
-        $complexDeviceSettings.Add('BlockWebshellCreationForServers_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockWebshellCreationForServers_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockAbuseOfExploitedVulnerableSignedDrivers', $policySettings.DeviceSettings.blockAbuseOfExploitedVulnerableSignedDrivers)
         $complexDeviceSettings.Add('BlockAbuseOfExploitedVulnerableSignedDrivers_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockAbuseOfExploitedVulnerableSignedDrivers_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockPersistenceThroughWMIEventSubscription', $policySettings.DeviceSettings.blockPersistenceThroughWMIEventSubscription)
@@ -536,24 +536,29 @@ function Get-TargetResource
         $complexDeviceSettings.Add('UseAdvancedProtectionAgainstRansomware_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.useAdvancedProtectionAgainstRansomware_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockProcessCreationsFromPSExecAndWMICommands', $policySettings.DeviceSettings.blockProcessCreationsFromPSExecAndWMICommands)
         $complexDeviceSettings.Add('BlockProcessCreationsFromPSExecAndWMICommands_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockProcessCreationsFromPSExecAndWMICommands_ASROnlyPerRuleExclusions)
-        $complexDeviceSettings.Add('BlockOfficeApplicationsFromCreatingExecutableContent', $policySettings.DeviceSettings.blockOfficeApplicationsFromCreatingExecutableContent)
-        $complexDeviceSettings.Add('BlockOfficeApplicationsFromCreatingExecutableContent_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockOfficeApplicationsFromCreatingExecutableContent_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockRebootingMachineInSafeMode', $policySettings.DeviceSettings.blockRebootingMachineInSafeMode)
         $complexDeviceSettings.Add('BlockRebootingMachineInSafeMode_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockRebootingMachineInSafeMode_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('BlockExecutableContentFromEmailClientAndWebmail', $policySettings.DeviceSettings.blockExecutableContentFromEmailClientAndWebmail)
         $complexDeviceSettings.Add('BlockExecutableContentFromEmailClientAndWebmail_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockExecutableContentFromEmailClientAndWebmail_ASROnlyPerRuleExclusions)
+        $complexDeviceSettings.Add('BlockOfficeApplicationsFromCreatingExecutableContent', $policySettings.DeviceSettings.blockOfficeApplicationsFromCreatingExecutableContent)
+        $complexDeviceSettings.Add('BlockOfficeApplicationsFromCreatingExecutableContent_ASROnlyPerRuleExclusions', $policySettings.DeviceSettings.blockOfficeApplicationsFromCreatingExecutableContent_ASROnlyPerRuleExclusions)
         $complexDeviceSettings.Add('CloudBlockLevel', $policySettings.DeviceSettings.cloudBlockLevel)
         $complexDeviceSettings.Add('CloudExtendedTimeout', $policySettings.DeviceSettings.cloudExtendedTimeout)
         $complexDeviceSettings.Add('DisableLocalAdminMerge', $policySettings.DeviceSettings.disableLocalAdminMerge)
+        $complexDeviceSettings.Add('EnableConvertWarnToBlock', $policySettings.DeviceSettings.enableConvertWarnToBlock)
         $complexDeviceSettings.Add('EnableFileHashComputation', $policySettings.DeviceSettings.enableFileHashComputation)
         $complexDeviceSettings.Add('EnableNetworkProtection', $policySettings.DeviceSettings.enableNetworkProtection)
         $complexDeviceSettings.Add('HideExclusionsFromLocalAdmins', $policySettings.DeviceSettings.hideExclusionsFromLocalAdmins)
+        $complexDeviceSettings.Add('OobeEnableRtpAndSigUpdate', $policySettings.DeviceSettings.oobeEnableRtpAndSigUpdate)
+        $complexDeviceSettings.Add('PassiveRemediation', $policySettings.DeviceSettings.passiveRemediation)
         $complexDeviceSettings.Add('PUAProtection', $policySettings.DeviceSettings.pUAProtection)
+        $complexDeviceSettings.Add('QuickScanIncludeExclusions', $policySettings.DeviceSettings.quickScanIncludeExclusions)
         $complexDeviceSettings.Add('RealTimeScanDirection', $policySettings.DeviceSettings.realTimeScanDirection)
         $complexDeviceSettings.Add('SubmitSamplesConsent', $policySettings.DeviceSettings.submitSamplesConsent)
         $complexDeviceSettings.Add('ConfigureSystemGuardLaunch', $policySettings.DeviceSettings.configureSystemGuardLaunch)
         $complexDeviceSettings.Add('LsaCfgFlags', $policySettings.DeviceSettings.lsaCfgFlags)
         $complexDeviceSettings.Add('EnableVirtualizationBasedSecurity', $policySettings.DeviceSettings.enableVirtualizationBasedSecurity)
+        $complexDeviceSettings.Add('MachineIdentityIsolation', $policySettings.DeviceSettings.machineIdentityIsolation)
         $complexDeviceSettings.Add('RequirePlatformSecurityFeatures', $policySettings.DeviceSettings.requirePlatformSecurityFeatures)
         $complexDeviceSettings.Add('DevicePasswordEnabled', $policySettings.DeviceSettings.devicePasswordEnabled)
         $complexDeviceSettings.Add('DevicePasswordExpiration', $policySettings.DeviceSettings.devicePasswordExpiration)
@@ -561,11 +566,32 @@ function Get-TargetResource
         $complexDeviceSettings.Add('MaxDevicePasswordFailedAttempts', $policySettings.DeviceSettings.maxDevicePasswordFailedAttempts)
         $complexDeviceSettings.Add('AlphanumericDevicePasswordRequired', $policySettings.DeviceSettings.alphanumericDevicePasswordRequired)
         $complexDeviceSettings.Add('MinDevicePasswordComplexCharacters', $policySettings.DeviceSettings.minDevicePasswordComplexCharacters)
+        $complexDeviceSettings.Add('MinDevicePasswordComplexCharacters', $policySettings.DeviceSettings.minDevicePasswordComplexCharacters)
         $complexDeviceSettings.Add('MaxInactivityTimeDeviceLock', $policySettings.DeviceSettings.maxInactivityTimeDeviceLock)
         $complexDeviceSettings.Add('DevicePasswordHistory', $policySettings.DeviceSettings.devicePasswordHistory)
         $complexDeviceSettings.Add('AllowSimpleDevicePassword', $policySettings.DeviceSettings.allowSimpleDevicePassword)
         $complexDeviceSettings.Add('DeviceEnumerationPolicy', $policySettings.DeviceSettings.deviceEnumerationPolicy)
+        $complexDeviceSettings.Add('PKInitHashAlgorithmConfiguration', $policySettings.DeviceSettings.pKInitHashAlgorithmConfiguration)
+        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA256', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA256)
+        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA512', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA512)
+        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA384', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA384)
+        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA1', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA1)
+        $complexDeviceSettings.Add('AuditClientDoesNotSupportEncryption', $policySettings.DeviceSettings.auditClientDoesNotSupportEncryption)
+        $complexDeviceSettings.Add('AuditClientDoesNotSupportSigning', $policySettings.DeviceSettings.auditClientDoesNotSupportSigning)
+        $complexDeviceSettings.Add('LanmanServer_AuditInsecureGuestLogon', $policySettings.DeviceSettings.lanmanServer_AuditInsecureGuestLogon)
+        $complexDeviceSettings.Add('AuthRateLimiterDelayInMs', $policySettings.DeviceSettings.authRateLimiterDelayInMs)
+        $complexDeviceSettings.Add('EnableAuthRateLimiter', $policySettings.DeviceSettings.enableAuthRateLimiter)
+        $complexDeviceSettings.Add('LanmanServer_EnableMailslots', $policySettings.DeviceSettings.lanmanServer_EnableMailslots)
+        $complexDeviceSettings.Add('LanmanServer_MaxSmb2Dialect', $policySettings.DeviceSettings.lanmanServer_MaxSmb2Dialect)
+        $complexDeviceSettings.Add('LanmanServer_MinSmb2Dialect', $policySettings.DeviceSettings.lanmanServer_MinSmb2Dialect)
+        $complexDeviceSettings.Add('LanmanWorkstation_AuditInsecureGuestLogon', $policySettings.DeviceSettings.lanmanWorkstation_AuditInsecureGuestLogon)
+        $complexDeviceSettings.Add('AuditServerDoesNotSupportEncryption', $policySettings.DeviceSettings.auditServerDoesNotSupportEncryption)
+        $complexDeviceSettings.Add('AuditServerDoesNotSupportSigning', $policySettings.DeviceSettings.auditServerDoesNotSupportSigning)
         $complexDeviceSettings.Add('EnableInsecureGuestLogons', $policySettings.DeviceSettings.enableInsecureGuestLogons)
+        $complexDeviceSettings.Add('LanmanWorkstation_EnableMailslots', $policySettings.DeviceSettings.lanmanWorkstation_EnableMailslots)
+        $complexDeviceSettings.Add('LanmanWorkstation_MaxSmb2Dialect', $policySettings.DeviceSettings.lanmanWorkstation_MaxSmb2Dialect)
+        $complexDeviceSettings.Add('LanmanWorkstation_MinSmb2Dialect', $policySettings.DeviceSettings.lanmanWorkstation_MinSmb2Dialect)
+        $complexDeviceSettings.Add('RequireEncryption', $policySettings.DeviceSettings.requireEncryption)
         $complexDeviceSettings.Add('Accounts_LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly', $policySettings.DeviceSettings.accounts_LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly)
         $complexDeviceSettings.Add('InteractiveLogon_MachineInactivityLimit', $policySettings.DeviceSettings.interactiveLogon_MachineInactivityLimit)
         $complexDeviceSettings.Add('InteractiveLogon_SmartCardRemovalBehavior', $policySettings.DeviceSettings.interactiveLogon_SmartCardRemovalBehavior)
@@ -601,6 +627,7 @@ function Get-TargetResource
         $complexDeviceSettings.Add('NotifyUnsafeApp', $policySettings.DeviceSettings.notifyUnsafeApp)
         $complexDeviceSettings.Add('ServiceEnabled', $policySettings.DeviceSettings.serviceEnabled)
         $complexDeviceSettings.Add('PreventOverrideForFilesInShell', $policySettings.DeviceSettings.preventOverrideForFilesInShell)
+        $complexDeviceSettings.Add('EnableSudo', $policySettings.DeviceSettings.enableSudo)
         $complexDeviceSettings.Add('ConfigureXboxAccessoryManagementServiceStartupMode', $policySettings.DeviceSettings.configureXboxAccessoryManagementServiceStartupMode)
         $complexDeviceSettings.Add('ConfigureXboxLiveAuthManagerServiceStartupMode', $policySettings.DeviceSettings.configureXboxLiveAuthManagerServiceStartupMode)
         $complexDeviceSettings.Add('ConfigureXboxLiveGameSaveServiceStartupMode', $policySettings.DeviceSettings.configureXboxLiveGameSaveServiceStartupMode)
@@ -635,33 +662,7 @@ function Get-TargetResource
         $complexDeviceSettings.Add('Passwordagedays_aad', $policySettings.DeviceSettings.passwordagedays_aad)
         $complexDeviceSettings.Add('ADPasswordEncryptionPrincipal', $policySettings.DeviceSettings.aDPasswordEncryptionPrincipal)
         $complexDeviceSettings.Add('PasswordExpirationProtectionEnabled', $policySettings.DeviceSettings.passwordExpirationProtectionEnabled)
-        $complexDeviceSettings.Add('EnableConvertWarnToBlock', $policySettings.DeviceSettings.enableConvertWarnToBlock)
-        $complexDeviceSettings.Add('HideExclusionsFromLocalUsers', $policySettings.DeviceSettings.hideExclusionsFromLocalUsers)
-        $complexDeviceSettings.Add('OobeEnableRtpAndSigUpdate', $policySettings.DeviceSettings.oobeEnableRtpAndSigUpdate)
-        $complexDeviceSettings.Add('PassiveRemediation', $policySettings.DeviceSettings.passiveRemediation)
-        $complexDeviceSettings.Add('QuickScanIncludeExclusions', $policySettings.DeviceSettings.quickScanIncludeExclusions)
-        $complexDeviceSettings.Add('PKInitHashAlgorithmConfiguration', $policySettings.DeviceSettings.pKInitHashAlgorithmConfiguration)
-        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA256', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA256)
-        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA512', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA512)
-        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA384', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA384)
-        $complexDeviceSettings.Add('PKInitHashAlgorithmSHA1', $policySettings.DeviceSettings.pKInitHashAlgorithmSHA1)
-        $complexDeviceSettings.Add('EnableSudo', $policySettings.DeviceSettings.enableSudo)
-        $complexDeviceSettings.Add('MachineIdentityIsolation', $policySettings.DeviceSettings.machineIdentityIsolation)
-        $complexDeviceSettings.Add('AuditClientDoesNotSupportEncryption', $policySettings.DeviceSettings.auditClientDoesNotSupportEncryption)
-        $complexDeviceSettings.Add('AuditClientDoesNotSupportSigning', $policySettings.DeviceSettings.auditClientDoesNotSupportSigning)
-        $complexDeviceSettings.Add('LanmanServer_AuditInsecureGuestLogon', $policySettings.DeviceSettings.lanmanServer_AuditInsecureGuestLogon)
-        $complexDeviceSettings.Add('AuthRateLimiterDelayInMs', $policySettings.DeviceSettings.authRateLimiterDelayInMs)
-        $complexDeviceSettings.Add('EnableAuthRateLimiter', $policySettings.DeviceSettings.enableAuthRateLimiter)
-        $complexDeviceSettings.Add('LanmanServer_EnableMailslots', $policySettings.DeviceSettings.lanmanServer_EnableMailslots)
-        $complexDeviceSettings.Add('LanmanServer_MaxSmb2Dialect', $policySettings.DeviceSettings.lanmanServer_MaxSmb2Dialect)
-        $complexDeviceSettings.Add('LanmanServer_MinSmb2Dialect', $policySettings.DeviceSettings.lanmanServer_MinSmb2Dialect)
-        $complexDeviceSettings.Add('LanmanWorkstation_AuditInsecureGuestLogon', $policySettings.DeviceSettings.lanmanWorkstation_AuditInsecureGuestLogon)
-        $complexDeviceSettings.Add('AuditServerDoesNotSupportEncryption', $policySettings.DeviceSettings.auditServerDoesNotSupportEncryption)
-        $complexDeviceSettings.Add('AuditServerDoesNotSupportSigning', $policySettings.DeviceSettings.auditServerDoesNotSupportSigning)
-        $complexDeviceSettings.Add('LanmanWorkstation_EnableMailslots', $policySettings.DeviceSettings.lanmanWorkstation_EnableMailslots)
-        $complexDeviceSettings.Add('LanmanWorkstation_MaxSmb2Dialect', $policySettings.DeviceSettings.lanmanWorkstation_MaxSmb2Dialect)
-        $complexDeviceSettings.Add('LanmanWorkstation_MinSmb2Dialect', $policySettings.DeviceSettings.lanmanWorkstation_MinSmb2Dialect)
-        $complexDeviceSettings.Add('RequireEncryption', $policySettings.DeviceSettings.requireEncryption)
+        $complexDeviceSettings.Add('DisableInternetExplorerLaunchViaCOM', $policySettings.DeviceSettings.disableInternetExplorerLaunchViaCOM)
         $complexDeviceSettingsCopy = $complexDeviceSettings.Clone()
         foreach ($key in $complexDeviceSettingsCopy.Keys)
         {
@@ -837,9 +838,10 @@ function Set-TargetResource
     #endregion
 
     $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
 
-    $templateReferenceId = '66df8dce-0166-4b82-92f7-1f74e3ca17a3_4'
+    $templateReferenceId = '66df8dce-0166-4b82-92f7-1f74e3ca17a3_5'
     $platforms = 'windows10'
     $technologies = 'mdm'
 
@@ -849,7 +851,7 @@ function Set-TargetResource
         $BoundParameters.Remove('Assignments') | Out-Null
 
         $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
+            -DSCParams ([System.Collections.Hashtable]$boundParameters) `
             -TemplateId $templateReferenceId `
             -ContainsDeviceAndUserSettings
 
@@ -882,7 +884,7 @@ function Set-TargetResource
         $BoundParameters.Remove('Assignments') | Out-Null
 
         $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
+            -DSCParams ([System.Collections.Hashtable]$boundParameters) `
             -TemplateId $templateReferenceId `
             -ContainsDeviceAndUserSettings
 
@@ -1072,7 +1074,7 @@ function Export-TargetResource
     try
     {
         #region resource generator code
-        $policyTemplateID = '66df8dce-0166-4b82-92f7-1f74e3ca17a3_4'
+        $policyTemplateID = '66df8dce-0166-4b82-92f7-1f74e3ca17a3_5'
         $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
         if (-not [System.String]::IsNullOrEmpty($Filter))
         {
@@ -1101,11 +1103,11 @@ function Export-TargetResource
         foreach ($config in $getValue)
         {
             $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.displayName))
+            if (-not [System.String]::IsNullOrEmpty($config.displayName))
             {
                 $displayedKey = $config.displayName
             }
-            elseif (-not [string]::IsNullOrEmpty($config.name))
+            elseif (-not [System.String]::IsNullOrEmpty($config.name))
             {
                 $displayedKey = $config.name
             }
@@ -1190,9 +1192,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('DeviceSettings', 'UserSettings', 'Assignments') `
+                -NoEscape @('Assignments', 'DeviceSettings', 'UserSettings') `
                 -RawResults $rawResults
-
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `
                 -FileName $Global:PartialExportFileName

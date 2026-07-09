@@ -2,6 +2,14 @@
 
 # UNRELEASED
 
+* IntuneSecurityBaselineWindows10
+  * Updated the resource to support the 25H2 baseline version.
+  * [BREAKING CHANGE] Removed properties `Pol_SecGuide_0202_WDigestAuthn`,
+    and `Scan_DisablePackedExeScanning`.
+  * Added properties `IncludeCmdLine`, `DisableInternetExplorerLaunchViaCOM`.
+
+# UNRELEASED
+
 * EXOMigration
   * Fixed unit-tests so datetimes are parsed in US-format
 * MISC

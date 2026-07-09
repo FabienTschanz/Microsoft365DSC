@@ -14,10 +14,10 @@
         ],
         "update": [
           {
-            "name": "Group.Read.All"
+            "name": "DeviceManagementConfiguration.ReadWrite.All"
           },
           {
-            "name": "DeviceManagementConfiguration.ReadWrite.All"
+            "name": "Group.Read.All"
           }
         ]
       },
@@ -32,10 +32,10 @@
         ],
         "update": [
           {
-            "name": "Group.Read.All"
+            "name": "DeviceManagementConfiguration.ReadWrite.All"
           },
           {
-            "name": "DeviceManagementConfiguration.ReadWrite.All"
+            "name": "Group.Read.All"
           }
         ]
       }

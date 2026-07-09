@@ -4212,8 +4212,12 @@ class <ClassName>
         $options = @()
         $values = @()
         $TemplateSetting.Options | ForEach-Object {
-            $options += "$($_.Id)" + ": " + $_.Name.Replace("""", "'")
-            $values += """$($_.Id)"""
+            try {
+                $options += "$($_.Id)" + ": " + $_.Name.Replace("""", "'")
+                $values += """$($_.Id)"""
+            } catch {
+                Write-Warning -Message "Failed to replace quotes in option name for setting $($TemplateSetting.DisplayName): $($_.Name)"
+            }
         }
         $optionsString = " (" + ($options -join ", ") + ")"
         $valueMapString = ", ValueMap{$($values -join ", ")}, Values{$($values -join ", ")}"
