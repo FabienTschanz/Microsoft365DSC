@@ -2,6 +2,14 @@
 
 # UNRELEASED
 
+* IntuneSecurityBaselineMicrosoft365AppsForEnterprise
+  * Updated the resource to support the v2512 baseline version.
+  * [BREAKING CHANGE] Removed property
+    `MicrosoftAccess_Security_TrustCenter_L_RequirethatApplicationExtensionsaresigned`.
+  * Added properties `L_ExcelFileBlockExternalLinks`, `L_BlockInsecureProtocols`,
+    `L_ProjectOptionsSecurity_TrustCenter_L_BlockMacroExecutionFromInternet`,
+    `L_OLEActions_L_Empty`, `L_BlockOrgChart`, `L_BlockWecFallback`, `L_OLEActions`,
+    `L_BlockOLEGraph`.
 * IntuneSecurityBaselineWindows10
   * Updated the resource to support the 25H2 baseline version.
   * [BREAKING CHANGE] Removed properties `Pol_SecGuide_0202_WDigestAuthn`,

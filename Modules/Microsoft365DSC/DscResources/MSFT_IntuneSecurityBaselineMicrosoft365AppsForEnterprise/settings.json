@@ -4,38 +4,38 @@
   "permissions": {
     "graph": {
       "delegated": {
-        "read": [
-          {
-            "name": "Group.Read.All"
-          },
-          {
-            "name": "DeviceManagementConfiguration.Read.All"
-          }
-        ],
         "update": [
           {
-            "name": "Group.Read.All"
+            "name": "DeviceManagementConfiguration.ReadWrite.All"
           },
           {
-            "name": "DeviceManagementConfiguration.ReadWrite.All"
+            "name": "Group.Read.All"
+          }
+        ],
+        "read": [
+          {
+            "name": "DeviceManagementConfiguration.Read.All"
+          },
+          {
+            "name": "Group.Read.All"
           }
         ]
       },
       "application": {
-        "read": [
-          {
-            "name": "Group.Read.All"
-          },
-          {
-            "name": "DeviceManagementConfiguration.Read.All"
-          }
-        ],
         "update": [
           {
-            "name": "Group.Read.All"
+            "name": "DeviceManagementConfiguration.ReadWrite.All"
           },
           {
-            "name": "DeviceManagementConfiguration.ReadWrite.All"
+            "name": "Group.Read.All"
+          }
+        ],
+        "read": [
+          {
+            "name": "DeviceManagementConfiguration.Read.All"
+          },
+          {
+            "name": "Group.Read.All"
           }
         ]
       }

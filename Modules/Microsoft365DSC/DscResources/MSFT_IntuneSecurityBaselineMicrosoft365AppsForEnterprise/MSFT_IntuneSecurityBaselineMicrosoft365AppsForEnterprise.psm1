@@ -106,7 +106,9 @@ function Get-TargetResource
             #region resource generator code
             if (-not [System.String]::IsNullOrEmpty($Id))
             {
-                $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id -ErrorAction SilentlyContinue
+                $getValue = Invoke-M365DSCCommand -ScriptBlock {
+                    Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id -ErrorAction Stop
+                } -SuppressNotFoundError
             }
 
             if ($null -eq $getValue)
@@ -365,7 +367,6 @@ function Get-TargetResource
         $complexUserSettings = [ordered]@{}
         $complexUserSettings.Add('MicrosoftAccess_Security_TrustCenter_L_BlockMacroExecutionFromInternet', $policySettings.UserSettings.microsoftAccess_Security_TrustCenter_L_BlockMacroExecutionFromInternet)
         $complexUserSettings.Add('MicrosoftAccess_Security_TrustCenter_L_DisableTrustBarNotificationforunsigned', $policySettings.UserSettings.microsoftAccess_Security_TrustCenter_L_DisableTrustBarNotificationforunsigned)
-        $complexUserSettings.Add('MicrosoftAccess_Security_TrustCenter_L_RequirethatApplicationExtensionsaresigned', $policySettings.UserSettings.microsoftAccess_Security_TrustCenter_L_RequirethatApplicationExtensionsaresigned)
         $complexUserSettings.Add('MicrosoftAccess_Security_TrustCenterTrustedLocations_L_AllowTrustedLocationsOnTheNetwork', $policySettings.UserSettings.microsoftAccess_Security_TrustCenterTrustedLocations_L_AllowTrustedLocationsOnTheNetwork)
         $complexUserSettings.Add('MicrosoftAccess_Security_TrustCenter_L_VBAWarningsPolicy', $policySettings.UserSettings.microsoftAccess_Security_TrustCenter_L_VBAWarningsPolicy)
         $complexUserSettings.Add('MicrosoftAccess_Security_TrustCenter_L_VBAWarningsPolicy_L_Empty', $policySettings.UserSettings.microsoftAccess_Security_TrustCenter_L_VBAWarningsPolicy_L_Empty)
@@ -435,8 +436,8 @@ function Get-TargetResource
         $complexUserSettings.Add('L_NoExtensibilityCustomizationFromDocumentPolicyPublisher', $policySettings.UserSettings.l_NoExtensibilityCustomizationFromDocumentPolicyPublisher)
         $complexUserSettings.Add('L_NoExtensibilityCustomizationFromDocumentPolicyOutlook', $policySettings.UserSettings.l_NoExtensibilityCustomizationFromDocumentPolicyOutlook)
         $complexUserSettings.Add('L_NoExtensibilityCustomizationFromDocumentPolicyProject', $policySettings.UserSettings.l_NoExtensibilityCustomizationFromDocumentPolicyProject)
-        $complexUserSettings.Add('L_NoExtensibilityCustomizationFromDocumentPolicyAccess', $policySettings.UserSettings.l_NoExtensibilityCustomizationFromDocumentPolicyAccess)
         $complexUserSettings.Add('L_NoExtensibilityCustomizationFromDocumentPolicyInfoPath', $policySettings.UserSettings.l_NoExtensibilityCustomizationFromDocumentPolicyInfoPath)
+        $complexUserSettings.Add('L_NoExtensibilityCustomizationFromDocumentPolicyAccess', $policySettings.UserSettings.l_NoExtensibilityCustomizationFromDocumentPolicyAccess)
         $complexUserSettings.Add('L_ActiveXControlInitialization', $policySettings.UserSettings.l_ActiveXControlInitialization)
         $complexUserSettings.Add('L_ActiveXControlInitializationcolon', $policySettings.UserSettings.l_ActiveXControlInitializationcolon)
         $complexUserSettings.Add('L_BasicAuthProxyBehavior', $policySettings.UserSettings.l_BasicAuthProxyBehavior)
@@ -463,49 +464,49 @@ function Get-TargetResource
         $complexUserSettings.Add('L_DisabletheOfficeclientfrompolling', $policySettings.UserSettings.l_DisabletheOfficeclientfrompolling)
         $complexUserSettings.Add('L_DisableSmartDocumentsuseofmanifests', $policySettings.UserSettings.l_DisableSmartDocumentsuseofmanifests)
         $complexUserSettings.Add('L_OutlookSecurityMode', $policySettings.UserSettings.l_OutlookSecurityMode)
+        $complexUserSettings.Add('L_OOMSend', $policySettings.UserSettings.l_OOMSend)
+        $complexUserSettings.Add('L_OOMSend_Setting', $policySettings.UserSettings.l_OOMSend_Setting)
+        $complexUserSettings.Add('L_AuthenticationwithExchangeServer', $policySettings.UserSettings.l_AuthenticationwithExchangeServer)
+        $complexUserSettings.Add('L_SelecttheauthenticationwithExchangeserver', $policySettings.UserSettings.l_SelecttheauthenticationwithExchangeserver)
+        $complexUserSettings.Add('L_OOMFormula', $policySettings.UserSettings.l_OOMFormula)
+        $complexUserSettings.Add('L_OOMFormula_Setting', $policySettings.UserSettings.l_OOMFormula_Setting)
         $complexUserSettings.Add('L_OOMAddressAccess', $policySettings.UserSettings.l_OOMAddressAccess)
         $complexUserSettings.Add('L_OOMAddressAccess_Setting', $policySettings.UserSettings.l_OOMAddressAccess_Setting)
         $complexUserSettings.Add('L_OOMMeetingTaskRequest', $policySettings.UserSettings.l_OOMMeetingTaskRequest)
         $complexUserSettings.Add('L_OOMMeetingTaskRequest_Setting', $policySettings.UserSettings.l_OOMMeetingTaskRequest_Setting)
-        $complexUserSettings.Add('L_OOMSend', $policySettings.UserSettings.l_OOMSend)
-        $complexUserSettings.Add('L_OOMSend_Setting', $policySettings.UserSettings.l_OOMSend_Setting)
         $complexUserSettings.Add('L_Preventusersfromcustomizingattachmentsecuritysettings', $policySettings.UserSettings.l_Preventusersfromcustomizingattachmentsecuritysettings)
         $complexUserSettings.Add('L_RetrievingCRLsCertificateRevocationLists', $policySettings.UserSettings.l_RetrievingCRLsCertificateRevocationLists)
         $complexUserSettings.Add('L_empty31', $policySettings.UserSettings.l_empty31)
-        $complexUserSettings.Add('L_OOMFormula', $policySettings.UserSettings.l_OOMFormula)
-        $complexUserSettings.Add('L_OOMFormula_Setting', $policySettings.UserSettings.l_OOMFormula_Setting)
-        $complexUserSettings.Add('L_AuthenticationwithExchangeServer', $policySettings.UserSettings.l_AuthenticationwithExchangeServer)
-        $complexUserSettings.Add('L_SelecttheauthenticationwithExchangeserver', $policySettings.UserSettings.l_SelecttheauthenticationwithExchangeserver)
-        $complexUserSettings.Add('L_EnableRPCEncryption', $policySettings.UserSettings.l_EnableRPCEncryption)
-        $complexUserSettings.Add('L_Enablelinksinemailmessages', $policySettings.UserSettings.l_Enablelinksinemailmessages)
-        $complexUserSettings.Add('L_OOMAddressBook', $policySettings.UserSettings.l_OOMAddressBook)
-        $complexUserSettings.Add('L_OOMAddressBook_Setting', $policySettings.UserSettings.l_OOMAddressBook_Setting)
         $complexUserSettings.Add('L_OutlookSecurityPolicy', $policySettings.UserSettings.l_OutlookSecurityPolicy)
         $complexUserSettings.Add('L_AllowUsersToLowerAttachments', $policySettings.UserSettings.l_AllowUsersToLowerAttachments)
-        $complexUserSettings.Add('L_AllowActiveXOneOffForms', $policySettings.UserSettings.l_AllowActiveXOneOffForms)
-        $complexUserSettings.Add('L_empty29', $policySettings.UserSettings.l_empty29)
         $complexUserSettings.Add('L_EnableScriptsInOneOffForms', $policySettings.UserSettings.l_EnableScriptsInOneOffForms)
+        $complexUserSettings.Add('L_EnableRPCEncryption', $policySettings.UserSettings.l_EnableRPCEncryption)
+        $complexUserSettings.Add('L_Enablelinksinemailmessages', $policySettings.UserSettings.l_Enablelinksinemailmessages)
         $complexUserSettings.Add('L_Level2RemoveFilePolicy', $policySettings.UserSettings.l_Level2RemoveFilePolicy)
         $complexUserSettings.Add('L_removedextensions25', $policySettings.UserSettings.l_removedextensions25)
-        $complexUserSettings.Add('L_MSGUnicodeformatwhendraggingtofilesystem', $policySettings.UserSettings.l_MSGUnicodeformatwhendraggingtofilesystem)
-        $complexUserSettings.Add('L_OnExecuteCustomActionOOM', $policySettings.UserSettings.l_OnExecuteCustomActionOOM)
-        $complexUserSettings.Add('L_OnExecuteCustomActionOOM_Setting', $policySettings.UserSettings.l_OnExecuteCustomActionOOM_Setting)
-        $complexUserSettings.Add('L_DisableOutlookobjectmodelscriptsforpublicfolders', $policySettings.UserSettings.l_DisableOutlookobjectmodelscriptsforpublicfolders)
+        $complexUserSettings.Add('L_AllowActiveXOneOffForms', $policySettings.UserSettings.l_AllowActiveXOneOffForms)
+        $complexUserSettings.Add('L_empty29', $policySettings.UserSettings.l_empty29)
+        $complexUserSettings.Add('L_OOMAddressBook', $policySettings.UserSettings.l_OOMAddressBook)
+        $complexUserSettings.Add('L_OOMAddressBook_Setting', $policySettings.UserSettings.l_OOMAddressBook_Setting)
         $complexUserSettings.Add('L_BlockInternet', $policySettings.UserSettings.l_BlockInternet)
+        $complexUserSettings.Add('L_SignatureWarning', $policySettings.UserSettings.l_SignatureWarning)
+        $complexUserSettings.Add('L_signaturewarning30', $policySettings.UserSettings.l_signaturewarning30)
+        $complexUserSettings.Add('L_DisableOutlookobjectmodelscriptsforpublicfolders', $policySettings.UserSettings.l_DisableOutlookobjectmodelscriptsforpublicfolders)
         $complexUserSettings.Add('L_SecurityLevelOutlook', $policySettings.UserSettings.l_SecurityLevelOutlook)
         $complexUserSettings.Add('L_SecurityLevel', $policySettings.UserSettings.l_SecurityLevel)
         $complexUserSettings.Add('L_Level1RemoveFilePolicy', $policySettings.UserSettings.l_Level1RemoveFilePolicy)
         $complexUserSettings.Add('L_RemovedExtensions', $policySettings.UserSettings.l_RemovedExtensions)
-        $complexUserSettings.Add('L_SignatureWarning', $policySettings.UserSettings.l_SignatureWarning)
-        $complexUserSettings.Add('L_signaturewarning30', $policySettings.UserSettings.l_signaturewarning30)
-        $complexUserSettings.Add('L_Level1Attachments', $policySettings.UserSettings.l_Level1Attachments)
+        $complexUserSettings.Add('L_MSGUnicodeformatwhendraggingtofilesystem', $policySettings.UserSettings.l_MSGUnicodeformatwhendraggingtofilesystem)
+        $complexUserSettings.Add('L_OnExecuteCustomActionOOM', $policySettings.UserSettings.l_OnExecuteCustomActionOOM)
+        $complexUserSettings.Add('L_OnExecuteCustomActionOOM_Setting', $policySettings.UserSettings.l_OnExecuteCustomActionOOM_Setting)
+        $complexUserSettings.Add('L_JunkEmailprotectionlevel', $policySettings.UserSettings.l_JunkEmailprotectionlevel)
+        $complexUserSettings.Add('L_Selectlevel', $policySettings.UserSettings.l_Selectlevel)
         $complexUserSettings.Add('L_Minimumencryptionsettings', $policySettings.UserSettings.l_Minimumencryptionsettings)
         $complexUserSettings.Add('L_Minimumkeysizeinbits', $policySettings.UserSettings.l_Minimumkeysizeinbits)
         $complexUserSettings.Add('L_DisableOutlookobjectmodelscripts', $policySettings.UserSettings.l_DisableOutlookobjectmodelscripts)
+        $complexUserSettings.Add('L_Level1Attachments', $policySettings.UserSettings.l_Level1Attachments)
         $complexUserSettings.Add('L_OOMSaveAs', $policySettings.UserSettings.l_OOMSaveAs)
         $complexUserSettings.Add('L_OOMSaveAs_Setting', $policySettings.UserSettings.l_OOMSaveAs_Setting)
-        $complexUserSettings.Add('L_JunkEmailprotectionlevel', $policySettings.UserSettings.l_JunkEmailprotectionlevel)
-        $complexUserSettings.Add('L_Selectlevel', $policySettings.UserSettings.l_Selectlevel)
         $complexUserSettings.Add('L_RunPrograms', $policySettings.UserSettings.l_RunPrograms)
         $complexUserSettings.Add('L_RunPrograms_L_Empty', $policySettings.UserSettings.l_RunPrograms_L_Empty)
         $complexUserSettings.Add('L_Determinewhethertoforceencryptedppt', $policySettings.UserSettings.l_Determinewhethertoforceencryptedppt)
@@ -591,7 +592,15 @@ function Get-TargetResource
         $complexUserSettings.Add('L_empty19', $policySettings.UserSettings.l_empty19)
         $complexUserSettings.Add('MicrosoftWord_Security_L_TurnOffFileValidation', $policySettings.UserSettings.microsoftWord_Security_L_TurnOffFileValidation)
         $complexUserSettings.Add('MicrosoftWord_Security_TrustCenterTrustedLocations_L_AllowTrustedLocationsOnTheNetwork', $policySettings.UserSettings.microsoftWord_Security_TrustCenterTrustedLocations_L_AllowTrustedLocationsOnTheNetwork)
-        if ($complexUserSettings.values.Where({ $null -ne $_ }).Count -eq 0)
+        $complexUserSettings.Add('L_ExcelFileBlockExternalLinks', $policySettings.UserSettings.l_ExcelFileBlockExternalLinks)
+        $complexUserSettings.Add('L_BlockInsecureProtocols', $policySettings.UserSettings.l_BlockInsecureProtocols)
+        $complexUserSettings.Add('L_BlockOLEGraph', $policySettings.UserSettings.l_BlockOLEGraph)
+        $complexUserSettings.Add('L_BlockOrgChart', $policySettings.UserSettings.l_BlockOrgChart)
+        $complexUserSettings.Add('L_BlockWecFallback', $policySettings.UserSettings.l_BlockWecFallback)
+        $complexUserSettings.Add('L_OLEActions', $policySettings.UserSettings.l_OLEActions)
+        $complexUserSettings.Add('L_OLEActions_L_Empty', $policySettings.UserSettings.l_OLEActions_L_Empty)
+        $complexUserSettings.Add('L_ProjectOptionsSecurity_TrustCenter_L_BlockMacroExecutionFromInternet', $policySettings.UserSettings.l_ProjectOptionsSecurity_TrustCenter_L_BlockMacroExecutionFromInternet)
+        if ($complexUserSettings.Values.Where({ $null -ne $_ }).Count -eq 0)
         {
             $complexUserSettings = $null
         }
@@ -717,6 +726,8 @@ function Set-TargetResource
         $AccessTokens
     )
 
+    Write-Verbose -Message "Setting configuration of the Intune Security Baseline Microsoft365 Apps For Enterprise with Id {$Id} and Name {$DisplayName}"
+
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
 
@@ -730,19 +741,20 @@ function Set-TargetResource
     #endregion
 
     $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
 
-    $templateReferenceId = '90316f12-246d-44c6-a767-f87692e86083_2'
+    $templateReferenceId = '90316f12-246d-44c6-a767-f87692e86083_3'
     $platforms = 'windows10'
     $technologies = 'mdm'
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating an Intune Security Baseline Microsoft365 Apps For Enterprise with Name {$DisplayName}"
-        $BoundParameters.Remove('Assignments') | Out-Null
+        $boundParameters.Remove('Assignments') | Out-Null
 
         $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
+            -DSCParams ([System.Collections.Hashtable]$boundParameters) `
             -TemplateId $templateReferenceId `
             -ContainsDeviceAndUserSettings
 
@@ -772,10 +784,10 @@ function Set-TargetResource
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
         Write-Verbose -Message "Updating the Intune Security Baseline Microsoft365 Apps For Enterprise with Id {$($currentInstance.Id)}"
-        $BoundParameters.Remove('Assignments') | Out-Null
+        $boundParameters.Remove('Assignments') | Out-Null
 
         $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
+            -DSCParams ([System.Collections.Hashtable]$boundParameters) `
             -TemplateId $templateReferenceId `
             -ContainsDeviceAndUserSettings
 
@@ -965,7 +977,7 @@ function Export-TargetResource
     try
     {
         #region resource generator code
-        $policyTemplateID = '90316f12-246d-44c6-a767-f87692e86083_2'
+        $policyTemplateID = '90316f12-246d-44c6-a767-f87692e86083_3'
         $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
         if (-not [System.String]::IsNullOrEmpty($Filter))
         {
@@ -994,11 +1006,11 @@ function Export-TargetResource
         foreach ($config in $getValue)
         {
             $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.displayName))
+            if (-not [System.String]::IsNullOrEmpty($config.displayName))
             {
                 $displayedKey = $config.displayName
             }
-            elseif (-not [string]::IsNullOrEmpty($config.name))
+            elseif (-not [System.String]::IsNullOrEmpty($config.name))
             {
                 $displayedKey = $config.name
             }
@@ -1069,7 +1081,7 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('DeviceSettings', 'UserSettings', 'Assignments') `
+                -NoEscape @('Assignments', 'DeviceSettings', 'UserSettings') `
                 -RawResults $rawResults
 
             [void]$dscContent.Append($currentDSCBlock)
