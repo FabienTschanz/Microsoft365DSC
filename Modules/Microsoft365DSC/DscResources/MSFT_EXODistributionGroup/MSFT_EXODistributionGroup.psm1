@@ -243,6 +243,13 @@ function Get-TargetResource
 
     Write-Verbose -Message "Getting configuration of Distribution Group for $Identity"
 
+    # TODO: Remove property 'Notes' in next breaking change
+    if ($PSBoundParameters.ContainsKey('Notes'))
+    {
+        $PSBoundParameters.Remove('Notes') | Out-Null
+        Write-Warning "Property 'Notes' is deprecated and will be removed"
+    }
+
     try
     {
         if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $Name)
@@ -634,6 +641,13 @@ function Set-TargetResource
     }
 
     Write-Verbose -Message "Setting configuration of Distribution Group for $Identity"
+
+    # TODO: Remove property 'Notes' in next breaking change
+    if ($PSBoundParameters.ContainsKey('Notes'))
+    {
+        $PSBoundParameters.Remove('Notes') | Out-Null
+        Write-Warning "Property 'Notes' is deprecated and will be removed"
+    }
 
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
@@ -1180,6 +1194,7 @@ function Get-CompareParameters
     param()
 
     return @{
+        ExcludedProperties = @('Notes')
         PostProcessing = {
             param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
             if (-not $ValuesToCheck.OrganizationalUnit)

@@ -12,8 +12,8 @@ function Get-TargetResource
         $Identity,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Disabled', 'PushToTalkUserOverride', 'WakeWordPushToTalkUserOverride')]
+        [System.String]
         $CortanaVoiceInvocationMode,
 
         [Parameter()]
@@ -139,8 +139,8 @@ function Set-TargetResource
         $Identity,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Disabled', 'PushToTalkUserOverride', 'WakeWordPushToTalkUserOverride')]
+        [System.String]
         $CortanaVoiceInvocationMode,
 
         [Parameter()]
@@ -237,8 +237,8 @@ function Test-TargetResource
         $Identity,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Disabled', 'PushToTalkUserOverride', 'WakeWordPushToTalkUserOverride')]
+        [System.String]
         $CortanaVoiceInvocationMode,
 
         [Parameter()]

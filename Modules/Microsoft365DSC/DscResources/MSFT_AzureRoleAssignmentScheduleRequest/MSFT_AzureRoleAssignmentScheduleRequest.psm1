@@ -46,6 +46,10 @@ function Get-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
+        [System.String]
+        $SubscriptionId,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -300,6 +304,7 @@ function Get-TargetResource
             Justification         = "Assignment of Azure role '$RoleDefinition' to principal '$PrincipalValue' of type '$PrincipalType'."
             ScheduleInfo          = $ScheduleInfoValue
             Ensure                = 'Present'
+            SubscriptionId        = $SubscriptionId
             Credential            = $Credential
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
@@ -366,6 +371,10 @@ function Set-TargetResource
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
+
+        [Parameter()]
+        [System.String]
+        $SubscriptionId,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -556,6 +565,10 @@ function Test-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
+        [System.String]
+        $SubscriptionId,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -623,6 +636,10 @@ function Export-TargetResource
         [Parameter()]
         [System.String]
         $Filter,
+
+        [Parameter()]
+        [System.String]
+        $SubscriptionId,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -828,6 +845,7 @@ function Export-TargetResource
                     DirectoryScopeId      = $request.Scope
                     RoleDefinition        = $roleDefinition.Name
                     Ensure                = 'Present'
+                    SubscriptionId        = $SubscriptionId
                     Credential            = $Credential
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
@@ -959,7 +977,7 @@ function Get-CompareParameters
     param()
 
     return @{
-        ExcludedProperties = @('Justification')
+        ExcludedProperties = @('Justification', 'SubscriptionId')
         PostProcessing = {
             param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
             if ($null -ne $DesiredValues.ScheduleInfo -and

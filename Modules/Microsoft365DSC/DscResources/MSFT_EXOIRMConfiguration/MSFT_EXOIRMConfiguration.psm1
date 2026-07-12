@@ -123,6 +123,13 @@ function Get-TargetResource
 
     Write-Verbose -Message 'Getting IRM Configuration'
 
+    # TODO: Remove property 'EnablePortalTrackingLogs' in next breaking change
+    if ($PSBoundParameters.ContainsKey('EnablePortalTrackingLogs'))
+    {
+        $PSBoundParameters.Remove('EnablePortalTrackingLogs') | Out-Null
+        Write-Warning "Property 'EnablePortalTrackingLogs' is deprecated and will be removed"
+    }
+
     try
     {
         if (-not $Script:exportedInstance)
@@ -338,6 +345,13 @@ function Set-TargetResource
 
     Write-Verbose -Message 'Setting configuration of Resource Configuration'
 
+    # TODO: Remove property 'EnablePortalTrackingLogs' in next breaking change
+    if ($PSBoundParameters.ContainsKey('EnablePortalTrackingLogs'))
+    {
+        $PSBoundParameters.Remove('EnablePortalTrackingLogs') | Out-Null
+        Write-Warning "Property 'EnablePortalTrackingLogs' is deprecated and will be removed"
+    }
+
     $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
         -InboundParameters $PSBoundParameters
 
@@ -482,8 +496,10 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
+    $compareParameters = Get-CompareParameters
     $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
+        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
+        @compareParameters
     return $result
 }
 
@@ -594,4 +610,16 @@ function Export-TargetResource
         throw
     }
 }
-Export-ModuleMember -Function *-TargetResource
+
+function Get-CompareParameters
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    return @{
+        ExcludedProperties = @('EnablePortalTrackingLogs')
+    }
+}
+
+Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

@@ -13,7 +13,7 @@ function Get-TargetResource
 
         [Parameter()]
         [ValidateRange(15, 180)]
-        [System.UInt16]
+        [System.Int32]
         $AgentAlertTime,
 
         [Parameter()]
@@ -34,6 +34,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
+        $WelcomeTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
         $MusicOnHoldAudioFileId,
 
         [Parameter()]
@@ -47,7 +51,7 @@ function Get-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 200)]
-        [System.UInt16]
+        [System.Int32]
         $OverflowThreshold,
 
         [Parameter()]
@@ -61,7 +65,7 @@ function Get-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 2700)]
-        [System.UInt16]
+        [System.Int32]
         $TimeoutThreshold,
 
         [Parameter()]
@@ -92,6 +96,10 @@ function Get-TargetResource
         [Parameter()]
         [System.String[]]
         $OboResourceAccountIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOverflowSharedVoicemailSystemPromptSuppression,
 
         [Parameter()]
         [System.String]
@@ -204,6 +212,164 @@ function Get-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableTimeoutSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTimeoutSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [ValidateSet('Queue', 'Disconnect', 'Forward', 'Voicemail', 'SharedVoicemail')]
+        [System.String]
+        $NoAgentAction,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [ValidateSet('AllCalls', 'NewCalls')]
+        [System.String]
+        $NoAgentApplyTo,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentDisconnectAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentDisconnectTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPersonAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPersonTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoiceAppAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoiceAppTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPhoneNumberAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPhoneNumberTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShouldOverwriteCallableChannelProperty,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $OverflowActionCallPriority,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $TimeoutActionCallPriority,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $NoAgentActionCallPriority,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsCallbackEnabled,
+
+        [Parameter()]
+        [ValidateSet('Tone0', 'Tone1', 'Tone2', 'Tone3', 'Tone4', 'Tone5', 'Tone6', 'Tone7', 'Tone8', 'Tone9', 'ToneStar', 'TonePound')]
+        [System.String]
+        $CallbackRequestDtmf,
+
+        [Parameter()]
+        [System.Int32]
+        $WaitTimeBeforeOfferingCallbackInSecond,
+
+        [Parameter()]
+        [System.Int32]
+        $NumberOfCallsInQueueBeforeOfferingCallback,
+
+        [Parameter()]
+        [System.Int32]
+        $CallToAgentRatioThresholdBeforeOfferingCallback,
+
+        [Parameter()]
+        [System.String]
+        $CallbackOfferAudioFilePromptResourceId,
+
+        [Parameter()]
+        [System.String]
+        $CallbackOfferTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $CallbackEmailNotificationTarget,
+
+        [Parameter()]
+        [System.Int32]
+        $ServiceLevelThresholdResponseTimeInSecond,
+
+        [Parameter()]
+        [System.String]
+        $ShiftsTeamId,
+
+        [Parameter()]
+        [System.String]
+        $CustomAudioFileAnnouncementForCR,
+
+        [Parameter()]
+        [System.String]
+        $CustomAudioFileAnnouncementForCRFailure,
+
+        [Parameter()]
+        [System.String[]]
+        $ComplianceRecordingForCallQueueTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $SharedCallQueueHistoryTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $AutoRecordingTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $ShiftsSchedulingGroupId,
 
         [Parameter()]
         [System.String]
@@ -312,7 +478,7 @@ function Get-TargetResource
             $authorizedUsers += $user.UserPrincipalName
         }
 
-        return @{
+        $returnHashtable = @{
             Name                                          = $queue.Name
             AgentAlertTime                                = $queue.AgentAlertTime
             AllowOptOut                                   = $queue.AllowOptOut
@@ -320,6 +486,7 @@ function Get-TargetResource
             HideAuthorizedUsers                           = $authorizedUsers
             UseDefaultMusicOnHold                         = $queue.UseDefaultMusicOnHold
             WelcomeMusicAudioFileId                       = $queue.WelcomeMusicAudioFileId
+            WelcomeTextToSpeechPrompt                     = $queue.WelcomeTextToSpeechPrompt
             MusicOnHoldAudioFileId                        = $queue.MusicOnHoldAudioFileId
             OverflowAction                                = $queue.OverflowAction
             OverflowActionTarget                          = $queue.OverflowActionTarget.Id
@@ -333,6 +500,7 @@ function Get-TargetResource
             Users                                         = [String[]]$queue.Users
             LanguageId                                    = $queue.LanguageId
             OboResourceAccountIds                         = [String[]]$queue.OboResourceAccountIds
+            EnableOverflowSharedVoicemailSystemPromptSuppression = $queue.EnableOverflowSharedVoicemailSystemPromptSuppression
             OverflowDisconnectTextToSpeechPrompt          = $queue.OverflowDisconnectTextToSpeechPrompt
             OverflowDisconnectAudioFilePrompt             = $queue.OverflowDisconnectAudioFilePrompt
             OverflowRedirectPersonTextToSpeechPrompt      = $queue.OverflowRedirectPersonTextToSpeechPrompt
@@ -361,6 +529,44 @@ function Get-TargetResource
             TimeoutSharedVoicemailTextToSpeechPrompt      = $queue.TimeoutSharedVoicemailTextToSpeechPrompt
             TimeoutSharedVoicemailAudioFilePrompt         = $queue.TimeoutSharedVoicemailAudioFilePrompt
             EnableTimeoutSharedVoicemailTranscription     = $queue.EnableTimeoutSharedVoicemailTranscription
+            EnableTimeoutSharedVoicemailSystemPromptSuppression = $queue.EnableTimeoutSharedVoicemailSystemPromptSuppression
+            NoAgentAction                                 = $queue.NoAgentAction
+            NoAgentActionTarget                           = $queue.NoAgentActionTarget.Id
+            NoAgentSharedVoicemailTextToSpeechPrompt      = $queue.NoAgentSharedVoicemailTextToSpeechPrompt
+            NoAgentSharedVoicemailAudioFilePrompt         = $queue.NoAgentSharedVoicemailAudioFilePrompt
+            EnableNoAgentSharedVoicemailTranscription     = $queue.EnableNoAgentSharedVoicemailTranscription
+            EnableNoAgentSharedVoicemailSystemPromptSuppression = $queue.EnableNoAgentSharedVoicemailSystemPromptSuppression
+            NoAgentApplyTo                                = $queue.NoAgentApplyTo
+            NoAgentDisconnectAudioFilePrompt              = $queue.NoAgentDisconnectAudioFilePrompt
+            NoAgentDisconnectTextToSpeechPrompt           = $queue.NoAgentDisconnectTextToSpeechPrompt
+            NoAgentRedirectPersonAudioFilePrompt          = $queue.NoAgentRedirectPersonAudioFilePrompt
+            NoAgentRedirectPersonTextToSpeechPrompt       = $queue.NoAgentRedirectPersonTextToSpeechPrompt
+            NoAgentRedirectVoiceAppAudioFilePrompt        = $queue.NoAgentRedirectVoiceAppAudioFilePrompt
+            NoAgentRedirectVoiceAppTextToSpeechPrompt     = $queue.NoAgentRedirectVoiceAppTextToSpeechPrompt
+            NoAgentRedirectPhoneNumberAudioFilePrompt     = $queue.NoAgentRedirectPhoneNumberAudioFilePrompt
+            NoAgentRedirectPhoneNumberTextToSpeechPrompt  = $queue.NoAgentRedirectPhoneNumberTextToSpeechPrompt
+            NoAgentRedirectVoicemailAudioFilePrompt       = $queue.NoAgentRedirectVoicemailAudioFilePrompt
+            NoAgentRedirectVoicemailTextToSpeechPrompt    = $queue.NoAgentRedirectVoicemailTextToSpeechPrompt
+            ShouldOverwriteCallableChannelProperty        = $queue.ShouldOverwriteCallableChannelProperty
+            OverflowActionCallPriority                    = $queue.OverflowActionCallPriority
+            TimeoutActionCallPriority                     = $queue.TimeoutActionCallPriority
+            NoAgentActionCallPriority                     = $queue.NoAgentActionCallPriority
+            IsCallbackEnabled                             = $queue.IsCallbackEnabled
+            CallbackRequestDtmf                           = $queue.CallbackRequestDtmf
+            WaitTimeBeforeOfferingCallbackInSecond        = $queue.WaitTimeBeforeOfferingCallbackInSecond
+            NumberOfCallsInQueueBeforeOfferingCallback    = $queue.NumberOfCallsInQueueBeforeOfferingCallback
+            CallToAgentRatioThresholdBeforeOfferingCallback = $queue.CallToAgentRatioThresholdBeforeOfferingCallback
+            CallbackOfferAudioFilePromptResourceId        = $queue.CallbackOfferAudioFilePromptResourceId
+            CallbackOfferTextToSpeechPrompt               = $queue.CallbackOfferTextToSpeechPrompt
+            CallbackEmailNotificationTarget               = $queue.CallbackEmailNotificationTarget
+            ServiceLevelThresholdResponseTimeInSecond     = $queue.ServiceLevelThresholdResponseTimeInSecond
+            ShiftsTeamId                                  = $queue.ShiftsTeamId
+            CustomAudioFileAnnouncementForCR              = $queue.CustomAudioFileAnnouncementForCR
+            CustomAudioFileAnnouncementForCRFailure       = $queue.CustomAudioFileAnnouncementForCRFailure
+            ComplianceRecordingForCallQueueTemplateId     = [String[]]$queue.ComplianceRecordingForCallQueueTemplateId
+            SharedCallQueueHistoryTemplateId              = $queue.SharedCallQueueHistoryTemplateId
+            AutoRecordingTemplateId                       = $queue.AutoRecordingTemplateId
+            ShiftsSchedulingGroupId                       = $queue.ShiftsSchedulingGroupId
             ChannelId                                     = $queue.ChannelId
             ChannelUserObjectId                           = $queue.ChannelUserObjectId
             AuthorizedUsers                               = [String[]]$queue.AuthorizedUsers
@@ -374,6 +580,21 @@ function Get-TargetResource
             ManagedIdentity                               = $ManagedIdentity.IsPresent
             AccessTokens                                  = $AccessTokens
         }
+
+        if ($returnHashtable.OverflowActionCallPriority -eq 0)
+        {
+            $returnHashtable.Remove('OverflowActionCallPriority') | Out-Null
+        }
+        if ($returnHashtable.TimeoutActionCallPriority -eq 0)
+        {
+            $returnHashtable.Remove('TimeoutActionCallPriority') | Out-Null
+        }
+        if ($returnHashtable.NoAgentActionCallPriority -eq 0)
+        {
+            $returnHashtable.Remove('NoAgentActionCallPriority') | Out-Null
+        }
+
+        return $returnHashtable
     }
     catch
     {
@@ -398,7 +619,7 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateRange(15, 180)]
-        [System.UInt16]
+        [System.Int32]
         $AgentAlertTime,
 
         [Parameter()]
@@ -419,6 +640,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
+        $WelcomeTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
         $MusicOnHoldAudioFileId,
 
         [Parameter()]
@@ -432,7 +657,7 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 200)]
-        [System.UInt16]
+        [System.Int32]
         $OverflowThreshold,
 
         [Parameter()]
@@ -446,7 +671,7 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 2700)]
-        [System.UInt16]
+        [System.Int32]
         $TimeoutThreshold,
 
         [Parameter()]
@@ -477,6 +702,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String[]]
         $OboResourceAccountIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOverflowSharedVoicemailSystemPromptSuppression,
 
         [Parameter()]
         [System.String]
@@ -589,6 +818,164 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableTimeoutSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTimeoutSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [ValidateSet('Queue', 'Disconnect', 'Forward', 'Voicemail', 'SharedVoicemail')]
+        [System.String]
+        $NoAgentAction,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [ValidateSet('AllCalls', 'NewCalls')]
+        [System.String]
+        $NoAgentApplyTo,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentDisconnectAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentDisconnectTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPersonAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPersonTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoiceAppAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoiceAppTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPhoneNumberAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPhoneNumberTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShouldOverwriteCallableChannelProperty,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $OverflowActionCallPriority,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $TimeoutActionCallPriority,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $NoAgentActionCallPriority,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsCallbackEnabled,
+
+        [Parameter()]
+        [ValidateSet('Tone0', 'Tone1', 'Tone2', 'Tone3', 'Tone4', 'Tone5', 'Tone6', 'Tone7', 'Tone8', 'Tone9', 'ToneStar', 'TonePound')]
+        [System.String]
+        $CallbackRequestDtmf,
+
+        [Parameter()]
+        [System.Int32]
+        $WaitTimeBeforeOfferingCallbackInSecond,
+
+        [Parameter()]
+        [System.Int32]
+        $NumberOfCallsInQueueBeforeOfferingCallback,
+
+        [Parameter()]
+        [System.Int32]
+        $CallToAgentRatioThresholdBeforeOfferingCallback,
+
+        [Parameter()]
+        [System.String]
+        $CallbackOfferAudioFilePromptResourceId,
+
+        [Parameter()]
+        [System.String]
+        $CallbackOfferTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $CallbackEmailNotificationTarget,
+
+        [Parameter()]
+        [System.Int32]
+        $ServiceLevelThresholdResponseTimeInSecond,
+
+        [Parameter()]
+        [System.String]
+        $ShiftsTeamId,
+
+        [Parameter()]
+        [System.String]
+        $CustomAudioFileAnnouncementForCR,
+
+        [Parameter()]
+        [System.String]
+        $CustomAudioFileAnnouncementForCRFailure,
+
+        [Parameter()]
+        [System.String[]]
+        $ComplianceRecordingForCallQueueTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $SharedCallQueueHistoryTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $AutoRecordingTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $ShiftsSchedulingGroupId,
 
         [Parameter()]
         [System.String]
@@ -714,7 +1101,7 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateRange(15, 180)]
-        [System.UInt16]
+        [System.Int32]
         $AgentAlertTime,
 
         [Parameter()]
@@ -735,6 +1122,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
+        $WelcomeTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
         $MusicOnHoldAudioFileId,
 
         [Parameter()]
@@ -748,7 +1139,7 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 200)]
-        [System.UInt16]
+        [System.Int32]
         $OverflowThreshold,
 
         [Parameter()]
@@ -762,7 +1153,7 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateRange(0, 2700)]
-        [System.UInt16]
+        [System.Int32]
         $TimeoutThreshold,
 
         [Parameter()]
@@ -793,6 +1184,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String[]]
         $OboResourceAccountIds,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableOverflowSharedVoicemailSystemPromptSuppression,
 
         [Parameter()]
         [System.String]
@@ -905,6 +1300,164 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $EnableTimeoutSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableTimeoutSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [ValidateSet('Queue', 'Disconnect', 'Forward', 'Voicemail', 'SharedVoicemail')]
+        [System.String]
+        $NoAgentAction,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentActionTarget,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentSharedVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailTranscription,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableNoAgentSharedVoicemailSystemPromptSuppression,
+
+        [Parameter()]
+        [ValidateSet('AllCalls', 'NewCalls')]
+        [System.String]
+        $NoAgentApplyTo,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentDisconnectAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentDisconnectTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPersonAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPersonTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoiceAppAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoiceAppTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPhoneNumberAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectPhoneNumberTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoicemailAudioFilePrompt,
+
+        [Parameter()]
+        [System.String]
+        $NoAgentRedirectVoicemailTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShouldOverwriteCallableChannelProperty,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $OverflowActionCallPriority,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $TimeoutActionCallPriority,
+
+        [Parameter()]
+        [ValidateRange(1, 5)]
+        [System.Int32]
+        $NoAgentActionCallPriority,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsCallbackEnabled,
+
+        [Parameter()]
+        [ValidateSet('Tone0', 'Tone1', 'Tone2', 'Tone3', 'Tone4', 'Tone5', 'Tone6', 'Tone7', 'Tone8', 'Tone9', 'ToneStar', 'TonePound')]
+        [System.String]
+        $CallbackRequestDtmf,
+
+        [Parameter()]
+        [System.Int32]
+        $WaitTimeBeforeOfferingCallbackInSecond,
+
+        [Parameter()]
+        [System.Int32]
+        $NumberOfCallsInQueueBeforeOfferingCallback,
+
+        [Parameter()]
+        [System.Int32]
+        $CallToAgentRatioThresholdBeforeOfferingCallback,
+
+        [Parameter()]
+        [System.String]
+        $CallbackOfferAudioFilePromptResourceId,
+
+        [Parameter()]
+        [System.String]
+        $CallbackOfferTextToSpeechPrompt,
+
+        [Parameter()]
+        [System.String]
+        $CallbackEmailNotificationTarget,
+
+        [Parameter()]
+        [System.Int32]
+        $ServiceLevelThresholdResponseTimeInSecond,
+
+        [Parameter()]
+        [System.String]
+        $ShiftsTeamId,
+
+        [Parameter()]
+        [System.String]
+        $CustomAudioFileAnnouncementForCR,
+
+        [Parameter()]
+        [System.String]
+        $CustomAudioFileAnnouncementForCRFailure,
+
+        [Parameter()]
+        [System.String[]]
+        $ComplianceRecordingForCallQueueTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $SharedCallQueueHistoryTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $AutoRecordingTemplateId,
+
+        [Parameter()]
+        [System.String]
+        $ShiftsSchedulingGroupId,
 
         [Parameter()]
         [System.String]

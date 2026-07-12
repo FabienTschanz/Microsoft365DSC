@@ -73,10 +73,120 @@
 
 # UNRELEASED
 
+* AADIdentityGovernanceProgram
+  * Deprecated resource. It is superseded by the access review resources.
+* AzureBillingAccountPolicy
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureBillingAccountsAssociatedTenant
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureBillingAccountScheduledAction
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureBillingAccountsRoleAssignment
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureDiagnosticSettings
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureDiagnosticSettingsCustomSecurityAttribute
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureRoleAssignmentScheduleRequest
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureRoleAssignmentScheduleRequest
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureRoleDefinition
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+    FIXES [#7321](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7321)
+* AzureRoleEligibilityScheduleRequest
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* AzureRoleEligibilityScheduleSettings
+  * Added `SubscriptionId` parameter to specify the Azure subscription
+    that is used to connect to.
+* EXOAvailabilityAddressSpace
+  * Fixed an issue where the `Credentials` property had the correct
+    parameter type in its definition.
+* EXODistributionGroup
+  * Deprecate property `Notes`
+* EXOIRMConfiguration
+  * Deprecate property `EnablePortalTrackingLogs`
+* EXOManagementRoleEntry
+  * Deprecate property `Type`
+* EXOMigration
+  * Fixed unit-tests so datetimes are parsed in US-format
+* EXOPlace
+  * Deprecate property `Desks`
+* IntuneWifiConfigurationPolicyIOS
+  * Added `wpa3Personal` to the `WifiSecurityType` property.
+* SettingsCatalogHelper
+  * Fixed an issue where complex administrative template names
+    were not handled correctly.
+* Teams
+  * Updated resource settings to use the Teams Reader role and remove Graph
+    permissions from resources that do not require Microsoft Graph modules.
+* TeamsCallQueue
+  * Added new properties `AutoRecordingTemplateId`, `CallbackEmailNotificationTarget`,
+    `CallbackOfferAudioFilePromptResourceId`, `CallbackOfferTextToSpeechPrompt`,
+    `CallbackRequestDtmf`, `CallToAgentRatioThresholdBeforeOfferingCallback`,
+    `ComplianceRecordingForCallQueueTemplateId`, `CustomAudioFileAnnouncementForCR`,
+    `CustomAudioFileAnnouncementForCRFailure`, `EnableNoAgentSharedVoicemailSystemPromptSuppression`,
+    `EnableNoAgentSharedVoicemailTranscription`, `EnableOverflowSharedVoicemailSystemPromptSuppression`,
+    `EnableTimeoutSharedVoicemailSystemPromptSuppression`, `IsCallbackEnabled`, `NoAgentAction`,
+    `NoAgentActionCallPriority`, `NoAgentActionTarget`, `NoAgentApplyTo`,
+    `NoAgentDisconnectAudioFilePrompt`, `NoAgentDisconnectTextToSpeechPrompt`,
+    `NoAgentRedirectPersonAudioFilePrompt`, `NoAgentRedirectPersonTextToSpeechPrompt`,
+    `NoAgentRedirectPhoneNumberAudioFilePrompt`, `NoAgentRedirectPhoneNumberTextToSpeechPrompt`,
+    `NoAgentRedirectVoiceAppAudioFilePrompt`, `NoAgentRedirectVoiceAppTextToSpeechPrompt`,
+    `NoAgentRedirectVoicemailAudioFilePrompt`, `NoAgentRedirectVoicemailTextToSpeechPrompt`,
+    `NoAgentSharedVoicemailAudioFilePrompt`, `NoAgentSharedVoicemailTextToSpeechPrompt`,
+    `NumberOfCallsInQueueBeforeOfferingCallback`, `OverflowActionCallPriority`,
+    `ServiceLevelThresholdResponseTimeInSecond`, `SharedCallQueueHistoryTemplateId`,
+    `ShiftsSchedulingGroupId`, `ShiftsTeamId`,
+    `ShouldOverwriteCallableChannelProperty`, `TimeoutActionCallPriority`,
+    `WaitTimeBeforeOfferingCallbackInSecond`, `WelcomeTextToSpeechPrompt`
+* M365DSCCheckProperties
+  * Fixed an issue with function `Get-PropertyReport` where it wasn't working
+    because the `Teams` module was being loaded last and causing conflicts
+  * Added authentication methods `ApplicationSecret`, `AccesstTokens` and
+    `ManagedIdentity` as internal M365DSC properties that should to be ignored
+* M365DSCExportUtil
+  * Fixed a formatting issue with `CertificatePassword` during export.
+  * Removed usage of function `Resolve-Credentials` and instead just use the
+    appropriate hardcoded strings
+* M365DSCReverse
+  * Fixed an issue with `Credential` and `CertificatePassword` parameters.
+  * Fixed an issue generating the blueprint if using Azure Automation with
+    `Credential` parameter.
+  * Removed usage of function `Save-Credentials` since it's not required any
+    longer.
+* DEPENDENCIES
+  * Updated `MSCloudLoginAssistant` to version `1.1.69`.
+* MISC
+  * Added Docker image publishing for Windows and Linux platforms.
+  * Updated workflow triggers for GitHub Actions.
+  * Stopped pinning Pester dependency to `5.7.1` on Docker images since all
+    tests were made compatible in previous release with version `6.x`
+* Added `License Requirements` section to README.md documenting Microsoft
+    365 E5 / Defender for Office 365 Plan 2 licensing requirements for EXO
+    Defender resources.
+
+# 1.26.708.1
+
 * AADAdministrativeUnit
-  * Fixed issue that made unit tests under Windows PowerShell fail.
+  * Added test for duplicated DisplayName across AUs
+  * Fixed an issue that made unit tests under Windows PowerShell fail.
+* AADCustomSecurityAttributeDefinition
+  * Fixed an issue where missing allowed values were not added to existing
+    custom security attribute definitions.
+    FIXES [#7305](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7305)
 * AADEntitlementManagementAccessPackageCatalog
-  * Fixed issue that made unit tests under Windows PowerShell fail.
+  * Fixed an issue that made unit tests under Windows PowerShell fail.
 * AADGroup
   * Fixed an issue where `GroupTypes` would be returned as a null object.
     FIXES [#7253](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7253)
@@ -85,7 +195,7 @@
     was incorrectly converted to a DateTime object.
     FIXES [#7291](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7291)
 * AzureBillingAccountScheduledAction
-  * Fixed issue that made unit tests under Windows PowerShell fail
+  * Fixed an issue that made unit tests under Windows PowerShell fail.
 * IntuneDeviceCompliancePolicyMacOS
   * Fixed an issue where `ScheduledActionsForRule` was not compared correctly.
 * M365DSCExportUtil
@@ -102,13 +212,14 @@
   * Fixed an issue with the foreground color when run under Linux.
   * Fixed an issue where `$env:TEMP` was not defined when run under Linux.
 * MISC
+  * Added Dockerfile and an ancillary script which is used to install
+    Microsoft365DSC module and its dependencies on that Windows docker image.
   * Fixed an issue where assignments through a policy set were exported for
     resources that were not of the `IntunePolicySets` type.
-  * Added Dockerfile and an ancillary script which is used to install
-    Microsoft365Dsc module and its dependencies on that Windows docker image
   * Fixed unit tests so that they all pass under both Windows PowerShell and
-    PowerShell 7
-
+    PowerShell 7.
+  * Updated all unit tests for Pester v6.0.0.
+  * Updated the drift event to mask authentication parameters in the message.
 # 1.26.701.1
 
 * AADCrossTenantAccessPolicyConfigurationPartner
@@ -4645,6 +4756,8 @@
     null
     FIXES [#3971](https://github.com/microsoft/Microsoft365DSC/issues/3971)
   * Fixed compare logic for CIM instances in Test-TargetResource
+* IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10
+  * Fixed an issue with parsing the returned DateTime value object.
 * M365DSCRuleEvaluation
   * Fix issue when it didn't find any matching resources and it tried to make a
     comparison

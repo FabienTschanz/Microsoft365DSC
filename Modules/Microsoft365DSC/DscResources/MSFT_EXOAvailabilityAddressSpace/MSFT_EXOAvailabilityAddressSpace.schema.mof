@@ -1,5 +1,5 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("EXOAvailabilityAddressSpace")]
+[ClassVersion("1.0.0.1"), FriendlyName("EXOAvailabilityAddressSpace")]
 class MSFT_EXOAvailabilityAddressSpace : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the AvailabilityAddressSpace you want to modify.")] String Identity;

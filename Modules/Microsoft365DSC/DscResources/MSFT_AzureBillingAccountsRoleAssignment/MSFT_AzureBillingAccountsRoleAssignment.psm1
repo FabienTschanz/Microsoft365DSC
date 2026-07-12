@@ -33,6 +33,10 @@ function Get-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
+        [System.String]
+        $SubscriptionId,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -126,6 +130,7 @@ function Get-TargetResource
             PrincipalTenantId     = $instance.properties.principalTenantId
             RoleDefinition        = $RoleDefinitionValue.properties.roleName
             Ensure                = 'Present'
+            SubscriptionId        = $SubscriptionId
             Credential            = $Credential
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
@@ -178,6 +183,10 @@ function Set-TargetResource
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
+
+        [Parameter()]
+        [System.String]
+        $SubscriptionId,
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -304,6 +313,10 @@ function Test-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
+        [System.String]
+        $SubscriptionId,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -351,8 +364,10 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
+    $compareParameters = Get-CompareParameters
     $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
+        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
+        @compareParameters
     return $result
 }
 
@@ -362,6 +377,10 @@ function Export-TargetResource
     [OutputType([System.String])]
     param
     (
+        [Parameter()]
+        [System.String]
+        $SubscriptionId,
+
         [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
@@ -465,6 +484,7 @@ function Export-TargetResource
                     PrincipalType         = $assignment.properties.principalType
                     PrincipalTenantId     = $assignment.properties.principalTenantId
                     RoleDefinition        = 'AnyRole'
+                    SubscriptionId        = $SubscriptionId
                     Credential            = $Credential
                     ApplicationId         = $ApplicationId
                     TenantId              = $TenantId
@@ -586,4 +606,15 @@ function Get-M365DSCPrincipalIdFromName
     return $result
 }
 
-Export-ModuleMember -Function *-TargetResource
+function Get-CompareParameters
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    return @{
+        ExcludedProperties = @('SubscriptionId')
+    }
+}
+
+Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')
