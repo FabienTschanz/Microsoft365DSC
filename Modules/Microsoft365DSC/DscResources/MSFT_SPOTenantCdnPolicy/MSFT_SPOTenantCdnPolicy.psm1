@@ -90,15 +90,13 @@ function Get-TargetResource
         $ExcludeRestrictedSiteClassifications = @()
         $IncludeFileExtensions = @()
         $Policies.GetEnumerator() | ForEach-Object {
-            if ($_.Name.Value -eq 'ExcludeRestrictedSiteClassifications' -and $_.Value.Length -gt 0)
+            if ($_.Key -eq 'ExcludeRestrictedSiteClassifications' -and $_.Value.Length -gt 0)
             {
-                $ExcludeRestrictedSiteClassifications = `
-                    $_.Value.Split(',')
+                $ExcludeRestrictedSiteClassifications = $_.Value.Split(',')
             }
-            if ($_.Name.Value -eq 'IncludeFileExtensions' -and $_.Value.Length -gt 0)
+            if ($_.Key -eq 'IncludeFileExtensions' -and $_.Value.Length -gt 0)
             {
-                $IncludeFileExtensions = `
-                    $_.Value.Split(',')
+                $IncludeFileExtensions = $_.Value.Split(',')
             }
         }
 

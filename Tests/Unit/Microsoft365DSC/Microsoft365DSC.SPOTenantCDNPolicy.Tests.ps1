@@ -54,9 +54,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-PnPTenantCDNPolicies -MockWith {
                     return @{
-                        @{ Value = 'CDNType' }                              = 'Public'
-                        @{ Value = 'ExcludeRestrictedSiteClassifications' } = 'Secured'
-                        @{ Value = 'IncludeFileExtensions' }                = '.php'
+                        CDNType                              = 'Public'
+                        ExcludeRestrictedSiteClassifications = 'Secured'
+                        IncludeFileExtensions                = '.php'
                     }
                 }
             }
@@ -85,10 +85,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-PnPTenantCDNPolicies -MockWith {
                     return @{
-                        @{ Value = 'CDNType' }                              = 'Private'
-                        @{ Value = 'ExcludeIfNoScriptDisabled' }            = $false
-                        @{ Value = 'ExcludeRestrictedSiteClassifications' } = 'Secured'
-                        @{ Value = 'IncludeFileExtensions' }                = '.php'
+                        CDNType                              = 'Private'
+                        ExcludeIfNoScriptDisabled            = $false
+                        ExcludeRestrictedSiteClassifications = 'Secured'
+                        IncludeFileExtensions                = '.php'
                     }
                 }
             }
@@ -117,10 +117,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-PnPTenantCDNPolicies -MockWith {
                     return @{
-                        @{ Value = 'CDNType' }                              = 'Public'
-                        @{ Value = 'ExcludeIfNoScriptDisabled' }            = $false
-                        @{ Value = 'ExcludeRestrictedSiteClassifications' } = 'Secured'
-                        @{ Value = 'IncludeFileExtensions' }                = '.php'
+                        CDNType                              = 'Public'
+                        ExcludeIfNoScriptDisabled            = $false
+                        ExcludeRestrictedSiteClassifications = 'Secured'
+                        IncludeFileExtensions                = '.php'
                     }
                 }
             }
@@ -144,10 +144,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Get-PnPTenantCDNPolicies -MockWith {
                     return @{
-                        @{ Value = 'CDNType' }                              = 'Public'
-                        @{ Value = 'ExcludeIfNoScriptDisabled' }            = $false
-                        @{ Value = 'ExcludeRestrictedSiteClassifications' } = 'Secured'
-                        @{ Value = 'IncludeFileExtensions' }                = '.php'
+                        CDNType                              = 'Public'
+                        ExcludeIfNoScriptDisabled            = $false
+                        ExcludeRestrictedSiteClassifications = 'Secured'
+                        IncludeFileExtensions                = '.php'
                     }
                 }
             }
