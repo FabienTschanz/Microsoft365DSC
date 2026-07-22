@@ -89,6 +89,13 @@ function Get-TargetResource
 
     Write-Verbose -Message "Getting configuration for Teams Tenant Network Site $Identity"
 
+    # TODO: Remove property 'SiteAddress' in next breaking change
+    if ($PSBoundParameters.ContainsKey('SiteAddress'))
+    {
+        $PSBoundParameters.Remove('SiteAddress') | Out-Null
+        Write-Warning "Property 'SiteAddress' is deprecated and will be removed"
+    }
+
     try
     {
         if (-not $Script:exportedInstance -or $Script:exportedInstance.Identity -ne $Identity)
@@ -133,7 +140,6 @@ function Get-TargetResource
             LocationPolicy             = $instance.LocationPolicy
             NetworkRegionID            = $instance.NetworkRegionID
             NetworkRoamingPolicy       = $instance.NetworkRoamingPolicy
-            SiteAddress                = $instance.SiteAddress
             Ensure                     = 'Present'
             Credential                 = $Credential
             ApplicationId              = $ApplicationId
@@ -244,6 +250,13 @@ function Set-TargetResource
     }
 
     Write-Verbose -Message "Getting configuration for Teams Tenant Network Site $Identity"
+
+    # TODO: Remove property 'SiteAddress' in next breaking change
+    if ($PSBoundParameters.ContainsKey('SiteAddress'))
+    {
+        $PSBoundParameters.Remove('SiteAddress') | Out-Null
+        Write-Warning "Property 'SiteAddress' is deprecated and will be removed"
+    }
 
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
@@ -373,8 +386,10 @@ function Test-TargetResource
     Add-M365DSCTelemetryEvent -Data $data
     #endregion
 
+    $compareParameters = Get-CompareParameters
     $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
+        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
+        @compareParameters
     return $result
 }
 
@@ -514,4 +529,15 @@ function Export-TargetResource
     }
 }
 
-Export-ModuleMember -Function *-TargetResource
+function Get-CompareParameters
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    return @{
+        ExcludedProperties = @('SiteAddress')
+    }
+}
+
+Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

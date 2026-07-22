@@ -176,7 +176,7 @@ function Get-TargetResource
 
     try
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $DisplayName)
         {
             $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
                 -InboundParameters $PSBoundParameters `
@@ -202,7 +202,9 @@ function Get-TargetResource
             $policy = $null
             if (-not [System.String]::IsNullOrEmpty($Identity))
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue `
+                    -ExpandProperty 'settings($expand=settingDefinitions)'
+                $settings = $policy.settings
             }
 
             if ($null -eq $policy)
@@ -227,18 +229,22 @@ function Get-TargetResource
         else
         {
             $policy = $Script:exportedInstance
+            $settings = $policy.settings
         }
 
         $Identity = $policy.Id
 
-        Write-Verbose -Message "Found Intune Attack Surface Reduction Rules Policy for Windows10 Config Manager with Id {$($Identity) and Name $($policy.Name)}"
+        Write-Verbose -Message "Found Intune Attack Surface Reduction Rules Policy for Windows10 Config Manager with Id {$($Identity)} and Name {$($policy.Name)}"
 
         # Retrieve policy specific settings
-        [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-            -DeviceManagementConfigurationPolicyId $Identity `
-            -ExpandProperty 'settingDefinitions' `
-            -All `
-            -ErrorAction Stop
+        if ($null -eq $settings)
+        {
+            [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
+                -DeviceManagementConfigurationPolicyId $Identity `
+                -ExpandProperty 'settingDefinitions' `
+                -All `
+                -ErrorAction Stop
+        }
 
         $returnHashtable = @{}
         $returnHashtable.Add('Identity', $Identity)
@@ -808,10 +814,9 @@ function Export-TargetResource
         {
             $Filter = $baseFilter
         }
-        [array]$policies = Get-MgBetaDeviceManagementConfigurationPolicy `
-            -Filter $Filter `
-            -All `
-            -ErrorAction Stop
+        [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
+            -TemplateId $policyTemplateID `
+            -Filter $Filter
 
         if ($policies.Length -eq 0)
         {

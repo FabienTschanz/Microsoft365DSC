@@ -130,8 +130,8 @@ function Get-TargetResource
             if (-not [string]::IsNullOrEmpty($Name))
             {
                 [array]$getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
-                    -Filter "Name eq '$($Name -replace "'", "''")' and Platforms eq 'windows10' and Technologies eq 'mdm' and TemplateReference/TemplateFamily eq 'none'" `
                     -All `
+                    -Filter "Name eq '$($Name -replace "'", "''")' and Platforms eq 'windows10' and Technologies eq 'mdm' and TemplateReference/TemplateFamily eq 'none'" `
                     -ErrorAction SilentlyContinue
 
                 if ($getValue.Count -gt 1)

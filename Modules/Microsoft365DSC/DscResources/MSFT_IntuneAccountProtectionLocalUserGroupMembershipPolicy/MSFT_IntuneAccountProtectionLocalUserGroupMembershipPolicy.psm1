@@ -83,7 +83,7 @@ function Get-TargetResource
 
     try
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $DisplayName)
         {
             $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
                 -InboundParameters $PSBoundParameters `
@@ -108,7 +108,9 @@ function Get-TargetResource
             $policy = $null
             if (-not [String]::IsNullOrEmpty($Identity))
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ExpandProperty settings -ErrorAction SilentlyContinue
+                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue `
+                    -ExpandProperty 'settings($expand=settingDefinitions)'
+                $settings = $policy.settings
             }
 
             if ($null -eq $policy)
@@ -116,9 +118,12 @@ function Get-TargetResource
                 Write-Verbose -Message "No Account Protection Local User Group Membership Policy with identity {$Identity} was found"
                 if (-not [String]::IsNullOrEmpty($DisplayName))
                 {
-                    $policy = Get-MgBetaDeviceManagementConfigurationPolicy -All -Filter "Name eq '$($DisplayName -replace "'", "''")'" -ErrorAction SilentlyContinue
+                    $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
+                        -All `
+                        -Filter "Name eq '$($DisplayName -replace "'", "''")'" `
+                        -ErrorAction SilentlyContinue
 
-                    if (([array]$devicePolicy).Count -gt 1)
+                    if (([array]$policy).Count -gt 1)
                     {
                         throw "A policy with a duplicated displayName {'$DisplayName'} was found - Ensure displayName is unique"
                     }
@@ -128,19 +133,17 @@ function Get-TargetResource
                         Write-Verbose -Message "No Account Protection Local User Group Membership Policy with displayName {$DisplayName} was found"
                         return $nullResult
                     }
-
-                    $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $policy.Id -ExpandProperty settings -ErrorAction SilentlyContinue
                 }
             }
         }
         else
         {
-            $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Script:exportedInstance.Id -ExpandProperty settings
+            $policy = $Script:exportedInstance
+            $settings = $policy.settings
         }
 
         # Retrieve policy specific settings
         $Identity = $policy.Id
-        [array]$settings = $policy.settings
 
         $returnHashtable = @{}
         $returnHashtable.Add('Identity', $policy.Id)
@@ -148,10 +151,13 @@ function Get-TargetResource
         $returnHashtable.Add('Description', $policy.Description)
         $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
 
-        [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-            -DeviceManagementConfigurationPolicyId $Identity `
-            -ExpandProperty 'settingDefinitions' `
-            -ErrorAction Stop
+        if ($null -eq $settings)
+        {
+            [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
+                -DeviceManagementConfigurationPolicyId $Identity `
+                -ExpandProperty 'settingDefinitions' `
+                -ErrorAction Stop
+        }
         $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
         foreach ($group in $returnHashtable.AccessGroup)
@@ -603,10 +609,9 @@ function Export-TargetResource
         {
             $Filter = $baseFilter
         }
-        [array]$policies = Get-MgBetaDeviceManagementConfigurationPolicy `
-            -Filter $Filter `
-            -All `
-            -ErrorAction Stop | Where-Object -FilterScript { $_.TemplateReference.TemplateId -eq $policyTemplateID }
+        [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
+            -TemplateId $policyTemplateID `
+            -Filter $Filter
 
         if ($policies.Length -eq 0)
         {

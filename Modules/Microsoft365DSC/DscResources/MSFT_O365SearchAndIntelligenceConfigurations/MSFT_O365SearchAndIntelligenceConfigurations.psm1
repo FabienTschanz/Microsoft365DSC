@@ -443,6 +443,9 @@ function Export-TargetResource
         return
     }
 
+    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
+        -InboundParameters $PSBoundParameters
+
     $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters
 
@@ -497,7 +500,6 @@ function Export-TargetResource
     }
     catch
     {
-        $TenantId = $Credential.UserName.Split('@')[1]
         New-M365DSCLogEntry -Message 'Error during Export:' `
             -Exception $_ `
             -Source $($MyInvocation.MyCommand.Source) `

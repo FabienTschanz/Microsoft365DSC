@@ -1334,7 +1334,7 @@ function Set-TargetResource
              Write-Verbose -Message "Updating AuthenticationBehaviors for Azure AD Application {$($currentAADApp.DisplayName)} with values:`r`n$($IAuthenticationBehaviors | Out-String)"
             Update-MgBetaApplication -ApplicationId $currentAADApp.ObjectId -BodyParameter @{
                 authenticationBehaviors = $IAuthenticationBehaviors
-            }
+            } -ErrorAction SilentlyContinue
         }
     }
 

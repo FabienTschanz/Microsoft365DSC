@@ -73,8 +73,51 @@
 
 # UNRELEASED
 
+* O365OrgCustomizationSetting
+  * Removed unused backtick in hashtable.
+* O365OrgSettings
+  * Added missing workload connections.
+* O365SearchAndIntelligenceConfigurations
+  * Added missing workload connection.
+* M365DSCExportUtil
+  * Added auto completion for `-Components` in `Export-M365DSCConfiguration`.
+  * Since `M365DSCStringReplacementMap` is now being sent in parallel exports
+    as global variable we need to set it as script scope based to be able to
+    inspect it.
+* M365DSCReverse
+  * Fixed an issue where parallel exports for EXO, O365 and SC could fail
+    if combined with resources that use Microsoft Graph.
+  * Fixed an issue where parallel exports were not being sent with the variable
+    `M365DSCStringReplacementMap` and therefore mappings were not working and
+    creating drifts.
+  * Reduced the number of calls to `Get-M365DSCAllResources` if `-Components`
+    was specified.
+  * Reduced the number of calls to `Get-M365DSCAllResources` by caching its
+    results.
+* M365DSCUtil
+  * Added new helper function `Get-M365DSCAllResourcesPath`
+* DEPENDENCIES
+  * Updated `MSCloudLoginAssistant` to version 1.1.71.
+* MISC
+  * Reduced time to export Intune policies by up to 50%.
+  * Updated function help descriptions and added / removed parameters.
+
+# 1.26.715.1
+
+* AADConditionalAccessPolicy
+  * Updated the code to return a GUID for `IncludeApplications` and
+    `ExcludeApplications` if the input already contains that GUID.
+    FIXES [#7118](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7118)
 * AADIdentityGovernanceProgram
   * Deprecated resource. It is superseded by the access review resources.
+* AADServicePrincipal
+  * Fixed an issue where attempting to resolve 3rd-party SPNs would fail.
+  * Fixed several issues when creating or updating an SPN.
+* AADUser
+  * Deprecate property `PasswordNeverExpires`
+    FIXES [#7339](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7339)
+  * Fixed issue with how `BusinessPhones` property was being sent when trying to
+    set that value
 * AzureBillingAccountPolicy
   * Added `SubscriptionId` parameter to specify the Azure subscription
     that is used to connect to.
@@ -122,6 +165,10 @@
   * Fixed unit-tests so datetimes are parsed in US-format
 * EXOPlace
   * Deprecate property `Desks`
+* IntuneDeviceEnrollmentScopeConfigurationMam
+  * Fixed issue where function `Get-CompareParameters` was not being exported
+* IntuneDeviceEnrollmentScopeConfigurationMdm
+  * Fixed issue where function `Get-CompareParameters` was not being exported
 * IntuneWifiConfigurationPolicyIOS
   * Added `wpa3Personal` to the `WifiSecurityType` property.
 * SettingsCatalogHelper
@@ -150,21 +197,41 @@
     `ShiftsSchedulingGroupId`, `ShiftsTeamId`,
     `ShouldOverwriteCallableChannelProperty`, `TimeoutActionCallPriority`,
     `WaitTimeBeforeOfferingCallbackInSecond`, `WelcomeTextToSpeechPrompt`
+* TeamsGuestMessagingConfiguration
+  * Deprecated property `UsersCanDeleteBotMessages`
+* TeamsOnlineVoicemailUserSettings
+  * Deprecated property `OofGreetingFollowCalendarEnabled`
+* TeamsTenantNetworkSite
+  * Deprecated property `SiteAddress`
 * M365DSCCheckProperties
   * Fixed an issue with function `Get-PropertyReport` where it wasn't working
     because the `Teams` module was being loaded last and causing conflicts
   * Added authentication methods `ApplicationSecret`, `AccesstTokens` and
     `ManagedIdentity` as internal M365DSC properties that should to be ignored
+* M365DSCDllLoader
+  * Fixed an issue when trying to load assemblies that were already loaded.
+* M365DSCDocGenerator
+  * Moved function `Get-TemporaryPath` to `M365DSCUtil` and use `$env:TEMP`
+    directly instead of the function's output
+* M365DSCErrorHandler
+  * Fixed an issue when writing in parallel to the same export file.
 * M365DSCExportUtil
   * Fixed a formatting issue with `CertificatePassword` during export.
   * Removed usage of function `Resolve-Credentials` and instead just use the
     appropriate hardcoded strings
+* M365DSCModuleMgmt
+  * Fixed invalid arg used in Confirm-M365DSCLoadedModule when run in Windows Powershell 5.1
 * M365DSCReverse
   * Fixed an issue with `Credential` and `CertificatePassword` parameters.
   * Fixed an issue generating the blueprint if using Azure Automation with
     `Credential` parameter.
+  * Fixed an issue when exporting resources in parallel.
   * Removed usage of function `Save-Credentials` since it's not required any
     longer.
+* M365DSCUtil
+  * Added function `Get-TemporaryPath` taken from `M365DSCDocGenerator` and use
+    its output to assign `$env:TEMP` variable
+  * Enabled parallel export on `Assert-M365DSCBlueprint`
 * DEPENDENCIES
   * Updated `MSCloudLoginAssistant` to version `1.1.69`.
 * MISC

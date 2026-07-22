@@ -351,7 +351,7 @@ function Export-TargetResource
             CertificatePath       = $CertificatePath
             CertificatePassword   = $CertificatePassword
             ManagedIdentity       = $ManagedIdentity.IsPresent
-`           AccessTokens          = $AccessTokens
+            AccessTokens          = $AccessTokens
         }
 
         $Results = Get-TargetResource @Params

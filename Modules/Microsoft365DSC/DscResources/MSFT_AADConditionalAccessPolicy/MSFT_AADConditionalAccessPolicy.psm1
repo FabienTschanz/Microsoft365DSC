@@ -676,7 +676,9 @@ function Get-TargetResource
         {
             foreach ($app in $Policy.Conditions.Applications.IncludeApplications)
             {
-                if ([System.Guid]::TryParse($app, [ref][System.Guid]::Empty))
+                # Only resolve to display name if the app is a GUID and not already in the list of included applications
+                # to prevent drifts during Test-TargetResource
+                if ([System.Guid]::TryParse($app, [ref][System.Guid]::Empty) -and $IncludeApplications -notcontains $app)
                 {
                     $appInfo = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
                     if ($null -ne $appInfo)
@@ -700,7 +702,9 @@ function Get-TargetResource
         {
             foreach ($app in $Policy.Conditions.Applications.ExcludeApplications)
             {
-                if ([System.Guid]::TryParse($app, [ref][System.Guid]::Empty))
+                # Only resolve to display name if the app is a GUID and not already in the list of excluded applications
+                # to prevent drifts during Test-TargetResource
+                if ([System.Guid]::TryParse($app, [ref][System.Guid]::Empty) -and $ExcludeApplications -notcontains $app)
                 {
                     $appInfo = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
                     if ($null -ne $appInfo)
