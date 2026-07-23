@@ -1,6 +1,6 @@
 Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADApplication'
 $script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
-$Script:PropertiesToRetrieve = 'appRoles, identifierUris, displayName, description, groupMembershipClaims, optionalClaims, web, api, id, appId, spa, applicationTemplateId, signInAudience, authenticationBehaviors, isFallbackPublicClient, publicClient, keyCredentials, passwordCredentials, requiredResourceAccess'
+$Script:PropertiesToRetrieve = 'appRoles, defaultRedirectUri, info, identifierUris, displayName, description, groupMembershipClaims, optionalClaims, web, api, id, appId, spa, applicationTemplateId, serviceManagementReference, signInAudience, authenticationBehaviors, isFallbackPublicClient, publicClient, keyCredentials, passwordCredentials, requiredResourceAccess'
 
 function Get-TargetResource
 {
@@ -22,6 +22,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
+        $DefaultRedirectUri,
+
+        [Parameter()]
+        [System.String]
         $Description,
 
         [Parameter()]
@@ -37,8 +41,16 @@ function Get-TargetResource
         $IdentifierUris,
 
         [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance]
+        $Info,
+
+        [Parameter()]
         [System.Boolean]
         $IsFallbackPublicClient,
+
+        [Parameter()]
+        [System.String]
+        $Logo,
 
         [Parameter()]
         [System.String]
@@ -99,6 +111,10 @@ function Get-TargetResource
         [Parameter()]
         [System.String[]]
         $PublicClientRedirectUris,
+
+        [Parameter()]
+        [System.String]
+        $ServiceManagementReference,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance]
@@ -462,6 +478,12 @@ function Get-TargetResource
 
             $oppInfo = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'onPremisesPublishing' }).body.value
             $lifetimePolicy = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'tokenLifetimePolicies' }).body.value | Select-Object -First 1
+
+            if (-not [System.String]::IsNullOrEmpty($AADApp.Info.LogoUrl))
+            {
+                $logoResponse = Invoke-WebRequest -Uri $AADApp.Info.LogoUrl -Method Get -UseBasicParsing -ErrorAction SilentlyContinue
+                $logoResponse = [System.Convert]::ToBase64String($logoResponse.Content)
+            }
         }
         catch
         {
@@ -534,6 +556,17 @@ function Get-TargetResource
             $IdentifierUrisValue = $AADApp.IdentifierUris
         }
 
+        $complexInfoValue = $null
+        if ($null -ne $AADApp.Info)
+        {
+            $complexInfoValue = @{
+                MarketingUrl        = $AADApp.Info.MarketingUrl
+                PrivacyStatementUrl = $AADApp.Info.PrivacyStatementUrl
+                SupportUrl          = $AADApp.Info.SupportUrl
+                TermsOfServiceUrl   = $AADApp.Info.TermsOfServiceUrl
+            }
+        }
+
         $spaValue = $null
         if ($null -ne $AADApp.Spa -and $AADApp.Spa.RedirectUris.Length -gt 0)
         {
@@ -543,42 +576,46 @@ function Get-TargetResource
         }
 
         $result = @{
-            DisplayName              = $AADApp.DisplayName
-            AuthenticationBehaviors  = $complexAuthenticationBehaviors
-            Description              = $AADApp.Description
-            GroupMembershipClaims    = $AADApp.GroupMembershipClaims
-            Homepage                 = $AADApp.web.HomepageUrl
-            IdentifierUris           = $IdentifierUrisValue
-            IsFallbackPublicClient   = $IsFallbackPublicClientValue
-            KnownClientApplications  = $AADApp.Api.KnownClientApplications
-            LogoutURL                = $AADApp.web.LogoutURL
-            PublicClient             = $isPublicClient
-            ReplyURLs                = $AADApp.web.RedirectUris
-            Owners                   = $OwnersValues
-            ObjectId                 = $AADApp.Id
-            AppId                    = $AADApp.AppId
-            OptionalClaims           = $complexOptionalClaims
-            Api                      = $complexApi
-            KeyCredentials           = $complexKeyCredentials
-            PasswordCredentials      = $complexPasswordCredentials
-            AppRoles                 = $complexAppRoles
-            Permissions              = $permissionsObj
-            OnPremisesPublishing     = $onPremisesPublishingValue
-            ApplicationTemplateId    = $AADApp.applicationTemplateId
-            Spa                      = $SpaValue
-            TokenLifetimePolicy      = $lifetimePolicy.displayName
-            PublicClientRedirectUris = $PublicClientRedirectUrisValue
-            SignInAudience           = $AADApp.SignInAudience
-            Ensure                   = 'Present'
-            Credential               = $Credential
-            ApplicationId            = $ApplicationId
-            TenantId                 = $TenantId
-            ApplicationSecret        = $ApplicationSecret
-            CertificateThumbprint    = $CertificateThumbprint
-            CertificatePath          = $CertificatePath
-            CertificatePassword      = $CertificatePassword
-            ManagedIdentity          = $ManagedIdentity.IsPresent
-            AccessTokens             = $AccessTokens
+            Api                        = $complexApi
+            AppId                      = $AADApp.AppId
+            ApplicationTemplateId      = $AADApp.applicationTemplateId
+            AppRoles                   = $complexAppRoles
+            AuthenticationBehaviors    = $complexAuthenticationBehaviors
+            DefaultRedirectUri         = $AADApp.DefaultRedirectUri
+            Description                = $AADApp.Description
+            DisplayName                = $AADApp.DisplayName
+            GroupMembershipClaims      = $AADApp.GroupMembershipClaims
+            Homepage                   = $AADApp.web.HomepageUrl
+            IdentifierUris             = $IdentifierUrisValue
+            Info                       = $complexInfoValue
+            IsFallbackPublicClient     = $IsFallbackPublicClientValue
+            KeyCredentials             = $complexKeyCredentials
+            KnownClientApplications    = $AADApp.Api.KnownClientApplications
+            Logo                       = $logoResponse
+            LogoutURL                  = $AADApp.web.LogoutURL
+            ObjectId                   = $AADApp.Id
+            OnPremisesPublishing       = $onPremisesPublishingValue
+            OptionalClaims             = $complexOptionalClaims
+            Owners                     = $OwnersValues
+            PasswordCredentials        = $complexPasswordCredentials
+            Permissions                = $permissionsObj
+            PublicClient               = $isPublicClient
+            PublicClientRedirectUris   = $PublicClientRedirectUrisValue
+            ReplyURLs                  = $AADApp.web.RedirectUris
+            ServiceManagementReference = $AADApp.ServiceManagementReference
+            SignInAudience             = $AADApp.SignInAudience
+            Spa                        = $spaValue
+            TokenLifetimePolicy        = $lifetimePolicy.displayName
+            Ensure                     = 'Present'
+            Credential                 = $Credential
+            ApplicationId              = $ApplicationId
+            TenantId                   = $TenantId
+            ApplicationSecret          = $ApplicationSecret
+            CertificateThumbprint      = $CertificateThumbprint
+            CertificatePath            = $CertificatePath
+            CertificatePassword        = $CertificatePassword
+            ManagedIdentity            = $ManagedIdentity.IsPresent
+            AccessTokens               = $AccessTokens
         }
 
         return $result
@@ -614,6 +651,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
+        $DefaultRedirectUri,
+
+        [Parameter()]
+        [System.String]
         $Description,
 
         [Parameter()]
@@ -629,8 +670,8 @@ function Set-TargetResource
         $IdentifierUris,
 
         [Parameter()]
-        [System.String[]]
-        $KnownClientApplications,
+        [Microsoft.Management.Infrastructure.CimInstance]
+        $Info,
 
         [Parameter()]
         [System.Boolean]
@@ -638,7 +679,15 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
+        $Logo,
+
+        [Parameter()]
+        [System.String]
         $LogoutURL,
+
+        [Parameter()]
+        [System.String[]]
+        $KnownClientApplications,
 
         [Parameter()]
         [System.Boolean]
@@ -691,6 +740,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String[]]
         $PublicClientRedirectUris,
+
+        [Parameter()]
+        [System.String]
+        $ServiceManagementReference,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance]
@@ -813,6 +866,7 @@ function Set-TargetResource
     $needToUpdatePermissions = $false
     $needToUpdateKeyCredentials = $false
     $currentParameters.Remove('AppId') | Out-Null
+    $currentParameters.Remove('Logo') | Out-Null
     $currentParameters.Remove('Permissions') | Out-Null
     $currentParameters.Remove('AuthenticationBehaviors') | Out-Null
     $currentParameters.Remove('KeyCredentials') | Out-Null
@@ -820,11 +874,9 @@ function Set-TargetResource
     if ($PasswordCredentials)
     {
         Write-Warning -Message 'PasswordCredentials is a readonly property and cannot be configured.'
-
     }
 
     $currentParameters.Remove('PublicClient') | Out-Null
-
     if ($PublicClientRedirectUris.Length -gt 0)
     {
         Write-Verbose -Message 'PublicClientRedirectUris were specified'
@@ -938,7 +990,6 @@ function Set-TargetResource
         $PSBoundParameters.ContainsKey('Homepage'))
     {
         $webValue = @{}
-
         if ($PSBoundParameters.ContainsKey('ReplyUrls'))
         {
             $webValue.Add('RedirectUris', $currentParameters.ReplyURLs)
@@ -1070,7 +1121,6 @@ function Set-TargetResource
             $appEntity = Get-MgApplication -ApplicationId $currentAADApp.Id -ErrorAction SilentlyContinue
             $tries++
         } until ($null -eq $appEntity -or $tries -le 12)
-
     }
     # App should exist and will be configured to desired state
     elseif (($Ensure -eq 'Present' -and $currentAADApp.Ensure -eq 'Present') -or $skipToUpdate)
@@ -1222,6 +1272,11 @@ function Set-TargetResource
                 }
             }
         }
+    }
+
+    if ($PSBoundParameters.ContainsKey('Logo'))
+    {
+        Invoke-MgGraphRequest -Uri "/beta/applications/$($currentAADApp.ObjectId)/logo" -Method PUT -Body ([System.Convert]::FromBase64String($Logo)) -ContentType 'image/*'
     }
 
     if ($needToUpdatePermissions -and $null -ne $Permissions)
@@ -1484,6 +1539,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
+        $DefaultRedirectUri,
+
+        [Parameter()]
+        [System.String]
         $Description,
 
         [Parameter()]
@@ -1499,16 +1558,24 @@ function Test-TargetResource
         $IdentifierUris,
 
         [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance]
+        $Info,
+
+        [Parameter()]
         [System.Boolean]
         $IsFallbackPublicClient,
 
         [Parameter()]
-        [System.String[]]
-        $KnownClientApplications,
+        [System.String]
+        $Logo,
 
         [Parameter()]
         [System.String]
         $LogoutURL,
+
+        [Parameter()]
+        [System.String[]]
+        $KnownClientApplications,
 
         [Parameter()]
         [System.Boolean]
@@ -1561,6 +1628,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String[]]
         $PublicClientRedirectUris,
+
+        [Parameter()]
+        [System.String]
+        $ServiceManagementReference,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance]
@@ -1820,6 +1891,21 @@ function Export-TargetResource
                         }
                     }
 
+                    if ($null -ne $Results.Info)
+                    {
+                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                            -ComplexObject $Results.Info `
+                            -CIMInstanceName 'MicrosoftGraphInformationalUrl'
+                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                        {
+                            $Results.Info = $complexTypeStringResult
+                        }
+                        else
+                        {
+                            $Results.Remove('Info') | Out-Null
+                        }
+                    }
+
                     if ($null -ne $Results.Spa -and $Results.Spa.Length -gt 0)
                     {
                         $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
@@ -1967,7 +2053,7 @@ function Export-TargetResource
                         -ModulePath $PSScriptRoot `
                         -Results $Results `
                         -Credential $Credential `
-                        -NoEscape @('Api', 'Permissions', 'OptionalClaims', 'OnPremisesPublishing', 'AuthenticationBehaviors', 'KeyCredentials', 'PasswordCredentials', 'AppRoles', 'Spa')
+                        -NoEscape @('Api', 'Info', 'Permissions', 'OptionalClaims', 'OnPremisesPublishing', 'AuthenticationBehaviors', 'KeyCredentials', 'PasswordCredentials', 'AppRoles', 'Spa')
 
                     [void]$dscContent.Append($currentDSCBlock)
                     Save-M365DSCPartialExport -Content $currentDSCBlock `

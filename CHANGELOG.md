@@ -75,11 +75,25 @@
   * Added automatic dependency update for both Windows PowerShell and PowerShell 7.
 * DEPENDENCIES
   * Added `Mgx` with version 1.0.2.
-  * Updated `PnP.PowerShell` to version 3.2.0.
+  * Updated `PnP.PowerShell` to version 3.3.0.
 * MISC
   * Invoke PowerShell 7 for all resources if not already running under it.
 
 # UNRELEASED
+
+* AADApplication
+  * Added new properties `DefaultRedirectUri`, `Info`, `Logo` and
+    `ServiceManagementReference`.
+    FIXES [#4321](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/4321)
+* IntuneAppConfigurationPolicy
+  * Added information about no support for Settings catalog policy entries due to
+    delegated authentication requirements.
+    FIXES [#5672](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/5672)
+* MISC
+  * Updated required permissions and documentation for Azure resources.
+    FIXES [#6960](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/6960)
+
+# 1.26.722.1
 
 * O365OrgCustomizationSetting
   * Removed unused backtick in hashtable.
@@ -179,6 +193,8 @@
   * Fixed issue where function `Get-CompareParameters` was not being exported
 * IntuneWifiConfigurationPolicyIOS
   * Added `wpa3Personal` to the `WifiSecurityType` property.
+* SCDLPComplianceRule
+  * Added support for the `EndpointDlpRestrictions` property.
 * SettingsCatalogHelper
   * Fixed an issue where complex administrative template names
     were not handled correctly.
