@@ -1,4 +1,4 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SPOAccessControlSettings")]
+[ClassVersion("1.0.0.1"), FriendlyName("SPOAccessControlSettings")]
 class MSFT_SPOAccessControlSettings : OMI_BaseResource
 {
     [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"),ValueMap{"Yes"},Values{"Yes"}] String IsSingleInstance;
@@ -12,6 +12,7 @@ class MSFT_SPOAccessControlSettings : OMI_BaseResource
     [Write, Description("Sets email attestation to required")] boolean EmailAttestationRequired;
     [Write, Description("Sets email attestation re-auth days")] uint32 EmailAttestationReAuthDays;
     [Write, Description("Enables or disables the restricted access control.")] boolean EnableRestrictedAccessControl;
+    [Write, Description("Controls whether resource accounts used by Teams Rooms and Devices can retain access to files after the meeting/collaboration is complete. The valid values are: - False (default) - Allows devices from accessing files and other Microsoft 365 assets when not actively in-use. - True - Prevents devices from accessing files and other Microsoft 365 assets when not actively in-use.")] Boolean RestrictResourceAccountAccess;
     [Write, Description("Only value accepted is 'Present'"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Credentials of the account to authenticate with."), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;

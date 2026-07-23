@@ -23,14 +23,26 @@ function Get-TargetResource
         $CoreDefaultShareLinkScope,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
+        $CoreOrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [System.Int32]
+        $CoreOrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
         $SharingCapability,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
         $MySiteSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictExternalSharingForAgents,
 
         [Parameter()]
         [System.Boolean]
@@ -194,6 +206,10 @@ function Get-TargetResource
         [Parameter()]
         [System.String[]]
         $WhoCanShareAllowListInTenant,
+
+        [Parameter()]
+        [System.String[]]
+        $WhoCanShareAllowListInTenantByPrincipalIdentity,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -342,6 +358,8 @@ function Get-TargetResource
             AllowSharingOutsideRestrictedAccessControlGroups           = $SPOSharingSettings.AllowSharingOutsideRestrictedAccessControlGroups
             CoreDefaultShareLinkRole                                   = $SPOSharingSettings.CoreDefaultShareLinkRole.ToString()
             CoreDefaultShareLinkScope                                  = $SPOSharingSettings.CoreDefaultShareLinkScope.ToString()
+            CoreOrganizationSharingLinkMaxExpirationInDays             = $SPOSharingSettings.CoreOrganizationSharingLinkMaxExpirationInDays
+            CoreOrganizationSharingLinkRecommendedExpirationInDays     = $SPOSharingSettings.CoreOrganizationSharingLinkRecommendedExpirationInDays
             SharingCapability                                          = $SPOSharingSettings.SharingCapability.ToString()
             ShowEveryoneClaim                                          = $SPOSharingSettings.ShowEveryoneClaim
             ShowAllUsersClaim                                          = $SPOSharingSettings.ShowAllUsersClaim
@@ -368,6 +386,7 @@ function Get-TargetResource
             CoreLoopDefaultSharingLinkRole                             = $SPOSharingSettings.CoreLoopDefaultSharingLinkRole.ToString()
             CoreDefaultLinkToExistingAccess                            = $SPOSharingSettings.CoreDefaultLinkToExistingAccess
             RestrictExternalSharing                                    = Get-M365DSCArrayFromProperty -PropertyValue $SPOSharingSettings.RestrictExternalSharing -ElementType ([System.String])
+            RestrictExternalSharingForAgents                           = $SPOSharingSettings.RestrictExternalSharingForAgents
             SharingAllowedDomainList                                   = $allowDomains
             SharingBlockedDomainList                                   = $blockDomains
             SharingDomainRestrictionMode                               = $SPOSharingSettings.SharingDomainRestrictionMode.ToString()
@@ -378,7 +397,9 @@ function Get-TargetResource
             FolderAnonymousLinkType                                    = $SPOSharingSettings.FolderAnonymousLinkType.ToString()
             NotifyOwnersWhenItemsReshared                              = $SPOSharingSettings.NotifyOwnersWhenItemsReshared
             DefaultLinkPermission                                      = $DefaultLinkPermission
+            # TODO: Look up the principal id
             WhoCanShareAllowListInTenant                               = Get-M365DSCArrayFromProperty -PropertyValue $SPOSharingSettings.WhoCanShareAllowListInTenant -ElementType ([System.String])
+            WhoCanShareAllowListInTenantByPrincipalIdentity            = Get-M365DSCArrayFromProperty -PropertyValue $SPOSharingSettings.WhoCanShareAllowListInTenantByPrincipalIdentity -ElementType ([System.String])
             Ensure                                                     = 'Present'
             Credential                                                 = $Credential
             ApplicationId                                              = $ApplicationId
@@ -430,14 +451,26 @@ function Set-TargetResource
         $CoreDefaultShareLinkScope,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
+        $CoreOrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [System.Int32]
+        $CoreOrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
         $SharingCapability,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
         $MySiteSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictExternalSharingForAgents,
 
         [Parameter()]
         [System.Boolean]
@@ -601,6 +634,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String[]]
         $WhoCanShareAllowListInTenant,
+
+        [Parameter()]
+        [System.String[]]
+        $WhoCanShareAllowListInTenantByPrincipalIdentity,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -772,14 +809,26 @@ function Test-TargetResource
         $CoreDefaultShareLinkScope,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
+        $CoreOrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [System.Int32]
+        $CoreOrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
         $SharingCapability,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('ExistingExternalUserSharingOnly', 'ExternalUserAndGuestSharing', 'Disabled', 'ExternalUserSharingOnly')]
+        [System.String]
         $MySiteSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictExternalSharingForAgents,
 
         [Parameter()]
         [System.Boolean]
@@ -943,6 +992,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String[]]
         $WhoCanShareAllowListInTenant,
+
+        [Parameter()]
+        [System.String[]]
+        $WhoCanShareAllowListInTenantByPrincipalIdentity,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]

@@ -7,16 +7,22 @@
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
     to PSCredential and removed it from the export output.
+* SPOAccessControlSettings
+  * Added property `RestrictResourceAccountAccess`.
 * SPOSharingSettings
   * Added properties `AllowGuestUserShareToUsersNotInSiteCollection`,
     `CoreDefaultShareLinkRole`, `CoreDefaultShareLinkScope`,
     `CoreLoopSharingCapability`, `CoreLoopDefaultSharingLinkScope`,
     `CoreLoopDefaultSharingLinkRole`, `CoreDefaultLinkToExistingAccess`,
+    `CoreOrganizationSharingLinkMaxExpirationInDays`,
+    `CoreOrganizationSharingLinkRecommendedExpirationInDays`,
     `GuestSharingGroupAllowListInTenantByPrincipalIdentity`,
     `OneDriveLoopSharingCapability`, `OneDriveLoopDefaultSharingLinkScope`,
     `OneDriveLoopDefaultSharingLinkRole`, `OneDriveOrganizationSharingLinkMaxExpirationInDays`,
     `OneDriveOrganizationSharingLinkRecommendedExpirationInDays`, `RestrictExternalSharing`,
-    `WhoCanShareAllowListInTenant`.
+    `RestrictExternalSharingForAgents`, `WhoCanShareAllowListInTenant`,
+    `WhoCanShareAllowListInTenantByPrincipalIdentity`.
+    FIXES [#2004](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/2004)
 * SPOSite
   * Added properties `AllowFileArchive`, `AllowFileArchiveOnNewSitesByDefault`,
     `AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled`,
@@ -24,7 +30,9 @@
     `DisableClassicPageBaselineSecurityMode`, `HidePeoplePreviewingFiles`,
     `HidePeopleWhoHaveListsOpen`, `InheritVersionPolicyFromTenant`,
     `ListsShowHeaderAndNavigation`, `LoopDefaultSharingLinkScope`,
-    `LoopDefaultSharingLinkRole`, `OverrideSharingCapability`,
+    `LoopDefaultSharingLinkRole`, `OrganizationSharingLinkMaxExpirationInDays`,
+    `OrganizationSharingLinkRecommendedExpirationInDays`, `OverrideSharingCapability`,
+    `OverrideTenantOrganizationSharingLinkExpirationPolicy`,
     `RequestFilesLinkEnabled`, `RequestFilesLinkExpirationInDays`,
     `ReadOnlyForUnmanagedDevices`, `RestrictContentOrgWideSearch`,
     `RestrictedAccessControl`, `RestrictedAccessControlGroups`.

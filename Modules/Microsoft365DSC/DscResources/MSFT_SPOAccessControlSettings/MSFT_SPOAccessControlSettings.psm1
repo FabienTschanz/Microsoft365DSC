@@ -58,6 +58,10 @@ function Get-TargetResource
         $ConditionalAccessPolicy,
 
         [Parameter()]
+        [System.Boolean]
+        $RestrictResourceAccountAccess,
+
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure = 'Present',
@@ -145,6 +149,7 @@ function Get-TargetResource
             ExternalServicesEnabled       = $SPOAccessControlSettings.ExternalServicesEnabled
             EmailAttestationRequired      = $SPOAccessControlSettings.EmailAttestationRequired
             EmailAttestationReAuthDays    = $SPOAccessControlSettings.EmailAttestationReAuthDays
+            RestrictResourceAccountAccess = $SPOAccessControlSettings.RestrictResourceAccountAccess
             EnableRestrictedAccessControl = $SPOAccessControlSettings.RestrictedAccessControl
             Credential                    = $Credential
             ApplicationId                 = $ApplicationId
@@ -225,6 +230,10 @@ function Set-TargetResource
         [ValidateSet('AllowFullAccess', 'AllowLimitedAccess', 'BlockAccess', 'ProtectionLevel')]
         [System.String]
         $ConditionalAccessPolicy,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictResourceAccountAccess,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
@@ -333,7 +342,6 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-
         [Parameter(Mandatory = $true)]
         [ValidateSet('Yes')]
         [System.String]
@@ -383,6 +391,10 @@ function Test-TargetResource
         [ValidateSet('AllowFullAccess', 'AllowLimitedAccess', 'BlockAccess', 'ProtectionLevel')]
         [System.String]
         $ConditionalAccessPolicy,
+
+        [Parameter()]
+        [System.Boolean]
+        $RestrictResourceAccountAccess,
 
         [Parameter()]
         [ValidateSet('Present', 'Absent')]

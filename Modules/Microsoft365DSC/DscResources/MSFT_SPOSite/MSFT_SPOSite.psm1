@@ -36,8 +36,8 @@ function Get-TargetResource
         $DisableFlows,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Disabled', 'ExistingExternalUserSharingOnly', 'ExternalUserSharingOnly', 'ExternalUserAndGuestSharing')]
+        [System.String]
         $SharingCapability,
 
         [Parameter()]
@@ -65,23 +65,23 @@ function Get-TargetResource
         $CommentsOnSitePagesDisabled,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'View', 'Edit')]
+        [System.String]
         $DefaultLinkPermission,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AnonymousAccess', 'Internal', 'Direct')]
+        [System.String]
         $DefaultSharingLinkType,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Unknown', 'Disabled', 'NotDisabled')]
+        [System.String]
         $DisableAppViews,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Unknown', 'Disabled', 'NotDisabled')]
+        [System.String]
         $DisableCompanyWideSharingLinks,
 
         [Parameter()]
@@ -129,8 +129,20 @@ function Get-TargetResource
         $LoopDefaultSharingLinkScope,
 
         [Parameter()]
+        [System.Int32]
+        $OrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [System.Int32]
+        $OrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
         [System.Boolean]
         $OverrideSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $OverrideTenantOrganizationSharingLinkExpirationPolicy,
 
         [Parameter()]
         [System.Boolean]
@@ -162,8 +174,8 @@ function Get-TargetResource
         $SocialBarOnSitePagesDisabled,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('NoRestriction', 'BlockMoveOnly', 'BlockFull', 'Unknown')]
+        [System.String]
         $RestrictedToRegion,
 
         [Parameter()]
@@ -175,8 +187,8 @@ function Get-TargetResource
         $SharingBlockedDomainList,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AllowList', 'BlockList')]
+        [System.String]
         $SharingDomainRestrictionMode,
 
         [Parameter()]
@@ -354,7 +366,10 @@ function Get-TargetResource
             RestrictedToRegion                                             = $site.RestrictedToGeo
             SocialBarOnSitePagesDisabled                                   = $site.SocialBarOnSitePagesDisabled
             DenyAddAndCustomizePages                                       = $DenyAddAndCustomizePagesValue
+            OrganizationSharingLinkMaxExpirationInDays                     = $site.OrganizationSharingLinkMaxExpirationInDays
+            OrganizationSharingLinkRecommendedExpirationInDays             = $site.OrganizationSharingLinkRecommendedExpirationInDays
             OverrideSharingCapability                                      = $site.OverrideSharingCapability
+            OverrideTenantOrganizationSharingLinkExpirationPolicy          = $site.OverrideTenantOrganizationSharingLinkExpirationPolicy
             ReadOnlyForUnmanagedDevices                                    = $site.ReadOnlyForUnmanagedDevices
             RequestFilesLinkExpirationInDays                               = $site.RequestFilesLinkExpirationInDays
             RestrictContentOrgWideSearch                                   = $site.RestrictContentOrgWideSearch
@@ -425,8 +440,8 @@ function Set-TargetResource
         $DisableFlows,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Disabled', 'ExistingExternalUserSharingOnly', 'ExternalUserSharingOnly', 'ExternalUserAndGuestSharing')]
+        [System.String]
         $SharingCapability,
 
         [Parameter()]
@@ -454,23 +469,23 @@ function Set-TargetResource
         $CommentsOnSitePagesDisabled,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'View', 'Edit')]
+        [System.String]
         $DefaultLinkPermission,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AnonymousAccess', 'Internal', 'Direct')]
+        [System.String]
         $DefaultSharingLinkType,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Unknown', 'Disabled', 'NotDisabled')]
+        [System.String]
         $DisableAppViews,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Unknown', 'Disabled', 'NotDisabled')]
+        [System.String]
         $DisableCompanyWideSharingLinks,
 
         [Parameter()]
@@ -518,8 +533,20 @@ function Set-TargetResource
         $LoopDefaultSharingLinkScope,
 
         [Parameter()]
+        [System.Int32]
+        $OrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [System.Int32]
+        $OrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
         [System.Boolean]
         $OverrideSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $OverrideTenantOrganizationSharingLinkExpirationPolicy,
 
         [Parameter()]
         [System.Boolean]
@@ -551,8 +578,8 @@ function Set-TargetResource
         $SocialBarOnSitePagesDisabled,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('NoRestriction', 'BlockMoveOnly', 'BlockFull', 'Unknown')]
+        [System.String]
         $RestrictedToRegion,
 
         [Parameter()]
@@ -564,8 +591,8 @@ function Set-TargetResource
         $SharingBlockedDomainList,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AllowList', 'BlockList')]
+        [System.String]
         $SharingDomainRestrictionMode,
 
         [Parameter()]
@@ -753,7 +780,10 @@ function Set-TargetResource
             AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled = $AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled
             DisableFlows                                = $DisableFlowsValue
             InheritVersionPolicyFromTenant              = $InheritVersionPolicyFromTenant
+            OrganizationSharingLinkMaxExpirationInDays  = $OrganizationSharingLinkMaxExpirationInDays
+            OrganizationSharingLinkRecommendedExpirationInDays = $OrganizationSharingLinkRecommendedExpirationInDays
             OverrideSharingCapability                   = $OverrideSharingCapability
+            OverrideTenantOrganizationSharingLinkExpirationPolicy = $OverrideTenantOrganizationSharingLinkExpirationPolicy
             ReadOnlyForUnmanagedDevices                 = $ReadOnlyForUnmanagedDevices
             RestrictContentOrgWideSearch                = $RestrictContentOrgWideSearch
             RestrictedAccessControl                     = $RestrictedAccessControl
@@ -928,8 +958,8 @@ function Test-TargetResource
         $DisableFlows,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Disabled', 'ExistingExternalUserSharingOnly', 'ExternalUserSharingOnly', 'ExternalUserAndGuestSharing')]
+        [System.String]
         $SharingCapability,
 
         [Parameter()]
@@ -957,23 +987,23 @@ function Test-TargetResource
         $CommentsOnSitePagesDisabled,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'View', 'Edit')]
+        [System.String]
         $DefaultLinkPermission,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AnonymousAccess', 'Internal', 'Direct')]
+        [System.String]
         $DefaultSharingLinkType,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Unknown', 'Disabled', 'NotDisabled')]
+        [System.String]
         $DisableAppViews,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('Unknown', 'Disabled', 'NotDisabled')]
+        [System.String]
         $DisableCompanyWideSharingLinks,
 
         [Parameter()]
@@ -1021,8 +1051,20 @@ function Test-TargetResource
         $LoopDefaultSharingLinkScope,
 
         [Parameter()]
+        [System.Int32]
+        $OrganizationSharingLinkMaxExpirationInDays,
+
+        [Parameter()]
+        [System.Int32]
+        $OrganizationSharingLinkRecommendedExpirationInDays,
+
+        [Parameter()]
         [System.Boolean]
         $OverrideSharingCapability,
+
+        [Parameter()]
+        [System.Boolean]
+        $OverrideTenantOrganizationSharingLinkExpirationPolicy,
 
         [Parameter()]
         [System.Boolean]
@@ -1054,8 +1096,8 @@ function Test-TargetResource
         $SocialBarOnSitePagesDisabled,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('NoRestriction', 'BlockMoveOnly', 'BlockFull', 'Unknown')]
+        [System.String]
         $RestrictedToRegion,
 
         [Parameter()]
@@ -1067,8 +1109,8 @@ function Test-TargetResource
         $SharingBlockedDomainList,
 
         [Parameter()]
-        [System.String]
         [ValidateSet('None', 'AllowList', 'BlockList')]
+        [System.String]
         $SharingDomainRestrictionMode,
 
         [Parameter()]
