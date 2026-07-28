@@ -161,7 +161,7 @@ function Get-TargetResource
             Description                   = $getValue.Description
             DisplayName                   = $getValue.DisplayName
             LocalizedNotificationMessages = $messages
-            RoleScopeTagIds               = $getValue.RoleScopeTagIds
+            RoleScopeTagIds               = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                            = $getValue.Id
             Ensure                        = 'Present'
             Credential                    = $Credential
@@ -282,6 +282,11 @@ function Set-TargetResource
     if ($boundParameters.ContainsKey('BrandingOptions'))
     {
         $boundParameters.BrandingOptions = $boundParameters.BrandingOptions -join ','
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

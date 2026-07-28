@@ -137,7 +137,7 @@ function Get-TargetResource
             DisplayName           = $getValue.DisplayName
             IsBuiltIn             = $getValue.IsBuiltIn
             Ensure                = 'Present'
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Credential            = $Credential
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
@@ -258,6 +258,11 @@ function Set-TargetResource
     #endregion
 
     $currentInstance = Get-TargetResource @PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

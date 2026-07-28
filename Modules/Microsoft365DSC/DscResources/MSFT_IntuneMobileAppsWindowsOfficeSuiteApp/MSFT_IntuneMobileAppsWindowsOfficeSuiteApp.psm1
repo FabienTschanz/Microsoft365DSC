@@ -238,7 +238,7 @@ function Get-TargetResource
             PrivacyInformationUrl                = $instance.PrivacyInformationUrl
             InformationUrl                       = $instance.InformationUrl
             Notes                                = $instance.Notes
-            RoleScopeTagIds                      = $instance.RoleScopeTagIds
+            RoleScopeTagIds                      = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $instance.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             AutoAcceptEula                       = $instance.autoAcceptEula
             ProductIds                           = $instance.productIds
             UseSharedComputerActivation          = $instance.useSharedComputerActivation
@@ -469,6 +469,11 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $BoundParameters.Remove('Categories') | Out-Null
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

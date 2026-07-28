@@ -842,7 +842,7 @@ function Get-TargetResource
             #DeviceManagementApplicabilityRuleOsEdition               = $getValue.DeviceManagementApplicabilityRuleOsEdition
             #DeviceManagementApplicabilityRuleOsVersion               = $getValue.DeviceManagementApplicabilityRuleOsVersion
             DisplayName                                              = $getValue.DisplayName
-            RoleScopeTagIds                                          = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                                          = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             AccountsBlockModification                                = $getValue.accountsBlockModification
             AppsAllowInstallFromUnknownSources                       = $getValue.appsAllowInstallFromUnknownSources
             AppsAutoUpdatePolicy                                     = $getValue.appsAutoUpdatePolicy
@@ -1656,6 +1656,11 @@ function Set-TargetResource
     #endregion
 
     $currentInstance = Get-TargetResource @PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $PSBoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

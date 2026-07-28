@@ -161,7 +161,7 @@ function Get-TargetResource
             #region resource generator code
             Description           = $getValue.Description
             DisplayName           = $getValue.Name
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                    = $getValue.Id
             Ensure                = 'Present'
             Credential            = $Credential
@@ -289,6 +289,11 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     $templateReferenceId = '3514388a-d4d1-4aa8-bd64-c317776008f5_1'
     $platforms = 'linux'

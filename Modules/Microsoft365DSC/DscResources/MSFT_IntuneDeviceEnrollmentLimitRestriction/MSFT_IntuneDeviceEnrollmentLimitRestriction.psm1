@@ -141,7 +141,7 @@ function Get-TargetResource
             Description           = $config.Description
             Limit                 = $config.limit
             Priority              = $config.Priority
-            RoleScopeTagIds       = $config.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $config.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Ensure                = 'Present'
             Credential            = $Credential
             ApplicationId         = $ApplicationId
@@ -280,6 +280,11 @@ function Set-TargetResource
     {
         $priorityPresent = $true
         $BoundParameters.Remove('Priority') | Out-Null
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

@@ -150,7 +150,7 @@ function Get-TargetResource
             Description            = $getValue.Description
             DisplayName            = $getValue.DisplayName
             EnforceSignatureCheck  = $getValue.EnforceSignatureCheck
-            RoleScopeTagIds        = $getValue.RoleScopeTagIds
+            RoleScopeTagIds        = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             RunAs32Bit             = $getValue.RunAs32Bit
             RunAsAccount           = $enumRunAsAccount
             DetectionScriptContent = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($getValue.DetectionScriptContent))
@@ -283,26 +283,24 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $BoundParameters.DetectionScriptContent = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($BoundParameters.DetectionScriptContent))
+    $BoundParameters = Rename-M365DSCCimInstanceParameter -Properties $BoundParameters
+    $BoundParameters.detectionScriptContent = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($BoundParameters.DetectionScriptContent))
 
-    # Convert all keys to camelCase
-    $scriptBody = @{}
-    foreach ($key in $BoundParameters.Keys)
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
     {
-        $camelCaseKey = $key.Substring(0, 1).ToLower() + $key.Substring(1)
-        $scriptBody[$camelCaseKey] = $BoundParameters[$key]
+        $BoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating an Intune Device Compliance Script for Windows10 with DisplayName {$DisplayName}"
-        $scriptBody.Remove('Id') | Out-Null
-        Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceManagement/deviceComplianceScripts' -Body $($scriptBody | ConvertTo-Json)
+        $BoundParameters.Remove('Id') | Out-Null
+        Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceManagement/deviceComplianceScripts' -Body $($BoundParameters | ConvertTo-Json)
     }
     elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
     {
         Write-Verbose -Message "Updating the Intune Device Compliance Script for Windows10 with Id {$($currentInstance.Id)}"
-        Invoke-MgGraphRequest -Method PATCH -Uri "/beta/deviceManagement/deviceComplianceScripts/$($currentInstance.Id)" -Body $($scriptBody | ConvertTo-Json)
+        Invoke-MgGraphRequest -Method PATCH -Uri "/beta/deviceManagement/deviceComplianceScripts/$($currentInstance.Id)" -Body $($BoundParameters | ConvertTo-Json)
     }
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {

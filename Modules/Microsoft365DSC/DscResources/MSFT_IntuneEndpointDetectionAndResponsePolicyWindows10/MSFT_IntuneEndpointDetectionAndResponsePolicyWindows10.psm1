@@ -173,7 +173,7 @@ function Get-TargetResource
             #region resource generator code
             Description           = $policy.Description
             DisplayName           = $policy.Name
-            RoleScopeTagIds       = $policy.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Identity              = $policy.Id
             Ensure                = 'Present'
             Credential            = $Credential
@@ -305,6 +305,11 @@ function Set-TargetResource
 
     $currentPolicy = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     switch ($ConfigurationType)
     {

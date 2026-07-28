@@ -142,7 +142,7 @@ function Get-TargetResource
         $returnHashtable = @{
             Description                      = $policy.Description
             DisplayName                      = $policy.DisplayName
-            RoleScopeTagIds                  = $policy.RoleScopeTagIds
+            RoleScopeTagIds                  = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             AppLockerApplicationControl      = $settingAppLockerApplicationControl
             SmartScreenBlockOverrideForFiles = $settingSmartScreenBlockOverrideForFiles
             SmartScreenEnableInShell         = $settingSmartScreenEnableInShell
@@ -271,6 +271,11 @@ function Set-TargetResource
     $templateReferenceId = '63be6324-e3c9-4c97-948a-e7f4b96f0f20'
     $currentPolicy = Get-TargetResource @PSBoundParameters
     $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Absent')
     {

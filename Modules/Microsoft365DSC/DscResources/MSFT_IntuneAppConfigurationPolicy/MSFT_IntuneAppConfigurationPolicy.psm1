@@ -201,7 +201,7 @@ function Get-TargetResource
             CertificatePassword         = $CertificatePassword
             ManagedIdentity             = $ManagedIdentity.IsPresent
             AccessTokens                = $AccessTokens
-            RoleScopeTagIds             = $configPolicy.RoleScopeTagIds
+            RoleScopeTagIds             = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $configPolicy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             TargetedAppManagementLevels = [String]$configPolicy.TargetedAppManagementLevels
             AppGroupType                = [String]$configPolicy.AppGroupType
             Apps                        = $complexAppsArray
@@ -334,12 +334,18 @@ function Set-TargetResource
 
     $currentconfigPolicy = Get-TargetResource @PSBoundParameters
 
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
+
     if ($Ensure -eq 'Present' -and $currentconfigPolicy.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating new Intune App Configuration Policy {$DisplayName}"
         $creationParams = @{
-            displayName = $DisplayName
-            description = $Description
+            displayName     = $DisplayName
+            description     = $Description
+            roleScopeTagIds = $RoleScopeTagIds
         }
         if ($null -ne $CustomSettings)
         {
@@ -405,8 +411,9 @@ function Set-TargetResource
         Write-Verbose -Message "Updating Intune App Configuration Policy {$DisplayName}"
 
         $updateParams = @{
-            displayName                       = $DisplayName
-            description                       = $Description
+            displayName     = $DisplayName
+            description     = $Description
+            roleScopeTagIds = $RoleScopeTagIds
         }
         if ($null -ne $CustomSettings)
         {

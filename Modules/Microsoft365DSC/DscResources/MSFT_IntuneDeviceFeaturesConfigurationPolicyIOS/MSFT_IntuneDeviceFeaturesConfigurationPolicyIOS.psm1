@@ -206,6 +206,7 @@ function Get-TargetResource
             CertificateThumbprint    = $CertificateThumbprint
             CertificatePath          = $CertificatePath
             CertificatePassword      = $CertificatePassword
+            RoleScopeTagIds          = $getValue.roleScopeTagIds
             ManagedIdentity          = $ManagedIdentity.IsPresent
             AccessTokens             = $AccessTokens
             AirPrintDestinations     = Convert-ComplexObjectToHashtableArray $getValue.airPrintDestinations
@@ -396,6 +397,11 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

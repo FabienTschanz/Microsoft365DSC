@@ -2641,7 +2641,7 @@ function Get-TargetResource
             Description                                                                  = $getValue.Description
             DisplayName                                                                  = $getValue.DisplayName
             Id                                                                           = $getValue.Id
-            RoleScopeTagIds                                                              = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                                                              = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Ensure                                                                       = 'Present'
             Credential                                                                   = $Credential
             ApplicationId                                                                = $ApplicationId
@@ -3726,19 +3726,24 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
     $PSBoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
 
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $PSBoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
+
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating an Intune Device Configuration Endpoint Protection Policy for Windows10 with DisplayName {$DisplayName}"
         $PSBoundParameters.Remove('Assignments') | Out-Null
 
-        $CreateParameters = ([Hashtable]$PSBoundParameters).Clone()
+        $createParameters = ([Hashtable]$PSBoundParameters).Clone()
         $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
         $createParameters.Remove('Id') | Out-Null
 
-        if ($CreateParameters.FirewallRules.Count -gt 0)
+        if ($createParameters.FirewallRules.Count -gt 0)
         {
             $intuneFirewallRules = @()
-            foreach ($firewallRule in $CreateParameters.FirewallRules)
+            foreach ($firewallRule in $createParameters.FirewallRules)
             {
                 if ($firewallRule.interfaceTypes -gt 1)
                 {
@@ -3746,11 +3751,11 @@ function Set-TargetResource
                 }
                 $intuneFirewallRules += $firewallRule
             }
-            $CreateParameters.FirewallRules = $intuneFirewallRules
+            $createParameters.FirewallRules = $intuneFirewallRules
         }
         #region resource generator code
-        $CreateParameters.Add('@odata.type', '#microsoft.graph.windows10EndpointProtectionConfiguration')
-        $policy = New-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $CreateParameters
+        $createParameters.Add('@odata.type', '#microsoft.graph.windows10EndpointProtectionConfiguration')
+        $policy = New-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $createParameters
         $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
 
         if ($policy.id)

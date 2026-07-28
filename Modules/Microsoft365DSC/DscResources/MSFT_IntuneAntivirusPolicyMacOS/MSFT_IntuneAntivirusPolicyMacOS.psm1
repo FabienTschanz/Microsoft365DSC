@@ -509,7 +509,7 @@ function Get-TargetResource
             #region resource generator code
             Description                 = $getValue.Description
             DisplayName                 = $getValue.Name
-            RoleScopeTagIds             = $getValue.RoleScopeTagIds
+            RoleScopeTagIds             = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                          = $getValue.Id
             exclusions                  = $complexExclusions
             threatTypeSettings          = $complexThreatTypeSettings
@@ -914,6 +914,11 @@ function Set-TargetResource
             '1' { $boundParameters.antivirusengine_enforcementLevel = 'on_demand' }
             '2' { $boundParameters.antivirusengine_enforcementLevel = 'passive' }
         }
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

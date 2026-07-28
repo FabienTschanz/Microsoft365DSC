@@ -229,7 +229,7 @@ function Get-TargetResource
             DisplayName                                    = $devicePolicy.DisplayName
             Id                                             = $devicePolicy.Id
             Description                                    = $devicePolicy.Description
-            RoleScopeTagIds                                = $devicePolicy.RoleScopeTagIds
+            RoleScopeTagIds                                = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $devicePolicy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             PasscodeBlockSimple                            = $devicePolicy.passcodeBlockSimple
             PasscodeExpirationDays                         = $devicePolicy.passcodeExpirationDays
             PasscodeMinimumLength                          = $devicePolicy.passcodeMinimumLength
@@ -456,6 +456,11 @@ function Set-TargetResource
 
     $currentDeviceiOsPolicy = Get-TargetResource @PSBoundParameters
     $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     $notificationTemplates = Get-MgBetaDeviceManagementNotificationMessageTemplate -All | Where-Object -FilterScript {
         $_.Id -ne '8ca486fc-bee8-4ef2-983b-21e8908d11b8' # Exclude the second, unused default template

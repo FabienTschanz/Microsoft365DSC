@@ -141,7 +141,7 @@ function Get-TargetResource
             Description              = $getValue.Description
             DisplayName              = $getValue.DisplayName
             IsIntuneManagedInstaller = $getValue.DetectionScriptParameters[0].defaultValue -eq 'true'
-            RoleScopeTagIds          = $getValue.RoleScopeTagIds
+            RoleScopeTagIds          = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                       = $getValue.Id
             Ensure                   = 'Present'
             Credential               = $Credential
@@ -265,7 +265,13 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
     $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
     $boundParameters.Remove('IsIntuneManagedInstaller') | Out-Null
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     $isIntuneManagedInstallerValue = 'false'
     if ($IsIntuneManagedInstaller)
@@ -293,21 +299,6 @@ function Set-TargetResource
 
         $createParameters = ([Hashtable]$boundParameters).Clone()
         $createParameters.Remove('Id') | Out-Null
-        if ($createParameters.ContainsKey('Description'))
-        {
-            $createParameters.description = $createParameters.Description
-            $createParameters.Remove('Description') | Out-Null
-        }
-        if ($createParameters.ContainsKey('DisplayName'))
-        {
-            $createParameters.displayName = $createParameters.DisplayName
-            $createParameters.Remove('DisplayName') | Out-Null
-        }
-        if ($createParameters.ContainsKey('RoleScopeTagIds'))
-        {
-            $createParameters.roleScopeTagIds = $createParameters.RoleScopeTagIds
-            $createParameters.Remove('RoleScopeTagIds') | Out-Null
-        }
         $createParameters.deviceHealthScriptType = 'managedInstallerScript'
         $createParameters.detectionScriptContent = 'ZGV0ZWN0aW9uU2NyaXB0Q29udGVudA=='
         $createParameters.remediationScriptContent = 'cmVtZWRpYXRpb25TY3JpcHRDb250ZW50'

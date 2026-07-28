@@ -247,7 +247,7 @@ function Get-TargetResource
             DisplayName           = $getValue.DisplayName
             DefinitionValues      = $complexDefinitionValues
             Id                    = $getValue.Id
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Ensure                = 'Present'
             Credential            = $Credential
             ApplicationId         = $ApplicationId
@@ -374,6 +374,11 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
 
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $PSBoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
+
     $keyToRename = @{
         'odataType'          = '@odata.type'
         'BooleanValue'       = 'value'
@@ -382,6 +387,7 @@ function Set-TargetResource
         'KeyValuePairValues' = 'values'
         'StringValues'       = 'values'
     }
+
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating an Intune Device Configuration Administrative Template Policy for Windows10 with DisplayName {$DisplayName}"

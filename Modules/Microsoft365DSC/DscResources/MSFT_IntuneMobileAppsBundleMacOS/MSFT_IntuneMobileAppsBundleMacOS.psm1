@@ -264,7 +264,7 @@ function Get-TargetResource
             PackageFileType                 = $getValue.'@odata.type'.Replace('#microsoft.graph.macOS', '').Replace('App', '')
             PrivacyInformationUrl           = $getValue.PrivacyInformationUrl
             Publisher                       = $getValue.Publisher
-            RoleScopeTagIds                 = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                 = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                              = $getValue.Id
             Ensure                          = 'Present'
             Credential                      = $Credential
@@ -459,7 +459,7 @@ function Set-TargetResource
     #endregion
 
     $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $boundParameters.Remove('Categories') | Out-Null
     $boundParameters.Remove('PackageFileType') | Out-Null
 
@@ -478,6 +478,11 @@ function Set-TargetResource
         $boundParameters.Add('PostInstallScript', @{
             scriptContent = $convertedPostInstallScript
         })
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

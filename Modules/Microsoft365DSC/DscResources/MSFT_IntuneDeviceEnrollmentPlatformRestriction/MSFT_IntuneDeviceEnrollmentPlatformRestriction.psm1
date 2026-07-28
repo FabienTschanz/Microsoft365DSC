@@ -193,7 +193,7 @@ function Get-TargetResource
             Identity                          = $config.Id
             DisplayName                       = $config.DisplayName
             Description                       = $config.Description
-            RoleScopeTagIds                   = $config.RoleScopeTagIds
+            RoleScopeTagIds                   = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $config.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             DeviceEnrollmentConfigurationType = $config.DeviceEnrollmentConfigurationType.ToString()
             Priority                          = $config.Priority
             Ensure                            = 'Present'
@@ -383,6 +383,11 @@ function Set-TargetResource
     {
         $PriorityPresent = $true
         $boundParameters.Remove('Priority') | Out-Null
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

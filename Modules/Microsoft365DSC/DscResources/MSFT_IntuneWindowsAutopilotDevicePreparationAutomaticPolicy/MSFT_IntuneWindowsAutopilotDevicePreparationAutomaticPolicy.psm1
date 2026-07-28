@@ -186,7 +186,7 @@ function Get-TargetResource
             #region resource generator code
             Description           = $getValue.Description
             DisplayName           = $getValue.Name
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                    = $getValue.Id
             AllowedApplications   = Get-M365DSCArrayFromProperty -PropertyValue ($batchResponsesApps | ForEach-Object { $_.body.displayName }) -ElementType ([System.String])
             AllowedScripts        = Get-M365DSCArrayFromProperty -PropertyValue ($batchResponsesScripts | ForEach-Object { $_.body.displayName }) -ElementType ([System.String])
@@ -370,6 +370,11 @@ function Set-TargetResource
             } | ConvertTo-Json -Compress
         }
         $boundParameters.Add('allowedApplicationIds', $newApps)
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

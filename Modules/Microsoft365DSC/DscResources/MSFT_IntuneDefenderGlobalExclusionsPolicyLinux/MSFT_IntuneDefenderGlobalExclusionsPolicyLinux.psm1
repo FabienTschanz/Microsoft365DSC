@@ -167,7 +167,7 @@ function Get-TargetResource
             #region resource generator code
             Description           = $getValue.Description
             DisplayName           = $getValue.Name
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                    = $getValue.Id
             Exclusions            = $complexExclusions
             Ensure                = 'Present'
@@ -321,6 +321,11 @@ function Set-TargetResource
     }
     $BoundParameters.Remove('Exclusions') | Out-Null
     $BoundParameters.Add('Exclusions', $convertedExclusions)
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     $templateReferenceId = 'dfa57610-d11d-4bf8-89d6-1f5cb1679506_1'
     $platforms = 'linux'

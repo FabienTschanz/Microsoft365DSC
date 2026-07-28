@@ -189,7 +189,7 @@ function Get-TargetResource
             Id                                             = $getValue.Id
             Description                                    = $getValue.Description
             DisplayName                                    = $getValue.DisplayName
-            RoleScopeTagIds                                = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                                = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             AppsBlockInstallFromUnknownSources             = $getValue.appsBlockInstallFromUnknownSources
             BluetoothBlockConfiguration                    = $getValue.bluetoothBlockConfiguration
             BluetoothBlocked                               = $getValue.bluetoothBlocked
@@ -382,6 +382,11 @@ function Set-TargetResource
 
     $currentInstance = Get-TargetResource @PSBoundParameters
     $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

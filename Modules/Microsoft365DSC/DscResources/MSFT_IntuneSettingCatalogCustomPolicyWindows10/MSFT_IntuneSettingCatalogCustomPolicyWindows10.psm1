@@ -200,7 +200,7 @@ function Get-TargetResource
             Description           = $getValue.Description
             Name                  = $getValue.Name
             Platforms             = $enumPlatforms
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Technologies          = $enumTechnologies
             Settings              = $complexSettings
             Id                    = $getValue.Id
@@ -347,6 +347,11 @@ function Set-TargetResource
         'IntValue'    = 'value'
     }
     $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters -KeyMapping $keysToRename
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

@@ -169,7 +169,7 @@ function Get-TargetResource
             ExecutionFrequency          = [System.Xml.XmlConvert]::ToTimeSpan($getValue.ExecutionFrequency).ToString()
             FileName                    = $getValue.FileName
             RetryCount                  = $getValue.RetryCount
-            RoleScopeTagIds             = $getValue.RoleScopeTagIds
+            RoleScopeTagIds             = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             RunAsAccount                = $enumRunAsAccount
             ScriptContent               = $getValue.ScriptContent
             Id                          = $getValue.Id
@@ -322,6 +322,10 @@ function Set-TargetResource
     if ($boundParameters.ContainsKey('ExecutionFrequency'))
     {
         $boundParameters['executionFrequency'] = [System.Xml.XmlConvert]::ToString([System.TimeSpan]::Parse($boundParameters['ExecutionFrequency']))
+    }
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

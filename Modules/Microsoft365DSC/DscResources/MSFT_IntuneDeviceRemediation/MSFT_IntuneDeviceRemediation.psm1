@@ -243,7 +243,7 @@ function Get-TargetResource
             Publisher                   = $getValue.Publisher
             RemediationScriptContent    = $getValue.RemediationScriptContent
             RemediationScriptParameters = $complexRemediationScriptParameters
-            RoleScopeTagIds             = $getValue.RoleScopeTagIds
+            RoleScopeTagIds             = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             RunAs32Bit                  = $getValue.RunAs32Bit
             RunAsAccount                = $enumRunAsAccount
             Id                          = $getValue.Id
@@ -428,6 +428,11 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $BoundParameters.Remove('IsGlobalScript') | Out-Null
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

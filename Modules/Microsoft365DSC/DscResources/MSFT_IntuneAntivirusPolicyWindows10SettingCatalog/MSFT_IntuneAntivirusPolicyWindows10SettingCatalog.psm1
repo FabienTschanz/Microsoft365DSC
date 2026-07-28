@@ -525,7 +525,7 @@ function Get-TargetResource
         $returnHashtable.Add('Identity', $Identity)
         $returnHashtable.Add('DisplayName', $policy.name)
         $returnHashtable.Add('Description', $policy.description)
-        $returnHashtable.Add('RoleScopeTagIds', $policy.roleScopeTagIds)
+        $returnHashtable.Add('RoleScopeTagIds', (Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds))
         $returnHashtable.Add('TemplateId', $policy.templateReference.TemplateId)
 
         if ($null -ne $policySettings.SevereThreatDefaultAction)
@@ -1067,6 +1067,11 @@ function Set-TargetResource
     {
         $BoundParameters.Add('LowSeverityThreatDefaultAction', $BoundParameters['LowSeverityThreats'])
         $BoundParameters.Remove('LowSeverityThreats')
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     $templateReferenceId = $TemplateId

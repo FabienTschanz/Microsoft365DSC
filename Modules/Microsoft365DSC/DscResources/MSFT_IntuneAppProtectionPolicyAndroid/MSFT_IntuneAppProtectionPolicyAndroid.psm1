@@ -559,7 +559,7 @@ function Get-TargetResource
             RequiredAndroidSafetyNetDeviceAttestationType      = $policy.RequiredAndroidSafetyNetDeviceAttestationType
             RequiredAndroidSafetyNetEvaluationType             = $policy.RequiredAndroidSafetyNetEvaluationType
             RequirePinAfterBiometricChange                     = $policy.RequirePinAfterBiometricChange
-            RoleScopeTagIds                                    = $policy.RoleScopeTagIds
+            RoleScopeTagIds                                    = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             SaveAsBlocked                                      = $policy.SaveAsBlocked
             ScreenCaptureBlocked                               = $policy.ScreenCaptureBlocked
             SimplePinBlocked                                   = $policy.SimplePinBlocked
@@ -996,6 +996,11 @@ function Set-TargetResource
 
     $currentPolicy = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     #rebuild array as a MicrosoftGraphKeyValuePair hash table for ApprovedKeyboards
     $myApprovedKeyboards = @()

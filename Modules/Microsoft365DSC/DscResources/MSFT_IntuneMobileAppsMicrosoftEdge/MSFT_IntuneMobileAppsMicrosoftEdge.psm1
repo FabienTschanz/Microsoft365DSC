@@ -224,7 +224,7 @@ function Get-TargetResource
             Owner                 = $getValue.Owner
             PrivacyInformationUrl = $getValue.PrivacyInformationUrl
             Publisher             = $getValue.Publisher
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             TargetPlatform        = $getValue.'@odata.type'.Replace('#microsoft.graph.', '').Replace('MicrosoftEdgeApp', '')
             Id                    = $getValue.Id
             Ensure                = 'Present'
@@ -400,11 +400,16 @@ function Set-TargetResource
     #endregion
 
     $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+    $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
 
     $boundParameters.Remove('Categories') | Out-Null
     $boundParameters.Remove('Channel') | Out-Null
     $boundParameters.Remove('TargetPlatform') | Out-Null
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

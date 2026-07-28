@@ -165,7 +165,7 @@ function Get-TargetResource
             #region resource generator code
             Description                                       = $getValue.Description
             DisplayName                                       = $getValue.DisplayName
-            RoleScopeTagIds                                   = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                                   = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             FeatureUpdateVersion                              = $getValue.FeatureUpdateVersion
             InstallFeatureUpdatesOptional                     = $getValue.InstallFeatureUpdatesOptional
             InstallLatestWindows10OnWindows11IneligibleDevice = $getValue.InstallLatestWindows10OnWindows11IneligibleDevice
@@ -341,6 +341,11 @@ function Set-TargetResource
             offerEndDateTimeInUTC   = $null
             offerIntervalInDays     = $null
         }
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

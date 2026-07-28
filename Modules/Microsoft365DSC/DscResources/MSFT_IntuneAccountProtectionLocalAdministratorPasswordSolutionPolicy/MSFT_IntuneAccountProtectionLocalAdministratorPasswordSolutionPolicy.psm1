@@ -233,7 +233,7 @@ function Get-TargetResource
         $returnHashtable.Add('Identity', $Identity)
         $returnHashtable.Add('DisplayName', $policy.Name)
         $returnHashtable.Add('Description', $policy.Description)
-        $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
+        $returnHashtable.Add('RoleScopeTagIds', (Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds))
 
         $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
@@ -449,6 +449,10 @@ function Set-TargetResource
     $platforms = 'windows10'
     $technologies = 'mdm'
 
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
     if ($Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating new Account Protection LAPS Policy {$DisplayName}"

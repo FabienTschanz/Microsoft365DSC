@@ -175,7 +175,7 @@ function Get-TargetResource
             EnrollmentMode          = $androidDeviceOwnerEnrollmentProfile.EnrollmentMode.ToString()
             EnrollmentTokenType     = $androidDeviceOwnerEnrollmentProfile.EnrollmentTokenType.ToString()
             IsTeamsDeviceProfile    = $androidDeviceOwnerEnrollmentProfile.IsTeamsDeviceProfile
-            RoleScopeTagIds         = $androidDeviceOwnerEnrollmentProfile.RoleScopeTagIds
+            RoleScopeTagIds         = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $androidDeviceOwnerEnrollmentProfile.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             TokenExpirationDateTime = $tokenExpirationDateTimeString
             WifiHidden              = $androidDeviceOwnerEnrollmentProfile.WifiHidden
             WifiPassword            = $androidDeviceOwnerEnrollmentProfile.WifiPassword
@@ -323,6 +323,11 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
     $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $setParameters = Rename-M365DSCCimInstanceParameter -Properties $setParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $setParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     # CREATE
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

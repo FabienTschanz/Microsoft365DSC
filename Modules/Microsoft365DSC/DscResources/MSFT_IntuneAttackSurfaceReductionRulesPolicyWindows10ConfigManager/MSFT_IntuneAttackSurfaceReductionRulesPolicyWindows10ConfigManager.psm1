@@ -243,7 +243,7 @@ function Get-TargetResource
         $returnHashtable.Add('Identity', $Identity)
         $returnHashtable.Add('DisplayName', $policy.Name)
         $returnHashtable.Add('Description', $policy.Description)
-        $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
+        $returnHashtable.Add('RoleScopeTagIds', (Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds))
 
         $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
@@ -460,6 +460,11 @@ function Set-TargetResource
 
     $currentPolicy = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     $templateReferenceId = '5dd36540-eb22-4e7e-b19c-2a07772ba627_1'
     $platforms = 'windows10'

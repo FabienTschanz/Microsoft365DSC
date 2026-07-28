@@ -251,7 +251,7 @@ function Get-TargetResource
             Owner                           = $getValue.Owner
             PrivacyInformationUrl           = $getValue.PrivacyInformationUrl
             Publisher                       = $getValue.Publisher
-            RoleScopeTagIds                 = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                 = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id                              = $getValue.Id
             Ensure                          = 'Present'
             Credential                      = $Credential
@@ -426,6 +426,11 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $boundParameters.Remove('Categories') | Out-Null
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

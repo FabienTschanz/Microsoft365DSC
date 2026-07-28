@@ -317,7 +317,7 @@ function Get-TargetResource
             Id                                          = $devicePolicy.Id
             DisplayName                                 = $devicePolicy.DisplayName
             Description                                 = $devicePolicy.Description
-            RoleScopeTagIds                             = $devicePolicy.RoleScopeTagIds
+            RoleScopeTagIds                             = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $devicePolicy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             PasswordRequired                            = $devicePolicy.passwordRequired
             PasswordBlockSimple                         = $devicePolicy.passwordBlockSimple
             PasswordRequiredToUnlockFromIdle            = $devicePolicy.passwordRequiredToUnlockFromIdle
@@ -609,6 +609,11 @@ function Set-TargetResource
 
     $currentDeviceWindows10Policy = Get-TargetResource @PSBoundParameters
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $BoundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($null -ne $BoundParameters.DeviceCompliancePolicyScript)
     {

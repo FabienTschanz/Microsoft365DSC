@@ -160,7 +160,7 @@ function Get-TargetResource
             DisplayName           = $getValue.DisplayName
             EnforceSignatureCheck = $getValue.EnforceSignatureCheck
             FileName              = $getValue.FileName
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
+            RoleScopeTagIds       = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             RunAs32Bit            = $getValue.RunAs32Bit
             RunAsAccount          = $enumRunAsAccount
             ScriptContent         = $getValue.ScriptContent
@@ -306,6 +306,11 @@ function Set-TargetResource
     $currentInstance = Get-TargetResource @PSBoundParameters
     $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.roleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {

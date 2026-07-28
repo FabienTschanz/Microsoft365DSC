@@ -13,6 +13,8 @@
 * M365DSCDocGenerator
   * Fixed an issue where not all permissions were shown on the resource docs page.
 * MISC
+  * Updated `RoleScopeTagIds` for Intune resources to resolve to their display name.
+    FIXES [#6444](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/6444)
   * Updated documentation for the `Update-M365DSCAzureAdApplication` function.
     FIXES [#5399](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/5399)
   * Updated required permissions and documentation for Azure resources.

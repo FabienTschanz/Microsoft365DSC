@@ -142,7 +142,7 @@ function Get-TargetResource
         $returnHashtable.Add('Identity', $policy.Id)
         $returnHashtable.Add('DisplayName', $policy.Name)
         $returnHashtable.Add('Description', $policy.Description)
-        $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
+        $returnHashtable.Add('RoleScopeTagIds', (Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $policy.RoleScopeTagIds -DesiredValues $RoleScopeTagIds))
 
         if ($null -eq $settings)
         {
@@ -315,6 +315,11 @@ function Set-TargetResource
     $templateReferenceId = '22968f54-45fa-486c-848e-f8224aa69772_1'
     $platforms = 'windows10'
     $technologies = 'mdm'
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
 
     foreach ($group in $boundParameters.AccessGroup)
     {

@@ -11,7 +11,7 @@ $Script:M365DSCAuthenticationParameterSet = @{
     ManagedIdentity = @('ManagedIdentity', 'TenantId')
     AccessTokens = @('AccessTokens', 'TenantId')
 }
-$templatesPath = Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCRelationTemplates.json'
+$templatesPath = Join-Path -Path $PSScriptRoot -ChildPath '../M365DSCRelationTemplates.json'
 $jsonContent = Get-Content -Path $templatesPath -Raw | ConvertFrom-Json
 $Script:RelationTemplates = @{
     templates = @{}

@@ -327,7 +327,7 @@ function Get-TargetResource
             PrivacyUrl                                = $getValue.PrivacyUrl
             ProfileDescription                        = $getValue.ProfileDescription
             ProfileName                               = $getValue.ProfileName
-            RoleScopeTagIds                           = $getValue.RoleScopeTagIds
+            RoleScopeTagIds                           = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             #SendDeviceOwnershipChangePushNotification = $getValue.SendDeviceOwnershipChangePushNotification
             ShowAzureADEnterpriseApps                 = $getValue.ShowAzureADEnterpriseApps
             ShowConfigurationManagerApps              = $getValue.ShowConfigurationManagerApps
@@ -556,6 +556,11 @@ function Set-TargetResource
                 $boundParameters.themeColor.$property = [int]$boundParameters.themeColor.$property
             }
         }
+    }
+
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $boundParameters.RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
     }
 
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')

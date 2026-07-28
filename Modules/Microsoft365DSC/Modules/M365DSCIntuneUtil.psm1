@@ -1,3 +1,165 @@
+# Module-scoped cache so the ~100+ resources sharing this property during a
+# single Export/Test/Set run pay for one Graph call, not one per resource.
+$Script:M365DSCRoleScopeTagCache = $null
+
+function Initialize-M365DSCIntuneRoleScopeTagCache
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param(
+        [Parameter()]
+        [switch]
+        $Force
+    )
+
+    if ($null -eq $Script:M365DSCRoleScopeTagCache -or $Force)
+    {
+        Write-Verbose -Message 'Refreshing Intune RoleScopeTag cache from Graph'
+
+        $tags = Get-MgBetaDeviceManagementRoleScopeTag -All -ErrorAction Stop
+
+        $byId   = @{}
+        $byName = @{}
+
+        foreach ($tag in $tags)
+        {
+            $byId[[System.String]$tag.Id] = $tag.DisplayName
+
+            # DisplayName isn't unique in Intune - keep every Id under a name
+            # so callers can detect and handle ambiguity instead of us
+            # silently picking one.
+            if (-not $byName.ContainsKey($tag.DisplayName))
+            {
+                $byName[$tag.DisplayName] = [System.Collections.Generic.List[System.String]]::new()
+            }
+            $byName[$tag.DisplayName].Add([System.String]$tag.Id)
+        }
+
+        $Script:M365DSCRoleScopeTagCache = @{
+            ById   = $byId
+            ByName = $byName
+        }
+    }
+}
+
+<#
+.SYNOPSIS
+    Resolves Intune RoleScopeTag Names to their Id.
+
+.DESCRIPTION
+    Resolves RoleScopeTag Names into their corresponding Ids.
+    If a tag has been deleted, this will return the raw name and emit a warning.
+
+.PARAMETER RoleScopeTagIds
+    One or more RoleScopeTag Names to resolve into Ids.
+
+.EXAMPLE
+    Resolve-M365DSCIntuneRoleScopeTagNames -RoleScopeTagIds @('Default', 'Second')
+#>
+function Resolve-M365DSCIntuneRoleScopeTagIds
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.String[]]
+        $RoleScopeTagIds
+    )
+
+    if ($RoleScopeTagIds.Count -eq 0)
+    {
+        return ,@()
+    }
+
+    Initialize-M365DSCIntuneRoleScopeTagCache
+
+    $ids = @()
+    foreach ($id in $RoleScopeTagIds)
+    {
+        $resolvedId = $Script:M365DSCRoleScopeTagCache.ByName[$id]
+        if ($null -eq $resolvedId)
+        {
+            $resolvedName = $Script:M365DSCRoleScopeTagCache.ById[$id]
+            if ($null -eq $resolvedName)
+            {
+                Write-Warning "RoleScopeTag with Name or Id {$id} not found in the directory. It may have been deleted or renamed. Skipping it."
+                continue
+            }
+
+            # Already an id, return it as-is
+            $resolvedId = $id
+        }
+
+        $ids += $resolvedId
+    }
+    return ,$ids
+}
+
+<#
+.SYNOPSIS
+    Resolves Intune RoleScopeTag Ids to their current DisplayNames.
+
+.DESCRIPTION
+    Resolves RoleScopeTag Ids returned by Graph into their current DisplayNames.
+    If a tag has been renamed since the Id was retrieved, this will return the new name.
+    If a tag has been deleted, this will return the raw Id and emit a warning.
+
+.PARAMETER CurrentValues
+    One or more current RoleScopeTagIds as returned by Graph.
+
+.PARAMETER DesiredValues
+    One or more bound RoleScopeTagIds that should be excluded from the resolution and returned as-is.
+
+.EXAMPLE
+    Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues @('0', '4') -DesiredValues @('0')
+#>
+function Resolve-M365DSCIntuneRoleScopeTagNames
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.String[]]
+        $CurrentValues,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [AllowNull()]
+        [System.String[]]
+        $DesiredValues
+    )
+
+    if ($CurrentValues.Count -eq 0)
+    {
+        return ,@()
+    }
+
+    Initialize-M365DSCIntuneRoleScopeTagCache
+
+    $names = @()
+    foreach ($id in $CurrentValues)
+    {
+        if ($DesiredValues -contains $id)
+        {
+            $names += $id
+            continue
+        }
+
+        $resolvedName = $Script:M365DSCRoleScopeTagCache.ById[$id]
+        if ($null -eq $resolvedName)
+        {
+            Write-Warning "RoleScopeTag with Id {$id} not found in the directory. It may have been deleted or renamed."
+            $resolvedName = $id
+        }
+
+        $names += $resolvedName
+    }
+
+    return ,$names
+}
+
 <#
 .SYNOPSIS
     Converts Microsoft Graph Intune policy assignments into DSC-friendly hashtables.
@@ -1758,6 +1920,8 @@ Export-ModuleMember -Function @(
     'Get-OmaSettingPlainTextValue',
     'Invoke-M365DSCIntuneMobileAppInitialUpload',
     'Remove-ComplexFunctionsFromFilterQuery',
+    'Resolve-M365DSCIntuneRoleScopeTagIds',
+    'Resolve-M365DSCIntuneRoleScopeTagNames',
     'Update-DeviceAppManagementAppCategory',
     'Update-DeviceAppManagementPolicyAssignment',
     'Update-DeviceConfigurationPolicyAssignment',

@@ -178,7 +178,7 @@ function Get-TargetResource
         $results = @{
             Description     = $getValue.Description
             DisplayName     = $getValue.DisplayName
-            RoleScopeTagIds = $getValue.RoleScopeTagIds
+            RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagNames -CurrentValues $getValue.RoleScopeTagIds -DesiredValues $RoleScopeTagIds
             Id              = $getValue.Id
         }
 
@@ -350,6 +350,11 @@ function Set-TargetResource
     $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
     $policyTemplateId = 'a239407c-698d-4ef8-b314-e3ae409204b8'
 
+    if ($PSBoundParameters.ContainsKey('RoleScopeTagIds'))
+    {
+        $RoleScopeTagIds = Resolve-M365DSCIntuneRoleScopeTagIds -RoleScopeTagIds $RoleScopeTagIds
+    }
+
     if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Creating an Intune Disk Encryption for macOS with DisplayName {$DisplayName}"
@@ -411,6 +416,7 @@ function Set-TargetResource
         $UpdateParameters = @{}
         $UpdateParameters.Add('DisplayName', $DisplayName)
         $UpdateParameters.Add('Description', $Description)
+        $UpdateParameters.Add('RoleScopeTagIds', $RoleScopeTagIds)
         Update-MgBetaDeviceManagementIntent -DeviceManagementIntentId $currentInstance.Id -BodyParameter $UpdateParameters
 
         #region resource generator code
