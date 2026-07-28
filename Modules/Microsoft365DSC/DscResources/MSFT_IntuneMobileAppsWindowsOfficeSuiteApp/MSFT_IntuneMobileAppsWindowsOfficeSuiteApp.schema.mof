@@ -10,13 +10,6 @@ class MSFT_DeviceManagementMobileAppAssignment
     [Write, Description("Possible values for the install intent chosen by the admin."), ValueMap{"available", "required", "uninstall", "availableWithoutEnrollment"}, Values{"available", "required", "uninstall", "availableWithoutEnrollment"}] String intent;
 };
 
-[ClassVersion("1.0.0")]
-class MSFT_DeviceManagementMimeContent
-{
-    [Write, Description("Indicates the type of content mime.")] String Type;
-    [Write, Description("The Base64 encoded string content.")] String Value;
-};
-
 [ClassVersion("1.0.0.1")]
 class MSFT_DeviceManagementMobileAppCategory
 {

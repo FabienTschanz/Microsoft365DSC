@@ -63,7 +63,7 @@ class MSFT_customKeyValueData
     [Write, Description("Value for the custom data entry.")] String value;
 };
 
-[ClassVersion("1.0.0.0"), FriendlyName("IntuneVPNConfigurationPolicyIOS")]
+[ClassVersion("1.0.0.1"), FriendlyName("IntuneVPNConfigurationPolicyIOS")]
 class MSFT_IntuneVPNConfigurationPolicyIOS : OMI_BaseResource
 {
     [Write, Description("Id of the Intune policy.")] String Id;
@@ -84,7 +84,7 @@ class MSFT_IntuneVPNConfigurationPolicyIOS : OMI_BaseResource
     [Write, Description("Use this field to enable functionality not supported by Intune, but available in your VPN solution. Contact your VPN vendor to learn how to add these key/value pairs. This collection can contain a maximum of 25 elements"), EmbeddedInstance("MSFT_customData")] String customData[];
     [Write, Description("Use this field to enable functionality not supported by Intune, but available in your VPN solution. Contact your VPN vendor to learn how to add these key/value pairs. This collection can contain a maximum of 25 elements"), EmbeddedInstance("MSFT_customKeyValueData")] String customKeyValueData[];
     [Write, Description("On-Demand Rules. This collection can contain a maximum of 500 elements."), EmbeddedInstance("MSFT_DeviceManagementConfigurationPolicyVpnOnDemandRule")] String onDemandRules[];
-    [Write, Description("Not documented on https://learn.microsoft.com/en-us/graph/api/resources/intune-deviceconfig-applevpnconfiguration?view=graph-rest-beta.")] String targetedMobileApps[];
+    [Write, Description("Not documented on https://learn.microsoft.com/en-us/graph/api/resources/intune-deviceconfig-applevpnconfiguration?view=graph-rest-beta."), EmbeddedInstance("MSFT_targetedMobileApps")] String targetedMobileApps[];
     [Write, Description("Represents the assignment to the Intune policy."), EmbeddedInstance("MSFT_DeviceManagementConfigurationPolicyAssignments")] String Assignments[];
     [Write, Description("Present ensures the policy exists, absent ensures it is removed."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
     [Write, Description("Credentials of the Intune Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;

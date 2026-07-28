@@ -7,6 +7,16 @@
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
     to PSCredential and removed it from the export output.
+* IntuneCloudProvisioningPolicyWindows365
+  * Removed unused class reference `MSFT_MicrosoftGraphMicrosoftManagedDesktop`.
+* IntuneMobileAppsLobAppWindows10
+  * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementAppxMobileAppAssignment`.
+* IntuneMobileAppsSystemAppAndroid
+  * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementSystemMobileAppAssignment`.
+* IntuneMobileAppsWindowsOfficeSuiteApp
+  * Removed unused class reference `MSFT_DeviceManagementMimeContent`.
+* IntuneVPNConfigurationPolicyIOS
+  * [BREAKING CHANGE] Updated `targetedMobileApps` to use `MSFT_targetedMobileApps`.
 * SPOAccessControlSettings
   * Added property `RestrictResourceAccountAccess`.
 * SPOSharingSettings
@@ -77,7 +87,9 @@
   * Added `Mgx` with version 1.0.2.
   * Updated `PnP.PowerShell` to version 3.3.0.
 * MISC
-  * Invoke PowerShell 7 for all resources if not already running under it.
+  * Added QA new test to check for unreferenced classes in the schema file.
+    FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)
+  * Updated module to invoke PowerShell 7 for all resources if not already running under it.
 
 # UNRELEASED
 

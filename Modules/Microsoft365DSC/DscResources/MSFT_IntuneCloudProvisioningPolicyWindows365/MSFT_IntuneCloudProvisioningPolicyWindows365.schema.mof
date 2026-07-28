@@ -36,14 +36,6 @@ class MSFT_MicrosoftGraphCloudPcDomainJoinConfiguration
 };
 
 [ClassVersion("1.0.0.0")]
-class MSFT_MicrosoftGraphMicrosoftManagedDesktop
-{
-    [Write, Description("Indicates the provisioning policy associated with Microsoft Managed Desktop settings. Possible values are: notManaged, premiumManaged, standardManaged, starterManaged. The default value is notManaged."), ValueMap{"notManaged","premiumManaged","standardManaged","starterManaged"}, Values{"notManaged","premiumManaged","standardManaged","starterManaged"}] String ManagedType;
-    [Write, Description("The name of the Microsoft Managed Desktop profile that the Windows 365 Cloud PC is associated with.")] String Profile;
-    [Write, Description("Indicates whether the provisioning policy enables Microsoft Managed Desktop and, if enabled, specifies the type of plan managing the device. Possible values are: notManaged, premiumManaged, standardManaged, starterManaged. The type property is deprecated and will stop returning data on January 31, 2024. Going forward, use the managedType property."), ValueMap{"notManaged","premiumManaged","standardManaged","starterManaged"}, Values{"notManaged","premiumManaged","standardManaged","starterManaged"}] String Type;
-};
-
-[ClassVersion("1.0.0.0")]
 class MSFT_MicrosoftGraphCloudPcWindowsSetting
 {
     [Write, Description("The Windows language or region tag to use for language pack configuration and localization of the Cloud PC. The default value is en-US, which corresponds to English (United States).")] String Locale;
