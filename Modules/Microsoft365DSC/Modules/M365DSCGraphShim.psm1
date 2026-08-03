@@ -149,6 +149,14 @@ function Invoke-M365DSCGraphShimRequestV75
         $OutputType,
 
         [Parameter()]
+        [System.Int32]
+        $Skip = 0,
+
+        [Parameter()]
+        [System.Int32]
+        $Top = 0,
+
+        [Parameter()]
         [switch]
         $All,
 
@@ -163,11 +171,25 @@ function Invoke-M365DSCGraphShimRequestV75
     }
 
     $invokeParams = @{
-        All        = $All
-        ApiVersion = if ($Uri -match '^/beta') { 'beta' } else { 'v1.0' }
-        Method     = $Method
-        Uri        = $Uri.TrimStart('/beta').TrimStart('/v1.0')
+        All         = $All
+        ApiVersion  = if ($Uri -match '^/beta') { 'beta' } else { 'v1.0' }
+        Method      = $Method
+        Uri         = [regex]::Replace($Uri, '^/beta|^/v1.0', '')
         ErrorAction = 'Stop'
+    }
+
+    if ($PSBoundParameters.ContainsKey('Skip') -and $Skip -gt 0)
+    {
+        $invokeParams['Skip'] = $Skip
+    }
+
+    if ($PSBoundParameters.ContainsKey('Top') -and $Top -gt 0)
+    {
+        $invokeParams['PageSize'] = $Top
+    }
+    elseif ($PSBoundParameters.ContainsKey('Top') -and $Top -eq 0)
+    {
+        $invokeParams['NoPageSize'] = $true
     }
 
     if ($PSBoundParameters.ContainsKey('Body') -and $null -ne $Body)
@@ -234,11 +256,21 @@ function Get-M365DSCGraphShimAllPages
 
         [Parameter()]
         [System.Int32]
+        $Skip = 0,
+
+        [Parameter()]
+        [System.Int32]
         $Top = 0
     )
 
     $allResults = [System.Collections.Generic.List[System.Object]]::new()
     $currentUri = $Uri
+
+    if ($Skip -gt 0 -and $currentUri -notmatch '[\?&]\$skip=')
+    {
+        $separator = if ($currentUri.Contains('?')) { '&' } else { '?' }
+        $currentUri = "$currentUri$separator`$skip=$Skip"
+    }
 
     if ($Top -gt 0 -and $currentUri -notmatch '[\?&]\$top=')
     {
@@ -301,17 +333,15 @@ function Get-M365DSCGraphShimAllPagesV75
 
         [Parameter()]
         [System.Int32]
+        $Skip = 0,
+
+        [Parameter()]
+        [System.Int32]
         $Top = 0
     )
 
     $allResults = [System.Collections.Generic.List[System.Object]]::new()
     $currentUri = $Uri
-
-    if ($Top -gt 0 -and $currentUri -notmatch '[\?&]\$top=')
-    {
-        $separator = if ($currentUri.Contains('?')) { '&' } else { '?' }
-        $currentUri = "$currentUri$separator`$top=$Top"
-    }
 
     $requestParams = @{
         All    = $true
@@ -321,6 +351,16 @@ function Get-M365DSCGraphShimAllPagesV75
     if ($PSBoundParameters.ContainsKey('Headers') -and $Headers.Keys.Count -gt 0)
     {
         $requestParams['Headers'] = $Headers
+    }
+
+    if ($PSBoundParameters.ContainsKey('Skip'))
+    {
+        $requestParams['Skip'] = $Skip
+    }
+
+    if ($PSBoundParameters.ContainsKey('Top'))
+    {
+        $requestParams['Top'] = $Top
     }
 
     $response = Invoke-M365DSCGraphShimRequestV75 @requestParams -PassThru
@@ -555,11 +595,13 @@ function Invoke-M365DSCGraphShimGetResource
     if ($BoundParameters['Filter'])         { $uriParams['Filter'] = $BoundParameters['Filter'] }
     if ($BoundParameters['Property'])       { $uriParams['Property'] = $BoundParameters['Property'] }
     if ($BoundParameters['ExpandProperty']) { $uriParams['ExpandProperty'] = $BoundParameters['ExpandProperty'] }
-    if ($BoundParameters.ContainsKey('Top') -and $BoundParameters['Top'] -gt 0)   { $uriParams['Top'] = $BoundParameters['Top'] }
-    if ($BoundParameters.ContainsKey('Skip') -and $BoundParameters['Skip'] -gt 0) { $uriParams['Skip'] = $BoundParameters['Skip'] }
     if ($BoundParameters['Search'])         { $uriParams['Search'] = $BoundParameters['Search'] }
     if ($BoundParameters['Sort'])           { $uriParams['Sort'] = $BoundParameters['Sort'] }
     if ($BoundParameters['CountVariable'])  { $uriParams['CountVariable'] = $BoundParameters['CountVariable'] }
+
+    $paramSplat = @{}
+    if ($BoundParameters.ContainsKey('Top'))   { $paramSplat['Top'] = $BoundParameters['Top'] }
+    if ($BoundParameters.ContainsKey('Skip')) { $paramSplat['Skip'] = $BoundParameters['Skip'] }
 
     $uri = ConvertTo-M365DSCGraphShimUri @uriParams
 
@@ -567,9 +609,9 @@ function Invoke-M365DSCGraphShimGetResource
     {
         if ($Script:IsPowerShell75OrGreater)
         {
-            return Get-M365DSCGraphShimAllPagesV75 -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+            return Get-M365DSCGraphShimAllPagesV75 -Uri $uri -Headers $requestHeaders @paramSplat -ErrorAction $ErrorActionPreference
         }
-        return Get-M365DSCGraphShimAllPages -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+        return Get-M365DSCGraphShimAllPages -Uri $uri -Headers $requestHeaders @paramSplat -ErrorAction $ErrorActionPreference
     }
 
     if ($Script:IsPowerShell75OrGreater)
@@ -51684,4 +51726,3 @@ Export-ModuleMember -Function @(
     'Update-MgServicePrincipal',
     'Update-MgUser'
 )
-

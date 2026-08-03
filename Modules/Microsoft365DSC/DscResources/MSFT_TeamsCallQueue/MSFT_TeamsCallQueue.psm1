@@ -465,8 +465,21 @@ function Get-TargetResource
             return $nullReturn
         }
 
+        $users = @()
+        foreach ($user in $queue.Users)
+        {
+            $onlineUser = Get-CsOnlineUser -Identity $user -Properties UserPrincipalName -ErrorAction SilentlyContinue
+            if ($null -eq $onlineUser)
+            {
+                Write-Warning -Message "Unable to retrieve details for user with object id $user. Ensure the user exists and the account used for authentication has the necessary permissions to read user details."
+                continue
+            }
+
+            $users += $onlineUser.UserPrincipalName
+        }
+
         $authorizedUsers = @()
-        foreach ($authorizedUser in $queue.HideAuthorizedUsers)
+        foreach ($authorizedUser in $queue.AuthorizedUsers)
         {
             $user = Get-CsOnlineUser -Identity $authorizedUser -Properties UserPrincipalName -ErrorAction SilentlyContinue
             if ($null -eq $user)
@@ -478,12 +491,25 @@ function Get-TargetResource
             $authorizedUsers += $user.UserPrincipalName
         }
 
+        $hideAuthorizedUsers = @()
+        foreach ($authorizedUser in $queue.HideAuthorizedUsers)
+        {
+            $user = Get-CsOnlineUser -Identity $authorizedUser -Properties UserPrincipalName -ErrorAction SilentlyContinue
+            if ($null -eq $user)
+            {
+                Write-Warning -Message "Unable to retrieve details for hidden authorized user with object id $authorizedUser. Ensure the user exists and the account used for authentication has the necessary permissions to read user details."
+                continue
+            }
+
+            $hideAuthorizedUsers += $user.UserPrincipalName
+        }
+
         $returnHashtable = @{
             Name                                          = $queue.Name
             AgentAlertTime                                = $queue.AgentAlertTime
             AllowOptOut                                   = $queue.AllowOptOut
             DistributionLists                             = [String[]]$queue.DistributionLists
-            HideAuthorizedUsers                           = $authorizedUsers
+            HideAuthorizedUsers                           = $hideAuthorizedUsers
             UseDefaultMusicOnHold                         = $queue.UseDefaultMusicOnHold
             WelcomeMusicAudioFileId                       = $queue.WelcomeMusicAudioFileId
             WelcomeTextToSpeechPrompt                     = $queue.WelcomeTextToSpeechPrompt
@@ -569,7 +595,7 @@ function Get-TargetResource
             ShiftsSchedulingGroupId                       = $queue.ShiftsSchedulingGroupId
             ChannelId                                     = $queue.ChannelId
             ChannelUserObjectId                           = $queue.ChannelUserObjectId
-            AuthorizedUsers                               = [String[]]$queue.AuthorizedUsers
+            AuthorizedUsers                               = $authorizedUsers
             Ensure                                        = 'Present'
             Credential                                    = $Credential
             ApplicationId                                 = $ApplicationId
@@ -1050,11 +1076,30 @@ function Set-TargetResource
     $currentValues = Get-TargetResource @PSBoundParameters
     $opsParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
 
-    if ($PSBoundParameters.ContainsKey('HideAuthorizedUsers') -and $HideAuthorizedUsers.Count -gt 0)
+    if ($PSBoundParameters.ContainsKey('Users') -and $Users.Count -gt 0)
     {
-        $opsParameters.Remove('HideAuthorizedUsers') | Out-Null
+        $opsParameters.Remove('Users') | Out-Null
+        $userIds = @()
+        foreach ($user in $Users)
+        {
+            $onlineUser = Get-CsOnlineUser -Identity $user -Properties Id -ErrorAction SilentlyContinue
+            if ($null -eq $onlineUser)
+            {
+                Write-Warning -Message "Unable to retrieve details for user $user. Ensure the user exists and the account used for authentication has the necessary permissions to read user details."
+                continue
+            }
+
+            $userIds += $onlineUser.Id
+        }
+
+        $opsParameters.Add('Users', $userIds)
+    }
+
+    if ($PSBoundParameters.ContainsKey('AuthorizedUsers') -and $AuthorizedUsers.Count -gt 0)
+    {
+        $opsParameters.Remove('AuthorizedUsers') | Out-Null
         $authorizedUserIds = @()
-        foreach ($user in $HideAuthorizedUsers)
+        foreach ($user in $AuthorizedUsers)
         {
             $userDetails = Get-CsOnlineUser -Identity $user -Properties Id -ErrorAction SilentlyContinue
             if ($null -eq $userDetails)
@@ -1066,7 +1111,26 @@ function Set-TargetResource
             $authorizedUserIds += $userDetails.Id
         }
 
-        $opsParameters.Add('HideAuthorizedUsers', $authorizedUserIds)
+        $opsParameters.Add('AuthorizedUsers', $authorizedUserIds)
+    }
+
+    if ($PSBoundParameters.ContainsKey('HideAuthorizedUsers') -and $HideAuthorizedUsers.Count -gt 0)
+    {
+        $opsParameters.Remove('HideAuthorizedUsers') | Out-Null
+        $hideAuthorizedUserIds = @()
+        foreach ($user in $HideAuthorizedUsers)
+        {
+            $userDetails = Get-CsOnlineUser -Identity $user -Properties Id -ErrorAction SilentlyContinue
+            if ($null -eq $userDetails)
+            {
+                Write-Warning -Message "Unable to retrieve details for user $user. Ensure the user exists and the account used for authentication has the necessary permissions to read user details."
+                continue
+            }
+
+            $hideAuthorizedUserIds += $userDetails.Id
+        }
+
+        $opsParameters.Add('HideAuthorizedUsers', $hideAuthorizedUserIds)
     }
 
     if ($currentValues.Ensure -eq 'Absent' -and 'Present' -eq $Ensure )

@@ -416,7 +416,11 @@ function Export-TargetResource
         {
             $Filter = $baseFilter
         }
-        [array]$getValue = Get-MgBetaIdentityProvider -All -Filter $Filter -ErrorAction Stop
+        [array]$getValue = Get-MgBetaIdentityProvider `
+            -All `
+            -Filter $Filter `
+            -Top 0 `
+            -ErrorAction Stop
 
         $i = 1
         $dscContent = [System.Text.StringBuilder]::new()

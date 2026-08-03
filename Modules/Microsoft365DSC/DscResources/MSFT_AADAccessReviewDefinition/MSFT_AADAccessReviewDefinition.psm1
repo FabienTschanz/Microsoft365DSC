@@ -1178,6 +1178,7 @@ function Export-TargetResource
         [array]$getValue = Get-MgBetaIdentityGovernanceAccessReviewDefinition `
             -Filter $Filter `
             -All `
+            -Top 100 `
             -ErrorAction Stop
         #endregion
 

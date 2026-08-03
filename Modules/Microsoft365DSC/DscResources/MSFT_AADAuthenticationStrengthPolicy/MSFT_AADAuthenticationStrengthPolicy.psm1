@@ -438,6 +438,7 @@ function Export-TargetResource
         [array]$getValue = Get-MgBetaPolicyAuthenticationStrengthPolicy `
             -All `
             -Filter $Filter `
+            -Top 0 `
             -ErrorAction Stop
         #endregion
 

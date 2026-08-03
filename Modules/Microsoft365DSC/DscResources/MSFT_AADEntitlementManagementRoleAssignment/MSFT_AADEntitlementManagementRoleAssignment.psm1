@@ -115,7 +115,8 @@ function Get-TargetResource
                 {
                     $Script:AllRoleAssignments = Get-MgBetaRoleManagementEntitlementManagementRoleAssignment `
                         -ExpandProperty 'Principal' `
-                        -All
+                        -All `
+                        -Top 15
                 }
                 if ($null -eq $Script:AllRoleDefinitions)
                 {
@@ -521,6 +522,7 @@ function Export-TargetResource
             -All `
             -ExpandProperty 'Principal' `
             -Filter $Filter `
+            -Top 15 `
             -ErrorAction Stop
 
         #endregion

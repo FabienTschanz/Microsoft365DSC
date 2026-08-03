@@ -135,7 +135,9 @@ function Get-TargetResource
             }
             if ($null -eq $instance)
             {
-                $instance = Get-MgBetaIdentityCustomAuthenticationExtension -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'" `
+                $instance = Get-MgBetaIdentityCustomAuthenticationExtension -All `
+                    -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'" `
+                    -Top 0 `
                     -ErrorAction SilentlyContinue
             }
             if ($null -eq $instance)
@@ -616,6 +618,7 @@ function Export-TargetResource
         [array] $exportedInstances = Get-MgBetaIdentityCustomAuthenticationExtension `
         -All `
         -Filter $Filter `
+        -Top 0 `
         -ErrorAction Stop
 
         $i = 1

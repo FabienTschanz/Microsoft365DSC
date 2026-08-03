@@ -134,6 +134,16 @@ function Get-TargetResource
             $tagObject = $Script:exportedInstance
         }
 
+        $eventTypeName = $null
+        if (-not [System.String]::IsNullOrEmpty($tagObject.EventTypeId))
+        {
+            $eventTypeObject = Invoke-M365DSCCommand -ScriptBlock { Get-ComplianceTagEventType -Identity $tagObject.EventTypeId -ErrorAction Stop } -SuppressNotFoundError
+            if ($null -ne $eventTypeObject)
+            {
+                $eventTypeName = $eventTypeObject.Name
+            }
+        }
+
         Write-Verbose "Found existing ComplianceTag $($Name)"
         $result = @{
             Name                  = $tagObject.Name
@@ -144,7 +154,7 @@ function Get-TargetResource
             Notes                 = $tagObject.Notes
             ReviewerEmail         = $tagObject.ReviewerEmail
             RetentionAction       = $tagObject.RetentionAction
-            EventType             = $tagObject.EventType
+            EventType             = $eventTypeName
             RetentionType         = $tagObject.RetentionType
             Ensure                = 'Present'
             Credential            = $Credential

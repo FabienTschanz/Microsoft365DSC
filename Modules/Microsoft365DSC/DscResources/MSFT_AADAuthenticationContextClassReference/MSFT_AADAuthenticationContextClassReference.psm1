@@ -415,6 +415,7 @@ function Export-TargetResource
         [array]$getValue = Get-MgBetaIdentityConditionalAccessAuthenticationContextClassReference `
             -All `
             -Filter $Filter `
+            -Top 0 `
             -ErrorAction Stop
         #endregion
 

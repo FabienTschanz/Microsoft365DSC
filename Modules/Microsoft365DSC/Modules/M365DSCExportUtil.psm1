@@ -1422,7 +1422,7 @@ function Resolve-M365DSCExportRelations
         return
     }
 
-    foreach ($relation in $relations)
+    :relations foreach ($relation in $relations)
     {
         $propertyValue = $Results
         $splittedProperty = $relation.property.Split('.')
@@ -1445,21 +1445,21 @@ function Resolve-M365DSCExportRelations
                 }
                 if (-not $found)
                 {
-                    continue
+                    continue relations
                 }
             }
             else
             {
                 if (-not $propertyValue.ContainsKey($propertyName))
                 {
-                    continue
+                    continue relations
                 }
             }
 
             $propertyValue = $propertyValue.$propertyName
             if ($null -eq $propertyValue)
             {
-                continue
+                continue relations
             }
         }
 
@@ -1533,7 +1533,7 @@ function Get-M365DSCRelationTargetKey
     }
 
     # Extract the child property value
-    $childProperty = $Relation.childProperty
+    [string]$childProperty = $Relation.childProperty
     $value = $null
 
     if ($Item -is [System.Collections.IDictionary])

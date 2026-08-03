@@ -17,6 +17,8 @@
   * Removed unused class reference `MSFT_DeviceManagementMimeContent`.
 * IntuneVPNConfigurationPolicyIOS
   * [BREAKING CHANGE] Updated `targetedMobileApps` to use `MSFT_targetedMobileApps`.
+* SCComplianceTag
+  * Fixed an issue where `EventType` was never exported.
 * SPOAccessControlSettings
   * Added property `RestrictResourceAccountAccess`.
 * SPOSharingSettings
@@ -79,6 +81,8 @@
     with `MySiteSharingCapability` in the `SPOSharingSettings` resource.
 * SPOUserProfileProperty
   * Updated fetching of user profile properties.
+* TeamsCallQueue
+  * Added GUID resolution to `AuthorizedUsers` and `Users`.
 * M365DSCGraphShim
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
 * M365DSCModuleMgmt
@@ -87,6 +91,7 @@
   * Added `Mgx` with version 1.0.2.
   * Updated `PnP.PowerShell` to version 3.3.0.
 * MISC
+  * Added many new relations between resources to improve dependency handling during export.
   * Added QA new test to check for unreferenced classes in the schema file.
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
