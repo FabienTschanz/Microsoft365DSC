@@ -528,6 +528,7 @@ function Export-TargetResource
                 }
 
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
 
                 if ($Results.Destinations)
                 {
@@ -546,7 +547,8 @@ function Export-TargetResource
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
                     -Credential $Credential `
-                    -NoEscape @('Destinations')
+                    -NoEscape @('Destinations') `
+                    -RawResults $rawResults
 
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `

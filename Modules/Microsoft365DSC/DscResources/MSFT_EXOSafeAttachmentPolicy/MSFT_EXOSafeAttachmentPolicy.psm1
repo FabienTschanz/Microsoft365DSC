@@ -532,11 +532,13 @@ function Export-TargetResource
                 }
                 $Script:exportedInstance = $SafeAttachmentPolicy
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
-                    -Credential $Credential
+                    -Credential $Credential `
+                    -RawResults $rawResults
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
                     -FileName $Global:PartialExportFileName

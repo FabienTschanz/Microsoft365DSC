@@ -613,11 +613,13 @@ function Export-TargetResource
             }
             $Script:exportedInstance = $action
             $Results = Get-TargetResource @PSBoundParameters @Params
+            $rawResults = $Results.Clone()
             $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                 -ConnectionMode $ConnectionMode `
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
-                -Credential $Credential
+                -Credential $Credential `
+                -RawResults $rawResults
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `
                 -FileName $Global:PartialExportFileName
@@ -656,12 +658,14 @@ function Export-TargetResource
                     $Params.Action = 'Retention'
                 }
                 $Results = Get-TargetResource @PSBoundParameters @Params
+                $rawResults = $Results.Clone()
 
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
-                    -Credential $Credential
+                    -Credential $Credential `
+                    -RawResults $rawResults
                 [void]$dscContent.Append($currentDSCBlock)
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
                 $i++

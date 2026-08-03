@@ -2,8 +2,12 @@
 
 # UNRELEASED
 
+* AADApplication
+  * Updated `Owners` to use `DisplayName` for Service Principal objects.
 * AADPIMGroupSetting
   * Improved performance with batch requests.
+* AADRoleDefinition
+  * Fixed an issue where roles with empty permissions were not exported.
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
     to PSCredential and removed it from the export output.
@@ -95,6 +99,27 @@
   * Added QA new test to check for unreferenced classes in the schema file.
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
+  * Moved export relation resolution and `DependsOn` injection into the new
+    `Microsoft365DSC.Relations` assembly. Relation lookup, dependency collection and the
+    rewrite of the generated configuration no longer scale quadratically with the number of
+    exported objects.
+  * Fixed relation conditions using the `eq` operator being ignored.
+  * Fixed hashtable-valued properties never resolving in a relation, because they were
+    walked as a sequence instead of read as an object.
+  * Fixed relation resolution aborting the whole export when a property had an unexpected
+    type; the relation is now skipped and reported as verbose output.
+  * Fixed an issue where relations were always resolved instead of only when
+    `Export-M365DSCConfiguration` is called with `-IncludeDependencies`.
+  * Fixed the relation templates failing to parse on Windows PowerShell, which prevented
+    the module from being imported on that edition.
+  * Added `RawResults` to the export of every resource that is part of a relation template.
+  * Fixed dependency stub blocks omitting most mandatory properties. Only a fixed list of
+    property names was ever emitted, so stubs such as `AADUser` carried no identifying
+    property at all and `AADRoleDefinition` was missing `IsEnabled` and `RolePermissions`.
+    Every mandatory property is now emitted with a placeholder matching its type.
+  * Added support for the `like` and `notlike` operators in relation conditions, and for
+    `$_` as the subject so a condition can test a value in a simple array rather than a
+    property of an object.
 
 # 1.26.729.2
 

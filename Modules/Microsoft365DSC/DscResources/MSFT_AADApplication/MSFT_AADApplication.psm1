@@ -446,7 +446,7 @@ function Get-TargetResource
             }
             else
             {
-                $OwnersValues += $Owner.Id
+                $OwnersValues += $Owner.displayName
             }
         }
 
@@ -1052,7 +1052,7 @@ function Set-TargetResource
                     }
                     else
                     {
-                        $ownersValues += $owner.Id
+                        $ownersValues += $owner.displayName
                     }
                 }
                 $backCurrentOwners = $ownersValues
@@ -1225,12 +1225,18 @@ function Set-TargetResource
                 if ($diff.InputObject.Contains('@'))
                 {
                     $Type = 'users'
+                    $ObjectUri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'v1.0/{0}/{1}' -f $Type, $diff.InputObject
                 }
                 else
                 {
                     $Type = 'directoryObjects'
+                    $resolvedObject = Get-MgServicePrincipal -Filter "DisplayName eq '$($diff.InputObject -replace "'", "''")'" -All -ErrorAction SilentlyContinue
+                    if ($null -eq $resolvedObject)
+                    {
+                        throw "Could not find an existing object with DisplayName {$($diff.InputObject)} to add as an owner. Please make sure the object exists and the DisplayName is correct."
+                    }
+                    $ObjectUri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'v1.0/{0}/{1}' -f $Type, $resolvedObject.Id
                 }
-                $ObjectUri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'v1.0/{0}/{1}' -f $Type, $diff.InputObject
                 $ownerObject = @{
                     '@odata.id' = $ObjectUri
                 }
@@ -1816,6 +1822,7 @@ function Export-TargetResource
             {
                 $Script:exportedInstance = $AADApp
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
                 if ($Results.Ensure -eq 'Present')
                 {
                     if ($Results.Permissions.Count -gt 0)
@@ -2053,7 +2060,8 @@ function Export-TargetResource
                         -ModulePath $PSScriptRoot `
                         -Results $Results `
                         -Credential $Credential `
-                        -NoEscape @('Api', 'Info', 'Permissions', 'OptionalClaims', 'OnPremisesPublishing', 'AuthenticationBehaviors', 'KeyCredentials', 'PasswordCredentials', 'AppRoles', 'Spa')
+                        -NoEscape @('Api', 'Info', 'Permissions', 'OptionalClaims', 'OnPremisesPublishing', 'AuthenticationBehaviors', 'KeyCredentials', 'PasswordCredentials', 'AppRoles', 'Spa') `
+                        -RawResults $rawResults
 
                     [void]$dscContent.Append($currentDSCBlock)
                     Save-M365DSCPartialExport -Content $currentDSCBlock `

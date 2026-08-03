@@ -2460,6 +2460,7 @@ function Export-TargetResource
                 }
                 $Script:exportedInstance = $Policy
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
                 if ([System.String]::IsNullOrEmpty($Results.DeviceFilterMode))
                 {
                     $Results.Remove('DeviceFilterMode') | Out-Null
@@ -2469,7 +2470,8 @@ function Export-TargetResource
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
-                    -Credential $Credential
+                    -Credential $Credential `
+                    -RawResults $rawResults
 
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `

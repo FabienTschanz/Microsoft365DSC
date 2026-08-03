@@ -544,11 +544,13 @@ function Export-TargetResource
 
             $Script:exportedInstance = $search
             $Results = Get-TargetResource @PSBoundParameters -Name $search.Name
+            $rawResults = $Results.Clone()
             $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                 -ConnectionMode $ConnectionMode `
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
-                -Credential $Credential
+                -Credential $Credential `
+                -RawResults $rawResults
             [void]$dscContent.Append($currentDSCBlock)
             Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             $i++
@@ -578,12 +580,14 @@ function Export-TargetResource
                 }
                 Write-M365DSCHost -Message "        |---[$i/$($searches.Name.Count)] $($search.Name)" -DeferWrite
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
 
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
-                    -Credential $Credential
+                    -Credential $Credential `
+                    -RawResults $rawResults
                 [void]$dscContent.Append($currentDSCBlock)
 
                 Save-M365DSCPartialExport -Content $currentDSCBlock `

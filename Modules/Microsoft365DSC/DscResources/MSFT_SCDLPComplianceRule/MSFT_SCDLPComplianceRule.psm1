@@ -1574,6 +1574,7 @@ function Export-TargetResource
             $Results = Get-TargetResource @PSBoundParameters `
                 -Name $rule.name `
                 -Policy $rule.ParentPolicyName
+            $rawResults = $Results.Clone()
 
             if ($null -ne $Results.ContentContainsSensitiveInformation)
             {
@@ -1722,7 +1723,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('ContentContainsSensitiveInformation', 'EndpointDlpRestrictions', 'ExceptIfContentContainsSensitiveInformation')
+                -NoEscape @('ContentContainsSensitiveInformation', 'EndpointDlpRestrictions', 'ExceptIfContentContainsSensitiveInformation') `
+                -RawResults $rawResults
 
             [void]$dscContent.Append($currentDSCBlock)
 

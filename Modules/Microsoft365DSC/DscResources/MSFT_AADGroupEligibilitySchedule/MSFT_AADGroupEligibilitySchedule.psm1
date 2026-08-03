@@ -955,6 +955,7 @@ function Export-TargetResource
 
                 $Script:exportedInstance = $config
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
 
                 if ($null -ne $Results.ScheduleInfo)
                 {
@@ -1005,7 +1006,8 @@ function Export-TargetResource
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
                     -Credential $Credential `
-                    -NoEscape @('ScheduleInfo')
+                    -NoEscape @('ScheduleInfo') `
+                    -RawResults $rawResults
 
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `

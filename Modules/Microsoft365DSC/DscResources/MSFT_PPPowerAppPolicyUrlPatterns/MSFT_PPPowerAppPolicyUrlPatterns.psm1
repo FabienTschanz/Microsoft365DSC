@@ -462,6 +462,7 @@ function Export-TargetResource
 
             $Script:exportedInstance = $policy
             $Results = Get-TargetResource @Params
+            $rawResults = $Results.Clone()
 
             if ($null -ne $Results.RuleSet)
             {
@@ -482,7 +483,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('RuleSet')
+                -NoEscape @('RuleSet') `
+                -RawResults $rawResults
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `
                 -FileName $Global:PartialExportFileName

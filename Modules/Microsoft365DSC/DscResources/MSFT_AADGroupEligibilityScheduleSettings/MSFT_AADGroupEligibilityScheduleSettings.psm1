@@ -570,6 +570,7 @@ function Export-TargetResource
 
                     $Script:exportedInstance = $rule
                     $Results = Get-TargetResource @Params
+                    $rawResults = $Results.Clone()
 
                     if ($null -ne $Results.ExpirationRule)
                     {
@@ -716,7 +717,8 @@ function Export-TargetResource
                         -ModulePath $PSScriptRoot `
                         -Results $Results `
                         -Credential $Credential `
-                        -NoEscape @('ExpirationRule', 'NotificationRule', 'EnablementRule', 'ApprovalRule', 'AuthenticationContextRule')
+                        -NoEscape @('ExpirationRule', 'NotificationRule', 'EnablementRule', 'ApprovalRule', 'AuthenticationContextRule') `
+                        -RawResults $rawResults
 
                     [void]$dscContent.Append($currentDSCBlock)
                     Save-M365DSCPartialExport -Content $currentDSCBlock `

@@ -1168,6 +1168,7 @@ function Export-TargetResource
                 -Name $rule.name `
                 -Policy $rule.ParentPolicyName `
                 -Workload $rule.LogicalWorkload
+            $rawResults = $Results.Clone()
 
             if ($null -ne $Results.ContentContainsSensitiveInformation)
             {
@@ -1323,7 +1324,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('ContentContainsSensitiveInformation', 'ExceptIfContentContainsSensitiveInformation', 'HeaderMatchesPatterns')
+                -NoEscape @('ContentContainsSensitiveInformation', 'ExceptIfContentContainsSensitiveInformation', 'HeaderMatchesPatterns') `
+                -RawResults $rawResults
 
             [void]$dscContent.Append($currentDSCBlock)
 

@@ -1654,6 +1654,7 @@ function Export-TargetResource
 
             $Script:exportedInstance = $label
             $Results = Get-TargetResource @PSBoundParameters -Name $label.Name
+            $rawResults = $Results.Clone()
 
             if ($null -ne $Results.AdvancedSettings)
             {
@@ -1752,7 +1753,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('AdvancedSettings', 'LocaleSettings', 'AutoLabelingSettings')
+                -NoEscape @('AdvancedSettings', 'LocaleSettings', 'AutoLabelingSettings') `
+                -RawResults $rawResults
 
             $currentDSCBlock = $currentDSCBlock.Replace("''", "'")
 

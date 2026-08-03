@@ -516,17 +516,18 @@ function Export-TargetResource
             }
             $Script:exportedInstance = $AADRoleDefinition
             $Results = Get-TargetResource @Params
-            if ($Results.Ensure -eq 'Present' -and ([array]$results.RolePermissions).Length -gt 0)
-            {
-                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                    -ConnectionMode $ConnectionMode `
-                    -ModulePath $PSScriptRoot `
-                    -Results $Results `
-                    -Credential $Credential
-                [void]$dscContent.Append($currentDSCBlock)
-                Save-M365DSCPartialExport -Content $currentDSCBlock `
-                    -FileName $Global:PartialExportFileName
-            }
+            $rawResults = $Results.Clone()
+
+            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
+                -ConnectionMode $ConnectionMode `
+                -ModulePath $PSScriptRoot `
+                -Results $Results `
+                -Credential $Credential `
+                -RawResults $rawResults
+            [void]$dscContent.Append($currentDSCBlock)
+
+            Save-M365DSCPartialExport -Content $currentDSCBlock `
+                -FileName $Global:PartialExportFileName
 
             Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             $i++

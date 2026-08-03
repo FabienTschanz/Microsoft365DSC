@@ -578,6 +578,7 @@ function Export-TargetResource
 
             $Script:exportedInstance = $config
             $Results = Get-TargetResource @Params
+            $rawResults = $Results.Clone()
             if ($null -ne $Results.AllowedValues)
             {
                 $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
@@ -599,7 +600,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('AllowedValues')
+                -NoEscape @('AllowedValues') `
+                -RawResults $rawResults
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `
                 -FileName $Global:PartialExportFileName

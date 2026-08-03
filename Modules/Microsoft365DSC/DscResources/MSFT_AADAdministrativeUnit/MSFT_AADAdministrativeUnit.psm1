@@ -1081,6 +1081,7 @@ function Export-TargetResource
 
             $Script:exportedInstance = $config
             $Results = Get-TargetResource @Params
+            $rawResults = $Results.Clone()
             if ($null -ne $Results.ScopedRoleMembers)
             {
                 $complexMapping = @(
@@ -1116,7 +1117,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('Members', 'ScopedRoleMembers')
+                -NoEscape @('Members', 'ScopedRoleMembers') `
+                -RawResults $rawResults
 
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `

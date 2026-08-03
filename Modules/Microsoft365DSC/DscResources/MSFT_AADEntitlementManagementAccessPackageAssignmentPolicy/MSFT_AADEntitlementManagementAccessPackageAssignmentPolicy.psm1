@@ -859,6 +859,7 @@ function Export-TargetResource
             }
 
             $Results = Get-TargetResource @Params
+            $rawResults = $Results.Clone()
 
             if ($null -ne $Results.AccessReviewSettings)
             {
@@ -997,7 +998,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('AccessReviewSettings', 'Questions', 'RequestApprovalSettings', 'RequestorSettings', 'CustomExtensionHandlers')
+                -NoEscape @('AccessReviewSettings', 'Questions', 'RequestApprovalSettings', 'RequestorSettings', 'CustomExtensionHandlers') `
+                -RawResults $rawResults
 
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `

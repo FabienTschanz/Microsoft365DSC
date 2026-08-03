@@ -209,7 +209,7 @@ function Get-TargetResource
             $originId = $getValue.OriginId
         }
 
-        $results = [ordered]@{
+        $results = @{
             Id                    = $Id
             CatalogId             = $CatalogIdValue
             Attributes            = $hashAttributes
@@ -741,6 +741,7 @@ function Export-TargetResource
                 }
 
                 $Results = Get-TargetResource @Params
+                $rawResults = $Results.Clone()
                 if ($null -ne $Results.Attributes)
                 {
                     $complexMapping = @(
@@ -790,7 +791,8 @@ function Export-TargetResource
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
                     -Credential $Credential `
-                    -NoEscape @('Attributes')
+                    -NoEscape @('Attributes') `
+                    -RawResults $rawResults
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
                     -FileName $Global:PartialExportFileName

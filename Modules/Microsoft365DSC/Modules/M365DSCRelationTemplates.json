@@ -430,12 +430,20 @@
         {
           "property": "Owners",
           "targetResource": "AADUser",
-          "targetKeyProperty": "UserPrincipalName"
+          "targetKeyProperty": "UserPrincipalName",
+          "condition": "$_ like '*@*'"
+        },
+        {
+          "property": "Owners",
+          "targetResource": "AADServicePrincipal",
+          "targetKeyProperty": "AppId",
+          "condition": "$_ notlike '*@*'"
         },
         {
           "property": "Members",
           "targetResource": "AADUser",
-          "targetKeyProperty": "UserPrincipalName"
+          "targetKeyProperty": "UserPrincipalName",
+          "condition": "$_ like '*@*'"
         },
         {
           "property": "GroupAsMembers",
@@ -479,12 +487,14 @@
         {
           "property": "IncludeUsers",
           "targetResource": "AADUser",
-          "targetKeyProperty": "UserPrincipalName"
+          "targetKeyProperty": "UserPrincipalName",
+          "condition": "$_ like '*@*'"
         },
         {
           "property": "ExcludeUsers",
           "targetResource": "AADUser",
-          "targetKeyProperty": "UserPrincipalName"
+          "targetKeyProperty": "UserPrincipalName",
+          "condition": "$_ like '*@*'"
         },
         {
           "property": "IncludeGroups",
@@ -541,13 +551,19 @@
         "AADConditionalAccessPolicy"
       ]
     },
-    // TODO: Add targetResource for AADServicePrincipal since SPNs can be Owners too
     "AADDirectoryObjectOwners": {
       "relations": [
         {
           "property": "Owners",
           "targetResource": "AADUser",
-          "targetKeyProperty": "UserPrincipalName"
+          "targetKeyProperty": "UserPrincipalName",
+          "condition": "$_ like '*@*'"
+        },
+        {
+          "property": "Owners",
+          "targetResource": "AADServicePrincipal",
+          "targetKeyProperty": "AppId",
+          "condition": "$_ notlike '*@*'"
         }
       ],
       "resources": [

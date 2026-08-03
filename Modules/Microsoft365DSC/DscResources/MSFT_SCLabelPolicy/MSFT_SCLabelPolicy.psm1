@@ -882,6 +882,7 @@ function Export-TargetResource
 
             $Script:exportedInstance = $policy
             $Results = Get-TargetResource @PSBoundParameters -Name $policy.Name
+            $rawResults = $Results.Clone()
 
             if ($null -ne $Results.AdvancedSettings)
             {
@@ -912,7 +913,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('AdvancedSettings')
+                -NoEscape @('AdvancedSettings') `
+                -RawResults $rawResults
 
             Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             [void]$dscContent.Append($currentDSCBlock)

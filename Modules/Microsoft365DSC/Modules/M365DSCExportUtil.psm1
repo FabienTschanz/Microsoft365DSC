@@ -11,15 +11,7 @@ $Script:M365DSCAuthenticationParameterSet = @{
     ManagedIdentity = @('ManagedIdentity', 'TenantId')
     AccessTokens = @('AccessTokens', 'TenantId')
 }
-$templatesPath = Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCRelationTemplates.json'
-$jsonContent = Get-Content -Path $templatesPath -Raw | ConvertFrom-Json
-$Script:RelationTemplates = @{
-    templates = @{}
-}
-foreach ($template in $jsonContent.templates.psobject.Properties)
-{
-    $Script:RelationTemplates.templates[$template.Name] = $template.Value
-}
+$Script:M365DSCRelationIndex = $null
 $allResourcesArgumentCompleter = Get-ChildItem -Path ($PSScriptRoot + '/../DscResources/') -Recurse -Filter '*.psm1' -File | Foreach-Object {
     $_.Name -replace 'MSFT_', '' -replace '.psm1', ''
 }
@@ -270,18 +262,20 @@ function Export-M365DSCConfiguration
 
     Clear-M365DSCHostMessageCache
 
-    # Define the exported resource instances' names Global variable
-    $Global:M365DSCExportedResourceInstancesNames = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    # Initialize the relation assembly and reset its state for this export session
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+    [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
 
     # Clear performance caches for fresh export
     $Script:M365DSCMandatoryKeyCache = @{}
     $Script:M365DSCCompiledRegexCache = @{}
 
-    # Define the exported resource instances registry for DependsOn tracking
-    $Global:M365DSCExportedResourceInstances = @{}
-
-    # Define the export dependencies collector
-    $Global:M365DSCExportDependencies = @()
+    # Track cross-resource relations only when the caller asked for DependsOn output.
+    [Microsoft365DSC.Relations.ExportRelationSession]::Reset()
+    if ($IncludeDependencies.IsPresent)
+    {
+        $null = New-M365DSCExportRelationSession
+    }
 
     # LaunchWebUI specified, launching that now
     if ($LaunchWebUI)
@@ -502,10 +496,19 @@ function Export-M365DSCConfiguration
             -IncludeDependencies:$IncludeDependencies.IsPresent
     }
 
-    # Clear the exported resource instances' names Global variable
-    $Global:M365DSCExportedResourceInstancesNames = $null
-    $Global:M365DSCExportedResourceInstances = $null
-    $Global:M365DSCExportDependencies = $null
+    if ($IncludeDependencies.IsPresent)
+    {
+        $relationSession = [Microsoft365DSC.Relations.ExportRelationSession]::Current
+        if ($null -eq $relationSession -or $relationSession.InstanceCount -eq 0)
+        {
+            Write-Warning -Message ('No resource instances were recorded for dependency tracking, so no DependsOn ' + `
+                'statements were generated. Please report this at https://github.com/Microsoft365DSC/Microsoft365DSC.')
+        }
+    }
+
+    # Release the export-scoped state held on the relation assembly
+    [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
+    [Microsoft365DSC.Relations.ExportRelationSession]::Reset()
     $Global:M365DSCExportInProgress = $false
 
     $data = [System.Collections.Generic.Dictionary[[System.String], [System.Object]]]::new()
@@ -790,45 +793,24 @@ function Get-M365DSCExportContentForResource
         $instanceName += "-$($Results.Workload)"
     }
 
-    # Check to see if a resource with this exact name was already exported, if so, append a number to the end.
-    $i = 2
-    $tempName = $instanceName
-    if ($null -eq $Global:M365DSCExportedResourceInstancesNames)
-    {
-        $Global:M365DSCExportedResourceInstancesNames = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::OrdinalIgnoreCase)
-    }
-    while ($null -ne $Global:M365DSCExportedResourceInstancesNames -and `
-            $Global:M365DSCExportedResourceInstancesNames.Contains($tempName))
-    {
-        $tempName = $instanceName + '-' + $i.ToString()
-        $i++
-    }
-    $instanceName = $tempName
-    [void]$Global:M365DSCExportedResourceInstancesNames.Add($tempName)
+    # Check to see if a resource with this exact name was already exported, if so, append a
+    # number to the end. Claiming the name is one atomic operation on the shared registry, so
+    # two runspaces of a parallel export cannot both decide the same name is free.
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+    $instanceName = [Microsoft365DSC.Relations.ExportInstanceNames]::Reserve($instanceName)
 
-    # Register this instance in the dependency tracking registry
-    if ($null -ne $Global:M365DSCExportedResourceInstances)
-    {
-        $registryKey = "[$ResourceName]$instanceName"
-        $Global:M365DSCExportedResourceInstances[$registryKey] = @{
-            InstanceName = $instanceName
-            ResourceName = $ResourceName
-            PrimaryKey   = $primaryKey
-            Results      = $Results
-        }
-    }
-
-    # Resolve cross-resource relations and register dependencies
-    if ($null -ne $Global:M365DSCExportDependencies)
+    # Record the instance and resolve its cross-resource relations
+    $relationSession = Get-M365DSCExportRelationSession
+    if ($null -ne $relationSession)
     {
         $resolveResults = $Results
         if ($null -ne $RawResults)
         {
             $resolveResults = $RawResults
         }
-        Resolve-M365DSCExportRelations -ResourceName $ResourceName `
-            -InstanceName $instanceName `
-            -Results $resolveResults
+
+        $relationSession.RegisterInstance($ResourceName, $instanceName, $primaryKey, $resolveResults)
+        $relationSession.ResolveRelations($ResourceName, $instanceName, $resolveResults)
     }
 
     $content = [System.Text.StringBuilder]::new()
@@ -1352,15 +1334,310 @@ function Register-M365DSCExportDependency
         $TargetKey
     )
 
-    if ($null -ne $Global:M365DSCExportDependencies)
+    $session = Get-M365DSCExportRelationSession
+    if ($null -ne $session)
     {
-        $Global:M365DSCExportDependencies += @{
-            SourceInstanceName = $SourceInstanceName
-            SourceResourceName = $SourceResourceName
-            TargetResourceType = $TargetResourceType
-            TargetKey          = $TargetKey
+        $session.RegisterDependency($SourceInstanceName, $SourceResourceName, $TargetResourceType, $TargetKey)
+    }
+}
+
+<#
+.SYNOPSIS
+    Removes JavaScript-style comments from a JSON document.
+
+.DESCRIPTION
+    The relation templates are annotated with // and /* */ comments. Windows PowerShell's
+    ConvertFrom-Json rejects those, so they are stripped before parsing on that edition.
+    The scanner tracks string literals so that a comment marker appearing inside a value is
+    left untouched.
+
+    This exists only to keep Windows PowerShell working. Delete it, and its caller in
+    Get-M365DSCRelationIndex, once the module requires PowerShell 7.
+
+.PARAMETER Json
+    Specifies the raw JSON document.
+
+.OUTPUTS
+    System.String
+
+.FUNCTIONALITY
+    Internal
+#>
+function Remove-M365DSCJsonComment
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [System.String]
+        $Json
+    )
+
+    $builder = [System.Text.StringBuilder]::new($Json.Length)
+    $inString = $false
+    $escaped = $false
+    $index = 0
+
+    while ($index -lt $Json.Length)
+    {
+        $character = $Json[$index]
+
+        if ($inString)
+        {
+            [void]$builder.Append($character)
+            if ($escaped)
+            {
+                $escaped = $false
+            }
+            elseif ($character -eq '\')
+            {
+                $escaped = $true
+            }
+            elseif ($character -eq '"')
+            {
+                $inString = $false
+            }
+
+            $index++
+            continue
+        }
+
+        if ($character -eq '"')
+        {
+            $inString = $true
+            [void]$builder.Append($character)
+            $index++
+            continue
+        }
+
+        if ($character -eq '/' -and ($index + 1) -lt $Json.Length)
+        {
+            $next = $Json[$index + 1]
+
+            if ($next -eq '/')
+            {
+                while ($index -lt $Json.Length -and $Json[$index] -ne "`n")
+                {
+                    $index++
+                }
+                continue
+            }
+
+            if ($next -eq '*')
+            {
+                $index += 2
+                while (($index + 1) -lt $Json.Length -and -not ($Json[$index] -eq '*' -and $Json[$index + 1] -eq '/'))
+                {
+                    $index++
+                }
+                $index += 2
+                continue
+            }
+        }
+
+        [void]$builder.Append($character)
+        $index++
+    }
+
+    return $builder.ToString()
+}
+
+<#
+.SYNOPSIS
+    Expands relation entries, resolving any template references they contain.
+
+.DESCRIPTION
+    A relation may be a $ref pointing at another template rather than a relation of its own.
+    This returns a flat list with every reference replaced by the relations it names.
+
+.PARAMETER Relations
+    Specifies the relation entries to expand.
+
+.PARAMETER Templates
+    Specifies all templates, used to look references up.
+
+.PARAMETER Visited
+    Specifies the template names already being expanded, used to stop reference cycles.
+
+.OUTPUTS
+    System.Collections.Generic.List[System.Object]
+
+.FUNCTIONALITY
+    Internal
+#>
+function Expand-M365DSCRelationTemplate
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Generic.List[System.Object]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
+        [System.Object]
+        $Relations,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Templates,
+
+        [Parameter()]
+        [System.Collections.Generic.HashSet[System.String]]
+        $Visited
+    )
+
+    if ($null -eq $Visited)
+    {
+        $Visited = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    }
+
+    $expanded = [System.Collections.Generic.List[System.Object]]::new()
+    foreach ($relation in $Relations)
+    {
+        $reference = $relation.'$ref'
+        if ([System.String]::IsNullOrEmpty($reference))
+        {
+            $expanded.Add($relation)
+            continue
+        }
+
+        $referencedName = $reference.Split('/')[-1]
+        if (-not $Visited.Add($referencedName))
+        {
+            Write-Verbose -Message "Skipping circular relation template reference '$referencedName'."
+            continue
+        }
+
+        $referenced = Expand-M365DSCRelationTemplate -Relations $Templates.$referencedName.relations `
+            -Templates $Templates `
+            -Visited $Visited
+        $expanded.AddRange($referenced)
+        [void]$Visited.Remove($referencedName)
+    }
+
+    return , $expanded
+}
+
+<#
+.SYNOPSIS
+    Returns the relation index, building it on first use.
+
+.DESCRIPTION
+    Parses M365DSCRelationTemplates.json and inverts it into a lookup keyed by resource name.
+    The templates list the resources each relation applies to, so without this inversion every
+    exported instance would have to scan every template.
+
+    Parsing stays in PowerShell deliberately: handing the parsed schema to the relation
+    assembly keeps that assembly free of a JSON dependency, and therefore free of assembly
+    version conflicts with other modules loaded in the same session.
+
+.OUTPUTS
+    Microsoft365DSC.Relations.RelationIndex
+
+.FUNCTIONALITY
+    Internal
+#>
+function Get-M365DSCRelationIndex
+{
+    [CmdletBinding()]
+    # Quoted so the attribute does not force the type to resolve while the module is being
+    # parsed, which happens before the assemblies are loaded.
+    [OutputType('Microsoft365DSC.Relations.RelationIndex')]
+    param()
+
+    if ($null -ne $Script:M365DSCRelationIndex)
+    {
+        return $Script:M365DSCRelationIndex
+    }
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+
+    $templatesPath = Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCRelationTemplates.json'
+    $rawTemplates = Get-Content -Path $templatesPath -Raw
+
+    if ($PSVersionTable.PSEdition -eq 'Desktop')
+    {
+        $rawTemplates = Remove-M365DSCJsonComment -Json $rawTemplates
+    }
+
+    $templates = ($rawTemplates | ConvertFrom-Json).templates
+    $builder = [Microsoft365DSC.Relations.RelationIndexBuilder]::new()
+
+    foreach ($template in $templates.PSObject.Properties)
+    {
+        $relations = Expand-M365DSCRelationTemplate -Relations $template.Value.relations -Templates $templates
+        foreach ($resourceName in $template.Value.resources)
+        {
+            foreach ($relation in $relations)
+            {
+                $builder.AddRelation(
+                    $resourceName,
+                    $relation.property,
+                    $relation.childProperty,
+                    $relation.targetResource,
+                    $relation.targetKeyProperty,
+                    $relation.condition)
+            }
         }
     }
+
+    $Script:M365DSCRelationIndex = $builder.Build()
+    return $Script:M365DSCRelationIndex
+}
+
+<#
+.SYNOPSIS
+    Creates the relation session used to collect dependencies during an export.
+
+.DESCRIPTION
+    Returns a session that records exported instances, accumulates the references between
+    them, and rewrites the finished configuration with DependsOn declarations.
+
+.OUTPUTS
+    Microsoft365DSC.Relations.ExportRelationSession
+
+.FUNCTIONALITY
+    Internal
+#>
+function New-M365DSCExportRelationSession
+{
+    [CmdletBinding()]
+    [OutputType('Microsoft365DSC.Relations.ExportRelationSession')]
+    param()
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+    $index = Get-M365DSCRelationIndex
+
+    return [Microsoft365DSC.Relations.ExportRelationSession]::Start($index)
+}
+
+<#
+.SYNOPSIS
+    Returns the relation session the running export is accumulating into.
+
+.DESCRIPTION
+    The session lives on the relation assembly rather than in a variable. A parallel export
+    runs its resources in a pool of runspaces, and PowerShell variables are not shared across
+    runspaces, so a session held in one would be invisible to the workers that need to write
+    to it. The assemblies are loaded once per process, so static state on them is visible
+    everywhere.
+
+.OUTPUTS
+    Microsoft365DSC.Relations.ExportRelationSession, or $null when the export was not asked
+    for dependency tracking.
+
+.FUNCTIONALITY
+    Internal
+#>
+function Get-M365DSCExportRelationSession
+{
+    [CmdletBinding()]
+    [OutputType('Microsoft365DSC.Relations.ExportRelationSession')]
+    param()
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+    return [Microsoft365DSC.Relations.ExportRelationSession]::Current
 }
 
 <#
@@ -1397,218 +1674,13 @@ function Resolve-M365DSCExportRelations
         $Results
     )
 
-    # Determine relations from template
-    $relations = @()
-    foreach ($template in $Script:RelationTemplates.templates.GetEnumerator())
-    {
-        if ($template.Value.resources.Contains($ResourceName))
-        {
-            $resourceRelations = $template.Value.relations
-            foreach ($relation in $resourceRelations)
-            {
-                if ($null -ne $relation.'$ref')
-                {
-                    $templateName = $relation.'$ref'.Split("/")[-1]
-                    $relations += $Script:RelationTemplates.templates.$templateName.relations
-                    continue
-                }
-                $relations += $relation
-            }
-        }
-    }
-
-    if ($relations.Count -eq 0)
+    $session = Get-M365DSCExportRelationSession
+    if ($null -eq $session)
     {
         return
     }
 
-    :relations foreach ($relation in $relations)
-    {
-        $propertyValue = $Results
-        $splittedProperty = $relation.property.Split('.')
-        for ($i = 0; $i -lt $splittedProperty.Count; $i++)
-        {
-            $propertyName = $splittedProperty[$i]
-            if ($propertyValue -is [System.Array])
-            {
-                if ($propertyValue.Count -eq 0)
-                {
-                    continue
-                }
-
-                $found = $false
-                $propertyValue | Foreach-Object {
-                    if ($_ -is [System.Collections.IDictionary] -and $_.Contains($propertyName))
-                    {
-                        $found = $true
-                    }
-                }
-                if (-not $found)
-                {
-                    continue relations
-                }
-            }
-            else
-            {
-                if (-not $propertyValue.ContainsKey($propertyName))
-                {
-                    continue relations
-                }
-            }
-
-            $propertyValue = $propertyValue.$propertyName
-            if ($null -eq $propertyValue)
-            {
-                continue relations
-            }
-        }
-
-        # Handle array of complex objects (e.g., Assignments)
-        if ($propertyValue -is [System.Array])
-        {
-            foreach ($item in $propertyValue)
-            {
-                $targetKey = Get-M365DSCRelationTargetKey -Item $item -Relation $relation
-                if (-not [System.String]::IsNullOrEmpty($targetKey))
-                {
-                    Register-M365DSCExportDependency -SourceInstanceName $InstanceName `
-                        -SourceResourceName $ResourceName `
-                        -TargetResourceType $relation.targetResource `
-                        -TargetKey $targetKey
-                }
-            }
-        }
-        elseif ($propertyValue -is [System.Collections.IDictionary] -or $propertyValue -is [Microsoft.Management.Infrastructure.CimInstance])
-        {
-            $targetKey = Get-M365DSCRelationTargetKey -Item $propertyValue -Relation $relation
-            if (-not [System.String]::IsNullOrEmpty($targetKey))
-            {
-                Register-M365DSCExportDependency -SourceInstanceName $InstanceName `
-                    -SourceResourceName $ResourceName `
-                    -TargetResourceType $relation.targetResource `
-                    -TargetKey $targetKey
-            }
-        }
-        else
-        {
-            # Simple string property referencing a target resource key directly
-            Register-M365DSCExportDependency -SourceInstanceName $InstanceName `
-                -SourceResourceName $ResourceName `
-                -TargetResourceType $relation.targetResource `
-                -TargetKey $propertyValue.ToString()
-        }
-    }
-}
-
-<#
-.Description
-    Extracts the target key value from a complex item based on the relation definition.
-
-.Functionality
-    Internal
-#>
-function Get-M365DSCRelationTargetKey
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Item,
-
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Relation
-    )
-
-    # If there's a condition, check it first
-    if (-not [System.String]::IsNullOrEmpty($Relation.condition))
-    {
-        $conditionMet = Test-M365DSCRelationCondition -Item $Item -Condition $Relation.condition
-        if (-not $conditionMet)
-        {
-            return $null
-        }
-    }
-
-    # Extract the child property value
-    [string]$childProperty = $Relation.childProperty
-    $value = $null
-
-    if ($Item -is [System.Collections.IDictionary])
-    {
-        if ($Item.Contains($childProperty))
-        {
-            $value = $Item[$childProperty]
-        }
-    }
-    elseif ($null -ne $Item)
-    {
-        $value = $Item.$childProperty
-    }
-
-    if ([System.String]::IsNullOrEmpty($value))
-    {
-        return $null
-    }
-
-    return $value.ToString()
-}
-
-<#
-.Description
-    Evaluates a simple condition expression against a complex object item.
-    Supports: "propertyName in ['value1', 'value2']"
-
-.Functionality
-    Internal
-#>
-function Test-M365DSCRelationCondition
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Item,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Condition
-    )
-
-    # Parse "propertyName in ['value1', 'value2']" pattern
-    if ($Condition -match "^(\w+)\s+in\s+\[(.+)\]$")
-    {
-        $propName = $Matches[1]
-        $valuesString = $Matches[2]
-        $allowedValues = $valuesString -split ',\s*' | ForEach-Object { $_.Trim().Trim("'").Trim('"') }
-
-        $itemValue = $null
-        if ($Item -is [System.Collections.Hashtable])
-        {
-            if ($Item.ContainsKey($propName))
-            {
-                $itemValue = $Item[$propName]
-            }
-        }
-        elseif ($null -ne $Item)
-        {
-            $itemValue = $Item.$propName
-        }
-
-        if ($null -eq $itemValue)
-        {
-            return $false
-        }
-
-        return ($allowedValues -contains $itemValue.ToString())
-    }
-
-    # Unknown condition format - default to true
-    return $true
+    $session.ResolveRelations($ResourceName, $InstanceName, $Results)
 }
 
 <#
@@ -1635,130 +1707,86 @@ function Add-M365DSCExportDependsOn
         $DSCContent
     )
 
-    if ($null -eq $Global:M365DSCExportDependencies -or $Global:M365DSCExportDependencies.Count -eq 0)
+    $session = Get-M365DSCExportRelationSession
+    if ($null -eq $session -or $session.DependencyCount -eq 0)
     {
         return $DSCContent
     }
 
-    if ($null -eq $Global:M365DSCExportedResourceInstances)
+    $processedContent = $session.InjectDependsOn($DSCContent, (New-M365DSCStubBlockOption))
+
+    foreach ($warning in $session.Warnings)
     {
-        return $DSCContent
+        Write-Verbose -Message $warning
     }
 
-    # Build a lookup from target resource+key to instance reference
-    $targetLookup = @{}
-    foreach ($entry in $Global:M365DSCExportedResourceInstances.GetEnumerator())
+    return $processedContent
+}
+
+<#
+.SYNOPSIS
+    Collects the inputs needed to render dependency stub blocks.
+
+.DESCRIPTION
+    Gathers the mandatory properties of every resource and the authentication properties for
+    the current connection mode, so the relation assembly can render stubs without calling
+    back into the module while it rewrites the configuration.
+
+.OUTPUTS
+    Microsoft365DSC.Relations.StubBlockOptions
+
+.FUNCTIONALITY
+    Internal
+#>
+function New-M365DSCStubBlockOption
+{
+    [CmdletBinding()]
+    [OutputType('Microsoft365DSC.Relations.StubBlockOptions')]
+    param()
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+
+    # The type and any allowed values travel with each property, so a stub can be given a
+    # placeholder of the right shape for every mandatory property instead of only for the
+    # handful whose names happen to be recognised.
+    $mandatoryProperties = @{}
+    try
     {
-        $inst = $entry.Value
-        $lookupKey = "$($inst.ResourceName)|$($inst.PrimaryKey)"
-        $targetLookup[$lookupKey] = $entry.Key
-    }
-
-    # Group dependencies by source instance
-    $dependenciesBySource = @{}
-    $unresolvedTargets = @{}
-
-    foreach ($dep in $Global:M365DSCExportDependencies)
-    {
-        $lookupKey = "$($dep.TargetResourceType)|$($dep.TargetKey)"
-        $targetRef = $targetLookup[$lookupKey]
-
-        if ($null -ne $targetRef)
+        $dictionary = Get-M365DSCAllResourcesDictionary
+        foreach ($entry in $dictionary.GetEnumerator())
         {
-            # Target was exported - add DependsOn reference
-            $sourceRef = "[$($dep.SourceResourceName)]$($dep.SourceInstanceName)"
-            if (-not $dependenciesBySource.ContainsKey($sourceRef))
-            {
-                $dependenciesBySource[$sourceRef] = @()
-            }
-            if ($dependenciesBySource[$sourceRef] -notcontains $targetRef)
-            {
-                $dependenciesBySource[$sourceRef] += $targetRef
-            }
-        }
-        else
-        {
-            # Target was NOT exported - needs a stub
-            $stubKey = "$($dep.TargetResourceType)|$($dep.TargetKey)"
-            if (-not $unresolvedTargets.ContainsKey($stubKey))
-            {
-                $unresolvedTargets[$stubKey] = @{
-                    ResourceType = $dep.TargetResourceType
-                    TargetKey    = $dep.TargetKey
+            $properties = @($entry.Value.Properties.Where({ $_.IsMandatory }) | ForEach-Object {
+                @{
+                    Name         = $_.Name
+                    PropertyType = $_.PropertyType
+                    Values       = [System.String[]]@($_.Values)
                 }
-            }
+            })
 
-            # Still record the dependency for injection after stub is created
-            $sourceRef = "[$($dep.SourceResourceName)]$($dep.SourceInstanceName)"
-            if (-not $dependenciesBySource.ContainsKey($sourceRef))
+            if ($properties.Count -gt 0)
             {
-                $dependenciesBySource[$sourceRef] = @()
-            }
-            $stubInstanceName = "$($dep.TargetResourceType)-$($dep.TargetKey)"
-            $stubRef = "[$($dep.TargetResourceType)]$stubInstanceName"
-            if ($dependenciesBySource[$sourceRef] -notcontains $stubRef)
-            {
-                $dependenciesBySource[$sourceRef] += $stubRef
+                $mandatoryProperties[$entry.Key] = $properties
             }
         }
     }
-
-    # Inject DependsOn into each source block
-    foreach ($sourceEntry in $dependenciesBySource.GetEnumerator())
+    catch
     {
-        $sourceRef = $sourceEntry.Key
-        $targets = $sourceEntry.Value
-
-        # Parse resource name and instance name from "[ResourceName]InstanceName"
-        if ($sourceRef -match '^\[([^\]]+)\](.+)$')
-        {
-            $srcResourceName = $Matches[1]
-            $srcInstanceName = $Matches[2]
-
-            # Build DependsOn line
-            $dependsOnEntries = Get-M365DSCArrayFromProperty -PropertyValue ($targets | ForEach-Object { "`"$_`"" }) -ElementType ([System.String])
-            if ($dependsOnEntries.Count -eq 1)
-            {
-                $dependsOnLine = "            DependsOn = @($($dependsOnEntries[0]))"
-            }
-            else
-            {
-                $dependsOnLine = "            DependsOn = @($($dependsOnEntries -join ', '))"
-            }
-
-            # Find the closing brace of this resource block and inject DependsOn before it
-            $blockPattern = "        $srcResourceName `"$srcInstanceName`""
-            $blockStart = $DSCContent.IndexOf($blockPattern)
-            if ($blockStart -ge 0)
-            {
-                # Find the closing "        }" for this block
-                $searchFrom = $blockStart + $blockPattern.Length
-                $closingBrace = $DSCContent.IndexOf("`r`n        }`r`n", $searchFrom)
-                if ($closingBrace -gt 0)
-                {
-                    $DSCContent = $DSCContent.Insert($closingBrace + 1, $dependsOnLine)
-                }
-            }
-        }
+        Write-Verbose -Message "Unable to load resource dictionary for stub generation: $_"
     }
 
-    # Generate stub blocks for unresolved targets
-    if ($unresolvedTargets.Count -gt 0)
+    # ConnectionMode is only set once an export has authenticated; without that guard the
+    # hashtable lookup below throws on a null key.
+    $authenticationProperties = @()
+    if (-not [System.String]::IsNullOrEmpty($Script:ConnectionMode))
     {
-        $stubContent = Get-M365DSCMinimalExportBlocks -UnresolvedTargets $unresolvedTargets
-        if (-not [System.String]::IsNullOrEmpty($stubContent))
-        {
-            # Insert stubs before the closing "    }" of the Node block
-            # Just after the last resource block's closing brace
-            $nodeClose = $DSCContent.LastIndexOf("        }`r`n")
-            if ($nodeClose -gt 0)
-            {
-                $DSCContent = $DSCContent.Insert($nodeClose + 11, $stubContent)
-            }
-        }
+        $authenticationProperties = $Script:M365DSCAuthenticationParameterSet.$($Script:ConnectionMode)
     }
 
-    return $DSCContent
+    $options = [Microsoft365DSC.Relations.StubBlockOptions]::new()
+    $options.MandatoryPropertiesByResource = $mandatoryProperties
+    $options.AuthenticationProperties = [System.String[]]@($authenticationProperties)
+
+    return $options
 }
 
 <#
@@ -1785,82 +1813,9 @@ function Get-M365DSCMinimalExportBlocks
         $UnresolvedTargets
     )
 
-    $stubBuilder = [System.Text.StringBuilder]::new()
-    [void]$stubBuilder.Append("`r`n        # Dependency stubs - minimal resource blocks for referenced resources`r`n")
+    Initialize-M365DSCDllLoader -ErrorAction Stop
 
-    $dictionary = $null
-    try
-    {
-        $dictionary = Get-M365DSCAllResourcesDictionary
-    }
-    catch
-    {
-        Write-Verbose -Message "Unable to load resource dictionary for stub generation: $_"
-        return ''
-    }
-
-    foreach ($target in $UnresolvedTargets.GetEnumerator())
-    {
-        $resourceType = $target.Value.ResourceType
-        $targetKey = $target.Value.TargetKey
-        $instanceName = "$resourceType-$targetKey"
-
-        # Get key properties from the resource dictionary
-        $resourceInfo = $null
-        if ($null -ne $dictionary -and $dictionary.ContainsKey($resourceType))
-        {
-            $resourceInfo = $dictionary[$resourceType]
-        }
-
-        [void]$stubBuilder.Append("        $resourceType `"$instanceName`"`r`n")
-        [void]$stubBuilder.Append("        {`r`n")
-
-        if ($null -ne $resourceInfo)
-        {
-            $keyProps = $resourceInfo.Properties | Where-Object -Property IsMandatory -EQ $true
-            foreach ($prop in $keyProps)
-            {
-                if ($prop.Name -eq 'IsSingleInstance')
-                {
-                    [void]$stubBuilder.Append("            IsSingleInstance = `"Yes`"`r`n")
-                }
-                elseif ($prop.Name -eq 'MailEnabled')
-                {
-                    [void]$stubBuilder.Append("            $($prop.Name) = `$false`r`n")
-                }
-                elseif ($prop.Name -eq 'SecurityEnabled')
-                {
-                    [void]$stubBuilder.Append("            $($prop.Name) = `$true`r`n")
-                }
-                elseif ($prop.Name -in @('DisplayName', 'MailNickName', 'Name', 'Title', 'Identity', 'Id'))
-                {
-                    [void]$stubBuilder.Append("            $($prop.Name) = `"$targetKey`"`r`n")
-                }
-            }
-
-            foreach ($prop in $Script:M365DSCAuthenticationParameterSet.$($Script:ConnectionMode))
-            {
-                if ($prop -eq 'ManagedIdentity')
-                {
-                    [void]$stubBuilder.Append("            $($prop) = `$true`r`n")
-                }
-                else
-                {
-                    [void]$stubBuilder.Append("            $($prop) = `$ConfigurationData.NonNodeData.$($prop)`r`n")
-                }
-            }
-        }
-        else
-        {
-            # Fallback: assume DisplayName is the key
-            [void]$stubBuilder.Append("            DisplayName = `"$targetKey`"`r`n")
-        }
-
-        [void]$stubBuilder.Append("            Ensure      = `"Present`"`r`n")
-        [void]$stubBuilder.Append("        }`r`n")
-    }
-
-    return $stubBuilder.ToString()
+    return [Microsoft365DSC.Relations.DependsOnInjector]::RenderStubs($UnresolvedTargets.Values, (New-M365DSCStubBlockOption))
 }
 
 Export-ModuleMember -Function @(

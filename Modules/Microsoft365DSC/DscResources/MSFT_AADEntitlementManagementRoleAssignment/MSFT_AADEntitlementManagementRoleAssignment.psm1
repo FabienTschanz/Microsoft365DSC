@@ -120,7 +120,7 @@ function Get-TargetResource
                 }
                 if ($null -eq $Script:AllRoleDefinitions)
                 {
-                    [array]$Script:AllRoleDefinitions = Get-MgBetaRoleManagementEntitlementManagementRoleDefinition -All
+                    [array]$Script:AllRoleDefinitions = Get-MgBetaRoleManagementEntitlementManagementRoleDefinition -All -Top 50
                     $Script:AllRoleDefinitions += @{
                         Id          = 'e65cf63f-9cc2-4b48-8871-cb667e9d90fb'
                         DisplayName = 'Connected organization administrator'
@@ -545,7 +545,7 @@ function Export-TargetResource
 
             if ($null -eq $Script:AllRoleDefinitions)
             {
-                [array]$Script:AllRoleDefinitions = Get-MgBetaRoleManagementEntitlementManagementRoleDefinition -All
+                [array]$Script:AllRoleDefinitions = Get-MgBetaRoleManagementEntitlementManagementRoleDefinition -All -Top 50
                 $Script:AllRoleDefinitions += @{
                     Id          = 'e65cf63f-9cc2-4b48-8871-cb667e9d90fb'
                     DisplayName = 'Connected organization administrator'
@@ -565,13 +565,13 @@ function Export-TargetResource
                 {
                     $principalName = $config.Principal.userPrincipalName
                 }
-                $null
-                {
-                    $principalName = (Get-MgGroup -GroupId $config.PrincipalId).DisplayName
-                }
                 '#microsoft.graph.servicePrincipal'
                 {
                     $principalName = $config.Principal.displayName
+                }
+                $null
+                {
+                    $principalName = (Get-MgGroup -GroupId $config.PrincipalId).DisplayName
                 }
             }
             $params = @{

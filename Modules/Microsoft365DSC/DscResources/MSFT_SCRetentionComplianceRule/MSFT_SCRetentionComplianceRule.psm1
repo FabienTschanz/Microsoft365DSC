@@ -597,6 +597,7 @@ function Export-TargetResource
                 $Results = Get-TargetResource @PSBoundParameters `
                     -Name $rule.Name `
                     -Policy $rule.Policy
+                $rawResults = $Results.Clone()
 
                 if ([System.String]::IsNullOrEmpty($Results.ExpirationDateOption))
                 {
@@ -606,7 +607,8 @@ function Export-TargetResource
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
-                    -Credential $Credential
+                    -Credential $Credential `
+                    -RawResults $rawResults
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
                     -FileName $Global:PartialExportFileName

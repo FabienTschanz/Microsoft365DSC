@@ -519,12 +519,14 @@ function Export-TargetResource
                 $Results = Get-TargetResource @PSBoundParameters `
                     -Name $policy.Name `
                     -Case $case.Name
+                $rawResults = $Results.Clone()
 
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
-                    -Credential $Credential
+                    -Credential $Credential `
+                    -RawResults $rawResults
                 [void]$dscContent.Append($currentDSCBlock)
 
                 Save-M365DSCPartialExport -Content $currentDSCBlock `

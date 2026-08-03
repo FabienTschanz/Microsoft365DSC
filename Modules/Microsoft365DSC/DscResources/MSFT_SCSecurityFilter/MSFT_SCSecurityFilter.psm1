@@ -543,12 +543,14 @@ function Export-TargetResource
             # $Results = Get-TargetResource @GetParams
             $Results = Get-M365DSCSCMapSecurityFilter -Filter $filter -Credential $Credential -ApplicationId $ApplicationId `
                 -TenantId $TenantId -CertificateThumbprint $CertificateThumbprint -CertificatePath $CertificatePath -CertificatePassword $CertificatePassword
+            $rawResults = $Results.Clone()
 
             $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
                 -ConnectionMode $ConnectionMode `
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
-                -Credential $Credential
+                -Credential $Credential `
+                -RawResults $rawResults
 
             Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             [void]$dscContent.Append($currentDSCBlock)

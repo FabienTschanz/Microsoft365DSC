@@ -1230,6 +1230,7 @@ function Export-TargetResource
             }
             $Script:exportedInstance = $AADServicePrincipal
             $Results = Get-TargetResource @Params
+            $rawResults = $Results.Clone()
             if ($Results.Ensure -eq 'Present')
             {
                 if ($Results.AppRoleAssignedTo.Count -gt 0)
@@ -1378,7 +1379,8 @@ function Export-TargetResource
                     -ModulePath $PSScriptRoot `
                     -Results $Results `
                     -Credential $Credential `
-                    -NoEscape @('AppRoleAssignedTo', 'ClaimsPolicy', 'DelegatedPermissionClassifications', 'KeyCredentials', 'PasswordCredentials', 'CustomSecurityAttributes')
+                    -NoEscape @('AppRoleAssignedTo', 'ClaimsPolicy', 'DelegatedPermissionClassifications', 'KeyCredentials', 'PasswordCredentials', 'CustomSecurityAttributes') `
+                    -RawResults $rawResults
 
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `

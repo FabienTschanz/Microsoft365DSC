@@ -567,6 +567,7 @@ function Export-TargetResource
             Write-M365DSCHost -Message "    |---[$i/$($totalTags)] $($tag.Name)" -DeferWrite
             $Script:exportedInstance = $tag
             $Results = Get-TargetResource @PSBoundParameters -Name $tag.Name
+            $rawResults = $Results.Clone()
             if ($Results.FilePlanProperty)
             {
                 $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
@@ -586,7 +587,8 @@ function Export-TargetResource
                 -ModulePath $PSScriptRoot `
                 -Results $Results `
                 -Credential $Credential `
-                -NoEscape @('FilePlanProperty')
+                -NoEscape @('FilePlanProperty') `
+                -RawResults $rawResults
             [void]$dscContent.Append($currentDSCBlock)
             Save-M365DSCPartialExport -Content $currentDSCBlock `
                 -FileName $Global:PartialExportFileName
