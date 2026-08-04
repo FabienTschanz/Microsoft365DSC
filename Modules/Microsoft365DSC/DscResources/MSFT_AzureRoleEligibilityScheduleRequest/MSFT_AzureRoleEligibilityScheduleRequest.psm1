@@ -814,9 +814,9 @@ function Export-TargetResource
         {
             $Script:RoleDefinitions = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
             $roleDefinitions = Get-AzRoleDefinition -ErrorAction SilentlyContinue
-            foreach ($roleDefinition in $roleDefinitions)
+            foreach ($currentRoleDefinition in $roleDefinitions)
             {
-                $Script:RoleDefinitions.Add($roleDefinition.Id, $roleDefinition)
+                $Script:RoleDefinitions.Add($currentRoleDefinition.Id, $currentRoleDefinition)
             }
         }
         $Script:PrincipalByIdCache = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
@@ -869,19 +869,19 @@ function Export-TargetResource
             if ($null -ne $PrincipalValue)
             {
                 $roleDefinitionGuid = $request.RoleDefinitionId.Split('/')[-1]
-                $roleDefinition = $Script:RoleDefinitions[$roleDefinitionGuid]
-                if ($null -eq $roleDefinition)
+                $currentRoleDefinition = $Script:RoleDefinitions[$roleDefinitionGuid]
+                if ($null -eq $currentRoleDefinition)
                 {
-                    $roleDefinition = Get-AzRoleDefinition -Id $roleDefinitionGuid `
+                    $currentRoleDefinition = Get-AzRoleDefinition -Id $roleDefinitionGuid `
                         -ErrorAction SilentlyContinue
-                    $Script:RoleDefinitions.Add($roleDefinitionGuid, $roleDefinition)
+                    $Script:RoleDefinitions.Add($roleDefinitionGuid, $currentRoleDefinition)
                 }
                 $params = @{
                     Id                    = $request.Name
                     Principal             = $PrincipalValue
                     PrincipalType         = $principalType
                     DirectoryScopeId      = $request.Scope
-                    RoleDefinition        = $roleDefinition.Name
+                    RoleDefinition        = $currentRoleDefinition.Name
                     Ensure                = 'Present'
                     SubscriptionId        = $SubscriptionId
                     Credential            = $Credential

@@ -23,7 +23,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]
@@ -150,7 +150,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]
@@ -232,7 +232,7 @@ function Set-TargetResource
     }
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
-        Write-Verbose -Message 'Azure AD Cross Tenant Access Policies cannot be removed.'
+        throw 'Azure AD Cross Tenant Access Policies cannot be removed.'
     }
 }
 
@@ -258,7 +258,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]

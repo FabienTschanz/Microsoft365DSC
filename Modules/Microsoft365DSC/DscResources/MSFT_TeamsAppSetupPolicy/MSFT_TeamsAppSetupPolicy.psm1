@@ -294,7 +294,7 @@ function Set-TargetResource
     {
         foreach ($appInstance in $AppPresetList)
         {
-            $appPresetValues += [Microsoft.Teams.Policy.Administration.Cmdlets.Core.AppPreset]::new($appInstance)
+            $appPresetValues += New-Object -TypeName 'Microsoft.Teams.Policy.Administration.Cmdlets.Core.AppPreset' -ArgumentList $appInstance
         }
     }
 
@@ -303,7 +303,7 @@ function Set-TargetResource
     {
         foreach ($appInstance in $AppPresetMeetingList)
         {
-            $appPresetMeetingValues += [Microsoft.Teams.Policy.Administration.Cmdlets.Core.AppPresetMeeting]::new($appInstance)
+            $appPresetMeetingValues += New-Object -TypeName 'Microsoft.Teams.Policy.Administration.Cmdlets.Core.AppPresetMeeting' -ArgumentList $appInstance
         }
     }
 
@@ -313,7 +313,7 @@ function Set-TargetResource
         $i = 1
         foreach ($appInstance in $PinnedAppBarApps)
         {
-            $pinnedAppBarAppsValue += [Microsoft.Teams.Policy.Administration.Cmdlets.Core.PinnedApp]::new($appInstance, $i)
+            $pinnedAppBarAppsValue += New-Object -TypeName 'Microsoft.Teams.Policy.Administration.Cmdlets.Core.PinnedApp' -ArgumentList $appInstance, $i
             $i++
         }
     }
@@ -324,7 +324,7 @@ function Set-TargetResource
         $i = 1
         foreach ($appInstance in $PinnedCallingBarApps)
         {
-            $pinnedCallingBarAppsValue += [Microsoft.Teams.Policy.Administration.Cmdlets.Core.PinnedCallingBarApp]::new($appInstance, $i)
+            $pinnedCallingBarAppsValue += New-Object -TypeName 'Microsoft.Teams.Policy.Administration.Cmdlets.Core.PinnedCallingBarApp' -ArgumentList $appInstance, $i
             $i++
         }
     }
@@ -335,7 +335,7 @@ function Set-TargetResource
         $i = 1
         foreach ($appInstance in $PinnedMessageBarApps)
         {
-            $pinnedMessageBarAppsValue += [Microsoft.Teams.Policy.Administration.Cmdlets.Core.PinnedMessageBarApp]::new($appInstance, $i)
+            $pinnedMessageBarAppsValue += New-Object -TypeName 'Microsoft.Teams.Policy.Administration.Cmdlets.Core.PinnedMessageBarApp' -ArgumentList $appInstance, $i
             $i++
         }
     }

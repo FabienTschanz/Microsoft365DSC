@@ -42,7 +42,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]
@@ -447,7 +447,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]
@@ -579,7 +579,7 @@ function Set-TargetResource
     }
     elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
     {
-        Write-Verbose -Message 'Removing Cross Tenant Access Policy Configuration Default is not supported'
+        throw 'Removing Cross Tenant Access Policy Configuration Default is not supported'
     }
 }
 
@@ -624,7 +624,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]

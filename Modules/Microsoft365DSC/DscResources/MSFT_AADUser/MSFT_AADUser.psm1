@@ -603,30 +603,23 @@ function Set-TargetResource
             }
             else
             {
-                if ($PSVersionTable.PSVersion.Major -eq 5)
-                {
-                    Add-Type -AssemblyName System.Web
-                    $passwordValue = [System.Web.Security.Membership]::GeneratePassword(30, 2)
+                # [System.Web.Security.Membership] does not exist on .NET Core
+                $TokenSet = @{
+                    U = [Char[]]'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                    L = [Char[]]'abcdefghijklmnopqrstuvwxyz'
+                    N = [Char[]]'0123456789'
+                    S = [Char[]]'!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~'
                 }
-                else
-                {
-                    $TokenSet = @{
-                        U = [Char[]]'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                        L = [Char[]]'abcdefghijklmnopqrstuvwxyz'
-                        N = [Char[]]'0123456789'
-                        S = [Char[]]'!"#$%&''()*+,-./:;<=>?@[\]^_`{|}~'
-                    }
 
-                    $Upper = Get-Random -Count 8 -InputObject $TokenSet.U
-                    $Lower = Get-Random -Count 8 -InputObject $TokenSet.L
-                    $Number = Get-Random -Count 8 -InputObject $TokenSet.N
-                    $Special = Get-Random -Count 8 -InputObject $TokenSet.S
+                $Upper = Get-Random -Count 8 -InputObject $TokenSet.U
+                $Lower = Get-Random -Count 8 -InputObject $TokenSet.L
+                $Number = Get-Random -Count 8 -InputObject $TokenSet.N
+                $Special = Get-Random -Count 8 -InputObject $TokenSet.S
 
-                    $StringSet = $Upper + $Lower + $Number + $Special
+                $StringSet = $Upper + $Lower + $Number + $Special
 
-                    $stringPassword = (Get-Random -Count 30 -InputObject $StringSet) -join ''
-                    $passwordValue = ConvertTo-SecureString $stringPassword -AsPlainText -Force
-                }
+                $stringPassword = (Get-Random -Count 30 -InputObject $StringSet) -join ''
+                $passwordValue = ConvertTo-SecureString $stringPassword -AsPlainText -Force
             }
 
             $PasswordProfile = @{

@@ -1,4 +1,4 @@
-[ClassVersion("1.0.0.0"), FriendlyName("SPOSearchManagedProperty")]
+[ClassVersion("1.0.0.1"), FriendlyName("SPOSearchManagedProperty")]
 class MSFT_SPOSearchManagedProperty : OMI_BaseResource
 {
     [Key, Description("The Name of the Managed Property")] string Name;
@@ -20,7 +20,7 @@ class MSFT_SPOSearchManagedProperty : OMI_BaseResource
     [Write, Description("By default, search tokenizes queries coarser than content. If a managed property 'ID' contains the string '1-23-456#7', and you query ID:'1-23', you might not get a partial match because search didn't break the query into small enough parts. Consider selecting finer query tokenization if the content of this managed property contains separators such as dots and dashes. Finer query tokenization makes queries against this managed property slower.")] boolean FinerQueryTokenization;
     [Write, Description("Names of the crawled properties that are mapped to this managed property")] string MappedCrawledProperties[];
     [Write, Description("Enables the system to extract company name entities from the managed property when crawling new or updated items. Afterwards, the extracted entities can be used to set up refiners in the web part.")] boolean CompanyNameExtraction;
-    [Write, Description("Present ensures the Search Managed Property exists."), ValueMap{"Present"}, Values{"Present"}] string Ensure;
+    [Write, Description("Present ensures the Search Managed Property exists."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
     [Write, Description("Credentials of the account to authenticate with."), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
     [Write, Description("Secret of the Azure Active Directory application to authenticate with."), EmbeddedInstance("MSFT_Credential")] String ApplicationSecret;

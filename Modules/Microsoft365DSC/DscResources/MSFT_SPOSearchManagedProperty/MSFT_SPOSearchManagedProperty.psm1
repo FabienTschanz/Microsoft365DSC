@@ -87,7 +87,7 @@ function Get-TargetResource
         $CompanyNameExtraction,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -341,7 +341,7 @@ function Set-TargetResource
         $CompanyNameExtraction,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -814,7 +814,7 @@ function Test-TargetResource
         $CompanyNameExtraction,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 

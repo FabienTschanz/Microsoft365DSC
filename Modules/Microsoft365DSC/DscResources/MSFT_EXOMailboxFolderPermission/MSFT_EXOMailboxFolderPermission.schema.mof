@@ -1,4 +1,4 @@
-[ClassVersion("1.0.0.1")]
+[ClassVersion("1.0.0.2")]
 class MSFT_EXOMailboxFolderUserPermission
 {
     [Write, Description("The AccessRights parameter specifies the permissions that you want to add for the user on the mailbox folder.")] String AccessRights[];
@@ -11,7 +11,7 @@ class MSFT_EXOMailboxFolderPermission : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the target mailbox and folder. The syntax is MailboxID:\\ParentFolder[\\SubFolder]. For the MailboxID you can use any value that uniquely identifies the mailbox.")] String Identity;
     [Write, Description("Mailbox Folder Permissions for the current user."),EmbeddedInstance("MSFT_EXOMailboxFolderUserPermission")] String UserPermissions[];
-    [Write, Description("Determines whether or not the permission should exist on the mailbox."), ValueMap{"Present"}, Values{"Present"}] String Ensure;
+    [Write, Description("Determines whether or not the permission should exist on the mailbox. This resource cannot be removed and the value must be set to 'Ensure'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("Credentials of the Exchange Global Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
     [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;

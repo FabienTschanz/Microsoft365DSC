@@ -70,7 +70,7 @@ function Get-TargetResource
         $StartTime,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -259,7 +259,7 @@ function Set-TargetResource
         $StartTime,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -394,7 +394,7 @@ function Test-TargetResource
         $StartTime,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 

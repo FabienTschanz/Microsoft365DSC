@@ -16,7 +16,7 @@ function Get-TargetResource
         $Properties,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -166,7 +166,7 @@ function Set-TargetResource
         $Properties,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -261,7 +261,7 @@ function Test-TargetResource
         $Properties,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 

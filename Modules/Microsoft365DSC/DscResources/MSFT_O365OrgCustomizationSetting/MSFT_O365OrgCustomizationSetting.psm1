@@ -13,11 +13,6 @@ function Get-TargetResource
         $IsSingleInstance,
 
         [Parameter()]
-        [ValidateSet('Present')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -60,11 +55,6 @@ function Get-TargetResource
 
     try
     {
-        if ($PSBoundParameters.ContainsKey('Ensure') -and $Ensure -eq 'Absent')
-        {
-            throw 'This resource is not able to remove the Customization settings and therefore only accepts Ensure=Present.'
-        }
-
         $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
             -InboundParameters $PSBoundParameters
 
@@ -80,24 +70,17 @@ function Get-TargetResource
         Add-M365DSCTelemetryEvent -Data $data
         #endregion
 
-        $nullReturn = @{
-            IsSingleInstance = $IsSingleInstance
-            Ensure           = 'Absent'
-        }
-
         $orgConfig = Get-OrganizationConfig -ErrorAction Stop
 
         if ($null -eq $orgConfig)
         {
-            Write-Verbose -Message "Can't find the information about the Organization Configuration."
-            return $nullReturn
+            throw 'Failed to retrieve the Organization Configuration. Please ensure that you have the necessary permissions to access this information.'
         }
 
         if ($orgConfig.IsDehydrated -eq $false)
         {
             return @{
                 IsSingleInstance      = 'Yes'
-                Ensure                = 'Present'
                 Credential            = $Credential
                 ApplicationId         = $ApplicationId
                 TenantId              = $TenantId
@@ -132,11 +115,6 @@ function Set-TargetResource
         [ValidateSet('Yes')]
         [System.String]
         $IsSingleInstance,
-
-        [Parameter()]
-        [ValidateSet('Present')]
-        [System.String]
-        $Ensure = 'Present',
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -179,11 +157,6 @@ function Set-TargetResource
 
     Write-Verbose -Message 'Setting configuration of the O365 Org Customization Setting'
 
-    if ($PSBoundParameters.ContainsKey('Ensure') -and $Ensure -eq 'Absent')
-    {
-        throw 'This resource is not able to remove the Customization settings and therefore only accepts Ensure=Present.'
-    }
-
     $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
         -InboundParameters $PSBoundParameters
 
@@ -216,11 +189,6 @@ function Test-TargetResource
         [ValidateSet('Yes')]
         [System.String]
         $IsSingleInstance,
-
-        [Parameter()]
-        [ValidateSet('Present')]
-        [System.String]
-        $Ensure = 'Present',
 
         [Parameter()]
         [System.Management.Automation.PSCredential]
@@ -356,18 +324,15 @@ function Export-TargetResource
 
         $Results = Get-TargetResource @Params
         $dscContent = [System.Text.StringBuilder]::new()
-        if ($Results.Ensure -eq 'Present')
-        {
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
+        $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
+            -ConnectionMode $ConnectionMode `
+            -ModulePath $PSScriptRoot `
+            -Results $Results `
+            -Credential $Credential
+        [void]$dscContent.Append($currentDSCBlock)
 
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-        }
+        Save-M365DSCPartialExport -Content $currentDSCBlock `
+            -FileName $Global:PartialExportFileName
         Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
 
         return $dscContent.ToString()

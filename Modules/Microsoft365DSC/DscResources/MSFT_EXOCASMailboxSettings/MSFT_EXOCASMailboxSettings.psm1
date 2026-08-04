@@ -148,7 +148,7 @@ function Get-TargetResource
         $UniversalOutlookEnabled,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -438,7 +438,7 @@ function Set-TargetResource
         $UniversalOutlookEnabled,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -650,7 +650,7 @@ function Test-TargetResource
         $UniversalOutlookEnabled,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 

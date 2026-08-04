@@ -16,7 +16,7 @@ function Get-TargetResource
         $FocusedInboxOn,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
@@ -143,7 +143,7 @@ function Set-TargetResource
         $FocusedInboxOn,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
@@ -220,7 +220,7 @@ function Test-TargetResource
         $FocusedInboxOn,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 

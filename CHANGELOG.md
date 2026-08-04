@@ -8,6 +8,8 @@
   * Improved performance with batch requests.
 * AADRoleDefinition
   * Fixed an issue where roles with empty permissions were not exported.
+* AADUser
+  * Updated the password generation routine to work with PowerShell 7.
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
     to PSCredential and removed it from the export output.
@@ -21,6 +23,8 @@
   * Removed unused class reference `MSFT_DeviceManagementMimeContent`.
 * IntuneVPNConfigurationPolicyIOS
   * [BREAKING CHANGE] Updated `targetedMobileApps` to use `MSFT_targetedMobileApps`.
+* O365OrgCustomizationSetting
+  * [BREAKING CHANGE] Removed the property `Ensure`.
 * SCComplianceTag
   * Fixed an issue where `EventType` was never exported.
 * SPOAccessControlSettings
@@ -95,10 +99,13 @@
   * Added `Mgx` with version 1.0.2.
   * Updated `PnP.PowerShell` to version 3.3.0.
 * MISC
+  * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
+    when the requested instance does not exist.
   * Added many new relations between resources to improve dependency handling during export.
   * Added QA new test to check for unreferenced classes in the schema file.
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
+  * Fixed an issue with module parsing for Teams resources after changing to PowerShell classes.
   * Moved export relation resolution and `DependsOn` injection into the new
     `Microsoft365DSC.Relations` assembly. Relation lookup, dependency collection and the
     rewrite of the generated configuration no longer scale quadratically with the number of

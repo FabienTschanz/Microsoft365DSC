@@ -789,9 +789,9 @@ function Export-TargetResource
         {
             $Script:RoleDefinitions = [System.Collections.Generic.Dictionary[string, object]]::new()
             $roleDefinitions = Get-MgBetaRoleManagementDirectoryRoleDefinition -All -ErrorAction SilentlyContinue
-            foreach ($roleDefinition in $roleDefinitions)
+            foreach ($currentRoleDefinition in $roleDefinitions)
             {
-                $Script:RoleDefinitions.Add($roleDefinition.Id, $roleDefinition)
+                $Script:RoleDefinitions.Add($currentRoleDefinition.Id, $currentRoleDefinition)
             }
         }
         foreach ($request in $Script:exportedInstances)
@@ -819,19 +819,19 @@ function Export-TargetResource
 
             if ($null -ne $PrincipalValue)
             {
-                $roleDefinition = $Script:RoleDefinitions[$request.RoleDefinitionId]
-                if ($null -eq $roleDefinition)
+                $currentRoleDefinition = $Script:RoleDefinitions[$request.RoleDefinitionId]
+                if ($null -eq $currentRoleDefinition)
                 {
-                    $roleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $request.RoleDefinitionId `
+                    $currentRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $request.RoleDefinitionId `
                         -ErrorAction SilentlyContinue
-                    $Script:RoleDefinitions.Add($request.RoleDefinitionId, $roleDefinition)
+                    $Script:RoleDefinitions.Add($request.RoleDefinitionId, $currentRoleDefinition)
                 }
                 $params = @{
                     Id                    = $request.Id
                     Principal             = $PrincipalValue
                     PrincipalType         = $principalType
                     DirectoryScopeId      = $request.DirectoryScopeId
-                    RoleDefinition        = $roleDefinition.DisplayName
+                    RoleDefinition        = $currentRoleDefinition.DisplayName
                     Ensure                = 'Present'
                     Credential            = $Credential
                     ApplicationId         = $ApplicationId

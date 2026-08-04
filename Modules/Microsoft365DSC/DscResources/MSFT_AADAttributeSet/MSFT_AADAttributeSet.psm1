@@ -22,7 +22,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]
@@ -160,7 +160,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]
@@ -235,6 +235,10 @@ function Set-TargetResource
         $BoundParameters.Remove('Id') | Out-Null
         Update-MgBetaDirectoryAttributeSet -AttributeSetId $currentInstance.Id -BodyParameter $BoundParameters | Out-Null
     }
+    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+    {
+        throw "The Attribute Set with Id {$($currentInstance.Id)} cannot be deleted. Deletion of Attribute Sets is not supported."
+    }
 }
 
 function Test-TargetResource
@@ -258,7 +262,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         $Ensure = 'Present',
 
         [Parameter()]

@@ -1,4 +1,4 @@
-[ClassVersion("1.0.0.0"), FriendlyName("EXOCASMailboxSettings")]
+[ClassVersion("1.0.0.1"), FriendlyName("EXOCASMailboxSettings")]
 class MSFT_EXOCASMailboxSettings : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the mailbox that you want to configure.")] String Identity;
@@ -36,7 +36,7 @@ class MSFT_EXOCASMailboxSettings : OMI_BaseResource
     [Write, Description("The ShowGalAsDefaultView parameter specifies whether the global address list (GAL) is the default recipient picker for messages.")] Boolean ShowGalAsDefaultView;
     [Write, Description("The SmtpClientAuthenticationDisabled parameter specifies whether to disable authenticated SMTP (SMTP AUTH) for the mailbox.")] Boolean SmtpClientAuthenticationDisabled;
     [Write, Description("The UniversalOutlookEnabled parameter enables or disables access to the mailbox using Windows 10 Mail and Calendar.")] Boolean UniversalOutlookEnabled;
-    [Write, Description("Present ensures the Mailbox CAS settings are applied."), ValueMap{"Present"}, Values{"Present"}] string Ensure;
+    [Write, Description("Present ensures the Mailbox CAS settings are applied. This resource cannot be removed and the value must be set to 'Ensure'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
     [Write, Description("Credentials of the Exchange Global Admin"), EmbeddedInstance("MSFT_Credential")] string Credential;
     [Write, Description("Id of the Azure Active Directory application to authenticate with.")] String ApplicationId;
     [Write, Description("Id of the Azure Active Directory tenant used for authentication.")] String TenantId;

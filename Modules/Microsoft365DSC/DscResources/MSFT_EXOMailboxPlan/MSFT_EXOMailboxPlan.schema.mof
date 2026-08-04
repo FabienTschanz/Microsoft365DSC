@@ -1,9 +1,9 @@
-[ClassVersion("1.0.0.0"), FriendlyName("EXOMailboxPlan")]
+[ClassVersion("1.0.0.1"), FriendlyName("EXOMailboxPlan")]
 class MSFT_EXOMailboxPlan : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the Mailbox Plan that you want to modify.")] String Identity;
     [Write, Description("The display name of the mailbox plan.")] String DisplayName;
-    [Write, Description("MailboxPlans cannot be created/removed in O365.  This must be set to 'Present'"), ValueMap{"Present"}, Values{"Present"}] String Ensure;
+    [Write, Description("MailboxPlans cannot be created/removed in O365.  This resource cannot be removed and the value must be set to 'Ensure'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("The IssueWarningQuota parameter specifies the warning threshold for the size of the mailboxes that are created or enabled using the mailbox plan.")] String IssueWarningQuota;
     [Write, Description("The MaxReceiveSize parameter specifies the maximum size of a message that can be sent to the mailbox.")] String MaxReceiveSize;
     [Write, Description("The MaxSendSize parameter specifies the maximum size of a message that can be sent by the mailbox.")] String MaxSendSize;

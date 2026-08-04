@@ -48,7 +48,7 @@ function Get-TargetResource
         $RoleAssignmentPolicy,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -225,7 +225,7 @@ function Set-TargetResource
         $RoleAssignmentPolicy,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -348,7 +348,7 @@ function Test-TargetResource
         $RoleAssignmentPolicy,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 

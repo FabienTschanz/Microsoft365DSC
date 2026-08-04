@@ -32,7 +32,7 @@ function Get-TargetResource
         $PopEnabled = $true,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -192,7 +192,7 @@ function Set-TargetResource
         $PopEnabled = $true,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -295,7 +295,7 @@ function Test-TargetResource
         $PopEnabled = $true,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 

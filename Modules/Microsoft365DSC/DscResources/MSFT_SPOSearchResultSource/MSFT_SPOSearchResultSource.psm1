@@ -74,7 +74,7 @@ function Get-TargetResource
         $UseAutoDiscover,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -249,7 +249,7 @@ function Set-TargetResource
         $UseAutoDiscover,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
@@ -498,7 +498,7 @@ function Test-TargetResource
         $UseAutoDiscover,
 
         [Parameter()]
-        [ValidateSet('Present')]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure = 'Present',
 
