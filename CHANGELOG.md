@@ -106,6 +106,7 @@
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
   * Fixed an issue with module parsing for Teams resources after changing to PowerShell classes.
+  * Fixed an issue where several resources had a different resource name in the Mof definition.
   * Moved export relation resolution and `DependsOn` injection into the new
     `Microsoft365DSC.Relations` assembly. Relation lookup, dependency collection and the
     rewrite of the generated configuration no longer scale quadratically with the number of

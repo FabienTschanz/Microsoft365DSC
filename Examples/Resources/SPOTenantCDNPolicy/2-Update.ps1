@@ -14,7 +14,7 @@ Configuration Example
 
     node localhost
     {
-        SPOTenantCDNPolicy 'PublicCDNPolicy'
+        SPOTenantCdnPolicy 'PublicCdnPolicy'
         {
             IncludeFileExtensions                = @('.jpg', '.png')
             CDNType                              = "Public"

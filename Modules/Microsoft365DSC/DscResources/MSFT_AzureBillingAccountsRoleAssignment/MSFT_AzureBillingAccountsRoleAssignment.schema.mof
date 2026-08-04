@@ -1,5 +1,5 @@
-[ClassVersion("1.0.0.0"), FriendlyName("AzureBillingaccountsRoleAssignment")]
-class MSFT_AzureBillingaccountsRoleAssignment : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("AzureBillingAccountsRoleAssignment")]
+class MSFT_AzureBillingAccountsRoleAssignment : OMI_BaseResource
 {
     [Key, Description("Name of the principal associated to the role assignment.")] String PrincipalName;
     [Key, Description("Name of the role assigned to the principal.")] String RoleDefinition;

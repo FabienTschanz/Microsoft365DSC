@@ -308,7 +308,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         }
 
         # Test contexts
-        Context -Name 'The IntuneDeviceConfigurationPolicyIOS should exist but it DOES NOT' -Fixture {
+        Context -Name 'The IntuneDeviceConfigurationPolicyiOS should exist but it DOES NOT' -Fixture {
             BeforeAll {
                 $testParams = @{
                     AccountBlockModification                       = $True
@@ -579,7 +579,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name 'The IntuneDeviceConfigurationPolicyIOS exists but it SHOULD NOT' -Fixture {
+        Context -Name 'The IntuneDeviceConfigurationPolicyiOS exists but it SHOULD NOT' -Fixture {
             BeforeAll {
                 $testParams = @{
                     AccountBlockModification                       = $True
@@ -848,7 +848,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Remove-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
-        Context -Name 'The IntuneDeviceConfigurationPolicyIOS Exists and Values are already in the desired state' -Fixture {
+        Context -Name 'The IntuneDeviceConfigurationPolicyiOS Exists and Values are already in the desired state' -Fixture {
             BeforeAll {
                 $testParams = @{
                     AccountBlockModification                       = $True
@@ -1110,7 +1110,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name 'The IntuneDeviceConfigurationPolicyIOS exists and values are NOT in the desired state' -Fixture {
+        Context -Name 'The IntuneDeviceConfigurationPolicyiOS exists and values are NOT in the desired state' -Fixture {
             BeforeAll {
                 $testParams = @{
                     AccountBlockModification                       = $False # Updated property

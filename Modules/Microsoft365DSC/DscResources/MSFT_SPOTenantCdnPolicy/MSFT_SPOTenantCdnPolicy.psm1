@@ -188,7 +188,7 @@ function Set-TargetResource
         return
     }
 
-    Write-Verbose -Message "Setting configuration for SPOTenantCDNPolicy {$CDNType}"
+    Write-Verbose -Message "Setting configuration for SPOTenantCdnPolicy {$CDNType}"
 
     #Ensure the proper dependencies are installed in the current environment.
     Confirm-M365DSCDependencies
