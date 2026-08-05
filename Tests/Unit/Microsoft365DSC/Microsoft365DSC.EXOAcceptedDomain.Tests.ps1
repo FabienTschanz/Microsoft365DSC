@@ -83,7 +83,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     DomainType     = 'Authoritative'
                     Ensure         = 'Absent'
-                    MatchSubDomain = $false
+                    MatchSubDomains = $false
                     OutboundOnly   = $false
                     Credential     = $Credential
                     Identity       = 'contoso.com'
@@ -104,7 +104,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     DomainType     = 'Authoritative'
                     Ensure         = 'Present'
-                    MatchSubDomain = $false
+                    MatchSubDomains = $false
                     OutboundOnly   = $false
                     Credential     = $Credential
                     Identity       = 'contoso.com'

@@ -27,7 +27,7 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogthreatTypeSettings
     [Write, Description("Action to take - Depends on threatTypeSettings (audit, block, off)"), ValueMap{"audit", "block", "off"}, Values{"audit", "block", "off"}] String threatTypeSettings_item_value;
 };
 
-[ClassVersion("1.0.0.2"), FriendlyName("IntuneAntivirusPolicyLinux")]
+[ClassVersion("1.0.0.3"), FriendlyName("IntuneAntivirusPolicyLinux")]
 class MSFT_IntuneAntivirusPolicyLinux : OMI_BaseResource
 {
     [Write, Description("Policy description")] String Description;
@@ -64,7 +64,7 @@ class MSFT_IntuneAntivirusPolicyLinux : OMI_BaseResource
     [Write, Description("Offline security intelligence update URL or directory")] String offlinedefinitionupdateurl;
     [Write, Description("Schedule Signature Updates Before Running Scan (false: Disabled, true: Enabled)"), ValueMap{"false", "true"}, Values{"false", "true"}] String scheduledScan_checkForDefinitionsUpdate;
     [Write, Description("Daily Schedule scan time. Must be between 0 and 1380.")] SInt32 scheduledScan_dailyConfiguration_timeOfDay;
-    [Write, Description("Weekly Schedule scan day (0: Never, 1: Sunday, 2: Monday, 3: Tuesday, 4: Wednesday, 5: Thursday, 6: Friday, 7: Saturday, 8: Daily)"), ValueMap{"0","1","2","3","4","5","6","7","8"}] String scheduledScan_dayOfWeek;
+    [Write, Description("Weekly Schedule scan day (0: Never, 1: Sunday, 2: Monday, 3: Tuesday, 4: Wednesday, 5: Thursday, 6: Friday, 7: Saturday, 8: Daily)"), ValueMap{"0","1","2","3","4","5","6","7","8"}, Values{"0","1","2","3","4","5","6","7","8"}] String scheduledScan_dayOfWeek;
     [Write, Description("Ignore Exclusions (false: Disabled, true: Enabled)"), ValueMap{"false", "true"}, Values{"false", "true"}] String scheduledScan_ignoreExclusions;
     [Write, Description("Daily Schedule quick scan interval (hours). Must be between 0 and 24 hours.")] SInt32 scheduledScan_interval;
     [Write, Description("Run with low CPU priority (false: Disabled, true: Enabled)"), ValueMap{"false", "true"}, Values{"false", "true"}] String scheduledScan_lowPriorityScheduledScan;

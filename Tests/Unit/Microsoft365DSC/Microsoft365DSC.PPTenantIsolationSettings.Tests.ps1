@@ -76,7 +76,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $true
+                    Enabled           = $true
                     Rules            = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'
@@ -131,7 +131,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $true
+                    Enabled           = $true
                     Rules            = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'
@@ -189,7 +189,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $false
+                    Enabled           = $false
                     Rules            = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'
@@ -253,7 +253,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $true
+                    Enabled           = $true
                     RulesToInclude   = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'
@@ -317,7 +317,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $true
+                    Enabled           = $true
                     RulesToInclude   = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'
@@ -375,7 +375,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $true
+                    Enabled           = $true
                     RulesToExclude   = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'
@@ -448,7 +448,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance = 'Yes'
-                    Enable           = $true
+                    Enabled           = $true
                     RulesToExclude   = @(
                         (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
                             TenantName = 'contoso.onmicrosoft.com'

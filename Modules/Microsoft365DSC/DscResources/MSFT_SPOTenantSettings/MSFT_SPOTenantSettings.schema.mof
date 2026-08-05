@@ -1,4 +1,4 @@
-[ClassVersion("1.0.0.4"), FriendlyName("SPOTenantSettings")]
+[ClassVersion("1.0.0.5"), FriendlyName("SPOTenantSettings")]
 class MSFT_SPOTenantSettings : OMI_BaseResource
 {
     [Key, Description("Specifies the resource is a single instance, the value must be 'Yes'"),ValueMap{"Yes"},Values{"Yes"}] String IsSingleInstance;
@@ -49,7 +49,7 @@ class MSFT_SPOTenantSettings : OMI_BaseResource
     [Write, Description("Specifies a URL appended to the external sharing policy block message to direct users to internal guidance or request portals.")] String CustomizedExternalSharingServiceUrl;
     [Write, Description("Enables or disables the At A Glance feature in sharing e-mails.")] Boolean IncludeAtAGlanceInShareEmails;
     [Write, Description("Enables or disables mass delete detection notifications.")] Boolean MassDeleteNotificationDisabled;
-    [Write, Description("Sets the sharing state for blocking guests as site admin in OneDrive. Valid values are: On, Off, Unspecified"), ValueMap{"On","Off","Unspecified"}] String OneDriveBlockGuestsAsSiteAdmin;
+    [Write, Description("Sets the sharing state for blocking guests as site admin in OneDrive. Valid values are: On, Off, Unspecified"), ValueMap{"On","Off","Unspecified"}, Values{"On","Off","Unspecified"}] String OneDriveBlockGuestsAsSiteAdmin;
     [Write, Description("Sets the retention period for the recycle bin. The value of Recycle Bin Retention Period must be between 14 and 93. By default it is set to 93.")] UInt32 RecycleBinRetentionPeriod;
     [Write, Description("Enables or disables legacy browser authentication protocols.")] Boolean LegacyBrowserAuthProtocolsEnabled;
     [Write, Description("Enables or disables showing the organization-wide sharing option in the sharing dialog for videos.")] Boolean EnableDiscoverableByOrganizationForVideos;
