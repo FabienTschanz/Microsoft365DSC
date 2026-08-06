@@ -21,7 +21,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Invoke-Command -ScriptBlock $Global:DscHelper.InitializeScript -NoNewScope
         BeforeAll {
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@contoso.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -CommandName Get-PSSession -MockWith {
             }
@@ -44,7 +44,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName New-MgServicePrincipal -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -85,23 +85,23 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ServicePrincipalType      = 'Application'
                     Tags                      = '{WindowsAzureActiveDirectoryIntegratedApp}'
                     PasswordCredentials       = @(
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphpasswordCredential -Property @{
+                        [MSFT_MicrosoftGraphpasswordCredential] @{
                             KeyId = 'keyid'
                             EndDateTime = '2025-03-15T19:50:29.0310000+00:00'
                             Hint = 'VsO'
                             DisplayName = 'Super Secret'
                             StartDateTime = '2024-09-16T19:50:29.0310000+00:00'
-                        } -ClientOnly
+                        }
                     )
                     KeyCredentials = @(
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphkeyCredential -Property @{
+                        [MSFT_MicrosoftGraphkeyCredential] @{
                             Usage = 'Verify'
                             StartDateTime = '2024-09-25T09:13:11.0000000+00:00'
                             Type = 'AsymmetricX509Cert'
                             KeyId = 'Key ID'
                             EndDateTime = '2025-09-25T09:33:11.0000000+00:00'
                             DisplayName = 'anexas_test_2'
-                        } -ClientOnly
+                        }
                     )
                     Ensure                    = 'Present'
                     Credential                = $Credscredential
@@ -113,14 +113,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return values from the get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
             }
             It 'Should return false from the test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should create the application from the set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Set()
                 Should -Invoke -CommandName 'New-MgServicePrincipal' -Exactly 1
             }
         }
@@ -143,29 +143,29 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ServicePrincipalType      = 'Application'
                     Tags                      = '{WindowsAzureActiveDirectoryIntegratedApp}'
                     PasswordCredentials       = @(
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphpasswordCredential -Property @{
+                        [MSFT_MicrosoftGraphpasswordCredential] @{
                             KeyId = 'keyid'
                             EndDateTime = '2025-03-15T19:50:29.0310000+00:00'
                             Hint = 'VsO'
                             DisplayName = 'Super Secret'
                             StartDateTime = '2024-09-16T19:50:29.0310000+00:00'
-                        } -ClientOnly
+                        }
                     )
                     KeyCredentials            = @(
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphkeyCredential -Property @{
+                        [MSFT_MicrosoftGraphkeyCredential] @{
                             Usage = 'Verify'
                             StartDateTime = '2024-09-25T09:13:11.0000000+00:00'
                             Type = 'AsymmetricX509Cert'
                             KeyId = 'Key ID'
                             EndDateTime = '2025-09-25T09:33:11.0000000+00:00'
                             DisplayName = 'anexas_test_2'
-                        } -ClientOnly
+                        }
                     )
                     Ensure                    = 'Absent'
                     Credential                = $Credscredential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -206,16 +206,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return values from the get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
             }
 
             It 'Should return false from the test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should remove the app from the set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Remove-MgServicePrincipal' -Exactly 1
             }
         }
@@ -237,29 +237,29 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ServicePrincipalType      = 'Application'
                     Tags                      = '{WindowsAzureActiveDirectoryIntegratedApp}'
                     PasswordCredentials       = @(
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphpasswordCredential -Property @{
+                        [MSFT_MicrosoftGraphpasswordCredential] @{
                             KeyId = 'keyid'
                             EndDateTime = '2025-03-15T19:50:29.0310000+00:00'
                             Hint = 'VsO'
                             DisplayName = 'Super Secret'
                             StartDateTime = '2024-09-16T19:50:29.0310000+00:00'
-                        } -ClientOnly
+                        }
                     )
                     KeyCredentials            = @(
-                        New-CimInstance -ClassName MSFT_MicrosoftGraphkeyCredential -Property @{
+                        [MSFT_MicrosoftGraphkeyCredential] @{
                             Usage = 'Verify'
                             StartDateTime = '2024-09-25T09:13:11.0000000+00:00'
                             Type = 'AsymmetricX509Cert'
                             KeyId = 'Key ID'
                             EndDateTime = '2025-09-25T09:33:11.0000000+00:00'
                             DisplayName = 'anexas_test_2'
-                        } -ClientOnly
+                        }
                     )
                     Ensure                    = 'Present'
                     Credential                = $Credscredential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -301,12 +301,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
             }
 
             It 'Should return true from the test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -333,7 +333,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential                = $Credscredential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -373,16 +373,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return values from the get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
             }
 
             It 'Should return false from the test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Update-MgServicePrincipal' -Exactly 1
             }
         }
@@ -395,7 +395,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -436,7 +436,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should reverse engineer resource from the export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'AADServicePrincipal' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }
@@ -450,7 +450,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 )
 
-                Get-M365DSCAADServicePrincipalAppRoleId -AppRoles $appRoles -PrincipalType 'Group' | Should -Be '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
+                Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId -AppRoles $appRoles -PrincipalType 'Group' | Should -Be '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
             }
 
             It 'Should return the default access app role id when no role matches the principal type' {
@@ -461,7 +461,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 )
 
-                Get-M365DSCAADServicePrincipalAppRoleId -AppRoles $appRoles -PrincipalType 'Group' | Should -Be '00000000-0000-0000-0000-000000000000'
+                Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId -AppRoles $appRoles -PrincipalType 'Group' | Should -Be '00000000-0000-0000-0000-000000000000'
             }
         }
     }

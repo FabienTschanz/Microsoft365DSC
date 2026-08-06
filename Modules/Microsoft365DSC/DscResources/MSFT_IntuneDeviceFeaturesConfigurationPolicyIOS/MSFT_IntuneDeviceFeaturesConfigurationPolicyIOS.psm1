@@ -1,1075 +1,1079 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneDeviceFeaturesConfigurationPolicyIOS'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Intune policy.')]
+    [System.String] $Id
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Display name of the Intune policy.')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of the Intune policy.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
+    [DscProperty()]
+    [System.ComponentModel.Description('Represents the assignment to the Intune policy.')]
+    [MSFT_DeviceManagementConfigurationPolicyAssignments[]] $Assignments
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleOsEdition,
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleOsVersion,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Intune Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleDeviceMode,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AirPrintDestinations,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $AssetTagTemplate,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ContentFilterSettings,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $LockScreenFootnote,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $HomeScreenDockIcons,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $HomeScreenPages,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.Int32]
-        $HomeScreenGridWidth,
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-        [Parameter()]
-        [System.Int32]
-        $HomeScreenGridHeight,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of Scope Tags for this Entity instance. Inherited from deviceConfiguration.')]
+    [System.String[]] $RoleScopeTagIds
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $NotificationSettings,
+    [DscProperty()]
+    [System.ComponentModel.Description('The OS edition applicability for this Policy. Inherited from deviceConfiguration.')]
+    [MSFT_deviceManagementApplicabilityRuleOsEdition[]] $DeviceManagementApplicabilityRuleOsEdition
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $SingleSignOnSettings,
+    [DscProperty()]
+    [System.ComponentModel.Description('The OS version applicability rule for this Policy. Inherited from deviceConfiguration.')]
+    [MSFT_deviceManagementApplicabilityRuleOsVersion[]] $DeviceManagementApplicabilityRuleOsVersion
 
-        [Parameter()]
-        [ValidateSet('notConfigured', 'lockScreen', 'homeScreen', 'lockAndHomeScreens')]
-        [System.String]
-        $WallpaperDisplayLocation,
+    [DscProperty()]
+    [System.ComponentModel.Description('The device mode applicability rule for this Policy. Inherited from deviceConfiguration.')]
+    [MSFT_deviceManagementApplicabilityRuleDeviceMode[]] $DeviceManagementApplicabilityRuleDeviceMode
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $WallpaperImage,
+    [DscProperty()]
+    [System.ComponentModel.Description('An array of AirPrint printers that should always be shown.')]
+    [MSFT_airPrintDestination[]] $AirPrintDestinations
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $IosSingleSignOnExtension,
+    [DscProperty()]
+    [System.ComponentModel.Description('Asset tag information for the device, displayed on the login window and lock screen.')]
+    [System.String] $AssetTagTemplate
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets iOS Web Content Filter settings, supervised mode only.')]
+    [MSFT_iosWebContentFilterSpecificWebsitesAccess[]] $ContentFilterSettings
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('A footnote displayed on the login window and lock screen. Available in iOS 9.3.1 and later.')]
+    [System.String] $LockScreenFootnote
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of app and folders to appear on the Home Screen Dock. This collection can contain a maximum of 500 elements.')]
+    [MSFT_iosHomeScreenApp[]] $HomeScreenDockIcons
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of pages on the Home Screen. This collection can contain a maximum of 500 elements.')]
+    [MSFT_iosHomeScreenItem[]] $HomeScreenPages
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets the number of columns to render when configuring iOS home screen layout settings. If this value is configured, homeScreenGridHeight must be configured as well.')]
+    [System.Nullable[System.UInt32]] $HomeScreenGridWidth
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets the number of rows to render when configuring iOS home screen layout settings. If this value is configured, homeScreenGridWidth must be configured as well.')]
+    [System.Nullable[System.UInt32]] $HomeScreenGridHeight
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Notification settings for each bundle id. Applicable to devices in supervised mode only (iOS 9.3 and later).')]
+    [MSFT_iosNotificationSettings[]] $NotificationSettings
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Kerberos login settings that enable apps on receiving devices to authenticate smoothly.')]
+    [MSFT_iosSingleSignOnSettings[]] $SingleSignOnSettings
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('A wallpaper display location specifier. Possible values are: notConfigured, lockScreen, homeScreen, lockAndHomeScreens.')]
+    [ValidateSet('notConfigured', 'lockScreen', 'homeScreen', 'lockAndHomeScreens')]
+    [System.String] $WallpaperDisplayLocation
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('A wallpaper image must be in either PNG or JPEG format. It requires a supervised device with iOS 8 or later version.')]
+    [MSFT_mimeContent[]] $WallpaperImage
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets a single sign-on extension profile.')]
+    [MSFT_iosSingleSignOnExtension[]] $IosSingleSignOnExtension
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [IntuneDeviceFeaturesConfigurationPolicyIOS] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration of the Intune Device Features Configuration Policy for iOS with Id {$Id} and DisplayName {$DisplayName}"
-
-    try
-    {
-        if (-not $Script:exportedInstance)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $getValue = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [IntuneDeviceFeaturesConfigurationPolicyIOS]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration of the Intune Device Features Configuration Policy for iOS with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            if (-not [string]::IsNullOrWhiteSpace($Id))
+        try
+        {
+            if (-not $this.ExportedInstance)
             {
-                $getValue = Get-MgBetaDeviceManagementDeviceConfiguration -All -Filter "Id eq '$Id'" -ErrorAction SilentlyContinue
-            }
+                $null = $this.Connect('MicrosoftGraph')
 
-            #region resource generator code
-            if ($null -eq $getValue)
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                if (-not [string]::IsNullOrWhiteSpace($this.Id))
+                {
+                    $getValue = Get-MgBetaDeviceManagementDeviceConfiguration -All -Filter "Id eq '$($this.Id)'" -ErrorAction SilentlyContinue
+                }
+
+                #region resource generator code
+                if ($null -eq $getValue)
+                {
+                    $getValue = Get-MgBetaDeviceManagementDeviceConfiguration -All -Filter "DisplayName eq '$($this.Displayname -replace "'", "''")' and isof('microsoft.graph.iosDeviceFeaturesConfiguration')" -ErrorAction SilentlyContinue
+                }
+                #endregion
+
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "No Intune Device Features Policy for iOS with Id {$($this.Id)} was found"
+                    return $this.AsResult($nullResult)
+                }
+
+                $this.Id = $getValue.Id
+
+                Write-Verbose -Message "An Intune Device Features Policy for iOS with id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            }
+            else
             {
-                $getValue = Get-MgBetaDeviceManagementDeviceConfiguration -All -Filter "DisplayName eq '$($Displayname -replace "'", "''")' and isof('microsoft.graph.iosDeviceFeaturesConfiguration')" -ErrorAction SilentlyContinue
+                $getValue = $this.ExportedInstance
             }
-            #endregion
 
-            if ($null -eq $getValue)
+            #value could be bool, string or int - export as a string and handle later
+            $complexIosSingleSignonExtension = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType $getValue.iosSingleSignOnExtension
+            foreach ($configuration in $complexIosSingleSignonExtension.configurations)
             {
-                Write-Verbose -Message "No Intune Device Features Policy for iOS with Id {$Id} was found"
-                return $nullResult
+                $configuration.value = [string]$configuration.value
             }
 
-            $Id = $getValue.Id
+            $results = @{
+                #region resource generator code
+                Id                       = $getValue.Id
+                Description              = $getValue.Description
+                DisplayName              = $getValue.DisplayName
+                Ensure                   = 'Present'
+                Credential               = $this.Credential
+                ApplicationId            = $this.ApplicationId
+                TenantId                 = $this.TenantId
+                ApplicationSecret        = $this.ApplicationSecret
+                CertificateThumbprint    = $this.CertificateThumbprint
+                CertificatePath          = $this.CertificatePath
+                CertificatePassword      = $this.CertificatePassword
+                ManagedIdentity          = $this.ManagedIdentity.IsPresent
+                AccessTokens             = $this.AccessTokens
+                AirPrintDestinations     = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.airPrintDestinations
+                AssetTagTemplate         = $getValue.assetTagTemplate
+                ContentFilterSettings    = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType $getValue.contentFilterSettings
+                LockScreenFootnote       = $getValue.lockScreenFootnote
+                HomeScreenDockIcons      = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.homeScreenDockIcons
+                HomeScreenPages          = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.homeScreenPages
+                HomeScreenGridWidth      = $getValue.homeScreenGridWidth
+                HomeScreenGridHeight     = $getValue.homeScreenGridHeight
+                NotificationSettings     = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.notificationSettings
+                SingleSignOnSettings     = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.singleSignOnSettings
+                WallpaperDisplayLocation = $getValue.wallpaperDisplayLocation
+                WallpaperImage           = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.wallpaperImage
+                IosSingleSignOnExtension = $complexIosSingleSignonExtension
+            }
 
-            Write-Verbose -Message "An Intune Device Features Policy for iOS with id {$Id} and DisplayName {$DisplayName} was found"
-        }
-        else
-        {
-            $getValue = $Script:exportedInstance
-        }
-
-        #value could be bool, string or int - export as a string and handle later
-        $complexIosSingleSignonExtension = Convert-ComplexObjectToHashtableArray_ExportDataType $getValue.iosSingleSignOnExtension
-        foreach ($configuration in $complexIosSingleSignonExtension.configurations)
-        {
-            $configuration.value = [string]$configuration.value
-        }
-
-        $results = @{
-            #region resource generator code
-            Id                       = $getValue.Id
-            Description              = $getValue.Description
-            DisplayName              = $getValue.DisplayName
-            Ensure                   = 'Present'
-            Credential               = $Credential
-            ApplicationId            = $ApplicationId
-            TenantId                 = $TenantId
-            ApplicationSecret        = $ApplicationSecret
-            CertificateThumbprint    = $CertificateThumbprint
-            CertificatePath          = $CertificatePath
-            CertificatePassword      = $CertificatePassword
-            ManagedIdentity          = $ManagedIdentity.IsPresent
-            AccessTokens             = $AccessTokens
-            AirPrintDestinations     = Convert-ComplexObjectToHashtableArray $getValue.airPrintDestinations
-            AssetTagTemplate         = $getValue.assetTagTemplate
-            ContentFilterSettings    = Convert-ComplexObjectToHashtableArray_ExportDataType $getValue.contentFilterSettings
-            LockScreenFootnote       = $getValue.lockScreenFootnote
-            HomeScreenDockIcons      = Convert-ComplexObjectToHashtableArray $getValue.homeScreenDockIcons
-            HomeScreenPages          = Convert-ComplexObjectToHashtableArray $getValue.homeScreenPages
-            HomeScreenGridWidth      = $getValue.homeScreenGridWidth
-            HomeScreenGridHeight     = $getValue.homeScreenGridHeight
-            NotificationSettings     = Convert-ComplexObjectToHashtableArray $getValue.notificationSettings
-            SingleSignOnSettings     = Convert-ComplexObjectToHashtableArray $getValue.singleSignOnSettings
-            WallpaperDisplayLocation = $getValue.wallpaperDisplayLocation
-            WallpaperImage           = Convert-ComplexObjectToHashtableArray $getValue.wallpaperImage
-            IosSingleSignOnExtension = $complexIosSingleSignonExtension
-        }
-
-        $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $Results.Id
-        $assignmentResult = @()
-        if ($assignmentsValues.Count -gt 0)
-        {
-            $assignmentResult += ConvertFrom-IntunePolicyAssignment `
-                -IncludeDeviceFilter:$true `
-                -Assignments ($assignmentsValues)
-        }
-        $results.Add('Assignments', $assignmentResult)
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleOsEdition,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleOsVersion,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleDeviceMode,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AirPrintDestinations,
-
-        [Parameter()]
-        [System.String]
-        $AssetTagTemplate,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ContentFilterSettings,
-
-        [Parameter()]
-        [System.String]
-        $LockScreenFootnote,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $HomeScreenDockIcons,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $HomeScreenPages,
-
-        [Parameter()]
-        [System.Int32]
-        $HomeScreenGridWidth,
-
-        [Parameter()]
-        [System.Int32]
-        $HomeScreenGridHeight,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $NotificationSettings,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $SingleSignOnSettings,
-
-        [Parameter()]
-        [ValidateSet('notConfigured', 'lockScreen', 'homeScreen', 'lockAndHomeScreens')]
-        [System.String]
-        $WallpaperDisplayLocation,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $WallpaperImage,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $IosSingleSignOnExtension,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of the Intune Device Features Configuration Policy for iOS with Id {$Id} and DisplayName {$DisplayName}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Intune Device Features Configuration Policy for iOS with DisplayName {$DisplayName}"
-        $BoundParameters.Remove('Assignments') | Out-Null
-        $CreateParameters = ([Hashtable]$BoundParameters).Clone()
-        $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
-        $CreateParameters.Remove('Id') | Out-Null
-
-        #create params need some processing to get payload in correct format
-        $CreateParameters.Add('@odata.type', '#microsoft.graph.iosDeviceFeaturesConfiguration') #add odata type or payload will be rejected
-        if ($CreateParameters.WallpaperImage)
-        {
-            $CreateParameters['WallpaperImage'] = $CreateParameters.WallpaperImage[0] #needs the hashtable not embedded in array
-            $CreateParameters.WallpaperImage['value'] = [Convert]::FromBase64String($CreateParameters.WallpaperImage['value'])
-        }
-        if ($CreateParameters.HomeScreenPages)
-        {
-            foreach ($homeScreenPage in $CreateParameters.HomeScreenPages)
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $Results.Id
+            $assignmentResult = @()
+            if ($assignmentsValues.Count -gt 0)
             {
-                foreach ($icon in $homeScreenPage.icons)
-                {
-                    if ($icon.ContainsKey('pages'))
-                    {
-                        $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
-                        continue
-                    }
-                    $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
-                }
+                $assignmentResult += ConvertFrom-IntunePolicyAssignment `
+                    -IncludeDeviceFilter:$true `
+                    -Assignments ($assignmentsValues)
             }
+            $results.Add('Assignments', $assignmentResult)
+            return $this.AsResult($results)
         }
-        if ($CreateParameters.HomeScreenDockIcons)
+        catch
         {
-            foreach ($homeScreenDockIcon in $CreateParameters.HomeScreenDockIcons)
-            {
-                if ($homeScreenDockIcon.ContainsKey('pages'))
-                {
-                    $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
-                    continue
-                }
-                $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
-            }
-        }
-        if ($CreateParameters.ContentFilterSettings)
-        {
-            Convert-DataTypeFormat $CreateParameters.ContentFilterSettings
-            $CreateParameters['ContentFilterSettings'] = $CreateParameters.ContentFilterSettings[0] #needs the hashtable not embedded in array
-        }
-        if ($CreateParameters.SingleSignOnSettings)
-        {
-            $CreateParameters['SingleSignOnSettings'] = $CreateParameters.SingleSignOnSettings[0] #needs the hashtable not embedded in array
-        }
-        if ($CreateParameters.IosSingleSignOnExtension)
-        {
-            Convert-DataTypeFormat $CreateParameters.IosSingleSignOnExtension
-            if ($null -ne $CreateParameters.IosSingleSignOnExtension.configurations)
-            {
-                Convert-StringToBooleans $CreateParameters.IosSingleSignOnExtension.configurations
-            }
-            $CreateParameters['iosSingleSignOnExtension'] = $CreateParameters.IosSingleSignOnExtension[0] #needs the hashtable not embedded in array
-        }
-        #finished processing create parameters
-
-        #region resource generator code
-        $policy = New-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $CreateParameters
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-
-        if ($policy.id)
-        {
-            Update-DeviceConfigurationPolicyAssignment -DeviceConfigurationPolicyId $policy.id `
-                -Targets $assignmentsHash `
-                -Repository 'deviceManagement/deviceConfigurations'
-        }
-        #endregion
-    }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating {$DisplayName}"
-
-        $BoundParameters.Remove('Assignments') | Out-Null
-        $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
-        $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
-        $UpdateParameters.Remove('Id') | Out-Null
-
-        #update params need some processing to get payload in correct format
-        $UpdateParameters.Add('@odata.type', '#microsoft.graph.iosDeviceFeaturesConfiguration') #add odata type or payload will be rejected
-        if ($UpdateParameters.WallpaperImage)
-        {
-            $UpdateParameters['WallpaperImage'] = $UpdateParameters.WallpaperImage[0] #needs the hashtable not embedded in array
-            $UpdateParameters.WallpaperImage['value'] = [Convert]::FromBase64String($UpdateParameters.WallpaperImage['value'])
-        }
-        if ($UpdateParameters.HomeScreenPages)
-        {
-            foreach ($homeScreenPage in $UpdateParameters.HomeScreenPages)
-            {
-                foreach ($icon in $homeScreenPage.icons)
-                {
-                    if ($icon.ContainsKey('pages'))
-                    {
-                        $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
-                        continue
-                    }
-                    $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
-                }
-            }
-        }
-        if ($UpdateParameters.HomeScreenDockIcons)
-        {
-            foreach ($homeScreenDockIcon in $UpdateParameters.HomeScreenDockIcons)
-            {
-                if ($homeScreenDockIcon.ContainsKey('pages'))
-                {
-                    $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
-                    continue
-                }
-                $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
-            }
-        }
-        if ($UpdateParameters.ContentFilterSettings)
-        {
-            Convert-DataTypeFormat $UpdateParameters.ContentFilterSettings
-            $UpdateParameters['ContentFilterSettings'] = $UpdateParameters.ContentFilterSettings[0] #needs the hashtable not embedded in array
-        }
-        if ($UpdateParameters.SingleSignOnSettings)
-        {
-            $UpdateParameters['SingleSignOnSettings'] = $UpdateParameters.SingleSignOnSettings[0] #needs the hashtable not embedded in array
-        }
-        if ($UpdateParameters.IosSingleSignOnExtension)
-        {
-            Convert-DataTypeFormat $UpdateParameters.IosSingleSignOnExtension
-            if ($null -ne $UpdateParameters.IosSingleSignOnExtension.configurations)
-            {
-                Convert-StringToBooleans $UpdateParameters.IosSingleSignOnExtension.configurations
-            }
-            $UpdateParameters['IosSingleSignOnExtension'] = $UpdateParameters.IosSingleSignOnExtension[0] #needs the hashtable not embedded in array
-        }
-        #finished processing update parameters
-
-        #region resource generator code
-        Update-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $UpdateParameters `
-            -DeviceConfigurationId $currentInstance.Id
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        Update-DeviceConfigurationPolicyAssignment -DeviceConfigurationPolicyId $currentInstance.id `
-            -Targets $assignmentsHash `
-            -Repository 'deviceManagement/deviceConfigurations'
-        #endregion
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing {$DisplayName}"
-        #region resource generator code
-        Remove-MgBetaDeviceManagementDeviceConfiguration -DeviceConfigurationId $currentInstance.Id
-        #endregion
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleOsEdition,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleOsVersion,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceManagementApplicabilityRuleDeviceMode,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AirPrintDestinations,
-
-        [Parameter()]
-        [System.String]
-        $AssetTagTemplate,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ContentFilterSettings,
-
-        [Parameter()]
-        [System.String]
-        $LockScreenFootnote,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $HomeScreenDockIcons,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $HomeScreenPages,
-
-        [Parameter()]
-        [System.Int32]
-        $HomeScreenGridWidth,
-
-        [Parameter()]
-        [System.Int32]
-        $HomeScreenGridHeight,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $NotificationSettings,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $SingleSignOnSettings,
-
-        [Parameter()]
-        [ValidateSet('notConfigured', 'lockScreen', 'homeScreen', 'lockAndHomeScreens')]
-        [System.String]
-        $WallpaperDisplayLocation,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $WallpaperImage,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $IosSingleSignOnExtension,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        $baseFilter = "isof('microsoft.graph.iosDeviceFeaturesConfiguration')"
-        if (-not [string]::IsNullOrEmpty($Filter))
-        {
-            $Filter = "($baseFilter) and ($Filter)"
-        }
-        else
-        {
-            $Filter = $baseFilter
-        }
-        [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $Filter -All -ErrorAction Stop
-        #endregion
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $($config.DisplayName)" -DeferWrite
-            $params = @{
-                Id                    = $config.id
-                DisplayName           = $config.DisplayName
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-
-            if ($Results.Assignments)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
-                if ($complexTypeStringResult)
-                {
-                    $Results.Assignments = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Assignments') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.airPrintDestinations)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.AirPrintDestinations `
-                    -CIMInstanceName 'MSFT_airPrintDestination'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.AirPrintDestinations = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('AirPrintDestinations') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.ContentFilterSettings)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'websiteList'
-                        CimInstanceName = 'iosWebContentFilterBase'
-                        IsRequired      = $false
-                    }
-                    @{
-                        Name            = 'specificWebsitesOnly'
-                        CimInstanceName = 'iosWebContentFilterBase'
-                        IsRequired      = $false
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.ContentFilterSettings `
-                    -CIMInstanceName 'MSFT_iosWebContentFilterSpecificWebsitesAccess' `
-                    -ComplexTypeMapping $complexMapping
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.ContentFilterSettings = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('contentFilterSettings') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.HomeScreenDockIcons)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'pages'
-                        CimInstanceName = 'MSFT_iosHomeScreenFolderPage'
-                        IsRequired      = $false
-                    },
-                    @{
-                        Name            = 'apps'
-                        CimInstanceName = 'iosHomeScreenApp'
-                        IsRequired      = $false
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.HomeScreenDockIcons `
-                    -CIMInstanceName 'MSFT_iosHomeScreenApp' `
-                    -ComplexTypeMapping $complexMapping
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.HomeScreenDockIcons = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('HomeScreenDockIcons') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.HomeScreenPages)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'icons'
-                        CimInstanceName = 'iosHomeScreenApp'
-                        IsRequired      = $false
-                    },
-                    @{
-                        Name            = 'pages'
-                        CimInstanceName = 'MSFT_iosHomeScreenFolderPage'
-                        IsRequired      = $false
-                    },
-                    @{
-                        Name            = 'apps'
-                        CimInstanceName = 'iosHomeScreenApp'
-                        IsRequired      = $false
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.HomeScreenPages `
-                    -CIMInstanceName 'MSFT_iosHomeScreenItem' `
-                    -ComplexTypeMapping $complexMapping
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.HomeScreenPages = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('HomeScreenPages') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.WallpaperImage)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.WallpaperImage `
-                    -CIMInstanceName 'MSFT_mimeContent'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.WallpaperImage = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('WallpaperImage') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.IosSingleSignOnExtension)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'configurations'
-                        CimInstanceName = 'keyTypedValuePair'
-                        IsRequired      = $false
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.IosSingleSignOnExtension `
-                    -CIMInstanceName 'MSFT_iosSingleSignOnExtension' `
-                    -ComplexTypeMapping $complexMapping
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.IosSingleSignOnExtension = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('IosSingleSignOnExtension') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.NotificationSettings)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.NotificationSettings `
-                    -CIMInstanceName 'MSFT_iosNotificationSettings'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.NotificationSettings = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('NotificationSettings') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.SingleSignOnSettings)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'allowedAppsList'
-                        CimInstanceName = 'appListItem'
-                        IsRequired      = $false
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.SingleSignOnSettings `
-                    -CIMInstanceName 'MSFT_iosSingleSignOnSettings' `
-                    -ComplexTypeMapping $complexMapping
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.SingleSignOnSettings = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('SingleSignOnSettings') | Out-Null
-                }
-            }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('Assignments', 'AirPrintDestinations', 'ContentFilterSettings', 'HomeScreenDockIcons', 'HomeScreenPages', 'WallpaperImage', 'IosSingleSignOnExtension', 'NotificationSettings', 'SingleSignOnSettings') `
-                -RawResults $rawResults
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        if ($_.Exception -like '*401*' -or $_.ErrorDetails.Message -like "*`"ErrorCode`":`"Forbidden`"*" -or `
-                $_.Exception -like '*Request not applicable to target tenant*')
-        {
-            Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) The current tenant is not registered for Intune."
-        }
-        else
-        {
-            New-M365DSCLogEntry -Message 'Error during Export:' `
-                -Exception $_ `
-                -Source $($MyInvocation.MyCommand.Source) `
-                -TenantId $TenantId `
-                -Credential $Credential
+            $this.LogError($_, 'Error retrieving data:')
 
             throw
         }
     }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting configuration of the Intune Device Features Configuration Policy for iOS with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Creating an Intune Device Features Configuration Policy for iOS with DisplayName {$($this.DisplayName)}"
+            $BoundParameters.Remove('Assignments') | Out-Null
+            $CreateParameters = ([Hashtable]$BoundParameters).Clone()
+            $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
+            $CreateParameters.Remove('Id') | Out-Null
+
+            #create params need some processing to get payload in correct format
+            $CreateParameters.Add('@odata.type', '#microsoft.graph.iosDeviceFeaturesConfiguration') #add odata type or payload will be rejected
+            if ($CreateParameters.WallpaperImage)
+            {
+                $CreateParameters['WallpaperImage'] = $CreateParameters.WallpaperImage[0] #needs the hashtable not embedded in array
+                $CreateParameters.WallpaperImage['value'] = [Convert]::FromBase64String($CreateParameters.WallpaperImage['value'])
+            }
+            if ($CreateParameters.HomeScreenPages)
+            {
+                foreach ($homeScreenPage in $CreateParameters.HomeScreenPages)
+                {
+                    foreach ($icon in $homeScreenPage.icons)
+                    {
+                        if ($icon.ContainsKey('pages'))
+                        {
+                            $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
+                            continue
+                        }
+                        $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
+                    }
+                }
+            }
+            if ($CreateParameters.HomeScreenDockIcons)
+            {
+                foreach ($homeScreenDockIcon in $CreateParameters.HomeScreenDockIcons)
+                {
+                    if ($homeScreenDockIcon.ContainsKey('pages'))
+                    {
+                        $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
+                        continue
+                    }
+                    $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
+                }
+            }
+            if ($CreateParameters.ContentFilterSettings)
+            {
+                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $CreateParameters.ContentFilterSettings
+                $CreateParameters['ContentFilterSettings'] = $CreateParameters.ContentFilterSettings[0] #needs the hashtable not embedded in array
+            }
+            if ($CreateParameters.SingleSignOnSettings)
+            {
+                $CreateParameters['SingleSignOnSettings'] = $CreateParameters.SingleSignOnSettings[0] #needs the hashtable not embedded in array
+            }
+            if ($CreateParameters.IosSingleSignOnExtension)
+            {
+                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $CreateParameters.IosSingleSignOnExtension
+                if ($null -ne $CreateParameters.IosSingleSignOnExtension.configurations)
+                {
+                    Convert-IntuneDeviceFeaturesConfigurationPolicyIOSStringToBooleans $CreateParameters.IosSingleSignOnExtension.configurations
+                }
+                $CreateParameters['iosSingleSignOnExtension'] = $CreateParameters.IosSingleSignOnExtension[0] #needs the hashtable not embedded in array
+            }
+            #finished processing create parameters
+
+            #region resource generator code
+            $policy = New-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $CreateParameters
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+
+            if ($policy.id)
+            {
+                Update-DeviceConfigurationPolicyAssignment -DeviceConfigurationPolicyId $policy.id `
+                    -Targets $assignmentsHash `
+                    -Repository 'deviceManagement/deviceConfigurations'
+            }
+            #endregion
+        }
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating {$($this.DisplayName)}"
+
+            $BoundParameters.Remove('Assignments') | Out-Null
+            $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
+            $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
+            $UpdateParameters.Remove('Id') | Out-Null
+
+            #update params need some processing to get payload in correct format
+            $UpdateParameters.Add('@odata.type', '#microsoft.graph.iosDeviceFeaturesConfiguration') #add odata type or payload will be rejected
+            if ($UpdateParameters.WallpaperImage)
+            {
+                $UpdateParameters['WallpaperImage'] = $UpdateParameters.WallpaperImage[0] #needs the hashtable not embedded in array
+                $UpdateParameters.WallpaperImage['value'] = [Convert]::FromBase64String($UpdateParameters.WallpaperImage['value'])
+            }
+            if ($UpdateParameters.HomeScreenPages)
+            {
+                foreach ($homeScreenPage in $UpdateParameters.HomeScreenPages)
+                {
+                    foreach ($icon in $homeScreenPage.icons)
+                    {
+                        if ($icon.ContainsKey('pages'))
+                        {
+                            $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
+                            continue
+                        }
+                        $icon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
+                    }
+                }
+            }
+            if ($UpdateParameters.HomeScreenDockIcons)
+            {
+                foreach ($homeScreenDockIcon in $UpdateParameters.HomeScreenDockIcons)
+                {
+                    if ($homeScreenDockIcon.ContainsKey('pages'))
+                    {
+                        $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenFolder')
+                        continue
+                    }
+                    $homeScreenDockIcon.Add('@odata.type', '#microsoft.graph.iosHomeScreenApp')
+                }
+            }
+            if ($UpdateParameters.ContentFilterSettings)
+            {
+                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $UpdateParameters.ContentFilterSettings
+                $UpdateParameters['ContentFilterSettings'] = $UpdateParameters.ContentFilterSettings[0] #needs the hashtable not embedded in array
+            }
+            if ($UpdateParameters.SingleSignOnSettings)
+            {
+                $UpdateParameters['SingleSignOnSettings'] = $UpdateParameters.SingleSignOnSettings[0] #needs the hashtable not embedded in array
+            }
+            if ($UpdateParameters.IosSingleSignOnExtension)
+            {
+                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $UpdateParameters.IosSingleSignOnExtension
+                if ($null -ne $UpdateParameters.IosSingleSignOnExtension.configurations)
+                {
+                    Convert-IntuneDeviceFeaturesConfigurationPolicyIOSStringToBooleans $UpdateParameters.IosSingleSignOnExtension.configurations
+                }
+                $UpdateParameters['IosSingleSignOnExtension'] = $UpdateParameters.IosSingleSignOnExtension[0] #needs the hashtable not embedded in array
+            }
+            #finished processing update parameters
+
+            #region resource generator code
+            Update-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $UpdateParameters `
+                -DeviceConfigurationId $currentInstance.Id
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+            Update-DeviceConfigurationPolicyAssignment -DeviceConfigurationPolicyId $currentInstance.id `
+                -Targets $assignmentsHash `
+                -Repository 'deviceManagement/deviceConfigurations'
+            #endregion
+        }
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing {$($this.DisplayName)}"
+            #region resource generator code
+            Remove-MgBetaDeviceManagementDeviceConfiguration -DeviceConfigurationId $currentInstance.Id
+            #endregion
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            #region resource generator code
+            $baseFilter = "isof('microsoft.graph.iosDeviceFeaturesConfiguration')"
+            if (-not [string]::IsNullOrEmpty($this.Filter))
+            {
+                $this.Filter = "($baseFilter) and ($($this.Filter))"
+            }
+            else
+            {
+                $this.Filter = $baseFilter
+            }
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            #endregion
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $($config.DisplayName)" -DeferWrite
+                $params = @{
+                    Id                    = $config.id
+                    DisplayName           = $config.DisplayName
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+
+                if ($Results.Assignments)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
+                    if ($complexTypeStringResult)
+                    {
+                        $Results.Assignments = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Assignments') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.airPrintDestinations)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.AirPrintDestinations `
+                        -CIMInstanceName 'MSFT_airPrintDestination'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.AirPrintDestinations = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('AirPrintDestinations') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.ContentFilterSettings)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'websiteList'
+                            CimInstanceName = 'iosWebContentFilterBase'
+                            IsRequired      = $false
+                        }
+                        @{
+                            Name            = 'specificWebsitesOnly'
+                            CimInstanceName = 'iosWebContentFilterBase'
+                            IsRequired      = $false
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.ContentFilterSettings `
+                        -CIMInstanceName 'MSFT_iosWebContentFilterSpecificWebsitesAccess' `
+                        -ComplexTypeMapping $complexMapping
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.ContentFilterSettings = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('contentFilterSettings') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.HomeScreenDockIcons)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'pages'
+                            CimInstanceName = 'MSFT_iosHomeScreenFolderPage'
+                            IsRequired      = $false
+                        },
+                        @{
+                            Name            = 'apps'
+                            CimInstanceName = 'iosHomeScreenApp'
+                            IsRequired      = $false
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.HomeScreenDockIcons `
+                        -CIMInstanceName 'MSFT_iosHomeScreenApp' `
+                        -ComplexTypeMapping $complexMapping
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.HomeScreenDockIcons = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('HomeScreenDockIcons') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.HomeScreenPages)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'icons'
+                            CimInstanceName = 'iosHomeScreenApp'
+                            IsRequired      = $false
+                        },
+                        @{
+                            Name            = 'pages'
+                            CimInstanceName = 'MSFT_iosHomeScreenFolderPage'
+                            IsRequired      = $false
+                        },
+                        @{
+                            Name            = 'apps'
+                            CimInstanceName = 'iosHomeScreenApp'
+                            IsRequired      = $false
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.HomeScreenPages `
+                        -CIMInstanceName 'MSFT_iosHomeScreenItem' `
+                        -ComplexTypeMapping $complexMapping
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.HomeScreenPages = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('HomeScreenPages') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.WallpaperImage)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.WallpaperImage `
+                        -CIMInstanceName 'MSFT_mimeContent'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.WallpaperImage = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('WallpaperImage') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.IosSingleSignOnExtension)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'configurations'
+                            CimInstanceName = 'keyTypedValuePair'
+                            IsRequired      = $false
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.IosSingleSignOnExtension `
+                        -CIMInstanceName 'MSFT_iosSingleSignOnExtension' `
+                        -ComplexTypeMapping $complexMapping
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.IosSingleSignOnExtension = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('IosSingleSignOnExtension') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.NotificationSettings)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.NotificationSettings `
+                        -CIMInstanceName 'MSFT_iosNotificationSettings'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.NotificationSettings = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('NotificationSettings') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.SingleSignOnSettings)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'allowedAppsList'
+                            CimInstanceName = 'appListItem'
+                            IsRequired      = $false
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.SingleSignOnSettings `
+                        -CIMInstanceName 'MSFT_iosSingleSignOnSettings' `
+                        -ComplexTypeMapping $complexMapping
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.SingleSignOnSettings = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('SingleSignOnSettings') | Out-Null
+                    }
+                }
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('Assignments', 'AirPrintDestinations', 'ContentFilterSettings', 'HomeScreenDockIcons', 'HomeScreenPages', 'WallpaperImage', 'IosSingleSignOnExtension', 'NotificationSettings', 'SingleSignOnSettings') `
+                    -RawResults $rawResults
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            if ($_.Exception -like '*401*' -or $_.ErrorDetails.Message -like "*`"ErrorCode`":`"Forbidden`"*" -or `
+                    $_.Exception -like '*Request not applicable to target tenant*')
+            {
+                Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) The current tenant is not registered for Intune."
+            }
+            else
+            {
+                $this.LogError($_, 'Error during Export:')
+
+                throw
+            }
+        }
+    
+        # Every code path must return in a method with a declared return type.
+        return ''
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneDeviceFeaturesConfigurationPolicyIOS] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntuneDeviceFeaturesConfigurationPolicyIOS])
+        {
+            return $Values
+        }
+
+        $result = [IntuneDeviceFeaturesConfigurationPolicyIOS]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
+    }
 }
 
-function Convert-ComplexObjectToHashtableArray
+class MSFT_DeviceManagementConfigurationPolicyAssignments
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of the target assignment.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterType
+    [DscProperty()]
+    [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterId
+    [DscProperty()]
+    [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
+    [System.String] $groupId
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
+    [System.String] $groupDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
+    [System.String] $collectionId
+}
+
+class MSFT_deviceManagementApplicabilityRuleOsEdition
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Name for object')]
+    [System.String] $Name
+    [DscProperty()]
+    [System.ComponentModel.Description('Applicability rule OS edition type')]
+    [System.String[]] $OsEditionTypes
+    [DscProperty()]
+    [System.ComponentModel.Description('Applicability Rule type')]
+    [System.String] $RuleType
+}
+
+class MSFT_deviceManagementApplicabilityRuleOsVersion
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Name for object')]
+    [System.String] $Name
+    [DscProperty()]
+    [System.ComponentModel.Description('Min OS version for Applicability Rule')]
+    [System.String] $MinOSVersion
+    [DscProperty()]
+    [System.ComponentModel.Description('Max OS version for Applicability Rule')]
+    [System.String] $MaxOSVersion
+    [DscProperty()]
+    [System.ComponentModel.Description('Applicability Rule type')]
+    [System.String] $RuleType
+}
+
+class MSFT_deviceManagementApplicabilityRuleDeviceMode
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Name for object')]
+    [System.String] $Name
+    [DscProperty()]
+    [System.ComponentModel.Description('Applicability rule for device mode')]
+    [System.String] $DeviceMode
+    [DscProperty()]
+    [System.ComponentModel.Description('Applicability Rule type')]
+    [System.String] $RuleType
+}
+
+class MSFT_airPrintDestination
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The IP Address of the AirPrint destination.')]
+    [System.String] $ipAddress
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The Resource Path associated with the printer. This corresponds to the rp parameter of the _ipps.tcp Bonjour record. For example: printers/Canon_MG5300_series, printers/Xerox_Phaser_7600, ipp/print, Epson_IPP_Printer.')]
+    [System.String] $resourcePath
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The listening port of the AirPrint destination. If this key is not specified, AirPrint will use the default port. Available in iOS 11.0 and later.')]
+    [System.Nullable[System.UInt32]] $port
+    [DscProperty()]
+    [System.ComponentModel.Description('If true, AirPrint connections are secured by Transport Layer Security (TLS). Default is false. Available in iOS 11.0 and later.')]
+    [System.Nullable[System.Boolean]] $forceTls
+}
+
+class MSFT_iosWebContentFilterSpecificWebsitesAccess
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of data.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('specificWebsitesOnly, embedded instance of iosWebContentFilterBase.')]
+    [MSFT_iosWebContentFilterBase[]] $specificWebsitesOnly
+    [DscProperty()]
+    [System.ComponentModel.Description('websiteList, embedded instance of iosWebContentFilterBase.')]
+    [MSFT_iosWebContentFilterBase[]] $websiteList
+    [DscProperty()]
+    [System.ComponentModel.Description('allowedUrls.')]
+    [System.String[]] $allowedUrls
+    [DscProperty()]
+    [System.ComponentModel.Description('blockedUrls.')]
+    [System.String[]] $blockedUrls
+}
+
+class MSFT_iosHomeScreenApp
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Name of the app. Inherited from iosHomeScreenItem.')]
+    [System.String] $displayName
+    [DscProperty()]
+    [System.ComponentModel.Description('BundleID of the app if isWebClip is false or the URL of a web clip if isWebClip is true.')]
+    [System.String] $bundleID
+    [DscProperty()]
+    [System.ComponentModel.Description('Is it a website URL or an app')]
+    [System.Nullable[System.Boolean]] $isWebClip
+    [DscProperty()]
+    [System.ComponentModel.Description('Pages of the folder.')]
+    [MSFT_iosHomeScreenFolderPage[]] $pages
+}
+
+class MSFT_iosHomeScreenItem
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of apps, folders, and web clips to appear on a page. This collection can contain a maximum of 500 elements.')]
+    [MSFT_iosHomeScreenApp[]] $icons
+}
+
+class MSFT_iosNotificationSettings
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Bundle id of the app to which to apply these notification settings.')]
+    [System.String] $bundleID
+    [DscProperty()]
+    [System.ComponentModel.Description('Application name to be associated with the BundleID.')]
+    [System.String] $appName
+    [DscProperty()]
+    [System.ComponentModel.Description('Publisher to be associated with the BundleID.')]
+    [System.String] $publisher
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether notifications are allowed for this app.')]
+    [System.Nullable[System.Boolean]] $enabled
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether notifications can be shown in the notification center.')]
+    [System.Nullable[System.Boolean]] $showInNotificationCenter
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether notifications can be shown on the lock screen.')]
+    [System.Nullable[System.Boolean]] $showOnLockScreen
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates the type of alert for notifications for this app. Possible values are: deviceDefault, banner, modal, none.')]
+    [System.String] $alertType
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether badges are allowed for this app.')]
+    [System.Nullable[System.Boolean]] $badgesEnabled
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether sounds are allowed for this app.')]
+    [System.Nullable[System.Boolean]] $soundsEnabled
+    [DscProperty()]
+    [System.ComponentModel.Description('Overrides the notification preview policy set by the user on an iOS device. Possible values are: notConfigured, alwaysShow, hideWhenLocked, neverShow.')]
+    [System.String] $previewVisibility
+}
+
+class MSFT_iosSingleSignOnSettings
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('List of app identifiers that are allowed to use this login. If this field is omitted, the login applies to all applications on the device. This collection can contain a maximum of 500 elements.')]
+    [MSFT_appListItem[]] $allowedAppsList
+    [DscProperty()]
+    [System.ComponentModel.Description('List of HTTP URLs that must be matched in order to use this login. With iOS 9.0 or later, wildcard characters may be used.')]
+    [System.String[]] $allowedUrls
+    [DscProperty()]
+    [System.ComponentModel.Description('The display name of login settings shown on the receiving device.')]
+    [System.String] $displayName
+    [DscProperty()]
+    [System.ComponentModel.Description('A Kerberos principal name. If not provided, the user is prompted for one during profile installation.')]
+    [System.String] $kerberosPrincipalName
+    [DscProperty()]
+    [System.ComponentModel.Description('A Kerberos realm name. Case sensitive.')]
+    [System.String] $kerberosRealm
+}
+
+class MSFT_mimeContent
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates the content mime type.')]
+    [System.String] $type
+    [DscProperty()]
+    [System.ComponentModel.Description('The byte array that contains the actual content.')]
+    [System.String[]] $value
+}
+
+class MSFT_iosSingleSignOnExtension
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of data.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The case-sensitive realm name for this profile.')]
+    [System.String] $Realm
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of hosts or domain names for which the app extension performs SSO.')]
+    [System.String[]] $Domains
+    [DscProperty()]
+    [System.ComponentModel.Description('Enables or disables Keychain usage.')]
+    [System.Nullable[System.Boolean]] $BlockAutomaticLogin
+    [DscProperty()]
+    [System.ComponentModel.Description('The Generic Security Services name of the Kerberos cache to use for this profile.')]
+    [System.String] $CacheName
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of app Bundle IDs allowed to access the Kerberos Ticket Granting Ticket.')]
+    [System.String[]] $CredentialBundleIdAccessControlList
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of realms for custom domain-realm mapping. Realms are case sensitive.')]
+    [System.String[]] $DomainRealms
+    [DscProperty()]
+    [System.ComponentModel.Description('When true, this profile''s realm will be selected as the default. Necessary if multiple Kerberos-type profiles are configured.')]
+    [System.Nullable[System.Boolean]] $IsDefaultRealm
+    [DscProperty()]
+    [System.ComponentModel.Description('Enables or disables password changes.')]
+    [System.Nullable[System.Boolean]] $PasswordBlockModification
+    [DscProperty()]
+    [System.ComponentModel.Description('Overrides the default password expiration in days. For most domains, this value is calculated automatically.')]
+    [System.Nullable[System.UInt32]] $PasswordExpirationDays
+    [DscProperty()]
+    [System.ComponentModel.Description('The number of days until the user is notified that their password will expire (default is 15).')]
+    [System.Nullable[System.UInt32]] $PasswordExpirationNotificationDays
+    [DscProperty()]
+    [System.ComponentModel.Description('The principal user name to use for this profile. The realm name does not need to be included.')]
+    [System.String] $UserPrincipalName
+    [DscProperty()]
+    [System.ComponentModel.Description('Enables or disables whether passwords must meet Active Directory''s complexity requirements.')]
+    [System.Nullable[System.Boolean]] $PasswordRequireActiveDirectoryComplexity
+    [DscProperty()]
+    [System.ComponentModel.Description('The number of previous passwords to block.')]
+    [System.Nullable[System.UInt32]] $PasswordPreviousPasswordBlockCount
+    [DscProperty()]
+    [System.ComponentModel.Description('The minimum length of a password.')]
+    [System.Nullable[System.UInt32]] $PasswordMinimumLength
+    [DscProperty()]
+    [System.ComponentModel.Description('The minimum number of days until a user can change their password again.')]
+    [System.Nullable[System.UInt32]] $PasswordMinimumAgeDays
+    [DscProperty()]
+    [System.ComponentModel.Description('A description of the password complexity requirements.')]
+    [System.String] $PasswordRequirementsDescription
+    [DscProperty()]
+    [System.ComponentModel.Description('Whether to require authentication via Touch ID, Face ID, or a passcode to access the keychain entry.')]
+    [System.Nullable[System.Boolean]] $RequireUserPresence
+    [DscProperty()]
+    [System.ComponentModel.Description('The Active Directory site.')]
+    [System.String] $ActiveDirectorySiteCode
+    [DscProperty()]
+    [System.ComponentModel.Description('Enables or disables password syncing. This won''t affect users logged in with a mobile account on macOS.')]
+    [System.Nullable[System.Boolean]] $PasswordEnableLocalSync
+    [DscProperty()]
+    [System.ComponentModel.Description('Enables or disables whether the Kerberos extension can automatically determine its site name.')]
+    [System.Nullable[System.Boolean]] $BlockActiveDirectorySiteAutoDiscovery
+    [DscProperty()]
+    [System.ComponentModel.Description('The URL that the user will be sent to when they initiate a password change.')]
+    [System.String] $PasswordChangeUrl
+    [DscProperty()]
+    [System.ComponentModel.Description('Text displayed to the user at the Kerberos sign-in window. Available for devices running iOS and iPadOS versions 14 and later.')]
+    [System.String] $SignInHelpText
+    [DscProperty()]
+    [System.ComponentModel.Description('When set to True, the Kerberos extension allows managed apps, and any apps entered with the app bundle ID to access the credential. When set to False, the Kerberos extension allows all apps to access the credential. Available for devices running iOS and iPadOS versions 14 and later.')]
+    [System.Nullable[System.Boolean]] $ManagedAppsInBundleIdACLIncluded
+    [DscProperty()]
+    [System.ComponentModel.Description('Enables or disables shared device mode.')]
+    [System.Nullable[System.Boolean]] $EnableSharedDeviceMode
+    [DscProperty()]
+    [System.ComponentModel.Description('An optional list of additional bundle IDs allowed to use the AAD extension for single sign-on.')]
+    [System.String[]] $BundleIdAccessControlList
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets a list of typed key-value pairs used to configure Credential-type profiles. This collection can contain a maximum of 500 elements.')]
+    [MSFT_keyTypedValuePair[]] $Configurations
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets the bundle ID of the app extension that performs SSO for the specified URLs.')]
+    [System.String] $ExtensionIdentifier
+    [DscProperty()]
+    [System.ComponentModel.Description('Gets or sets the team ID of the app extension that performs SSO for the specified URLs.')]
+    [System.String] $TeamIdentifier
+    [DscProperty()]
+    [System.ComponentModel.Description('One or more URL prefixes of identity providers on whose behalf the app extension performs single sign-on. URLs must begin with http:// or https://. All URL prefixes must be unique for all profiles.')]
+    [System.String[]] $urlPrefixes
+}
+
+class MSFT_iosWebContentFilterBase
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('url.')]
+    [System.String] $url
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('bookmarkFolder.')]
+    [System.String] $bookmarkFolder
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('displayName.')]
+    [System.String] $displayName
+}
+
+class MSFT_iosHomeScreenFolderPage
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of apps, folders, and web clips to appear on a page. This collection can contain a maximum of 500 elements.')]
+    [MSFT_iosHomeScreenApp[]] $apps
+}
+
+class MSFT_appListItem
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The application name.')]
+    [System.String] $name
+    [DscProperty()]
+    [System.ComponentModel.Description('The publisher of the application.')]
+    [System.String] $publisher
+    [DscProperty()]
+    [System.ComponentModel.Description('The Store URL of the application.')]
+    [System.String] $appStoreUrl
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The application or bundle identifier of the application.')]
+    [System.String] $appId
+}
+
+class MSFT_keyTypedValuePair
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of data.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('Key for the custom data entry.')]
+    [System.String] $key
+    [DscProperty()]
+    [System.ComponentModel.Description('Value for the custom data entry.')]
+    [System.String] $value
+}
+
+# Was Convert-ComplexObjectToHashtableArray. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray
 {
     param
     (
@@ -1093,7 +1097,7 @@ function Convert-ComplexObjectToHashtableArray
                     $elementTypes = $keyValue | ForEach-Object { $_.GetType().Name }
                     if ($elementTypes -contains 'Hashtable') #another embedded complex type, not a string array
                     {
-                        $keyValue = Convert-ComplexObjectToHashtableArray $keyValue #recurse the function
+                        $keyValue = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $keyValue #recurse the function
                     }
                 }
                 $hashtable.Add($key, $keyValue)
@@ -1110,7 +1114,9 @@ function Convert-ComplexObjectToHashtableArray
     return , $resultArray
 }
 
-function Convert-ComplexObjectToHashtableArray_ExportDataType
+# Was Convert-ComplexObjectToHashtableArray_ExportDataType. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType
 {
     param
     (
@@ -1134,7 +1140,7 @@ function Convert-ComplexObjectToHashtableArray_ExportDataType
                     $elementTypes = $keyValue | ForEach-Object { $_.GetType().Name }
                     if ($elementTypes -contains 'Hashtable') #another embedded complex type, not a string array
                     {
-                        $keyValue = Convert-ComplexObjectToHashtableArray_ExportDataType $keyValue #recurse the function
+                        $keyValue = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType $keyValue #recurse the function
                     }
                 }
                 $hashtable.Add($key, $keyValue)
@@ -1155,35 +1161,9 @@ function Convert-ComplexObjectToHashtableArray_ExportDataType
     return , $resultArray
 }
 
-function Convert-StringToBooleans
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [array]$Configurations
-    )
-
-    foreach ($config in $Configurations)
-    {
-        if ($config.ContainsKey('value'))
-        {
-            switch ($config.value)
-            {
-                'True'
-                {
-                    $config.value = $true
-                }
-                'False'
-                {
-                    $config.value = $false
-                }
-            }
-        }
-    }
-    return $Configurations
-}
-
-function Convert-DataTypeFormat
+# Was Convert-DataTypeFormat. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat
 {
     param
     (
@@ -1214,10 +1194,39 @@ function Convert-DataTypeFormat
         foreach ($key in $keysToRecurse)
         {
 
-            $item[$key] = Convert-DataTypeFormat $item.$key
+            $item[$key] = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $item.$key
         }
     }
     return $InputObject
 }
 
-Export-ModuleMember -Function *-TargetResource
+# Was Convert-StringToBooleans. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSStringToBooleans
+{
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [array]$Configurations
+    )
+
+    foreach ($config in $Configurations)
+    {
+        if ($config.ContainsKey('value'))
+        {
+            switch ($config.value)
+            {
+                'True'
+                {
+                    $config.value = $true
+                }
+                'False'
+                {
+                    $config.value = $false
+                }
+            }
+        }
+    }
+    return $Configurations
+}
+

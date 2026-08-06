@@ -1,500 +1,301 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_EXOMailboxPermission'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class EXOMailboxPermission : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The Identity parameter specifies the mailbox where you want to assign permissions to the user. You can use any value that uniquely identifies the mailbox.')]
+    [System.String] $Identity
 
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('ChangeOwner', 'ChangePermission', 'DeleteItem', 'ExternalAccount', 'FullAccess', 'ReadPermission')]
-        [System.String[]]
-        $AccessRights,
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The AccessRights parameter specifies the permission that you want to add for the user on the mailbox. Valid values are: ChangeOwner, ChangePermission, DeleteItem, ExternalAccount, FullAccess and ReadPermission.')]
+    [System.String[]] $AccessRights
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        [ValidateSet('None', 'All', 'Children', 'Descendents', 'SelfAndChildren')]
-        $InheritanceType,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The User parameter specifies who gets the permissions on the mailbox.')]
+    [System.String] $User
 
-        [Parameter()]
-        [System.String]
-        $Owner,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The InheritanceType parameter specifies how permissions are inherited by folders in the mailbox. Valid values are: None, All, Children, Descendents, SelfAndChildren.')]
+    [ValidateSet('None', 'All', 'Children', 'Descendents', 'SelfAndChildren')]
+    [System.String] $InheritanceType
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $User,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Owner parameter specifies the owner of the mailbox object.')]
+    [System.String] $Owner
 
-        [Parameter()]
-        [System.Boolean]
-        $Deny,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Deny switch specifies that the permissions you''re adding are Deny permissions.')]
+    [System.Nullable[System.Boolean]] $Deny
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Determines whether or not the permission should exist on the mailbox.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Exchange Global Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [EXOMailboxPermission] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [EXOMailboxPermission]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting permissions for Mailbox {$($this.Identity)}"
+
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
+            {
+                $null = $this.Connect('ExchangeOnline')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = @{
+                    Identity = $this.Identity
+                    Ensure   = 'Absent'
+                }
+
+                [Array]$permissions = Get-MailboxPermission -Identity $this.Identity -ErrorAction SilentlyContinue
+                $permission = $permissions | Where-Object -FilterScript { $_.User -eq $this.User -and (Compare-Object -ReferenceObject $_.AccessRights.Replace(' ', '').Split(',') -DifferenceObject $this.AccessRights).Count -eq 0 }
+
+                if ($null -eq $permission)
+                {
+                    Write-Verbose -Message "Permission for mailbox {$($this.Identity)} do not exist."
+                    return $this.AsResult($nullResult)
+                }
+
+                $userInfo = (Get-User -Identity $permission.Identity).UserPrincipalName
+            }
+            else
+            {
+                $permission = $this.ExportedInstance
+                $userInfo = $this.ResourceCache['UsersCache'][$permission.Identity]
+            }
+
+            $result = @{
+                Identity              = $userInfo
+                AccessRights          = [System.String[]]$permission.AccessRights.Replace(' ', '').Split(',')
+                InheritanceType       = $permission.InheritanceType
+                Owner                 = $permission.Owner
+                User                  = $permission.User
+                Deny                  = [Boolean]$permission.Deny
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                TenantId              = $this.TenantId
+                AccessTokens          = $this.AccessTokens
+            }
+
+            Write-Verbose -Message "Found permissions for mailbox {$($this.Identity)}"
+            return $this.AsResult($result)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting permissions for Mailbox {$Identity}"
-
-    try
+    [void] Set()
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Identity -ne $Identity)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-                -InboundParameters $PSBoundParameters
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Setting configuration of Mailbox Permissions for {$($this.Identity)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
 
-            $nullResult = @{
-                Identity = $Identity
-                Ensure   = 'Absent'
-            }
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
 
-            [Array]$permissions = Get-MailboxPermission -Identity $Identity -ErrorAction SilentlyContinue
-            $permission = $permissions | Where-Object -FilterScript { $_.User -eq $User -and (Compare-Object -ReferenceObject $_.AccessRights.Replace(' ', '').Split(',') -DifferenceObject $AccessRights).Count -eq 0 }
+        $currentValues = $this.Get().ToHashtable()
+        $instanceParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
-            if ($null -eq $permission)
+        if ($this.Ensure -eq 'Present' -and $currentValues.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Adding new permission for user {$($this.User)} on Mailbox {$($this.Identity)}"
+            Add-MailboxPermission @instanceParams | Out-Null
+        }
+        elseif ($this.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Removing permission for user {$($this.User)} on Mailbox {$($this.Identity)}"
+            Remove-MailboxPermission @instanceParams
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('ExchangeOnline')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array]$mailboxes = Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop
+            if ($mailboxes.Count -eq 0)
             {
-                Write-Verbose -Message "Permission for mailbox {$($Identity)} do not exist."
-                return $nullResult
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            $dscContent = [System.Text.StringBuilder]::new()
+            $i = 1
+            if ($null -eq $this.ResourceCache['UsersCache'])
+            {
+                $this.ResourceCache['UsersCache'] = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
+                Get-User -ResultSize Unlimited | ForEach-Object {
+                    $this.ResourceCache['UsersCache'][$_.Identity] = $_.UserPrincipalName
+                }
+            }
+            foreach ($mailbox in $mailboxes)
+            {
+                Write-M365DSCHost -Message "    |---[$i/$($mailboxes.Count)] $($mailbox.UserPrincipalName)" -DeferWrite
 
-            $userInfo = (Get-User -Identity $permission.Identity).UserPrincipalName
+                [Array]$permissions = Get-MailboxPermission -Identity $mailbox.UserPrincipalName
+
+                $j = 1
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+                foreach ($permission in $permissions)
+                {
+                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                    {
+                        $Global:M365DSCExportResourceInstancesCount++
+                    }
+
+                    Write-M365DSCHost -Message "        |---[$j/$($permissions.Count)] $($permission.Identity)" -DeferWrite
+                    $Params = @{
+                        Identity              = $mailbox.UserPrincipalName
+                        AccessRights          = [System.String[]]$permission.AccessRights.Replace(' ', '').Replace('SendAs,', '').Split(',') # ignore SendAs permissions since they are not supported by *-MailboxPermission cmdlets
+                        InheritanceType       = $permission.InheritanceType
+                        User                  = $permission.User
+                        Credential            = $this.Credential
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        CertificatePassword   = $this.CertificatePassword
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        CertificatePath       = $this.CertificatePath
+                        AccessTokens          = $this.AccessTokens
+                    }
+
+                    $this.ExportedInstance = $permission
+                    $Results = $this.GetForExport($Params)
+                    if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)
+                    {
+                        $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                            -ConnectionMode $ConnectionMode `
+                            -ModulePath $this.GetModulePath() `
+                            -Results $Results `
+                            -Credential $this.Credential
+                        [void]$dscContent.Append($currentDSCBlock)
+
+                        Save-M365DSCPartialExport -Content $currentDSCBlock `
+                            -FileName $Global:PartialExportFileName
+
+                        Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                    }
+                    else
+                    {
+                        Write-M365DSCHost -Message $Global:M365DSCEmojiRedX -CommitWrite
+                    }
+                    $j++
+                }
+
+                $i++
+            }
+            return $dscContent.ToString()
         }
-        else
+        catch
         {
-            $permission = $Script:exportedInstance
-            $userInfo = $Script:UsersCache[$permission.Identity]
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [EXOMailboxPermission] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [EXOMailboxPermission])
+        {
+            return $Values
         }
 
-        $result = @{
-            Identity              = $userInfo
-            AccessRights          = [System.String[]]$permission.AccessRights.Replace(' ', '').Split(',')
-            InheritanceType       = $permission.InheritanceType
-            Owner                 = $permission.Owner
-            User                  = $permission.User
-            Deny                  = [Boolean]$permission.Deny
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            TenantId              = $TenantId
-            AccessTokens          = $AccessTokens
+        $result = [EXOMailboxPermission]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
         }
 
-        Write-Verbose -Message "Found permissions for mailbox {$($Identity)}"
         return $result
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
 }
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('ChangeOwner', 'ChangePermission', 'DeleteItem', 'ExternalAccount', 'FullAccess', 'ReadPermission')]
-        [System.String[]]
-        $AccessRights,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        [ValidateSet('None', 'All', 'Children', 'Descendents', 'SelfAndChildren')]
-        $InheritanceType,
-
-        [Parameter()]
-        [System.String]
-        $Owner,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $User,
-
-        [Parameter()]
-        [System.Boolean]
-        $Deny,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of Mailbox Permissions for {$Identity}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentValues = Get-TargetResource @PSBoundParameters
-    $instanceParams = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($Ensure -eq 'Present' -and $currentValues.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Adding new permission for user {$User} on Mailbox {$Identity}"
-        Add-MailboxPermission @instanceParams | Out-Null
-    }
-    elseif ($Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Removing permission for user {$User} on Mailbox {$Identity}"
-        Remove-MailboxPermission @instanceParams
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('ChangeOwner', 'ChangePermission', 'DeleteItem', 'ExternalAccount', 'FullAccess', 'ReadPermission')]
-        [System.String[]]
-        $AccessRights,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        [ValidateSet('None', 'All', 'Children', 'Descendents', 'SelfAndChildren')]
-        $InheritanceType,
-
-        [Parameter()]
-        [System.String]
-        $Owner,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $User,
-
-        [Parameter()]
-        [System.Boolean]
-        $Deny,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array]$mailboxes = Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop
-        if ($mailboxes.Count -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        $dscContent = [System.Text.StringBuilder]::new()
-        $i = 1
-        if ($null -eq $Script:UsersCache)
-        {
-            $Script:UsersCache = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
-            Get-User -ResultSize Unlimited | ForEach-Object {
-                $Script:UsersCache[$_.Identity] = $_.UserPrincipalName
-            }
-        }
-        foreach ($mailbox in $mailboxes)
-        {
-            Write-M365DSCHost -Message "    |---[$i/$($mailboxes.Count)] $($mailbox.UserPrincipalName)" -DeferWrite
-
-            [Array]$permissions = Get-MailboxPermission -Identity $mailbox.UserPrincipalName
-
-            $j = 1
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-            foreach ($permission in $permissions)
-            {
-                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-                {
-                    $Global:M365DSCExportResourceInstancesCount++
-                }
-
-                Write-M365DSCHost -Message "        |---[$j/$($permissions.Count)] $($permission.Identity)" -DeferWrite
-                $Params = @{
-                    Identity              = $mailbox.UserPrincipalName
-                    AccessRights          = [System.String[]]$permission.AccessRights.Replace(' ', '').Replace('SendAs,', '').Split(',') # ignore SendAs permissions since they are not supported by *-MailboxPermission cmdlets
-                    InheritanceType       = $permission.InheritanceType
-                    User                  = $permission.User
-                    Credential            = $Credential
-                    ApplicationId         = $ApplicationId
-                    TenantId              = $TenantId
-                    CertificateThumbprint = $CertificateThumbprint
-                    CertificatePassword   = $CertificatePassword
-                    ManagedIdentity       = $ManagedIdentity.IsPresent
-                    CertificatePath       = $CertificatePath
-                    AccessTokens          = $AccessTokens
-                }
-
-                $Script:exportedInstance = $permission
-                $Results = Get-TargetResource @Params
-                if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)
-                {
-                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                        -ConnectionMode $ConnectionMode `
-                        -ModulePath $PSScriptRoot `
-                        -Results $Results `
-                        -Credential $Credential
-                    [void]$dscContent.Append($currentDSCBlock)
-
-                    Save-M365DSCPartialExport -Content $currentDSCBlock `
-                        -FileName $Global:PartialExportFileName
-
-                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-                }
-                else
-                {
-                    Write-M365DSCHost -Message $Global:M365DSCEmojiRedX -CommitWrite
-                }
-                $j++
-            }
-
-            $i++
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

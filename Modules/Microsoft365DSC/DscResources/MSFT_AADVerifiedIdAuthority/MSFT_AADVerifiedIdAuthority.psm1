@@ -1,518 +1,342 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADVerifiedIdAuthority'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADVerifiedIdAuthority : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('Name of the Verified ID Authority.')]
+    [System.String] $Name
 
-        [Parameter()]
-        [System.String]
-        $Name,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Verified ID Authority.')]
+    [System.String] $Id
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $LinkedDomainUrl,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('URL of the linked domain.')]
+    [System.String] $LinkedDomainUrl
 
-        [Parameter()]
-        [System.String]
-        $DidMethod,
+    [DscProperty()]
+    [System.ComponentModel.Description('DID method used by the Verified ID Authority.')]
+    [System.String] $DidMethod
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $KeyVaultMetadata,
+    [DscProperty()]
+    [System.ComponentModel.Description('Key Vault metadata for the Verified ID Authority.')]
+    [MSFT_AADVerifiedIdAuthorityKeyVaultMetadata] $KeyVaultMetadata
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [AADVerifiedIdAuthority] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [AADVerifiedIdAuthority]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration for the AAD VerifiedId Authority with LinkedDomainUrl {$($this.LinkedDomainUrl)}"
+
+        try
+        {
+            $null = $this.Connect('AdminAPI')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $nullResult = $this.GetBoundParameters()
+            $nullResult.Ensure = 'Absent'
+
+            if ($null -ne $this.ResourceCache['exportedInstances'] -and $this.ResourceCache['ExportMode'])
+            {
+                $instances = $this.ResourceCache['exportedInstances']
+            }
+            else
+            {
+                $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
+                $response = Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+                $instances = $response.value
+            }
+            if ($null -eq $instances)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $instance = Get-AADVerifiedIdAuthorityM365DSCVerifiedIdAuthorityObject -Authority ($instances | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.LinkedDomainUrl })
+            if ($null -eq $instance)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $results = @{
+                Id                    = $instance.Id
+                Name                  = $instance.Name
+                LinkedDomainUrl       = $instance.LinkedDomainUrl
+                DidMethod             = $instance.DidMethod
+                KeyVaultMetadata      = $instance.KeyVaultMetadata
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                ApplicationSecret     = $this.ApplicationSecret
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
+
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration for the AAD VerifiedId Authority with LinkedDomainUrl {$LinkedDomainUrl}"
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'AdminAPI' `
-            -InboundParameters $PSBoundParameters
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
+        $currentInstance = $this.Get().ToHashtable()
 
-        if ($null -ne $Script:exportedInstances -and $Script:ExportMode)
+        Write-Verbose -Message "Retrieved current instance: $($currentInstance.Name) with Id $($currentInstance.Id)"
+
+        $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities/' + $currentInstance.Id
+
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            $instances = $Script:exportedInstances
-        }
-        else
-        {
+            Write-Verbose -Message "Creating an VerifiedId Authority with Name {$($this.Name)} and Id $($currentInstance.Id)"
+
+            $body = @{
+                name             = $this.Name
+                linkedDomainUrl  = $this.LinkedDomainUrl
+                didMethod        = $this.DidMethod
+                keyVaultMetadata = @{
+                    subscriptionId = $this.KeyVaultMetadata.SubscriptionId
+                    resourceGroup  = $this.KeyVaultMetadata.ResourceGroup
+                    resourceName   = $this.KeyVaultMetadata.ResourceName
+                    resourceUrl    = $this.KeyVaultMetadata.ResourceUrl
+                }
+            }
+            Write-Verbose -Message "Creating VerifiedId Authority with body $($body | ConvertTo-Json -Depth 5)"
+
             $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-            $response = Invoke-M365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
-            $instances = $response.value
+            Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'POST' -Body $body
         }
-        if ($null -eq $instances)
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            return $nullResult
-        }
+            Write-Verbose -Message "Updating an VerifiedId Authority with Name {$($this.Name)} and Id $($currentInstance.Id)"
 
-        $instance = Get-M365DSCVerifiedIdAuthorityObject -Authority ($instances | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $LinkedDomainUrl })
-        if ($null -eq $instance)
-        {
-            return $nullResult
-        }
-
-        $results = @{
-            Id                    = $instance.Id
-            Name                  = $instance.Name
-            LinkedDomainUrl       = $instance.LinkedDomainUrl
-            DidMethod             = $instance.DidMethod
-            KeyVaultMetadata      = $instance.KeyVaultMetadata
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            ApplicationSecret     = $ApplicationSecret
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $LinkedDomainUrl,
-
-        [Parameter()]
-        [System.String]
-        $DidMethod,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $KeyVaultMetadata,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    Write-Verbose -Message "Retrieved current instance: $($currentInstance.Name) with Id $($currentInstance.Id)"
-
-    $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities/' + $currentInstance.Id
-
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an VerifiedId Authority with Name {$Name} and Id $($currentInstance.Id)"
-
-        $body = @{
-            name             = $Name
-            linkedDomainUrl  = $LinkedDomainUrl
-            didMethod        = $DidMethod
-            keyVaultMetadata = @{
-                subscriptionId = $KeyVaultMetadata.SubscriptionId
-                resourceGroup  = $KeyVaultMetadata.ResourceGroup
-                resourceName   = $KeyVaultMetadata.ResourceName
-                resourceUrl    = $KeyVaultMetadata.ResourceUrl
+            Write-Warning -Message 'You can only update Name of the VerifiedId Authority, if you want to update other properties, please delete and recreate the VerifiedId Authority.'
+            $body = @{
+                name = $this.Name
             }
+            Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'PATCH' -Body $body
         }
-        Write-Verbose -Message "Creating VerifiedId Authority with body $($body | ConvertTo-Json -Depth 5)"
-
-        $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-        Invoke-M365DSCVerifiedIdWebRequest -Uri $uri -Method 'POST' -Body $body
-    }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating an VerifiedId Authority with Name {$Name} and Id $($currentInstance.Id)"
-
-        Write-Warning -Message 'You can only update Name of the VerifiedId Authority, if you want to update other properties, please delete and recreate the VerifiedId Authority.'
-        $body = @{
-            name = $Name
-        }
-        Invoke-M365DSCVerifiedIdWebRequest -Uri $uri -Method 'PATCH' -Body $body
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing VerifiedId Authority with Name {$Name} and Id $($currentInstance.Id)"
-
-        $uri = 'https://verifiedid.did.msidentity.com/beta/verifiableCredentials/authorities/' + $currentInstance.Id
-        Invoke-M365DSCVerifiedIdWebRequest -Uri $uri -Method 'DELETE'
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $LinkedDomainUrl,
-
-        [Parameter()]
-        [System.String]
-        $DidMethod,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $KeyVaultMetadata,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'AdminAPI' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $dscContent = [System.Text.StringBuilder]::new()
-    $i = 1
-    Write-M365DSCHost -Message "`r`n" -DeferWrite
-    try
-    {
-        $Script:ExportMode = $true
-        $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-        $response = Invoke-M365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
-        [array] $Script:exportedInstances = $response.value
-
-        foreach ($authority in $Script:exportedInstances)
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            Write-Verbose -Message "Removing VerifiedId Authority with Name {$($this.Name)} and Id $($currentInstance.Id)"
+
+            $uri = 'https://verifiedid.did.msidentity.com/beta/verifiableCredentials/authorities/' + $currentInstance.Id
+            Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'DELETE'
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('AdminAPI')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        $dscContent = [System.Text.StringBuilder]::new()
+        $i = 1
+        Write-M365DSCHost -Message "`r`n" -DeferWrite
+        try
+        {
+            $this.ResourceCache['ExportMode'] = $true
+            $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
+            $response = Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+            [array] $this.ResourceCache['exportedInstances'] = $response.value
+
+            foreach ($authority in $this.ResourceCache['exportedInstances'])
             {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            Write-M365DSCHost -Message "    |---[$i/$($Script:exportedInstances.Count)] $($authority.didModel.linkedDomainUrls[0])" -DeferWrite
-            $Params = @{
-                LinkedDomainUrl       = $authority.didModel.linkedDomainUrls[0]
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-            $Results = Get-TargetResource @Params
-            if ($Results.Ensure -eq 'Present')
-            {
-
-                if ($null -ne $Results.KeyVaultMetadata)
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
                 {
-                    $complexMapping = @(
-                        @{
-                            Name            = 'KeyVaultMetadata'
-                            CimInstanceName = 'AADVerifiedIdAuthorityKeyVaultMetadata'
-                            IsRequired      = $False
-                        }
-                    )
-                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                        -ComplexObject $Results.KeyVaultMetadata `
-                        -CIMInstanceName 'AADVerifiedIdAuthorityKeyVaultMetadata' `
-                        -ComplexTypeMapping $complexMapping
-
-                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                    {
-                        $Results.KeyVaultMetadata = $complexTypeStringResult
-                    }
-                    else
-                    {
-                        $Results.Remove('KeyVaultMetadata') | Out-Null
-                    }
+                    $Global:M365DSCExportResourceInstancesCount++
                 }
 
-                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                    -ConnectionMode $ConnectionMode `
-                    -ModulePath $PSScriptRoot `
-                    -Results $Results `
-                    -Credential $Credential `
-                    -NoEscape @('KeyVaultMetadata')
+                Write-M365DSCHost -Message "    |---[$i/$($this.ResourceCache['exportedInstances'].Count)] $($authority.didModel.linkedDomainUrls[0])" -DeferWrite
+                $Params = @{
+                    LinkedDomainUrl       = $authority.didModel.linkedDomainUrls[0]
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+                $Results = $this.GetForExport($Params)
+                if ($Results.Ensure -eq 'Present')
+                {
 
-                [void]$dscContent.Append($currentDSCBlock)
-                Save-M365DSCPartialExport -Content $currentDSCBlock `
-                    -FileName $Global:PartialExportFileName
-                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-                $i++
+                    if ($null -ne $Results.KeyVaultMetadata)
+                    {
+                        $complexMapping = @(
+                            @{
+                                Name            = 'KeyVaultMetadata'
+                                CimInstanceName = 'AADVerifiedIdAuthorityKeyVaultMetadata'
+                                IsRequired      = $False
+                            }
+                        )
+                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                            -ComplexObject $Results.KeyVaultMetadata `
+                            -CIMInstanceName 'AADVerifiedIdAuthorityKeyVaultMetadata' `
+                            -ComplexTypeMapping $complexMapping
+
+                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                        {
+                            $Results.KeyVaultMetadata = $complexTypeStringResult
+                        }
+                        else
+                        {
+                            $Results.Remove('KeyVaultMetadata') | Out-Null
+                        }
+                    }
+
+                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                        -ConnectionMode $ConnectionMode `
+                        -ModulePath $this.GetModulePath() `
+                        -Results $Results `
+                        -Credential $this.Credential `
+                        -NoEscape @('KeyVaultMetadata')
+
+                    [void]$dscContent.Append($currentDSCBlock)
+                    Save-M365DSCPartialExport -Content $currentDSCBlock `
+                        -FileName $Global:PartialExportFileName
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                    $i++
+                }
             }
+            return $dscContent.ToString()
         }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
 
-        throw
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADVerifiedIdAuthority] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADVerifiedIdAuthority])
+        {
+            return $Values
+        }
+
+        $result = [AADVerifiedIdAuthority]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-M365DSCVerifiedIdAuthorityObject
+class MSFT_AADVerifiedIdAuthorityKeyVaultMetadata
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Subscription ID of the Key Vault.')]
+    [System.String] $SubscriptionId
+    [DscProperty()]
+    [System.ComponentModel.Description('Resource group of the Key Vault.')]
+    [System.String] $ResourceGroup
+    [DscProperty()]
+    [System.ComponentModel.Description('Resource name of the Key Vault.')]
+    [System.String] $ResourceName
+    [DscProperty()]
+    [System.ComponentModel.Description('Resource URL of the Key Vault.')]
+    [System.String] $ResourceUrl
+}
+
+# Was Get-M365DSCVerifiedIdAuthorityObject. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AADVerifiedIdAuthorityM365DSCVerifiedIdAuthorityObject
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -548,7 +372,9 @@ function Get-M365DSCVerifiedIdAuthorityObject
     return $values
 }
 
-function Invoke-M365DSCVerifiedIdWebRequest
+# Was Invoke-M365DSCVerifiedIdWebRequest. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest
 {
     [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
@@ -589,4 +415,3 @@ function Invoke-M365DSCVerifiedIdWebRequest
     return $result
 }
 
-Export-ModuleMember -Function *-TargetResource

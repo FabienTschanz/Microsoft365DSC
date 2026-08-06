@@ -1,496 +1,329 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_SPOTheme'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class SPOTheme : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The name of the theme, which appears in the theme picker UI and is also used by administrators and developers to refer to the theme in PowerShell cmdlets or calls to the SharePoint REST API.')]
+    [System.String] $Name
 
-        [Parameter()]
-        [System.Boolean]
-        $IsInverted,
+    [DscProperty()]
+    [System.ComponentModel.Description('This value should be false for light themes and true for dark themes; it controls whether SharePoint uses dark or light theme colors to render text on colored backgrounds.')]
+    [System.Nullable[System.Boolean]] $IsInverted
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Palette,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies the color scheme which composes your theme.')]
+    [MSFT_SPOThemePaletteProperty[]] $Palette
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Only accepted value is ''Present''.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the account to authenticate with.')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory application to authenticate with.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Name of the Azure Active Directory tenant used for authentication. Format contoso.onmicrosoft.com')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [SPOTheme] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for SPO Theme $Name"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $Name)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $nullReturn = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'PNP' `
-                -InboundParameters $PSBoundParameters
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullReturn = $PSBoundParameters
-            $nullReturn.Ensure = 'Absent'
-
-            Write-Verbose -Message "Getting theme $Name"
-            $theme = Get-PnPTenantTheme -ErrorAction SilentlyContinue | Where-Object -FilterScript { $_.Name -eq $Name }
-        }
-        else
-        {
-            $theme = $Script:exportedInstance
+            $remote = [SPOTheme]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
         }
 
-        if ($null -eq $theme)
-        {
-            Write-Verbose -Message "The specified theme doesn't exist."
-            return $nullReturn
-        }
-        $convertedPalette = Convert-ExistingThemePaletteToArray -Palette ([System.Collections.Hashtable]$theme.Palette)
-
-        return @{
-            Name                  = $theme.Name
-            IsInverted            = $theme.IsInverted
-            Palette               = $convertedPalette
-            Credential            = $Credential
-            Ensure                = 'Present'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsInverted,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Palette,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration for SPO Theme $Name"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $CurrentPalette = Get-TargetResource @PSBoundParameters
-    if ($Ensure -eq 'Present')
-    {
-        Write-Verbose 'Converting Received Palette Values into Hashtable'
-        $convertedPalettes = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $Palette
-        $hashPalette = @{}
-        foreach ($convertedPalette in $convertedPalettes)
-        {
-            $hashPalette.Add($convertedPalette.Property, $convertedPalette.Value)
-        }
-        $AddParameters = @{
-            Identity   = $Name
-            IsInverted = $IsInverted
-            Palette    = $hashPalette
-        }
+        Write-Verbose -Message "Getting configuration for SPO Theme $($this.Name)"
 
         try
         {
-            $existingTheme = Get-PnPTenantTheme -Name $Name -ErrorAction SilentlyContinue
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Name -ne $this.Name)
+            {
+                $null = $this.Connect('PNP')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                Write-Verbose -Message "Getting theme $($this.Name)"
+                $theme = Get-PnPTenantTheme -ErrorAction SilentlyContinue | Where-Object -FilterScript { $_.Name -eq $this.Name }
+            }
+            else
+            {
+                $theme = $this.ExportedInstance
+            }
+
+            if ($null -eq $theme)
+            {
+                Write-Verbose -Message "The specified theme doesn't exist."
+                return $this.AsResult($nullReturn)
+            }
+            $convertedPalette = Convert-SPOThemeExistingThemePaletteToArray -Palette ([System.Collections.Hashtable]$theme.Palette)
+
+            return $this.AsResult(@{
+                Name                  = $theme.Name
+                IsInverted            = $theme.IsInverted
+                Palette               = $convertedPalette
+                Credential            = $this.Credential
+                Ensure                = 'Present'
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            })
         }
         catch
         {
-            Write-Verbose -Message "Theme $($Name) does not yet exist."
-        }
+            $this.LogError($_, 'Error retrieving data:')
 
-        if ($null -eq $existingTheme)
-        {
-            Write-Verbose -Message "Theme {$Name} doesn't already exist. Creating it."
-            Add-PnPTenantTheme @AddParameters
-        }
-        else
-        {
-            Write-Verbose -Message "Theme {$Name} already exists. Updating it"
-            Add-PnPTenantTheme @AddParameters -Overwrite
+            throw
         }
     }
-    elseif ($Ensure -eq 'Absent' -and $CurrentPalette.Ensure -eq 'Present')
+
+    [void] Set()
     {
-        Write-Verbose -Message "Removing theme $($Name)"
-        try
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $existingTheme = $null
+        if ($this.RequiresPowerShellCore())
         {
-            Remove-PnPTenantTheme -Identity $Name
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
         }
-        catch
-        {
-            $Message = "The SPOTheme $($Name) does not exist and for that cannot be removed."
-            New-M365DSCLogEntry -Message $Message `
-                -Exception $_ `
-                -Source $MyInvocation.MyCommand.ModuleName
-            Write-Error $Message
-        }
-    }
-}
 
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsInverted,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Palette,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    try
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
-            -InboundParameters $PSBoundParameters
+        Write-Verbose -Message "Setting configuration for SPO Theme $($this.Name)"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        [array]$themes = Get-PnPTenantTheme -ErrorAction Stop
-        $dscContent = [System.Text.StringBuilder]::new()
-        $i = 1
-
-        if ($themes.Length -eq 0)
+        $CurrentPalette = $this.Get().ToHashtable()
+        if ($this.Ensure -eq 'Present')
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($theme in $themes)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            Write-Verbose 'Converting Received Palette Values into Hashtable'
+            $convertedPalettes = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.Palette
+            $hashPalette = @{}
+            foreach ($convertedPalette in $convertedPalettes)
             {
-                $Global:M365DSCExportResourceInstancesCount++
+                $hashPalette.Add($convertedPalette.Property, $convertedPalette.Value)
+            }
+            $AddParameters = @{
+                Identity   = $this.Name
+                IsInverted = $this.IsInverted
+                Palette    = $hashPalette
             }
 
-            Write-M365DSCHost -Message "    |---[$i/$($themes.Length)] $($theme.Name)" -DeferWrite
-            $Params = @{
-                Name                  = $theme.Name
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                Credential            = $Credential
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $theme
-            $Results = Get-TargetResource @Params
-            if ($null -ne $Results.Palette)
+            try
             {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.Palette `
-                    -CIMInstanceName 'MSFT_SPOThemePaletteProperty' `
-                    -IsArray
-
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.Palette = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Palette') | Out-Null
-                }
+                $existingTheme = Get-PnPTenantTheme -Name $this.Name -ErrorAction SilentlyContinue
             }
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('Palette')
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            $i++
+            catch
+            {
+                Write-Verbose -Message "Theme $($this.Name) does not yet exist."
+            }
+
+            if ($null -eq $existingTheme)
+            {
+                Write-Verbose -Message "Theme {$($this.Name)} doesn't already exist. Creating it."
+                Add-PnPTenantTheme @AddParameters
+            }
+            else
+            {
+                Write-Verbose -Message "Theme {$($this.Name)} already exists. Updating it"
+                Add-PnPTenantTheme @AddParameters -Overwrite
+            }
         }
-        return $dscContent.ToString()
+        elseif ($this.Ensure -eq 'Absent' -and $CurrentPalette.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing theme $($this.Name)"
+            try
+            {
+                Remove-PnPTenantTheme -Identity $this.Name
+            }
+            catch
+            {
+                $Message = "The SPOTheme $($this.Name) does not exist and for that cannot be removed."
+                $this.LogError($_, $Message)
+                Write-Error $Message
+            }
+        }
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        try
+        {
+            $ConnectionMode = $this.Connect('PNP')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Export')
+            #endregion
+
+            [array]$themes = Get-PnPTenantTheme -ErrorAction Stop
+            $dscContent = [System.Text.StringBuilder]::new()
+            $i = 1
+
+            if ($themes.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($theme in $themes)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($themes.Length)] $($theme.Name)" -DeferWrite
+                $Params = @{
+                    Name                  = $theme.Name
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    Credential            = $this.Credential
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $theme
+                $Results = $this.GetForExport($Params)
+                if ($null -ne $Results.Palette)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.Palette `
+                        -CIMInstanceName 'MSFT_SPOThemePaletteProperty' `
+                        -IsArray
+
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.Palette = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Palette') | Out-Null
+                    }
+                }
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('Palette')
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $i++
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [SPOTheme] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [SPOTheme])
+        {
+            return $Values
+        }
+
+        $result = [SPOTheme]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Convert-ExistingThemePaletteToArray
+class MSFT_SPOThemePaletteProperty
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Name of the property.')]
+    [System.String] $Property
+    [DscProperty()]
+    [System.ComponentModel.Description('Color value in Hexadecimal.')]
+    [System.String] $Value
+}
+
+# Was Convert-ExistingThemePaletteToArray. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Convert-SPOThemeExistingThemePaletteToArray
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable[]])]
@@ -511,4 +344,3 @@ function Convert-ExistingThemePaletteToArray
     return $themes
 }
 
-Export-ModuleMember -Function *-TargetResource

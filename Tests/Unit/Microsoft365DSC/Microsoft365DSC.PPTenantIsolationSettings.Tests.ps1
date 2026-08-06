@@ -23,7 +23,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         BeforeAll {
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@contoso.onmicrosoft.com', $secpasswd)
+            $CredsCredential = New-Object System.Management.Automation.PSCredential ('tenantadmin@contoso.onmicrosoft.com', $secpasswd)
 
             Mock -CommandName Get-MgContext -MockWith {
                 return @{
@@ -34,7 +34,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -78,10 +78,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $true
                     Rules            = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Outbound'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -114,15 +114,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=False from the Get method' {
-                (Get-TargetResource @testParams).Enabled | Should -Be $false
+                ((New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()).Enabled | Should -Be $false
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should enable the isolation settings and create a rule in Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Invoke-M365DSCPowerPlatformRESTWebRequest' -Exactly 1
             }
         }
@@ -133,10 +133,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $true
                     Rules            = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Outbound'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -175,13 +175,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=True and 1 rule from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()
                 $result.Enabled | Should -Be $true
                 $result.Rules.Count | Should -Be 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -191,10 +191,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $false
                     Rules            = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Both'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -233,18 +233,18 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=True and 1 rule from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()
                 $result.Enabled | Should -Be $true
                 $result.Rules.Count | Should -Be 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $false
             }
 
             $global:M365DSCTenantId = ''
             It 'Should enable the isolation settings and create a rule in Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Invoke-M365DSCPowerPlatformRESTWebRequest' -Exactly 1
             }
         }
@@ -255,10 +255,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $true
                     RulesToInclude   = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Both'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -297,18 +297,18 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=True and 1 rule from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()
                 $result.Enabled | Should -Be $true
                 $result.Rules.Count | Should -Be 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $false
             }
 
             $global:M365DSCTenantIds = ''
             It 'Should add a rule in Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Invoke-M365DSCPowerPlatformRESTWebRequest' -Exactly 1
             }
         }
@@ -319,10 +319,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $true
                     RulesToInclude   = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Both'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -361,13 +361,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=True and 1 rule from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()
                 $result.Enabled | Should -Be $true
                 $result.Rules.Count | Should -Be 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -377,10 +377,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $true
                     RulesToExclude   = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Both'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -427,18 +427,18 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=True and 1 rule from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()
                 $result.Enabled | Should -Be $true
                 $result.Rules.Count | Should -Be 2
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $false
             }
 
             $global:M365DSCTenantIds = ''
             It 'Should remove a rule in Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Set()
                 $global:M365DSCTenantIds.Count | Should -Be 1
                 Should -Invoke -CommandName 'Invoke-M365DSCPowerPlatformRESTWebRequest' -Exactly 1
             }
@@ -450,10 +450,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     IsSingleInstance = 'Yes'
                     Enabled           = $true
                     RulesToExclude   = @(
-                        (New-CimInstance -ClassName MSFT_PPTenantRule -Property @{
+                        ([MSFT_PPTenantRule] @{
                             TenantName = 'contoso.onmicrosoft.com'
                             Direction  = 'Both'
-                        } -ClientOnly)
+                        })
                     )
                     Credential       = $Credscredential
                 }
@@ -492,13 +492,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Enabled=True and 1 rule from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Get().ToHashtable()
                 $result.Enabled | Should -Be $true
                 $result.Rules.Count | Should -Be 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'PPTenantIsolationSettings' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -507,7 +507,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $Global:CurrentModeIsExport = $true
                 $Global:PartialExportFileName = "$(New-Guid).partial.ps1"
                 $testParams = @{
-                    Credential = $Credential
+                    Credential = $CredsCredential
                 }
 
                 Mock -CommandName Invoke-WebRequest -MockWith {
@@ -552,7 +552,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'PPTenantIsolationSettings' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

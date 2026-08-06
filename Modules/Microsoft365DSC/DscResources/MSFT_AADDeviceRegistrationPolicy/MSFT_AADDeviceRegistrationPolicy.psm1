@@ -1,712 +1,455 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADDeviceRegistrationPolicy'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADDeviceRegistrationPolicy : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Only valid value is ''Yes''.')]
+    [ValidateSet('Yes')]
+    [System.String] $IsSingleInstance
 
-        [Parameter()]
-        [Boolean]
-        $AzureADJoinIsAdminConfigurable,
+    [DscProperty()]
+    [System.ComponentModel.Description('Determines whether or not administrators can configure Azure AD Join.')]
+    [System.Nullable[System.Boolean]] $AzureADJoinIsAdminConfigurable
 
-        [Parameter()]
-        [ValidateSet('All', 'Selected', 'None')]
-        [System.String]
-        $AzureADAllowedToJoin,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies the maximum number of devices that a user can have within your organization before blocking new device registrations. The default value is set to 50. If this property isn''t specified during the policy update operation, it''s automatically reset to 0 to indicate that users aren''t allowed to join any devices.')]
+    [System.Nullable[System.UInt32]] $UserDeviceQuota
 
-        [Parameter()]
-        [System.String[]]
-        $AzureADAllowedToJoinUsers,
+    [DscProperty()]
+    [System.ComponentModel.Description('Scope that a device registration policy applies to.')]
+    [ValidateSet('All', 'Selected', 'None')]
+    [System.String] $AzureADAllowedToJoin
 
-        [Parameter()]
-        [System.String[]]
-        $AzureADAllowedToJoinGroups,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of users that this policy applies to.')]
+    [System.String[]] $AzureADAllowedToJoinUsers
 
-        [Parameter()]
-        [System.Boolean]
-        $MultiFactorAuthConfiguration,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of groups that this policy applies to.')]
+    [System.String[]] $AzureADAllowedToJoinGroups
 
-        [Parameter()]
-        [System.Boolean]
-        $LocalAdminsEnableGlobalAdmins,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies the authentication policy for a user to complete registration using Microsoft Entra join or Microsoft Entra registered within your organization.')]
+    [System.Nullable[System.Boolean]] $MultiFactorAuthConfiguration
 
-        [Parameter()]
-        [System.Boolean]
-        $LocalAdminPasswordIsEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether global administrators are local administrators on all Microsoft Entra-joined devices. This setting only applies to future registrations. Default is true.')]
+    [System.Nullable[System.Boolean]] $LocalAdminsEnableGlobalAdmins
 
-        [Parameter()]
-        [ValidateSet('All', 'Selected', 'None')]
-        [System.String]
-        $AzureAdJoinLocalAdminsRegisteringMode,
+    [DscProperty()]
+    [System.ComponentModel.Description('Scope that a device registration policy applies to for local admins.')]
+    [ValidateSet('All', 'Selected', 'None')]
+    [System.String] $AzureAdJoinLocalAdminsRegisteringMode
 
-        [Parameter()]
-        [System.String[]]
-        $AzureAdJoinLocalAdminsRegisteringGroups,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of groups that this policy applies to.')]
+    [System.String[]] $AzureAdJoinLocalAdminsRegisteringGroups
 
-        [Parameter()]
-        [System.String[]]
-        $AzureAdJoinLocalAdminsRegisteringUsers,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of users that this policy applies to.')]
+    [System.String[]] $AzureAdJoinLocalAdminsRegisteringUsers
 
-        [Parameter()]
-        [System.UInt32]
-        $UserDeviceQuota,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies whether this policy scope is configurable by the admin. The default value is false. An admin can set it to true to enable Local Admin Password Solution (LAPS) within their organzation.')]
+    [System.Nullable[System.Boolean]] $LocalAdminPasswordIsEnabled
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [AADDeviceRegistrationPolicy] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [AADDeviceRegistrationPolicy]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message 'Getting configuration of AzureAD Device Registration Policy'
+
+        try
+        {
+            $null = $this.Connect('MicrosoftGraph')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $getValue = Get-MgBetaPolicyDeviceRegistrationPolicy -ErrorAction Stop
+
+            $this.AzureADAllowedToJoin = 'None'
+            $this.AzureADAllowedToJoinUsers = @()
+            $this.AzureADAllowedToJoinGroups = @()
+            if ($getValue.AzureADJoin.AllowedToJoin.'@odata.type' -eq '#microsoft.graph.allDeviceRegistrationMembership')
+            {
+                $this.AzureADAllowedToJoin = 'All'
+            }
+            elseif ($getValue.AzureADJoin.AllowedToJoin.'@odata.type' -eq '#microsoft.graph.enumeratedDeviceRegistrationMembership')
+            {
+                $this.AzureADAllowedToJoin = 'Selected'
+
+                foreach ($userId in $getValue.AzureAdJoin.AllowedToJoin.users)
+                {
+                    try
+                    {
+                        $userInfo = Get-MgUser -UserId $userId -ErrorAction Stop
+                        $this.AzureADAllowedToJoinUsers += $userInfo.UserPrincipalName
+                    }
+                    catch
+                    {
+                        $message = "Could not find a user with id $($userId) specified in AllowedToJoin. Skipping user!"
+                        $this.LogError($_, $message)
+                        continue
+                    }
+                }
+
+                foreach ($groupId in $getValue.AzureAdJoin.AllowedToJoin.groups)
+                {
+                    try
+                    {
+                        $groupInfo = Get-MgGroup -GroupId $groupId -ErrorAction Stop
+                        $this.AzureADAllowedToJoinGroups += $groupInfo.DisplayName
+                    }
+                    catch
+                    {
+                        $message = "Could not find a group with id $($groupId) specified in AllowedToJoin. Skipping group!"
+                        $this.LogError($_, $message)
+                        continue
+                    }
+                }
+            }
+
+            $this.AzureAdJoinLocalAdminsRegisteringUsers = @()
+            $this.AzureAdJoinLocalAdminsRegisteringGroups = @()
+            $this.AzureAdJoinLocalAdminsRegisteringMode = 'All'
+
+            if ($getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.'@odata.type' -eq '#microsoft.graph.noDeviceRegistrationMembership')
+            {
+                $this.AzureAdJoinLocalAdminsRegisteringMode = 'None'
+            }
+            elseif ($getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.'@odata.type' -eq '#microsoft.graph.enumeratedDeviceRegistrationMembership')
+            {
+                $this.AzureAdJoinLocalAdminsRegisteringMode = 'Selected'
+                foreach ($userId in $getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.users)
+                {
+                    try
+                    {
+                        $userInfo = Get-MgUser -UserId $userId -ErrorAction Stop
+                        $this.AzureAdJoinLocalAdminsRegisteringUsers += $userInfo.UserPrincipalName
+                    }
+                    catch
+                    {
+                        $message = "Could not find a user with id $($userId) specified in AllowedToJoin. Skipping user!"
+                        $this.LogError($_, $message)
+                        continue
+                    }
+                }
+
+                foreach ($groupId in $getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.groups)
+                {
+                    try
+                    {
+                        $groupInfo = Get-MgGroup -GroupId $groupId -ErrorAction Stop
+                        $this.AzureAdJoinLocalAdminsRegisteringGroups += $groupInfo.DisplayName
+                    }
+                    catch
+                    {
+                        $message = "Could not find a group with id $($groupId) specified in AllowedToJoin. Skipping group!"
+                        $this.LogError($_, $message)
+                        continue
+                    }
+                }
+            }
+
+            $this.MultiFactorAuthConfiguration = $false
+            if ($getValue.MultiFactorAuthConfiguration -eq 'required')
+            {
+                $this.MultiFactorAuthConfiguration = $true
+            }
+            $this.LocalAdminsEnableGlobalAdmins = $true
+            if (-not $getValue.AzureAdJoin.LocalAdmins.EnableGlobalAdmins)
+            {
+                $this.LocalAdminsEnableGlobalAdmins = $false
+            }
+            $results = @{
+                IsSingleInstance                        = 'Yes'
+                AzureADJoinIsAdminConfigurable          = [Boolean]$getValue.AzureAdJoin.IsAdminConfigurable
+                AzureADAllowedToJoin                    = $this.AzureADAllowedToJoin
+                AzureADAllowedToJoinGroups              = $this.AzureADAllowedToJoinGroups
+                AzureADAllowedToJoinUsers               = $this.AzureADAllowedToJoinUsers
+                UserDeviceQuota                         = $getValue.UserDeviceQuota
+                MultiFactorAuthConfiguration            = $this.MultiFactorAuthConfiguration
+                LocalAdminsEnableGlobalAdmins           = $this.LocalAdminsEnableGlobalAdmins
+                LocalAdminPasswordIsEnabled             = [Boolean]$getValue.LocalAdminPassword.IsEnabled
+                AzureAdJoinLocalAdminsRegisteringMode   = $this.AzureAdJoinLocalAdminsRegisteringMode
+                AzureAdJoinLocalAdminsRegisteringGroups = $this.AzureAdJoinLocalAdminsRegisteringGroups
+                AzureAdJoinLocalAdminsRegisteringUsers  = $this.AzureAdJoinLocalAdminsRegisteringUsers
+                Credential                              = $this.Credential
+                ApplicationId                           = $this.ApplicationId
+                TenantId                                = $this.TenantId
+                ApplicationSecret                       = $this.ApplicationSecret
+                CertificateThumbprint                   = $this.CertificateThumbprint
+                CertificatePath                         = $this.CertificatePath
+                CertificatePassword                     = $this.CertificatePassword
+                ManagedIdentity                         = $this.ManagedIdentity.IsPresent
+                AccessTokens                            = $this.AccessTokens
+            }
+
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message 'Getting configuration of AzureAD Device Registration Policy'
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-            -InboundParameters $PSBoundParameters
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $azureADRegistrationAllowedUsers = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $localAdminAllowedGroups = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $localAdminAllowedUsers = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $azureADRegistrationAllowedGroups = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message 'Setting configuration of AzureAD Device Registration Policy'
+
+        $null = $this.Connect('MicrosoftGraph')
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $getValue = Get-MgBetaPolicyDeviceRegistrationPolicy -ErrorAction Stop
-
-        $AzureADAllowedToJoin = 'None'
-        $AzureADAllowedToJoinUsers = @()
-        $AzureADAllowedToJoinGroups = @()
-        if ($getValue.AzureADJoin.AllowedToJoin.'@odata.type' -eq '#microsoft.graph.allDeviceRegistrationMembership')
+        $MultiFactorAuthConfigurationValue = 'notRequired'
+        if ($this.MultiFactorAuthConfiguration)
         {
-            $AzureADAllowedToJoin = 'All'
+            $MultiFactorAuthConfigurationValue = 'required'
         }
-        elseif ($getValue.AzureADJoin.AllowedToJoin.'@odata.type' -eq '#microsoft.graph.enumeratedDeviceRegistrationMembership')
-        {
-            $AzureADAllowedToJoin = 'Selected'
 
-            foreach ($userId in $getValue.AzureAdJoin.AllowedToJoin.users)
+        $azureADRegistrationAllowedToRegister = '#microsoft.graph.noDeviceRegistrationMembership'
+        if ($this.AzureADAllowedToJoin -eq 'All')
+        {
+            $azureADRegistrationAllowedToRegister = '#microsoft.graph.allDeviceRegistrationMembership'
+        }
+        elseif ($this.AzureADAllowedToJoin -eq 'Selected')
+        {
+            $azureADRegistrationAllowedToRegister = '#microsoft.graph.enumeratedDeviceRegistrationMembership'
+
+            $azureADRegistrationAllowedUsers = @()
+            foreach ($user in $this.AzureADAllowedToJoinUsers)
             {
-                try
-                {
-                    $userInfo = Get-MgUser -UserId $userId -ErrorAction Stop
-                    $AzureADAllowedToJoinUsers += $userInfo.UserPrincipalName
-                }
-                catch
-                {
-                    $message = "Could not find a user with id $($userId) specified in AllowedToJoin. Skipping user!"
-                    New-M365DSCLogEntry -Message $message `
-                        -Exception $_ `
-                        -Source $($MyInvocation.MyCommand.Source) `
-                        -TenantId $TenantId `
-                        -Credential $Credential
-                    continue
-                }
+                $userInfo = Get-MgUser -UserId $user
+                $azureADRegistrationAllowedUsers += $userInfo.Id
             }
 
-            foreach ($groupId in $getValue.AzureAdJoin.AllowedToJoin.groups)
+            $azureADRegistrationAllowedGroups = @()
+            foreach ($group in $this.AzureADAllowedToJoinGroups)
             {
-                try
-                {
-                    $groupInfo = Get-MgGroup -GroupId $groupId -ErrorAction Stop
-                    $AzureADAllowedToJoinGroups += $groupInfo.DisplayName
-                }
-                catch
-                {
-                    $message = "Could not find a group with id $($groupId) specified in AllowedToJoin. Skipping group!"
-                    New-M365DSCLogEntry -Message $message `
-                        -Exception $_ `
-                        -Source $($MyInvocation.MyCommand.Source) `
-                        -TenantId $TenantId `
-                        -Credential $Credential
-                    continue
-                }
+                $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($group -replace "'", "''")'"
+                $azureADRegistrationAllowedGroups += $groupInfo.Id
             }
         }
 
-        $AzureAdJoinLocalAdminsRegisteringUsers = @()
-        $AzureAdJoinLocalAdminsRegisteringGroups = @()
-        $AzureAdJoinLocalAdminsRegisteringMode = 'All'
-
-        if ($getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.'@odata.type' -eq '#microsoft.graph.noDeviceRegistrationMembership')
+        $localAdminAllowedMode = '#microsoft.graph.noDeviceRegistrationMembership'
+        if ($this.AzureAdJoinLocalAdminsRegisteringMode -eq 'All')
         {
-            $AzureAdJoinLocalAdminsRegisteringMode = 'None'
+            $localAdminAllowedMode = '#microsoft.graph.allDeviceRegistrationMembership'
         }
-        elseif ($getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.'@odata.type' -eq '#microsoft.graph.enumeratedDeviceRegistrationMembership')
+        elseif ($this.AzureAdJoinLocalAdminsRegisteringMode -eq 'Selected')
         {
-            $AzureAdJoinLocalAdminsRegisteringMode = 'Selected'
-            foreach ($userId in $getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.users)
+            $localAdminAllowedMode = '#microsoft.graph.enumeratedDeviceRegistrationMembership'
+
+            $localAdminAllowedUsers = @()
+            foreach ($user in $this.AzureAdJoinLocalAdminsRegisteringUsers)
             {
-                try
-                {
-                    $userInfo = Get-MgUser -UserId $userId -ErrorAction Stop
-                    $AzureAdJoinLocalAdminsRegisteringUsers += $userInfo.UserPrincipalName
-                }
-                catch
-                {
-                    $message = "Could not find a user with id $($userId) specified in AllowedToJoin. Skipping user!"
-                    New-M365DSCLogEntry -Message $message `
-                        -Exception $_ `
-                        -Source $($MyInvocation.MyCommand.Source) `
-                        -TenantId $TenantId `
-                        -Credential $Credential
-                    continue
-                }
+                $userInfo = Get-MgUser -UserId $user
+                $localAdminAllowedUsers += $userInfo.Id
             }
 
-            foreach ($groupId in $getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.groups)
+            $localAdminAllowedGroups = @()
+            foreach ($group in $this.AzureAdJoinLocalAdminsRegisteringGroups)
             {
-                try
-                {
-                    $groupInfo = Get-MgGroup -GroupId $groupId -ErrorAction Stop
-                    $AzureAdJoinLocalAdminsRegisteringGroups += $groupInfo.DisplayName
-                }
-                catch
-                {
-                    $message = "Could not find a group with id $($groupId) specified in AllowedToJoin. Skipping group!"
-                    New-M365DSCLogEntry -Message $message `
-                        -Exception $_ `
-                        -Source $($MyInvocation.MyCommand.Source) `
-                        -TenantId $TenantId `
-                        -Credential $Credential
-                    continue
-                }
+                $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($group -replace "'", "''")'"
+                $localAdminAllowedGroups += $groupInfo.Id
             }
         }
 
-        $MultiFactorAuthConfiguration = $false
-        if ($getValue.MultiFactorAuthConfiguration -eq 'required')
-        {
-            $MultiFactorAuthConfiguration = $true
+        $updateParameters = @{
+            userDeviceQuota              = $this.UserDeviceQuota
+            multiFactorAuthConfiguration = $MultiFactorAuthConfigurationValue
+            azureADJoin                  = @{
+                isAdminConfigurable = $this.AzureADJoinIsAdminConfigurable
+                allowedToJoin       = @{
+                    '@odata.type' = $azureADRegistrationAllowedToRegister
+                    users         = $azureADRegistrationAllowedUsers
+                    groups        = $azureADRegistrationAllowedGroups
+                }
+                localAdmins         = @{
+                    enableGlobalAdmins = $this.LocalAdminsEnableGlobalAdmins
+                    registeringUsers   = @{
+                        '@odata.type' = $localAdminAllowedMode
+                        users         = $localAdminAllowedUsers
+                        groups        = $localAdminAllowedGroups
+                    }
+                }
+            }
+            localAdminPassword           = @{
+                isEnabled = $this.LocalAdminPasswordIsEnabled
+            }
+            azureADRegistration          = @{
+                isAdminConfigurable = $false
+                allowedToRegister   = @{
+                    '@odata.type' = '#microsoft.graph.allDeviceRegistrationMembership'
+                }
+            }
         }
-        $LocalAdminsEnableGlobalAdmins = $true
-        if (-not $getValue.AzureAdJoin.LocalAdmins.EnableGlobalAdmins)
-        {
-            $LocalAdminsEnableGlobalAdmins = $false
-        }
-        $results = @{
-            IsSingleInstance                        = 'Yes'
-            AzureADJoinIsAdminConfigurable          = [Boolean]$getValue.AzureAdJoin.IsAdminConfigurable
-            AzureADAllowedToJoin                    = $AzureADAllowedToJoin
-            AzureADAllowedToJoinGroups              = $AzureADAllowedToJoinGroups
-            AzureADAllowedToJoinUsers               = $AzureADAllowedToJoinUsers
-            UserDeviceQuota                         = $getValue.UserDeviceQuota
-            MultiFactorAuthConfiguration            = $MultiFactorAuthConfiguration
-            LocalAdminsEnableGlobalAdmins           = $LocalAdminsEnableGlobalAdmins
-            LocalAdminPasswordIsEnabled             = [Boolean]$getValue.LocalAdminPassword.IsEnabled
-            AzureAdJoinLocalAdminsRegisteringMode   = $AzureAdJoinLocalAdminsRegisteringMode
-            AzureAdJoinLocalAdminsRegisteringGroups = $AzureAdJoinLocalAdminsRegisteringGroups
-            AzureAdJoinLocalAdminsRegisteringUsers  = $AzureAdJoinLocalAdminsRegisteringUsers
-            Credential                              = $Credential
-            ApplicationId                           = $ApplicationId
-            TenantId                                = $TenantId
-            ApplicationSecret                       = $ApplicationSecret
-            CertificateThumbprint                   = $CertificateThumbprint
-            CertificatePath                         = $CertificatePath
-            CertificatePassword                     = $CertificatePassword
-            ManagedIdentity                         = $ManagedIdentity.IsPresent
-            AccessTokens                            = $AccessTokens
-        }
-
-        return $results
+        $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/deviceRegistrationPolicy'
+        Write-Verbose -Message "Updating Device Registration Policy with payload:`r`n$(ConvertTo-Json $updateParameters -Depth 10)"
+        Invoke-MgGraphRequest -Method PUT -Uri $uri -Body $updateParameters
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $i = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            {
+                $Global:M365DSCExportResourceInstancesCount++
+            }
+            $dscContent = [System.Text.StringBuilder]::new()
+            $params = @{
+                IsSingleInstance      = 'Yes'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+
+            $Results = $this.GetForExport($Params)
+            $rawResults = $Results.Clone()
+
+            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                -ConnectionMode $ConnectionMode `
+                -ModulePath $this.GetModulePath() `
+                -Results $Results `
+                -Credential $this.Credential `
+                -RawResults $rawResults
+
+            [void]$dscContent.Append($currentDSCBlock)
+            Save-M365DSCPartialExport -Content $currentDSCBlock `
+                -FileName $Global:PartialExportFileName
+            $i++
+            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            if ($_.ErrorDetails.Message -like '*Insufficient privileges*')
+            {
+                Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) Insufficient permissions or license to export Attribute Sets."
+                return ''
+            }
+            else
+            {
+                $this.LogError($_, 'Error during Export:')
+
+                throw
+            }
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADDeviceRegistrationPolicy] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADDeviceRegistrationPolicy])
+        {
+            return $Values
+        }
+
+        $result = [AADDeviceRegistrationPolicy]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
-
-        [Parameter()]
-        [Boolean]
-        $AzureADJoinIsAdminConfigurable,
-
-        [Parameter()]
-        [ValidateSet('All', 'Selected', 'None')]
-        [System.String]
-        $AzureADAllowedToJoin,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureADAllowedToJoinUsers,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureADAllowedToJoinGroups,
-
-        [Parameter()]
-        [System.Boolean]
-        $MultiFactorAuthConfiguration,
-
-        [Parameter()]
-        [System.Boolean]
-        $LocalAdminsEnableGlobalAdmins,
-
-        [Parameter()]
-        [System.Boolean]
-        $LocalAdminPasswordIsEnabled,
-
-        [Parameter()]
-        [ValidateSet('All', 'Selected', 'None')]
-        [System.String]
-        $AzureAdJoinLocalAdminsRegisteringMode,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureAdJoinLocalAdminsRegisteringGroups,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureAdJoinLocalAdminsRegisteringUsers,
-
-        [Parameter()]
-        [System.UInt32]
-        $UserDeviceQuota,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message 'Setting configuration of AzureAD Device Registration Policy'
-
-    $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $MultiFactorAuthConfigurationValue = 'notRequired'
-    if ($MultiFactorAuthConfiguration)
-    {
-        $MultiFactorAuthConfigurationValue = 'required'
-    }
-
-    $azureADRegistrationAllowedToRegister = '#microsoft.graph.noDeviceRegistrationMembership'
-    if ($AzureADAllowedToJoin -eq 'All')
-    {
-        $azureADRegistrationAllowedToRegister = '#microsoft.graph.allDeviceRegistrationMembership'
-    }
-    elseif ($AzureADAllowedToJoin -eq 'Selected')
-    {
-        $azureADRegistrationAllowedToRegister = '#microsoft.graph.enumeratedDeviceRegistrationMembership'
-
-        $azureADRegistrationAllowedUsers = @()
-        foreach ($user in $AzureADAllowedToJoinUsers)
-        {
-            $userInfo = Get-MgUser -UserId $user
-            $azureADRegistrationAllowedUsers += $userInfo.Id
-        }
-
-        $azureADRegistrationAllowedGroups = @()
-        foreach ($group in $AzureADAllowedToJoinGroups)
-        {
-            $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($group -replace "'", "''")'"
-            $azureADRegistrationAllowedGroups += $groupInfo.Id
-        }
-    }
-
-    $localAdminAllowedMode = '#microsoft.graph.noDeviceRegistrationMembership'
-    if ($AzureAdJoinLocalAdminsRegisteringMode -eq 'All')
-    {
-        $localAdminAllowedMode = '#microsoft.graph.allDeviceRegistrationMembership'
-    }
-    elseif ($AzureAdJoinLocalAdminsRegisteringMode -eq 'Selected')
-    {
-        $localAdminAllowedMode = '#microsoft.graph.enumeratedDeviceRegistrationMembership'
-
-        $localAdminAllowedUsers = @()
-        foreach ($user in $AzureAdJoinLocalAdminsRegisteringUsers)
-        {
-            $userInfo = Get-MgUser -UserId $user
-            $localAdminAllowedUsers += $userInfo.Id
-        }
-
-        $localAdminAllowedGroups = @()
-        foreach ($group in $AzureAdJoinLocalAdminsRegisteringGroups)
-        {
-            $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($group -replace "'", "''")'"
-            $localAdminAllowedGroups += $groupInfo.Id
-        }
-    }
-
-    $updateParameters = @{
-        userDeviceQuota              = $UserDeviceQuota
-        multiFactorAuthConfiguration = $MultiFactorAuthConfigurationValue
-        azureADJoin                  = @{
-            isAdminConfigurable = $AzureADJoinIsAdminConfigurable
-            allowedToJoin       = @{
-                '@odata.type' = $azureADRegistrationAllowedToRegister
-                users         = $azureADRegistrationAllowedUsers
-                groups        = $azureADRegistrationAllowedGroups
-            }
-            localAdmins         = @{
-                enableGlobalAdmins = $LocalAdminsEnableGlobalAdmins
-                registeringUsers   = @{
-                    '@odata.type' = $localAdminAllowedMode
-                    users         = $localAdminAllowedUsers
-                    groups        = $localAdminAllowedGroups
-                }
-            }
-        }
-        localAdminPassword           = @{
-            isEnabled = $LocalAdminPasswordIsEnabled
-        }
-        azureADRegistration          = @{
-            isAdminConfigurable = $false
-            allowedToRegister   = @{
-                '@odata.type' = '#microsoft.graph.allDeviceRegistrationMembership'
-            }
-        }
-    }
-    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/deviceRegistrationPolicy'
-    Write-Verbose -Message "Updating Device Registration Policy with payload:`r`n$(ConvertTo-Json $updateParameters -Depth 10)"
-    Invoke-MgGraphRequest -Method PUT -Uri $uri -Body $updateParameters
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
-
-        [Parameter()]
-        [Boolean]
-        $AzureADJoinIsAdminConfigurable,
-
-        [Parameter()]
-        [ValidateSet('All', 'Selected', 'None')]
-        [System.String]
-        $AzureADAllowedToJoin,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureADAllowedToJoinUsers,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureADAllowedToJoinGroups,
-
-        [Parameter()]
-        [System.Boolean]
-        $MultiFactorAuthConfiguration,
-
-        [Parameter()]
-        [System.Boolean]
-        $LocalAdminsEnableGlobalAdmins,
-
-        [Parameter()]
-        [System.Boolean]
-        $LocalAdminPasswordIsEnabled,
-
-        [Parameter()]
-        [ValidateSet('All', 'Selected', 'None')]
-        [System.String]
-        $AzureAdJoinLocalAdminsRegisteringMode,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureAdJoinLocalAdminsRegisteringGroups,
-
-        [Parameter()]
-        [System.String[]]
-        $AzureAdJoinLocalAdminsRegisteringUsers,
-
-        [Parameter()]
-        [System.UInt32]
-        $UserDeviceQuota,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-        {
-            $Global:M365DSCExportResourceInstancesCount++
-        }
-        $dscContent = [System.Text.StringBuilder]::new()
-        $params = @{
-            IsSingleInstance      = 'Yes'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-
-        $Results = Get-TargetResource @Params
-        $rawResults = $Results.Clone()
-
-        $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-            -ConnectionMode $ConnectionMode `
-            -ModulePath $PSScriptRoot `
-            -Results $Results `
-            -Credential $Credential `
-            -RawResults $rawResults
-
-        [void]$dscContent.Append($currentDSCBlock)
-        Save-M365DSCPartialExport -Content $currentDSCBlock `
-            -FileName $Global:PartialExportFileName
-        $i++
-        Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        if ($_.ErrorDetails.Message -like '*Insufficient privileges*')
-        {
-            Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) Insufficient permissions or license to export Attribute Sets."
-            return ''
-        }
-        else
-        {
-            New-M365DSCLogEntry -Message 'Error during Export:' `
-                -Exception $_ `
-                -Source $($MyInvocation.MyCommand.Source) `
-                -TenantId $TenantId `
-                -Credential $Credential
-
-            throw
-        }
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

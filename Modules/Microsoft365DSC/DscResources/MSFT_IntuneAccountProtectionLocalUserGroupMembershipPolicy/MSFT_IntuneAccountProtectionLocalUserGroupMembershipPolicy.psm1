@@ -1,719 +1,555 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneAccountProtectionLocalUserGroupMembershipPolicy'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntuneAccountProtectionLocalUserGroupMembershipPolicy : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Identity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Identity of the account protection policy.')]
+    [System.String] $Identity
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Display name of the account protection rules policy.')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of the account protection rules policy.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of Scope Tags for this Entity instance.')]
+    [System.String[]] $RoleScopeTagIds
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AccessGroup,
+    [DscProperty()]
+    [System.ComponentModel.Description('Assignments of the Intune Policy.')]
+    [MSFT_IntuneAccountProtectionLocalUserGroupMembershipPolicyAssignments[]] $Assignments
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
+    [DscProperty()]
+    [System.ComponentModel.Description('Local User Group Collections of the Intune Policy.')]
+    [MSFT_MicrosoftGraphIntuneSettingsCatalogAccessGroup[]] $AccessGroup
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the site collection exists, absent ensures it is removed')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Intune Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Name of the Azure Active Directory tenant used for authentication. Format contoso.onmicrosoft.com')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [IntuneAccountProtectionLocalUserGroupMembershipPolicy] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration of the Intune Account Protection Local User Group Membership Policy with Id {$Identity} and DisplayName {$DisplayName}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $DisplayName)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters `
-                -ErrorAction Stop
+            $remote = [IntuneAccountProtectionLocalUserGroupMembershipPolicy]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration of the Intune Account Protection Local User Group Membership Policy with Id {$($this.Identity)} and DisplayName {$($this.DisplayName)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            #Retrieve policy general settings
-            $policy = $null
-            if (-not [String]::IsNullOrEmpty($Identity))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Name -ne $this.DisplayName)
             {
-                $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Identity -ErrorAction SilentlyContinue `
-                    -ExpandProperty 'settings($expand=settingDefinitions)'
-                $settings = $policy.settings
-            }
+                $null = $this.Connect('MicrosoftGraph')
 
-            if ($null -eq $policy)
-            {
-                Write-Verbose -Message "No Account Protection Local User Group Membership Policy with identity {$Identity} was found"
-                if (-not [String]::IsNullOrEmpty($DisplayName))
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                #Retrieve policy general settings
+                $policy = $null
+                if (-not [String]::IsNullOrEmpty($this.Identity))
                 {
-                    $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
-                        -All `
-                        -Filter "Name eq '$($DisplayName -replace "'", "''")'" `
-                        -ErrorAction SilentlyContinue
+                    $policy = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $this.Identity -ErrorAction SilentlyContinue `
+                        -ExpandProperty 'settings($expand=settingDefinitions)'
+                    $settings = $policy.settings
+                }
 
-                    if (([array]$policy).Count -gt 1)
+                if ($null -eq $policy)
+                {
+                    Write-Verbose -Message "No Account Protection Local User Group Membership Policy with identity {$($this.Identity)} was found"
+                    if (-not [String]::IsNullOrEmpty($this.DisplayName))
                     {
-                        throw "A policy with a duplicated displayName {'$DisplayName'} was found - Ensure displayName is unique"
-                    }
+                        $policy = Get-MgBetaDeviceManagementConfigurationPolicy `
+                            -All `
+                            -Filter "Name eq '$($this.DisplayName -replace "'", "''")'" `
+                            -ErrorAction SilentlyContinue
 
-                    if ($null -eq $policy)
-                    {
-                        Write-Verbose -Message "No Account Protection Local User Group Membership Policy with displayName {$DisplayName} was found"
-                        return $nullResult
+                        if (([array]$policy).Count -gt 1)
+                        {
+                            throw "A policy with a duplicated displayName {'$($this.DisplayName)'} was found - Ensure displayName is unique"
+                        }
+
+                        if ($null -eq $policy)
+                        {
+                            Write-Verbose -Message "No Account Protection Local User Group Membership Policy with displayName {$($this.DisplayName)} was found"
+                            return $this.AsResult($nullResult)
+                        }
                     }
                 }
             }
+            else
+            {
+                $policy = $this.ExportedInstance
+                $settings = $policy.settings
+            }
+
+            # Retrieve policy specific settings
+            $this.Identity = $policy.Id
+
+            $returnHashtable = @{}
+            $returnHashtable.Add('Identity', $policy.Id)
+            $returnHashtable.Add('DisplayName', $policy.Name)
+            $returnHashtable.Add('Description', $policy.Description)
+            $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
+
+            if ($null -eq $settings)
+            {
+                [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
+                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -ExpandProperty 'settingDefinitions' `
+                    -ErrorAction Stop
+            }
+            $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
+
+            foreach ($group in $returnHashtable.AccessGroup)
+            {
+                for ($i = 0; $i -lt $group.desc.Count; $i++)
+                {
+                    $member = $group.desc[$i]
+                    switch ($member)
+                    {
+                        'S-1-5-32-544'
+                        {
+                            $member = 'administrators'
+                        }
+                        'S-1-5-32-545'
+                        {
+                            $member = 'users'
+                        }
+                        'S-1-5-32-546'
+                        {
+                            $member = 'guests'
+                        }
+                        'S-1-5-32-547'
+                        {
+                            $member = 'powerusers'
+                        }
+                        'S-1-5-32-555'
+                        {
+                            $member = 'remotedesktopusers'
+                        }
+                        'S-1-5-32-580'
+                        {
+                            $member = 'RemoteManagementUsers'
+                        }
+                    }
+                    $group.desc[$i] = $member
+                }
+            }
+
+            Write-Verbose -Message "Found Account Protection Local User Group Membership Policy {$($this.DisplayName)}"
+
+            $returnHashtable.Add('Ensure', 'Present')
+            $returnHashtable.Add('Credential', $this.Credential)
+            $returnHashtable.Add('ApplicationId', $this.ApplicationId)
+            $returnHashtable.Add('TenantId', $this.TenantId)
+            $returnHashtable.Add('ApplicationSecret', $this.ApplicationSecret)
+            $returnHashtable.Add('CertificateThumbprint', $this.CertificateThumbprint)
+            $returnHashtable.Add('ManagedIdentity', $this.ManagedIdentity.IsPresent)
+            $returnHashtable.Add('AccessTokens', $this.AccessTokens)
+
+            $returnAssignments = @()
+            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $policy.Id
+            if ($graphAssignments.Count -gt 0)
+            {
+                $returnAssignments += ConvertFrom-IntunePolicyAssignment `
+                    -IncludeDeviceFilter:$true `
+                    -Assignments ($graphAssignments)
+            }
+            $returnHashtable.Add('Assignments', $returnAssignments)
+
+            return $this.AsResult($returnHashtable)
         }
-        else
+        catch
         {
-            $policy = $Script:exportedInstance
-            $settings = $policy.settings
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
         }
+    }
 
-        # Retrieve policy specific settings
-        $Identity = $policy.Id
-
-        $returnHashtable = @{}
-        $returnHashtable.Add('Identity', $policy.Id)
-        $returnHashtable.Add('DisplayName', $policy.Name)
-        $returnHashtable.Add('Description', $policy.Description)
-        $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
-
-        if ($null -eq $settings)
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
         {
-            [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                -DeviceManagementConfigurationPolicyId $Identity `
-                -ExpandProperty 'settingDefinitions' `
-                -ErrorAction Stop
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
         }
-        $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
-        foreach ($group in $returnHashtable.AccessGroup)
+        Write-Verbose -Message "Setting configuration of the Intune Account Protection Local User Group Membership Policy with Id {$($this.Identity)} and DisplayName {$($this.DisplayName)}"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentPolicy = $this.Get().ToHashtable()
+        $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        $templateReferenceId = '22968f54-45fa-486c-848e-f8224aa69772_1'
+        $platforms = 'windows10'
+        $technologies = 'mdm'
+
+        foreach ($group in $boundParameters.AccessGroup)
         {
             for ($i = 0; $i -lt $group.desc.Count; $i++)
             {
                 $member = $group.desc[$i]
                 switch ($member)
                 {
-                    'S-1-5-32-544'
+                    'administrators'
                     {
-                        $member = 'administrators'
+                        $member = 'S-1-5-32-544'
                     }
-                    'S-1-5-32-545'
+                    'users'
                     {
-                        $member = 'users'
+                        $member = 'S-1-5-32-545'
                     }
-                    'S-1-5-32-546'
+                    'guests'
                     {
-                        $member = 'guests'
+                        $member = 'S-1-5-32-546'
                     }
-                    'S-1-5-32-547'
+                    'powerusers'
                     {
-                        $member = 'powerusers'
+                        $member = 'S-1-5-32-547'
                     }
-                    'S-1-5-32-555'
+                    'remotedesktopusers'
                     {
-                        $member = 'remotedesktopusers'
+                        $member = 'S-1-5-32-555'
                     }
-                    'S-1-5-32-580'
+                    'RemoteManagementUsers'
                     {
-                        $member = 'RemoteManagementUsers'
+                        $member = 'S-1-5-32-580'
                     }
                 }
                 $group.desc[$i] = $member
             }
         }
 
-        Write-Verbose -Message "Found Account Protection Local User Group Membership Policy {$DisplayName}"
-
-        $returnHashtable.Add('Ensure', 'Present')
-        $returnHashtable.Add('Credential', $Credential)
-        $returnHashtable.Add('ApplicationId', $ApplicationId)
-        $returnHashtable.Add('TenantId', $TenantId)
-        $returnHashtable.Add('ApplicationSecret', $ApplicationSecret)
-        $returnHashtable.Add('CertificateThumbprint', $CertificateThumbprint)
-        $returnHashtable.Add('ManagedIdentity', $ManagedIdentity.IsPresent)
-        $returnHashtable.Add('AccessTokens', $AccessTokens)
-
-        $returnAssignments = @()
-        $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $policy.Id
-        if ($graphAssignments.Count -gt 0)
+        if ($this.Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Absent')
         {
-            $returnAssignments += ConvertFrom-IntunePolicyAssignment `
-                -IncludeDeviceFilter:$true `
-                -Assignments ($graphAssignments)
+            Write-Verbose -Message "Creating new Account Protection Local User Group Membership Policy {$($this.DisplayName)}"
+            $boundParameters.Remove('Identity') | Out-Null
+            $boundParameters.Remove('Assignments') | Out-Null
+            $boundParameters.Remove('DisplayName') | Out-Null
+            $boundParameters.Remove('Description') | Out-Null
+
+            $settings = Get-IntuneSettingCatalogPolicySetting `
+                -DSCParams ([System.Collections.Hashtable]$boundParameters) `
+                -TemplateId $templateReferenceId
+
+            $createParameters = @{}
+            $createParameters.Add('name', $this.DisplayName)
+            $createParameters.Add('description', $this.Description)
+            $createParameters.Add('settings', @($settings))
+            $createParameters.Add('platforms', $platforms)
+            $createParameters.Add('technologies', $technologies)
+            $createParameters.Add('templateReference', @{
+                templateId = $templateReferenceId
+            })
+            $createParameters.Add('roleScopeTagIds', $this.RoleScopeTagIds)
+            $policy = New-MgBetaDeviceManagementConfigurationPolicy -BodyParameter $createParameters
+
+            #region Assignments
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+            Update-DeviceConfigurationPolicyAssignment `
+                -DeviceConfigurationPolicyId $policy.Id `
+                -Targets $assignmentsHash
+            #endregion
         }
-        $returnHashtable.Add('Assignments', $returnAssignments)
-
-        return $returnHashtable
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AccessGroup,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of the Intune Account Protection Local User Group Membership Policy with Id {$Identity} and DisplayName {$DisplayName}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentPolicy = Get-TargetResource @PSBoundParameters
-    $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    $templateReferenceId = '22968f54-45fa-486c-848e-f8224aa69772_1'
-    $platforms = 'windows10'
-    $technologies = 'mdm'
-
-    foreach ($group in $boundParameters.AccessGroup)
-    {
-        for ($i = 0; $i -lt $group.desc.Count; $i++)
+        elseif ($this.Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Present')
         {
-            $member = $group.desc[$i]
-            switch ($member)
-            {
-                'administrators'
-                {
-                    $member = 'S-1-5-32-544'
-                }
-                'users'
-                {
-                    $member = 'S-1-5-32-545'
-                }
-                'guests'
-                {
-                    $member = 'S-1-5-32-546'
-                }
-                'powerusers'
-                {
-                    $member = 'S-1-5-32-547'
-                }
-                'remotedesktopusers'
-                {
-                    $member = 'S-1-5-32-555'
-                }
-                'RemoteManagementUsers'
-                {
-                    $member = 'S-1-5-32-580'
-                }
-            }
-            $group.desc[$i] = $member
+            Write-Verbose -Message "Updating existing Account Protection Local User Group Membership Policy {$($this.DisplayName)}"
+
+            $boundParameters.Remove('Identity') | Out-Null
+            $boundParameters.Remove('DisplayName') | Out-Null
+            $boundParameters.Remove('Description') | Out-Null
+            $boundParameters.Remove('Assignments') | Out-Null
+
+            $settings = Get-IntuneSettingCatalogPolicySetting `
+                -DSCParams ([System.Collections.Hashtable]$boundParameters) `
+                -TemplateId $templateReferenceId
+
+            Update-IntuneDeviceConfigurationPolicy `
+                -DeviceConfigurationPolicyId $currentPolicy.Identity `
+                -Name $this.DisplayName `
+                -Description $this.Description `
+                -TemplateReferenceId $templateReferenceId `
+                -Platforms $platforms `
+                -Technologies $technologies `
+                -Settings $settings `
+                -RoleScopeTagIds $this.RoleScopeTagIds
+
+            #region Assignments
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+            Update-DeviceConfigurationPolicyAssignment `
+                -DeviceConfigurationPolicyId $currentPolicy.Identity `
+                -Targets $assignmentsHash
+            #endregion
+        }
+        elseif ($this.Ensure -eq 'Absent' -and $currentPolicy.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing Account Protection Local User Group Membership Policy {$($this.DisplayName)}"
+            Remove-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $currentPolicy.Identity
         }
     }
 
-    if ($Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Absent')
+    [bool] Test()
     {
-        Write-Verbose -Message "Creating new Account Protection Local User Group Membership Policy {$DisplayName}"
-        $boundParameters.Remove('Identity') | Out-Null
-        $boundParameters.Remove('Assignments') | Out-Null
-        $boundParameters.Remove('DisplayName') | Out-Null
-        $boundParameters.Remove('Description') | Out-Null
+        return ([M365DSCResourceBase] $this).Test()
+    }
 
-        $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$boundParameters) `
-            -TemplateId $templateReferenceId
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
 
-        $createParameters = @{}
-        $createParameters.Add('name', $DisplayName)
-        $createParameters.Add('description', $Description)
-        $createParameters.Add('settings', @($settings))
-        $createParameters.Add('platforms', $platforms)
-        $createParameters.Add('technologies', $technologies)
-        $createParameters.Add('templateReference', @{
-            templateId = $templateReferenceId
-        })
-        $createParameters.Add('roleScopeTagIds', $RoleScopeTagIds)
-        $policy = New-MgBetaDeviceManagementConfigurationPolicy -BodyParameter $createParameters
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
 
-        #region Assignments
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        Update-DeviceConfigurationPolicyAssignment `
-            -DeviceConfigurationPolicyId $policy.Id `
-            -Targets $assignmentsHash
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
         #endregion
+
+        $dscContent = [System.Text.StringBuilder]::new()
+        $i = 1
+
+        try
+        {
+            # Local user group membership template, family endpointSecurityAccountProtection
+            $policyTemplateID = '22968f54-45fa-486c-848e-f8224aa69772_1'
+            $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $this.Filter = "($($this.Filter)) and ($baseFilter)"
+            }
+            else
+            {
+                $this.Filter = $baseFilter
+            }
+            [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
+                -TemplateId $policyTemplateID `
+                -Filter $this.Filter
+
+            if ($policies.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($policy in $policies)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($policies.Count)] $($policy.Name)" -DeferWrite
+
+                $params = @{
+                    Identity              = $policy.Id
+                    DisplayName           = $policy.Name
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $policy
+                $Results = $this.GetForExport($params)
+                $rawResults = $Results.Clone()
+
+                if ($Results.AccessGroup)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject ([Array]$Results.AccessGroup) -CIMInstanceName MicrosoftGraphIntuneSettingsCatalogAccessGroup
+
+                    if ($complexTypeStringResult)
+                    {
+                        $Results.AccessGroup = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('AccessGroup') | Out-Null
+                    }
+                }
+
+                if ($Results.Assignments)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject ([Array]$Results.Assignments) -CIMInstanceName IntuneAccountProtectionLocalUserGroupMembershipPolicyAssignments
+
+                    if ($complexTypeStringResult)
+                    {
+                        $Results.Assignments = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Assignments') | Out-Null
+                    }
+                }
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('AccessGroup', 'Assignments') `
+                    -RawResults $rawResults
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $i++
+
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            if ($_.Exception -like '*401*' -or $_.ErrorDetails.Message -like "*`"ErrorCode`":`"Forbidden`"*" -or `
+                    $_.Exception -like '*Unable to perform redirect as Location Header is not set in response*' -or `
+                    $_.Exception -like '*Request not applicable to target tenant*')
+            {
+                Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) The current tenant is not registered for Intune."
+            }
+            else
+            {
+                $this.LogError($_, 'Error during Export:')
+
+                throw
+            }
+        }
+    
+        # Every code path must return in a method with a declared return type.
+        return ''
     }
-    elseif ($Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Present')
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneAccountProtectionLocalUserGroupMembershipPolicy] AsResult([System.Object] $Values)
     {
-        Write-Verbose -Message "Updating existing Account Protection Local User Group Membership Policy {$DisplayName}"
+        if ($Values -is [IntuneAccountProtectionLocalUserGroupMembershipPolicy])
+        {
+            return $Values
+        }
 
-        $boundParameters.Remove('Identity') | Out-Null
-        $boundParameters.Remove('DisplayName') | Out-Null
-        $boundParameters.Remove('Description') | Out-Null
-        $boundParameters.Remove('Assignments') | Out-Null
+        $result = [IntuneAccountProtectionLocalUserGroupMembershipPolicy]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
 
-        $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$boundParameters) `
-            -TemplateId $templateReferenceId
-
-        Update-IntuneDeviceConfigurationPolicy `
-            -DeviceConfigurationPolicyId $currentPolicy.Identity `
-            -Name $DisplayName `
-            -Description $Description `
-            -TemplateReferenceId $templateReferenceId `
-            -Platforms $platforms `
-            -Technologies $technologies `
-            -Settings $settings `
-            -RoleScopeTagIds $RoleScopeTagIds
-
-        #region Assignments
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        Update-DeviceConfigurationPolicyAssignment `
-            -DeviceConfigurationPolicyId $currentPolicy.Identity `
-            -Targets $assignmentsHash
-        #endregion
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentPolicy.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing Account Protection Local User Group Membership Policy {$DisplayName}"
-        Remove-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $currentPolicy.Identity
+        return $result
     }
 }
 
-function Test-TargetResource
+class MSFT_IntuneAccountProtectionLocalUserGroupMembershipPolicyAssignments
 {
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AccessGroup,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of the target assignment.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterType
+    [DscProperty()]
+    [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterId
+    [DscProperty()]
+    [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
+    [System.String] $groupId
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
+    [System.String] $groupDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
+    [System.String] $collectionId
 }
 
-function Export-TargetResource
+class MSFT_MicrosoftGraphIntuneSettingsCatalogAccessGroup
 {
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $dscContent = [System.Text.StringBuilder]::new()
-    $i = 1
-
-    try
-    {
-        # Local user group membership template, family endpointSecurityAccountProtection
-        $policyTemplateID = '22968f54-45fa-486c-848e-f8224aa69772_1'
-        $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
-        if (-not [System.String]::IsNullOrEmpty($Filter))
-        {
-            $Filter = "($Filter) and ($baseFilter)"
-        }
-        else
-        {
-            $Filter = $baseFilter
-        }
-        [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
-            -TemplateId $policyTemplateID `
-            -Filter $Filter
-
-        if ($policies.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($policy in $policies)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            Write-M365DSCHost -Message "    |---[$i/$($policies.Count)] $($policy.Name)" -DeferWrite
-
-            $params = @{
-                Identity              = $policy.Id
-                DisplayName           = $policy.Name
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $policy
-            $Results = Get-TargetResource @params
-            $rawResults = $Results.Clone()
-
-            if ($Results.AccessGroup)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject ([Array]$Results.AccessGroup) -CIMInstanceName MicrosoftGraphIntuneSettingsCatalogAccessGroup
-
-                if ($complexTypeStringResult)
-                {
-                    $Results.AccessGroup = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('AccessGroup') | Out-Null
-                }
-            }
-
-            if ($Results.Assignments)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject ([Array]$Results.Assignments) -CIMInstanceName IntuneAccountProtectionLocalUserGroupMembershipPolicyAssignments
-
-                if ($complexTypeStringResult)
-                {
-                    $Results.Assignments = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Assignments') | Out-Null
-                }
-            }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('AccessGroup', 'Assignments') `
-                -RawResults $rawResults
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            $i++
-
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        if ($_.Exception -like '*401*' -or $_.ErrorDetails.Message -like "*`"ErrorCode`":`"Forbidden`"*" -or `
-                $_.Exception -like '*Unable to perform redirect as Location Header is not set in response*' -or `
-                $_.Exception -like '*Request not applicable to target tenant*')
-        {
-            Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) The current tenant is not registered for Intune."
-        }
-        else
-        {
-            New-M365DSCLogEntry -Message 'Error during Export:' `
-                -Exception $_ `
-                -Source $($MyInvocation.MyCommand.Source) `
-                -TenantId $TenantId `
-                -Credential $Credential
-
-            throw
-        }
-    }
+    [DscProperty()]
+    [System.ComponentModel.Description('The action to use for adding / removing members. Possible values: Add (AddUpdate), Remove (RemoveUpdate), Replace (AddRestrict). Add and Remove do not update unspecified members, whereas Replace will replace all members with the ones specified.')]
+    [System.String] $action
+    [DscProperty()]
+    [System.ComponentModel.Description('The local groups to add / remove the members to / from. List of the following values: `administrators`, `users`, `guests`, `powerusers`, `remotedesktopusers`, `remotemanagementusers`')]
+    [System.String[]] $desc
+    [DscProperty()]
+    [System.ComponentModel.Description('The members to add / remove to / from the group. For AzureAD Users, use the format `AzureAD\\<UserPrincipalName>`. For groups, use the security identifier (SID).')]
+    [System.String[]] $member
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of the selection. Either users / groups from AzureAD, or by manual identifier.')]
+    [System.String] $userselectiontype
 }
 
-Export-ModuleMember -Function *-TargetResource

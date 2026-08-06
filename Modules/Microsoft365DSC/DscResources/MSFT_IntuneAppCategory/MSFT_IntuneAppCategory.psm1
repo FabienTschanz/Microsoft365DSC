@@ -1,465 +1,299 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneAppCategory'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntuneAppCategory : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The name of the app.')]
+    [System.String] $DisplayName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [IntuneAppCategory] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration of the Intune App Category with Id {$Id} and DisplayName {$DisplayName}."
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [IntuneAppCategory]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration of the Intune App Category with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}."
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $instance = $null
-            if (-not [string]::IsNullOrEmpty($Id))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
             {
-                $instance = Get-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $Id -ErrorAction SilentlyContinue
-            }
+                $null = $this.Connect('MicrosoftGraph')
 
-            if ($null -eq $instance)
-            {
-                Write-Verbose -Message "Could not find MobileAppCategory by Id {$Id}."
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
 
-                if (-not [string]::IsNullOrEmpty($DisplayName))
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $instance = $null
+                if (-not [string]::IsNullOrEmpty($this.Id))
                 {
-                    $instance = Get-MgBetaDeviceAppManagementMobileAppCategory `
-                        -All `
-                        -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'" `
-                        -ErrorAction SilentlyContinue
+                    $instance = Get-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $this.Id -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find MobileAppCategory by Id {$($this.Id)}."
+
+                    if (-not [string]::IsNullOrEmpty($this.DisplayName))
+                    {
+                        $instance = Get-MgBetaDeviceAppManagementMobileAppCategory `
+                            -All `
+                            -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'" `
+                            -ErrorAction SilentlyContinue
+                    }
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find MobileAppCategory by DisplayName {$($this.DisplayName)}."
+                    return $this.AsResult($nullResult)
                 }
             }
-
-            if ($null -eq $instance)
+            else
             {
-                Write-Verbose -Message "Could not find MobileAppCategory by DisplayName {$DisplayName}."
-                return $nullResult
+                $instance = $this.ExportedInstance
             }
-        }
-        else
-        {
-            $instance = $Script:exportedInstance
-        }
 
-        $results = @{
-            Id                    = $instance.Id
-            DisplayName           = $instance.DisplayName
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ApplicationSecret     = $ApplicationSecret
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $setParameters = Rename-M365DSCCimInstanceParameter -Properties $setParameters
-    $setParameters.Remove('Id') | Out-Null
-
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Intune App Category with DisplayName {$DisplayName}"
-        New-MgBetaDeviceAppManagementMobileAppCategory -BodyParameter $setParameters
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating the Intune App Category with DisplayName {$DisplayName}"
-        Update-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id -BodyParameter $setParameters
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing the Intune App Category with DisplayName {$DisplayName}"
-        Remove-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $getValue = Get-MgBetaDeviceAppManagementMobileAppCategory -Filter $Filter -ErrorAction Stop
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            $displayedKey = $config.Id
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                DisplayName           = $config.DisplayName
+            $results = @{
+                Id                    = $instance.Id
+                DisplayName           = $instance.DisplayName
                 Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ApplicationSecret     = $this.ApplicationSecret
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
             }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return $this.AsResult($results)
         }
-        return $dscContent.ToString()
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
-    catch
+
+    [void] Set()
     {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-        throw
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+
+        $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $setParameters = Rename-M365DSCCimInstanceParameter -Properties $setParameters
+        $setParameters.Remove('Id') | Out-Null
+
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Creating an Intune App Category with DisplayName {$($this.DisplayName)}"
+            New-MgBetaDeviceAppManagementMobileAppCategory -BodyParameter $setParameters
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating the Intune App Category with DisplayName {$($this.DisplayName)}"
+            Update-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id -BodyParameter $setParameters
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing the Intune App Category with DisplayName {$($this.DisplayName)}"
+            Remove-MgBetaDeviceAppManagementMobileAppCategory -MobileAppCategoryId $currentInstance.Id
+        }
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array] $getValue = Get-MgBetaDeviceAppManagementMobileAppCategory -Filter $this.Filter -ErrorAction Stop
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                $displayedKey = $config.Id
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    DisplayName           = $config.DisplayName
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            IncludedProperties = @('DisplayName')
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneAppCategory] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntuneAppCategory])
+        {
+            return $Values
+        }
+
+        $result = [IntuneAppCategory]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        IncludedProperties = @('DisplayName')
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

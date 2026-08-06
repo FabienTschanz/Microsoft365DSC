@@ -1,555 +1,361 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneDeviceComplianceScriptLinux'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
-$Script:PropertiesToRetrieve = @('id', 'displayName', 'description', 'settingDefinitionId', 'settingInstance')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntuneDeviceComplianceScriptLinux : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of the compliance script.')]
+    [System.String] $Description
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the compliance script.')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [System.String]
-        $DiscoveryScript,
-        #endregion
+    [DscProperty()]
+    [System.ComponentModel.Description('The compliance discovery script. Cannot be empty.')]
+    [System.String] $DiscoveryScript
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    IntuneDeviceComplianceScriptLinux() : base()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        $this.ResourceCache['PropertiesToRetrieve'] =  @('id', 'displayName', 'description', 'settingDefinitionId', 'settingInstance')
     }
 
-    Write-Verbose -Message "Getting configuration for the Intune Device Compliance Script for Linux with Id {$Id} and Name {$DisplayName}"
-
-    try
+    [IntuneDeviceComplianceScriptLinux] Get()
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [IntuneDeviceComplianceScriptLinux]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration for the Intune Device Compliance Script for Linux with Id {$($this.Id)} and Name {$($this.DisplayName)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $getValue = $null
-            #region resource generator code
-            if (-not [System.String]::IsNullOrEmpty($Id))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
             {
-                $getValue = Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($Id)?`$select=$($Script:PropertiesToRetrieve -join ',')" `
-                    -Method GET `
-                    -SkipHttpErrorCheck `
-                    -ErrorAction SilentlyContinue
-                if ($getValue -is [hashtable] -and $getValue.ContainsKey('error'))
-                {
-                    # Policy does not exist, set it to $null
-                    $getValue = $null
-                }
-            }
+                $null = $this.Connect('MicrosoftGraph')
 
-            if ($null -eq $getValue)
-            {
-                Write-Verbose -Message "Could not find an Intune Device Compliance Script for Linux with Id {$Id}"
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
 
-                if (-not [System.String]::IsNullOrEmpty($DisplayName))
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $getValue = $null
+                #region resource generator code
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    $getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$filter=DisplayName eq '$($DisplayName -replace "'", "''")' and settingDefinitionId eq 'linux_customcompliance_discoveryscript_reusablesetting'&select=$($Script:PropertiesToRetrieve -join ',')" `
+                    $getValue = Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($this.Id)?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')" `
                         -Method GET `
                         -SkipHttpErrorCheck `
-                        -ErrorAction SilentlyContinue).value
-                    if ($getValue -is [array] -and $getValue.Count -eq 0)
+                        -ErrorAction SilentlyContinue
+                    if ($getValue -is [hashtable] -and $getValue.ContainsKey('error'))
                     {
+                        # Policy does not exist, set it to $null
                         $getValue = $null
                     }
                 }
+
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Intune Device Compliance Script for Linux with Id {$($this.Id)}"
+
+                    if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
+                    {
+                        $getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$filter=DisplayName eq '$($this.DisplayName -replace "'", "''")' and settingDefinitionId eq 'linux_customcompliance_discoveryscript_reusablesetting'&select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')" `
+                            -Method GET `
+                            -SkipHttpErrorCheck `
+                            -ErrorAction SilentlyContinue).value
+                        if ($getValue -is [array] -and $getValue.Count -eq 0)
+                        {
+                            $getValue = $null
+                        }
+                    }
+                }
+                #endregion
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Intune Device Compliance Script for Linux with Name {$($this.DisplayName)}."
+                    return $this.AsResult($nullResult)
+                }
             }
-            #endregion
-            if ($null -eq $getValue)
+            else
             {
-                Write-Verbose -Message "Could not find an Intune Device Compliance Script for Linux with Name {$DisplayName}."
-                return $nullResult
+                $getValue = $this.ExportedInstance
             }
-        }
-        else
-        {
-            $getValue = $Script:exportedInstance
-        }
-        $Id = $getValue.id
-        Write-Verbose -Message "An Intune Device Compliance Script for Linux with Id {$Id} and Name {$DisplayName} was found"
+            $this.Id = $getValue.id
+            Write-Verbose -Message "An Intune Device Compliance Script for Linux with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
 
-        $results = @{
-            #region resource generator code
-            Description           = $getValue.description
-            DiscoveryScript       = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($getValue.settingInstance.simpleSettingValue.value))
-            DisplayName           = $getValue.displayName
-            Id                    = $getValue.id
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            #endregion
-        }
-
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $DiscoveryScript,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of the Intune Device Compliance Script for Linux with Id {$Id} and Name {$DisplayName}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $boundParameters.Remove('DiscoveryScript') | Out-Null
-    $boundParameters.Add('settingDefinitionId', 'linux_customcompliance_discoveryscript_reusablesetting')
-    $boundParameters.Add('settingInstance', @{
-            '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-            settingDefinitionId = 'linux_customcompliance_discoveryscript_reusablesetting'
-            simpleSettingValue  = @{
-                '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                value         = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($DiscoveryScript))
+            $results = @{
+                #region resource generator code
+                Description           = $getValue.description
+                DiscoveryScript       = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($getValue.settingInstance.simpleSettingValue.value))
+                DisplayName           = $getValue.displayName
+                Id                    = $getValue.id
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                #endregion
             }
-        })
 
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Intune Device Compliance Script for Linux with Name {$DisplayName}"
-
-        $createParameters = ([Hashtable]$boundParameters).Clone()
-        $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
-        $createParameters.Remove('Id') | Out-Null
-
-        #region resource generator code
-        $null = Invoke-MgGraphRequest -Uri '/beta/deviceManagement/reusablePolicySettings' -Method POST -Body $($createParameters | ConvertTo-Json -Depth 10)
-        #endregion
-    }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating the Intune Device Compliance Script for Linux with Id {$($currentInstance.Id)}"
-
-        $updateParameters = ([Hashtable]$boundParameters).Clone()
-        $updateParameters = Rename-M365DSCCimInstanceParameter -Properties $updateParameters
-        $updateParameters.Remove('Id') | Out-Null
-
-        #region resource generator code
-        Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method PUT -Body $($updateParameters | ConvertTo-Json -Depth 10)
-        #endregion
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing the Intune Device Compliance Script for Linux with Id {$($currentInstance.Id)}"
-        #region resource generator code
-        try
-        {
-            Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method DELETE
+            return $this.AsResult($results)
         }
         catch
         {
-            $errorMessage = "Failed to remove the Intune Device Compliance Script for Linux with Id {$($currentInstance.Id)} and Name {$($currentInstance.DisplayName)}."
-            $errorMessage += ' Please make sure it is not referenced by a Linux compliance policy.'
-            throw $errorMessage
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
         }
-        #endregion
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $DiscoveryScript,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
     }
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
+    [void] Set()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        $baseFilter = "settingDefinitionId eq 'linux_customcompliance_discoveryscript_reusablesetting'"
-        if (-not [System.String]::IsNullOrEmpty($Filter))
+        if ($this.RequiresPowerShellCore())
         {
-            $Filter = "($Filter) and ($baseFilter)"
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
         }
-        else
-        {
-            $Filter = $baseFilter
-        }
-        [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($Script:PropertiesToRetrieve -join ',')&`$filter=$Filter" `
-            -Method GET `
-            -SkipHttpErrorCheck `
-            -ErrorAction Stop).value
+
+        Write-Verbose -Message "Setting configuration of the Intune Device Compliance Script for Linux with Id {$($this.Id)} and Name {$($this.DisplayName)}"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
         #endregion
 
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
+        $currentInstance = $this.Get().ToHashtable()
+        $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $boundParameters.Remove('DiscoveryScript') | Out-Null
+        $boundParameters.Add('settingDefinitionId', 'linux_customcompliance_discoveryscript_reusablesetting')
+        $boundParameters.Add('settingInstance', @{
+                '@odata.type'       = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
+                settingDefinitionId = 'linux_customcompliance_discoveryscript_reusablesetting'
+                simpleSettingValue  = @{
+                    '@odata.type' = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                    value         = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($this.DiscoveryScript))
+                }
+            })
+
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            Write-Verbose -Message "Creating an Intune Device Compliance Script for Linux with Name {$($this.DisplayName)}"
+
+            $createParameters = ([Hashtable]$boundParameters).Clone()
+            $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
+            $createParameters.Remove('Id') | Out-Null
+
+            #region resource generator code
+            $null = Invoke-MgGraphRequest -Uri '/beta/deviceManagement/reusablePolicySettings' -Method POST -Body $($createParameters | ConvertTo-Json -Depth 10)
+            #endregion
         }
-        else
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
+            Write-Verbose -Message "Updating the Intune Device Compliance Script for Linux with Id {$($currentInstance.Id)}"
+
+            $updateParameters = ([Hashtable]$boundParameters).Clone()
+            $updateParameters = Rename-M365DSCCimInstanceParameter -Properties $updateParameters
+            $updateParameters.Remove('Id') | Out-Null
+
+            #region resource generator code
+            Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method PUT -Body $($updateParameters | ConvertTo-Json -Depth 10)
+            #endregion
         }
-        foreach ($config in $getValue)
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
-            $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.displayName))
+            Write-Verbose -Message "Removing the Intune Device Compliance Script for Linux with Id {$($currentInstance.Id)}"
+            #region resource generator code
+            try
             {
-                $displayedKey = $config.displayName
+                Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method DELETE
             }
-            elseif (-not [string]::IsNullOrEmpty($config.name))
+            catch
             {
-                $displayedKey = $config.name
+                $errorMessage = "Failed to remove the Intune Device Compliance Script for Linux with Id {$($currentInstance.Id)} and Name {$($currentInstance.DisplayName)}."
+                $errorMessage += ' Please make sure it is not referenced by a Linux compliance policy.'
+                throw $errorMessage
             }
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                DisplayName           = $config.DisplayName
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            #endregion
         }
-        return $dscContent.ToString()
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            #region resource generator code
+            $baseFilter = "settingDefinitionId eq 'linux_customcompliance_discoveryscript_reusablesetting'"
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $this.Filter = "($($this.Filter)) and ($baseFilter)"
+            }
+            else
+            {
+                $this.Filter = $baseFilter
+            }
+            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($this.Filter)" `
+                -Method GET `
+                -SkipHttpErrorCheck `
+                -ErrorAction Stop).value
+            #endregion
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                $displayedKey = $config.Id
+                if (-not [String]::IsNullOrEmpty($config.displayName))
+                {
+                    $displayedKey = $config.displayName
+                }
+                elseif (-not [string]::IsNullOrEmpty($config.name))
+                {
+                    $displayedKey = $config.name
+                }
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    DisplayName           = $config.DisplayName
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneDeviceComplianceScriptLinux] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntuneDeviceComplianceScriptLinux])
+        {
+            return $Values
+        }
+
+        $result = [IntuneDeviceComplianceScriptLinux]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
-
-Export-ModuleMember -Function *-TargetResource

@@ -21,12 +21,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Invoke-Command -ScriptBlock $Global:DscHelper.InitializeScript -NoNewScope
         BeforeAll {
             $secpasswd = ConvertTo-SecureString ((New-Guid).ToString()) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -106,49 +106,39 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Description                                = 'FakeStringValue'
                     DisplayName                                = 'FakeStringValue'
                     Id                                         = 'FakeStringValue'
-                    proxyServer                                = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftvpnProxyServer `
-                        -Property @{
+                    proxyServer                                = @(
+                        ([MSFT_MicrosoftvpnProxyServer] @{
                             port                               = 80
                             automaticConfigurationScriptUrl    = 'https://www.test.com'
                             address                            = 'proxy.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    servers                                    = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftGraphvpnServer `
-                        -Property @{
+                    servers                                    = @(
+                        ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer                    = $True
                             description                        = 'server'
                             address                            = 'vpn.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    customData                                 = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_CustomData `
-                        -Property @{
+                    customData                                 = @(
+                        ([MSFT_customData] @{
                             key                                = 'FakeStringValue'
                             value                              = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
-                    customKeyValueData                         = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_CustomData `
-                        -Property @{
+                    customKeyValueData                         = @(
+                        ([MSFT_customKeyValueData] @{
                             name                               = 'FakeStringValue'
                             value                              = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
-                     targetedMobileApps                      = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_targetedMobileApps `
-                        -Property @{
+                     targetedMobileApps                      = @(
+                        ([MSFT_targetedMobileApps] @{
                             name                               = 'FakeStringValue'
                             publisher                          = 'FakeStringValue'
                             appStoreUrl                        = 'FakeStringValue'
                             appId                              = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure                                     = 'Present'
                     Credential                                 = $Credential
@@ -160,15 +150,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return absent from the Get method' {
-                    (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                    ((New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should create the IntuneVPNConfigurationPolicyAndroidWork from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Set()
                 Should -Invoke -CommandName 'New-MgBetaDeviceManagementDeviceConfiguration' -Exactly 1
             }
         }
@@ -182,49 +172,39 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authenticationMethod                      = 'usernameAndPassword'
                     connectionName                            = 'FakeStringValue'
                     connectionType                            = 'ciscoAnyConnect'
-                    proxyServer                               = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftvpnProxyServer `
-                        -Property @{
+                    proxyServer                               = @(
+                        ([MSFT_MicrosoftvpnProxyServer] @{
                             port                              = 80
                             automaticConfigurationScriptUrl   = 'https://www.test.com'
                             address                           = 'proxy.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    servers                                   = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftGraphvpnServer `
-                        -Property @{
+                    servers                                   = @(
+                        ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer                   = $True
                             description                       = 'server'
                             address                           = 'vpn.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    customData                                = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_CustomData `
-                        -Property @{
+                    customData                                = @(
+                        ([MSFT_customData] @{
                            key                                = 'FakeStringValue'
                             value                             = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
-                    customKeyValueData                        = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_CustomData `
-                        -Property @{
+                    customKeyValueData                        = @(
+                        ([MSFT_customKeyValueData] @{
                             name                              = 'UpdatedName' # Updated property
                             value                             = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
-                    targetedMobileApps                      = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_targetedMobileApps `
-                        -Property @{
+                    targetedMobileApps                      = @(
+                        ([MSFT_targetedMobileApps] @{
                             name                             = 'FakeStringValue'
                             publisher                        = 'FakeStringValue'
                             appStoreUrl                      = 'FakeStringValue'
                             appId                            = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure                                   = 'Present'
                     Credential                               = $Credential
@@ -232,15 +212,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should update the IntuneVPNConfigurationPolicyAndroidWork from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
 
             }
@@ -254,49 +234,39 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authenticationMethod                     = 'usernameAndPassword'
                     connectionName                           = 'FakeStringValue'
                     connectionType                           = 'ciscoAnyConnect'
-                    proxyServer                              = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftvpnProxyServer `
-                        -Property @{
+                    proxyServer                              = @(
+                        ([MSFT_MicrosoftvpnProxyServer] @{
                             port                             = 80
                             automaticConfigurationScriptUrl  = 'https://www.test.com'
                             address                          = 'proxy.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    servers                                   = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftGraphvpnServer `
-                        -Property @{
+                    servers                                   = @(
+                        ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer                  = $True
                             description                      = 'server'
                             address                          = 'vpn.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    customData                               = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_CustomData `
-                        -Property @{
+                    customData                               = @(
+                        ([MSFT_customData] @{
                             key                              = 'FakeStringValue'
                             value                            = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
-                    customKeyValueData      = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_CustomData `
-                        -Property @{
+                    customKeyValueData      = @(
+                        ([MSFT_customKeyValueData] @{
                             name                            = 'FakeStringValue'
                             value                           = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
-                    targetedMobileApps                    = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_targetedMobileApps `
-                        -Property @{
+                    targetedMobileApps                    = @(
+                        ([MSFT_targetedMobileApps] @{
                             name                            = 'FakeStringValue'
                             publisher                       = 'FakeStringValue'
                             appStoreUrl                     = 'FakeStringValue'
                             appId                           = 'FakeStringValue'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure                                  = 'Present'
                     Credential                              = $Credential
@@ -304,7 +274,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -316,23 +286,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authenticationMethod                    = 'usernameAndPassword'
                     connectionName                          = 'FakeStringValue'
                     connectionType                          = 'ciscoAnyConnect'
-                    proxyServer                             = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftvpnProxyServer `
-                        -Property @{
+                    proxyServer                             = @(
+                        ([MSFT_MicrosoftvpnProxyServer] @{
                             port = 80
                             automaticConfigurationScriptUrl = 'https://www.test.com'
                             address                         = 'proxy.test.com'
-                        } -ClientOnly)
+                        })
                     )
-                    servers                                 = [CimInstance[]]@(
-                        (New-CimInstance `
-                        -ClassName MSFT_MicrosoftGraphvpnServer `
-                        -Property @{
+                    servers                                 = @(
+                        ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer                 = $True
                             description                     = 'server'
                             address                         = 'vpn.test.com'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure                                  = 'Absent'
                     Credential                              = $Credential
@@ -340,15 +306,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                    (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                    ((New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should remove the IntuneVPNConfigurationPolicyAndroidWork from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -Property $testParams).Set()
                 Should -Invoke -CommandName Remove-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -363,7 +329,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'IntuneVPNConfigurationPolicyAndroidWork' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

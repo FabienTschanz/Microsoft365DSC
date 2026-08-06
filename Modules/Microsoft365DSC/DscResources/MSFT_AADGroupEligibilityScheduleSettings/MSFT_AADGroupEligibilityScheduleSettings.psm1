@@ -1,749 +1,634 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADGroupEligibilityScheduleSettings'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupDisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Group display name.')]
+    [System.String] $GroupDisplayName
 
-        [Parameter()]
-        [System.String]
-        $RuleType,
+    [DscProperty()]
+    [System.ComponentModel.Description('Rule Type.')]
+    [System.String] $RuleType
 
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('member', 'owner')]
-        [System.String]
-        $PIMGroupRole,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('PIM Group Role.')]
+    [ValidateSet('member', 'owner')]
+    [System.String] $PIMGroupRole
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExpirationRule,
+    [DscProperty()]
+    [System.ComponentModel.Description('Expiration Rule.')]
+    [MSFT_AADRoleManagementPolicyExpirationRule] $ExpirationRule
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $NotificationRule,
+    [DscProperty()]
+    [System.ComponentModel.Description('Notification Rule.')]
+    [MSFT_AADRoleManagementPolicyNotificationRule] $NotificationRule
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $EnablementRule,
+    [DscProperty()]
+    [System.ComponentModel.Description('Enablement Rule.')]
+    [MSFT_AADRoleManagementPolicyEnablementRule] $EnablementRule
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ApprovalRule,
+    [DscProperty()]
+    [System.ComponentModel.Description('Approval Rule.')]
+    [MSFT_AADRoleManagementPolicyApprovalRule] $ApprovalRule
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $AuthenticationContextRule,
+    [DscProperty()]
+    [System.ComponentModel.Description('Authentication Context Rule.')]
+    [MSFT_AADRoleManagementPolicyAuthenticationContextRule] $AuthenticationContextRule
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [AADGroupEligibilityScheduleSettings] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for the Azure AD Group Eligibility Schedule Settings with Id {$Id} and GroupDisplayName {$GroupDisplayName}"
-
-    try
-    {
-        if ($null -eq $Script:exportedInstance)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $policyId = $null
+        if ($this.RequiresPowerShellCore())
         {
+            $remote = [AADGroupEligibilityScheduleSettings]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+        Write-Verbose -Message "Getting configuration for the Azure AD Group Eligibility Schedule Settings with Id {$($this.Id)} and GroupDisplayName {$($this.GroupDisplayName)}"
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-
-            #get groupId
-            if ($GroupDisplayName.Contains("'"))
+        try
+        {
+            if ($null -eq $this.ExportedInstance)
             {
-                $GroupDisplayName = $GroupDisplayName -replace "'", "''"
-            }
-            $filter = "DisplayName eq '$GroupDisplayName'"
-            [array]$Group = Get-MgGroup -Filter $filter -ErrorAction Stop
-            if ($Group.Count -gt 1)
-            {
-                throw "Duplicate AzureAD Groups named $GroupDisplayName exist in tenant"
-            }
 
-            $getValue = $null
+                $null = $this.Connect('MicrosoftGraph')
 
-            $assignment = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '$($group.Id)' and scopeType eq 'Group' and RoleDefinitionId eq '$PIMGroupRole'"
-            if ($null -eq $assignment)
-            {
-                Write-Verbose -Message "Could not find an Azure AD PIM Group with DisplayName {$GroupDisplayName} and Id {$id}."
-                return $nullResult
-            }
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
 
-            $policyId = $assignment.PolicyId
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
 
-            $getValue = Get-MgBetaPolicyRoleManagementPolicyRule `
-                -UnifiedRoleManagementPolicyId $policyId `
-                -UnifiedRoleManagementPolicyRuleId $Id -ErrorAction SilentlyContinue
+                $nullResult = $this.GetBoundParameters()
 
-            if ($null -eq $getValue)
-            {
-                Write-Verbose -Message "Could not find an Azure AD Group PIM Policy Rule with Id {$Id} and PolicyId {$policyId}."
-                return $nullResult
-            }
-        }
-        else
-        {
-            $getValue = $Script:exportedInstance
-        }
-        $Id = $getValue.Id
-
-        Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$Id} and PolicyId {$policyId} was found"
-        $rule = Get-M365DSCRoleManagementPolicyRuleObject -Rule $getValue
-
-        $results = @{
-            Id                        = $Id
-            GroupDisplayName          = $groupDisplayName
-            RuleType                  = $rule.ruleType
-            PIMGroupRole              = $PIMGroupRole
-            ExpirationRule            = $rule.expirationRule
-            NotificationRule          = $rule.notificationRule
-            EnablementRule            = $rule.enablementRule
-            ApprovalRule              = $rule.approvalRule
-            AuthenticationContextRule = $rule.authenticationContextRule
-            Credential                = $Credential
-            ApplicationId             = $ApplicationId
-            TenantId                  = $TenantId
-            ApplicationSecret         = $ApplicationSecret
-            CertificateThumbprint     = $CertificateThumbprint
-            CertificatePath           = $CertificatePath
-            CertificatePassword       = $CertificatePassword
-            ManagedIdentity           = $ManagedIdentity.IsPresent
-        }
-
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupDisplayName,
-
-        [Parameter()]
-        [System.String]
-        $RuleType,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('member', 'owner')]
-        [System.String]
-        $PIMGroupRole,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExpirationRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $NotificationRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $EnablementRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ApprovalRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $AuthenticationContextRule,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of the AAD Group Eligibility Schedule Settings with Id {$Id} and GroupDisplayName {$GroupDisplayName}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    Write-Verbose -Message "Updating the Azure AD PIM Group Management Policy Rule with Id {$($currentInstance.Id)}"
-    $body = @{
-        '@odata.type' = $ruleType
-    }
-
-    switch ($ruleType)
-    {
-        '#microsoft.graph.unifiedRoleManagementPolicyExpirationRule'
-        {
-            $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $expirationRule
-        }
-        '#microsoft.graph.unifiedRoleManagementPolicyNotificationRule'
-        {
-            $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $notificationRule
-        }
-        '#microsoft.graph.unifiedRoleManagementPolicyEnablementRule'
-        {
-            $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $enablementRule
-        }
-        '#microsoft.graph.unifiedRoleManagementPolicyApprovalRule'
-        {
-            $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $approvalRule
-        }
-        '#microsoft.graph.unifiedRoleManagementPolicyAuthenticationContextRule'
-        {
-            $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $authenticationContextRule
-        }
-    }
-
-    foreach ($key in $ruleHashmap.Keys)
-    {
-        $body.Add($key, $ruleHashmap.$key)
-    }
-
-    $filter = "DisplayName eq '$($GroupDisplayName -replace "'", "''")'"
-    [array]$Group = Get-MgGroup -Filter $filter -ErrorAction Stop
-    if ($Group.Count -gt 1)
-    {
-        throw "Duplicate AzureAD Groups named $GroupDisplayName exist in tenant"
-    }
-
-    $assignment = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '$($group.Id)' and scopeType eq 'Group' and RoleDefinitionId eq '$PIMGroupRole'"
-    if ($null -eq $assignment)
-    {
-        Write-Verbose -Message "Could not find an Azure AD PIM Group with DisplayName {$GroupDisplayName} and Id {$id}."
-        return $nullResult
-    }
-
-    $policyId = $assignment.PolicyId
-
-    Update-MgBetaPolicyRoleManagementPolicyRule `
-        -UnifiedRoleManagementPolicyId $policyId `
-        -UnifiedRoleManagementPolicyRuleId $currentInstance.Id `
-        -BodyParameter $body
-    #endregion
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupDisplayName,
-
-        [Parameter()]
-        [System.String]
-        $RuleType,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('member', 'owner')]
-        [System.String]
-        $PIMGroupRole,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExpirationRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $NotificationRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $EnablementRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ApprovalRule,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $AuthenticationContextRule,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        $Script:ExportMode = $true
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/privilegedAccess/aadGroups/resources'
-        [array]$groups = (Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction SilentlyContinue).value
-
-        $dscContent = [System.Text.StringBuilder]::new()
-        Write-M365DSCHost -Message "`r`n" -DeferWrite
-        $j = 1
-        $PIMGroupRole = @('member', 'owner')
-
-        $batchRequests = @()
-        foreach ($group in $groups)
-        {
-            $batchRequests += @{
-                id     = $group.Id
-                method = 'GET'
-                url    = "/policies/roleManagementPolicyAssignments?filter=scopeId eq '$($group.Id)' and scopeType eq 'Group'&`$expand=policy(`$expand=rules)"
-            }
-        }
-
-        $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
-
-        foreach ($group in $groups)
-        {
-            foreach ($PIMRole in $PIMGroupRole)
-            {
-                $assignment = ($batchResponses | Where-Object { $_.id -eq $group.Id }).body.value `
-                | Where-Object { $_.roleDefinitionId -eq $PIMRole }
-                $rules = $assignment.policy.rules
-
-                Write-M365DSCHost -Message "    |---[$j/$($groups.Count * 2)] $($group.displayName) ($PIMRole)`r`n" -DeferWrite
-                $i = 1
-                foreach ($rule in $rules)
+                #get groupId
+                if ($this.GroupDisplayName.Contains("'"))
                 {
-                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-                    {
-                        $Global:M365DSCExportResourceInstancesCount++
-                    }
-                    Write-M365DSCHost -Message "        |---[$i/$($rules.Count)] $($group.DisplayName)_$($rule.Id)" -DeferWrite
-                    $Params = @{
-                        GroupDisplayName      = $group.DisplayName
-                        Id                    = $rule.Id
-                        PIMGroupRole          = $PIMRole
-                        Credential            = $Credential
-                        ApplicationId         = $ApplicationId
-                        TenantId              = $TenantId
-                        ApplicationSecret     = $ApplicationSecret
-                        CertificateThumbprint = $CertificateThumbprint
-                        CertificatePath       = $CertificatePath
-                        CertificatePassword   = $CertificatePassword
-                        ManagedIdentity       = $ManagedIdentity.IsPresent
-                        AccessTokens          = $AccessTokens
-                    }
-
-                    $Script:exportedInstance = $rule
-                    $Results = Get-TargetResource @Params
-                    $rawResults = $Results.Clone()
-
-                    if ($null -ne $Results.ExpirationRule)
-                    {
-                        $complexMapping = @(
-                            @{
-                                Name            = 'expirationRule'
-                                CimInstanceName = 'AADRoleManagementPolicyExpirationRule'
-                                IsRequired      = $False
-                            }
-                        )
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.ExpirationRule`
-                            -CIMInstanceName 'AADRoleManagementPolicyExpirationRule' `
-                            -ComplexTypeMapping $complexMapping
-
-                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                        {
-                            $Results.ExpirationRule = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('ExpirationRule') | Out-Null
-                        }
-                    }
-
-                    if ($null -ne $Results.NotificationRule)
-                    {
-                        $complexMapping = @(
-                            @{
-                                Name            = 'notificationRule'
-                                CimInstanceName = 'AADRoleManagementPolicyNotificationRule'
-                                IsRequired      = $False
-                            }
-                        )
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.NotificationRule`
-                            -CIMInstanceName 'AADRoleManagementPolicyNotificationRule' `
-                            -ComplexTypeMapping $complexMapping
-
-                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                        {
-                            $Results.NotificationRule = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('NotificationRule') | Out-Null
-                        }
-                    }
-
-                    if ($null -ne $Results.EnablementRule)
-                    {
-                        $complexMapping = @(
-                            @{
-                                Name            = 'enablementRule'
-                                CimInstanceName = 'AADRoleManagementPolicyEnablementRule'
-                                IsRequired      = $False
-                            }
-                        )
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.EnablementRule`
-                            -CIMInstanceName 'AADRoleManagementPolicyEnablementRule' `
-                            -ComplexTypeMapping $complexMapping
-
-                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                        {
-                            $Results.EnablementRule = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('EnablementRule') | Out-Null
-                        }
-                    }
-
-                    if ($null -ne $Results.AuthenticationContextRule)
-                    {
-                        $complexMapping = @(
-                            @{
-                                Name            = 'authenticationContextRule'
-                                CimInstanceName = 'AADRoleManagementPolicyAuthenticationContextRule'
-                                IsRequired      = $False
-                            }
-                        )
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.AuthenticationContextRule`
-                            -CIMInstanceName 'AADRoleManagementPolicyAuthenticationContextRule' `
-                            -ComplexTypeMapping $complexMapping
-
-                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                        {
-                            $Results.AuthenticationContextRule = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('AuthenticationContextRule') | Out-Null
-                        }
-                    }
-
-                    if ($null -ne $Results.ApprovalRule)
-                    {
-                        $complexMapping = @(
-                            @{
-                                Name            = 'approvalRule'
-                                CimInstanceName = 'AADRoleManagementPolicyApprovalRule'
-                                IsRequired      = $False
-                            }
-                            @{
-                                Name            = 'setting'
-                                CimInstanceName = 'AADRoleManagementPolicyApprovalSettings'
-                                IsRequired      = $False
-                            }
-                            @{
-                                Name            = 'approvalStages'
-                                CimInstanceName = 'AADRoleManagementPolicyApprovalStage'
-                                IsRequired      = $False
-                            }
-                            @{
-                                Name            = 'escalationApprovers'
-                                CimInstanceName = 'AADRoleManagementPolicySubjectSet'
-                                IsRequired      = $False
-                            }
-                            @{
-                                Name            = 'primaryApprovers'
-                                CimInstanceName = 'AADRoleManagementPolicySubjectSet'
-                                IsRequired      = $False
-                            }
-                        )
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.ApprovalRule`
-                            -CIMInstanceName 'AADRoleManagementPolicyApprovalRule' `
-                            -ComplexTypeMapping $complexMapping
-
-                        if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                        {
-                            $Results.ApprovalRule = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('ApprovalRule') | Out-Null
-                        }
-                    }
-
-                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                        -ConnectionMode $ConnectionMode `
-                        -ModulePath $PSScriptRoot `
-                        -Results $Results `
-                        -Credential $Credential `
-                        -NoEscape @('ExpirationRule', 'NotificationRule', 'EnablementRule', 'ApprovalRule', 'AuthenticationContextRule') `
-                        -RawResults $rawResults
-
-                    [void]$dscContent.Append($currentDSCBlock)
-                    Save-M365DSCPartialExport -Content $currentDSCBlock `
-                        -FileName $Global:PartialExportFileName
-                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-                    $i++
+                    $this.GroupDisplayName = $this.GroupDisplayName -replace "'", "''"
                 }
-                $j++
+                $this.filter = "DisplayName eq '$($this.GroupDisplayName)'"
+                [array]$Group = Get-MgGroup -Filter $this.filter -ErrorAction Stop
+                if ($Group.Count -gt 1)
+                {
+                    throw "Duplicate AzureAD Groups named $($this.GroupDisplayName) exist in tenant"
+                }
+
+                $getValue = $null
+
+                $assignment = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '$($group.Id)' and scopeType eq 'Group' and RoleDefinitionId eq '$($this.PIMGroupRole)'"
+                if ($null -eq $assignment)
+                {
+                    Write-Verbose -Message "Could not find an Azure AD PIM Group with DisplayName {$($this.GroupDisplayName)} and Id {$($this.id)}."
+                    return $this.AsResult($nullResult)
+                }
+
+                $policyId = $assignment.PolicyId
+
+                $getValue = Get-MgBetaPolicyRoleManagementPolicyRule `
+                    -UnifiedRoleManagementPolicyId $policyId `
+                    -UnifiedRoleManagementPolicyRuleId $this.Id -ErrorAction SilentlyContinue
+
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Azure AD Group PIM Policy Rule with Id {$($this.Id)} and PolicyId {$policyId}."
+                    return $this.AsResult($nullResult)
+                }
+            }
+            else
+            {
+                $getValue = $this.ExportedInstance
+            }
+            $this.Id = $getValue.Id
+
+            Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$($this.Id)} and PolicyId {$policyId} was found"
+            $rule = Get-AADGroupEligibilityScheduleSettingsM365DSCRoleManagementPolicyRuleObject -Rule $getValue
+
+            $results = @{
+                Id                        = $this.Id
+                GroupDisplayName          = $this.groupDisplayName
+                RuleType                  = $rule.ruleType
+                PIMGroupRole              = $this.PIMGroupRole
+                ExpirationRule            = $rule.expirationRule
+                NotificationRule          = $rule.notificationRule
+                EnablementRule            = $rule.enablementRule
+                ApprovalRule              = $rule.approvalRule
+                AuthenticationContextRule = $rule.authenticationContextRule
+                Credential                = $this.Credential
+                ApplicationId             = $this.ApplicationId
+                TenantId                  = $this.TenantId
+                ApplicationSecret         = $this.ApplicationSecret
+                CertificateThumbprint     = $this.CertificateThumbprint
+                CertificatePath           = $this.CertificatePath
+                CertificatePassword       = $this.CertificatePassword
+                ManagedIdentity           = $this.ManagedIdentity.IsPresent
+            }
+
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $ruleHashmap = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting configuration of the AAD Group Eligibility Schedule Settings with Id {$($this.Id)} and GroupDisplayName {$($this.GroupDisplayName)}"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+
+        Write-Verbose -Message "Updating the Azure AD PIM Group Management Policy Rule with Id {$($currentInstance.Id)}"
+        $body = @{
+            '@odata.type' = $this.ruleType
+        }
+
+        switch ($this.ruleType)
+        {
+            '#microsoft.graph.unifiedRoleManagementPolicyExpirationRule'
+            {
+                $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.expirationRule
+            }
+            '#microsoft.graph.unifiedRoleManagementPolicyNotificationRule'
+            {
+                $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.notificationRule
+            }
+            '#microsoft.graph.unifiedRoleManagementPolicyEnablementRule'
+            {
+                $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.enablementRule
+            }
+            '#microsoft.graph.unifiedRoleManagementPolicyApprovalRule'
+            {
+                $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.approvalRule
+            }
+            '#microsoft.graph.unifiedRoleManagementPolicyAuthenticationContextRule'
+            {
+                $ruleHashmap = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.authenticationContextRule
             }
         }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
+        foreach ($key in $ruleHashmap.Keys)
+        {
+            $body.Add($key, $ruleHashmap.$key)
+        }
+
+        $this.filter = "DisplayName eq '$($this.GroupDisplayName -replace "'", "''")'"
+        [array]$Group = Get-MgGroup -Filter $this.filter -ErrorAction Stop
+        if ($Group.Count -gt 1)
+        {
+            throw "Duplicate AzureAD Groups named $($this.GroupDisplayName) exist in tenant"
+        }
+
+        $assignment = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '$($group.Id)' and scopeType eq 'Group' and RoleDefinitionId eq '$($this.PIMGroupRole)'"
+        if ($null -eq $assignment)
+        {
+            Write-Verbose -Message "Could not find an Azure AD PIM Group with DisplayName {$($this.GroupDisplayName)} and Id {$($this.id)}."
+            return
+        }
+
+        $policyId = $assignment.PolicyId
+
+        Update-MgBetaPolicyRoleManagementPolicyRule `
+            -UnifiedRoleManagementPolicyId $policyId `
+            -UnifiedRoleManagementPolicyRuleId $currentInstance.Id `
+            -BodyParameter $body
+        #endregion
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            $this.ResourceCache['ExportMode'] = $true
+            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/privilegedAccess/aadGroups/resources'
+            [array]$groups = (Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction SilentlyContinue).value
+
+            $dscContent = [System.Text.StringBuilder]::new()
+            Write-M365DSCHost -Message "`r`n" -DeferWrite
+            $j = 1
+            $pimGroupRoles = @('member', 'owner')
+
+            $batchRequests = @()
+            foreach ($group in $groups)
+            {
+                $batchRequests += @{
+                    id     = $group.Id
+                    method = 'GET'
+                    url    = "/policies/roleManagementPolicyAssignments?filter=scopeId eq '$($group.Id)' and scopeType eq 'Group'&`$expand=policy(`$expand=rules)"
+                }
+            }
+
+            $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+
+            foreach ($group in $groups)
+            {
+                foreach ($PIMRole in $pimGroupRoles)
+                {
+                    $assignment = ($batchResponses | Where-Object { $_.id -eq $group.Id }).body.value `
+                    | Where-Object { $_.roleDefinitionId -eq $PIMRole }
+                    $rules = $assignment.policy.rules
+
+                    Write-M365DSCHost -Message "    |---[$j/$($groups.Count * 2)] $($group.displayName) ($PIMRole)`r`n" -DeferWrite
+                    $i = 1
+                    foreach ($rule in $rules)
+                    {
+                        if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                        {
+                            $Global:M365DSCExportResourceInstancesCount++
+                        }
+                        Write-M365DSCHost -Message "        |---[$i/$($rules.Count)] $($group.DisplayName)_$($rule.Id)" -DeferWrite
+                        $Params = @{
+                            GroupDisplayName      = $group.DisplayName
+                            Id                    = $rule.Id
+                            PIMGroupRole          = $PIMRole
+                            Credential            = $this.Credential
+                            ApplicationId         = $this.ApplicationId
+                            TenantId              = $this.TenantId
+                            ApplicationSecret     = $this.ApplicationSecret
+                            CertificateThumbprint = $this.CertificateThumbprint
+                            CertificatePath       = $this.CertificatePath
+                            CertificatePassword   = $this.CertificatePassword
+                            ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                            AccessTokens          = $this.AccessTokens
+                        }
+
+                        $this.ExportedInstance = $rule
+                        $Results = $this.GetForExport($Params)
+                        $rawResults = $Results.Clone()
+
+                        if ($null -ne $Results.ExpirationRule)
+                        {
+                            $complexMapping = @(
+                                @{
+                                    Name            = 'expirationRule'
+                                    CimInstanceName = 'AADRoleManagementPolicyExpirationRule'
+                                    IsRequired      = $False
+                                }
+                            )
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.ExpirationRule`
+                                -CIMInstanceName 'AADRoleManagementPolicyExpirationRule' `
+                                -ComplexTypeMapping $complexMapping
+
+                            if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                            {
+                                $Results.ExpirationRule = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('ExpirationRule') | Out-Null
+                            }
+                        }
+
+                        if ($null -ne $Results.NotificationRule)
+                        {
+                            $complexMapping = @(
+                                @{
+                                    Name            = 'notificationRule'
+                                    CimInstanceName = 'AADRoleManagementPolicyNotificationRule'
+                                    IsRequired      = $False
+                                }
+                            )
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.NotificationRule`
+                                -CIMInstanceName 'AADRoleManagementPolicyNotificationRule' `
+                                -ComplexTypeMapping $complexMapping
+
+                            if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                            {
+                                $Results.NotificationRule = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('NotificationRule') | Out-Null
+                            }
+                        }
+
+                        if ($null -ne $Results.EnablementRule)
+                        {
+                            $complexMapping = @(
+                                @{
+                                    Name            = 'enablementRule'
+                                    CimInstanceName = 'AADRoleManagementPolicyEnablementRule'
+                                    IsRequired      = $False
+                                }
+                            )
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.EnablementRule`
+                                -CIMInstanceName 'AADRoleManagementPolicyEnablementRule' `
+                                -ComplexTypeMapping $complexMapping
+
+                            if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                            {
+                                $Results.EnablementRule = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('EnablementRule') | Out-Null
+                            }
+                        }
+
+                        if ($null -ne $Results.AuthenticationContextRule)
+                        {
+                            $complexMapping = @(
+                                @{
+                                    Name            = 'authenticationContextRule'
+                                    CimInstanceName = 'AADRoleManagementPolicyAuthenticationContextRule'
+                                    IsRequired      = $False
+                                }
+                            )
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.AuthenticationContextRule`
+                                -CIMInstanceName 'AADRoleManagementPolicyAuthenticationContextRule' `
+                                -ComplexTypeMapping $complexMapping
+
+                            if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                            {
+                                $Results.AuthenticationContextRule = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('AuthenticationContextRule') | Out-Null
+                            }
+                        }
+
+                        if ($null -ne $Results.ApprovalRule)
+                        {
+                            $complexMapping = @(
+                                @{
+                                    Name            = 'approvalRule'
+                                    CimInstanceName = 'AADRoleManagementPolicyApprovalRule'
+                                    IsRequired      = $False
+                                }
+                                @{
+                                    Name            = 'setting'
+                                    CimInstanceName = 'AADRoleManagementPolicyApprovalSettings'
+                                    IsRequired      = $False
+                                }
+                                @{
+                                    Name            = 'approvalStages'
+                                    CimInstanceName = 'AADRoleManagementPolicyApprovalStage'
+                                    IsRequired      = $False
+                                }
+                                @{
+                                    Name            = 'escalationApprovers'
+                                    CimInstanceName = 'AADRoleManagementPolicySubjectSet'
+                                    IsRequired      = $False
+                                }
+                                @{
+                                    Name            = 'primaryApprovers'
+                                    CimInstanceName = 'AADRoleManagementPolicySubjectSet'
+                                    IsRequired      = $False
+                                }
+                            )
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.ApprovalRule`
+                                -CIMInstanceName 'AADRoleManagementPolicyApprovalRule' `
+                                -ComplexTypeMapping $complexMapping
+
+                            if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                            {
+                                $Results.ApprovalRule = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('ApprovalRule') | Out-Null
+                            }
+                        }
+
+                        $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                            -ConnectionMode $ConnectionMode `
+                            -ModulePath $this.GetModulePath() `
+                            -Results $Results `
+                            -Credential $this.Credential `
+                            -NoEscape @('ExpirationRule', 'NotificationRule', 'EnablementRule', 'ApprovalRule', 'AuthenticationContextRule') `
+                            -RawResults $rawResults
+
+                        [void]$dscContent.Append($currentDSCBlock)
+                        Save-M365DSCPartialExport -Content $currentDSCBlock `
+                            -FileName $Global:PartialExportFileName
+                        Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                        $i++
+                    }
+                    $j++
+                }
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADGroupEligibilityScheduleSettings] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADGroupEligibilityScheduleSettings])
+        {
+            return $Values
+        }
+
+        $result = [AADGroupEligibilityScheduleSettings]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-M365DSCRoleManagementPolicyRuleObject
+class MSFT_AADRoleManagementPolicyExpirationRule
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies if expiration is required.')]
+    [System.Nullable[System.Boolean]] $isExpirationRequired
+    [DscProperty()]
+    [System.ComponentModel.Description('The maximum duration for the expiration.')]
+    [System.String] $maximumDuration
+}
+
+class MSFT_AADRoleManagementPolicyNotificationRule
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Notification type for the rule.')]
+    [System.String] $notificationType
+    [DscProperty()]
+    [System.ComponentModel.Description('Type of the recipient for the notification.')]
+    [System.String] $recipientType
+    [DscProperty()]
+    [System.ComponentModel.Description('Level of the notification.')]
+    [System.String] $notificationLevel
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates if default recipients are enabled.')]
+    [System.Nullable[System.Boolean]] $isDefaultRecipientsEnabled
+    [DscProperty()]
+    [System.ComponentModel.Description('List of notification recipients.')]
+    [System.String[]] $notificationRecipients
+}
+
+class MSFT_AADRoleManagementPolicyEnablementRule
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('List of enabled rules.')]
+    [System.String[]] $enabledRules
+}
+
+class MSFT_AADRoleManagementPolicyApprovalRule
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Settings for approval requirements.')]
+    [MSFT_AADRoleManagementPolicyApprovalSettings] $setting
+}
+
+class MSFT_AADRoleManagementPolicyAuthenticationContextRule
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates if the authentication context rule is enabled.')]
+    [System.Nullable[System.Boolean]] $isEnabled
+    [DscProperty()]
+    [System.ComponentModel.Description('Claim value associated with the rule.')]
+    [System.String] $claimValue
+}
+
+class MSFT_AADRoleManagementPolicyApprovalSettings
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('One of SingleStage, Serial, Parallel, NoApproval (default). NoApproval is used when isApprovalRequired is false.')]
+    [System.String] $approvalMode
+    [DscProperty()]
+    [System.ComponentModel.Description('If approval is required, the one or two elements of this collection define each of the stages of approval. An empty array if no approval is required.')]
+    [MSFT_AADRoleManagementPolicyApprovalStage[]] $approvalStages
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether approval is required for requests in this policy.')]
+    [System.Nullable[System.Boolean]] $isApprovalRequired
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether approval is required for a user to extend their assignment.')]
+    [System.Nullable[System.Boolean]] $isApprovalRequiredForExtension
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the requestor is required to supply a justification in their request.')]
+    [System.Nullable[System.Boolean]] $isRequestorJustificationRequired
+}
+
+class MSFT_AADRoleManagementPolicyApprovalStage
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The number of days that a request can be pending a response before it is automatically denied.')]
+    [System.Nullable[System.UInt32]] $approvalStageTimeOutInDays
+    [DscProperty()]
+    [System.ComponentModel.Description('The time a request can be pending a response from a primary approver before it can be escalated to the escalation approvers.')]
+    [System.Nullable[System.UInt32]] $escalationTimeInMinutes
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the approver must provide justification for their reponse.')]
+    [System.Nullable[System.Boolean]] $isApproverJustificationRequired
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether escalation if enabled.')]
+    [System.Nullable[System.Boolean]] $isEscalationEnabled
+    [DscProperty()]
+    [System.ComponentModel.Description('The escalation approvers for this stage when the primary approvers don''t respond.')]
+    [MSFT_AADRoleManagementPolicySubjectSet[]] $escalationApprovers
+    [DscProperty()]
+    [System.ComponentModel.Description('The primary approvers of this stage.')]
+    [MSFT_AADRoleManagementPolicySubjectSet[]] $primaryApprovers
+}
+
+class MSFT_AADRoleManagementPolicySubjectSet
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of the subject set.')]
+    [System.String] $odataType
+}
+
+# Was Get-M365DSCRoleManagementPolicyRuleObject. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AADGroupEligibilityScheduleSettingsM365DSCRoleManagementPolicyRuleObject
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable[]])]
@@ -757,7 +642,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
         return $null
     }
 
-    if ($Script:ExportMode)
+    if ($this.ResourceCache['ExportMode'])
     {
         $values = [ordered]@{
             id       = $Rule.id
@@ -774,7 +659,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
 
     if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyExpirationRule')
     {
-        if ($Script:ExportMode)
+        if ($this.ResourceCache['ExportMode'])
         {
             $expirationRule = [ordered]@{
                 isExpirationRequired = $Rule.isExpirationRequired
@@ -794,7 +679,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
 
     if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyNotificationRule')
     {
-        if ($Script:ExportMode)
+        if ($this.ResourceCache['ExportMode'])
         {
             $notificationRule = [ordered]@{
                 notificationType           = $Rule.notificationType
@@ -819,7 +704,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
 
     if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyEnablementRule')
     {
-        if ($Script:ExportMode)
+        if ($this.ResourceCache['ExportMode'])
         {
             $enablementRule = @{
                 enabledRules = [array]$Rule.enabledRules
@@ -837,7 +722,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
     if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyApprovalRule')
     {
         $approvalStages = @()
-        if ($Script:ExportMode)
+        if ($this.ResourceCache['ExportMode'])
         {
             $foreachApprovalStages = $Rule.setting.approvalStages
         }
@@ -877,7 +762,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
             $approvalStages += $approvalStage
         }
 
-        if ($Script:ExportMode)
+        if ($this.ResourceCache['ExportMode'])
         {
             $setting = [ordered]@{
                 approvalMode                     = $Rule.setting.approvalMode
@@ -905,7 +790,7 @@ function Get-M365DSCRoleManagementPolicyRuleObject
 
     if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyAuthenticationContextRule')
     {
-        if ($Script:ExportMode)
+        if ($this.ResourceCache['ExportMode'])
         {
             $authenticationContextRule = [ordered]@{
                 isEnabled  = $Rule.isEnabled
@@ -924,5 +809,3 @@ function Get-M365DSCRoleManagementPolicyRuleObject
 
     return $values
 }
-
-Export-ModuleMember -Function *-TargetResource

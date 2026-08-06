@@ -1,155 +1,240 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADAppManagementPolicy'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADAppManagementPolicy : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The display name of the policy.')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the policy.')]
+    [System.String] $Id
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Description,
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The description of the policy.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.Boolean]
-        $IsEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('Denotes whether the policy is enabled.')]
+    [System.Nullable[System.Boolean]] $IsEnabled
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Restrictions,
+    [DscProperty()]
+    [System.ComponentModel.Description('Restrictions that apply to an application or service principal object.')]
+    [MSFT_AADAppManagementPolicyRestrictions] $Restrictions
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [AADAppManagementPolicy] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $instance = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [AADAppManagementPolicy]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration of App Management Policy '$($this.DisplayName)'"
+
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
+            {
+                $null = $this.Connect('MicrosoftGraph')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
+                {
+                    $instance = Get-MgBetaPolicyAppManagementPolicy -AppManagementPolicyId $this.Id `
+                        -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find App Management Policy with ID {$($this.Id)}"
+                    $instance = Get-MgBetaPolicyAppManagementPolicy -Filter "displayName eq '$($this.DisplayName)'" -All `
+                        -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find App Management Policy with DisplayName {$($this.DisplayName)}"
+                    return $this.AsResult($nullResult)
+                }
+            }
+            else
+            {
+                $instance = $this.ExportedInstance
+            }
+
+            $restrictionsValue = @{
+                passwordCredentials = @()
+                keyCredentials      = @()
+            }
+
+            foreach ($passwordCred in $instance.Restrictions.PasswordCredentials)
+            {
+                $newItem = @{
+                    restrictForAppsCreatedAfterDateTime = $passwordCred.RestrictForAppsCreatedAfterDateTime.ToString('o')
+                    restrictionType                     = $passwordCred.RestrictionType
+                    state                               = $passwordCred.State
+                }
+                if ($null -ne $passwordCred.MaxLifetime)
+                {
+                    $iso8601Duration = 'P{0}DT{1}H{2}M{3}S' -f $passwordCred.MaxLifetime.Days, $passwordCred.MaxLifetime.Hours, $passwordCred.MaxLifetime.Minutes, $passwordCred.MaxLifetime.Seconds
+                    $newItem.Add('maxLifetime', $iso8601Duration)
+                }
+                $restrictionsValue.passwordCredentials += $newItem
+            }
+
+            foreach ($keyCred in $instance.Restrictions.KeyCredentials)
+            {
+                $newItem = @{
+                    restrictForAppsCreatedAfterDateTime = $keyCred.RestrictForAppsCreatedAfterDateTime.ToString('o')
+                    restrictionType                     = $keyCred.RestrictionType
+                    state                               = $keyCred.State
+                }
+                if ($null -ne $keyCred.MaxLifetime)
+                {
+                    $iso8601Duration = 'P{0}DT{1}H{2}M{3}S' -f $keyCred.MaxLifetime.Days, $keyCred.MaxLifetime.Hours, $keyCred.MaxLifetime.Minutes, $keyCred.MaxLifetime.Seconds
+                    $newItem.Add('maxLifetime', $iso8601Duration)
+                }
+                if ($null -ne $keyCred.CertificateBasedApplicationConfigurationIds -and $keyCred.CertificateBasedApplicationConfigurationIds.Count -gt 0)
+                {
+                    $newItem.Add('certificateBasedApplicationConfigurationIds', [System.String[]]$keyCred.CertificateBasedApplicationConfigurationIds)
+                }
+                $restrictionsValue.keyCredentials += $newItem
+            }
+
+            $results = @{
+                DisplayName           = $instance.DisplayName
+                Id                    = $instance.Id
+                Description           = $instance.Description
+                IsEnabled             = $instance.IsEnabled
+                Restrictions          = $restrictionsValue
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration of App Management Policy '$DisplayName'"
-
-    try
+    [void] Set()
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            if (-not [System.String]::IsNullOrEmpty($Id))
-            {
-                $instance = Get-MgBetaPolicyAppManagementPolicy -AppManagementPolicyId $Id `
-                    -ErrorAction SilentlyContinue
-            }
-
-            if ($null -eq $instance)
-            {
-                Write-Verbose -Message "Could not find App Management Policy with ID {$Id}"
-                $instance = Get-MgBetaPolicyAppManagementPolicy -Filter "displayName eq '$DisplayName'" -All `
-                    -ErrorAction SilentlyContinue
-            }
-
-            if ($null -eq $instance)
-            {
-                Write-Verbose -Message "Could not find App Management Policy with DisplayName {$DisplayName}"
-                return $nullResult
-            }
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
         }
-        else
-        {
-            $instance = $Script:exportedInstance
-        }
+
+        Write-Verbose -Message "Setting configuration of App Management Policy '$($this.DisplayName)'"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+        $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
         $restrictionsValue = @{
             passwordCredentials = @()
             keyCredentials      = @()
         }
 
-        foreach ($passwordCred in $instance.Restrictions.PasswordCredentials)
+        foreach ($passwordCred in $this.Restrictions.PasswordCredentials)
         {
             $newItem = @{
-                restrictForAppsCreatedAfterDateTime = $passwordCred.RestrictForAppsCreatedAfterDateTime.ToString('o')
+                restrictForAppsCreatedAfterDateTime = [System.DateTime]::Parse($passwordCred.RestrictForAppsCreatedAfterDateTime)
                 restrictionType                     = $passwordCred.RestrictionType
                 state                               = $passwordCred.State
             }
             if ($null -ne $passwordCred.MaxLifetime)
             {
-                $iso8601Duration = 'P{0}DT{1}H{2}M{3}S' -f $passwordCred.MaxLifetime.Days, $passwordCred.MaxLifetime.Hours, $passwordCred.MaxLifetime.Minutes, $passwordCred.MaxLifetime.Seconds
-                $newItem.Add('maxLifetime', $iso8601Duration)
+                $newItem.Add('maxLifetime', $passwordCred.MaxLifetime.ToString())
             }
             $restrictionsValue.passwordCredentials += $newItem
         }
 
-        foreach ($keyCred in $instance.Restrictions.KeyCredentials)
+        foreach ($keyCred in $this.Restrictions.KeyCredentials)
         {
             $newItem = @{
-                restrictForAppsCreatedAfterDateTime = $keyCred.RestrictForAppsCreatedAfterDateTime.ToString('o')
+                restrictForAppsCreatedAfterDateTime = [System.DateTime]::Parse($keyCred.RestrictForAppsCreatedAfterDateTime)
                 restrictionType                     = $keyCred.RestrictionType
                 state                               = $keyCred.State
             }
             if ($null -ne $keyCred.MaxLifetime)
             {
-                $iso8601Duration = 'P{0}DT{1}H{2}M{3}S' -f $keyCred.MaxLifetime.Days, $keyCred.MaxLifetime.Hours, $keyCred.MaxLifetime.Minutes, $keyCred.MaxLifetime.Seconds
-                $newItem.Add('maxLifetime', $iso8601Duration)
+                $newItem.Add('maxLifetime', $keyCred.MaxLifetime.ToString())
             }
             if ($null -ne $keyCred.CertificateBasedApplicationConfigurationIds -and $keyCred.CertificateBasedApplicationConfigurationIds.Count -gt 0)
             {
@@ -158,429 +243,187 @@ function Get-TargetResource
             $restrictionsValue.keyCredentials += $newItem
         }
 
-        $results = @{
-            DisplayName           = $instance.DisplayName
-            Id                    = $instance.Id
-            Description           = $instance.Description
-            IsEnabled             = $instance.IsEnabled
-            Restrictions          = $restrictionsValue
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        $setParameters.Restrictions = $restrictionsValue
 
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsEnabled,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Restrictions,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of App Management Policy '$DisplayName'"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    $restrictionsValue = @{
-        passwordCredentials = @()
-        keyCredentials      = @()
-    }
-
-    foreach ($passwordCred in $Restrictions.PasswordCredentials)
-    {
-        $newItem = @{
-            restrictForAppsCreatedAfterDateTime = [System.DateTime]::Parse($passwordCred.RestrictForAppsCreatedAfterDateTime)
-            restrictionType                     = $passwordCred.RestrictionType
-            state                               = $passwordCred.State
-        }
-        if ($null -ne $passwordCred.MaxLifetime)
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            $newItem.Add('maxLifetime', $passwordCred.MaxLifetime.ToString())
+            Write-Verbose -Message "Creating new App Management Policy {$($this.DisplayName)} with:`r`n$(ConvertTo-Json $setParameters -Depth 10)"
+            New-MgBetaPolicyAppManagementPolicy -BodyParameter $setParameters
         }
-        $restrictionsValue.passwordCredentials += $newItem
-    }
-
-    foreach ($keyCred in $Restrictions.KeyCredentials)
-    {
-        $newItem = @{
-            restrictForAppsCreatedAfterDateTime = [System.DateTime]::Parse($keyCred.RestrictForAppsCreatedAfterDateTime)
-            restrictionType                     = $keyCred.RestrictionType
-            state                               = $keyCred.State
-        }
-        if ($null -ne $keyCred.MaxLifetime)
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            $newItem.Add('maxLifetime', $keyCred.MaxLifetime.ToString())
+            Write-Verbose -Message "Updating App Management Policy {$($this.DisplayName)} with:`r`n$(ConvertTo-Json $setParameters -Depth 10)"
+            Update-MgBetaPolicyAppManagementPolicy -AppManagementPolicyId $currentInstance.Id -BodyParameter $setParameters
         }
-        if ($null -ne $keyCred.CertificateBasedApplicationConfigurationIds -and $keyCred.CertificateBasedApplicationConfigurationIds.Count -gt 0)
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
-            $newItem.Add('certificateBasedApplicationConfigurationIds', [System.String[]]$keyCred.CertificateBasedApplicationConfigurationIds)
+            Write-Verbose -Message "Removing App Management Policy {$($this.DisplayName)}"
+            Remove-MgBetaPolicyAppManagementPolicy -AppManagementPolicyId $currentInstance.Id
         }
-        $restrictionsValue.keyCredentials += $newItem
     }
 
-    $setParameters.Restrictions = $restrictionsValue
-
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+    [bool] Test()
     {
-        Write-Verbose -Message "Creating new App Management Policy {$DisplayName} with:`r`n$(ConvertTo-Json $setParameters -Depth 10)"
-        New-MgBetaPolicyAppManagementPolicy -BodyParameter $setParameters
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating App Management Policy {$DisplayName} with:`r`n$(ConvertTo-Json $setParameters -Depth 10)"
-        Update-MgBetaPolicyAppManagementPolicy -AppManagementPolicyId $currentInstance.Id -BodyParameter $setParameters
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing App Management Policy {$DisplayName}"
-        Remove-MgBetaPolicyAppManagementPolicy -AppManagementPolicyId $currentInstance.Id
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsEnabled,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Restrictions,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        return ([M365DSCResourceBase] $this).Test()
     }
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
+    [string] Export()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $exportedInstances = Get-MgBetaPolicyAppManagementPolicy -Filter $Filter -All -ErrorAction Stop
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($exportedInstances.Count -eq 0)
+        if ($this.RequiresPowerShellCore())
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return [string] $this.InvokeInPowerShellCore('Export')
         }
-        else
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
         {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $exportedInstances)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            [array] $exportedInstances = Get-MgBetaPolicyAppManagementPolicy -Filter $this.Filter -All -ErrorAction Stop
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($exportedInstances.Count -eq 0)
             {
-                $Global:M365DSCExportResourceInstancesCount++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
-
-            $displayedKey = $config.DisplayName
-            Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                DisplayName           = $config.DisplayName
-                Id                    = $config.Id
-                Description           = $config.Description
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            if ($null -ne $Results.Restrictions)
+            else
             {
-                $complexMapping = @(
-                    @{
-                        Name            = 'Restrictions'
-                        CimInstanceName = 'AADAppManagementPolicyRestrictions'
-                        IsRequired      = $False
-                    }
-                    @{
-                        Name            = 'PasswordCredentials'
-                        CimInstanceName = 'AADAppManagementPolicyRestrictionsCredential'
-                        IsRequired      = $False
-                    }
-                    @{
-                        Name            = 'KeyCredentials'
-                        CimInstanceName = 'AADAppManagementPolicyRestrictionsCredential'
-                        IsRequired      = $False
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.Restrictions `
-                    -CIMInstanceName 'AADAppManagementPolicyRestrictions' `
-                    -ComplexTypeMapping $complexMapping
-
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.Restrictions = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Restrictions') | Out-Null
-                }
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('Restrictions', 'KeyCredentials', 'PasswordCredentials')
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+            foreach ($config in $exportedInstances)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
 
-        throw
+                $displayedKey = $config.DisplayName
+                Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    DisplayName           = $config.DisplayName
+                    Id                    = $config.Id
+                    Description           = $config.Description
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                if ($null -ne $Results.Restrictions)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'Restrictions'
+                            CimInstanceName = 'AADAppManagementPolicyRestrictions'
+                            IsRequired      = $False
+                        }
+                        @{
+                            Name            = 'PasswordCredentials'
+                            CimInstanceName = 'AADAppManagementPolicyRestrictionsCredential'
+                            IsRequired      = $False
+                        }
+                        @{
+                            Name            = 'KeyCredentials'
+                            CimInstanceName = 'AADAppManagementPolicyRestrictionsCredential'
+                            IsRequired      = $False
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.Restrictions `
+                        -CIMInstanceName 'AADAppManagementPolicyRestrictions' `
+                        -ComplexTypeMapping $complexMapping
+
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.Restrictions = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Restrictions') | Out-Null
+                    }
+                }
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('Restrictions', 'KeyCredentials', 'PasswordCredentials')
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADAppManagementPolicy] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADAppManagementPolicy])
+        {
+            return $Values
+        }
+
+        $result = [AADAppManagementPolicy]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-Export-ModuleMember -Function *-TargetResource
+class MSFT_AADAppManagementPolicyRestrictions
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Collection of keyCredential restrictions settings to be applied to an application or service principal.')]
+    [MSFT_AADAppManagementPolicyRestrictionsCredential[]] $KeyCredentials
+    [DscProperty()]
+    [System.ComponentModel.Description('Collection of password restrictions settings to be applied to an application or service principal.')]
+    [MSFT_AADAppManagementPolicyRestrictionsCredential[]] $PasswordCredentials
+}
+
+class MSFT_AADAppManagementPolicyRestrictionsCredential
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Collection of GUIDs of certificateBasedApplicationConfiguration objects that represent trusted certificate authorities. Used when restrictionType is set to trustedCertificateAuthority for keyCredentials.')]
+    [System.String[]] $CertificateBasedApplicationConfigurationIds
+    [DscProperty()]
+    [System.ComponentModel.Description('String value that indicates the maximum lifetime for password expiration, defined as an ISO 8601 duration. For example, P4DT12H30M5S represents four days, 12 hours, 30 minutes, and five seconds. This property is required when restrictionType is set to passwordLifetime.')]
+    [System.String] $MaxLifetime
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies the date from which the policy restriction applies to newly created applications. For existing applications, the enforcement date can be retroactively applied.')]
+    [System.String] $RestrictForAppsCreatedAfterDateTime
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of restriction being applied. The possible values are: passwordAddition, passwordLifetime, symmetricKeyAddition, symmetricKeyLifetime, customPasswordAddition, asymmetricKeyLifetime, trustedCertificateAuthority, and unknownFutureValue. Each value of restrictionType can be used only once per policy.')]
+    [System.String] $RestrictionType
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the restriction is evaluated. The possible values are: enabled, disabled, unknownFutureValue. If enabled, the restriction is evaluated. If disabled, the restriction isn''t evaluated or enforced.')]
+    [System.String] $State
+}
+

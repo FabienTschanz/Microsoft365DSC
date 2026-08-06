@@ -1,536 +1,302 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AzureBillingAccountScheduledAction'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AzureBillingAccountScheduledAction : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Display name of the scheduled action.')]
+    [System.String] $DisplayName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BillingAccount,
+    [DscProperty()]
+    [System.ComponentModel.Description('Associated billing account id.')]
+    [System.String] $BillingAccount
 
-        [Parameter()]
-        [System.String]
-        $Status,
+    [DscProperty()]
+    [System.ComponentModel.Description('Status of the scheduled action.')]
+    [System.String] $Status
 
-        [Parameter()]
-        [System.String]
-        $View,
+    [DscProperty()]
+    [System.ComponentModel.Description('Associated view id.')]
+    [System.String] $View
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Notification,
+    [DscProperty()]
+    [System.ComponentModel.Description('Notification properties based on scheduled action kind.')]
+    [MSFT_AzureBillingAccountScheduledActionNotification] $Notification
 
-        [Parameter()]
-        [System.String]
-        $NotificationEmail,
+    [DscProperty()]
+    [System.ComponentModel.Description('Email address of the point of contact that should get the unsubscribe requests and notification emails.')]
+    [System.String] $NotificationEmail
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Schedule,
+    [DscProperty()]
+    [System.ComponentModel.Description('Schedule of the scheduled action.')]
+    [MSFT_AzureBillingAccountScheduledActionSchedule] $Schedule
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Azure subscription to connect to if the access is restricted on subscription level.')]
+    [System.String] $SubscriptionId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [AzureBillingAccountScheduledAction] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [AzureBillingAccountScheduledAction]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration of Azure Billing Account Scheduled Action for Billing Account $($this.BillingAccount) with Display Name $($this.DisplayName)"
+
+        try
+        {
+            $null = $this.Connect('Azure')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $nullResult = $this.GetBoundParameters()
+            $nullResult.Ensure = 'Absent'
+
+            $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($this.BillingAccount)/providers/Microsoft.CostManagement/scheduledActions?api-version=2023-11-01"
+            $response = Invoke-AzRestMethod -Uri $uri -Method GET
+            $actions = (ConvertFrom-Json ($response.Content)).value
+
+            $instance = $actions | Where-Object -FilterScript { $_.properties.displayName -eq $this.DisplayName }
+
+            if ($null -eq $instance)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $NotificationValue = $null
+            if ($null -ne $instance.properties.notification)
+            {
+                $NotificationValue = @{
+                    subject = $instance.properties.notification.subject
+                    message = $instance.properties.notification.message
+                    to      = $instance.properties.notification.to
+                }
+            }
+
+            $ScheduleValue = $null
+            if ($null -ne $instance.properties.schedule)
+            {
+                $startDateVal = $instance.properties.schedule.startDate
+                if ($null -ne $startDateVal -and $startDateVal -isnot [DateTime])
+                {
+                    try
+                    {
+                        $startDateVal = [DateTime]::Parse($startDateVal).ToUniversalTime()
+                    }
+                    catch { }
+                }
+                $endDateVal = $instance.properties.schedule.endDate
+                if ($null -ne $endDateVal -and $endDateVal -isnot [DateTime])
+                {
+                    try
+                    {
+                        $endDateVal = [DateTime]::Parse($endDateVal).ToUniversalTime()
+                    }
+                    catch { }
+                }
+
+                $ScheduleValue = @{
+                    frequency    = $instance.properties.schedule.frequency
+                    hourOfDay    = $instance.properties.schedule.hourOfDay
+                    daysOfWeek   = [Array]($instance.properties.schedule.daysOfWeek)
+                    weeksofMonth = [Array]($instance.properties.schedule.weeksofMonth)
+                    dayOfMonth   = $instance.properties.schedule.dayOfMonth
+                    startDate    = if ($startDateVal -is [DateTime]) { $startDateVal.ToString('yyyy-MM-ddTHH:mm:ssZ') } else { $startDateVal }
+                    endDate      = if ($endDateVal -is [DateTime]) { $endDateVal.ToString('yyyy-MM-ddTHH:mm:ssZ') } else { $endDateVal }
+                }
+            }
+
+            $results = @{
+                DisplayName           = $this.DisplayName
+                BillingAccount        = $this.BillingAccount
+                Status                = $instance.properties.Status
+                View                  = $instance.properties.viewId
+                Notification          = $NotificationValue
+                NotificationEmail     = $instance.properties.notificationEmail
+                Schedule              = $ScheduleValue
+                Ensure                = 'Present'
+                SubscriptionId        = $this.SubscriptionId
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration of Azure Billing Account Scheduled Action for Billing Account $BillingAccount with Display Name $DisplayName"
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'Azure' `
-            -InboundParameters $PSBoundParameters
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting configuration of Azure Billing Account Scheduled Action for Billing Account $($this.BillingAccount) with Display Name $($this.DisplayName)"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
+        $currentInstance = $this.Get().ToHashtable()
 
-        $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($BillingAccount)/providers/Microsoft.CostManagement/scheduledActions?api-version=2023-11-01"
-        $response = Invoke-AzRestMethod -Uri $uri -Method GET
-        $actions = (ConvertFrom-Json ($response.Content)).value
-
-        $instance = $actions | Where-Object -FilterScript { $_.properties.displayName -eq $DisplayName }
-
-        if ($null -eq $instance)
-        {
-            return $nullResult
-        }
-
-        $NotificationValue = $null
-        if ($null -ne $instance.properties.notification)
-        {
-            $NotificationValue = @{
-                subject = $instance.properties.notification.subject
-                message = $instance.properties.notification.message
-                to      = $instance.properties.notification.to
-            }
-        }
-
-        $ScheduleValue = $null
-        if ($null -ne $instance.properties.schedule)
-        {
-            $startDateVal = $instance.properties.schedule.startDate
-            if ($null -ne $startDateVal -and $startDateVal -isnot [DateTime])
-            {
-                try
-                {
-                    $startDateVal = [DateTime]::Parse($startDateVal).ToUniversalTime()
+        $instanceParams = @{
+            kind       = 'Email'
+            properties = @{
+                displayName       = $this.DisplayName
+                notificationEmail = $this.NotificationEmail
+                notification      = @{
+                    to      = $this.Notification.to
+                    subject = $this.Notification.subject
+                    message = $this.Notification.message
                 }
-                catch { }
-            }
-            $endDateVal = $instance.properties.schedule.endDate
-            if ($null -ne $endDateVal -and $endDateVal -isnot [DateTime])
-            {
-                try
-                {
-                    $endDateVal = [DateTime]::Parse($endDateVal).ToUniversalTime()
+                schedule          = @{
+                    frequency    = $this.Schedule.frequency
+                    weeksOfMonth = $this.Schedule.weeksOfMonth
+                    daysOfWeek   = $this.Schedule.daysOfWeek
+                    startDate    = $this.Schedule.startDate
+                    endDate      = $this.Schedule.endDate
+                    dayOfMonth   = $this.Schedule.dayOfMonth
                 }
-                catch { }
-            }
-
-            $ScheduleValue = @{
-                frequency    = $instance.properties.schedule.frequency
-                hourOfDay    = $instance.properties.schedule.hourOfDay
-                daysOfWeek   = [Array]($instance.properties.schedule.daysOfWeek)
-                weeksofMonth = [Array]($instance.properties.schedule.weeksofMonth)
-                dayOfMonth   = $instance.properties.schedule.dayOfMonth
-                startDate    = if ($startDateVal -is [DateTime]) { $startDateVal.ToString('yyyy-MM-ddTHH:mm:ssZ') } else { $startDateVal }
-                endDate      = if ($endDateVal -is [DateTime]) { $endDateVal.ToString('yyyy-MM-ddTHH:mm:ssZ') } else { $endDateVal }
+                viewId            = $this.View
+                status            = $this.Status
             }
         }
+        $payload = ConvertTo-Json $instanceParams -Depth 10 -Compress
 
-        $results = @{
-            DisplayName           = $DisplayName
-            BillingAccount        = $BillingAccount
-            Status                = $instance.properties.Status
-            View                  = $instance.properties.viewId
-            Notification          = $NotificationValue
-            NotificationEmail     = $instance.properties.notificationEmail
-            Schedule              = $ScheduleValue
-            Ensure                = 'Present'
-            SubscriptionId        = $SubscriptionId
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        # CREATE
+        if ($this.Ensure -eq 'Present')
+        {
+            $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($this.BillingAccount)/providers/Microsoft.CostManagement/scheduledActions/$($this.DisplayName)?api-version=2023-11-01"
+            Write-Verbose -Message "Making PUT call to {$uri}"
 
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BillingAccount,
-
-        [Parameter()]
-        [System.String]
-        $Status,
-
-        [Parameter()]
-        [System.String]
-        $View,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Notification,
-
-        [Parameter()]
-        [System.String]
-        $NotificationEmail,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Schedule,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of Azure Billing Account Scheduled Action for Billing Account $BillingAccount with Display Name $DisplayName"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    $instanceParams = @{
-        kind       = 'Email'
-        properties = @{
-            displayName       = $DisplayName
-            notificationEmail = $NotificationEmail
-            notification      = @{
-                to      = $Notification.to
-                subject = $Notification.subject
-                message = $Notification.message
+            if ($currentInstance.Ensure -eq 'Absent')
+            {
+                Write-Verbose -Message "Creating new scheduled action {$($this.DisplayName)} with payload:`r`n$($payload)"
             }
-            schedule          = @{
-                frequency    = $Schedule.frequency
-                weeksOfMonth = $Schedule.weeksOfMonth
-                daysOfWeek   = $Schedule.daysOfWeek
-                startDate    = $Schedule.startDate
-                endDate      = $Schedule.endDate
-                dayOfMonth   = $Schedule.dayOfMonth
+            else
+            {
+                Write-Verbose -Message "Updating scheduled action {$($this.DisplayName)} with payload:`r`n$($payload)"
             }
-            viewId            = $View
-            status            = $Status
+
+            $response = Invoke-AzRestMethod -Uri $uri -Method PUT -Payload $payload
+            Write-Verbose -Message "Response:`r`n$($response.Content)"
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing scheduled action {$($this.DisplayName)} with payload:`r`n$($payload)"
+            $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($this.BillingAccount)/providers/Microsoft.CostManagement/scheduledActions/$($this.DisplayName)?api-version=2023-11-01"
+            $response = Invoke-AzRestMethod -Uri $uri -Method DELETE
         }
     }
-    $payload = ConvertTo-Json $instanceParams -Depth 10 -Compress
 
-    # CREATE
-    if ($Ensure -eq 'Present')
+    [bool] Test()
     {
-        $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($BillingAccount)/providers/Microsoft.CostManagement/scheduledActions/$($DisplayName)?api-version=2023-11-01"
-        Write-Verbose -Message "Making PUT call to {$uri}"
-
-        if ($currentInstance.Ensure -eq 'Absent')
+        if ($this.RequiresPowerShellCore())
         {
-            Write-Verbose -Message "Creating new scheduled action {$DisplayName} with payload:`r`n$($payload)"
-        }
-        else
-        {
-            Write-Verbose -Message "Updating scheduled action {$DisplayName} with payload:`r`n$($payload)"
+            return [bool] $this.InvokeInPowerShellCore('Test')
         }
 
-        $response = Invoke-AzRestMethod -Uri $uri -Method PUT -Payload $payload
-        Write-Verbose -Message "Response:`r`n$($response.Content)"
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing scheduled action {$DisplayName} with payload:`r`n$($payload)"
-        $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($BillingAccount)/providers/Microsoft.CostManagement/scheduledActions/$($DisplayName)?api-version=2023-11-01"
-        $response = Invoke-AzRestMethod -Uri $uri -Method DELETE
-    }
-}
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
 
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BillingAccount,
-
-        [Parameter()]
-        [System.String]
-        $Status,
-
-        [Parameter()]
-        [System.String]
-        $View,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Notification,
-
-        [Parameter()]
-        [System.String]
-        $NotificationEmail,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $Schedule,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
+    [string] Export()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'Azure' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #Get all billing account
-        $accounts = Get-M365DSCAzureBillingAccount
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($accounts.Length -eq 0)
+        if ($this.RequiresPowerShellCore())
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return [string] $this.InvokeInPowerShellCore('Export')
         }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($account in $accounts.value)
-        {
-            $displayedKey = $account.properties.displayName
-            Write-M365DSCHost -Message "    |---[$i/$($accounts.value.Length)] $displayedKey" -DeferWrite
 
-            $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($account.name)/providers/Microsoft.CostManagement/scheduledActions?api-version=2023-11-01"
-            $response = Invoke-AzRestMethod -Uri $uri -Method GET
-            $actions = (ConvertFrom-Json ($response.Content)).value
-            $j = 1
-            if ($actions.Length -eq 0)
+        $ConnectionMode = $this.Connect('Azure')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            #Get all billing account
+            $accounts = Get-M365DSCAzureBillingAccount
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($accounts.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
@@ -538,89 +304,155 @@ function Export-TargetResource
             {
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
-            foreach ($config in $actions)
+            foreach ($account in $accounts.value)
             {
-                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-                {
-                    $Global:M365DSCExportResourceInstancesCount++
-                }
+                $displayedKey = $account.properties.displayName
+                Write-M365DSCHost -Message "    |---[$i/$($accounts.value.Length)] $displayedKey" -DeferWrite
 
-                $displayedKey = $config.properties.displayName
-                Write-M365DSCHost -Message "        |---[$j/$($actions.Count)] $displayedKey" -DeferWrite
-                $params = @{
-                    DisplayName           = $config.properties.displayName
-                    BillingAccount        = $account.name
-                    SubscriptionId        = $SubscriptionId
-                    Credential            = $Credential
-                    ApplicationId         = $ApplicationId
-                    TenantId              = $TenantId
-                    CertificateThumbprint = $CertificateThumbprint
-                    ManagedIdentity       = $ManagedIdentity.IsPresent
-                    AccessTokens          = $AccessTokens
-                }
-
-                $Results = Get-TargetResource @Params
-
-                if ($Results.Notification)
+                $uri = "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/Microsoft.Billing/billingAccounts/$($account.name)/providers/Microsoft.CostManagement/scheduledActions?api-version=2023-11-01"
+                $response = Invoke-AzRestMethod -Uri $uri -Method GET
+                $actions = (ConvertFrom-Json ($response.Content)).value
+                $j = 1
+                if ($actions.Length -eq 0)
                 {
-                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Notification -CIMInstanceName AzureBillingAccountScheduledActionNotification
-                    if ($complexTypeStringResult)
-                    {
-                        $Results.Notification = $complexTypeStringResult
-                    }
-                    else
-                    {
-                        $Results.Remove('Notification') | Out-Null
-                    }
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
                 }
-                if ($Results.Schedule)
+                else
                 {
-                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Schedule -CIMInstanceName AzureBillingAccountScheduledActionSchedule
-                    if ($complexTypeStringResult)
-                    {
-                        $Results.Schedule = $complexTypeStringResult
-                    }
-                    else
-                    {
-                        $Results.Remove('Schedule') | Out-Null
-                    }
+                    Write-M365DSCHost -Message "`r`n" -DeferWrite
                 }
-                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                    -ConnectionMode $ConnectionMode `
-                    -ModulePath $PSScriptRoot `
-                    -Results $Results `
-                    -Credential $Credential `
-                    -NoEscape @('Notification', 'Schedule')
-                [void]$dscContent.Append($currentDSCBlock)
-                Save-M365DSCPartialExport -Content $currentDSCBlock `
-                    -FileName $Global:PartialExportFileName
-                $i++
-                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                foreach ($config in $actions)
+                {
+                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                    {
+                        $Global:M365DSCExportResourceInstancesCount++
+                    }
+
+                    $displayedKey = $config.properties.displayName
+                    Write-M365DSCHost -Message "        |---[$j/$($actions.Count)] $displayedKey" -DeferWrite
+                    $params = @{
+                        DisplayName           = $config.properties.displayName
+                        BillingAccount        = $account.name
+                        SubscriptionId        = $this.SubscriptionId
+                        Credential            = $this.Credential
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        AccessTokens          = $this.AccessTokens
+                    }
+
+                    $Results = $this.GetForExport($Params)
+
+                    if ($Results.Notification)
+                    {
+                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Notification -CIMInstanceName AzureBillingAccountScheduledActionNotification
+                        if ($complexTypeStringResult)
+                        {
+                            $Results.Notification = $complexTypeStringResult
+                        }
+                        else
+                        {
+                            $Results.Remove('Notification') | Out-Null
+                        }
+                    }
+                    if ($Results.Schedule)
+                    {
+                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Schedule -CIMInstanceName AzureBillingAccountScheduledActionSchedule
+                        if ($complexTypeStringResult)
+                        {
+                            $Results.Schedule = $complexTypeStringResult
+                        }
+                        else
+                        {
+                            $Results.Remove('Schedule') | Out-Null
+                        }
+                    }
+                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                        -ConnectionMode $ConnectionMode `
+                        -ModulePath $this.GetModulePath() `
+                        -Results $Results `
+                        -Credential $this.Credential `
+                        -NoEscape @('Notification', 'Schedule')
+                    [void]$dscContent.Append($currentDSCBlock)
+                    Save-M365DSCPartialExport -Content $currentDSCBlock `
+                        -FileName $Global:PartialExportFileName
+                    $i++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
             }
+            return $dscContent.ToString()
         }
-        return $dscContent.ToString()
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
     }
-    catch
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
     {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        return @{
+            ExcludedProperties = @('SubscriptionId')
+        }
+    }
 
-        throw
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AzureBillingAccountScheduledAction] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AzureBillingAccountScheduledAction])
+        {
+            return $Values
+        }
+
+        $result = [AzureBillingAccountScheduledAction]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-CompareParameters
+class MSFT_AzureBillingAccountScheduledActionNotification
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        ExcludedProperties = @('SubscriptionId')
-    }
+    [DscProperty()]
+    [System.ComponentModel.Description('Subject of the email. Length is limited to 70 characters.')]
+    [System.String] $subject
+    [DscProperty()]
+    [System.ComponentModel.Description('Optional message to be added in the email. Length is limited to 250 characters.')]
+    [System.String] $message
+    [DscProperty()]
+    [System.ComponentModel.Description('Array of email addresses.')]
+    [System.String[]] $to
 }
 
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')
+class MSFT_AzureBillingAccountScheduledActionSchedule
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('UTC day on which cost analysis data will be emailed. Must be between 1 and 31. This property is applicable when frequency is Monthly and overrides weeksOfMonth or daysOfWeek.')]
+    [System.Nullable[System.UInt32]] $dayOfMonth
+    [DscProperty()]
+    [System.ComponentModel.Description('Day names in english on which cost analysis data will be emailed. This property is applicable when frequency is Weekly or Monthly.')]
+    [System.String[]] $daysOfWeek
+    [DscProperty()]
+    [System.ComponentModel.Description('The start date and time of the scheduled action (UTC).')]
+    [System.String] $startDate
+    [DscProperty()]
+    [System.ComponentModel.Description('The end date and time of the scheduled action (UTC).')]
+    [System.String] $endDate
+    [DscProperty()]
+    [System.ComponentModel.Description('Weeks in which cost analysis data will be emailed. This property is applicable when frequency is Monthly and used in combination with daysOfWeek.')]
+    [System.String[]] $weeksOfMonth
+    [DscProperty()]
+    [System.ComponentModel.Description('Frequency of the schedule.')]
+    [System.String] $frequency
+    [DscProperty()]
+    [System.ComponentModel.Description('UTC time at which cost analysis data will be emailed.')]
+    [System.Nullable[System.UInt32]] $hourOfDay
+}
+

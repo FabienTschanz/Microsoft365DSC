@@ -1,610 +1,500 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADRemoteNetwork'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADRemoteNetwork : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the remote network.')]
+    [System.String] $Name
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the remote network')]
+    [System.String] $Id
 
-        [Parameter()]
-        [System.String]
-        $Region,
+    [DscProperty()]
+    [System.ComponentModel.Description('Region')]
+    [System.String] $Region
 
-        [Parameter()]
-        [System.String[]]
-        $ForwardingProfiles,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of the forwarding profile names associated to this remote network')]
+    [System.String[]] $ForwardingProfiles
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceLinks,
+    [DscProperty()]
+    [System.ComponentModel.Description('Device Links associated to this remote network')]
+    [MSFT_AADRemoteNetworkDeviceLink[]] $DeviceLinks
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [AADRemoteNetwork] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for the AAD Network Access Forwarding Profile with Id {$Id} and Name {$Name}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Id -ne $Id)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $nullResult = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [AADRemoteNetwork]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration for the AAD Network Access Forwarding Profile with Id {$($this.Id)} and Name {$($this.Name)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $getValue = $null
-            #region resource generator code
-            if (-not [System.String]::IsNullOrEmpty($Id))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Id -ne $this.Id)
             {
-                $getValue = Get-MgBetaNetworkAccessConnectivityRemoteNetwork -RemoteNetworkId $Id -ErrorAction SilentlyContinue
-            }
+                $null = $this.Connect('MicrosoftGraph')
 
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $getValue = $null
+                #region resource generator code
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
+                {
+                    $getValue = Get-MgBetaNetworkAccessConnectivityRemoteNetwork -RemoteNetworkId $this.Id -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Azure AD Remote Network with Id {$($this.Id)}"
+
+                    if (-not [System.String]::IsNullOrEmpty($this.Name))
+                    {
+                        $getValue = Get-MgBetaNetworkAccessConnectivityRemoteNetwork -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $this.Name }
+                    }
+                }
+            }
+            else
+            {
+                $getValue = $this.ExportedInstance
+            }
+            #endregion
             if ($null -eq $getValue)
             {
-                Write-Verbose -Message "Could not find an Azure AD Remote Network with Id {$Id}"
+                Write-Verbose -Message "Could not find an Azure AD Remote Network with Name {$($this.Name)}."
+                return $this.AsResult($nullResult)
+            }
+            $this.Id = $getValue.Id
+            Write-Verbose -Message "An Azure AD Remote Network with Id {$($this.Id)} and Name {$($this.Name)} was found"
 
-                if (-not [System.String]::IsNullOrEmpty($Name))
-                {
-                    $getValue = Get-MgBetaNetworkAccessConnectivityRemoteNetwork -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $Name }
-                }
+            #region resource generator code
+            $forwardingProfilesList = @()
+            foreach ($forwardingProfile in $getValue.ForwardingProfiles)
+            {
+                $forwardingProfilesList += $forwardingProfile.Name
+            }
+
+            $complexDeviceLinks = Get-AADRemoteNetworkMicrosoftGraphRemoteNetworkDeviceLinksHashtable -DeviceLinks $getValue.DeviceLinks
+            #endregion
+
+            $results = @{
+                Id                    = $getValue.Id
+                Name                  = $getValue.Name
+                Region                = $getValue.Region
+                ForwardingProfiles    = [Array]$forwardingProfilesList
+                DeviceLinks           = [Array]$complexDeviceLinks
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+            }
+
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $deviceLinksItem = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        # creating the device links property
+        $deviceLinksHashtable = Rename-M365DSCCimInstanceParameter -Properties $BoundParameters.DeviceLinks
+
+        #creating the forwarding policies list by getting the ids
+        $allForwardingProfiles = Get-MgBetaNetworkAccessForwardingProfile
+        $forwardingProfilesList = @()
+        foreach ($profileName in $BoundParameters.ForwardingProfiles)
+        {
+            $matchedProfile = $allForwardingProfiles | Where-Object { $_.Name -eq $profileName }
+            $forwardingProfilesList += @{
+                id = $matchedProfile.Id
             }
         }
-        else
+
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            $getValue = $Script:exportedInstance
+            Write-Verbose -Message "Creating an Azure AD Remote Network with Name {$($this.Name)}"
+            $params = @{
+                name               = $BoundParameters.Name
+                region             = $BoundParameters.Region
+                deviceLinks        = [Array]$deviceLinksHashtable
+                forwardingProfiles = [Array]$forwardingProfilesList
+            }
+
+            New-MgBetaNetworkAccessConnectivityRemoteNetwork -BodyParameter $params
         }
-        #endregion
-        if ($null -eq $getValue)
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            Write-Verbose -Message "Could not find an Azure AD Remote Network with Name {$Name}."
-            return $nullResult
-        }
-        $Id = $getValue.Id
-        Write-Verbose -Message "An Azure AD Remote Network with Id {$Id} and Name {$Name} was found"
+            Write-Verbose -Message "Updating the Azure AD Remote Network with Id {$($currentInstance.Id)}"
+            $currentRemoteNetwork = Get-MgBetaNetworkAccessConnectivityRemoteNetwork -RemoteNetworkId $currentInstance.Id
 
-        #region resource generator code
-        $forwardingProfilesList = @()
-        foreach ($forwardingProfile in $getValue.ForwardingProfiles)
-        {
-            $forwardingProfilesList += $forwardingProfile.Name
-        }
+            #removing the old device links
+            foreach ($deviceLinkItem in $currentRemoteNetwork.DeviceLinks)
+            {
+                Remove-MgBetaNetworkAccessConnectivityRemoteNetworkDeviceLink -RemoteNetworkId $currentInstance.Id -DeviceLinkId $deviceLinkItem.Id
+            }
+            # updating the list of device links
+            foreach ($deviceLinkItem in $deviceLinksHashtable)
+            {
+                Write-Verbose "Device Link Hashtable: $deviceLinksItem"
+                New-MgBetaNetworkAccessConnectivityRemoteNetworkDeviceLink -RemoteNetworkId $currentInstance.Id -BodyParameter $deviceLinkItem
+            }
 
-        $complexDeviceLinks = Get-MicrosoftGraphRemoteNetworkDeviceLinksHashtable -DeviceLinks $getValue.DeviceLinks
-        #endregion
-
-        $results = @{
-            Id                    = $getValue.Id
-            Name                  = $getValue.Name
-            Region                = $getValue.Region
-            ForwardingProfiles    = [Array]$forwardingProfilesList
-            DeviceLinks           = [Array]$complexDeviceLinks
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-        }
-
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Region,
-
-        [Parameter()]
-        [System.String[]]
-        $ForwardingProfiles,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceLinks,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    # creating the device links property
-    $deviceLinksHashtable = Rename-M365DSCCimInstanceParameter -Properties $BoundParameters.DeviceLinks
-
-    #creating the forwarding policies list by getting the ids
-    $allForwardingProfiles = Get-MgBetaNetworkAccessForwardingProfile
-    $forwardingProfilesList = @()
-    foreach ($profileName in $BoundParameters.ForwardingProfiles)
-    {
-        $matchedProfile = $allForwardingProfiles | Where-Object { $_.Name -eq $profileName }
-        $forwardingProfilesList += @{
-            id = $matchedProfile.Id
-        }
-    }
-
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Azure AD Remote Network with Name {$Name}"
-        $params = @{
-            name               = $BoundParameters.Name
-            region             = $BoundParameters.Region
-            deviceLinks        = [Array]$deviceLinksHashtable
-            forwardingProfiles = [Array]$forwardingProfilesList
-        }
-
-        New-MgBetaNetworkAccessConnectivityRemoteNetwork -BodyParameter $params
-    }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating the Azure AD Remote Network with Id {$($currentInstance.Id)}"
-        $currentRemoteNetwork = Get-MgBetaNetworkAccessConnectivityRemoteNetwork -RemoteNetworkId $currentInstance.Id
-
-        #removing the old device links
-        foreach ($deviceLinkItem in $currentRemoteNetwork.DeviceLinks)
-        {
-            Remove-MgBetaNetworkAccessConnectivityRemoteNetworkDeviceLink -RemoteNetworkId $currentInstance.Id -DeviceLinkId $deviceLinkItem.Id
-        }
-        # updating the list of device links
-        foreach ($deviceLinkItem in $deviceLinksHashtable)
-        {
-            Write-Verbose "Device Link Hashtable: $deviceLinksItem"
-            New-MgBetaNetworkAccessConnectivityRemoteNetworkDeviceLink -RemoteNetworkId $currentInstance.Id -BodyParameter $deviceLinkItem
-        }
-
-        # removing forwarding profiles
-        $params = @{
-            '@context' = '#$delta'
-            value      = @(@{})
-        }
-        Invoke-MgGraphRequest -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
-
-        #adding forwarding profiles if required
-        if ($forwardingProfilesList.Count -gt 0)
-        {
+            # removing forwarding profiles
             $params = @{
                 '@context' = '#$delta'
-                value      = $forwardingProfilesList
+                value      = @(@{})
             }
             Invoke-MgGraphRequest -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
+
+            #adding forwarding profiles if required
+            if ($forwardingProfilesList.Count -gt 0)
+            {
+                $params = @{
+                    '@context' = '#$delta'
+                    value      = $forwardingProfilesList
+                }
+                Invoke-MgGraphRequest -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
+            }
+        }
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing the Azure AD Remote Network with Id {$($currentInstance.Id)}"
+            #region resource generator code
+            Remove-MgBetaNetworkAccessConnectivityRemoteNetwork -RemoteNetworkId $currentInstance.Id
+            #endregion
         }
     }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+
+    [bool] Test()
     {
-        Write-Verbose -Message "Removing the Azure AD Remote Network with Id {$($currentInstance.Id)}"
-        #region resource generator code
-        Remove-MgBetaNetworkAccessConnectivityRemoteNetwork -RemoteNetworkId $currentInstance.Id
-        #endregion
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Region,
-
-        [Parameter()]
-        [System.String[]]
-        $ForwardingProfiles,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DeviceLinks,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        return ([M365DSCResourceBase] $this).Test()
     }
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
+    [string] Export()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
 
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
 
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        [array]$getValue = Get-MgBetaNetworkAccessConnectivityRemoteNetwork `
-            -Filter $Filter `
-            -All `
-            -ErrorAction Stop
+        #region Telemetry
+        $this.AddTelemetry('Export')
         #endregion
 
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
+        try
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-            $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.Name))
-            {
-                $displayedKey = $config.Name
-            }
-            elseif (-not [string]::IsNullOrEmpty($config.name))
-            {
-                $displayedKey = $config.name
-            }
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                Name                  = $config.Name
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
+            #region resource generator code
+            [array]$getValue = Get-MgBetaNetworkAccessConnectivityRemoteNetwork `
+                -Filter $this.Filter `
+                -All `
+                -ErrorAction Stop
+            #endregion
 
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-
-            if ($null -ne $Results.DeviceLinks)
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
             {
-                $complexMapping = @(
-                    @{
-                        Name            = 'DeviceLinks'
-                        CimInstanceName = 'AADRemoteNetworkDeviceLink'
-                        IsRequired      = $False
-                    },
-                    @{
-                        Name            = 'BgpConfiguration'
-                        CimInstanceName = 'AADRemoteNetworkDeviceLinkbgpConfiguration'
-                        IsRequired      = $False
-                    },
-                    @{
-                        Name            = 'RedundancyConfiguration'
-                        CimInstanceName = 'AADRemoteNetworkDeviceLinkRedundancyConfiguration'
-                        IsRequired      = $False
-                    },
-                    @{
-                        Name            = 'TunnelConfiguration'
-                        CimInstanceName = 'AADRemoteNetworkDeviceLinkTunnelConfiguration'
-                        IsRequired      = $False
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+                $displayedKey = $config.Id
+                if (-not [String]::IsNullOrEmpty($config.Name))
+                {
+                    $displayedKey = $config.Name
+                }
+                elseif (-not [string]::IsNullOrEmpty($config.name))
+                {
+                    $displayedKey = $config.name
+                }
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    Name                  = $config.Name
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+
+                if ($null -ne $Results.DeviceLinks)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'DeviceLinks'
+                            CimInstanceName = 'AADRemoteNetworkDeviceLink'
+                            IsRequired      = $False
+                        },
+                        @{
+                            Name            = 'BgpConfiguration'
+                            CimInstanceName = 'AADRemoteNetworkDeviceLinkbgpConfiguration'
+                            IsRequired      = $False
+                        },
+                        @{
+                            Name            = 'RedundancyConfiguration'
+                            CimInstanceName = 'AADRemoteNetworkDeviceLinkRedundancyConfiguration'
+                            IsRequired      = $False
+                        },
+                        @{
+                            Name            = 'TunnelConfiguration'
+                            CimInstanceName = 'AADRemoteNetworkDeviceLinkTunnelConfiguration'
+                            IsRequired      = $False
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.DeviceLinks `
+                        -CIMInstanceName 'AADRemoteNetworkDeviceLink' `
+                        -ComplexTypeMapping $complexMapping
+
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.DeviceLinks = $complexTypeStringResult
                     }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.DeviceLinks `
-                    -CIMInstanceName 'AADRemoteNetworkDeviceLink' `
-                    -ComplexTypeMapping $complexMapping
+                    else
+                    {
+                        $Results.Remove('DeviceLinks') | Out-Null
+                    }
+                }
 
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.DeviceLinks = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('DeviceLinks') | Out-Null
-                }
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('DeviceLinks') `
+                    -RawResults $rawResults
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('DeviceLinks') `
-                -RawResults $rawResults
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return $dscContent.ToString()
         }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
 
-        throw
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADRemoteNetwork] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADRemoteNetwork])
+        {
+            return $Values
+        }
+
+        $result = [AADRemoteNetwork]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-MicrosoftGraphRemoteNetworkDeviceLinksHashtable
+class MSFT_AADRemoteNetworkDeviceLink
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Name of the Device Link')]
+    [System.String] $Name
+    [DscProperty()]
+    [System.ComponentModel.Description('IP Address')]
+    [System.String] $IPAddress
+    [DscProperty()]
+    [System.ComponentModel.Description('Bandwidth Capacity in Mbps')]
+    [System.String] $BandwidthCapacityInMbps
+    [DscProperty()]
+    [System.ComponentModel.Description('Device Vendor')]
+    [System.String] $DeviceVendor
+    [DscProperty()]
+    [System.ComponentModel.Description('BgpConfiguration.')]
+    [MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration] $BgpConfiguration
+    [DscProperty()]
+    [System.ComponentModel.Description('redundancyConfiguration.')]
+    [MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration] $RedundancyConfiguration
+    [DscProperty()]
+    [System.ComponentModel.Description('tunnelConfiguration')]
+    [MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration] $TunnelConfiguration
+}
+
+class MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('LocalIpAddress.')]
+    [System.String] $LocalIPAddress
+    [DscProperty()]
+    [System.ComponentModel.Description('PeerIpAddress.')]
+    [System.String] $PeerIPAddress
+    [DscProperty()]
+    [System.ComponentModel.Description('Asn.')]
+    [System.Nullable[System.UInt32]] $Asn
+}
+
+class MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('ZoneLocalIpAddress.')]
+    [System.String] $ZoneLocalIPAddress
+    [DscProperty()]
+    [System.ComponentModel.Description('RedundancyTier.')]
+    [System.String] $RedundancyTier
+}
+
+class MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('PreSharedKey')]
+    [System.String] $PreSharedKey
+    [DscProperty()]
+    [System.ComponentModel.Description('ZoneRedundancyPreSharedKey')]
+    [System.String] $ZoneRedundancyPreSharedKey
+    [DscProperty()]
+    [System.ComponentModel.Description('SaLifeTimeSeconds')]
+    [System.Nullable[System.UInt32]] $SaLifeTimeSeconds
+    [DscProperty()]
+    [System.ComponentModel.Description('IpSecEncryption')]
+    [System.String] $IPSecEncryption
+    [DscProperty()]
+    [System.ComponentModel.Description('IpSecIntegrity')]
+    [System.String] $IPSecIntegrity
+    [DscProperty()]
+    [System.ComponentModel.Description('IkeEncryption')]
+    [System.String] $IKEEncryption
+    [DscProperty()]
+    [System.ComponentModel.Description('IkeIntegrity')]
+    [System.String] $IKEIntegrity
+    [DscProperty()]
+    [System.ComponentModel.Description('DhGroup')]
+    [System.String] $DHGroup
+    [DscProperty()]
+    [System.ComponentModel.Description('PfsGroup')]
+    [System.String] $PFSGroup
+    [DscProperty()]
+    [System.ComponentModel.Description('ODataType')]
+    [System.String] $ODataType
+}
+
+# Was Get-MicrosoftGraphRemoteNetworkDeviceLinksHashtable. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AADRemoteNetworkMicrosoftGraphRemoteNetworkDeviceLinksHashtable
 {
     [CmdletBinding()]
     [OutputType([System.Collections.ArrayList])]
@@ -747,4 +637,3 @@ function Get-MicrosoftGraphRemoteNetworkDeviceLinksHashtable
     return $newDeviceLinks
 }
 
-Export-ModuleMember -Function *-TargetResource

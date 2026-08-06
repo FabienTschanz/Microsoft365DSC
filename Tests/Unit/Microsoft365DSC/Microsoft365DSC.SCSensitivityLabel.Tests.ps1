@@ -22,12 +22,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         BeforeAll {
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -CommandName Confirm-M365DSCDependencies -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -97,58 +97,58 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Tooltip          = 'Test tool tip'
                     DisplayName      = 'Test label'
                     ParentId         = 'TestLabel'
-                    AdvancedSettings = (New-CimInstance -ClassName MSFT_SCLabelSetting -Property @{
+                    AdvancedSettings = ([MSFT_SCLabelSetting] @{
                             Key   = 'LabelStatus'
                             Value = 'Enabled'
-                        } -ClientOnly)
-                    LocaleSettings   = (New-CimInstance -ClassName MSFT_SCLabelLocaleSettings -Property @{
+                        })
+                    LocaleSettings   = ([MSFT_SCLabelLocaleSettings] @{
                             LocaleKey     = 'DisplayName'
-                            LabelSettings = (New-CimInstance -ClassName MSFT_SCLabelSetting -Property @{
+                            LabelSettings = ([MSFT_SCLabelSetting] @{
                                     Key   = 'en-us'
                                     Value = 'English DisplayName'
-                                } -ClientOnly)
-                        } -ClientOnly)
-                    AutoLabelingSettings = New-CimInstance -ClassName MSFT_SCSLAutoLabelingSettings -Property @{
+                                })
+                        })
+                    AutoLabelingSettings = [MSFT_SCSLAutoLabelingSettings] @{
                         Operator      = 'And'
                         AutoApplyType = 'Recommend'
                         PolicyTip     = 'My Perfect Test Tip!'
-                        Groups        = [CimInstance[]]@(
-                            New-CimInstance -ClassName MSFT_SCSLSensitiveInformationGroup -Property @{
+                        Groups        = @(
+                            [MSFT_SCSLSensitiveInformationGroup] @{
                                 Name = 'Group1'
                                 Operator = 'Or'
-                                SensitiveInformationType = [CimInstance[]]@(
-                                    New-CimInstance -ClassName MSFT_SCSLSensitiveInformationType -Property @{
+                                SensitiveInformationType = @(
+                                    [MSFT_SCSLSensitiveInformationType] @{
                                         name = 'ABA Routing Number'
                                         confidencelevel = 'High'
                                         mincount = 1
                                         maxcount = -1
-                                    } -ClientOnly
+                                    }
                                 )
-                                TrainableClassifier = [CimInstance[]]@(
-                                    New-CimInstance -ClassName MSFT_SCSLTrainableClassifiers -Property @{
+                                TrainableClassifier = @(
+                                    [MSFT_SCSLTrainableClassifiers] @{
                                         name = 'Legal Affairs'
-                                    } -ClientOnly
+                                    }
                                 )
-                            } -ClientOnly
-                            New-CimInstance -ClassName MSFT_SCSLSensitiveInformationGroup -Property @{
+                            }
+                            [MSFT_SCSLSensitiveInformationGroup] @{
                                 Name = 'Group2'
                                 Operator = 'And'
-                                SensitiveInformationType = [CimInstance[]]@(
-                                    New-CimInstance -ClassName MSFT_SCSLSensitiveInformationType -Property @{
+                                SensitiveInformationType = @(
+                                    [MSFT_SCSLSensitiveInformationType] @{
                                         name = 'All Full Names'
                                         confidencelevel = 'High'
                                         mincount = 10
                                         maxcount = 100
-                                    } -ClientOnly
+                                    }
                                 )
-                                TrainableClassifier = [CimInstance[]]@(
-                                    New-CimInstance -ClassName MSFT_SCSLTrainableClassifiers -Property @{
+                                TrainableClassifier = @(
+                                    [MSFT_SCSLTrainableClassifiers] @{
                                         name = 'Legal Affairs'
-                                    } -ClientOnly
+                                    }
                                 )
-                            } -ClientOnly
+                            }
                         )
-                    } -ClientOnly
+                    }
                     Credential       = $Credential
                     Ensure           = 'Present'
                 }
@@ -159,15 +159,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should return Absent from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Set()
             }
         }
 
@@ -180,60 +180,60 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     DisplayName      = 'Test label'
                     ParentId         = 'MyLabel'
 
-                    AdvancedSettings = (New-CimInstance -ClassName MSFT_SCLabelSetting -Property @{
+                    AdvancedSettings = ([MSFT_SCLabelSetting] @{
                             Key   = 'LabelStatus'
                             Value = 'Enabled'
-                        } -ClientOnly)
+                        })
 
-                    LocaleSettings   = (New-CimInstance -ClassName MSFT_SCLabelLocaleSettings -Property @{
+                    LocaleSettings   = ([MSFT_SCLabelLocaleSettings] @{
                             LocaleKey     = 'DisplayName'
-                            LabelSettings = (New-CimInstance -ClassName MSFT_SCLabelSetting -Property @{
+                            LabelSettings = ([MSFT_SCLabelSetting] @{
                                     Key   = 'en-us'
                                     Value = 'English DisplayName'
-                                } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                        })
 
-                    AutoLabelingSettings = New-CimInstance -ClassName MSFT_SCSLAutoLabelingSettings -Property @{
+                    AutoLabelingSettings = [MSFT_SCSLAutoLabelingSettings] @{
                             Operator      = 'And'
                             AutoApplyType = 'Recommend'
                             PolicyTip     = 'My Perfect Test Tip!'
-                            Groups        = [CimInstance[]]@(
-                                New-CimInstance -ClassName MSFT_SCSLSensitiveInformationGroup -Property @{
+                            Groups        = @(
+                                [MSFT_SCSLSensitiveInformationGroup] @{
                                     Name = 'Group1'
                                     Operator = 'Or'
-                                    SensitiveInformationType = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLSensitiveInformationType -Property @{
+                                    SensitiveInformationType = @(
+                                        [MSFT_SCSLSensitiveInformationType] @{
                                             name = 'ABA Routing Number'
                                             confidencelevel = 'High'
                                             mincount = 1
                                             maxcount = -1
-                                        } -ClientOnly
+                                        }
                                     )
-                                    TrainableClassifier = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLTrainableClassifiers -Property @{
+                                    TrainableClassifier = @(
+                                        [MSFT_SCSLTrainableClassifiers] @{
                                             name = 'Legal Affairs'
-                                        } -ClientOnly
+                                        }
                                     )
-                                } -ClientOnly
-                                New-CimInstance -ClassName MSFT_SCSLSensitiveInformationGroup -Property @{
+                                }
+                                [MSFT_SCSLSensitiveInformationGroup] @{
                                     Name = 'Group2'
                                     Operator = 'And'
-                                    SensitiveInformationType = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLSensitiveInformationType -Property @{
+                                    SensitiveInformationType = @(
+                                        [MSFT_SCSLSensitiveInformationType] @{
                                             name = 'All Full Names'
                                             confidencelevel = 'High'
                                             mincount = 1
                                             maxcount = 100
-                                        } -ClientOnly
+                                        }
                                     )
-                                    TrainableClassifier = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLTrainableClassifiers -Property @{
+                                    TrainableClassifier = @(
+                                        [MSFT_SCSLTrainableClassifiers] @{
                                             name = 'Legal Affairs'
-                                        } -ClientOnly
+                                        }
                                     )
-                                } -ClientOnly
+                                }
                             )
-                        } -ClientOnly
+                        }
 
                     Credential       = $Credential
                     Ensure           = 'Present'
@@ -241,15 +241,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should update from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Set()
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
         }
 
@@ -262,60 +262,60 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     DisplayName      = 'Test label'
                     ParentId         = 'MyLabel'
 
-                    AdvancedSettings = (New-CimInstance -ClassName MSFT_SCLabelSetting -Property @{
+                    AdvancedSettings = ([MSFT_SCLabelSetting] @{
                             Key   = 'LabelStatus'
                             Value = 'Enabled'
-                        } -ClientOnly)
+                        })
 
-                    LocaleSettings   = (New-CimInstance -ClassName MSFT_SCLabelLocaleSettings -Property @{
+                    LocaleSettings   = ([MSFT_SCLabelLocaleSettings] @{
                             LocaleKey     = 'DisplayName'
-                            LabelSettings = (New-CimInstance -ClassName MSFT_SCLabelSetting -Property @{
+                            LabelSettings = ([MSFT_SCLabelSetting] @{
                                     Key   = 'en-us'
                                     Value = 'English DisplayName'
-                                } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                        })
 
-                    AutoLabelingSettings = New-CimInstance -ClassName MSFT_SCSLAutoLabelingSettings -Property @{
+                    AutoLabelingSettings = [MSFT_SCSLAutoLabelingSettings] @{
                             Operator      = 'And'
                             AutoApplyType = 'Recommend'
                             PolicyTip     = 'My Perfect Test Tip!'
-                            Groups        = [CimInstance[]]@(
-                                New-CimInstance -ClassName MSFT_SCSLSensitiveInformationGroup -Property @{
+                            Groups        = @(
+                                [MSFT_SCSLSensitiveInformationGroup] @{
                                     Name = 'Group1'
                                     Operator = 'Or'
-                                    SensitiveInformationType = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLSensitiveInformationType -Property @{
+                                    SensitiveInformationType = @(
+                                        [MSFT_SCSLSensitiveInformationType] @{
                                             name = 'ABA Routing Number'
                                             confidencelevel = 'High'
                                             mincount = 1
                                             maxcount = -1
-                                        } -ClientOnly
+                                        }
                                     )
-                                    TrainableClassifier = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLTrainableClassifiers -Property @{
+                                    TrainableClassifier = @(
+                                        [MSFT_SCSLTrainableClassifiers] @{
                                             name = 'Legal Affairs'
-                                        } -ClientOnly
+                                        }
                                     )
-                                } -ClientOnly
-                                New-CimInstance -ClassName MSFT_SCSLSensitiveInformationGroup -Property @{
+                                }
+                                [MSFT_SCSLSensitiveInformationGroup] @{
                                     Name = 'Group2'
                                     Operator = 'And'
-                                    SensitiveInformationType = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLSensitiveInformationType -Property @{
+                                    SensitiveInformationType = @(
+                                        [MSFT_SCSLSensitiveInformationType] @{
                                             name = 'All Full Names'
                                             confidencelevel = 'High'
                                             mincount = 10
                                             maxcount = 100
-                                        } -ClientOnly
+                                        }
                                     )
-                                    TrainableClassifier = [CimInstance[]]@(
-                                        New-CimInstance -ClassName MSFT_SCSLTrainableClassifiers -Property @{
+                                    TrainableClassifier = @(
+                                        [MSFT_SCSLTrainableClassifiers] @{
                                             name = 'Legal Affairs'
-                                        } -ClientOnly
+                                        }
                                     )
-                                } -ClientOnly
+                                }
                             )
-                        } -ClientOnly
+                        }
 
                     Credential       = $Credential
                     Ensure           = 'Present'
@@ -323,7 +323,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -345,21 +345,21 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         ParentId = 'MyLabel'
                     }
                 }
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should delete from the Set method' {
                 Mock -CommandName Get-Label -MockWith {
                     $null
                 }
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Set()
             }
 
             It 'Should return Absent from the Get method' {
                 Mock -CommandName Get-Label -MockWith {
                     $null
                 }
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'SCSensitivityLabel' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
         }
 
@@ -383,7 +383,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'SCSensitivityLabel' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

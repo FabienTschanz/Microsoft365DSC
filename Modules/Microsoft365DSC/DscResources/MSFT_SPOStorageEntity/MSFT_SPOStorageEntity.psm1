@@ -1,562 +1,362 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_SPOStorageEntity'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class SPOStorageEntity : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Key,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The key of the storage entity.')]
+    [System.String] $Key
 
-        [Parameter()]
-        [System.String]
-        $Value,
+    [DscProperty()]
+    [System.ComponentModel.Description('Scope of the storage entity.')]
+    [ValidateSet('Tenant', 'Site')]
+    [System.String] $EntityScope
 
-        [Parameter()]
-        [ValidateSet('Tenant', 'Site')]
-        [System.String]
-        $EntityScope = 'Tenant',
+    [DscProperty()]
+    [System.ComponentModel.Description('Value of the storage entity.')]
+    [System.String] $Value
 
-        [Parameter()]
-        [System.String]
-        $Comment,
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of storage entity.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Comment for the storage entity.')]
+    [System.String] $Comment
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Used to add or remove storage entity.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SiteUrl,
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The url of site collection or tenant.')]
+    [System.String] $SiteUrl
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Office365 Tenant Admin.')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory application to authenticate with.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Name of the Azure Active Directory tenant used for authentication. Format contoso.onmicrosoft.com')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [SPOStorageEntity] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for SPO Storage Entity for $Key"
-
-    try
-    {
-        if ($null -eq $Script:exportedInstance)
+        if ($this.RequiresPowerShellCore())
         {
-            $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
-                -InboundParameters $PSBoundParameters `
-                -Url $SiteUrl
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullReturn = $PSBoundParameters
-            $nullReturn.Ensure = 'Absent'
-
-            Write-Verbose -Message "Getting storage entity $Key"
-            $entityStorageParms = @{ }
-            $entityStorageParms.Add('Key', $Key)
-
-            if ($null -ne $EntityScope -and '' -ne $EntityScope)
-            {
-                $entityStorageParms.Add('Scope', $EntityScope)
-            }
-
-            $Entity = Get-PnPStorageEntity @entityStorageParms -ErrorAction SilentlyContinue
-            ## Get-PnPStorageEntity seems to not return $null when not found
-            ## so checking key
-            if ($null -eq $Entity.Key)
-            {
-                Write-Verbose -Message "No storage entity found for $Key"
-                return $nullReturn
-            }
-        }
-        else
-        {
-            $Entity = $Script:exportedInstance
+            $remote = [SPOStorageEntity]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
         }
 
-        Write-Verbose -Message "Found storage entity $($Entity.Key)"
+        Write-Verbose -Message "Getting configuration for SPO Storage Entity for $($this.Key)"
 
-        return @{
-            Key                   = $Entity.Key
-            Value                 = $Entity.Value
-            EntityScope           = $EntityScope
-            Description           = $Entity.Description
-            Comment               = $Entity.Comment
-            Ensure                = 'Present'
-            SiteUrl               = $SiteUrl
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Key,
-
-        [Parameter()]
-        [System.String]
-        $Value,
-
-        [Parameter()]
-        [ValidateSet('Tenant', 'Site')]
-        [System.String]
-        $EntityScope = 'Tenant',
-
-        [Parameter()]
-        [System.String]
-        $Comment,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SiteUrl,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration for SPO Storage Entity for $Key"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $curStorageEntry = Get-TargetResource @PSBoundParameters
-
-    $CurrentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $CurrentParameters.Remove('SiteUrl') | Out-Null
-    $CurrentParameters.Remove('EntityScope') | Out-Null
-    $CurrentParameters.Add('Scope', $EntityScope)
-
-    if (($Ensure -eq 'Absent' -and $curStorageEntry.Ensure -eq 'Present'))
-    {
-        Write-Verbose -Message "Removing storage entity $Key"
-        Remove-PnPStorageEntity -Key $Key
-    }
-    elseif ($Ensure -eq 'Present')
-    {
         try
         {
-            Write-Verbose -Message "Adding new storage entity $Key"
-            $currentTenantSite = Get-PnPTenantSite -Identity $SiteUrl
-            $resetSecurity = $false
-            if ($currentTenantSite.DenyAddAndCustomizePages -eq 'Enabled')
+            if ($null -eq $this.ExportedInstance)
             {
-                Set-PnPTenantSite -Identity $SiteUrl -NoScriptSite:$false -ErrorAction Stop
-                $resetSecurity = $true
-            }
-            Set-PnPStorageEntity @CurrentParameters
+                $ConnectionMode = $this.Connect('PNP', $this.SiteUrl)
 
-            if ($resetSecurity)
-            {
-                Write-Verbose -Message "Resetting security for $SiteUrl"
-                Set-PnPTenantSite -Identity $SiteUrl -NoScriptSite:$true
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                Write-Verbose -Message "Getting storage entity $($this.Key)"
+                $entityStorageParms = @{ }
+                $entityStorageParms.Add('Key', $this.Key)
+
+                if ($null -ne $this.EntityScope -and '' -ne $this.EntityScope)
+                {
+                    $entityStorageParms.Add('Scope', $this.EntityScope)
+                }
+
+                $Entity = Get-PnPStorageEntity @entityStorageParms -ErrorAction SilentlyContinue
+                ## Get-PnPStorageEntity seems to not return $null when not found
+                ## so checking key
+                if ($null -eq $Entity.Key)
+                {
+                    Write-Verbose -Message "No storage entity found for $($this.Key)"
+                    return $this.AsResult($nullReturn)
+                }
             }
+            else
+            {
+                $Entity = $this.ExportedInstance
+            }
+
+            Write-Verbose -Message "Found storage entity $($Entity.Key)"
+
+            return $this.AsResult(@{
+                Key                   = $Entity.Key
+                Value                 = $Entity.Value
+                EntityScope           = $this.EntityScope
+                Description           = $Entity.Description
+                Comment               = $Entity.Comment
+                Ensure                = 'Present'
+                SiteUrl               = $this.SiteUrl
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            })
         }
         catch
         {
-            if ($_.Exception -like '*Access denied*')
-            {
-                throw "It appears that the account doesn't have access to create an SPO Storage " + `
-                    'Entity or that an App Catalog was not created for the specified location. ' + `
-                    'Additionally, make sure that the site is allowed for custom scripts.'
-            }
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
         }
     }
-}
 
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Key,
-
-        [Parameter()]
-        [System.String]
-        $Value,
-
-        [Parameter()]
-        [ValidateSet('Tenant', 'Site')]
-        [System.String]
-        $EntityScope = 'Tenant',
-
-        [Parameter()]
-        [System.String]
-        $Comment,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SiteUrl,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
+    [void] Set()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    try
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'PNP' `
-            -InboundParameters $PSBoundParameters
+        Write-Verbose -Message "Setting configuration for SPO Storage Entity for $($this.Key)"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $storageEntities = Get-PnPStorageEntity -ErrorAction SilentlyContinue
+        $curStorageEntry = $this.Get().ToHashtable()
 
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        $organization = ''
-        $principal = '' # Principal represents the "NetBios" name of the tenant (e.g. the M365DSC part of M365DSC.onmicrosoft.com)
-        $organization = Get-M365DSCOrganization -Credential $Credential -TenantId $Tenantid
-        if ($organization.IndexOf('.') -gt 0)
-        {
-            $principal = $organization.Split('.')[0]
-        }
+        $CurrentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $CurrentParameters.Remove('SiteUrl') | Out-Null
+        $CurrentParameters.Remove('EntityScope') | Out-Null
+        $CurrentParameters.Add('Scope', $this.EntityScope)
 
-        # Obtain central administration url from a User Principal Name
-        if ($ConnectionMode -eq 'Credential')
+        if (($this.Ensure -eq 'Absent' -and $curStorageEntry.Ensure -eq 'Present'))
         {
-            $centralAdminUrl = Get-SPOAdministrationUrl -Credential $Credential
+            Write-Verbose -Message "Removing storage entity $($this.Key)"
+            Remove-PnPStorageEntity -Key $this.Key
         }
-        else
+        elseif ($this.Ensure -eq 'Present')
         {
-            $centralAdminUrl = "https://$principal-admin.sharepoint.com"
-        }
-
-        if ($storageEntities.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-
-        foreach ($storageEntity in $storageEntities)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            try
             {
-                $Global:M365DSCExportResourceInstancesCount++
+                Write-Verbose -Message "Adding new storage entity $($this.Key)"
+                $currentTenantSite = Get-PnPTenantSite -Identity $this.SiteUrl
+                $resetSecurity = $false
+                if ($currentTenantSite.DenyAddAndCustomizePages -eq 'Enabled')
+                {
+                    Set-PnPTenantSite -Identity $this.SiteUrl -NoScriptSite:$false -ErrorAction Stop
+                    $resetSecurity = $true
+                }
+                Set-PnPStorageEntity @CurrentParameters
+
+                if ($resetSecurity)
+                {
+                    Write-Verbose -Message "Resetting security for $($this.SiteUrl)"
+                    Set-PnPTenantSite -Identity $this.SiteUrl -NoScriptSite:$true
+                }
             }
-
-            $Params = @{
-                Credential            = $Credential
-                Key                   = $storageEntity.Key
-                SiteUrl               = $centralAdminUrl
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-            Write-M365DSCHost -Message "    |---[$i/$($storageEntities.Length)] $($storageEntity.Key)" -DeferWrite
-
-            $Script:exportedInstance = $storageEntity
-            $Results = Get-TargetResource @Params
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-
-            # Make the Url parameterized
-            if ($currentDSCBlock.ToLower().Contains($organization.ToLower()) -or `
-                    $currentDSCBlock.ToLower().Contains($principal.ToLower()))
+            catch
             {
-                $currentDSCBlock = $currentDSCBlock -ireplace [regex]::Escape('https://' + $principal + '.sharepoint.com'), "https://`$(`$OrganizationName.Split('.')[0]).sharepoint.com"
-                $currentDSCBlock = $currentDSCBlock -ireplace [regex]::Escape('https://' + $principal + '-admin.sharepoint.com'), "https://`$(`$OrganizationName.Split('.')[0])-admin.sharepoint.com"
+                if ($_.Exception -like '*Access denied*')
+                {
+                    throw "It appears that the account doesn't have access to create an SPO Storage " + `
+                        'Entity or that an App Catalog was not created for the specified location. ' + `
+                        'Additionally, make sure that the site is allowed for custom scripts.'
+                }
             }
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
         }
-
-        return $dscContent.ToString()
     }
-    catch
+
+    [bool] Test()
     {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
 
-        throw
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        try
+        {
+            $ConnectionMode = $this.Connect('PNP')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Export')
+            #endregion
+
+            $storageEntities = Get-PnPStorageEntity -ErrorAction SilentlyContinue
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            $organization = ''
+            $principal = '' # Principal represents the "NetBios" name of the tenant (e.g. the M365DSC part of M365DSC.onmicrosoft.com)
+            $organization = Get-M365DSCOrganization -Credential $this.Credential -TenantId $this.Tenantid
+            if ($organization.IndexOf('.') -gt 0)
+            {
+                $principal = $organization.Split('.')[0]
+            }
+
+            # Obtain central administration url from a User Principal Name
+            if ($ConnectionMode -eq 'Credential')
+            {
+                $centralAdminUrl = Get-SPOAdministrationUrl -Credential $this.Credential
+            }
+            else
+            {
+                $centralAdminUrl = "https://$principal-admin.sharepoint.com"
+            }
+
+            if ($storageEntities.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+
+            foreach ($storageEntity in $storageEntities)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                $Params = @{
+                    Credential            = $this.Credential
+                    Key                   = $storageEntity.Key
+                    SiteUrl               = $centralAdminUrl
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+                Write-M365DSCHost -Message "    |---[$i/$($storageEntities.Length)] $($storageEntity.Key)" -DeferWrite
+
+                $this.ExportedInstance = $storageEntity
+                $Results = $this.GetForExport($Params)
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+
+                # Make the Url parameterized
+                if ($currentDSCBlock.ToLower().Contains($organization.ToLower()) -or `
+                        $currentDSCBlock.ToLower().Contains($principal.ToLower()))
+                {
+                    $currentDSCBlock = $currentDSCBlock -ireplace [regex]::Escape('https://' + $principal + '.sharepoint.com'), "https://`$(`$OrganizationName.Split('.')[0]).sharepoint.com"
+                    $currentDSCBlock = $currentDSCBlock -ireplace [regex]::Escape('https://' + $principal + '-admin.sharepoint.com'), "https://`$(`$OrganizationName.Split('.')[0])-admin.sharepoint.com"
+                }
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('SiteUrl')
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [SPOStorageEntity] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [SPOStorageEntity])
+        {
+            return $Values
+        }
+
+        $result = [SPOStorageEntity]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        ExcludedProperties = @('SiteUrl')
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

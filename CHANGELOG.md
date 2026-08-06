@@ -4,6 +4,9 @@
 
 * AADApplication
   * Updated `Owners` to use `DisplayName` for Service Principal objects.
+* AADIdentityGovernanceProgram
+  * [BREAKING CHANGE] Removed resource. Please use the resources
+    `AADAccessReview[Definition|Policy]` instead.
 * AADPIMGroupSetting
   * Improved performance with batch requests.
 * AADRoleDefinition
@@ -13,18 +16,34 @@
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
     to PSCredential and removed it from the export output.
+* IntuneAppControlForBusinessPolicyWindows10
+  * [BREAKING CHANGE] Removed resource. Please use the resource
+    `IntuneAppControlForBusinessPolicyWindows10V2` instead.
+* IntuneApplicationControlPolicyWindows10
+  * [BREAKING CHANGE] Removed resource. Please use the resource
+    `IntuneDeviceConfigurationEndpointProtectionPolicyWindows10` instead.
+* IntuneAppProtectionPolicyiOS
+  * [BREAKING CHANGE] Removed property `DeployedAppCount`.
 * IntuneCloudProvisioningPolicyWindows365
   * Removed unused class reference `MSFT_MicrosoftGraphMicrosoftManagedDesktop`.
+* IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10
+  * [BREAKING CHANGE] Removed resource. Please use the resource
+    `IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2` instead.
+* IntuneDiskEncryptionMacOS
+  * [BREAKING CHANGE] Removed resource. Please use the resource
+    `IntuneDiskEncryptionFileVaultPolicyMacOS` instead.
 * IntuneMobileAppsLobAppWindows10
   * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementAppxMobileAppAssignment`.
 * IntuneMobileAppsSystemAppAndroid
   * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementSystemMobileAppAssignment`.
 * IntuneMobileAppsWindowsOfficeSuiteApp
   * Removed unused class reference `MSFT_DeviceManagementMimeContent`.
+* IntuneSettingCatalogCustomPolicyWindows10
+  * Fixed an issue where some nested properties didn't have the correct type.
 * IntuneVPNConfigurationPolicyIOS
   * [BREAKING CHANGE] Updated `targetedMobileApps` to use `MSFT_targetedMobileApps`.
 * O365OrgCustomizationSetting
-  * [BREAKING CHANGE] Removed the property `Ensure`.
+  * [BREAKING CHANGE] Renamed the property `Ensure` to `State`.
 * SCComplianceTag
   * Fixed an issue where `EventType` was never exported.
 * SPOAccessControlSettings
@@ -91,6 +110,9 @@
   * Updated fetching of user profile properties.
 * TeamsCallQueue
   * Added GUID resolution to `AuthorizedUsers` and `Users`.
+* TeamsUpdateManagementPolicy
+  * Updated `UpdateTimeOfDay` to use the format `h:mm tt` with invariant culture.
+    An example is `6:00 pm`. This is the standard on en-US cultures.
 * M365DSCGraphShim
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
 * M365DSCModuleMgmt
@@ -104,7 +126,14 @@
   * Added many new relations between resources to improve dependency handling during export.
   * Added QA new test to check for unreferenced classes in the schema file.
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)
-  * Updated module to invoke PowerShell 7 for all resources if not already running under it.
+  * Added `RawResults` to the export of every resource that is part of a relation template.
+  * Added support for the `like` and `notlike` operators in relation conditions, and for
+    `$_` as the subject so a condition can test a value in a simple array rather than a
+    property of an object.
+  * Fixed dependency stub blocks omitting most mandatory properties. Only a fixed list of
+    property names was ever emitted, so stubs such as `AADUser` carried no identifying
+    property at all and `AADRoleDefinition` was missing `IsEnabled` and `RolePermissions`.
+    Every mandatory property is now emitted with a placeholder matching its type.
   * Fixed an issue with module parsing for Teams resources after changing to PowerShell classes.
   * Fixed an issue where several resources had a different resource name in the Mof definition.
   * Moved export relation resolution and `DependsOn` injection into the new
@@ -120,14 +149,8 @@
     `Export-M365DSCConfiguration` is called with `-IncludeDependencies`.
   * Fixed the relation templates failing to parse on Windows PowerShell, which prevented
     the module from being imported on that edition.
-  * Added `RawResults` to the export of every resource that is part of a relation template.
-  * Fixed dependency stub blocks omitting most mandatory properties. Only a fixed list of
-    property names was ever emitted, so stubs such as `AADUser` carried no identifying
-    property at all and `AADRoleDefinition` was missing `IsEnabled` and `RolePermissions`.
-    Every mandatory property is now emitted with a placeholder matching its type.
-  * Added support for the `like` and `notlike` operators in relation conditions, and for
-    `$_` as the subject so a condition can test a value in a simple array rather than a
-    property of an object.
+  * Updated module to invoke PowerShell 7 for all resources if not already running under it.
+  * Updated all DSC resources from script-based to class-based.
 
 # 1.26.729.2
 

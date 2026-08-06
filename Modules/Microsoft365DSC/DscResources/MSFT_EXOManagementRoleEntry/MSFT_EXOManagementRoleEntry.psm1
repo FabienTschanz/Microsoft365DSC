@@ -1,490 +1,327 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_EXOManagementRoleEntry'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class EXOManagementRoleEntry : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The Identity parameter specifies the role entry that you want to modify.')]
+    [System.String] $Identity
 
-        [Parameter()]
-        [System.String[]]
-        $Parameters,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Parameters parameter specifies the parameters to be added to or removed from the role entry.')]
+    [System.String[]] $Parameters
 
-        [Parameter()]
-        [ValidateSet('Cmdlet', 'Script', 'ApplicationPermission', 'WebService')]
-        [System.String]
-        $Type,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Type parameter specifies the type of role entry to return.')]
+    [ValidateSet('Cmdlet', 'Script', 'ApplicationPermission', 'WebService')]
+    [System.String] $Type
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify if the Management Role entry should exist or not.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Exchange Global Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [EXOManagementRoleEntry] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting Management Role Entry configuration for {$Identity}"
-
-    # TODO: Remove property 'Type' in next breaking change
-    if ($PSBoundParameters.ContainsKey('Type'))
-    {
-        $PSBoundParameters.Remove('Type') | Out-Null
-        Write-Warning "Property 'Type' is deprecated and will be removed"
-    }
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Identity -ne $Identity)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-                -InboundParameters $PSBoundParameters
+            $remote = [EXOManagementRoleEntry]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting Management Role Entry configuration for {$($this.Identity)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
+        # TODO: Remove property 'Type' in next breaking change
+        if ($this.GetBoundParameters().ContainsKey('Type'))
+        {
+            $this.GetBoundParameters().Remove('Type') | Out-Null
+            Write-Warning "Property 'Type' is deprecated and will be removed"
+        }
 
-            $roleEntry = Get-ManagementRoleEntry -Identity $Identity -ResultSize 'Unlimited' -ErrorAction SilentlyContinue
-
-            if ($null -eq $roleEntry)
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
             {
-                Write-Verbose -Message "Management Role Entry {$Identity} does not exist."
-                $nullReturn = $PSBoundParameters
-                $nullReturn.Ensure = 'Absent'
-                return $nullReturn
+                $null = $this.Connect('ExchangeOnline')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $roleEntry = Get-ManagementRoleEntry -Identity $this.Identity -ResultSize 'Unlimited' -ErrorAction SilentlyContinue
+
+                if ($null -eq $roleEntry)
+                {
+                    Write-Verbose -Message "Management Role Entry {$($this.Identity)} does not exist."
+                    $nullReturn = $this.GetBoundParameters()
+                    $nullReturn.Ensure = 'Absent'
+                    return $this.AsResult($nullReturn)
+                }
+            }
+            else
+            {
+                $roleEntry = $this.ExportedInstance
+            }
+
+            $result = @{
+                Identity              = $this.Identity
+                Parameters            = $roleEntry.Parameters
+                Type                  = $roleEntry.Type
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity
+                AccessTokens          = $this.AccessTokens
+            }
+
+            Write-Verbose -Message "Found Management Role Entry {$($this.Identity)}."
+            return $this.AsResult($result)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting Management Role Entry configuration for {$($this.Identity)}"
+
+        # TODO: Remove property 'Type' in next breaking change
+        if ($this.GetBoundParameters().ContainsKey('Type'))
+        {
+            $this.GetBoundParameters().Remove('Type') | Out-Null
+            Write-Warning "Property 'Type' is deprecated and will be removed"
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentValues = $this.Get().ToHashtable()
+
+        if ($currentValues.Ensure -eq 'Absent' -and $this.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Creating new Management Role Entry {$($this.Identity)}"
+            $params = @{
+                Identity = $this.Identity
+            }
+
+            if ($null -ne $this.Parameters -and $this.Parameters.Length -gt 0)
+            {
+                $params.Add('Parameters', $this.Parameters)
+            }
+
+            if (-not [System.String]::IsNullOrEmpty($this.Type))
+            {
+                $params.Add('Type', $this.Type)
+            }
+
+            Add-ManagementRoleEntry @params
+        }
+        elseif ($currentValues.Ensure -eq 'Present' -and $this.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating Management Role Entry {$($this.Identity)}"
+            $paramDifference = Compare-Object -ReferenceObject $currentValues.Parameters -DifferenceObject $this.Parameters
+
+            $paramsToAdd = $paramDifference | Where-Object -FilterScript { $_.SideIndicator -eq '=>' }
+            $paramsToAddEntries = @()
+            foreach ($diff in $paramsToAdd)
+            {
+                $paramsToAddEntries += $diff.InputObject.ToString()
+            }
+            if ($paramsToAddEntries.Count -gt 0)
+            {
+                Write-Verbose -Message "Adding the following parameters to {$($this.Identity)}: $($paramsToAddEntries -join ',')"
+                Set-ManagementRoleEntry -Identity $this.Identity -AddParameter -Parameters $paramsToAddEntries
+            }
+
+            $paramsToRemove = $paramDifference | Where-Object -FilterScript { $_.SideIndicator -eq '<=' }
+            $paramsToRemoveEntries = @()
+            foreach ($diff in $paramsToRemove)
+            {
+                $paramsToRemoveEntries += $diff.InputObject.ToString()
+            }
+            if ($paramsToRemoveEntries.Count -gt 0)
+            {
+                Write-Verbose -Message "Removing the following parameters to {$($this.Identity)}: $($paramsToRemoveEntries -join ',')"
+                Set-ManagementRoleEntry -Identity $this.Identity -RemoveParameter -Parameters $paramsToRemoveEntries
             }
         }
-        else
+        elseif ($currentValues.Ensure -eq 'Present' -and $this.Ensure -eq 'Absent')
         {
-            $roleEntry = $Script:exportedInstance
+            Write-Verbose -Message "Removing Management Role Entry {$($this.Identity)}"
+            Remove-ManagementRoleEntry -Identity $this.Identity -Confirm:$false
+        }
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
         }
 
-        $result = @{
-            Identity              = $Identity
-            Parameters            = $roleEntry.Parameters
-            Type                  = $roleEntry.Type
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity
-            AccessTokens          = $AccessTokens
-        }
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
 
-        Write-Verbose -Message "Found Management Role Entry {$Identity}."
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
         return $result
     }
-    catch
+
+    [string] Export()
     {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter()]
-        [System.String[]]
-        $Parameters,
-
-        [Parameter()]
-        [ValidateSet('Cmdlet', 'Script', 'ApplicationPermission', 'WebService')]
-        [System.String]
-        $Type,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting Management Role Entry configuration for {$Identity}"
-
-    # TODO: Remove property 'Type' in next breaking change
-    if ($PSBoundParameters.ContainsKey('Type'))
-    {
-        $PSBoundParameters.Remove('Type') | Out-Null
-        Write-Warning "Property 'Type' is deprecated and will be removed"
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentValues = Get-TargetResource @PSBoundParameters
-
-    if ($currentValues.Ensure -eq 'Absent' -and $Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Creating new Management Role Entry {$Identity}"
-        $params = @{
-            Identity = $Identity
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
         }
 
-        if ($null -ne $Parameters -and $Parameters.Length -gt 0)
+        $ConnectionMode = $this.Connect('ExchangeOnline')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
         {
-            $params.Add('Parameters', $Parameters)
-        }
-
-        if (-not [System.String]::IsNullOrEmpty($Type))
-        {
-            $params.Add('Type', $Type)
-        }
-
-        Add-ManagementRoleEntry @params
-    }
-    elseif ($currentValues.Ensure -eq 'Present' -and $Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating Management Role Entry {$Identity}"
-        $paramDifference = Compare-Object -ReferenceObject $currentValues.Parameters -DifferenceObject $Parameters
-
-        $paramsToAdd = $paramDifference | Where-Object -FilterScript { $_.SideIndicator -eq '=>' }
-        $paramsToAddEntries = @()
-        foreach ($diff in $paramsToAdd)
-        {
-            $paramsToAddEntries += $diff.InputObject.ToString()
-        }
-        if ($paramsToAddEntries.Count -gt 0)
-        {
-            Write-Verbose -Message "Adding the following parameters to {$Identity}: $($paramsToAddEntries -join ',')"
-            Set-ManagementRoleEntry -Identity $Identity -AddParameter -Parameters $paramsToAddEntries
-        }
-
-        $paramsToRemove = $paramDifference | Where-Object -FilterScript { $_.SideIndicator -eq '<=' }
-        $paramsToRemoveEntries = @()
-        foreach ($diff in $paramsToRemove)
-        {
-            $paramsToRemoveEntries += $diff.InputObject.ToString()
-        }
-        if ($paramsToRemoveEntries.Count -gt 0)
-        {
-            Write-Verbose -Message "Removing the following parameters to {$Identity}: $($paramsToRemoveEntries -join ',')"
-            Set-ManagementRoleEntry -Identity $Identity -RemoveParameter -Parameters $paramsToRemoveEntries
-        }
-    }
-    elseif ($currentValues.Ensure -eq 'Present' -and $Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Removing Management Role Entry {$Identity}"
-        Remove-ManagementRoleEntry -Identity $Identity -Confirm:$false
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter()]
-        [System.String[]]
-        $Parameters,
-
-        [Parameter()]
-        [ValidateSet('Cmdlet', 'Script', 'ApplicationPermission', 'WebService')]
-        [System.String]
-        $Type,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $exportedInstances = Get-ManagementRoleEntry -Identity '*\*' -ResultSize 'Unlimited'
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($exportedInstances.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        $i = 1
-        foreach ($roleEntry in $exportedInstances)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            [array] $exportedInstances = Get-ManagementRoleEntry -Identity '*\*' -ResultSize 'Unlimited'
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($exportedInstances.Length -eq 0)
             {
-                $Global:M365DSCExportResourceInstancesCount++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
-
-            Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $($roleEntry.Identity + '\' + $roleEntry.Name)" -DeferWrite
-
-            $Params = @{
-                Identity              = $roleEntry.Identity + '\' + $roleEntry.Name
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                CertificatePath       = $CertificatePath
-                AccessTokens          = $AccessTokens
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
-            $Script:exportedInstance = $roleEntry
-            $Results = Get-TargetResource @Params
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            $i++
+            $i = 1
+            foreach ($roleEntry in $exportedInstances)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $($roleEntry.Identity + '\' + $roleEntry.Name)" -DeferWrite
+
+                $Params = @{
+                    Identity              = $roleEntry.Identity + '\' + $roleEntry.Name
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    CertificatePath       = $this.CertificatePath
+                    AccessTokens          = $this.AccessTokens
+                }
+                $this.ExportedInstance = $roleEntry
+                $Results = $this.GetForExport($Params)
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $i++
+            }
+            return $dscContent.ToString()
         }
-        return $dscContent.ToString()
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
     }
-    catch
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
     {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        return @{
+            ExcludedProperties = @('Type')
+        }
+    }
 
-        throw
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [EXOManagementRoleEntry] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [EXOManagementRoleEntry])
+        {
+            return $Values
+        }
+
+        $result = [EXOManagementRoleEntry]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        ExcludedProperties = @('Type')
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

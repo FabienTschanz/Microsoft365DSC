@@ -1,661 +1,332 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_SentinelThreatIntelligenceIndicator'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The display name of the indicator')]
+    [System.String] $DisplayName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SubscriptionId,
+    [DscProperty()]
+    [System.ComponentModel.Description('The name of the resource group. The name is case insensitive.')]
+    [System.String] $SubscriptionId
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResourceGroupName,
+    [DscProperty()]
+    [System.ComponentModel.Description('The name of the resource group. The name is case insensitive.')]
+    [System.String] $ResourceGroupName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $WorkspaceName,
+    [DscProperty()]
+    [System.ComponentModel.Description('The name of the workspace.')]
+    [System.String] $WorkspaceName
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique id of the indicator.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('The name of the workspace.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String]
-        $PatternType,
+    [DscProperty()]
+    [System.ComponentModel.Description('Pattern type of a threat intelligence entity')]
+    [System.String] $PatternType
 
-        [Parameter()]
-        [System.String]
-        $Pattern,
+    [DscProperty()]
+    [System.ComponentModel.Description('Pattern of a threat intelligence entity')]
+    [System.String] $Pattern
 
-        [Parameter()]
-        [System.Boolean]
-        $Revoked,
+    [DscProperty()]
+    [System.ComponentModel.Description('Is threat intelligence entity revoked')]
+    [System.String] $Revoked
 
-        [Parameter()]
-        [System.String]
-        $ValidFrom,
+    [DscProperty()]
+    [System.ComponentModel.Description('Valid from')]
+    [System.String] $ValidFrom
 
-        [Parameter()]
-        [System.String]
-        $ValidUntil,
+    [DscProperty()]
+    [System.ComponentModel.Description('Valid until')]
+    [System.String] $ValidUntil
 
-        [Parameter()]
-        [System.String]
-        $Source,
+    [DscProperty()]
+    [System.ComponentModel.Description('Source type.')]
+    [System.String] $Source
 
-        [Parameter()]
-        [System.String[]]
-        $Labels,
+    [DscProperty()]
+    [System.ComponentModel.Description('Labels of threat intelligence entity')]
+    [System.String[]] $Labels
 
-        [Parameter()]
-        [System.String[]]
-        $ThreatIntelligenceTags,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of tags')]
+    [System.String[]] $ThreatIntelligenceTags
 
-        [Parameter()]
-        [System.String[]]
-        $ThreatTypes,
+    [DscProperty()]
+    [System.ComponentModel.Description('Threat types')]
+    [System.String[]] $ThreatTypes
 
-        [Parameter()]
-        [System.String[]]
-        $KillChainPhases,
+    [DscProperty()]
+    [System.ComponentModel.Description('Kill chain phases')]
+    [System.String[]] $KillChainPhases
 
-        [Parameter()]
-        [System.UInt32]
-        $Confidence,
+    [DscProperty()]
+    [System.ComponentModel.Description('Confidence of threat intelligence entity')]
+    [System.Nullable[System.UInt32]] $Confidence
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [SentinelThreatIntelligenceIndicator] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $instance = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [SentinelThreatIntelligenceIndicator]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting Sentinel Threat Intelligence Indicator configuration for $($this.DisplayName)"
+
+        try
+        {
+            $null = $this.Connect('Azure')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $nullResult = $this.GetBoundParameters()
+            $nullResult.Ensure = 'Absent'
+
+            if ([System.String]::IsNullOrEmpty($this.TenantId) -and -not $null -eq $this.Credential)
+            {
+                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+            }
+
+            if (-not [System.String]::IsNullOrEmpty($this.Id))
+            {
+                Write-Verbose -Message "Retrieving indicator by id {$($this.Id)}"
+                $instance = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
+                    -ResourceGroupName $this.ResourceGroupName `
+                    -WorkspaceName $this.WorkspaceName `
+                    -TenantId $this.TenantId `
+                    -Id $this.Id
+            }
+            if ($null -eq $instance)
+            {
+                Write-Verbose -Message "Retrieving indicator by DisplayName {$($this.DisplayName)}"
+                $instances = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
+                    -ResourceGroupName $this.ResourceGroupName `
+                    -WorkspaceName $this.WorkspaceName `
+                    -TenantId $this.TenantId
+                $instance = $instances | Where-Object -FilterScript { $_.properties.displayName -eq $this.DisplayName }
+            }
+            if ($null -eq $instance)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $results = @{
+                DisplayName            = $instance.properties.displayName
+                SubscriptionId         = $this.SubscriptionId
+                ResourceGroupName      = $this.ResourceGroupName
+                WorkspaceName          = $this.WorkspaceName
+                Id                     = $instance.name
+                Description            = $instance.properties.description
+                PatternType            = $instance.properties.patternType
+                Pattern                = $instance.properties.pattern
+                Revoked                = $instance.properties.revoked
+                ValidFrom              = $instance.properties.validFrom
+                ValidUntil             = $instance.properties.validUntil
+                Labels                 = $instance.properties.labels
+                ThreatIntelligenceTags = $instance.properties.threatIntelligenceTags
+                ThreatTypes            = $instance.properties.threatTypes
+                KillChainPhases        = $instance.properties.KillChainPhases.phaseName
+                Confidence             = $instance.properties.confidence
+                Source                 = $instance.properties.source
+                Ensure                 = 'Present'
+                Credential             = $this.Credential
+                ApplicationId          = $this.ApplicationId
+                TenantId               = $this.TenantId
+                CertificateThumbprint  = $this.CertificateThumbprint
+                CertificatePath        = $this.CertificatePath
+                CertificatePassword    = $this.CertificatePassword
+                ManagedIdentity        = $this.ManagedIdentity.IsPresent
+                AccessTokens           = $this.AccessTokens
+            }
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting Sentinel Threat Intelligence Indicator configuration for $DisplayName"
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'Azure' `
-            -InboundParameters $PSBoundParameters
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting Sentinel Threat Intelligence Indicator configuration for $($this.DisplayName)"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
+        $currentInstance = $this.Get().ToHashtable()
 
-        if ([System.String]::IsNullOrEmpty($TenantId) -and -not $null -eq $Credential)
-        {
-            $TenantId = $Credential.UserName.Split('@')[1]
-        }
-
-        if (-not [System.String]::IsNullOrEmpty($Id))
-        {
-            Write-Verbose -Message "Retrieving indicator by id {$Id}"
-            $instance = Get-M365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $SubscriptionId `
-                -ResourceGroupName $ResourceGroupName `
-                -WorkspaceName $WorkspaceName `
-                -TenantId $TenantId `
-                -Id $Id
-        }
-        if ($null -eq $instance)
-        {
-            Write-Verbose -Message "Retrieving indicator by DisplayName {$DisplayName}"
-            $instances = Get-M365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $SubscriptionId `
-                -ResourceGroupName $ResourceGroupName `
-                -WorkspaceName $WorkspaceName `
-                -TenantId $TenantId
-            $instance = $instances | Where-Object -FilterScript { $_.properties.displayName -eq $DisplayName }
-        }
-        if ($null -eq $instance)
-        {
-            return $nullResult
-        }
-
-        $results = @{
-            DisplayName            = $instance.properties.displayName
-            SubscriptionId         = $SubscriptionId
-            ResourceGroupName      = $ResourceGroupName
-            WorkspaceName          = $WorkspaceName
-            Id                     = $instance.name
-            Description            = $instance.properties.description
-            PatternType            = $instance.properties.patternType
-            Pattern                = $instance.properties.pattern
-            Revoked                = $instance.properties.revoked
-            ValidFrom              = $instance.properties.validFrom
-            ValidUntil             = $instance.properties.validUntil
-            Labels                 = $instance.properties.labels
-            ThreatIntelligenceTags = $instance.properties.threatIntelligenceTags
-            ThreatTypes            = $instance.properties.threatTypes
-            KillChainPhases        = $instance.properties.KillChainPhases.phaseName
-            Confidence             = $instance.properties.confidence
-            Source                 = $instance.properties.source
-            Ensure                 = 'Present'
-            Credential             = $Credential
-            ApplicationId          = $ApplicationId
-            TenantId               = $TenantId
-            CertificateThumbprint  = $CertificateThumbprint
-            CertificatePath        = $CertificatePath
-            CertificatePassword    = $CertificatePassword
-            ManagedIdentity        = $ManagedIdentity.IsPresent
-            AccessTokens           = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String]
-        $PatternType,
-
-        [Parameter()]
-        [System.String]
-        $Pattern,
-
-        [Parameter()]
-        [System.Boolean]
-        $Revoked,
-
-        [Parameter()]
-        [System.String]
-        $ValidFrom,
-
-        [Parameter()]
-        [System.String]
-        $ValidUntil,
-
-        [Parameter()]
-        [System.String]
-        $Source,
-
-        [Parameter()]
-        [System.String[]]
-        $Labels,
-
-        [Parameter()]
-        [System.String[]]
-        $ThreatIntelligenceTags,
-
-        [Parameter()]
-        [System.String[]]
-        $ThreatTypes,
-
-        [Parameter()]
-        [System.String[]]
-        $KillChainPhases,
-
-        [Parameter()]
-        [System.UInt32]
-        $Confidence,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting Sentinel Threat Intelligence Indicator configuration for $DisplayName"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    $instanceParameters = @{
-        kind       = 'indicator'
-        properties = @{
-            confidence             = $Confidence
-            description            = $Description
-            displayName            = $DisplayName
-            labels                 = $Labels
-            pattern                = $Pattern
-            patternType            = $patternType
-            revoked                = $revoked
-            source                 = $Source
-            threatIntelligenceTags = $ThreatIntelligenceTags
-            threatTypes            = $ThreatTypes
-            validFrom              = $ValidFrom
-            validUntil             = $ValidUntil
-        }
-    }
-
-    if ($null -ne $KillChainPhases)
-    {
-        $values = @()
-        foreach ($phase in $KillChainPhases)
-        {
-            $values += @{
-                killChainName = 'lockheed-martin-cyber-kill-chain'
-                phaseName     = $phase.phaseName
+        $instanceParameters = @{
+            kind       = 'indicator'
+            properties = @{
+                confidence             = $this.Confidence
+                description            = $this.Description
+                displayName            = $this.DisplayName
+                labels                 = $this.Labels
+                pattern                = $this.Pattern
+                patternType            = $this.patternType
+                revoked                = $this.revoked
+                source                 = $this.Source
+                threatIntelligenceTags = $this.ThreatIntelligenceTags
+                threatTypes            = $this.ThreatTypes
+                validFrom              = $this.ValidFrom
+                validUntil             = $this.ValidUntil
             }
         }
-        $instanceParameters.properties.Add('KillChainPhases', $values)
-    }
 
-    if ([System.String]::IsNullOrEmpty($TenantId) -and -not $null -eq $Credential)
-    {
-        $TenantId = $Credential.UserName.Split('@')[1]
-    }
-
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating a new indicator {$DisplayName}"
-        New-M365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $SubscriptionId `
-            -ResourceGroupName $ResourceGroupName `
-            -WorkspaceName $WorkspaceName `
-            -TenantId $TenantId `
-            -Body $instanceParameters
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating indicator {$DisplayName}"
-        Set-M365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $SubscriptionId `
-            -ResourceGroupName $ResourceGroupName `
-            -WorkspaceName $WorkspaceName `
-            -TenantId $TenantId `
-            -Body $instanceParameters `
-            -Id $currentInstance.Id
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing indicator {$DisplayName}"
-        Remove-M365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $SubscriptionId `
-            -ResourceGroupName $ResourceGroupName `
-            -WorkspaceName $WorkspaceName `
-            -TenantId $TenantId `
-            -Id $currentInstance.Id
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String]
-        $PatternType,
-
-        [Parameter()]
-        [System.String]
-        $Pattern,
-
-        [Parameter()]
-        [System.Boolean]
-        $Revoked,
-
-        [Parameter()]
-        [System.String]
-        $ValidFrom,
-
-        [Parameter()]
-        [System.String]
-        $ValidUntil,
-
-        [Parameter()]
-        [System.String]
-        $Source,
-
-        [Parameter()]
-        [System.String[]]
-        $Labels,
-
-        [Parameter()]
-        [System.String[]]
-        $ThreatIntelligenceTags,
-
-        [Parameter()]
-        [System.String[]]
-        $ThreatTypes,
-
-        [Parameter()]
-        [System.String[]]
-        $KillChainPhases,
-
-        [Parameter()]
-        [System.UInt32]
-        $Confidence,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'Azure' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        $sentinelInstances = Get-AzResource -ResourceType 'Microsoft.OperationsManagement/solutions'
-        $sentinelNames = @()
-        foreach ($instance in $sentinelInstances)
+        if ($null -ne $this.KillChainPhases)
         {
-            $sentinelNames += $instance.Name.Replace('SecurityInsights(', '').Replace(')', '')
-        }
-        $workspaces = Get-AzResource -ResourceType 'Microsoft.OperationalInsights/workspaces' | Where-Object Name -in $sentinelNames
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($workspaces.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-
-        if ([System.String]::IsNullOrEmpty($TenantId) -and $null -ne $Credential)
-        {
-            $TenantId = $Credential.UserName.Split('@')[1]
-        }
-        foreach ($workspace in $workspaces)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            $values = @()
+            foreach ($phase in $this.KillChainPhases)
             {
-                $Global:M365DSCExportResourceInstancesCount++
+                $values += @{
+                    killChainName = 'lockheed-martin-cyber-kill-chain'
+                    phaseName     = $phase.phaseName
+                }
             }
+            $instanceParameters.properties.Add('KillChainPhases', $values)
+        }
 
-            Write-M365DSCHost -Message "    |---[$i/$($workspaces.Length)] $($workspace.Name)" -DeferWrite
-            $subscriptionId = $workspace.ResourceId.Split('/')[2]
-            $resourceGroupName = $workspace.ResourceGroupName
-            $workspaceName = $workspace.Name
+        if ([System.String]::IsNullOrEmpty($this.TenantId) -and -not $null -eq $this.Credential)
+        {
+            $this.TenantId = $this.Credential.UserName.Split('@')[1]
+        }
 
-            $indicators = Get-M365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $subscriptionId `
-                -ResourceGroupName $resourceGroupName `
-                -WorkspaceName $workspaceName `
-                -TenantId $TenantId
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Creating a new indicator {$($this.DisplayName)}"
+            New-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
+                -ResourceGroupName $this.ResourceGroupName `
+                -WorkspaceName $this.WorkspaceName `
+                -TenantId $this.TenantId `
+                -Body $instanceParameters
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating indicator {$($this.DisplayName)}"
+            Set-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
+                -ResourceGroupName $this.ResourceGroupName `
+                -WorkspaceName $this.WorkspaceName `
+                -TenantId $this.TenantId `
+                -Body $instanceParameters `
+                -Id $currentInstance.Id
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing indicator {$($this.DisplayName)}"
+            Remove-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
+                -ResourceGroupName $this.ResourceGroupName `
+                -WorkspaceName $this.WorkspaceName `
+                -TenantId $this.TenantId `
+                -Id $currentInstance.Id
+        }
+    }
 
-            $j = 1
-            if ($indicators.Length -eq 0)
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('Azure')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            $sentinelInstances = Get-AzResource -ResourceType 'Microsoft.OperationsManagement/solutions'
+            $sentinelNames = @()
+            foreach ($instance in $sentinelInstances)
+            {
+                $sentinelNames += $instance.Name.Replace('SecurityInsights(', '').Replace(')', '')
+            }
+            $workspaces = Get-AzResource -ResourceType 'Microsoft.OperationalInsights/workspaces' | Where-Object Name -in $sentinelNames
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($workspaces.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
@@ -664,55 +335,102 @@ function Export-TargetResource
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
 
-            foreach ($indicator in $indicators)
+            if ([System.String]::IsNullOrEmpty($this.TenantId) -and $null -ne $this.Credential)
             {
-                $displayedKey = $indicator.properties.DisplayName
-                Write-M365DSCHost -Message "        |---[$j/$($indicators.Count)] $displayedKey" -DeferWrite
-                $params = @{
-                    DisplayName           = $indicator.properties.displayName
-                    Id                    = $indicator.name
-                    SubscriptionId        = $subscriptionId
-                    ResourceGroupName     = $resourceGroupName
-                    WorkspaceName         = $workspaceName
-                    Credential            = $Credential
-                    ApplicationId         = $ApplicationId
-                    TenantId              = $TenantId
-                    CertificateThumbprint = $CertificateThumbprint
-                    CertificatePath       = $CertificatePath
-                    CertificatePassword   = $CertificatePassword
-                    ManagedIdentity       = $ManagedIdentity.IsPresent
-                    AccessTokens          = $AccessTokens
+                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+            }
+            foreach ($workspace in $workspaces)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
                 }
 
-                $Results = Get-TargetResource @Params
+                Write-M365DSCHost -Message "    |---[$i/$($workspaces.Length)] $($workspace.Name)" -DeferWrite
+                $this.subscriptionId = $workspace.ResourceId.Split('/')[2]
+                $this.resourceGroupName = $workspace.ResourceGroupName
+                $this.workspaceName = $workspace.Name
 
-                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                    -ConnectionMode $ConnectionMode `
-                    -ModulePath $PSScriptRoot `
-                    -Results $Results `
-                    -Credential $Credential
-                [void]$dscContent.Append($currentDSCBlock)
-                Save-M365DSCPartialExport -Content $currentDSCBlock `
-                    -FileName $Global:PartialExportFileName
-                $j++
-                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $indicators = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.subscriptionId `
+                    -ResourceGroupName $this.resourceGroupName `
+                    -WorkspaceName $this.workspaceName `
+                    -TenantId $this.TenantId
+
+                $j = 1
+                if ($indicators.Length -eq 0)
+                {
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
+                else
+                {
+                    Write-M365DSCHost -Message "`r`n" -DeferWrite
+                }
+
+                foreach ($indicator in $indicators)
+                {
+                    $displayedKey = $indicator.properties.DisplayName
+                    Write-M365DSCHost -Message "        |---[$j/$($indicators.Count)] $displayedKey" -DeferWrite
+                    $params = @{
+                        DisplayName           = $indicator.properties.displayName
+                        Id                    = $indicator.name
+                        SubscriptionId        = $this.subscriptionId
+                        ResourceGroupName     = $this.resourceGroupName
+                        WorkspaceName         = $this.workspaceName
+                        Credential            = $this.Credential
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        CertificatePath       = $this.CertificatePath
+                        CertificatePassword   = $this.CertificatePassword
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        AccessTokens          = $this.AccessTokens
+                    }
+
+                    $Results = $this.GetForExport($Params)
+
+                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                        -ConnectionMode $ConnectionMode `
+                        -ModulePath $this.GetModulePath() `
+                        -Results $Results `
+                        -Credential $this.Credential
+                    [void]$dscContent.Append($currentDSCBlock)
+                    Save-M365DSCPartialExport -Content $currentDSCBlock `
+                        -FileName $Global:PartialExportFileName
+                    $j++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
             }
+            return $dscContent.ToString()
         }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
 
-        throw
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [SentinelThreatIntelligenceIndicator] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [SentinelThreatIntelligenceIndicator])
+        {
+            return $Values
+        }
+
+        $result = [SentinelThreatIntelligenceIndicator]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-M365DSCSentinelThreatIntelligenceIndicator
+# Was Get-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
 {
     [CmdletBinding()]
     [OutputType([Array])]
@@ -768,7 +486,55 @@ function Get-M365DSCSentinelThreatIntelligenceIndicator
     }
 }
 
-function New-M365DSCSentinelThreatIntelligenceIndicator
+# Was Remove-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Remove-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $SubscriptionId,
+
+        [Parameter()]
+        [System.String]
+        $ResourceGroupName,
+
+        [Parameter()]
+        [System.String]
+        $WorkspaceName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TenantId,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Id
+    )
+
+    try
+    {
+        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+
+        $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
+        $null = Invoke-AzRestMethod -Uri $uri -Method 'DELETE'
+    }
+    catch
+    {
+        Write-Verbose -Message $_
+        New-M365DSCLogEntry -Message 'Error retrieving data:' `
+            -Exception $_ `
+            -Source $($MyInvocation.MyCommand.Source) `
+            -TenantId $TenantId
+        throw $_
+    }
+}
+
+# Was New-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function New-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
 {
     [CmdletBinding()]
     param(
@@ -813,7 +579,9 @@ function New-M365DSCSentinelThreatIntelligenceIndicator
     }
 }
 
-function Set-M365DSCSentinelThreatIntelligenceIndicator
+# Was Set-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Set-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
 {
     [CmdletBinding()]
     param(
@@ -862,48 +630,3 @@ function Set-M365DSCSentinelThreatIntelligenceIndicator
     }
 }
 
-function Remove-M365DSCSentinelThreatIntelligenceIndicator
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-
-        $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
-        $null = Invoke-AzRestMethod -Uri $uri -Method 'DELETE'
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

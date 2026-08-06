@@ -1,706 +1,599 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADIdentityGovernanceLifecycleWorkflow'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADIdentityGovernanceLifecycleWorkflow : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Specifies the Display Name of the Workflow')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of the Workflow')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String]
-        $Category,
+    [DscProperty()]
+    [System.ComponentModel.Description('Category of the Workflow')]
+    [System.String] $Category
 
-        [Parameter()]
-        [System.Boolean]
-        $IsEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates if the Workflow is enabled')]
+    [System.Nullable[System.Boolean]] $IsEnabled
 
-        [Parameter()]
-        [System.Boolean]
-        $IsSchedulingEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates if scheduling is enabled for the Workflow')]
+    [System.Nullable[System.Boolean]] $IsSchedulingEnabled
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Tasks,
+    [DscProperty()]
+    [System.ComponentModel.Description('Tasks associated with this workflow')]
+    [MSFT_AADIdentityGovernanceTask[]] $Tasks
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExecutionConditions,
+    [DscProperty()]
+    [System.ComponentModel.Description('ExecutionConditions for this workflow')]
+    [MSFT_IdentityGovernanceWorkflowExecutionConditions] $ExecutionConditions
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [AADIdentityGovernanceLifecycleWorkflow] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for the Azure AD Identity Governance Lifecycle Workflow with DisplayName {$DisplayName}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $executionConditionsResults = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $taskResults = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $nullResult = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'" `
-                -ErrorAction Stop
-        }
-        else
-        {
-            $instance = $Script:exportedInstance
+            $remote = [AADIdentityGovernanceLifecycleWorkflow]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
         }
 
-        if ($null -eq $instance)
-        {
-            return $nullResult
-        }
+        Write-Verbose -Message "Getting configuration for the Azure AD Identity Governance Lifecycle Workflow with DisplayName {$($this.DisplayName)}"
 
-        $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $instance.Id
-        if ($null -ne $instance)
-        {
-            $executionConditionsResults = Get-M365DSCIdentityGovernanceWorkflowExecutionConditions -WorkflowId $instance.Id
-            $taskResults = Get-M365DSCIdentityGovernanceTasks -WorkflowId $instance.Id
-        }
-
-        $results = @{
-            DisplayName           = $DisplayName
-            Description           = $instance.Description
-            Category              = $instance.Category
-            IsEnabled             = $instance.IsEnabled
-            IsSchedulingEnabled   = $instance.IsSchedulingEnabled
-            Tasks                 = [Array]$taskResults
-            ExecutionConditions   = $executionConditionsResults
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String]
-        $Category,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsSchedulingEnabled,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Tasks,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExecutionConditions,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($null -ne $ExecutionConditions)
-    {
-        $executionConditionsResult = @{
-            Scope         = @{
-                Rule          = $ExecutionConditions.ScopeValue.Rule
-                '@odata.type' = $ExecutionConditions.ScopeValue.ODataType
-            }
-            Trigger       = @{
-                OffsetInDays       = $ExecutionConditions.TriggerValue.OffsetInDays
-                TimeBasedAttribute = $ExecutionConditions.TriggerValue.TimeBasedAttribute
-                '@odata.type'      = $ExecutionConditions.TriggerValue.ODataType
-            }
-            '@odata.type' = $ExecutionConditions.ODataType
-        }
-
-        $setParameters.Remove('ExecutionConditions')
-        $setParameters.Add('executionConditions', $executionConditionsResult)
-    }
-
-    if ($null -ne $Tasks)
-    {
-        $taskList = @()
-
-        # Loop through each task and create a hashtable
-        foreach ($task in $Tasks)
-        {
-            [Array]$argumentsArray = @()
-
-            if ($task.Arguments)
-            {
-                foreach ($arg in $task.Arguments)
-                {
-                    # Create a hashtable for each argument
-                    $argumentsArray += @{
-                        Name  = $arg.Name.ToString()
-                        Value = $arg.Value.ToString()
-                    }
-                }
-            }
-            $taskHashtable = @{
-                DisplayName       = $task.DisplayName.ToString()
-                Description       = $task.Description.ToString()
-                Category          = $task.Category.ToString()
-                IsEnabled         = $task.IsEnabled
-                ExecutionSequence = $task.ExecutionSequence
-                ContinueOnError   = $task.ContinueOnError
-                TaskDefinitionId  = $task.TaskDefinitionId
-
-                # If Arguments exist, populate the hashtable
-                Arguments         = [Array]$argumentsArray
-            }
-
-            # Add the task hashtable to the task list
-            $taskList += $taskHashtable
-        }
-
-        $setParameters.Remove('Tasks')
-        $setParameters.Add('Tasks', $taskList)
-    }
-
-    $UpdateParameters = ([Hashtable]$setParameters).Clone()
-
-    $newParams = @{}
-    $newParams.Add('workflow', $UpdateParameters)
-
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
         try
         {
-            New-MgBetaIdentityGovernanceLifecycleWorkflow -BodyParameter $SetParameters -ErrorAction Stop
-        }
-        catch
-        {
-            if ($_.ErrorDetails.Message -like '*Insufficient license *')
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
             {
-                Write-Warning -Message ' Insufficient license. You need the Entra ID Governance license.'
+                $null = $this.Connect('MicrosoftGraph')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'" `
+                    -ErrorAction Stop
             }
             else
             {
-                New-M365DSCLogEntry -Message 'Error during Create:' `
-                    -Exception $_ `
-                    -Source $($MyInvocation.MyCommand.Source) `
-                    -TenantId $TenantId `
-                    -Credential $Credential
-                throw $_
+                $instance = $this.ExportedInstance
             }
-        }
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        try
-        {
-            $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'"
+
+            if ($null -eq $instance)
+            {
+                return $this.AsResult($nullResult)
+            }
+
             $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $instance.Id
+            if ($null -ne $instance)
+            {
+                $executionConditionsResults = Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceWorkflowExecutionConditions -WorkflowId $instance.Id
+                $taskResults = Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceTasks -WorkflowId $instance.Id
+            }
 
-            New-MgBetaIdentityGovernanceLifecycleWorkflowNewVersion -WorkflowId $instance.Id -BodyParameter $newParams -ErrorAction Stop
+            $results = @{
+                DisplayName           = $this.DisplayName
+                Description           = $instance.Description
+                Category              = $instance.Category
+                IsEnabled             = $instance.IsEnabled
+                IsSchedulingEnabled   = $instance.IsSchedulingEnabled
+                Tasks                 = [Array]$taskResults
+                ExecutionConditions   = $executionConditionsResults
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
         }
         catch
         {
-            if ($_.ErrorDetails.Message -like '*Insufficient license *')
-            {
-                Write-Warning -Message ' Insufficient license. You need the Entra ID Governance license.'
-            }
-            else
-            {
-                New-M365DSCLogEntry -Message 'Error during Update:' `
-                    -Exception $_ `
-                    -Source $($MyInvocation.MyCommand.Source) `
-                    -TenantId $TenantId `
-                    -Credential $Credential
-                throw $_
-            }
-        }
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        try
-        {
-            $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'"
-            Remove-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $instance.Id -ErrorAction Stop
-        }
-        catch
-        {
-            if ($_.ErrorDetails.Message -like '*Insufficient license *')
-            {
-                Write-Warning -Message ' Insufficient license. You need the Entra ID Governance license.'
-            }
-            else
-            {
-                New-M365DSCLogEntry -Message 'Error during Remove:' `
-                    -Exception $_ `
-                    -Source $($MyInvocation.MyCommand.Source) `
-                    -TenantId $TenantId `
-                    -Credential $Credential
-                throw $_
-            }
-        }
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String]
-        $Category,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsSchedulingEnabled,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Tasks,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExecutionConditions,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $exportedInstances = Get-MgBetaIdentityGovernanceLifecycleWorkflow -All -Filter $Filter -ErrorAction Stop
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($exportedInstances.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $exportedInstances)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            $displayedKey = $config.DisplayName
-            Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                DisplayName           = $config.DisplayName
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            if ($null -ne $Results.Tasks)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'Tasks'
-                        CimInstanceName = 'AADIdentityGovernanceTask'
-                        IsRequired      = $False
-                    },
-                    @{
-                        Name            = 'Arguments'
-                        CimInstanceName = 'MSFT_AADIdentityGovernanceTaskArguments'
-                        IsRequired      = $False
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.Tasks `
-                    -CIMInstanceName 'AADIdentityGovernanceTask' `
-                    -ComplexTypeMapping $complexMapping
-
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.Tasks = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Tasks') | Out-Null
-                }
-            }
-
-            if ($null -ne $Results.ExecutionConditions)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'ExecutionConditions'
-                        CimInstanceName = 'MSFT_IdentityGovernanceWorkflowExecutionConditions'
-                        IsRequired      = $False
-                    },
-                    @{
-                        Name            = 'ScopeValue'
-                        CimInstanceName = 'MSFT_IdentityGovernanceScope'
-                        IsRequired      = $False
-                    },
-                    @{
-                        Name            = 'TriggerValue'
-                        CimInstanceName = 'MSFT_IdentityGovernanceTrigger'
-                        IsRequired      = $False
-                    }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.ExecutionConditions `
-                    -CIMInstanceName 'MSFT_IdentityGovernanceWorkflowExecutionConditions' `
-                    -ComplexTypeMapping $complexMapping
-
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.ExecutionConditions = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('ExecutionConditions') | Out-Null
-                }
-            }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('Tasks', 'ExecutionConditions')
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        if ($_.ErrorDetails.Message -like 'Insufficient license *')
-        {
-            Write-M365DSCHost -Message "`r`n    " -DeferWrite
-            Write-M365DSCHost -Message $Global:M365DSCEmojiYellowCircle -DeferWrite
-            Write-M365DSCHost -Message ' Insufficient license. You need the Entra ID Governance license.' -CommitWrite
-        }
-        else
-        {
-            New-M365DSCLogEntry -Message 'Error during Export:' `
-                -Exception $_ `
-                -Source $($MyInvocation.MyCommand.Source) `
-                -TenantId $TenantId `
-                -Credential $Credential
+            $this.LogError($_, 'Error retrieving data:')
 
             throw
         }
     }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+        $setParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        if ($null -ne $this.ExecutionConditions)
+        {
+            $executionConditionsResult = @{
+                Scope         = @{
+                    Rule          = $this.ExecutionConditions.ScopeValue.Rule
+                    '@odata.type' = $this.ExecutionConditions.ScopeValue.ODataType
+                }
+                Trigger       = @{
+                    OffsetInDays       = $this.ExecutionConditions.TriggerValue.OffsetInDays
+                    TimeBasedAttribute = $this.ExecutionConditions.TriggerValue.TimeBasedAttribute
+                    '@odata.type'      = $this.ExecutionConditions.TriggerValue.ODataType
+                }
+                '@odata.type' = $this.ExecutionConditions.ODataType
+            }
+
+            $setParameters.Remove('ExecutionConditions')
+            $setParameters.Add('executionConditions', $executionConditionsResult)
+        }
+
+        if ($null -ne $this.Tasks)
+        {
+            $taskList = @()
+
+            # Loop through each task and create a hashtable
+            foreach ($task in $this.Tasks)
+            {
+                [Array]$argumentsArray = @()
+
+                if ($task.Arguments)
+                {
+                    foreach ($arg in $task.Arguments)
+                    {
+                        # Create a hashtable for each argument
+                        $argumentsArray += @{
+                            Name  = $arg.Name.ToString()
+                            Value = $arg.Value.ToString()
+                        }
+                    }
+                }
+                $taskHashtable = @{
+                    DisplayName       = $task.DisplayName.ToString()
+                    Description       = $task.Description.ToString()
+                    Category          = $task.Category.ToString()
+                    IsEnabled         = $task.IsEnabled
+                    ExecutionSequence = $task.ExecutionSequence
+                    ContinueOnError   = $task.ContinueOnError
+                    TaskDefinitionId  = $task.TaskDefinitionId
+
+                    # If Arguments exist, populate the hashtable
+                    Arguments         = [Array]$argumentsArray
+                }
+
+                # Add the task hashtable to the task list
+                $taskList += $taskHashtable
+            }
+
+            $setParameters.Remove('Tasks')
+            $setParameters.Add('Tasks', $taskList)
+        }
+
+        $UpdateParameters = ([Hashtable]$setParameters).Clone()
+
+        $newParams = @{}
+        $newParams.Add('workflow', $UpdateParameters)
+
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            try
+            {
+                New-MgBetaIdentityGovernanceLifecycleWorkflow -BodyParameter $SetParameters -ErrorAction Stop
+            }
+            catch
+            {
+                if ($_.ErrorDetails.Message -like '*Insufficient license *')
+                {
+                    Write-Warning -Message ' Insufficient license. You need the Entra ID Governance license.'
+                }
+                else
+                {
+                    $this.LogError($_, 'Error during Create:')
+                    throw $_
+                }
+            }
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            try
+            {
+                $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
+                $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $instance.Id
+
+                New-MgBetaIdentityGovernanceLifecycleWorkflowNewVersion -WorkflowId $instance.Id -BodyParameter $newParams -ErrorAction Stop
+            }
+            catch
+            {
+                if ($_.ErrorDetails.Message -like '*Insufficient license *')
+                {
+                    Write-Warning -Message ' Insufficient license. You need the Entra ID Governance license.'
+                }
+                else
+                {
+                    $this.LogError($_, 'Error during Update:')
+                    throw $_
+                }
+            }
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            try
+            {
+                $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
+                Remove-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $instance.Id -ErrorAction Stop
+            }
+            catch
+            {
+                if ($_.ErrorDetails.Message -like '*Insufficient license *')
+                {
+                    Write-Warning -Message ' Insufficient license. You need the Entra ID Governance license.'
+                }
+                else
+                {
+                    $this.LogError($_, 'Error during Remove:')
+                    throw $_
+                }
+            }
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array] $exportedInstances = Get-MgBetaIdentityGovernanceLifecycleWorkflow -All -Filter $this.Filter -ErrorAction Stop
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($exportedInstances.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $exportedInstances)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                $displayedKey = $config.DisplayName
+                Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    DisplayName           = $config.DisplayName
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                if ($null -ne $Results.Tasks)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'Tasks'
+                            CimInstanceName = 'AADIdentityGovernanceTask'
+                            IsRequired      = $False
+                        },
+                        @{
+                            Name            = 'Arguments'
+                            CimInstanceName = 'MSFT_AADIdentityGovernanceTaskArguments'
+                            IsRequired      = $False
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.Tasks `
+                        -CIMInstanceName 'AADIdentityGovernanceTask' `
+                        -ComplexTypeMapping $complexMapping
+
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.Tasks = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Tasks') | Out-Null
+                    }
+                }
+
+                if ($null -ne $Results.ExecutionConditions)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'ExecutionConditions'
+                            CimInstanceName = 'MSFT_IdentityGovernanceWorkflowExecutionConditions'
+                            IsRequired      = $False
+                        },
+                        @{
+                            Name            = 'ScopeValue'
+                            CimInstanceName = 'MSFT_IdentityGovernanceScope'
+                            IsRequired      = $False
+                        },
+                        @{
+                            Name            = 'TriggerValue'
+                            CimInstanceName = 'MSFT_IdentityGovernanceTrigger'
+                            IsRequired      = $False
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.ExecutionConditions `
+                        -CIMInstanceName 'MSFT_IdentityGovernanceWorkflowExecutionConditions' `
+                        -ComplexTypeMapping $complexMapping
+
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.ExecutionConditions = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('ExecutionConditions') | Out-Null
+                    }
+                }
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('Tasks', 'ExecutionConditions')
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            if ($_.ErrorDetails.Message -like 'Insufficient license *')
+            {
+                Write-M365DSCHost -Message "`r`n    " -DeferWrite
+                Write-M365DSCHost -Message $Global:M365DSCEmojiYellowCircle -DeferWrite
+                Write-M365DSCHost -Message ' Insufficient license. You need the Entra ID Governance license.' -CommitWrite
+            }
+            else
+            {
+                $this.LogError($_, 'Error during Export:')
+
+                throw
+            }
+        }
+    
+        # Every code path must return in a method with a declared return type.
+        return ''
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADIdentityGovernanceLifecycleWorkflow] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADIdentityGovernanceLifecycleWorkflow])
+        {
+            return $Values
+        }
+
+        $result = [AADIdentityGovernanceLifecycleWorkflow]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
+    }
 }
 
-function Get-M365DSCIdentityGovernanceTasks
+class MSFT_AADIdentityGovernanceTask
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Specifies the display name of the Workflow Task')]
+    [System.String] $DisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of the Workflow Task')]
+    [System.String] $Description
+    [DscProperty()]
+    [System.ComponentModel.Description('Category of the Workflow Task')]
+    [System.String] $Category
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates if the Workflow Task is enabled or not')]
+    [System.Nullable[System.Boolean]] $IsEnabled
+    [DscProperty()]
+    [System.ComponentModel.Description('The sequence in which the task is executed')]
+    [System.Nullable[System.Int32]] $ExecutionSequence
+    [DscProperty()]
+    [System.ComponentModel.Description('Specifies whether the task should continue on error')]
+    [System.Nullable[System.Boolean]] $ContinueOnError
+    [DscProperty()]
+    [System.ComponentModel.Description('ID of the task definition associated with this Workflow Task')]
+    [System.String] $TaskDefinitionId
+    [DscProperty()]
+    [System.ComponentModel.Description('Arguments for the Workflow Task')]
+    [MSFT_AADIdentityGovernanceTaskArguments[]] $Arguments
+}
+
+class MSFT_IdentityGovernanceWorkflowExecutionConditions
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The @odata.type for the Workflow Execution Conditions.')]
+    [System.String] $OdataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The scope for the Workflow Execution Conditions.')]
+    [MSFT_IdentityGovernanceScope] $ScopeValue
+    [DscProperty()]
+    [System.ComponentModel.Description('The trigger for the Workflow Execution Conditions.')]
+    [MSFT_IdentityGovernanceTrigger] $TriggerValue
+}
+
+class MSFT_AADIdentityGovernanceTaskArguments
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The name of the key')]
+    [System.String] $Name
+    [DscProperty()]
+    [System.ComponentModel.Description('The value associated with the key')]
+    [System.String] $Value
+}
+
+class MSFT_IdentityGovernanceScope
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The @odata.type for the Scope.')]
+    [System.String] $OdataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The rule associated with the Scope.')]
+    [System.String] $Rule
+}
+
+class MSFT_IdentityGovernanceTrigger
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The @odata.type for the Trigger.')]
+    [System.String] $OdataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The time-based attribute for the Trigger.')]
+    [System.String] $TimeBasedAttribute
+    [DscProperty()]
+    [System.ComponentModel.Description('The offset in days for the Trigger.')]
+    [System.Nullable[System.Int32]] $OffsetInDays
+}
+
+# Was Get-M365DSCIdentityGovernanceWorkflowExecutionConditions. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceWorkflowExecutionConditions
+{
+    [CmdletBinding()]
+    [OutputType([Hashtable])]
+    param(
+        [Parameter(Mandatory = $true)]
+        $WorkflowId
+    )
+
+    $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $WorkflowId
+    $executionConditionsResult = @{}
+
+    if ($null -ne $instance -and $null -ne $instance.ExecutionConditions)
+    {
+        $executionConditions = $instance.ExecutionConditions
+        $executionConditionsResult = @{
+            ScopeValue   = @{
+                Rule      = $ExecutionConditions['scope']['rule']
+                OdataType = $ExecutionConditions['scope']['@odata.type']
+            }
+            TriggerValue = @{
+                OffsetInDays       = $ExecutionConditions['trigger']['offsetInDays']
+                TimeBasedAttribute = $ExecutionConditions['trigger']['timeBasedAttribute']
+                ODataType          = $ExecutionConditions['trigger']['@odata.type']
+            }
+            OdataType    = $ExecutionConditions['@odata.type']
+        }
+    }
+
+    return $executionConditionsResult
+}
+
+# Was Get-M365DSCIdentityGovernanceTasks. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceTasks
 {
     [CmdletBinding()]
     [OutputType([Array])]
@@ -756,36 +649,3 @@ function Get-M365DSCIdentityGovernanceTasks
     return $taskList
 }
 
-function Get-M365DSCIdentityGovernanceWorkflowExecutionConditions
-{
-    [CmdletBinding()]
-    [OutputType([Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        $WorkflowId
-    )
-
-    $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $WorkflowId
-    $executionConditionsResult = @{}
-
-    if ($null -ne $instance -and $null -ne $instance.ExecutionConditions)
-    {
-        $executionConditions = $instance.ExecutionConditions
-        $executionConditionsResult = @{
-            ScopeValue   = @{
-                Rule      = $ExecutionConditions['scope']['rule']
-                OdataType = $ExecutionConditions['scope']['@odata.type']
-            }
-            TriggerValue = @{
-                OffsetInDays       = $ExecutionConditions['trigger']['offsetInDays']
-                TimeBasedAttribute = $ExecutionConditions['trigger']['timeBasedAttribute']
-                ODataType          = $ExecutionConditions['trigger']['@odata.type']
-            }
-            OdataType    = $ExecutionConditions['@odata.type']
-        }
-    }
-
-    return $executionConditionsResult
-}
-
-Export-ModuleMember -Function *-TargetResource

@@ -1,723 +1,526 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntunePolicySets'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntunePolicySets : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Description of the PolicySet.')]
+    [System.String] $Description
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('DisplayName of the PolicySet.')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String[]]
-        $GuidedDeploymentTags,
+    [DscProperty()]
+    [System.ComponentModel.Description('Tags of the guided deployment')]
+    [System.String[]] $GuidedDeploymentTags
 
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTags,
+    [DscProperty()]
+    [System.ComponentModel.Description('RoleScopeTags of the PolicySet')]
+    [System.String[]] $RoleScopeTags
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
+    [DscProperty()]
+    [System.ComponentModel.Description('Represents the assignment to the Intune policy.')]
+    [MSFT_DeviceManagementConfigurationPolicyAssignments[]] $Assignments
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Items,
+    [DscProperty()]
+    [System.ComponentModel.Description('Represents the assignment to the Intune policy.')]
+    [MSFT_DeviceManagementConfigurationPolicyItems[]] $Items
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [IntunePolicySets] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [IntunePolicySets]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration of the Intune Policy Sets with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
+
+        try
+        {
+            $null = $this.Connect('MicrosoftGraph')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $nullResult = $this.GetBoundParameters()
+            $nullResult.Ensure = 'Absent'
+
+            $getValue = $null
+            #region resource generator code
+            if (-not [string]::IsNullOrEmpty($this.Id))
+            {
+                $getValue = Get-MgBetaDeviceAppManagementPolicySet -PolicySetId $this.Id -ExpandProperty * -ErrorAction SilentlyContinue
+            }
+
+            if ($null -eq $getValue)
+            {
+                Write-Verbose -Message "Could not find an Intune Policy Sets with Id {$($this.Id)}"
+
+                if (-not [string]::IsNullOrEmpty($this.DisplayName))
+                {
+                    [array]$getValue = Get-MgBetaDeviceAppManagementPolicySet `
+                        -All `
+                        -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
+
+                    if ($null -eq $getValue)
+                    {
+                        Write-Verbose -Message "Could not find an Intune Policy Sets with DisplayName {$($this.DisplayName)}"
+                        return $this.AsResult($nullResult)
+                    }
+                    else
+                    {
+                        if ($getValue.Count -gt 1)
+                        {
+                            Write-Verbose -Message "Multiple Intune Policy Sets with DisplayName {$($this.DisplayName)} - unable to continue"
+                            return $this.AsResult($nullResult)
+                        }
+                        else
+                        {
+                            $getValue = Get-MgBetaDeviceAppManagementPolicySet -PolicySetId $getValue.Id -ExpandProperty * -ErrorAction SilentlyContinue
+                        }
+                    }
+                }
+            }
+            #endregion
+            if ($null -eq $getValue)
+            {
+                Write-Verbose -Message "Could not find an Intune Policy Sets with DisplayName {$($this.DisplayName)}"
+                return $this.AsResult($nullResult)
+            }
+            $this.Id = $getValue.Id
+            Write-Verbose -Message "An Intune Policy Sets with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+
+            $results = @{
+                #region resource generator code
+                Description           = $getValue.Description
+                DisplayName           = $getValue.DisplayName
+                GuidedDeploymentTags  = $getValue.GuidedDeploymentTags
+                RoleScopeTags         = $getValue.RoleScopeTags
+                Id                    = $getValue.Id
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+                #endregion
+            }
+
+            if ($null -eq $getValue.GuidedDeploymentTags)
+            {
+                $results.GuidedDeploymentTags = @()
+            }
+
+            $assignmentsValues = $getValue.Assignments
+            $assignmentResult = @()
+            if ($assignmentsValues.Count -gt 0)
+            {
+                $assignmentResult += ConvertFrom-IntunePolicyAssignment `
+                    -IncludeDeviceFilter:$true `
+                    -Assignments ($assignmentsValues)
+            }
+            $results.Add('Assignments', $assignmentResult)
+
+            $itemsValues = $getValue.Items
+
+            $itemResult = @()
+            $this.ResourceCache['itemResultCache'] = @()
+            foreach ($itemEntry in $itemsValues)
+            {
+                $itemValue = @{
+                    dataType             = $itemEntry.'@odata.type'
+                    payloadId            = $itemEntry.PayloadId
+                    itemType             = $itemEntry.ItemType
+                    displayName          = $itemEntry.displayName
+                    guidedDeploymentTags = $itemEntry.GuidedDeploymentTags
+                }
+                $itemResult += $itemValue
+
+                $itemValue = $itemValue.Clone()
+                $itemValue.Add('id', $itemEntry.Id)
+                $this.ResourceCache['itemResultCache'] += $itemValue
+            }
+
+            $results.Add('Items', $itemResult)
+
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration of the Intune Policy Sets with Id {$Id} and DisplayName {$DisplayName}"
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-            -InboundParameters $PSBoundParameters
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
+        $currentInstance = $this.Get().ToHashtable()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
-        $getValue = $null
-        #region resource generator code
-        if (-not [string]::IsNullOrEmpty($Id))
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            $getValue = Get-MgBetaDeviceAppManagementPolicySet -PolicySetId $Id -ExpandProperty * -ErrorAction SilentlyContinue
+            Write-Verbose -Message "Creating an Intune Policy Sets with DisplayName {$($this.DisplayName)}"
+            # remove complex values
+            $BoundParameters.Remove('Assignments') | Out-Null
+            $BoundParameters.Remove('Items') | Out-Null
+            # remove unused values
+            $BoundParameters.Remove('Id') | Out-Null
+
+            $CreateParameters = ([Hashtable]$BoundParameters).Clone()
+            $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
+
+            # set assignments and items to work with New-MgBetaDeviceAppManagementPolicySet command
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+            $CreateParameters.Add('assignments', $assignmentsHash)
+
+            $itemsHash = @()
+            foreach ($item in $this.items)
+            {
+                $itemsHash += @{
+                    payloadId            = Get-IntunePolicySetsPayloadIdFromItem -Item $item
+                    '@odata.type'        = $item.dataType
+                    guidedDeploymentTags = $item.guidedDeploymentTags
+                }
+            }
+            $CreateParameters.Add('items', $itemsHash)
+            $policy = New-MgBetaDeviceAppManagementPolicySet -BodyParameter $CreateParameters
+
+            if ($policy.id)
+            {
+                $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+                $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($policy.Id)/update"
+                Invoke-MgGraphRequest -Method POST -Uri ($url) -Body @{
+                    assignments = $assignmentsHash
+                }
+            }
+        }
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating the Intune Policy Sets with Id {$($currentInstance.Id)}"
+            # remove complex values
+            $BoundParameters.Remove('Assignments') | Out-Null
+            $BoundParameters.Remove('Items') | Out-Null
+            # remove unused values
+            $BoundParameters.Remove('Id') | Out-Null
+
+            $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
+            $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
+
+            #region resource generator code
+            Update-MgBetaDeviceAppManagementPolicySet -PolicySetId $currentInstance.Id -BodyParameter $UpdateParameters
+
+            $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($currentInstance.Id)/update"
+            if ($null -ne ($itemamendments = Get-IntunePolicySetsItemsAmendmentsObject -currentObjectItems $this.ResourceCache['itemResultCache'] -targetObjectItems $this.items))
+            {
+                Write-Verbose $($itemamendments | ConvertTo-Json -Depth 10) -Verbose
+                Invoke-MgGraphRequest -Method POST -Uri $url -Body $itemamendments
+            }
+
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+            Invoke-MgGraphRequest -Method POST -Uri $url -Body @{
+                assignments = $assignmentsHash
+            }
+            #endregion
+        }
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing the Intune Policy Sets with Id {$($currentInstance.Id)}"
+            #region resource generator code
+            Remove-MgBetaDeviceAppManagementPolicySet -PolicySetId $currentInstance.Id
+            #endregion
+        }
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
         }
 
-        if ($null -eq $getValue)
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
         {
-            Write-Verbose -Message "Could not find an Intune Policy Sets with Id {$Id}"
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
 
-            if (-not [string]::IsNullOrEmpty($DisplayName))
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            #region resource generator code
+            [array]$getValue = Get-MgBetaDeviceAppManagementPolicySet -Filter $this.Filter -All -ErrorAction Stop
+            #endregion
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
             {
-                [array]$getValue = Get-MgBetaDeviceAppManagementPolicySet `
-                    -All `
-                    -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'"
-
-                if ($null -eq $getValue)
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
                 {
-                    Write-Verbose -Message "Could not find an Intune Policy Sets with DisplayName {$DisplayName}"
-                    return $nullResult
+                    $Global:M365DSCExportResourceInstancesCount++
                 }
-                else
+
+                $displayedKey = $config.Id
+                if (-not [String]::IsNullOrEmpty($config.displayName))
                 {
-                    if ($getValue.Count -gt 1)
+                    $displayedKey = $config.displayName
+                }
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    DisplayName           = $config.DisplayName
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+
+                if ($Results.Assignments)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
+                    if ($complexTypeStringResult)
                     {
-                        Write-Verbose -Message "Multiple Intune Policy Sets with DisplayName {$DisplayName} - unable to continue"
-                        return $nullResult
+                        $Results.Assignments = $complexTypeStringResult
                     }
                     else
                     {
-                        $getValue = Get-MgBetaDeviceAppManagementPolicySet -PolicySetId $getValue.Id -ExpandProperty * -ErrorAction SilentlyContinue
+                        $Results.Remove('Assignments') | Out-Null
                     }
                 }
-            }
-        }
-        #endregion
-        if ($null -eq $getValue)
-        {
-            Write-Verbose -Message "Could not find an Intune Policy Sets with DisplayName {$DisplayName}"
-            return $nullResult
-        }
-        $Id = $getValue.Id
-        Write-Verbose -Message "An Intune Policy Sets with Id {$Id} and DisplayName {$DisplayName} was found."
-
-        $results = @{
-            #region resource generator code
-            Description           = $getValue.Description
-            DisplayName           = $getValue.DisplayName
-            GuidedDeploymentTags  = $getValue.GuidedDeploymentTags
-            RoleScopeTags         = $getValue.RoleScopeTags
-            Id                    = $getValue.Id
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-            #endregion
-        }
-
-        if ($null -eq $getValue.GuidedDeploymentTags)
-        {
-            $results.GuidedDeploymentTags = @()
-        }
-
-        $assignmentsValues = $getValue.Assignments
-        $assignmentResult = @()
-        if ($assignmentsValues.Count -gt 0)
-        {
-            $assignmentResult += ConvertFrom-IntunePolicyAssignment `
-                -IncludeDeviceFilter:$true `
-                -Assignments ($assignmentsValues)
-        }
-        $results.Add('Assignments', $assignmentResult)
-
-        $itemsValues = $getValue.Items
-
-        $itemResult = @()
-        $Script:itemResultCache = @()
-        foreach ($itemEntry in $itemsValues)
-        {
-            $itemValue = @{
-                dataType             = $itemEntry.'@odata.type'
-                payloadId            = $itemEntry.PayloadId
-                itemType             = $itemEntry.ItemType
-                displayName          = $itemEntry.displayName
-                guidedDeploymentTags = $itemEntry.GuidedDeploymentTags
-            }
-            $itemResult += $itemValue
-
-            $itemValue = $itemValue.Clone()
-            $itemValue.Add('id', $itemEntry.Id)
-            $Script:itemResultCache += $itemValue
-        }
-
-        $results.Add('Items', $itemResult)
-
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String[]]
-        $GuidedDeploymentTags,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTags,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Items,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Intune Policy Sets with DisplayName {$DisplayName}"
-        # remove complex values
-        $BoundParameters.Remove('Assignments') | Out-Null
-        $BoundParameters.Remove('Items') | Out-Null
-        # remove unused values
-        $BoundParameters.Remove('Id') | Out-Null
-
-        $CreateParameters = ([Hashtable]$BoundParameters).Clone()
-        $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
-
-        # set assignments and items to work with New-MgBetaDeviceAppManagementPolicySet command
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        $CreateParameters.Add('assignments', $assignmentsHash)
-
-        $itemsHash = @()
-        foreach ($item in $items)
-        {
-            $itemsHash += @{
-                payloadId            = Get-PayloadIdFromItem -Item $item
-                '@odata.type'        = $item.dataType
-                guidedDeploymentTags = $item.guidedDeploymentTags
-            }
-        }
-        $CreateParameters.Add('items', $itemsHash)
-        $policy = New-MgBetaDeviceAppManagementPolicySet -BodyParameter $CreateParameters
-
-        if ($policy.id)
-        {
-            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($policy.Id)/update"
-            Invoke-MgGraphRequest -Method POST -Uri ($url) -Body @{
-                assignments = $assignmentsHash
-            }
-        }
-    }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating the Intune Policy Sets with Id {$($currentInstance.Id)}"
-        # remove complex values
-        $BoundParameters.Remove('Assignments') | Out-Null
-        $BoundParameters.Remove('Items') | Out-Null
-        # remove unused values
-        $BoundParameters.Remove('Id') | Out-Null
-
-        $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
-        $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
-
-        #region resource generator code
-        Update-MgBetaDeviceAppManagementPolicySet -PolicySetId $currentInstance.Id -BodyParameter $UpdateParameters
-
-        $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($currentInstance.Id)/update"
-        if ($null -ne ($itemamendments = Get-ItemsAmendmentsObject -currentObjectItems $Script:itemResultCache -targetObjectItems $items))
-        {
-            Write-Verbose $($itemamendments | ConvertTo-Json -Depth 10) -Verbose
-            Invoke-MgGraphRequest -Method POST -Uri $url -Body $itemamendments
-        }
-
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        Invoke-MgGraphRequest -Method POST -Uri $url -Body @{
-            assignments = $assignmentsHash
-        }
-        #endregion
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing the Intune Policy Sets with Id {$($currentInstance.Id)}"
-        #region resource generator code
-        Remove-MgBetaDeviceAppManagementPolicySet -PolicySetId $currentInstance.Id
-        #endregion
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String[]]
-        $GuidedDeploymentTags,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTags,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Items,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        [array]$getValue = Get-MgBetaDeviceAppManagementPolicySet -Filter $Filter -All -ErrorAction Stop
-        #endregion
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.displayName))
-            {
-                $displayedKey = $config.displayName
-            }
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                DisplayName           = $config.DisplayName
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-
-            if ($Results.Assignments)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
-                if ($complexTypeStringResult)
+                if ($Results.Items)
                 {
-                    $Results.Assignments = $complexTypeStringResult
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Items -CIMInstanceName DeviceManagementConfigurationPolicyItems
+                    if ($complexTypeStringResult)
+                    {
+                        $Results.Items = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Items') | Out-Null
+                    }
                 }
-                else
-                {
-                    $Results.Remove('Assignments') | Out-Null
-                }
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('Assignments', 'Items') `
+                    -RawResults $rawResults
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
-            if ($Results.Items)
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            if ($_.Exception -like '*401*' -or $_.ErrorDetails.Message -like "*`"ErrorCode`":`"Forbidden`"*" -or
+                $_.Exception -like '* Unauthorized*' -or `
+                    $_.Exception -like '*Request not applicable to target tenant*')
             {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Items -CIMInstanceName DeviceManagementConfigurationPolicyItems
-                if ($complexTypeStringResult)
-                {
-                    $Results.Items = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Items') | Out-Null
-                }
+                Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) The current tenant is not registered for Intune."
             }
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('Assignments', 'Items') `
-                -RawResults $rawResults
+            else
+            {
+                $this.LogError($_, 'Error during Export:')
 
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                throw
+            }
         }
-        return $dscContent.ToString()
+    
+        # Every code path must return in a method with a declared return type.
+        return ''
     }
-    catch
-    {
-        if ($_.Exception -like '*401*' -or $_.ErrorDetails.Message -like "*`"ErrorCode`":`"Forbidden`"*" -or
-            $_.Exception -like '* Unauthorized*' -or `
-                $_.Exception -like '*Request not applicable to target tenant*')
-        {
-            Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiYellowCircle) The current tenant is not registered for Intune."
-        }
-        else
-        {
-            New-M365DSCLogEntry -Message 'Error during Export:' `
-                -Exception $_ `
-                -Source $($MyInvocation.MyCommand.Source) `
-                -TenantId $TenantId `
-                -Credential $Credential
 
-            throw
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('PayloadId')
         }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntunePolicySets] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntunePolicySets])
+        {
+            return $Values
+        }
+
+        $result = [IntunePolicySets]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-ItemsAmendmentsObject
+class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
-    [CmdletBinding()]
-    param
-    (
-        $currentObjectItems,
-        $targetObjectItems
-    )
-
-    $nullreturn = $true
-    $ItemsModificationTemplate = @{
-        deletedPolicySetItems = @()
-        updatedPolicySetItems = @()
-        addedPolicySetItems   = @()
-    }
-
-    $nullreturn = $true
-    $currentObjectItems | ForEach-Object {
-        if (-not ($targetObjectItems.DisplayName -contains $_.DisplayName))
-        {
-            Write-Verbose -Message ($_.DisplayName + ' NOT present in Config Document, Removing')
-            $ItemsModificationTemplate.deletedPolicySetItems += $_.id
-            $nullreturn = $false
-        }
-    }
-
-    $targetObjectItems | ForEach-Object {
-        if (-not ($currentObjectItems.DisplayName -contains $_.DisplayName))
-        {
-            Write-Verbose -Message ($_.DisplayName + ' NOT already present in Policy Set, Adding')
-            $ItemsModificationTemplate.addedPolicySetItems += @{
-                payloadId            = Get-PayloadIdFromItem -Item $_
-                '@odata.type'        = $_.dataType
-                guidedDeploymentTags = $_.guidedDeploymentTags
-            }
-            $nullreturn = $false
-        }
-    }
-
-    if (-not $nullreturn)
-    {
-        return $ItemsModificationTemplate
-    }
-
-    return $null
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of the target assignment.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterType
+    [DscProperty()]
+    [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterId
+    [DscProperty()]
+    [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
+    [System.String] $groupId
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
+    [System.String] $groupDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
+    [System.String] $collectionId
 }
 
-function Get-PayloadIdFromItem
+class MSFT_DeviceManagementConfigurationPolicyItems
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of policy the item represents.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Id of the policy the item represents.')]
+    [System.String] $payloadId
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The collection display name of the policy the item represents')]
+    [System.String] $displayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of policy the item represents.')]
+    [System.String] $itemType
+    [DscProperty()]
+    [System.ComponentModel.Description('Tags of the guided deployment')]
+    [System.String[]] $guidedDeploymentTags
+}
+
+# Was Get-PayloadIdFromItem. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-IntunePolicySetsPayloadIdFromItem
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -847,15 +650,52 @@ function Get-PayloadIdFromItem
     return $object.Id
 }
 
-function Get-CompareParameters
+# Was Get-ItemsAmendmentsObject. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-IntunePolicySetsItemsAmendmentsObject
 {
     [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
+    param
+    (
+        $currentObjectItems,
+        $targetObjectItems
+    )
 
-    return @{
-        ExcludedProperties = @('PayloadId')
+    $nullreturn = $true
+    $ItemsModificationTemplate = @{
+        deletedPolicySetItems = @()
+        updatedPolicySetItems = @()
+        addedPolicySetItems   = @()
     }
+
+    $nullreturn = $true
+    $currentObjectItems | ForEach-Object {
+        if (-not ($targetObjectItems.DisplayName -contains $_.DisplayName))
+        {
+            Write-Verbose -Message ($_.DisplayName + ' NOT present in Config Document, Removing')
+            $ItemsModificationTemplate.deletedPolicySetItems += $_.id
+            $nullreturn = $false
+        }
+    }
+
+    $targetObjectItems | ForEach-Object {
+        if (-not ($currentObjectItems.DisplayName -contains $_.DisplayName))
+        {
+            Write-Verbose -Message ($_.DisplayName + ' NOT already present in Policy Set, Adding')
+            $ItemsModificationTemplate.addedPolicySetItems += @{
+                payloadId            = Get-IntunePolicySetsPayloadIdFromItem -Item $_
+                '@odata.type'        = $_.dataType
+                guidedDeploymentTags = $_.guidedDeploymentTags
+            }
+            $nullreturn = $false
+        }
+    }
+
+    if (-not $nullreturn)
+    {
+        return $ItemsModificationTemplate
+    }
+
+    return $null
 }
 
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

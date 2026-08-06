@@ -1,460 +1,258 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_SHSpaceGroup'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class SHSpaceGroup : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SpaceName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the associated Services Hub space.')]
+    [System.String] $SpaceName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the group.')]
+    [System.String] $GroupName
 
-        [Parameter()]
-        [System.String[]]
-        $Roles,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of roles associated with the group. Accepted values are: CustomerActivityPagePermissionRole, HealthPermissionRole, InviteUsersPermissionRole, PlansPermissionRole, SharedFilesPermissionRole, SupportCasePermissionRole, TrainingManager, TrainingPermissionRole, WorkspaceAdministratorRole. Role Account manager,IncidentManagerUnified,CSMAdministrator, ContractSupportUser are read-only and inherited from the upstream system and cannot be modified.')]
+    [System.String[]] $Roles
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [SHSpaceGroup] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [SHSpaceGroup]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting SHSpaceGroup configuration for Space: $($this.SpaceName), Group: $($this.GroupName)"
+
+        try
+        {
+            $null = $this.Connect('EngageHub')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $nullResult = $this.GetBoundParameters()
+            $nullResult.Ensure = 'Absent'
+
+            Write-Verbose -Message "Retrieving space by name {$($this.SpaceName)}"
+            $spacesUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces'
+            $response = Invoke-M365DSCServicesHubWebRequest -Uri $spacesUri -Method GET
+            $space = $response.value | Where-Object -FilterScript { $_.name -eq $this.SpaceName }
+
+            if ($space.Length -gt 1)
+            {
+                throw "Multiple spaces with name {$($this.SpaceName)} were found"
+            }
+            elseif ($null -eq $space -or $space.Length -eq 0)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $groupsUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
+            $response = Invoke-M365DSCServicesHubWebRequest -Uri $groupsUri -Method GET
+            $instance = $response.value | Where-Object -FilterScript { $_.groupName -eq $this.GroupName }
+
+            if ($instance.Length -gt 1)
+            {
+                throw "Multiple groups with name {$($this.GroupName)} were found."
+            }
+            elseif ($null -eq $instance)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $results = @{
+                SpaceName             = $this.SpaceName
+                GroupName             = $this.GroupName
+                Roles                 = $instance.roles
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting SHSpaceGroup configuration for Space: $SpaceName, Group: $GroupName"
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'EngageHub' `
-            -InboundParameters $PSBoundParameters
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $group = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting SHSpaceGroup configuration for Space: $($this.SpaceName), Group: $($this.GroupName)"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
+        $currentInstance = $this.Get().ToHashtable()
 
-        Write-Verbose -Message "Retrieving space by name {$SpaceName}"
+        Write-Verbose -Message "Retrieving space by name {$($this.SpaceName)}"
         $spacesUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces'
         $response = Invoke-M365DSCServicesHubWebRequest -Uri $spacesUri -Method GET
-        $space = $response.value | Where-Object -FilterScript { $_.name -eq $SpaceName }
+        $space = $response.value | Where-Object -FilterScript { $_.name -eq $this.SpaceName }
 
-        if ($space.Length -gt 1)
+        if ($currentInstance.Ensure -eq 'Present')
         {
-            throw "Multiple spaces with name {$SpaceName} were found"
+            $groupsUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
+            $response = Invoke-M365DSCServicesHubWebRequest -Uri $groupsUri -Method GET
+            $group = $response.value | Where-Object -FilterScript { $_.groupName -eq $this.GroupName }
         }
-        elseif ($null -eq $space -or $space.Length -eq 0)
+
+        # Retrieve Group ID from Microsoft Graph
+        Write-Verbose -Message 'Authenticating to Microsoft Graph'
+        $null = $this.Connect('MicrosoftGraph')
+
+        Write-Verbose -Message "Retrieving group id for {$($this.GroupName)}"
+        $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($this.GroupName -replace "'", "''")'"
+        Write-Verbose -Message "Found group info:`r`n$($groupInfo | Out-String)"
+        $groupId = $null
+        if ($null -ne $groupInfo)
         {
-            return $nullResult
-        }
-
-        $groupsUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
-        $response = Invoke-M365DSCServicesHubWebRequest -Uri $groupsUri -Method GET
-        $instance = $response.value | Where-Object -FilterScript { $_.groupName -eq $GroupName }
-
-        if ($instance.Length -gt 1)
-        {
-            throw "Multiple groups with name {$GroupName} were found."
-        }
-        elseif ($null -eq $instance)
-        {
-            return $nullResult
-        }
-
-        $results = @{
-            SpaceName             = $SpaceName
-            GroupName             = $GroupName
-            Roles                 = $instance.roles
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SpaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
-
-        [Parameter()]
-        [System.String[]]
-        $Roles,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting SHSpaceGroup configuration for Space: $SpaceName, Group: $GroupName"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    Write-Verbose -Message "Retrieving space by name {$SpaceName}"
-    $spacesUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces'
-    $response = Invoke-M365DSCServicesHubWebRequest -Uri $spacesUri -Method GET
-    $space = $response.value | Where-Object -FilterScript { $_.name -eq $SpaceName }
-
-    if ($currentInstance.Ensure -eq 'Present')
-    {
-        $groupsUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
-        $response = Invoke-M365DSCServicesHubWebRequest -Uri $groupsUri -Method GET
-        $group = $response.value | Where-Object -FilterScript { $_.groupName -eq $GroupName }
-    }
-
-    # Retrieve Group ID from Microsoft Graph
-    Write-Verbose -Message 'Authenticating to Microsoft Graph'
-    $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    Write-Verbose -Message "Retrieving group id for {$GroupName}"
-    $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($GroupName -replace "'", "''")'"
-    Write-Verbose -Message "Found group info:`r`n$($groupInfo | Out-String)"
-    $groupId = $null
-    if ($null -ne $groupInfo)
-    {
-        $groupId = $groupInfo.Id
-        Write-Verbose -Message "Retrieved GroupId {$groupId}"
-    }
-    else
-    {
-        throw "Could not retrieve group {$GroupName} from Entra Id."
-    }
-
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating new group {$GroupName} with Roles {$($Roles -join ',')}"
-        $body = @{
-            DisplayName = $GroupName
-            Roles       = $Roles
-            GroupId     = $groupId
-        }
-
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
-        Write-Verbose -Message "POST request to {$uri}`r`n$(ConvertTo-Json $body -Depth 5)"
-        Invoke-M365DSCServicesHubWebRequest -Uri $uri `
-            -Method POST `
-            -Body $body
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating group {$GroupName} with Roles {$($Roles -join ',')}"
-        $body = @{
-            roles = $Roles
-        }
-
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups/' + $group.groupId
-        Write-Verbose -Message "PATCH request to {$uri}`r`n$(ConvertTo-Json $body -Depth 5)"
-        Invoke-M365DSCServicesHubWebRequest -Uri $uri `
-            -Method PATCH `
-            -Body $body
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing group {$GroupName}"
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups/' + $group.groupId
-        Invoke-M365DSCServicesHubWebRequest -Uri $uri `
-            -Method DELETE
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SpaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
-
-        [Parameter()]
-        [System.String[]]
-        $Roles,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'EngageHub' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        $spacesUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces'
-        $response = Invoke-M365DSCServicesHubWebRequest -Uri $spacesUri -Method GET
-        $spaces = $response.value
-
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($spaces.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            $groupId = $groupInfo.Id
+            Write-Verbose -Message "Retrieved GroupId {$groupId}"
         }
         else
         {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
+            throw "Could not retrieve group {$($this.GroupName)} from Entra Id."
         }
 
-        $j = 1
-        foreach ($space in $spaces)
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            $displayedKey = $space.name
-            Write-M365DSCHost -Message "    |---[$j/$($spaces.Count)] $displayedKey" -DeferWrite
+            Write-Verbose -Message "Creating new group {$($this.GroupName)} with Roles {$($this.Roles -join ',')}"
+            $body = @{
+                DisplayName = $this.GroupName
+                Roles       = $this.Roles
+                GroupId     = $groupId
+            }
 
-            $groupsUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
-            $response = Invoke-M365DSCServicesHubWebRequest -Uri $groupsUri -Method GET
-            $groups = $response.value
+            $uri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
+            Write-Verbose -Message "POST request to {$uri}`r`n$(ConvertTo-Json $body -Depth 5)"
+            Invoke-M365DSCServicesHubWebRequest -Uri $uri `
+                -Method POST `
+                -Body $body
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating group {$($this.GroupName)} with Roles {$($this.Roles -join ',')}"
+            $body = @{
+                roles = $this.Roles
+            }
 
-            if ($groups.Length -eq 0)
+            $uri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups/' + $group.groupId
+            Write-Verbose -Message "PATCH request to {$uri}`r`n$(ConvertTo-Json $body -Depth 5)"
+            Invoke-M365DSCServicesHubWebRequest -Uri $uri `
+                -Method PATCH `
+                -Body $body
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing group {$($this.GroupName)}"
+            $uri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups/' + $group.groupId
+            Invoke-M365DSCServicesHubWebRequest -Uri $uri `
+                -Method DELETE
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('EngageHub')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            $spacesUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces'
+            $response = Invoke-M365DSCServicesHubWebRequest -Uri $spacesUri -Method GET
+            $spaces = $response.value
+
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($spaces.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
@@ -463,53 +261,85 @@ function Export-TargetResource
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
 
-            $i = 1
-            foreach ($group in $groups)
+            $j = 1
+            foreach ($space in $spaces)
             {
-                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                $displayedKey = $space.name
+                Write-M365DSCHost -Message "    |---[$j/$($spaces.Count)] $displayedKey" -DeferWrite
+
+                $groupsUri = (Get-MSCloudLoginConnectionProfile -Workload EngageHub).APIUrl + '/spaces/' + $space.spaceId + '/groups'
+                $response = Invoke-M365DSCServicesHubWebRequest -Uri $groupsUri -Method GET
+                $groups = $response.value
+
+                if ($groups.Length -eq 0)
                 {
-                    $Global:M365DSCExportResourceInstancesCount++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
+                else
+                {
+                    Write-M365DSCHost -Message "`r`n" -DeferWrite
                 }
 
-                $displayedKey = $group.groupName
-                Write-M365DSCHost -Message "        |---[$i/$($groups.Count)] $displayedKey" -DeferWrite
-                $params = @{
-                    SpaceName             = $space.name
-                    GroupName             = $group.groupName
-                    Credential            = $Credential
-                    ApplicationId         = $ApplicationId
-                    TenantId              = $TenantId
-                    CertificateThumbprint = $CertificateThumbprint
-                    ManagedIdentity       = $ManagedIdentity.IsPresent
-                    AccessTokens          = $AccessTokens
-                }
+                $i = 1
+                foreach ($group in $groups)
+                {
+                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                    {
+                        $Global:M365DSCExportResourceInstancesCount++
+                    }
 
-                $Results = Get-TargetResource @Params
-                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                    -ConnectionMode $ConnectionMode `
-                    -ModulePath $PSScriptRoot `
-                    -Results $Results `
-                    -Credential $Credential
-                [void]$dscContent.Append($currentDSCBlock)
-                Save-M365DSCPartialExport -Content $currentDSCBlock `
-                    -FileName $Global:PartialExportFileName
-                $i++
-                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                    $displayedKey = $group.groupName
+                    Write-M365DSCHost -Message "        |---[$i/$($groups.Count)] $displayedKey" -DeferWrite
+                    $params = @{
+                        SpaceName             = $space.name
+                        GroupName             = $group.groupName
+                        Credential            = $this.Credential
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        AccessTokens          = $this.AccessTokens
+                    }
+
+                    $Results = $this.GetForExport($Params)
+                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                        -ConnectionMode $ConnectionMode `
+                        -ModulePath $this.GetModulePath() `
+                        -Results $Results `
+                        -Credential $this.Credential
+                    [void]$dscContent.Append($currentDSCBlock)
+                    Save-M365DSCPartialExport -Content $currentDSCBlock `
+                        -FileName $Global:PartialExportFileName
+                    $i++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
+                $j++
             }
-            $j++
+            return $dscContent.ToString()
         }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
 
-        throw
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [SHSpaceGroup] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [SHSpaceGroup])
+        {
+            return $Values
+        }
+
+        $result = [SHSpaceGroup]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-Export-ModuleMember -Function *-TargetResource

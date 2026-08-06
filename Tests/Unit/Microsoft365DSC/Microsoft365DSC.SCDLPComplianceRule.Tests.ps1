@@ -22,12 +22,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         BeforeAll {
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -CommandName Confirm-M365DSCDependencies -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -71,8 +71,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Policy                              = 'MyParentPolicy'
                     Comment                             = ''
                     AdvancedRule                        = "`"{\r\n  \`"Version\`": \`"1.0\`",\r\n  \`"Condition\`": {\r\n    \`"Operator\`": \`"And\`",\r\n    \`"SubConditions\`": [\r\n      {\r\n        \`"ConditionName\`": \`"AccessScope\`",\r\n        \`"Value\`": \`"InOrganization\`"\r\n      },\r\n      {\r\n        \`"ConditionName\`": \`"ContentContainsSensitiveInformation\`",\r\n        \`"Value\`": {\r\n          \`"maxconfidence\`": \`"100\`",\r\n          \`"name\`": \`"EU Debit Card Number\`",\r\n          \`"maxcount\`": \`"9\`",\r\n          \`"minconfidence\`": \`"75\`",\r\n          \`"classifiertype\`": \`"Content\`",\r\n          \`"mincount\`": \`"1\`",\r\n          \`"confidencelevel\`": \`"Medium\`"\r\n        }\r\n      }\r\n    ]\r\n  }\r\n}`"";
-                    ContentContainsSensitiveInformation = (New-CimInstance -ClassName MSFT_SCDLPContainsSensitiveInformation -Property @{
-                            SensitiveInformation = [CIMInstance[]]@(New-CimInstance -ClassName  MSFT_SCDLPSensitiveInformation -Property @{
+                    ContentContainsSensitiveInformation = ([MSFT_SCDLPContainsSensitiveInformation] @{
+                            SensitiveInformation = @([MSFT_SCDLPSensitiveInformation] @{
                                     name           = 'ABA Routing Number'
                                     id             = 'cb353f78-2b72-4c3c-8827-92ebe4f69fdf'
                                     maxconfidence  = '100'
@@ -80,8 +80,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     classifiertype = 'Content'
                                     mincount       = '1'
                                     maxcount       = '-1'
-                                } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                        })
 
                     BlockAccess                         = $False
                     Name                                = 'TestPolicy'
@@ -93,15 +93,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should return Absent from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
             }
         }
 
@@ -112,14 +112,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Policy                              = 'MyParentPolicy'
                     Comment                             = ''
                     AdvancedRule                        = "`"{\r\n  \`"Version\`": \`"1.0\`",\r\n  \`"Condition\`": {\r\n    \`"Operator\`": \`"And\`",\r\n    \`"SubConditions\`": [\r\n      {\r\n        \`"ConditionName\`": \`"ContentContainsSensitiveInformation\`",\r\n        \`"Value\`": [\r\n          {\r\n            \`"Groups\`": [\r\n              {\r\n                \`"Name\`": \`"Default\`",\r\n                \`"Operator\`": \`"Or\`",\r\n                \`"Sensitivetypes\`": [\r\n                  {\r\n                    \`"Name\`": \`"SCSEDM001-SCHEMA-CUSTOMERDATA\`",\r\n                    \`"Id\`": null,\r\n                    \`"Mincount\`": 5,\r\n                    \`"Maxcount\`": 9,\r\n                    \`"Confidencelevel\`": \`"High\`",\r\n                    \`"Minconfidence\`": 85,\r\n                    \`"Maxconfidence\`": 100\r\n                  }\r\n                ]\r\n              }\r\n            ],\r\n            \`"Operator\`": \`"And\`"\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  }\r\n}`"";
-                    ContentContainsSensitiveInformation = [CIMInstance[]]@(New-CimInstance -ClassName MSFT_SCDLPContainsSensitiveInformation -Property @{
+                    ContentContainsSensitiveInformation = @([MSFT_SCDLPContainsSensitiveInformation] @{
                         Operator = 'And'
-                        Groups   = [CIMInstance[]]@(
-                            New-CimInstance -ClassName MSFT_SCDLPContainsSensitiveInformationGroup -Property @{
+                        Groups   = @(
+                            [MSFT_SCDLPContainsSensitiveInformationGroup] @{
                                 Name                 = 'default'
                                 operator             = 'and'
-                                SensitiveInformation = [CIMInstance[]]@(
-                                    New-CimInstance -ClassName MSFT_SCDLPSensitiveInformation -Property @{
+                                SensitiveInformation = @(
+                                    [MSFT_SCDLPSensitiveInformation] @{
                                         name           = 'ABA Routing Number'
                                         id             = 'cb353f78-2b72-4c3c-8827-92ebe4f69fdf'
                                         maxconfidence  = '100'
@@ -127,8 +127,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         classifiertype = 'Content'
                                         mincount       = '1'
                                         maxcount       = '-1'
-                                    } -ClientOnly
-                                    New-CimInstance -ClassName MSFT_SCDLPSensitiveInformation -Property @{
+                                    }
+                                    [MSFT_SCDLPSensitiveInformation] @{
                                         name           = 'Argentina Unique Tax Identification Key (CUIT/CUIL)'
                                         id             = '98da3da1-9199-4571-b7c4-b6522980b507'
                                         maxconfidence  = '100'
@@ -136,11 +136,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         classifiertype = 'Content'
                                         mincount       = '1'
                                         maxcount       = '-1'
-                                    } -ClientOnly
+                                    }
                                 )
-                            } -ClientOnly
+                            }
                         )
-                    } -ClientOnly)
+                    })
                     BlockAccess                         = $False
                     Name                                = 'TestPolicy'
                     Credential                          = $Credential
@@ -151,15 +151,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should return Absent from the Get method' {
-                    (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                    ((New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
             }
         }
 
@@ -169,8 +169,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                              = 'Present'
                     Policy                              = 'MyParentPolicy'
                     Comment                             = 'New comment'
-                    ContentContainsSensitiveInformation = [CimInstance[]]@(New-CimInstance -ClassName MSFT_SCDLPContainsSensitiveInformation -Property @{
-                            SensitiveInformation = [CIMInstance[]]@(New-CimInstance -ClassName  MSFT_SCDLPSensitiveInformation -Property @{
+                    ContentContainsSensitiveInformation = @([MSFT_SCDLPContainsSensitiveInformation] @{
+                            SensitiveInformation = @([MSFT_SCDLPSensitiveInformation] @{
                                     name           = 'ABA Routing Number'
                                     id             = 'cb353f78-2b72-4c3c-8827-92ebe4f69fdf'
                                     maxconfidence  = '100'
@@ -178,8 +178,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     classifiertype = 'Content'
                                     mincount       = '1'
                                     maxcount       = '-1'
-                                } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                        })
                     BlockAccess                         = $False
                     Name                                = 'TestPolicy'
                     Credential                          = $Credential
@@ -197,15 +197,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $true
             }
 
             It 'Should recreate from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
             }
 
             It 'Should return Present from the Get method' {
-                    (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                    ((New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
         }
 
@@ -260,15 +260,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $true
             }
 
             It 'Should recreate from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
             }
 
             It 'Should return Present from the Get method' {
-                    (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                    ((New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
         }
 
@@ -379,7 +379,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should ignore trainable classifier ids when testing AdvancedRules for drift' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $true
                 $normalizedAdvancedRule = $Script:AdvancedRulePassedToTest | ConvertFrom-Json | ConvertFrom-Json
                 $sensitiveTypes = $normalizedAdvancedRule.Condition.SubConditions[0].Value[0].Groups[0].Sensitivetypes
                 ($sensitiveTypes | Where-Object -FilterScript { $_.Name -eq 'Healthcare' }).Id | Should -Be $null
@@ -392,16 +392,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     Ensure                  = 'Present'
                     Policy                  = 'MyParentPolicy'
-                    EndpointDlpRestrictions = [CimInstance[]]@(
-                        New-CimInstance -ClassName MSFT_SCDLPEndpointDlpRestriction -Property @{
+                    EndpointDlpRestrictions = @(
+                        [MSFT_SCDLPEndpointDlpRestriction] @{
                             Setting = 'Print'
                             Value   = 'Block'
-                        } -ClientOnly
-                        New-CimInstance -ClassName MSFT_SCDLPEndpointDlpRestriction -Property @{
+                        }
+                        [MSFT_SCDLPEndpointDlpRestriction] @{
                             Setting = 'UnallowedApps'
                             Value   = 'notepad'
                             Value2  = 'Microsoft Notepad'
-                        } -ClientOnly
+                        }
                     )
                     NotifyUser              = @('user@contoso.com')
                     Name                    = 'TestPolicy'
@@ -418,11 +418,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should pass EndpointDlpRestrictions as hashtables to the New method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
                 $Script:EndpointDlpRestrictionsPassedToNew[0].Setting | Should -Be 'Print'
                 $Script:EndpointDlpRestrictionsPassedToNew[0].Value | Should -Be 'Block'
                 $Script:EndpointDlpRestrictionsPassedToNew[1].Setting | Should -Be 'UnallowedApps'
@@ -436,16 +436,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     Ensure                  = 'Present'
                     Policy                  = 'MyParentPolicy'
-                    EndpointDlpRestrictions = [CimInstance[]]@(
-                        New-CimInstance -ClassName MSFT_SCDLPEndpointDlpRestriction -Property @{
+                    EndpointDlpRestrictions = @(
+                        [MSFT_SCDLPEndpointDlpRestriction] @{
                             Setting = 'Print'
                             Value   = 'Block'
-                        } -ClientOnly
-                        New-CimInstance -ClassName MSFT_SCDLPEndpointDlpRestriction -Property @{
+                        }
+                        [MSFT_SCDLPEndpointDlpRestriction] @{
                             Setting = 'UnallowedApps'
                             Value   = 'notepad'
                             Value2  = 'Microsoft Notepad'
-                        } -ClientOnly
+                        }
                     )
                     NotifyUser              = @('user@contoso.com')
                     Name                    = 'TestPolicy'
@@ -470,11 +470,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $true
             }
 
             It 'Should pass EndpointDlpRestrictions as hashtables to the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
                 $Script:EndpointDlpRestrictionsPassedToSet[0].Setting | Should -Be 'Print'
                 $Script:EndpointDlpRestrictionsPassedToSet[0].Value | Should -Be 'Block'
                 $Script:EndpointDlpRestrictionsPassedToSet[1].Setting | Should -Be 'UnallowedApps'
@@ -483,7 +483,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return EndpointDlpRestrictions from the Get method' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Get().ToHashtable()
                 $result.EndpointDlpRestrictions[0].Setting | Should -Be 'Print'
                 $result.EndpointDlpRestrictions[1].Value2 | Should -Be 'Microsoft Notepad'
             }
@@ -512,15 +512,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should delete from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Set()
             }
 
             It 'Should return Present from the Get method' {
-                    (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                    ((New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
         }
 
@@ -548,7 +548,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'SCDLPComplianceRule' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
                 $result | Should -Match 'EndpointDlpRestrictions'
                 $result | Should -Match 'SCDLPEndpointDlpRestriction'

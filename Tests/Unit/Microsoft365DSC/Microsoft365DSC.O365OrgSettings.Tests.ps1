@@ -23,7 +23,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         BeforeAll {
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
@@ -34,7 +34,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Reset-MSCloudLoginConnectionProfileContext -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -59,7 +59,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Get-M365DSCOrgSettingsInstallationOptions -MockWith {
+            Mock -CommandName Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions -MockWith {
                 return @{
                     '@odata.context' = 'https://graph.microsoft.com/beta/$metadata#admin/microsoft365Apps/installationOptions/$entity'
                     updateChannel = 'current'
@@ -76,7 +76,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Get-M365DSCO365OrgSettingsPlannerConfig -MockWith {
+            Mock -CommandName Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig -MockWith {
                 return @{
                     allowCalendarSharing = $false
                 }
@@ -124,11 +124,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).M365WebEnableUsersToOpenFilesFrom3PStorage | Should -Be $False
+                ((New-M365DSCResourceInstance -ResourceName 'O365OrgSettings' -Property $testParams).Get().ToHashtable()).M365WebEnableUsersToOpenFilesFrom3PStorage | Should -Be $False
             }
 
             It 'Should return true from the Test method' {
-                (Test-TargetResource @testParams) | Should -Be $true
+                ((New-M365DSCResourceInstance -ResourceName 'O365OrgSettings' -Property $testParams).Test()) | Should -Be $true
             }
         }
 
@@ -169,15 +169,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).M365WebEnableUsersToOpenFilesFrom3PStorage | Should -Be $False
+                ((New-M365DSCResourceInstance -ResourceName 'O365OrgSettings' -Property $testParams).Get().ToHashtable()).M365WebEnableUsersToOpenFilesFrom3PStorage | Should -Be $False
             }
 
             It 'Should return false from the Test method' {
-                (Test-TargetResource @testParams) | Should -Be $false
+                ((New-M365DSCResourceInstance -ResourceName 'O365OrgSettings' -Property $testParams).Test()) | Should -Be $false
             }
 
             It 'Should update values from the SET method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'O365OrgSettings' -Property $testParams).Set()
             }
         }
 
@@ -212,7 +212,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'O365OrgSettings' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

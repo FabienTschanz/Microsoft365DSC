@@ -1,485 +1,320 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_SCRoleGroupMember'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class SCRoleGroupMember : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateLength(1, 64)]
-        [System.String]
-        $Name,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The Name parameter specifies the name of the role. The maximum length of the name is 64 characters.')]
+    [ValidateLength(1, 64)]
+    [System.String] $Name
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Description parameter specifies the description that''s displayed when the role group is viewed using the Get-RoleGroup cmdlet. Enclose the description in quotation marks')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String[]]
-        $Members,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Members parameter specifies the mailboxes or mail-enabled USGs to add as a member of the role group. You can identify the user or group by the name, DN, or primary SMTP address value. You can specify multiple members separated by commas (Value1,Value2,...ValueN). If the value contains spaces, enclose the value in quotation marks')]
+    [System.String[]] $Members
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify if the Role Group Members should exist or not.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Exchange Global Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [SCRoleGroupMember] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting Role Group configuration for $Name"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $Name)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-                -InboundParameters $PSBoundParameters
+            $remote = [SCRoleGroupMember]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting Role Group configuration for $($this.Name)"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullReturn = $PSBoundParameters
-            $nullReturn.Ensure = 'Absent'
-
-            $AllRoleGroups = Get-RoleGroup -ErrorAction Stop
-            $RoleGroup = $AllRoleGroups | Where-Object -FilterScript { $_.Name -eq $Name }
-
-            if ($null -eq $RoleGroup)
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Name -ne $this.Name)
             {
-                Write-Verbose -Message "Role Group $($Name) does not exist."
-                return $nullReturn
+                $null = $this.Connect('SecurityComplianceCenter')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                $AllRoleGroups = Get-RoleGroup -ErrorAction Stop
+                $RoleGroup = $AllRoleGroups | Where-Object -FilterScript { $_.Name -eq $this.Name }
+
+                if ($null -eq $RoleGroup)
+                {
+                    Write-Verbose -Message "Role Group $($this.Name) does not exist."
+                    return $this.AsResult($nullReturn)
+                }
             }
-        }
-        else
-        {
-            $RoleGroup = $Script:exportedInstance
-        }
-
-        # Get RoleGroup Members if RoleGroup exists.
-        $roleGroupMembers = Get-RoleGroupMember -Identity $Name -ErrorAction Stop | Select-Object -Property @("Alias", "Name")
-        $roleGroupMembersValue = @()
-        foreach ($member in $roleGroupMembers)
-        {
-            # To ensure uniqueness for members, use Alias if it is an email address, otherwise use Name
-            if ($member.Alias.Contains("@"))
+            else
             {
-                $roleGroupMembersValue += $member.Alias
-                continue
-            }
-            $roleGroupMembersValue += $member.Name
-        }
-
-        $result = @{
-            Name                  = $RoleGroup.Name
-            Description           = $RoleGroup.Description
-            Members               = $roleGroupMembersValue
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-
-        Write-Verbose -Message "Found Role Group $($Name)"
-        return $result
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateLength(1, 64)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $Members,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting Role Group configuration for $Name"
-
-    $currentRoleGroupConfig = Get-TargetResource @PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $null = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-        -InboundParameters $PSBoundParameters
-
-    # CASE: Role Group has different member values than the desired ones
-    $MembersValue = $Members
-    if ([System.String]::IsNullOrEmpty($Members))
-    {
-        $MembersValue = @()
-    }
-
-    $currentMembersValue = $currentRoleGroupConfig.Members
-    if ([System.String]::IsNullOrEmpty($currentRoleGroupConfig.Members))
-    {
-        $currentMembersValue = @()
-    }
-
-    $differences = Compare-Object -ReferenceObject $currentMembersValue -DifferenceObject $MembersValue
-
-    if ($Ensure -eq 'Present' -and $currentRoleGroupConfig.Ensure -eq 'Present' -and $null -ne $differences)
-    {
-        Write-Verbose -Message "Role Group '$($Name)' exists, but members need updating."
-        foreach ($difference in $differences)
-        {
-            if ($difference.SideIndicator -eq '=>')
-            {
-                Write-Verbose -Message "Adding Member {$($difference.InputObject)} to Role Group {$Name}"
-                Add-RoleGroupMember -Identity $Name -Member $($difference.InputObject)
-            }
-            elseif ($difference.SideIndicator -eq '<=')
-            {
-                Write-Verbose -Message "Removing Member {$($difference.InputObject)} from Role Group {$Name}"
-                Remove-RoleGroupMember -Identity $Name -Member $($difference.InputObject)
-            }
-        }
-    }
-    # CASE: Role Group Membership should be removed
-    elseif ($Ensure -eq 'Absent' -and $currentRoleGroupConfig.Ensure -eq 'Present')
-    {
-        foreach ($member in $Members)
-        {
-            Write-Verbose -Message "Removing Member {$member} from Role Group {$Name}"
-            Remove-RoleGroupMember -Identity $Name -Member $member
-        }
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateLength(1, 64)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $Members,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'SecurityComplianceCenter' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $exportedInstances = Get-RoleGroup
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($exportedInstances.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        $i = 1
-        foreach ($RoleGroup in $exportedInstances)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
+                $RoleGroup = $this.ExportedInstance
             }
 
-            Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $($RoleGroup.Name)" -DeferWrite
+            # Get RoleGroup Members if RoleGroup exists.
+            $roleGroupMembers = Get-RoleGroupMember -Identity $RoleGroup.Name -ErrorAction Stop | Select-Object -Property @("Alias", "Name")
+            $roleGroupMembersValue = @()
+            foreach ($member in $roleGroupMembers)
+            {
+                # To ensure uniqueness for members, use Alias if it is an email address, otherwise use Name
+                if ($member.Alias.Contains("@"))
+                {
+                    $roleGroupMembersValue += $member.Alias
+                    continue
+                }
+                $roleGroupMembersValue += $member.Name
+            }
 
-            $Params = @{
+            $result = @{
                 Name                  = $RoleGroup.Name
                 Description           = $RoleGroup.Description
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePassword   = $CertificatePassword
-                CertificatePath       = $CertificatePath
-                AccessTokens          = $AccessTokens
+                Members               = $roleGroupMembersValue
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
             }
-            $Script:exportedInstance = $RoleGroup
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -RawResults $rawResults
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            $i++
+
+            Write-Verbose -Message "Found Role Group $($this.Name)"
+            return $this.AsResult($result)
         }
-        return $dscContent.ToString()
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
-    catch
+
+    [void] Set()
     {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-        throw
+        Write-Verbose -Message "Setting Role Group configuration for $($this.Name)"
+
+        $currentRoleGroupConfig = $this.Get().ToHashtable()
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $null = $this.Connect('SecurityComplianceCenter')
+
+        # CASE: Role Group has different member values than the desired ones
+        $MembersValue = $this.Members
+        if ([System.String]::IsNullOrEmpty($this.Members))
+        {
+            $MembersValue = @()
+        }
+
+        $currentMembersValue = $currentRoleGroupConfig.Members
+        if ([System.String]::IsNullOrEmpty($currentRoleGroupConfig.Members))
+        {
+            $currentMembersValue = @()
+        }
+
+        $differences = Compare-Object -ReferenceObject $currentMembersValue -DifferenceObject $MembersValue
+
+        if ($this.Ensure -eq 'Present' -and $currentRoleGroupConfig.Ensure -eq 'Present' -and $null -ne $differences)
+        {
+            Write-Verbose -Message "Role Group '$($this.Name)' exists, but members need updating."
+            foreach ($difference in $differences)
+            {
+                if ($difference.SideIndicator -eq '=>')
+                {
+                    Write-Verbose -Message "Adding Member {$($difference.InputObject)} to Role Group {$($this.Name)}"
+                    Add-RoleGroupMember -Identity $this.Name -Member $($difference.InputObject)
+                }
+                elseif ($difference.SideIndicator -eq '<=')
+                {
+                    Write-Verbose -Message "Removing Member {$($difference.InputObject)} from Role Group {$($this.Name)}"
+                    Remove-RoleGroupMember -Identity $this.Name -Member $($difference.InputObject)
+                }
+            }
+        }
+        # CASE: Role Group Membership should be removed
+        elseif ($this.Ensure -eq 'Absent' -and $currentRoleGroupConfig.Ensure -eq 'Present')
+        {
+            foreach ($member in $this.Members)
+            {
+                Write-Verbose -Message "Removing Member {$member} from Role Group {$($this.Name)}"
+                Remove-RoleGroupMember -Identity $this.Name -Member $member
+            }
+        }
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('SecurityComplianceCenter')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array] $exportedInstances = Get-RoleGroup
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($exportedInstances.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            $i = 1
+            foreach ($RoleGroup in $exportedInstances)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $($RoleGroup.Name)" -DeferWrite
+
+                $Params = @{
+                    Name                  = $RoleGroup.Name
+                    Description           = $RoleGroup.Description
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePassword   = $this.CertificatePassword
+                    CertificatePath       = $this.CertificatePath
+                    AccessTokens          = $this.AccessTokens
+                }
+                $this.ExportedInstance = $RoleGroup
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -RawResults $rawResults
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $i++
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('Description')
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [SCRoleGroupMember] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [SCRoleGroupMember])
+        {
+            return $Values
+        }
+
+        $result = [SCRoleGroupMember]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
-
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        ExcludedProperties = @('Description')
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

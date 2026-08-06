@@ -1,579 +1,344 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_EXOAntiPhishRule'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class EXOAntiPhishRule : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The Identity parameter specifies the name of the antiphishing rule that you want to modify.')]
+    [System.String] $Identity
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AntiPhishPolicy,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify if this rule should exist or not.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.String]
-        $Comments,
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The AntiPhishPolicy parameter specifies the name of the antiphishing policy that''s associated with the antiphishing rule.')]
+    [System.String] $AntiPhishPolicy
 
-        [Parameter()]
-        [System.Boolean]
-        $Enabled = $true,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify if this rule should be enabled. Default is $true.')]
+    [System.Nullable[System.Boolean]] $Enabled
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('The Priority parameter specifies a priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can''t have the same priority value.')]
+    [System.Nullable[System.UInt32]] $Priority
 
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfRecipientDomainIs = @(),
+    [DscProperty()]
+    [System.ComponentModel.Description('The Comments parameter specifies informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment can''t exceed 1024 characters.')]
+    [System.String] $Comments
 
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfSentTo = @(),
+    [DscProperty()]
+    [System.ComponentModel.Description('The ExceptIfRecipientDomainIs parameter specifies an exception that looks for recipients with email address in the specified domains. You can specify multiple domains separated by commas.')]
+    [System.String[]] $ExceptIfRecipientDomainIs
 
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfSentToMemberOf = @(),
+    [DscProperty()]
+    [System.ComponentModel.Description('The ExceptIfSentTo parameter specifies an exception that looks for recipients in messages. You can use any value that uniquely identifies the recipient.')]
+    [System.String[]] $ExceptIfSentTo
 
-        [Parameter()]
-        [uint32]
-        $Priority,
+    [DscProperty()]
+    [System.ComponentModel.Description('The ExceptIfSentToMemberOf parameter specifies an exception that looks for messages sent to members of groups. You can use any value that uniquely identifies the group.')]
+    [System.String[]] $ExceptIfSentToMemberOf
 
-        [Parameter()]
-        [System.String[]]
-        $RecipientDomainIs = @(),
+    [DscProperty()]
+    [System.ComponentModel.Description('The RecipientDomainIs parameter specifies a condition that looks for recipients with email address in the specified domains. You can specify multiple domains separated by commas.')]
+    [System.String[]] $RecipientDomainIs
 
-        [Parameter()]
-        [System.String[]]
-        $SentTo = @(),
+    [DscProperty()]
+    [System.ComponentModel.Description('The SentTo parameter specifies a condition that looks for recipients in messages. You can use any value that uniquely identifies the recipient.')]
+    [System.String[]] $SentTo
 
-        [Parameter()]
-        [System.String[]]
-        $SentToMemberOf = @(),
+    [DscProperty()]
+    [System.ComponentModel.Description('The SentToMemberOf parameter looks for messages sent to members of groups. You can use any value that uniquely identifies the group.')]
+    [System.String[]] $SentToMemberOf
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Exchange Global Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [EXOAntiPhishRule] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [EXOAntiPhishRule]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration of AntiPhishRule for $($this.Identity)"
+
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
+            {
+                $null = $this.Connect('ExchangeOnline')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                $AntiPhishRule = Get-AntiPhishRule -Identity $this.Identity -ErrorAction SilentlyContinue
+                if ($null -eq $AntiPhishRule)
+                {
+                    Write-Verbose -Message "AntiPhishRule $($this.Identity) does not exist."
+                    return $this.AsResult($nullReturn)
+                }
+            }
+            else
+            {
+                $AntiPhishRule = $this.ExportedInstance
+            }
+
+            Write-Verbose -Message "Found AntiPhishRule $($this.Identity)"
+            $result = @{
+                Identity                  = $this.Identity
+                AntiPhishPolicy           = $AntiPhishRule.AntiPhishPolicy
+                Comments                  = $AntiPhishRule.Comments
+                Enabled                   = $AntiPhishRule.RuleEnabled
+                ExceptIfRecipientDomainIs = $AntiPhishRule.ExceptIfRecipientDomainIs
+                ExceptIfSentTo            = $AntiPhishRule.ExceptIfSentTo
+                ExceptIfSentToMemberOf    = $AntiPhishRule.ExceptIfSentToMemberOf
+                Priority                  = $AntiPhishRule.Priority
+                RecipientDomainIs         = $AntiPhishRule.RecipientDomainIs
+                SentTo                    = $AntiPhishRule.SentTo
+                SentToMemberOf            = $AntiPhishRule.SentToMemberOf
+                Ensure                    = 'Present'
+                Credential                = $this.Credential
+                ApplicationId             = $this.ApplicationId
+                CertificateThumbprint     = $this.CertificateThumbprint
+                CertificatePath           = $this.CertificatePath
+                CertificatePassword       = $this.CertificatePassword
+                ManagedIdentity           = $this.ManagedIdentity.IsPresent
+                TenantId                  = $this.TenantId
+                AccessTokens              = $this.AccessTokens
+            }
+
+            if ('Enabled' -eq $AntiPhishRule.State)
+            {
+                # Accounts for Get-AntiPhishRule returning 'State' instead of 'Enabled' used by New/Set
+                $result.Enabled = $true
+            }
+
+            return $this.AsResult($result)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration of AntiPhishRule for $Identity"
-
-    try
+    [void] Set()
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Identity -ne $Identity)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-                -InboundParameters $PSBoundParameters
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Setting configuration of AntiPhishRule for $($this.Identity)"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
 
-            $nullReturn = $PSBoundParameters
-            $nullReturn.Ensure = 'Absent'
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
 
-            $AntiPhishRule = Get-AntiPhishRule -Identity $Identity -ErrorAction SilentlyContinue
-            if ($null -eq $AntiPhishRule)
+        $null = $this.Connect('ExchangeOnline')
+
+        $CurrentValues = $this.Get().ToHashtable()
+        $BoundParameters = ([System.Collections.Hashtable]$this.GetBoundParameters()).Clone()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        if ($this.Ensure -eq 'Present' -and $CurrentValues.Ensure -eq 'Absent')
+        {
+            $BoundParameters.Add('Name', $this.Identity) | Out-Null
+            $BoundParameters.Remove('Identity') | Out-Null
+
+            # Make sure that the associated Policy exists;
+            $AssociatedPolicy = Get-AntiPhishPolicy -Identity $this.AntiPhishPolicy -ErrorAction 'SilentlyContinue'
+            if ($null -eq $AssociatedPolicy)
             {
-                Write-Verbose -Message "AntiPhishRule $Identity does not exist."
-                return $nullReturn
+                throw "Error attempting to create EXOAntiPhishRule {$($this.Identity)}. The specified AntiPhishPolicy {$($this.AntiPhishPolicy)} " + `
+                    "doesn't exist. Make sure you either create it first or specify a valid policy."
             }
+
+            # New-AntiPhishRule has the Enabled parameter, Set-AntiPhishRule does not.
+            # There doesn't appear to be any way to change the Enabled state of a rule once created.
+            if ($CurrentValues.State -eq 'Disabled')
+            {
+                Write-Verbose -Message "AntiPhishRule {$($this.Identity)} already exists but is disabled, we need to delete it first. Deleting Rule"
+                Remove-AntiphishRule -Identity $this.Identity -Confirm:$false
+            }
+
+            Write-Verbose -Message "Creating AntiPhishRule {$($this.Identity)}"
+            New-AntiPhishRule @BoundParameters
         }
-        else
+        elseif ($this.Ensure -eq 'Present' -and $CurrentValues.Ensure -eq 'Present')
         {
-            $AntiPhishRule = $Script:exportedInstance
+            $BoundParameters.Remove('Enabled') | Out-Null
+
+            # Make sure that the associated Policy exists;
+            $AssociatedPolicy = Get-AntiPhishPolicy -Identity $this.AntiPhishPolicy -ErrorAction 'SilentlyContinue'
+            if ($null -eq $AssociatedPolicy)
+            {
+                throw "Error attempting to create EXOAntiPhishRule {$($this.Identity)}. The specified AntiPhishPolicy {$($this.AntiPhishPolicy)} " + `
+                    "doesn't exist. Make sure you either create it first or specify a valid policy."
+            }
+
+            # Check to see if the specified policy already has the rule assigned;
+            $existingRule = Get-AntiPhishRule | Where-Object -FilterScript { $_.AntiPhishPolicy -eq $this.AntiPhishPolicy }
+
+            if ($null -ne $existingRule)
+            {
+                # The rule is already assigned to the policy, do try to update the AntiPhishPolicy parameter;
+                $BoundParameters.Remove('AntiPhishPolicy') | Out-Null
+            }
+
+            Write-Verbose -Message "Updating AntiPhishRule {$($this.Identity)}."
+            Set-AntiPhishRule @BoundParameters
+        }
+        if ($this.Ensure -eq 'Absent' -and $CurrentValues.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing AntiPhishRule [$($this.Identity)]"
+            Remove-AntiPhishRule -Identity $this.Identity -Confirm:$false
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
         }
 
-        Write-Verbose -Message "Found AntiPhishRule $Identity"
-        $result = @{
-            Identity                  = $Identity
-            AntiPhishPolicy           = $AntiPhishRule.AntiPhishPolicy
-            Comments                  = $AntiPhishRule.Comments
-            Enabled                   = $AntiPhishRule.RuleEnabled
-            ExceptIfRecipientDomainIs = $AntiPhishRule.ExceptIfRecipientDomainIs
-            ExceptIfSentTo            = $AntiPhishRule.ExceptIfSentTo
-            ExceptIfSentToMemberOf    = $AntiPhishRule.ExceptIfSentToMemberOf
-            Priority                  = $AntiPhishRule.Priority
-            RecipientDomainIs         = $AntiPhishRule.RecipientDomainIs
-            SentTo                    = $AntiPhishRule.SentTo
-            SentToMemberOf            = $AntiPhishRule.SentToMemberOf
-            Ensure                    = 'Present'
-            Credential                = $Credential
-            ApplicationId             = $ApplicationId
-            CertificateThumbprint     = $CertificateThumbprint
-            CertificatePath           = $CertificatePath
-            CertificatePassword       = $CertificatePassword
-            ManagedIdentity           = $ManagedIdentity.IsPresent
-            TenantId                  = $TenantId
-            AccessTokens              = $AccessTokens
+        $ConnectionMode = $this.Connect('ExchangeOnline')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            $AntiPhishRules = Get-AntiphishRule -ErrorAction Stop
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($AntiPhishRules.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            $i = 1
+            foreach ($Rule in $AntiPhishRules)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($AntiPhishRules.Length)] $($Rule.Identity)" -DeferWrite
+
+                $Params = @{
+                    Identity              = $Rule.Identity
+                    AntiPhishPolicy       = $Rule.AntiPhishPolicy
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    CertificatePath       = $this.CertificatePath
+                    AccessTokens          = $this.AccessTokens
+                }
+                $this.ExportedInstance = $Rule
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -RawResults $rawResults
+                [void]$dscContent.Append($currentDSCBlock)
+
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $i++
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [EXOAntiPhishRule] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [EXOAntiPhishRule])
+        {
+            return $Values
         }
 
-        if ('Enabled' -eq $AntiPhishRule.State)
+        $result = [EXOAntiPhishRule]::new()
+        if ($Values -is [System.Collections.Hashtable])
         {
-            # Accounts for Get-AntiPhishRule returning 'State' instead of 'Enabled' used by New/Set
-            $result.Enabled = $true
+            $result.FromHashtable($Values)
         }
 
         return $result
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
 }
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AntiPhishPolicy,
-
-        [Parameter()]
-        [System.String]
-        $Comments,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled = $true,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfRecipientDomainIs = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfSentTo = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfSentToMemberOf = @(),
-
-        [Parameter()]
-        [uint32]
-        $Priority,
-
-        [Parameter()]
-        [System.String[]]
-        $RecipientDomainIs = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $SentTo = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $SentToMemberOf = @(),
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of AntiPhishRule for $Identity"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    $CurrentValues = Get-TargetResource @PSBoundParameters
-    $BoundParameters = ([System.Collections.Hashtable]$PSBoundParameters).Clone()
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($Ensure -eq 'Present' -and $CurrentValues.Ensure -eq 'Absent')
-    {
-        $BoundParameters.Add('Name', $Identity) | Out-Null
-        $BoundParameters.Remove('Identity') | Out-Null
-
-        # Make sure that the associated Policy exists;
-        $AssociatedPolicy = Get-AntiPhishPolicy -Identity $AntiPhishPolicy -ErrorAction 'SilentlyContinue'
-        if ($null -eq $AssociatedPolicy)
-        {
-            throw "Error attempting to create EXOAntiPhishRule {$Identity}. The specified AntiPhishPolicy {$AntiPhishPolicy} " + `
-                "doesn't exist. Make sure you either create it first or specify a valid policy."
-        }
-
-        # New-AntiPhishRule has the Enabled parameter, Set-AntiPhishRule does not.
-        # There doesn't appear to be any way to change the Enabled state of a rule once created.
-        if ($CurrentValues.State -eq 'Disabled')
-        {
-            Write-Verbose -Message "AntiPhishRule {$Identity} already exists but is disabled, we need to delete it first. Deleting Rule"
-            Remove-AntiphishRule -Identity $Identity -Confirm:$false
-        }
-
-        Write-Verbose -Message "Creating AntiPhishRule {$Identity}"
-        New-AntiPhishRule @BoundParameters
-    }
-    elseif ($Ensure -eq 'Present' -and $CurrentValues.Ensure -eq 'Present')
-    {
-        $BoundParameters.Remove('Enabled') | Out-Null
-
-        # Make sure that the associated Policy exists;
-        $AssociatedPolicy = Get-AntiPhishPolicy -Identity $AntiPhishPolicy -ErrorAction 'SilentlyContinue'
-        if ($null -eq $AssociatedPolicy)
-        {
-            throw "Error attempting to create EXOAntiPhishRule {$Identity}. The specified AntiPhishPolicy {$AntiPhishPolicy} " + `
-                "doesn't exist. Make sure you either create it first or specify a valid policy."
-        }
-
-        # Check to see if the specified policy already has the rule assigned;
-        $existingRule = Get-AntiPhishRule | Where-Object -FilterScript { $_.AntiPhishPolicy -eq $AntiPhishPolicy }
-
-        if ($null -ne $existingRule)
-        {
-            # The rule is already assigned to the policy, do try to update the AntiPhishPolicy parameter;
-            $BoundParameters.Remove('AntiPhishPolicy') | Out-Null
-        }
-
-        Write-Verbose -Message "Updating AntiPhishRule {$Identity}."
-        Set-AntiPhishRule @BoundParameters
-    }
-    if ($Ensure -eq 'Absent' -and $CurrentValues.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing AntiPhishRule [$Identity]"
-        Remove-AntiPhishRule -Identity $Identity -Confirm:$false
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AntiPhishPolicy,
-
-        [Parameter()]
-        [System.String]
-        $Comments,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled = $true,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfRecipientDomainIs = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfSentTo = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $ExceptIfSentToMemberOf = @(),
-
-        [Parameter()]
-        [uint32]
-        $Priority,
-
-        [Parameter()]
-        [System.String[]]
-        $RecipientDomainIs = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $SentTo = @(),
-
-        [Parameter()]
-        [System.String[]]
-        $SentToMemberOf = @(),
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        $AntiPhishRules = Get-AntiphishRule -ErrorAction Stop
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($AntiPhishRules.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        $i = 1
-        foreach ($Rule in $AntiPhishRules)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            Write-M365DSCHost -Message "    |---[$i/$($AntiPhishRules.Length)] $($Rule.Identity)" -DeferWrite
-
-            $Params = @{
-                Identity              = $Rule.Identity
-                AntiPhishPolicy       = $Rule.AntiPhishPolicy
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                CertificatePath       = $CertificatePath
-                AccessTokens          = $AccessTokens
-            }
-            $Script:exportedInstance = $Rule
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -RawResults $rawResults
-            [void]$dscContent.Append($currentDSCBlock)
-
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            $i++
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

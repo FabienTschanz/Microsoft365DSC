@@ -22,7 +22,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         BeforeAll {
 
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
@@ -248,7 +248,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }
 
@@ -291,34 +291,32 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowedArchitectures = @("x86", "x64")
-                    Assignments = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignment -Property @{
-                            Id = "12345-12345-12345-12345-12345"
+                    Assignments = @(
+                        ([MSFT_DeviceManagementWin32MobileAppAssignment] @{
                             Intent = "required"
                             DeviceAndAppManagementAssignmentFilterType = "none"
                             GroupId = "26d60dd1-fab6-47bf-8656-358194c1a49d"
                             DataType = "#microsoft.graph.groupAssignmentTarget"
-                            assignmentSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettings -Property @{
+                            assignmentSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettings] @{
                                 Notifications = "showAll"
                                 DeliveryOptimizationPriority = "notConfigured"
-                                RestartSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings -Property @{
+                                RestartSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings] @{
                                     GracePeriodInMinutes = 1440
                                     CountdownDisplayBeforeRestartInMinutes = 15
                                     RestartNotificationSnoozeDurationInMinutes = 240
-                                } -ClientOnly)
-                            } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                            })
+                        })
                     )
-                    Categories = [CimInstance[]]@((New-CimInstance -ClassName MSFT_DeviceManagementMobileAppCategory -Property @{
+                    Categories = @(([MSFT_DeviceManagementMobileAppCategory] @{
                         Id = "FakeStringValue"
                         DisplayName = "FakeStringValue"
-                    } -ClientOnly))
-                    InstallExperience = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppInstallExperience -Property @{
+                    }))
+                    InstallExperience = ([MSFT_MicrosoftGraphWin32LobAppInstallExperience] @{
                         DeviceRestartBehavior = "suppress"
                         MaxRunTimeInMinutes = 60
-                        RunAsAccountType = "system"
-                    } -ClientOnly)
-                    MsiInformation = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppMsiInformation -Property @{
+                    })
+                    MsiInformation = ([MSFT_MicrosoftGraphWin32LobAppMsiInformation] @{
                         ProductCode = "{00000000-0000-0000-0000-000000000000}"
                         ProductVersion = "1.0.0.0"
                         UpgradeCode = "{00000000-0000-0000-0000-000000000000}"
@@ -326,9 +324,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         PackageType = "dualPurpose"
                         ProductName = "IntuneWinAppUtil"
                         Publisher = "FakeStringValue"
-                    } -ClientOnly)
-                    Rules = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                    })
+                    Rules = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -336,8 +334,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "exists"
                             Operator = "notConfigured"
                             Check32BitOn64System = $False
-                        } -ClientOnly)
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                        })
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -345,13 +343,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "version"
                             Operator = "equal"
                             ComparisonValue = "1.0.0.0"
-                        } -ClientOnly)
+                        })
                     )
-                    ReturnCodes = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppReturnCode -Property @{
+                    ReturnCodes = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppReturnCode] @{
                             ReturnCode = 0
                             Type = "success"
-                        } -ClientOnly)
+                        })
                     )
                     InstallCommandLine = "IntuneWinAppUtil.exe -s -t 0"
                     UninstallCommandLine = "IntuneWinAppUtil.exe -s -u -t 0"
@@ -363,10 +361,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     InformationUrl = "FakeStringValue"
                     IsFeatured = $True
-                    LargeIcon = (New-CimInstance -ClassName MSFT_MicrosoftGraphmimeContent -Property @{
+                    LargeIcon = ([MSFT_DeviceManagementMimeContent] @{
                         Type = "FakeStringValue"
                         Value = "VGVzdA==" # Base64 encoded string for "Test"
-                    } -ClientOnly)
+                    })
                     Notes = "FakeStringValue"
                     Owner = "FakeStringValue"
                     PrivacyInformationUrl = "FakeStringValue"
@@ -381,13 +379,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should Create the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
             }
         }
@@ -396,34 +394,32 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowedArchitectures = @("x86", "x64")
-                    Assignments = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignment -Property @{
-                            Id = "12345-12345-12345-12345-12345"
+                    Assignments = @(
+                        ([MSFT_DeviceManagementWin32MobileAppAssignment] @{
                             Intent = "required"
                             DeviceAndAppManagementAssignmentFilterType = "none"
                             GroupId = "26d60dd1-fab6-47bf-8656-358194c1a49d"
                             DataType = "#microsoft.graph.groupAssignmentTarget"
-                            assignmentSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettings -Property @{
+                            assignmentSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettings] @{
                                 Notifications = "showAll"
                                 DeliveryOptimizationPriority = "notConfigured"
-                                RestartSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings -Property @{
+                                RestartSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings] @{
                                     GracePeriodInMinutes = 1440
                                     CountdownDisplayBeforeRestartInMinutes = 15
                                     RestartNotificationSnoozeDurationInMinutes = 240
-                                } -ClientOnly)
-                            } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                            })
+                        })
                     )
-                    Categories = [CimInstance[]]@((New-CimInstance -ClassName MSFT_DeviceManagementMobileAppCategory -Property @{
+                    Categories = @(([MSFT_DeviceManagementMobileAppCategory] @{
                         Id = "FakeStringValue"
                         DisplayName = "FakeStringValue"
-                    } -ClientOnly))
-                    InstallExperience = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppInstallExperience -Property @{
+                    }))
+                    InstallExperience = ([MSFT_MicrosoftGraphWin32LobAppInstallExperience] @{
                         DeviceRestartBehavior = "suppress"
                         MaxRunTimeInMinutes = 60
-                        RunAsAccountType = "system"
-                    } -ClientOnly)
-                    MsiInformation = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppMsiInformation -Property @{
+                    })
+                    MsiInformation = ([MSFT_MicrosoftGraphWin32LobAppMsiInformation] @{
                         ProductCode = "{00000000-0000-0000-0000-000000000000}"
                         ProductVersion = "1.0.0.0"
                         UpgradeCode = "{00000000-0000-0000-0000-000000000000}"
@@ -431,9 +427,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         PackageType = "dualPurpose"
                         ProductName = "IntuneWinAppUtil"
                         Publisher = "FakeStringValue"
-                    } -ClientOnly)
-                    Rules = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                    })
+                    Rules = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -441,8 +437,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "exists"
                             Operator = "notConfigured"
                             Check32BitOn64System = $False
-                        } -ClientOnly)
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                        })
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -450,13 +446,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "version"
                             Operator = "equal"
                             ComparisonValue = "1.0.0.0"
-                        } -ClientOnly)
+                        })
                     )
-                    ReturnCodes = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppReturnCode -Property @{
+                    ReturnCodes = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppReturnCode] @{
                             ReturnCode = 0
                             Type = "success"
-                        } -ClientOnly)
+                        })
                     )
                     InstallCommandLine = "IntuneWinAppUtil.exe -s -t 0"
                     UninstallCommandLine = "IntuneWinAppUtil.exe -s -u -t 0"
@@ -468,10 +464,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     InformationUrl = "FakeStringValue"
                     IsFeatured = $True
-                    LargeIcon = (New-CimInstance -ClassName MSFT_MicrosoftGraphmimeContent -Property @{
+                    LargeIcon = ([MSFT_DeviceManagementMimeContent] @{
                         Type = "FakeStringValue"
                         Value = "VGVzdA==" # Base64 encoded string for "Test"
-                    } -ClientOnly)
+                    })
                     Notes = "FakeStringValue"
                     Owner = "FakeStringValue"
                     PrivacyInformationUrl = "FakeStringValue"
@@ -483,15 +479,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should Remove the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Remove-MgBetaDeviceAppManagementMobileApp -Exactly 1
             }
         }
@@ -500,34 +496,32 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowedArchitectures = @("x86", "x64")
-                    Assignments = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignment -Property @{
-                            Id = "12345-12345-12345-12345-12345"
+                    Assignments = @(
+                        ([MSFT_DeviceManagementWin32MobileAppAssignment] @{
                             Intent = "required"
                             DeviceAndAppManagementAssignmentFilterType = "none"
                             GroupId = "26d60dd1-fab6-47bf-8656-358194c1a49d"
                             DataType = "#microsoft.graph.groupAssignmentTarget"
-                            assignmentSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettings -Property @{
+                            assignmentSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettings] @{
                                 Notifications = "showAll"
                                 DeliveryOptimizationPriority = "notConfigured"
-                                RestartSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings -Property @{
+                                RestartSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings] @{
                                     GracePeriodInMinutes = 1440
                                     CountdownDisplayBeforeRestartInMinutes = 15
                                     RestartNotificationSnoozeDurationInMinutes = 240
-                                } -ClientOnly)
-                            } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                            })
+                        })
                     )
-                    Categories = [CimInstance[]]@((New-CimInstance -ClassName MSFT_DeviceManagementMobileAppCategory -Property @{
+                    Categories = @(([MSFT_DeviceManagementMobileAppCategory] @{
                         Id = "FakeStringValue"
                         DisplayName = "FakeStringValue"
-                    } -ClientOnly))
-                    InstallExperience = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppInstallExperience -Property @{
+                    }))
+                    InstallExperience = ([MSFT_MicrosoftGraphWin32LobAppInstallExperience] @{
                         DeviceRestartBehavior = "suppress"
                         MaxRunTimeInMinutes = 60
-                        RunAsAccountType = "system"
-                    } -ClientOnly)
-                    MsiInformation = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppMsiInformation -Property @{
+                    })
+                    MsiInformation = ([MSFT_MicrosoftGraphWin32LobAppMsiInformation] @{
                         ProductCode = "{00000000-0000-0000-0000-000000000000}"
                         ProductVersion = "1.0.0.0"
                         UpgradeCode = "{00000000-0000-0000-0000-000000000000}"
@@ -535,9 +529,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         PackageType = "dualPurpose"
                         ProductName = "IntuneWinAppUtil"
                         Publisher = "FakeStringValue"
-                    } -ClientOnly)
-                    Rules = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                    })
+                    Rules = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -545,8 +539,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "exists"
                             Operator = "notConfigured"
                             Check32BitOn64System = $False
-                        } -ClientOnly)
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                        })
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -554,13 +548,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "version"
                             Operator = "equal"
                             ComparisonValue = "1.0.0.0"
-                        } -ClientOnly)
+                        })
                     )
-                    ReturnCodes = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppReturnCode -Property @{
+                    ReturnCodes = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppReturnCode] @{
                             ReturnCode = 0
                             Type = "success"
-                        } -ClientOnly)
+                        })
                     )
                     InstallCommandLine = "IntuneWinAppUtil.exe -s -t 0"
                     UninstallCommandLine = "IntuneWinAppUtil.exe -s -u -t 0"
@@ -572,10 +566,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     InformationUrl = "FakeStringValue"
                     IsFeatured = $True
-                    LargeIcon = (New-CimInstance -ClassName MSFT_MicrosoftGraphmimeContent -Property @{
+                    LargeIcon = ([MSFT_DeviceManagementMimeContent] @{
                         Type = "FakeStringValue"
                         Value = "VGVzdA==" # Base64 encoded string for "Test"
-                    } -ClientOnly)
+                    })
                     Notes = "FakeStringValue"
                     Owner = "FakeStringValue"
                     PrivacyInformationUrl = "FakeStringValue"
@@ -587,7 +581,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -595,34 +589,32 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowedArchitectures = @("x86", "x64")
-                    Assignments = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignment -Property @{
-                            Id = "12345-12345-12345-12345-12345"
+                    Assignments = @(
+                        ([MSFT_DeviceManagementWin32MobileAppAssignment] @{
                             Intent = "required"
                             DeviceAndAppManagementAssignmentFilterType = "none"
                             GroupId = "26d60dd1-fab6-47bf-8656-358194c1a49d"
                             DataType = "#microsoft.graph.groupAssignmentTarget"
-                            assignmentSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettings -Property @{
+                            assignmentSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettings] @{
                                 Notifications = "showAll"
                                 DeliveryOptimizationPriority = "notConfigured"
-                                RestartSettings = (New-CimInstance -ClassName MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings -Property @{
+                                RestartSettings = ([MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings] @{
                                     GracePeriodInMinutes = 1440
                                     CountdownDisplayBeforeRestartInMinutes = 30 # Drift
                                     RestartNotificationSnoozeDurationInMinutes = 240
-                                } -ClientOnly)
-                            } -ClientOnly)
-                        } -ClientOnly)
+                                })
+                            })
+                        })
                     )
-                    Categories = [CimInstance[]]@((New-CimInstance -ClassName MSFT_DeviceManagementMobileAppCategory -Property @{
+                    Categories = @(([MSFT_DeviceManagementMobileAppCategory] @{
                         Id = "FakeStringValue"
                         DisplayName = "FakeStringValue"
-                    } -ClientOnly))
-                    InstallExperience = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppInstallExperience -Property @{
+                    }))
+                    InstallExperience = ([MSFT_MicrosoftGraphWin32LobAppInstallExperience] @{
                         DeviceRestartBehavior = "suppress"
                         MaxRunTimeInMinutes = 60
-                        RunAsAccountType = "system"
-                    } -ClientOnly)
-                    MsiInformation = (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppMsiInformation -Property @{
+                    })
+                    MsiInformation = ([MSFT_MicrosoftGraphWin32LobAppMsiInformation] @{
                         ProductCode = "{00000000-0000-0000-0000-000000000000}"
                         ProductVersion = "1.0.0.0"
                         UpgradeCode = "{00000000-0000-0000-0000-000000000000}"
@@ -630,9 +622,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         PackageType = "dualPurpose"
                         ProductName = "IntuneWinAppUtil"
                         Publisher = "FakeStringValue"
-                    } -ClientOnly)
-                    Rules = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                    })
+                    Rules = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -640,8 +632,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "exists"
                             Operator = "notConfigured"
                             Check32BitOn64System = $False
-                        } -ClientOnly)
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppRule -Property @{
+                        })
+                        ([MSFT_MicrosoftGraphWin32LobAppRule] @{
                             Path = "C:\Path"
                             FileOrFolderName = "test.exe"
                             OdataType = "FileSystem"
@@ -649,13 +641,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             FileSystemOperationType = "version"
                             Operator = "equal"
                             ComparisonValue = "1.0.0.0"
-                        } -ClientOnly)
+                        })
                     )
-                    ReturnCodes = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphWin32LobAppReturnCode -Property @{
+                    ReturnCodes = @(
+                        ([MSFT_MicrosoftGraphWin32LobAppReturnCode] @{
                             ReturnCode = 0
                             Type = "success"
-                        } -ClientOnly)
+                        })
                     )
                     InstallCommandLine = "IntuneWinAppUtil.exe -s -t 0"
                     UninstallCommandLine = "IntuneWinAppUtil.exe -s -u -t 0"
@@ -667,10 +659,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     InformationUrl = "FakeStringValue"
                     IsFeatured = $True
-                    LargeIcon = (New-CimInstance -ClassName MSFT_MicrosoftGraphmimeContent -Property @{
+                    LargeIcon = ([MSFT_DeviceManagementMimeContent] @{
                         Type = "FakeStringValue"
                         Value = "VGVzdA==" # Base64 encoded string for "Test"
-                    } -ClientOnly)
+                    })
                     Notes = "FakeStringValue"
                     Owner = "FakeStringValue"
                     PrivacyInformationUrl = "FakeStringValue"
@@ -682,15 +674,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsWin32AppWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
             }
         }
@@ -705,7 +697,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'IntuneMobileAppsWin32AppWindows10' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

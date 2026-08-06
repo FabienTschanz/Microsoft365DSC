@@ -36,6 +36,7 @@ class MSFT_MicrosoftGraphWindowsInformationProtectionIPRangeCollection
 [ClassVersion("1.0.0.1")]
 class MSFT_MicrosoftGraphIpRange
 {
+    [Write, Description("CIDR address.")] String CidrAddress;
     [Required, Description("Lower address.")] String LowerAddress;
     [Required, Description("Upper address.")] String UpperAddress;
     [Required, Description("The type of the entity."), ValueMap{"#microsoft.graph.iPv4Range","#microsoft.graph.iPv6Range"}, Values{"#microsoft.graph.iPv4Range","#microsoft.graph.iPv6Range"}] String odataType;

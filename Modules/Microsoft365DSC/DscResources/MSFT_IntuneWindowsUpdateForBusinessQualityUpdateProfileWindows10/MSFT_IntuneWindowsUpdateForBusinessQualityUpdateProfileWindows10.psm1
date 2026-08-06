@@ -1,623 +1,442 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The display name for the profile.')]
+    [System.String] $DisplayName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty()]
+    [System.ComponentModel.Description('The description of the profile.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExpeditedUpdateSettings,
+    [DscProperty()]
+    [System.ComponentModel.Description('Expedited update settings.')]
+    [MSFT_MicrosoftGraphexpeditedWindowsQualityUpdateSettings] $ExpeditedUpdateSettings
 
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of Scope Tags for this Quality Update entity.')]
+    [System.String[]] $RoleScopeTagIds
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
+    [DscProperty()]
+    [System.ComponentModel.Description('Represents the assignment to the Intune policy.')]
+    [MSFT_DeviceManagementConfigurationPolicyAssignments[]] $Assignments
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration of the Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$Id} and DisplayName {$DisplayName}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.DisplayName -ne $DisplayName)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration of the Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $getValue = $null
-            #region resource generator code
-            if (-not [System.String]::IsNullOrEmpty($Id))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
             {
-                $getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -WindowsQualityUpdateProfileId $Id -ErrorAction SilentlyContinue
-            }
+                $null = $this.Connect('MicrosoftGraph')
 
-            if ($null -eq $getValue)
-            {
-                Write-Verbose -Message "Could not find an Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$Id}"
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
 
-                if (-not [System.String]::IsNullOrEmpty($DisplayName))
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $getValue = $null
+                #region resource generator code
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    $getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile `
-                        -All `
-                        -ErrorAction SilentlyContinue | Where-Object -FilterScript {
-                        $_.DisplayName -eq $DisplayName
+                    $getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -WindowsQualityUpdateProfileId $this.Id -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($this.Id)}"
+
+                    if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
+                    {
+                        $getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile `
+                            -All `
+                            -ErrorAction SilentlyContinue | Where-Object -FilterScript {
+                            $_.DisplayName -eq $this.DisplayName
+                        }
                     }
                 }
+                #endregion
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Intune Windows Update For Business Quality Update Profile for Windows10 with DisplayName {$($this.DisplayName)}."
+                    return $this.AsResult($nullResult)
+                }
             }
-            #endregion
-            if ($null -eq $getValue)
+            else
             {
-                Write-Verbose -Message "Could not find an Intune Windows Update For Business Quality Update Profile for Windows10 with DisplayName {$DisplayName}."
-                return $nullResult
+                $getValue = $this.ExportedInstance
             }
-        }
-        else
-        {
-            $getValue = $Script:exportedInstance
-        }
-        $Id = $getValue.Id
-        Write-Verbose -Message "An Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$Id} and DisplayName {$DisplayName} was found"
+            $this.Id = $getValue.Id
+            Write-Verbose -Message "An Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
 
-        #region resource generator code
-        $qualityUpdateReleaseDateTime = $getValue.ExpeditedUpdateSettings.qualityUpdateRelease
-        if ($null -ne $qualityUpdateReleaseDateTime)
-        {
-            $qualityUpdateReleaseDateTime = $qualityUpdateReleaseDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ')
+            #region resource generator code
+            $qualityUpdateReleaseDateTime = $getValue.ExpeditedUpdateSettings.qualityUpdateRelease
+            if ($null -ne $qualityUpdateReleaseDateTime)
+            {
+                $qualityUpdateReleaseDateTime = $qualityUpdateReleaseDateTime.ToString('yyyy-MM-ddTHH:mm:ssZ')
+            }
+            $complexExpeditedUpdateSettings = [ordered]@{}
+            $complexExpeditedUpdateSettings.Add('DaysUntilForcedReboot', $getValue.ExpeditedUpdateSettings.daysUntilForcedReboot)
+            $complexExpeditedUpdateSettings.Add('QualityUpdateRelease', $qualityUpdateReleaseDateTime)
+            if ($complexExpeditedUpdateSettings.values.Where({ $null -ne $_ }).Count -eq 0)
+            {
+                $complexExpeditedUpdateSettings = $null
+            }
+            #endregion
+
+            $results = @{
+                #region resource generator code
+                Description             = $getValue.Description
+                DisplayName             = $getValue.DisplayName
+                ExpeditedUpdateSettings = $complexExpeditedUpdateSettings
+                RoleScopeTagIds         = $getValue.RoleScopeTagIds
+                Id                      = $getValue.Id
+                Ensure                  = 'Present'
+                Credential              = $this.Credential
+                ApplicationId           = $this.ApplicationId
+                TenantId                = $this.TenantId
+                ApplicationSecret       = $this.ApplicationSecret
+                CertificateThumbprint   = $this.CertificateThumbprint
+                CertificatePath         = $this.CertificatePath
+                CertificatePassword     = $this.CertificatePassword
+                ManagedIdentity         = $this.ManagedIdentity.IsPresent
+                #endregion
+            }
+
+            $assignmentsValues = Get-MgBetaDeviceManagementWindowsQualityUpdateProfileAssignment -WindowsQualityUpdateProfileId $this.Id
+            $assignmentResult = @()
+            if ($assignmentsValues.Count -gt 0)
+            {
+                $assignmentResult += ConvertFrom-IntunePolicyAssignment -Assignments $assignmentsValues -IncludeDeviceFilter $true
+            }
+            $results.Add('Assignments', $assignmentResult)
+
+            return $this.AsResult($results)
         }
-        $complexExpeditedUpdateSettings = [ordered]@{}
-        $complexExpeditedUpdateSettings.Add('DaysUntilForcedReboot', $getValue.ExpeditedUpdateSettings.daysUntilForcedReboot)
-        $complexExpeditedUpdateSettings.Add('QualityUpdateRelease', $qualityUpdateReleaseDateTime)
-        if ($complexExpeditedUpdateSettings.values.Where({ $null -ne $_ }).Count -eq 0)
+        catch
         {
-            $complexExpeditedUpdateSettings = $null
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
         }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
         #endregion
 
-        $results = @{
+        if ($this.ExpeditedUpdateSettings.DaysUntilForcedReboot -lt 0 -or $this.ExpeditedUpdateSettings.DaysUntilForcedReboot -gt 2)
+        {
+            throw 'DaysUntilForcedReboot must be between 0 and 2.'
+        }
+
+        $currentInstance = $this.Get().ToHashtable()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Creating an Intune Windows Update For Business Quality Update Profile for Windows10 with DisplayName {$($this.DisplayName)}"
+            $BoundParameters.Remove('Assignments') | Out-Null
+
+            $createParameters = ([Hashtable]$BoundParameters).Clone()
+            $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
+            $createParameters.Remove('Id') | Out-Null
+
             #region resource generator code
-            Description             = $getValue.Description
-            DisplayName             = $getValue.DisplayName
-            ExpeditedUpdateSettings = $complexExpeditedUpdateSettings
-            RoleScopeTagIds         = $getValue.RoleScopeTagIds
-            Id                      = $getValue.Id
-            Ensure                  = 'Present'
-            Credential              = $Credential
-            ApplicationId           = $ApplicationId
-            TenantId                = $TenantId
-            ApplicationSecret       = $ApplicationSecret
-            CertificateThumbprint   = $CertificateThumbprint
-            CertificatePath         = $CertificatePath
-            CertificatePassword     = $CertificatePassword
-            ManagedIdentity         = $ManagedIdentity.IsPresent
+            $policy = New-MgBetaDeviceManagementWindowsQualityUpdateProfile -BodyParameter $createParameters
+            if ($policy.Id)
+            {
+                $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+                Update-DeviceConfigurationPolicyAssignment `
+                    -DeviceConfigurationPolicyId $policy.Id `
+                    -Targets $assignmentsHash `
+                    -Repository 'deviceManagement/windowsQualityUpdateProfiles'
+            }
             #endregion
         }
-
-        $assignmentsValues = Get-MgBetaDeviceManagementWindowsQualityUpdateProfileAssignment -WindowsQualityUpdateProfileId $Id
-        $assignmentResult = @()
-        if ($assignmentsValues.Count -gt 0)
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            $assignmentResult += ConvertFrom-IntunePolicyAssignment -Assignments $assignmentsValues -IncludeDeviceFilter $true
-        }
-        $results.Add('Assignments', $assignmentResult)
+            Write-Verbose -Message "Updating the Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($currentInstance.Id)}"
+            $BoundParameters.Remove('Assignments') | Out-Null
 
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+            $updateParameters = ([Hashtable]$boundParameters).Clone()
+            $updateParameters = Rename-M365DSCCimInstanceParameter -Properties $updateParameters
+            $updateParameters.Remove('Id') | Out-Null
 
-        throw
-    }
-}
+            #region resource generator code
+            Update-MgBetaDeviceManagementWindowsQualityUpdateProfile `
+                -WindowsQualityUpdateProfileId $currentInstance.Id `
+                -BodyParameter $updateParameters
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExpeditedUpdateSettings,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    if ($ExpeditedUpdateSettings.DaysUntilForcedReboot -lt 0 -or $ExpeditedUpdateSettings.DaysUntilForcedReboot -gt 2)
-    {
-        throw 'DaysUntilForcedReboot must be between 0 and 2.'
-    }
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Intune Windows Update For Business Quality Update Profile for Windows10 with DisplayName {$DisplayName}"
-        $BoundParameters.Remove('Assignments') | Out-Null
-
-        $createParameters = ([Hashtable]$BoundParameters).Clone()
-        $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
-        $createParameters.Remove('Id') | Out-Null
-
-        #region resource generator code
-        $policy = New-MgBetaDeviceManagementWindowsQualityUpdateProfile -BodyParameter $createParameters
-        if ($policy.Id)
-        {
-            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -Assignments $this.Assignments -IncludeDeviceFilter:$true
             Update-DeviceConfigurationPolicyAssignment `
-                -DeviceConfigurationPolicyId $policy.Id `
+                -DeviceConfigurationPolicyId $currentInstance.Id `
                 -Targets $assignmentsHash `
                 -Repository 'deviceManagement/windowsQualityUpdateProfiles'
+            #endregion
         }
-        #endregion
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing the Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($currentInstance.Id)}"
+            #region resource generator code
+            Remove-MgBetaDeviceManagementWindowsQualityUpdateProfile -WindowsQualityUpdateProfileId $currentInstance.Id
+            #endregion
+        }
     }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+
+    [bool] Test()
     {
-        Write-Verbose -Message "Updating the Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($currentInstance.Id)}"
-        $BoundParameters.Remove('Assignments') | Out-Null
-
-        $updateParameters = ([Hashtable]$boundParameters).Clone()
-        $updateParameters = Rename-M365DSCCimInstanceParameter -Properties $updateParameters
-        $updateParameters.Remove('Id') | Out-Null
-
-        #region resource generator code
-        Update-MgBetaDeviceManagementWindowsQualityUpdateProfile `
-            -WindowsQualityUpdateProfileId $currentInstance.Id `
-            -BodyParameter $updateParameters
-
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -Assignments $Assignments -IncludeDeviceFilter:$true
-        Update-DeviceConfigurationPolicyAssignment `
-            -DeviceConfigurationPolicyId $currentInstance.Id `
-            -Targets $assignmentsHash `
-            -Repository 'deviceManagement/windowsQualityUpdateProfiles'
-        #endregion
+        return ([M365DSCResourceBase] $this).Test()
     }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+
+    [string] Export()
     {
-        Write-Verbose -Message "Removing the Intune Windows Update For Business Quality Update Profile for Windows10 with Id {$($currentInstance.Id)}"
-        #region resource generator code
-        Remove-MgBetaDeviceManagementWindowsQualityUpdateProfile -WindowsQualityUpdateProfileId $currentInstance.Id
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $complexFunctions = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
         #endregion
+
+        try
+        {
+            #region resource generator code
+            # Filter not supported on this resource
+            # [array]$getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -Filter $Filter -All -ErrorAction Stop
+            if (-not [string]::IsNullOrEmpty($this.Filter))
+            {
+                Write-Warning -Message 'Microsoft Graph filter is not supported on this resource. Only best-effort filtering using startswith, endswith and contains is supported.'
+                $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+            }
+            [array]$getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -All -ErrorAction Stop
+            $getValue = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $getValue
+            #endregion
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                $displayedKey = $config.Id
+                if (-not [String]::IsNullOrEmpty($config.displayName))
+                {
+                    $displayedKey = $config.displayName
+                }
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    DisplayName           = $config.DisplayName
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+
+                if ($null -ne $Results.ExpeditedUpdateSettings)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.ExpeditedUpdateSettings `
+                        -CIMInstanceName 'MicrosoftGraphexpeditedWindowsQualityUpdateSettings'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.ExpeditedUpdateSettings = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('ExpeditedUpdateSettings') | Out-Null
+                    }
+                }
+
+                if ($Results.Assignments)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
+                    if ($complexTypeStringResult)
+                    {
+                        $Results.Assignments = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Assignments') | Out-Null
+                    }
+                }
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('ExpeditedUpdateSettings', 'Assignments') `
+                    -RawResults $rawResults
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10])
+        {
+            return $Values
+        }
+
+        $result = [IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Test-TargetResource
+class MSFT_MicrosoftGraphexpeditedWindowsQualityUpdateSettings
 {
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance]
-        $ExpeditedUpdateSettings,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    if ($ExpeditedUpdateSettings.DaysUntilForcedReboot -lt 0 -or $ExpeditedUpdateSettings.DaysUntilForcedReboot -gt 2)
-    {
-        throw 'DaysUntilForcedReboot must be between 0 and 2.'
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
+    [DscProperty()]
+    [System.ComponentModel.Description('The number of days after installation that forced reboot will happen. Must be in range from 0 to 2.')]
+    [System.Nullable[System.UInt32]] $DaysUntilForcedReboot
+    [DscProperty()]
+    [System.ComponentModel.Description('The release date to identify a quality update. Format is yyyy-MM-ddT00:00:00Z.')]
+    [System.String] $QualityUpdateRelease
 }
 
-function Export-TargetResource
+class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        # Filter not supported on this resource
-        # [array]$getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -Filter $Filter -All -ErrorAction Stop
-        if (-not [string]::IsNullOrEmpty($Filter))
-        {
-            Write-Warning -Message 'Microsoft Graph filter is not supported on this resource. Only best-effort filtering using startswith, endswith and contains is supported.'
-            $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $Filter
-            $Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $Filter
-        }
-        [array]$getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -All -ErrorAction Stop
-        $getValue = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $getValue
-        #endregion
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.displayName))
-            {
-                $displayedKey = $config.displayName
-            }
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                DisplayName           = $config.DisplayName
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-
-            if ($null -ne $Results.ExpeditedUpdateSettings)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.ExpeditedUpdateSettings `
-                    -CIMInstanceName 'MicrosoftGraphexpeditedWindowsQualityUpdateSettings'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.ExpeditedUpdateSettings = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('ExpeditedUpdateSettings') | Out-Null
-                }
-            }
-
-            if ($Results.Assignments)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
-                if ($complexTypeStringResult)
-                {
-                    $Results.Assignments = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Assignments') | Out-Null
-                }
-            }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('ExpeditedUpdateSettings', 'Assignments') `
-                -RawResults $rawResults
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of the target assignment.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterType
+    [DscProperty()]
+    [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterId
+    [DscProperty()]
+    [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
+    [System.String] $groupId
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
+    [System.String] $groupDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
+    [System.String] $collectionId
 }
 
-Export-ModuleMember -Function *-TargetResource

@@ -1,528 +1,356 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AzureBillingAccountsRoleAssignment'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BillingAccount,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the principal associated to the role assignment.')]
+    [System.String] $PrincipalName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the role assigned to the principal.')]
+    [System.String] $RoleDefinition
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalType,
+    [DscProperty()]
+    [System.ComponentModel.Description('Principal type. Can be User, Group or ServicePrincipal.')]
+    [System.String] $PrincipalType
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $RoleDefinition,
+    [DscProperty()]
+    [System.ComponentModel.Description('Name of the billing account.')]
+    [System.String] $BillingAccount
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalTenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('The principal tenant id of the user to whom the role was assigned.')]
+    [System.String] $PrincipalTenantId
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Azure subscription to connect to if the access is restricted on subscription level.')]
+    [System.String] $SubscriptionId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [AzureBillingAccountsRoleAssignment] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $RoleDefinitionValue = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $instance = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [AzureBillingAccountsRoleAssignment]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration of Azure Billing Accounts Role Assignment for Billing Account $($this.BillingAccount) and Principal Name $($this.PrincipalName)"
+
+        try
+        {
+            $null = $this.Connect('Azure')
+
+            $null = $this.Connect('MicrosoftGraph')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $nullResult = $this.GetBoundParameters()
+            $nullResult.Ensure = 'Absent'
+
+            $accounts = Get-M365DSCAzureBillingAccount
+            $currentAccount = $accounts.value | Where-Object -FilterScript { $_.properties.displayName -eq $this.BillingAccount }
+
+            if ($null -ne $currentAccount)
+            {
+                $instances = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $currentAccount.Name -ErrorAction Stop
+                $PrincipalIdValue = Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalIdFromName -PrincipalName $this.PrincipalName `
+                    -PrincipalType $this.PrincipalType
+                $instance = $instances.value | Where-Object -FilterScript { $_.properties.principalId -eq $PrincipalIdValue }
+
+                if ($null -ne $instance)
+                {
+                    $roleDefinitionId = $instance.properties.roleDefinitionId.Split('/')
+                    $roleDefinitionId = $roleDefinitionId[$roleDefinitionId.Length - 1]
+                    $RoleDefinitionValue = Get-M365DSCAzureBillingAccountsRoleDefinition -BillingAccountId $currentAccount.Name `
+                        -RoleDefinitionId $roleDefinitionId
+                }
+            }
+            if ($null -eq $instance)
+            {
+                return $this.AsResult($nullResult)
+            }
+
+            $results = @{
+                BillingAccount        = $this.BillingAccount
+                PrincipalName         = $this.PrincipalName
+                PrincipalType         = $this.PrincipalType
+                PrincipalTenantId     = $instance.properties.principalTenantId
+                RoleDefinition        = $RoleDefinitionValue.properties.roleName
+                Ensure                = 'Present'
+                SubscriptionId        = $this.SubscriptionId
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration of Azure Billing Accounts Role Assignment for Billing Account $BillingAccount and Principal Name $PrincipalName"
-
-    try
+    [void] Set()
     {
-        $null = New-M365DSCConnection -Workload 'Azure' `
-            -InboundParameters $PSBoundParameters
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $roleDefinitionId = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-        $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-            -InboundParameters $PSBoundParameters
+        Write-Verbose -Message "Setting configuration of Azure Billing Accounts Role Assignment for Billing Account {$($this.BillingAccount)} and Principal Name {$($this.PrincipalName)}"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $nullResult = $PSBoundParameters
-        $nullResult.Ensure = 'Absent'
+        $currentInstance = $this.Get().ToHashtable()
 
-        $accounts = Get-M365DSCAzureBillingAccount
-        $currentAccount = $accounts.value | Where-Object -FilterScript { $_.properties.displayName -eq $BillingAccount }
-
-        if ($null -ne $currentAccount)
+        $billingAccounts = Get-M365DSCAzureBillingAccount
+        $account = $billingAccounts.value | Where-Object -FilterScript { $_.properties.displayName -eq $this.BillingAccount }
+        $PrincipalIdValue = Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalIdFromName -PrincipalName $this.PrincipalName `
+            -PrincipalType $this.PrincipalType
+        $RoleDefinitionValues = Get-M365DSCAzureBillingAccountsRoleDefinition -BillingAccountId $account.Name
+        $roleDefinitionInstance = $RoleDefinitionValues.value | Where-Object -FilterScript { $_.properties.roleName -eq $currentInstance.RoleDefinition }
+        $instanceParams = @{
+            principalId       = $PrincipalIdValue
+            principalTenantId = $currentInstance.PrincipalTenantId
+            roleDefinitionId  = $roleDefinitionInstance.id
+        }
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
-            $instances = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $currentAccount.Name -ErrorAction Stop
-            $PrincipalIdValue = Get-M365DSCPrincipalIdFromName -PrincipalName $PrincipalName `
-                -PrincipalType $PrincipalType
+            Write-Verbose -Message "Adding new role assignment for user {$($this.PrincipalName)} for role {$($this.RoleDefinition)}"
+            New-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name `
+                -Body $instanceParams
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating role assignment for user {$($this.PrincipalName)} for role {$($this.RoleDefinition)}"
+            New-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name `
+                -Body $instanceParams
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            $instances = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name -ErrorAction Stop
             $instance = $instances.value | Where-Object -FilterScript { $_.properties.principalId -eq $PrincipalIdValue }
+            $AssignmentId = $instance.Id.Split('/')
+            $AssignmentId = $AssignmentId[$roleDefinitionId.Length - 1]
+            Write-Verbose -Message "Removing role assignment for user {$($this.PrincipalName)} for role {$($this.RoleDefinition)}"
+            Remove-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name `
+                -AssignmentId $AssignmentId
+        }
+    }
 
-            if ($null -ne $instance)
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('Azure')
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            #Get all billing account
+            [array]$accounts = Get-M365DSCAzureBillingAccount
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($accounts.Count -eq 0)
             {
-                $roleDefinitionId = $instance.properties.roleDefinitionId.Split('/')
-                $roleDefinitionId = $roleDefinitionId[$roleDefinitionId.Length - 1]
-                $RoleDefinitionValue = Get-M365DSCAzureBillingAccountsRoleDefinition -BillingAccountId $currentAccount.Name `
-                    -RoleDefinitionId $roleDefinitionId
-            }
-        }
-        if ($null -eq $instance)
-        {
-            return $nullResult
-        }
-
-        $results = @{
-            BillingAccount        = $BillingAccount
-            PrincipalName         = $PrincipalName
-            PrincipalType         = $PrincipalType
-            PrincipalTenantId     = $instance.properties.principalTenantId
-            RoleDefinition        = $RoleDefinitionValue.properties.roleName
-            Ensure                = 'Present'
-            SubscriptionId        = $SubscriptionId
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BillingAccount,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalType,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $RoleDefinition,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalTenantId,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of Azure Billing Accounts Role Assignment for Billing Account {$BillingAccount} and Principal Name {$PrincipalName}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    $billingAccounts = Get-M365DSCAzureBillingAccount
-    $account = $billingAccounts.value | Where-Object -FilterScript { $_.properties.displayName -eq $BillingAccount }
-    $PrincipalIdValue = Get-M365DSCPrincipalIdFromName -PrincipalName $PrincipalName `
-        -PrincipalType $PrincipalType
-    $RoleDefinitionValues = Get-M365DSCAzureBillingAccountsRoleDefinition -BillingAccountId $account.Name
-    $roleDefinitionInstance = $RoleDefinitionValues.value | Where-Object -FilterScript { $_.properties.roleName -eq $currentInstance.RoleDefinition }
-    $instanceParams = @{
-        principalId       = $PrincipalIdValue
-        principalTenantId = $currentInstance.PrincipalTenantId
-        roleDefinitionId  = $roleDefinitionInstance.id
-    }
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Adding new role assignment for user {$PrincipalName} for role {$RoleDefinition}"
-        New-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name `
-            -Body $instanceParams
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating role assignment for user {$PrincipalName} for role {$RoleDefinition}"
-        New-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name `
-            -Body $instanceParams
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        $instances = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name -ErrorAction Stop
-        $instance = $instances.value | Where-Object -FilterScript { $_.properties.principalId -eq $PrincipalIdValue }
-        $AssignmentId = $instance.Id.Split('/')
-        $AssignmentId = $AssignmentId[$roleDefinitionId.Length - 1]
-        Write-Verbose -Message "Removing role assignment for user {$PrincipalName} for role {$RoleDefinition}"
-        Remove-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $account.Name `
-            -AssignmentId $AssignmentId
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BillingAccount,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalType,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $RoleDefinition,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalTenantId,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'Azure' `
-        -InboundParameters $PSBoundParameters
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #Get all billing account
-        $accounts = Get-M365DSCAzureBillingAccount
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($Script:exportedInstances.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $accounts.value)
-        {
-            $displayedKey = $config.properties.displayName
-            Write-M365DSCHost -Message "    |---[$i/$($accounts.Count)] $displayedKey"
-
-            $assignments = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $config.name
-
-            $j = 1
-            foreach ($assignment in $assignments.value)
-            {
-                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-                {
-                    $Global:M365DSCExportResourceInstancesCount++
-                }
-
-                $PrincipalNameValue = Get-M365DSCPrincipalNameFromId -PrincipalId $assignment.properties.principalId `
-                    -PrincipalType $assignment.properties.principalType
-                $roleDefinitionId = $assignment.properties.roleDefinitionId.Split('/')
-                $roleDefinitionId = $roleDefinitionId[$roleDefinitionId.Length - 1]
-
-                Write-M365DSCHost -Message "        |---[$j/$($assignments.value.Length)] $($assignment.properties.principalId)" -DeferWrite
-                $params = @{
-                    BillingAccount        = $config.properties.displayName
-                    PrincipalName         = $PrincipalNameValue
-                    PrincipalType         = $assignment.properties.principalType
-                    PrincipalTenantId     = $assignment.properties.principalTenantId
-                    RoleDefinition        = 'AnyRole'
-                    SubscriptionId        = $SubscriptionId
-                    Credential            = $Credential
-                    ApplicationId         = $ApplicationId
-                    TenantId              = $TenantId
-                    CertificateThumbprint = $CertificateThumbprint
-                    ManagedIdentity       = $ManagedIdentity.IsPresent
-                    AccessTokens          = $AccessTokens
-                }
-
-                $Results = Get-TargetResource @Params
-
-                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                    -ConnectionMode $ConnectionMode `
-                    -ModulePath $PSScriptRoot `
-                    -Results $Results `
-                    -Credential $Credential
-                [void]$dscContent.Append($currentDSCBlock)
-                Save-M365DSCPartialExport -Content $currentDSCBlock `
-                    -FileName $Global:PartialExportFileName
-                $j++
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
-            $i++
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $accounts.value)
+            {
+                $displayedKey = $config.properties.displayName
+                Write-M365DSCHost -Message "    |---[$i/$($accounts.Count)] $displayedKey"
 
-        throw
+                $assignments = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $config.name
+
+                $j = 1
+                foreach ($assignment in $assignments.value)
+                {
+                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                    {
+                        $Global:M365DSCExportResourceInstancesCount++
+                    }
+
+                    $PrincipalNameValue = Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalNameFromId -PrincipalId $assignment.properties.principalId `
+                        -PrincipalType $assignment.properties.principalType
+                    $roleDefinitionId = $assignment.properties.roleDefinitionId.Split('/')
+                    $roleDefinitionId = $roleDefinitionId[$roleDefinitionId.Length - 1]
+
+                    Write-M365DSCHost -Message "        |---[$j/$($assignments.value.Length)] $($assignment.properties.principalId)" -DeferWrite
+                    $params = @{
+                        BillingAccount        = $config.properties.displayName
+                        PrincipalName         = $PrincipalNameValue
+                        PrincipalType         = $assignment.properties.principalType
+                        PrincipalTenantId     = $assignment.properties.principalTenantId
+                        RoleDefinition        = 'AnyRole'
+                        SubscriptionId        = $this.SubscriptionId
+                        Credential            = $this.Credential
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        AccessTokens          = $this.AccessTokens
+                    }
+
+                    $Results = $this.GetForExport($Params)
+
+                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                        -ConnectionMode $ConnectionMode `
+                        -ModulePath $this.GetModulePath() `
+                        -Results $Results `
+                        -Credential $this.Credential
+                    [void]$dscContent.Append($currentDSCBlock)
+                    Save-M365DSCPartialExport -Content $currentDSCBlock `
+                        -FileName $Global:PartialExportFileName
+                    $j++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
+                $i++
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('SubscriptionId')
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AzureBillingAccountsRoleAssignment] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AzureBillingAccountsRoleAssignment])
+        {
+            return $Values
+        }
+
+        $result = [AzureBillingAccountsRoleAssignment]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-M365DSCPrincipalNameFromId
+# Was Get-M365DSCPrincipalNameFromId. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalNameFromId
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -564,7 +392,9 @@ function Get-M365DSCPrincipalNameFromId
     return $result
 }
 
-function Get-M365DSCPrincipalIdFromName
+# Was Get-M365DSCPrincipalIdFromName. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalIdFromName
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -605,16 +435,3 @@ function Get-M365DSCPrincipalIdFromName
     }
     return $result
 }
-
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        ExcludedProperties = @('SubscriptionId')
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

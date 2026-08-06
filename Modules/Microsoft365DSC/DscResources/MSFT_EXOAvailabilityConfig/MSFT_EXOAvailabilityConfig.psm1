@@ -1,463 +1,300 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_EXOAvailabilityConfig'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class EXOAvailabilityConfig : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $OrgWideAccount,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Only valid value is ''Yes''.')]
+    [ValidateSet('Yes')]
+    [System.String] $IsSingleInstance
 
-        [Parameter()]
-        [System.String[]]
-        $AllowedTenantIds,
+    [DscProperty()]
+    [System.ComponentModel.Description('The AllowedTenantIds parameter specifies the tenant ID values of Microsoft 365 organization that you want to share free/busy information with (for example, d6b0a40e-029b-43f2-9852-f3724f68ead9). You can specify multiple values separated by commas. A maximum of 25 values are allowed.')]
+    [System.String[]] $AllowedTenantIds
 
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify the OrgWideAccount for the AvailabilityConfig.')]
+    [System.String] $OrgWideAccount
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify if the AvailabilityConfig should exist or not.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Exchange Global Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [EXOAvailabilityConfig] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [EXOAvailabilityConfig]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting configuration of Availability Config"
+
+        try
+        {
+            if (-not $this.ExportedInstance)
+            {
+                $null = $this.Connect('ExchangeOnline')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                $availabilityConfig = Get-AvailabilityConfig -ErrorAction Stop
+                if ($null -eq $availabilityConfig)
+                {
+                    Write-Verbose -Message "Availability config does not exist."
+                    return $this.AsResult($nullReturn)
+                }
+            }
+            else
+            {
+                $availabilityConfig = $this.ExportedInstance
+            }
+
+            Write-Verbose -Message "Found Availability Config"
+
+            $this.OrgWideAccount = $availabilityConfig.OrgWideAccount
+            if ($null -ne $availabilityConfig -and -not [System.String]::IsNullOrEmpty($this.OrgWideAccount) -and [System.Guid]::TryParse($this.OrgWideAccount, [ref][System.Guid]::Empty))
+            {
+                $user = Get-User -Identity $this.OrgWideAccount -ErrorAction SilentlyContinue
+                if ($null -ne $user)
+                {
+                    $this.OrgWideAccount = $user.UserPrincipalName
+                }
+            }
+
+            $result = @{
+                OrgWideAccount        = $this.OrgWideAccount
+                AllowedTenantIds      = [System.String[]]$availabilityConfig.AllowedTenantIds
+                IsSingleInstance      = 'Yes'
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                TenantId              = $this.TenantId
+                AccessTokens          = $this.AccessTokens
+            }
+
+            return $this.AsResult($result)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting configuration of Availability Config"
-
-    try
+    [void] Set()
     {
-        if (-not $Script:exportedInstance)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-                -InboundParameters $PSBoundParameters
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Setting configuration of Availability Config"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
 
-            $nullReturn = $PSBoundParameters
-            $nullReturn.Ensure = 'Absent'
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+        Write-Verbose -Message "Setting configuration of Availability Config"
 
-            $availabilityConfig = Get-AvailabilityConfig -ErrorAction Stop
-            if ($null -eq $availabilityConfig)
+        $currentAvailabilityConfig = $this.Get().ToHashtable()
+
+        $currentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $currentParameters.Remove('IsSingleInstance') | Out-Null
+        if ($currentParameters.OrgWideAccount -eq '' -or $currentParameters.OrgWideAccount -eq 'NotConfigured')
+        {
+            $currentParameters.OrgWideAccount = $null
+        }
+
+        if ($this.Ensure -eq 'Present' -and $currentAvailabilityConfig.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Availability Config does not exist but it should. Create it."
+            New-AvailabilityConfig @currentParameters -Confirm:$false
+        }
+        elseif ($this.Ensure -eq 'Absent' -and $currentAvailabilityConfig.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Availability Config exists but it shouldn't. Remove it."
+            Remove-AvailabilityConfig -Confirm:$false
+        }
+        elseif ($this.Ensure -eq 'Present' -and $currentAvailabilityConfig.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Availability Config already exists, but needs updating."
+            Set-AvailabilityConfig @currentParameters -Confirm:$false
+        }
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('ExchangeOnline')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
             {
-                Write-Verbose -Message "Availability config does not exist."
-                return $nullReturn
+                $Global:M365DSCExportResourceInstancesCount++
+            }
+
+            if ($null -eq (Get-Command Get-AvailabilityConfig -ErrorAction SilentlyContinue))
+            {
+                Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiRedX) The specified account doesn't have permissions to access Availibility Config"
+                return ''
+            }
+            $AvailabilityConfig = Get-AvailabilityConfig -ErrorAction Stop
+
+            if ($null -eq $AvailabilityConfig)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                return ''
+            }
+
+            $Params = @{
+                IsSingleInstance      = 'Yes'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                CertificatePath       = $this.CertificatePath
+                AccessTokens          = $this.AccessTokens
+            }
+            $this.ExportedInstance = $AvailabilityConfig
+            $dscContent = [System.Text.StringBuilder]::new()
+            $Results = $this.GetForExport($Params)
+            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                -ConnectionMode $ConnectionMode `
+                -ModulePath $this.GetModulePath() `
+                -Results $Results `
+                -Credential $this.Credential
+            [void]$dscContent.Append($currentDSCBlock)
+
+            Save-M365DSCPartialExport -Content $currentDSCBlock `
+                -FileName $Global:PartialExportFileName
+            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($DesiredValues.OrgWideAccount -eq 'NotConfigured')
+                {
+                    Write-Verbose -Message "OrgWideAccount is set to 'NotConfigured' in DesiredValues. Updating it to an empty string for comparison."
+                    $DesiredValues.OrgWideAccount = ''
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
             }
         }
-        else
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [EXOAvailabilityConfig] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [EXOAvailabilityConfig])
         {
-            $availabilityConfig = $Script:exportedInstance
+            return $Values
         }
 
-        Write-Verbose -Message "Found Availability Config"
-
-        $OrgWideAccount = $availabilityConfig.OrgWideAccount
-        if ($null -ne $availabilityConfig -and -not [System.String]::IsNullOrEmpty($OrgWideAccount) -and [System.Guid]::TryParse($OrgWideAccount, [ref][System.Guid]::Empty))
+        $result = [EXOAvailabilityConfig]::new()
+        if ($Values -is [System.Collections.Hashtable])
         {
-            $user = Get-User -Identity $OrgWideAccount -ErrorAction SilentlyContinue
-            if ($null -ne $user)
-            {
-                $OrgWideAccount = $user.UserPrincipalName
-            }
-        }
-
-        $result = @{
-            OrgWideAccount        = $OrgWideAccount
-            AllowedTenantIds      = [System.String[]]$availabilityConfig.AllowedTenantIds
-            IsSingleInstance      = 'Yes'
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            TenantId              = $TenantId
-            AccessTokens          = $AccessTokens
+            $result.FromHashtable($Values)
         }
 
         return $result
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
 }
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $OrgWideAccount,
-
-        [Parameter()]
-        [System.String[]]
-        $AllowedTenantIds,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration of Availability Config"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-    Write-Verbose -Message "Setting configuration of Availability Config"
-
-    $currentAvailabilityConfig = Get-TargetResource @PSBoundParameters
-
-    $currentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $currentParameters.Remove('IsSingleInstance') | Out-Null
-    if ($currentParameters.OrgWideAccount -eq '' -or $currentParameters.OrgWideAccount -eq 'NotConfigured')
-    {
-        $currentParameters.OrgWideAccount = $null
-    }
-
-    if ($Ensure -eq 'Present' -and $currentAvailabilityConfig.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Availability Config does not exist but it should. Create it."
-        New-AvailabilityConfig @currentParameters -Confirm:$false
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentAvailabilityConfig.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Availability Config exists but it shouldn't. Remove it."
-        Remove-AvailabilityConfig -Confirm:$false
-    }
-    elseif ($Ensure -eq 'Present' -and $currentAvailabilityConfig.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Availability Config already exists, but needs updating."
-        Set-AvailabilityConfig @currentParameters -Confirm:$false
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $OrgWideAccount,
-
-        [Parameter()]
-        [System.String[]]
-        $AllowedTenantIds,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-        {
-            $Global:M365DSCExportResourceInstancesCount++
-        }
-
-        if ($null -eq (Get-Command Get-AvailabilityConfig -ErrorAction SilentlyContinue))
-        {
-            Write-M365DSCHost -Message "`r`n    $($Global:M365DSCEmojiRedX) The specified account doesn't have permissions to access Availibility Config"
-            return ''
-        }
-        $AvailabilityConfig = Get-AvailabilityConfig -ErrorAction Stop
-
-        if ($null -eq $AvailabilityConfig)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            return ''
-        }
-
-        $Params = @{
-            IsSingleInstance      = 'Yes'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            CertificatePath       = $CertificatePath
-            AccessTokens          = $AccessTokens
-        }
-        $Script:exportedInstance = $AvailabilityConfig
-        $dscContent = [System.Text.StringBuilder]::new()
-        $Results = Get-TargetResource @Params
-        $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-            -ConnectionMode $ConnectionMode `
-            -ModulePath $PSScriptRoot `
-            -Results $Results `
-            -Credential $Credential
-        [void]$dscContent.Append($currentDSCBlock)
-
-        Save-M365DSCPartialExport -Content $currentDSCBlock `
-            -FileName $Global:PartialExportFileName
-        Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        PostProcessing = {
-            param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
-            if ($DesiredValues.OrgWideAccount -eq 'NotConfigured')
-            {
-                Write-Verbose -Message "OrgWideAccount is set to 'NotConfigured' in DesiredValues. Updating it to an empty string for comparison."
-                $DesiredValues.OrgWideAccount = ''
-            }
-            return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
-        }
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

@@ -1,674 +1,551 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneFirewallRulesPolicyWindows10'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class IntuneFirewallRulesPolicyWindows10 : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('Policy description')]
+    [System.String] $Description
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Policy name')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
+    [DscProperty()]
+    [System.ComponentModel.Description('List of Scope Tags for this Entity instance.')]
+    [System.String[]] $RoleScopeTagIds
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $FirewallRuleName,
+    [DscProperty()]
+    [System.ComponentModel.Description('Firewall Rules')]
+    [MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName[]] $FirewallRuleName
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
+    [DscProperty()]
+    [System.ComponentModel.Description('Represents the assignment to the Intune policy.')]
+    [MSFT_DeviceManagementConfigurationPolicyAssignments[]] $Assignments
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
+    [IntuneFirewallRulesPolicyWindows10] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration of the Intune Firewall Rules Policy for Windows10 with Id {$Id} and Name {$DisplayName}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $DisplayName)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [IntuneFirewallRulesPolicyWindows10]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration of the Intune Firewall Rules Policy for Windows10 with Id {$($this.Id)} and Name {$($this.DisplayName)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $getValue = $null
-            #region resource generator code
-            if (-not [System.String]::IsNullOrEmpty($Id))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Name -ne $this.DisplayName)
             {
-                $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $Id -ErrorAction SilentlyContinue `
-                    -ExpandProperty 'settings($expand=settingDefinitions)'
+                $null = $this.Connect('MicrosoftGraph')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $getValue = $null
+                #region resource generator code
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
+                {
+                    $getValue = Get-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $this.Id -ErrorAction SilentlyContinue `
+                        -ExpandProperty 'settings($expand=settingDefinitions)'
+                    $settings = $getValue.settings
+                }
+
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Intune Firewall Rules Policy for Windows10 with Id {$($this.Id)}"
+
+                    if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
+                    {
+                        $getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
+                            -All `
+                            -Filter "Name eq '$($this.DisplayName -replace "'", "''")'" `
+                            -ErrorAction SilentlyContinue
+                    }
+                }
+                #endregion
+                if ($null -eq $getValue)
+                {
+                    Write-Verbose -Message "Could not find an Intune Firewall Rules Policy for Windows10 with Name {$($this.DisplayName)}."
+                    return $this.AsResult($nullResult)
+                }
+            }
+            else
+            {
+                $getValue = $this.ExportedInstance
                 $settings = $getValue.settings
             }
+            $this.Id = $getValue.Id
+            Write-Verbose -Message "An Intune Firewall Rules Policy for Windows10 with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
 
-            if ($null -eq $getValue)
+            # Retrieve policy specific settings
+            if ($null -eq $settings)
             {
-                Write-Verbose -Message "Could not find an Intune Firewall Rules Policy for Windows10 with Id {$Id}"
+                [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
+                    -DeviceManagementConfigurationPolicyId $this.Id `
+                    -ExpandProperty 'settingDefinitions' `
+                    -All `
+                    -ErrorAction Stop
+            }
 
-                if (-not [System.String]::IsNullOrEmpty($DisplayName))
+            $policySettings = @{}
+            $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings
+
+            #region resource generator code
+            $complexFirewallRuleName = @()
+            foreach ($currentFirewallRuleName in $policySettings.firewallRuleName)
+            {
+                $myFirewallRuleName = [ordered]@{}
+                $myFirewallRuleName.Add('Enabled', $currentFirewallRuleName.enabled)
+                $myFirewallRuleName.Add('Name', $currentFirewallRuleName.name)
+                $myFirewallRuleName.Add('InterfaceTypes', $currentFirewallRuleName.interfaceTypes)
+                $myFirewallRuleName.Add('FilePath', $currentFirewallRuleName.filePath)
+                $myFirewallRuleName.Add('RemotePortRanges', $currentFirewallRuleName.remotePortRanges)
+                $myFirewallRuleName.Add('EdgeTraversal', $currentFirewallRuleName.edgeTraversal)
+                $myFirewallRuleName.Add('LocalUserAuthorizedList', $currentFirewallRuleName.localUserAuthorizedList)
+                $myFirewallRuleName.Add('Profiles', $currentFirewallRuleName.profiles)
+                $myFirewallRuleName.Add('LocalPortRanges', $currentFirewallRuleName.localPortRanges)
+                $myFirewallRuleName.Add('Description', $currentFirewallRuleName.description)
+                $myFirewallRuleName.Add('PolicyAppId', $currentFirewallRuleName.policyAppId)
+                $myFirewallRuleName.Add('PackageFamilyName', $currentFirewallRuleName.packageFamilyName)
+                $myFirewallRuleName.Add('LocalAddressRanges', $currentFirewallRuleName.localAddressRanges)
+                $myFirewallRuleName.Add('Direction', $currentFirewallRuleName.direction)
+                $myFirewallRuleName.Add('ServiceName', $currentFirewallRuleName.serviceName)
+                $myFirewallRuleName.Add('RemoteAddressRanges', $currentFirewallRuleName.remoteAddressRanges)
+                $myFirewallRuleName.Add('Type', $currentFirewallRuleName.type)
+                $myFirewallRuleName.Add('RemoteAddressDynamicKeywords', $currentFirewallRuleName.remoteAddressDynamicKeywords)
+                $myFirewallRuleName.Add('Protocol', $currentFirewallRuleName.protocol)
+                $myFirewallRuleName.Add('IcmpTypesAndCodes', $currentFirewallRuleName.icmpTypesAndCodes)
+                if ($myFirewallRuleName.values.Where({ $null -ne $_ }).Count -gt 0)
                 {
-                    $getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
-                        -All `
-                        -Filter "Name eq '$($DisplayName -replace "'", "''")'" `
-                        -ErrorAction SilentlyContinue
+                    $complexFirewallRuleName += $myFirewallRuleName
                 }
             }
+            $policySettings.Remove('FirewallRuleName') | Out-Null
             #endregion
-            if ($null -eq $getValue)
-            {
-                Write-Verbose -Message "Could not find an Intune Firewall Rules Policy for Windows10 with Name {$DisplayName}."
-                return $nullResult
+
+            $results = @{
+                #region resource generator code
+                Description           = $getValue.Description
+                DisplayName           = $getValue.Name
+                RoleScopeTagIds       = $getValue.RoleScopeTagIds
+                Id                    = $getValue.Id
+                FirewallRuleName      = $complexFirewallRuleName
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                #endregion
             }
-        }
-        else
-        {
-            $getValue = $Script:exportedInstance
-            $settings = $getValue.settings
-        }
-        $Id = $getValue.Id
-        Write-Verbose -Message "An Intune Firewall Rules Policy for Windows10 with Id {$Id} and Name {$DisplayName} was found"
+            $results += $policySettings
 
-        # Retrieve policy specific settings
-        if ($null -eq $settings)
-        {
-            [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                -DeviceManagementConfigurationPolicyId $Id `
-                -ExpandProperty 'settingDefinitions' `
-                -All `
-                -ErrorAction Stop
-        }
-
-        $policySettings = @{}
-        $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings
-
-        #region resource generator code
-        $complexFirewallRuleName = @()
-        foreach ($currentFirewallRuleName in $policySettings.firewallRuleName)
-        {
-            $myFirewallRuleName = [ordered]@{}
-            $myFirewallRuleName.Add('Enabled', $currentFirewallRuleName.enabled)
-            $myFirewallRuleName.Add('Name', $currentFirewallRuleName.name)
-            $myFirewallRuleName.Add('InterfaceTypes', $currentFirewallRuleName.interfaceTypes)
-            $myFirewallRuleName.Add('FilePath', $currentFirewallRuleName.filePath)
-            $myFirewallRuleName.Add('RemotePortRanges', $currentFirewallRuleName.remotePortRanges)
-            $myFirewallRuleName.Add('EdgeTraversal', $currentFirewallRuleName.edgeTraversal)
-            $myFirewallRuleName.Add('LocalUserAuthorizedList', $currentFirewallRuleName.localUserAuthorizedList)
-            $myFirewallRuleName.Add('Profiles', $currentFirewallRuleName.profiles)
-            $myFirewallRuleName.Add('LocalPortRanges', $currentFirewallRuleName.localPortRanges)
-            $myFirewallRuleName.Add('Description', $currentFirewallRuleName.description)
-            $myFirewallRuleName.Add('PolicyAppId', $currentFirewallRuleName.policyAppId)
-            $myFirewallRuleName.Add('PackageFamilyName', $currentFirewallRuleName.packageFamilyName)
-            $myFirewallRuleName.Add('LocalAddressRanges', $currentFirewallRuleName.localAddressRanges)
-            $myFirewallRuleName.Add('Direction', $currentFirewallRuleName.direction)
-            $myFirewallRuleName.Add('ServiceName', $currentFirewallRuleName.serviceName)
-            $myFirewallRuleName.Add('RemoteAddressRanges', $currentFirewallRuleName.remoteAddressRanges)
-            $myFirewallRuleName.Add('Type', $currentFirewallRuleName.type)
-            $myFirewallRuleName.Add('RemoteAddressDynamicKeywords', $currentFirewallRuleName.remoteAddressDynamicKeywords)
-            $myFirewallRuleName.Add('Protocol', $currentFirewallRuleName.protocol)
-            $myFirewallRuleName.Add('IcmpTypesAndCodes', $currentFirewallRuleName.icmpTypesAndCodes)
-            if ($myFirewallRuleName.values.Where({ $null -ne $_ }).Count -gt 0)
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id
+            $assignmentResult = @()
+            if ($assignmentsValues.Count -gt 0)
             {
-                $complexFirewallRuleName += $myFirewallRuleName
+                $assignmentResult += ConvertFrom-IntunePolicyAssignment -Assignments $assignmentsValues -IncludeDeviceFilter $true
             }
+            $results.Add('Assignments', $assignmentResult)
+
+            return $this.AsResult($results)
         }
-        $policySettings.Remove('FirewallRuleName') | Out-Null
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
         #endregion
 
-        $results = @{
+        $currentInstance = $this.Get().ToHashtable()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        $templateReferenceId = '19c8aa67-f286-4861-9aa0-f23541d31680_1'
+        $platforms = 'windows10'
+        $technologies = 'mdm,microsoftSense'
+
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Creating an Intune Firewall Rules Policy for Windows10 with Name {$($this.DisplayName)}"
+            $BoundParameters.Remove('Assignments') | Out-Null
+
+            $settings = Get-IntuneSettingCatalogPolicySetting `
+                -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
+                -TemplateId $templateReferenceId
+
+            $createParameters = @{
+                name              = $this.DisplayName
+                description       = $this.Description
+                templateReference = @{ templateId = $templateReferenceId }
+                platforms         = $platforms
+                technologies      = $technologies
+                settings          = $settings
+                roleScopeTagIds   = $this.RoleScopeTagIds
+            }
+
             #region resource generator code
-            Description           = $getValue.Description
-            DisplayName           = $getValue.Name
-            RoleScopeTagIds       = $getValue.RoleScopeTagIds
-            Id                    = $getValue.Id
-            FirewallRuleName      = $complexFirewallRuleName
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
+            $policy = New-MgBetaDeviceManagementConfigurationPolicy -BodyParameter $createParameters
+
+            if ($policy.Id)
+            {
+                $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
+                Update-DeviceConfigurationPolicyAssignment `
+                    -DeviceConfigurationPolicyId $policy.Id `
+                    -Targets $assignmentsHash `
+                    -Repository 'deviceManagement/configurationPolicies'
+            }
             #endregion
         }
-        $results += $policySettings
-
-        $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $Id
-        $assignmentResult = @()
-        if ($assignmentsValues.Count -gt 0)
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            $assignmentResult += ConvertFrom-IntunePolicyAssignment -Assignments $assignmentsValues -IncludeDeviceFilter $true
-        }
-        $results.Add('Assignments', $assignmentResult)
+            Write-Verbose -Message "Updating the Intune Firewall Rules Policy for Windows10 with Id {$($currentInstance.Id)}"
+            $BoundParameters.Remove('Assignments') | Out-Null
 
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+            $settings = Get-IntuneSettingCatalogPolicySetting `
+                -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
+                -TemplateId $templateReferenceId
 
-        throw
-    }
-}
+            Update-IntuneDeviceConfigurationPolicy `
+                -DeviceConfigurationPolicyId $currentInstance.Id `
+                -Name $this.DisplayName `
+                -Description $this.Description `
+                -TemplateReferenceId $templateReferenceId `
+                -Platforms $platforms `
+                -Technologies $technologies `
+                -Settings $settings `
+                -RoleScopeTagIds $this.RoleScopeTagIds
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $FirewallRuleName,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    $templateReferenceId = '19c8aa67-f286-4861-9aa0-f23541d31680_1'
-    $platforms = 'windows10'
-    $technologies = 'mdm,microsoftSense'
-
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating an Intune Firewall Rules Policy for Windows10 with Name {$DisplayName}"
-        $BoundParameters.Remove('Assignments') | Out-Null
-
-        $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
-            -TemplateId $templateReferenceId
-
-        $createParameters = @{
-            name              = $DisplayName
-            description       = $Description
-            templateReference = @{ templateId = $templateReferenceId }
-            platforms         = $platforms
-            technologies      = $technologies
-            settings          = $settings
-            roleScopeTagIds   = $RoleScopeTagIds
-        }
-
-        #region resource generator code
-        $policy = New-MgBetaDeviceManagementConfigurationPolicy -BodyParameter $createParameters
-
-        if ($policy.Id)
-        {
-            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
+            #region resource generator code
+            $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
             Update-DeviceConfigurationPolicyAssignment `
-                -DeviceConfigurationPolicyId $policy.Id `
+                -DeviceConfigurationPolicyId $currentInstance.Id `
                 -Targets $assignmentsHash `
                 -Repository 'deviceManagement/configurationPolicies'
+            #endregion
         }
-        #endregion
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing the Intune Firewall Rules Policy for Windows10 with Id {$($currentInstance.Id)}"
+            #region resource generator code
+            Remove-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $currentInstance.Id
+            #endregion
+        }
     }
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+
+    [bool] Test()
     {
-        Write-Verbose -Message "Updating the Intune Firewall Rules Policy for Windows10 with Id {$($currentInstance.Id)}"
-        $BoundParameters.Remove('Assignments') | Out-Null
-
-        $settings = Get-IntuneSettingCatalogPolicySetting `
-            -DSCParams ([System.Collections.Hashtable]$BoundParameters) `
-            -TemplateId $templateReferenceId
-
-        Update-IntuneDeviceConfigurationPolicy `
-            -DeviceConfigurationPolicyId $currentInstance.Id `
-            -Name $DisplayName `
-            -Description $Description `
-            -TemplateReferenceId $templateReferenceId `
-            -Platforms $platforms `
-            -Technologies $technologies `
-            -Settings $settings `
-            -RoleScopeTagIds $RoleScopeTagIds
-
-        #region resource generator code
-        $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $Assignments
-        Update-DeviceConfigurationPolicyAssignment `
-            -DeviceConfigurationPolicyId $currentInstance.Id `
-            -Targets $assignmentsHash `
-            -Repository 'deviceManagement/configurationPolicies'
-        #endregion
+        return ([M365DSCResourceBase] $this).Test()
     }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+
+    [string] Export()
     {
-        Write-Verbose -Message "Removing the Intune Firewall Rules Policy for Windows10 with Id {$($currentInstance.Id)}"
-        #region resource generator code
-        Remove-MgBetaDeviceManagementConfigurationPolicy -DeviceManagementConfigurationPolicyId $currentInstance.Id
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
         #endregion
+
+        try
+        {
+            #region resource generator code
+            $policyTemplateID = '19c8aa67-f286-4861-9aa0-f23541d31680_1'
+            $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $this.Filter = "($($this.Filter)) and ($baseFilter)"
+            }
+            else
+            {
+                $this.Filter = $baseFilter
+            }
+            [array]$getValue = Get-M365DSCExportCachedConfigurationPolicies `
+                -TemplateId $policyTemplateID `
+                -Filter $this.Filter
+            #endregion
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($config in $getValue)
+            {
+                $displayedKey = $config.Id
+                if (-not [String]::IsNullOrEmpty($config.displayName))
+                {
+                    $displayedKey = $config.displayName
+                }
+                elseif (-not [string]::IsNullOrEmpty($config.name))
+                {
+                    $displayedKey = $config.name
+                }
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    DisplayName           = $config.Name
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                $rawResults = $Results.Clone()
+
+                if ($null -ne $Results.FirewallRuleName)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.FirewallRuleName `
+                        -CIMInstanceName 'MicrosoftGraphIntuneSettingsCatalogFirewallRuleName'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.FirewallRuleName = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('FirewallRuleName') | Out-Null
+                    }
+                }
+
+                if ($Results.Assignments)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
+                    if ($complexTypeStringResult)
+                    {
+                        $Results.Assignments = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Assignments') | Out-Null
+                    }
+                }
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('FirewallRuleName', 'Assignments') `
+                    -RawResults $rawResults
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneFirewallRulesPolicyWindows10] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntuneFirewallRulesPolicyWindows10])
+        {
+            return $Values
+        }
+
+        $result = [IntuneFirewallRulesPolicyWindows10]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Test-TargetResource
+class MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName
 {
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region resource generator code
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.String[]]
-        $RoleScopeTagIds,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $FirewallRuleName,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Assignments,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
+    [DscProperty()]
+    [System.ComponentModel.Description('Enabled - Depends on FirewallRuleName (0: Disabled, 1: Enabled)')]
+    [System.String] $Enabled
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Name - Depends on FirewallRuleName')]
+    [System.String] $Name
+    [DscProperty()]
+    [System.ComponentModel.Description('Interface Types - Depends on FirewallRuleName (RemoteAccess, Wireless, Lan, MobileBroadband, MBB, All)')]
+    [System.String[]] $InterfaceTypes
+    [DscProperty()]
+    [System.ComponentModel.Description('File Path - Depends on FirewallRuleName')]
+    [System.String] $FilePath
+    [DscProperty()]
+    [System.ComponentModel.Description('Remote Port Ranges - Depends on FirewallRuleName')]
+    [System.String[]] $RemotePortRanges
+    [DscProperty()]
+    [System.ComponentModel.Description('Edge Traversal - Depends on FirewallRuleName (0: Disabled, 1: Enabled)')]
+    [System.String] $EdgeTraversal
+    [DscProperty()]
+    [System.ComponentModel.Description('Local User Authorized List - Depends on FirewallRuleName')]
+    [System.String[]] $LocalUserAuthorizedList
+    [DscProperty()]
+    [System.ComponentModel.Description('Network Types - Depends on FirewallRuleName (1: FW_PROFILE_TYPE_DOMAIN:  This value represents the profile for networks that are connected to domains., 2: FW_PROFILE_TYPE_STANDARD:  This value represents the standard profile for networks. These networks are classified as private by the administrators in the server host. The classification happens the first time the host connects to the network. Usually these networks are behind Network Address Translation (NAT) devices, routers, and other edge devices, and they are in a private location, such as a home or an office. AND FW_PROFILE_TYPE_PRIVATE:  This value represents the profile for private networks, which is represented by the same value as that used for FW_PROFILE_TYPE_STANDARD., 4: FW_PROFILE_TYPE_PUBLIC:  This value represents the profile for public networks. These networks are classified as public by the administrators in the server host. The classification happens the first time the host connects to the network. Usually these networks are those at airports, coffee shops, and other public places where the peers in the network or the network administrator are not trusted., 2147483647: FW_PROFILE_TYPE_ALL:  This value represents all these network sets and any future network sets., -2147483648: FW_PROFILE_TYPE_CURRENT:  This value represents the current profiles to which the firewall and advanced security components determine the host is connected at the moment of the call. This value can be specified only in method calls, and it cannot be combined with other flags.)')]
+    [System.Int32[]] $Profiles
+    [DscProperty()]
+    [System.ComponentModel.Description('Local Port Ranges - Depends on FirewallRuleName')]
+    [System.String[]] $LocalPortRanges
+    [DscProperty()]
+    [System.ComponentModel.Description('Description - Depends on FirewallRuleName')]
+    [System.String] $Description
+    [DscProperty()]
+    [System.ComponentModel.Description('Policy App Id - Depends on FirewallRuleName')]
+    [System.String] $PolicyAppId
+    [DscProperty()]
+    [System.ComponentModel.Description('Package Family Name - Depends on FirewallRuleName')]
+    [System.String] $PackageFamilyName
+    [DscProperty()]
+    [System.ComponentModel.Description('Local Address Ranges - Depends on FirewallRuleName')]
+    [System.String[]] $LocalAddressRanges
+    [DscProperty()]
+    [System.ComponentModel.Description('Direction - Depends on FirewallRuleName (IN: The rule applies to inbound traffic., OUT: The rule applies to outbound traffic.)')]
+    [System.String] $Direction
+    [DscProperty()]
+    [System.ComponentModel.Description('Service Name - Depends on FirewallRuleName')]
+    [System.String] $ServiceName
+    [DscProperty()]
+    [System.ComponentModel.Description('Remote Address Ranges - Depends on FirewallRuleName')]
+    [System.String[]] $RemoteAddressRanges
+    [DscProperty()]
+    [System.ComponentModel.Description('Action - Depends on FirewallRuleName (0: Block, 1: Allow)')]
+    [System.String] $Type
+    [DscProperty()]
+    [System.ComponentModel.Description('Reusable groups - Depends on FirewallRuleName')]
+    [System.String[]] $RemoteAddressDynamicKeywords
+    [DscProperty()]
+    [System.ComponentModel.Description('Protocol - Depends on FirewallRuleName')]
+    [System.Nullable[System.Int32]] $Protocol
+    [DscProperty()]
+    [System.ComponentModel.Description('ICMP Types And Codes - Depends on FirewallRuleName')]
+    [System.String[]] $IcmpTypesAndCodes
 }
 
-function Export-TargetResource
+class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        $policyTemplateID = '19c8aa67-f286-4861-9aa0-f23541d31680_1'
-        $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
-        if (-not [System.String]::IsNullOrEmpty($Filter))
-        {
-            $Filter = "($Filter) and ($baseFilter)"
-        }
-        else
-        {
-            $Filter = $baseFilter
-        }
-        [array]$getValue = Get-M365DSCExportCachedConfigurationPolicies `
-            -TemplateId $policyTemplateID `
-            -Filter $Filter
-        #endregion
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            $displayedKey = $config.Id
-            if (-not [String]::IsNullOrEmpty($config.displayName))
-            {
-                $displayedKey = $config.displayName
-            }
-            elseif (-not [string]::IsNullOrEmpty($config.name))
-            {
-                $displayedKey = $config.name
-            }
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                DisplayName           = $config.Name
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            $rawResults = $Results.Clone()
-
-            if ($null -ne $Results.FirewallRuleName)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.FirewallRuleName `
-                    -CIMInstanceName 'MicrosoftGraphIntuneSettingsCatalogFirewallRuleName'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.FirewallRuleName = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('FirewallRuleName') | Out-Null
-                }
-            }
-
-            if ($Results.Assignments)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString -ComplexObject $Results.Assignments -CIMInstanceName DeviceManagementConfigurationPolicyAssignments
-                if ($complexTypeStringResult)
-                {
-                    $Results.Assignments = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('Assignments') | Out-Null
-                }
-            }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('FirewallRuleName', 'Assignments') `
-                -RawResults $rawResults
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('The type of the target assignment.')]
+    [System.String] $dataType
+    [DscProperty()]
+    [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterType
+    [DscProperty()]
+    [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterId
+    [DscProperty()]
+    [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
+    [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
+    [System.String] $groupId
+    [DscProperty()]
+    [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
+    [System.String] $groupDisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
+    [System.String] $collectionId
 }
 
-Export-ModuleMember -Function *-TargetResource

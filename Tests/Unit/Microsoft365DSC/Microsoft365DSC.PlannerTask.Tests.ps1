@@ -23,7 +23,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         BeforeAll {
             $secpasswd = ConvertTo-SecureString ((New-Guid).ToString()) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -CommandName Save-M365DSCPartialExport -MockWith {
             }
@@ -37,7 +37,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Connect-Graph -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -118,15 +118,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return absent from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should create the Task in the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Set()
             }
         }
 
@@ -148,15 +148,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $False
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $False
             }
 
             It 'Should update the settings from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Set()
             }
         }
 
@@ -179,11 +179,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return true from the Set method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -205,11 +205,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Present from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Set method' {
-                Test-TargetResource @testParams | Should -Be $False
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $False
             }
         }
 
@@ -239,11 +239,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It "Should return 'Bucket12345' as the Bucket Value" {
-                (Get-TargetResource @testParams).Bucket | Should -Be 'Bucket12345'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Bucket | Should -Be 'Bucket12345'
             }
 
             It 'Should return True from the Test method' {
-                Test-TargetResource @testParams | Should -Be $True
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $True
             }
         }
 
@@ -271,7 +271,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $false
             }
         }
 
@@ -301,11 +301,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It "Should return 'TestBucket' as the Bucket Value" {
-                (Get-TargetResource @testParams).Bucket | Should -Be 'Bucket12345'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Bucket | Should -Be 'Bucket12345'
             }
 
             It 'Should return False from the Test method' {
-                Test-TargetResource @testParams | Should -Be $False
+                (New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Test() | Should -Be $False
             }
         }
 
@@ -348,7 +348,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'PlannerTask' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

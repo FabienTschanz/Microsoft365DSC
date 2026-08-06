@@ -1,703 +1,416 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_IntuneMobileThreatDefenseConnector'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-# https://learn.microsoft.com/en-us/graph/api/resources/intune-onboarding-mobilethreatdefenseconnector?view=graph-rest-1.0
-# https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.devicemanagement.administration/new-mgdevicemanagementmobilethreatdefenseconnector?view=graph-powershell-1.0
-
-function Get-TargetResource
+[DscResource()]
+class IntuneMobileThreatDefenseConnector : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region Intune parameters
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [System.String]
-        $DisplayName,
+    [DscProperty()]
+    [System.ComponentModel.Description('The DisplayName of the Mobile Threat Defense Connector partner. NOTE: Hard coded for convenience, not returned by the Graph API.')]
+    [System.String] $DisplayName
 
-        [Parameter()]
-        [System.Boolean]
-        $AllowPartnerToCollectIosApplicationMetadata,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates the Mobile Threat Defense partner may collect metadata about installed applications from Intune for IOS devices. When FALSE, indicates the Mobile Threat Defense partner may not collect metadata about installed applications from Intune for IOS devices. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $AllowPartnerToCollectIosApplicationMetadata
 
-        [Parameter()]
-        [System.Boolean]
-        $AllowPartnerToCollectIOSPersonalApplicationMetadata,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates the Mobile Threat Defense partner may collect metadata about personally installed applications from Intune for IOS devices. When FALSE, indicates the Mobile Threat Defense partner may not collect metadata about personally installed applications from Intune for IOS devices. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $AllowPartnerToCollectIOSPersonalApplicationMetadata
 
-        [Parameter()]
-        [System.Boolean]
-        $AndroidDeviceBlockedOnMissingPartnerData,
+    [DscProperty()]
+    [System.ComponentModel.Description('For Android, set whether Intune must receive data from the Mobile Threat Defense partner prior to marking a device compliant.')]
+    [System.Nullable[System.Boolean]] $AndroidDeviceBlockedOnMissingPartnerData
 
-        [Parameter()]
-        [System.Boolean]
-        $AndroidEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('For Android, set whether data from the Mobile Threat Defense partner should be used during compliance evaluations.')]
+    [System.Nullable[System.Boolean]] $AndroidEnabled
 
-        [Parameter()]
-        [System.Boolean]
-        $AndroidMobileApplicationManagementEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates that data from the Mobile Threat Defense partner can be used during Mobile Application Management (MAM) evaluations for Android devices. When FALSE, indicates that data from the Mobile Threat Defense partner should not be used during Mobile Application Management (MAM) evaluations for Android devices. Only one partner per platform may be enabled for Mobile Application Management (MAM) evaluation. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $AndroidMobileApplicationManagementEnabled
 
-        [Parameter()]
-        [System.Boolean]
-        $IosDeviceBlockedOnMissingPartnerData,
+    [DscProperty()]
+    [System.ComponentModel.Description('For IOS, set whether Intune must receive data from the Mobile Threat Defense partner prior to marking a device compliant.')]
+    [System.Nullable[System.Boolean]] $IosDeviceBlockedOnMissingPartnerData
 
-        [Parameter()]
-        [System.Boolean]
-        $IosEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('For IOS, get or set whether data from the Mobile Threat Defense partner should be used during compliance evaluations.')]
+    [System.Nullable[System.Boolean]] $IosEnabled
 
-        [Parameter()]
-        [System.Boolean]
-        $IosMobileApplicationManagementEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates that data from the Mobile Threat Defense partner can be used during Mobile Application Management (MAM) evaluations for IOS devices. When FALSE, indicates that data from the Mobile Threat Defense partner should not be used during Mobile Application Management (MAM) evaluations for IOS devices. Only one partner per platform may be enabled for Mobile Application Management (MAM) evaluation. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $IosMobileApplicationManagementEnabled
 
-        [Parameter()]
-        [System.DateTime]
-        $LastHeartbeatDateTime,
+    [DscProperty()]
+    [System.ComponentModel.Description('DateTime of last Heartbeat received from the Mobile Threat Defense partner.')]
+    [System.Nullable[System.DateTime]] $LastHeartbeatDateTime
 
-        [Parameter()]
-        [System.Boolean]
-        $MicrosoftDefenderForEndpointAttachEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates that configuration profile management via Microsoft Defender for Endpoint is enabled. When FALSE, inidicates that configuration profile management via Microsoft Defender for Endpoint is disabled. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $MicrosoftDefenderForEndpointAttachEnabled
 
-        [Parameter()]
-        [System.String]
-        $PartnerState,
+    [DscProperty()]
+    [System.ComponentModel.Description('Partner state of this tenant.')]
+    [System.String] $PartnerState
 
-        [Parameter()]
-        [System.Int32]
-        $PartnerUnresponsivenessThresholdInDays,
+    [DscProperty()]
+    [System.ComponentModel.Description('Get or Set days the per tenant tolerance to unresponsiveness for this partner integration.')]
+    [System.Nullable[System.UInt32]] $PartnerUnresponsivenessThresholdInDays
 
-        [Parameter()]
-        [System.Boolean]
-        $PartnerUnsupportedOSVersionBlocked,
+    [DscProperty()]
+    [System.ComponentModel.Description('Get or set whether to block devices on the enabled platforms that do not meet the minimum version requirements of the Mobile Threat Defense partner.')]
+    [System.Nullable[System.Boolean]] $PartnerUnsupportedOSVersionBlocked
 
-        [Parameter()]
-        [System.Boolean]
-        $WindowsDeviceBlockedOnMissingPartnerData,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates that Intune must receive data from the Mobile Threat Defense partner prior to marking a device compliant for Windows. When FALSE, indicates that Intune may make a device compliant without receiving data from the Mobile Threat Defense partner for Windows. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $WindowsDeviceBlockedOnMissingPartnerData
 
-        [Parameter()]
-        [System.Boolean]
-        $WindowsEnabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('When TRUE, indicates that data from the Mobile Threat Defense partner can be used during compliance evaluations for Windows. When FALSE, it indicates that data from the Mobile Threat Defense partner should not be used during compliance evaluations for Windows. Default value is FALSE.')]
+    [System.Nullable[System.Boolean]] $WindowsEnabled
 
-        #endregion Intune parameters
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
 
-    if ($PSEdition -ne 'Core')
+    [IntuneMobileThreatDefenseConnector] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration of the Intune Mobile Threat Defense Connector with Id {$Id}."
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Id -ne $Id)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $nullResult = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $instance = Get-MgBetaDeviceManagementMobileThreatDefenseConnector -MobileThreatDefenseConnectorId $Id -ErrorAction SilentlyContinue
-        }
-        else
-        {
-            $instance = $Script:exportedInstance
+            $remote = [IntuneMobileThreatDefenseConnector]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
         }
 
-        if ($null -eq $instance)
+        Write-Verbose -Message "Getting configuration of the Intune Mobile Threat Defense Connector with Id {$($this.Id)}."
+
+        try
         {
-            Write-Verbose -Message "Could not find MobileThreatDefenseConnector by Id: {$Id}."
-            if (-not [string]::IsNullOrEmpty($DisplayName))
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Id -ne $this.Id)
             {
-                # There is no API which searches MobileThreatDefenseConnector by its DisplayName so the below code is commented out.
-                # $instance = Get-MgBetaDeviceManagementMobileThreatDefenseConnector `
-                #       -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'" `
+                $null = $this.Connect('MicrosoftGraph')
 
-                # The DisplayName property is not supported by the any API of this resource, hence hard-coded in below function for convenience.
-                $connectorId = (Get-MobileThreatDefenseConnectorIdOrDisplayName -DisplayName $DisplayName).Id
-                $instance = Get-MgBetaDeviceManagementMobileThreatDefenseConnector `
-                    -MobileThreatDefenseConnectorId $connectorId `
-                    -ErrorAction SilentlyContinue
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $instance = Get-MgBetaDeviceManagementMobileThreatDefenseConnector -MobileThreatDefenseConnectorId $this.Id -ErrorAction SilentlyContinue
+            }
+            else
+            {
+                $instance = $this.ExportedInstance
             }
 
             if ($null -eq $instance)
             {
-                Write-Verbose -Message "Could not find MobileThreatDefenseConnector by DisplayName: {$DisplayName}."
-                return $nullResult
+                Write-Verbose -Message "Could not find MobileThreatDefenseConnector by Id: {$($this.Id)}."
+                if (-not [string]::IsNullOrEmpty($this.DisplayName))
+                {
+                    # There is no API which searches MobileThreatDefenseConnector by its DisplayName so the below code is commented out.
+                    # $instance = Get-MgBetaDeviceManagementMobileThreatDefenseConnector `
+                    #       -Filter "DisplayName eq '$($DisplayName -replace "'", "''")'" `
+
+                    # The DisplayName property is not supported by the any API of this resource, hence hard-coded in below function for convenience.
+                    $connectorId = (Get-IntuneMobileThreatDefenseConnectorMobileThreatDefenseConnectorIdOrDisplayName -DisplayName $this.DisplayName).Id
+                    $instance = Get-MgBetaDeviceManagementMobileThreatDefenseConnector `
+                        -MobileThreatDefenseConnectorId $connectorId `
+                        -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find MobileThreatDefenseConnector by DisplayName: {$($this.DisplayName)}."
+                    return $this.AsResult($nullResult)
+                }
             }
-        }
 
-        if ([string]::IsNullOrEmpty($DisplayName))
-        {
-            $DisplayName = (Get-MobileThreatDefenseConnectorIdOrDisplayName -Id $instance.Id).DisplayName
-        }
-
-        $results = @{
-            Id                                                  = $instance.Id
-            DisplayName                                         = $DisplayName
-            AllowPartnerToCollectIosApplicationMetadata         = $instance.AllowPartnerToCollectIosApplicationMetadata
-            AllowPartnerToCollectIOSPersonalApplicationMetadata = $instance.AllowPartnerToCollectIosPersonalApplicationMetadata
-            AndroidDeviceBlockedOnMissingPartnerData            = $instance.AndroidDeviceBlockedOnMissingPartnerData
-            AndroidEnabled                                      = $instance.AndroidEnabled
-            AndroidMobileApplicationManagementEnabled           = $instance.AndroidMobileApplicationManagementEnabled
-            IosDeviceBlockedOnMissingPartnerData                = $instance.IosDeviceBlockedOnMissingPartnerData
-            IosEnabled                                          = $instance.IosEnabled
-            IosMobileApplicationManagementEnabled               = $instance.IosMobileApplicationManagementEnabled
-            LastHeartbeatDateTime                               = $instance.LastHeartbeatDateTime
-            MicrosoftDefenderForEndpointAttachEnabled           = $instance.MicrosoftDefenderForEndpointAttachEnabled
-            PartnerState                                        = $instance.PartnerState.ToString()
-            PartnerUnresponsivenessThresholdInDays              = $instance.PartnerUnresponsivenessThresholdInDays
-            PartnerUnsupportedOSVersionBlocked                  = $instance.PartnerUnsupportedOSVersionBlocked
-            WindowsDeviceBlockedOnMissingPartnerData            = $instance.WindowsDeviceBlockedOnMissingPartnerData
-            WindowsEnabled                                      = $instance.WindowsEnabled
-            Ensure                                              = 'Present'
-            Credential                                          = $Credential
-            ApplicationId                                       = $ApplicationId
-            TenantId                                            = $TenantId
-            ApplicationSecret                                   = $ApplicationSecret
-            CertificateThumbprint                               = $CertificateThumbprint
-            CertificatePath                                     = $CertificatePath
-            CertificatePassword                                 = $CertificatePassword
-            ManagedIdentity                                     = $ManagedIdentity.IsPresent
-            AccessTokens                                        = $AccessTokens
-        }
-
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        #region Intune parameters
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.Boolean]
-        $AllowPartnerToCollectIosApplicationMetadata,
-
-        [Parameter()]
-        [System.Boolean]
-        $AllowPartnerToCollectIOSPersonalApplicationMetadata,
-
-        [Parameter()]
-        [System.Boolean]
-        $AndroidDeviceBlockedOnMissingPartnerData,
-
-        [Parameter()]
-        [System.Boolean]
-        $AndroidEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $AndroidMobileApplicationManagementEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IosDeviceBlockedOnMissingPartnerData,
-
-        [Parameter()]
-        [System.Boolean]
-        $IosEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IosMobileApplicationManagementEnabled,
-
-        [Parameter()]
-        [System.DateTime]
-        $LastHeartbeatDateTime,
-
-        [Parameter()]
-        [System.Boolean]
-        $MicrosoftDefenderForEndpointAttachEnabled,
-
-        [Parameter()]
-        [System.String]
-        $PartnerState,
-
-        [Parameter()]
-        [System.Int32]
-        $PartnerUnresponsivenessThresholdInDays,
-
-        [Parameter()]
-        [System.Boolean]
-        $PartnerUnsupportedOSVersionBlocked,
-
-        [Parameter()]
-        [System.Boolean]
-        $WindowsDeviceBlockedOnMissingPartnerData,
-
-        [Parameter()]
-        [System.Boolean]
-        $WindowsEnabled,
-
-        #endregion Intune parameters
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $SetParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-    $SetParameters = Rename-M365DSCCimInstanceParameter -Properties $SetParameters
-
-    # Remove the DisplayName parameter as the Graph API does not support it
-    $SetParameters.Remove('DisplayName') | Out-Null
-    $SetParameters.Remove('Id') | Out-Null
-    $SetParameters.Remove('LastHeartbeatDateTime') | Out-Null
-
-
-    if ($PSBoundParameters.ContainsKey('PartnerUnsupportedOSVersionBlocked'))
-    {
-        $SetParameters.Remove('PartnerUnsupportedOSVersionBlocked') | Out-Null
-        $SetParameters.Add('partnerUnsupportedOsVersionBlocked', $PartnerUnsupportedOSVersionBlocked)
-    }
-    if ($PSBoundParameters.ContainsKey('AllowPartnerToCollectIosApplicationMetadata'))
-    {
-        $SetParameters.Remove('AllowPartnerToCollectIosApplicationMetadata') | Out-Null
-        $SetParameters.Add('allowPartnerToCollectIOSApplicationMetadata', $AllowPartnerToCollectIosApplicationMetadata)
-    }
-
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        New-MgBetaDeviceManagementMobileThreatDefenseConnector -BodyParameter $SetParameters
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Update-MgBetaDeviceManagementMobileThreatDefenseConnector -MobileThreatDefenseConnectorId $currentInstance.Id -BodyParameter $SetParameters
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Remove-MgBetaDeviceManagementMobileThreatDefenseConnector -MobileThreatDefenseConnectorId $currentInstance.Id
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region Intune parameters
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $DisplayName,
-
-        [Parameter()]
-        [System.Boolean]
-        $AllowPartnerToCollectIosApplicationMetadata,
-
-        [Parameter()]
-        [System.Boolean]
-        $AllowPartnerToCollectIOSPersonalApplicationMetadata,
-
-        [Parameter()]
-        [System.Boolean]
-        $AndroidDeviceBlockedOnMissingPartnerData,
-
-        [Parameter()]
-        [System.Boolean]
-        $AndroidEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $AndroidMobileApplicationManagementEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IosDeviceBlockedOnMissingPartnerData,
-
-        [Parameter()]
-        [System.Boolean]
-        $IosEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $IosMobileApplicationManagementEnabled,
-
-        [Parameter()]
-        [System.DateTime]
-        $LastHeartbeatDateTime,
-
-        [Parameter()]
-        [System.Boolean]
-        $MicrosoftDefenderForEndpointAttachEnabled,
-
-        [Parameter()]
-        [System.String]
-        [ValidateSet('unavailable', 'available', 'enabled', 'unresponsive', 'notSetUp', 'error')]
-        $PartnerState,
-
-        [Parameter()]
-        [System.Int32]
-        $PartnerUnresponsivenessThresholdInDays,
-
-        [Parameter()]
-        [System.Boolean]
-        $PartnerUnsupportedOSVersionBlocked,
-
-        [Parameter()]
-        [System.Boolean]
-        $WindowsDeviceBlockedOnMissingPartnerData,
-
-        [Parameter()]
-        [System.Boolean]
-        $WindowsEnabled,
-
-        #endregion Intune parameters
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $compareParameters = Get-CompareParameters
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '') `
-        @compareParameters
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $getValue = Get-MgBetaDeviceManagementMobileThreatDefenseConnector -Filter $Filter -ErrorAction Stop
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-
-        foreach ($config in $getValue)
-        {
-            $displayedKey = $config.Id
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                                                  = $config.Id
-                DisplayName                                         = $config.DisplayName
-                AllowPartnerToCollectIosApplicationMetadata         = $config.AllowPartnerToCollectIosApplicationMetadata
-                AllowPartnerToCollectIOSPersonalApplicationMetadata = $config.AllowPartnerToCollectIosPersonalApplicationMetadata
-                AndroidDeviceBlockedOnMissingPartnerData            = $config.AndroidDeviceBlockedOnMissingPartnerData
-                AndroidEnabled                                      = $config.AndroidEnabled
-                AndroidMobileApplicationManagementEnabled           = $config.AndroidMobileApplicationManagementEnabled
-                IosDeviceBlockedOnMissingPartnerData                = $config.IosDeviceBlockedOnMissingPartnerData
-                IosEnabled                                          = $config.IosEnabled
-                IosMobileApplicationManagementEnabled               = $config.IosMobileApplicationManagementEnabled
-                LastHeartbeatDateTime                               = $config.LastHeartbeatDateTime
-                MicrosoftDefenderForEndpointAttachEnabled           = $config.MicrosoftDefenderForEndpointAttachEnabled
-                PartnerState                                        = $config.PartnerState.ToString()
-                PartnerUnresponsivenessThresholdInDays              = $config.PartnerUnresponsivenessThresholdInDays
-                PartnerUnsupportedOSVersionBlocked                  = $config.PartnerUnsupportedOSVersionBlocked
-                WindowsDeviceBlockedOnMissingPartnerData            = $config.WindowsDeviceBlockedOnMissingPartnerData
-                WindowsEnabled                                      = $config.WindowsEnabled
+            if ([string]::IsNullOrEmpty($this.DisplayName))
+            {
+                $this.DisplayName = (Get-IntuneMobileThreatDefenseConnectorMobileThreatDefenseConnectorIdOrDisplayName -Id $instance.Id).DisplayName
+            }
+
+            $results = @{
+                Id                                                  = $instance.Id
+                DisplayName                                         = $this.DisplayName
+                AllowPartnerToCollectIosApplicationMetadata         = $instance.AllowPartnerToCollectIosApplicationMetadata
+                AllowPartnerToCollectIOSPersonalApplicationMetadata = $instance.AllowPartnerToCollectIosPersonalApplicationMetadata
+                AndroidDeviceBlockedOnMissingPartnerData            = $instance.AndroidDeviceBlockedOnMissingPartnerData
+                AndroidEnabled                                      = $instance.AndroidEnabled
+                AndroidMobileApplicationManagementEnabled           = $instance.AndroidMobileApplicationManagementEnabled
+                IosDeviceBlockedOnMissingPartnerData                = $instance.IosDeviceBlockedOnMissingPartnerData
+                IosEnabled                                          = $instance.IosEnabled
+                IosMobileApplicationManagementEnabled               = $instance.IosMobileApplicationManagementEnabled
+                LastHeartbeatDateTime                               = $instance.LastHeartbeatDateTime
+                MicrosoftDefenderForEndpointAttachEnabled           = $instance.MicrosoftDefenderForEndpointAttachEnabled
+                PartnerState                                        = $instance.PartnerState.ToString()
+                PartnerUnresponsivenessThresholdInDays              = $instance.PartnerUnresponsivenessThresholdInDays
+                PartnerUnsupportedOSVersionBlocked                  = $instance.PartnerUnsupportedOSVersionBlocked
+                WindowsDeviceBlockedOnMissingPartnerData            = $instance.WindowsDeviceBlockedOnMissingPartnerData
+                WindowsEnabled                                      = $instance.WindowsEnabled
                 Ensure                                              = 'Present'
-                Credential                                          = $Credential
-                ApplicationId                                       = $ApplicationId
-                TenantId                                            = $TenantId
-                ApplicationSecret                                   = $ApplicationSecret
-                CertificateThumbprint                               = $CertificateThumbprint
-                CertificatePath                                     = $CertificatePath
-                CertificatePassword                                 = $CertificatePassword
-                ManagedIdentity                                     = $ManagedIdentity.IsPresent
-                AccessTokens                                        = $AccessTokens
+                Credential                                          = $this.Credential
+                ApplicationId                                       = $this.ApplicationId
+                TenantId                                            = $this.TenantId
+                ApplicationSecret                                   = $this.ApplicationSecret
+                CertificateThumbprint                               = $this.CertificateThumbprint
+                CertificatePath                                     = $this.CertificatePath
+                CertificatePassword                                 = $this.CertificatePassword
+                ManagedIdentity                                     = $this.ManagedIdentity.IsPresent
+                AccessTokens                                        = $this.AccessTokens
             }
 
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            return $this.AsResult($results)
         }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
 
-        throw
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+        $SetParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $SetParameters = Rename-M365DSCCimInstanceParameter -Properties $SetParameters
+
+        # Remove the DisplayName parameter as the Graph API does not support it
+        $SetParameters.Remove('DisplayName') | Out-Null
+        $SetParameters.Remove('Id') | Out-Null
+        $SetParameters.Remove('LastHeartbeatDateTime') | Out-Null
+
+
+        if ($this.GetBoundParameters().ContainsKey('PartnerUnsupportedOSVersionBlocked'))
+        {
+            $SetParameters.Remove('PartnerUnsupportedOSVersionBlocked') | Out-Null
+            $SetParameters.Add('partnerUnsupportedOsVersionBlocked', $this.PartnerUnsupportedOSVersionBlocked)
+        }
+        if ($this.GetBoundParameters().ContainsKey('AllowPartnerToCollectIosApplicationMetadata'))
+        {
+            $SetParameters.Remove('AllowPartnerToCollectIosApplicationMetadata') | Out-Null
+            $SetParameters.Add('allowPartnerToCollectIOSApplicationMetadata', $this.AllowPartnerToCollectIosApplicationMetadata)
+        }
+
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            New-MgBetaDeviceManagementMobileThreatDefenseConnector -BodyParameter $SetParameters
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Update-MgBetaDeviceManagementMobileThreatDefenseConnector -MobileThreatDefenseConnectorId $currentInstance.Id -BodyParameter $SetParameters
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Remove-MgBetaDeviceManagementMobileThreatDefenseConnector -MobileThreatDefenseConnectorId $currentInstance.Id
+        }
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $compareParameters = $this.GetCompareParameters()
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            @compareParameters -CurrentValues $this.Get().ToHashtable()
+        return $result
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array] $getValue = Get-MgBetaDeviceManagementMobileThreatDefenseConnector -Filter $this.Filter -ErrorAction Stop
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+
+            foreach ($config in $getValue)
+            {
+                $displayedKey = $config.Id
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                                                  = $config.Id
+                    DisplayName                                         = $config.DisplayName
+                    AllowPartnerToCollectIosApplicationMetadata         = $config.AllowPartnerToCollectIosApplicationMetadata
+                    AllowPartnerToCollectIOSPersonalApplicationMetadata = $config.AllowPartnerToCollectIosPersonalApplicationMetadata
+                    AndroidDeviceBlockedOnMissingPartnerData            = $config.AndroidDeviceBlockedOnMissingPartnerData
+                    AndroidEnabled                                      = $config.AndroidEnabled
+                    AndroidMobileApplicationManagementEnabled           = $config.AndroidMobileApplicationManagementEnabled
+                    IosDeviceBlockedOnMissingPartnerData                = $config.IosDeviceBlockedOnMissingPartnerData
+                    IosEnabled                                          = $config.IosEnabled
+                    IosMobileApplicationManagementEnabled               = $config.IosMobileApplicationManagementEnabled
+                    LastHeartbeatDateTime                               = $config.LastHeartbeatDateTime
+                    MicrosoftDefenderForEndpointAttachEnabled           = $config.MicrosoftDefenderForEndpointAttachEnabled
+                    PartnerState                                        = $config.PartnerState.ToString()
+                    PartnerUnresponsivenessThresholdInDays              = $config.PartnerUnresponsivenessThresholdInDays
+                    PartnerUnsupportedOSVersionBlocked                  = $config.PartnerUnsupportedOSVersionBlocked
+                    WindowsDeviceBlockedOnMissingPartnerData            = $config.WindowsDeviceBlockedOnMissingPartnerData
+                    WindowsEnabled                                      = $config.WindowsEnabled
+                    Ensure                                              = 'Present'
+                    Credential                                          = $this.Credential
+                    ApplicationId                                       = $this.ApplicationId
+                    TenantId                                            = $this.TenantId
+                    ApplicationSecret                                   = $this.ApplicationSecret
+                    CertificateThumbprint                               = $this.CertificateThumbprint
+                    CertificatePath                                     = $this.CertificatePath
+                    CertificatePassword                                 = $this.CertificatePassword
+                    ManagedIdentity                                     = $this.ManagedIdentity.IsPresent
+                    AccessTokens                                        = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
+    # GetBoundParameters().
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('LastHeartbeatDateTime')
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [IntuneMobileThreatDefenseConnector] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [IntuneMobileThreatDefenseConnector])
+        {
+            return $Values
+        }
+
+        $result = [IntuneMobileThreatDefenseConnector]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-#region Helper functions
-
-function Get-MobileThreatDefenseConnectorIdOrDisplayName
+# Was Get-MobileThreatDefenseConnectorIdOrDisplayName. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-IntuneMobileThreatDefenseConnectorMobileThreatDefenseConnectorIdOrDisplayName
 {
     param
     (
@@ -757,15 +470,3 @@ function Get-MobileThreatDefenseConnectorIdOrDisplayName
     }
 }
 
-function Get-CompareParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    return @{
-        ExcludedProperties = @('LastHeartbeatDateTime')
-    }
-}
-
-Export-ModuleMember -Function @('*-TargetResource', 'Get-CompareParameters')

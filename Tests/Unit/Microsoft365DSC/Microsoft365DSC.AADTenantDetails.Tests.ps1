@@ -44,7 +44,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -78,7 +78,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Test() | Should -Be $false
             }
         }
 
@@ -94,7 +94,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return false from the test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Test() | Should -Be $false
             }
         }
         Context -Name 'Values exists and values are already in the desired state' -Fixture {
@@ -110,12 +110,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaOrganization' -Exactly 1
             }
 
             It 'Should return true from the test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -132,16 +132,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return values from the get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaOrganization' -Exactly 1
             }
 
             It 'Should return false from the test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADTenantDetails' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Update-MgBetaOrganization' -Exactly 1
             }
         }
@@ -156,7 +156,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should reverse engineer resource from the export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'AADTenantDetails' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }
@@ -164,3 +164,4 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 }
 
 Invoke-Command -ScriptBlock $Global:DscHelper.CleanupScript -NoNewScope
+

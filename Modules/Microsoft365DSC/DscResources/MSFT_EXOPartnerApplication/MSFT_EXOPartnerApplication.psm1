@@ -1,503 +1,306 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_EXOPartnerApplication'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class EXOPartnerApplication : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The Name parameter specifies a new name for the partner application.')]
+    [System.String] $Name
 
-        [Parameter()]
-        [System.String]
-        $ApplicationIdentifier,
+    [DscProperty()]
+    [System.ComponentModel.Description('The ApplicationIdentifier parameter specifies a unique application identifier for the partner application that uses an authorization server.')]
+    [System.String] $ApplicationIdentifier
 
-        [Parameter()]
-        [System.Boolean]
-        $AcceptSecurityIdentifierInformation,
+    [DscProperty()]
+    [System.ComponentModel.Description('The AcceptSecurityIdentifierInformation parameter specifies whether Exchange should accept security identifiers (SIDs) from another trusted Active Directory forest for the partner application.')]
+    [System.Nullable[System.Boolean]] $AcceptSecurityIdentifierInformation
 
-        [Parameter()]
-        [ValidateSet('OrganizationalAccount', 'ConsumerAccount')]
-        [System.String]
-        $AccountType,
+    [DscProperty()]
+    [System.ComponentModel.Description('The AccountType parameter specifies the type of Microsoft account that''s required for the partner application.')]
+    [ValidateSet('OrganizationalAccount', 'ConsumerAccount')]
+    [System.String] $AccountType
 
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
+    [DscProperty()]
+    [System.ComponentModel.Description('The Enabled parameter specifies whether the partner application is enabled.')]
+    [System.Nullable[System.Boolean]] $Enabled
 
-        [Parameter()]
-        [System.String]
-        $LinkedAccount,
+    [DscProperty()]
+    [System.ComponentModel.Description('The LinkedAccount parameter specifies a linked Active Directory user account for the application.')]
+    [System.String] $LinkedAccount
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Specify if the Partner Application should exist or not.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Exchange Global Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [EXOPartnerApplication] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [EXOPartnerApplication]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message "Getting Partner Application configuration for $($this.Name)"
+
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Name -ne $this.Name)
+            {
+                $null = $this.Connect('ExchangeOnline')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                $PartnerApplication = Get-PartnerApplication -Identity $this.Name -ErrorAction SilentlyContinue
+                if ($null -eq $PartnerApplication)
+                {
+                    Write-Verbose -Message "Partner Application $($this.Name) does not exist."
+                    return $this.AsResult($nullReturn)
+                }
+            }
+            else
+            {
+                $PartnerApplication = $this.ExportedInstance
+            }
+
+            Write-Verbose -Message "Partner Application with Name $($PartnerApplication.Name) found"
+
+            $result = @{
+                Name                                = $PartnerApplication.Name
+                ApplicationIdentifier               = $PartnerApplication.ApplicationIdentifier
+                AcceptSecurityIdentifierInformation = $PartnerApplication.AcceptSecurityIdentifierInformation
+                AccountType                         = $PartnerApplication.AccountType
+                Enabled                             = $PartnerApplication.Enabled
+                LinkedAccount                       = $PartnerApplication.LinkedAccount
+                Ensure                              = 'Present'
+                Credential                          = $this.Credential
+                ApplicationId                       = $this.ApplicationId
+                CertificateThumbprint               = $this.CertificateThumbprint
+                CertificatePath                     = $this.CertificatePath
+                CertificatePassword                 = $this.CertificatePassword
+                ManagedIdentity                     = $this.ManagedIdentity.IsPresent
+                TenantId                            = $this.TenantId
+                AccessTokens                        = $this.AccessTokens
+            }
+
+            return $this.AsResult($result)
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
     }
 
-    Write-Verbose -Message "Getting Partner Application configuration for $Name"
-
-    try
+    [void] Set()
     {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Name -ne $Name)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-                -InboundParameters $PSBoundParameters
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Setting Partner Application configuration for $($this.Name)"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
+        $currentPartnerApplicationConfig = $this.Get().ToHashtable()
 
-            $nullReturn = $PSBoundParameters
-            $nullReturn.Ensure = 'Absent'
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
 
-            $PartnerApplication = Get-PartnerApplication -Identity $Name -ErrorAction SilentlyContinue
-            if ($null -eq $PartnerApplication)
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $null = $this.Connect('ExchangeOnline')
+
+        $NewPartnerApplicationParams = @{
+            Name                                = $this.Name
+            ApplicationIdentifier               = $this.ApplicationIdentifier
+            AcceptSecurityIdentifierInformation = $this.AcceptSecurityIdentifierInformation
+            Enabled                             = $this.Enabled
+            Confirm                             = $false
+        }
+
+        $SetPartnerApplicationParams = @{
+            Identity                            = $this.Name
+            Name                                = $this.Name
+            ApplicationIdentifier               = $this.ApplicationIdentifier
+            AcceptSecurityIdentifierInformation = $this.AcceptSecurityIdentifierInformation
+            Enabled                             = $this.Enabled
+            Confirm                             = $false
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($this.AccountType))
+        {
+            $NewPartnerApplicationParams.Add('AccountType', $this.AccountType)
+            $SetPartnerApplicationParams.Add('AccountType', $this.AccountType)
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($this.LinkedAccount))
+        {
+            $NewPartnerApplicationParams.Add('LinkedAccount', $this.LinkedAccount)
+            $SetPartnerApplicationParams.Add('LinkedAccount', $this.LinkedAccount)
+        }
+
+        # CASE: Partner Application doesn't exist but should;
+        if ($this.Ensure -eq 'Present' -and $currentPartnerApplicationConfig.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Partner Application '$($this.Name)' does not exist but it should. Create and configure it."
+            # Create Partner Application
+            New-PartnerApplication @NewPartnerApplicationParams
+
+        }
+        # CASE: Partner Application exists but it shouldn't;
+        elseif ($this.Ensure -eq 'Absent' -and $currentPartnerApplicationConfig.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Partner Application '$($this.Name)' exists but it shouldn't. Remove it."
+            Remove-PartnerApplication -Identity $this.Name -Confirm:$false
+        }
+        # CASE: Partner Application exists and it should, but has different values than the desired ones
+        elseif ($this.Ensure -eq 'Present' -and $currentPartnerApplicationConfig.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Partner Application '$($this.Name)' already exists, but needs updating."
+            Write-Verbose -Message "Setting Partner Application $($this.Name) with values: $(Convert-M365DscHashtableToString -Hashtable $SetPartnerApplicationParams)"
+            Set-PartnerApplication @SetPartnerApplicationParams
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('ExchangeOnline')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array]$AllPartnerApplications = Get-PartnerApplication -ErrorAction Stop
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($AllPartnerApplications.Length -eq 0)
             {
-                Write-Verbose -Message "Partner Application $($Name) does not exist."
-                return $nullReturn
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            $i = 1
+            foreach ($PartnerApplication in $AllPartnerApplications)
+            {
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
+
+                Write-M365DSCHost -Message "    |---[$i/$($AllPartnerApplications.Length)] $($PartnerApplication.Name)" -DeferWrite
+
+                $Params = @{
+                    Name                  = $PartnerApplication.Name
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    CertificatePath       = $this.CertificatePath
+                    AccessTokens          = $this.AccessTokens
+                }
+                $this.ExportedInstance = $PartnerApplication
+                $Results = $this.GetForExport($Params)
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                $i++
+            }
+            return $dscContent.ToString()
         }
-        else
+        catch
         {
-            $PartnerApplication = $Script:exportedInstance
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [EXOPartnerApplication] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [EXOPartnerApplication])
+        {
+            return $Values
         }
 
-        Write-Verbose -Message "Partner Application with Name $($PartnerApplication.Name) found"
-
-        $result = @{
-            Name                                = $PartnerApplication.Name
-            ApplicationIdentifier               = $PartnerApplication.ApplicationIdentifier
-            AcceptSecurityIdentifierInformation = $PartnerApplication.AcceptSecurityIdentifierInformation
-            AccountType                         = $PartnerApplication.AccountType
-            Enabled                             = $PartnerApplication.Enabled
-            LinkedAccount                       = $PartnerApplication.LinkedAccount
-            Ensure                              = 'Present'
-            Credential                          = $Credential
-            ApplicationId                       = $ApplicationId
-            CertificateThumbprint               = $CertificateThumbprint
-            CertificatePath                     = $CertificatePath
-            CertificatePassword                 = $CertificatePassword
-            ManagedIdentity                     = $ManagedIdentity.IsPresent
-            TenantId                            = $TenantId
-            AccessTokens                        = $AccessTokens
+        $result = [EXOPartnerApplication]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
         }
 
         return $result
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
 }
 
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationIdentifier,
-
-        [Parameter()]
-        [System.Boolean]
-        $AcceptSecurityIdentifierInformation,
-
-        [Parameter()]
-        [ValidateSet('OrganizationalAccount', 'ConsumerAccount')]
-        [System.String]
-        $AccountType,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
-
-        [Parameter()]
-        [System.String]
-        $LinkedAccount,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting Partner Application configuration for $Name"
-
-    $currentPartnerApplicationConfig = Get-TargetResource @PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $null = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    $NewPartnerApplicationParams = @{
-        Name                                = $Name
-        ApplicationIdentifier               = $ApplicationIdentifier
-        AcceptSecurityIdentifierInformation = $AcceptSecurityIdentifierInformation
-        Enabled                             = $Enabled
-        Confirm                             = $false
-    }
-
-    $SetPartnerApplicationParams = @{
-        Identity                            = $Name
-        Name                                = $Name
-        ApplicationIdentifier               = $ApplicationIdentifier
-        AcceptSecurityIdentifierInformation = $AcceptSecurityIdentifierInformation
-        Enabled                             = $Enabled
-        Confirm                             = $false
-    }
-
-    if (-not [System.String]::IsNullOrEmpty($AccountType))
-    {
-        $NewPartnerApplicationParams.Add('AccountType', $AccountType)
-        $SetPartnerApplicationParams.Add('AccountType', $AccountType)
-    }
-
-    if (-not [System.String]::IsNullOrEmpty($LinkedAccount))
-    {
-        $NewPartnerApplicationParams.Add('LinkedAccount', $LinkedAccount)
-        $SetPartnerApplicationParams.Add('LinkedAccount', $LinkedAccount)
-    }
-
-    # CASE: Partner Application doesn't exist but should;
-    if ($Ensure -eq 'Present' -and $currentPartnerApplicationConfig.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Partner Application '$($Name)' does not exist but it should. Create and configure it."
-        # Create Partner Application
-        New-PartnerApplication @NewPartnerApplicationParams
-
-    }
-    # CASE: Partner Application exists but it shouldn't;
-    elseif ($Ensure -eq 'Absent' -and $currentPartnerApplicationConfig.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Partner Application '$($Name)' exists but it shouldn't. Remove it."
-        Remove-PartnerApplication -Identity $Name -Confirm:$false
-    }
-    # CASE: Partner Application exists and it should, but has different values than the desired ones
-    elseif ($Ensure -eq 'Present' -and $currentPartnerApplicationConfig.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Partner Application '$($Name)' already exists, but needs updating."
-        Write-Verbose -Message "Setting Partner Application $($Name) with values: $(Convert-M365DscHashtableToString -Hashtable $SetPartnerApplicationParams)"
-        Set-PartnerApplication @SetPartnerApplicationParams
-    }
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationIdentifier,
-
-        [Parameter()]
-        [System.Boolean]
-        $AcceptSecurityIdentifierInformation,
-
-        [Parameter()]
-        [ValidateSet('OrganizationalAccount', 'ConsumerAccount')]
-        [System.String]
-        $AccountType,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
-
-        [Parameter()]
-        [System.String]
-        $LinkedAccount,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'ExchangeOnline' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array]$AllPartnerApplications = Get-PartnerApplication -ErrorAction Stop
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($AllPartnerApplications.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        $i = 1
-        foreach ($PartnerApplication in $AllPartnerApplications)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            Write-M365DSCHost -Message "    |---[$i/$($AllPartnerApplications.Length)] $($PartnerApplication.Name)" -DeferWrite
-
-            $Params = @{
-                Name                  = $PartnerApplication.Name
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                CertificatePath       = $CertificatePath
-                AccessTokens          = $AccessTokens
-            }
-            $Script:exportedInstance = $PartnerApplication
-            $Results = Get-TargetResource @Params
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            $i++
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

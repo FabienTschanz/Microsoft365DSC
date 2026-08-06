@@ -22,7 +22,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         BeforeAll {
 
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
@@ -36,11 +36,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }
 
-            Mock -CommandName Invoke-M365DSCVerifiedIdWebRequest -MockWith {
+            Mock -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -MockWith {
                 param ($Uri)
                 switch ($Uri) {
                     "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities" {
@@ -146,58 +146,58 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authorityId = "FakeStringValue"
                     name = "FakeStringValue"
                     linkedDomainUrl = "FakeStringValue"
-                    displays =  [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayModel -Property @{
-                            consent = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayConsent -Property @{
+                    displays =  @(
+                        ([MSFT_AADVerifiedIdAuthorityContractDisplayModel] @{
+                            consent = ([MSFT_AADVerifiedIdAuthorityContractDisplayConsent] @{
                                 instructions = "Verify your identity and workplace the easy way. Add this ID for online and in-person use."
                                 title = "Do you really want to accept the verified employee credential from Contoso."
-                            } -ClientOnly)
-                            card = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCard -Property @{
+                            })
+                            card = ([MSFT_AADVerifiedIdAuthorityContractDisplayCard] @{
                                 description = "This verifiable credential is issued to all members of the Contoso org."
                                 issuedBy = "Contoso"
                                 backgroundColor = "#000000"
                                 textColor = "#FFFFFA"
-                                logo = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo -Property @{
+                                logo = ([MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo] @{
                                     uri = "https://proddideussg1.z13.web.core.windows.net/systemgeneratedcontractlogo.png"
                                     description = "Default verified employee logo"
-                                } -ClientOnly)
+                                })
                                 title = "Verified Employee"
-                            } -ClientOnly)
+                            })
                             locale = "en-US"
-                            claims =  [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayClaims -Property @{
+                            claims =  @(
+                                ([MSFT_AADVerifiedIdAuthorityContractDisplayClaims] @{
                                     label = "Revocation id"
                                     claim = "vc.credentialSubject.revocationId"
                                     type = "String"
-                                } -ClientOnly)
+                                })
                             )
-                        } -ClientOnly)
+                        })
                     )
-                    rules = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractRulesModel -Property @{
+                    rules = ([MSFT_AADVerifiedIdAuthorityContractRulesModel] @{
                         validityInterval = 15552000
-                        vc = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractVcType -Property @{
+                        vc = ([MSFT_AADVerifiedIdAuthorityContractVcType] @{
                             type = @("VerifiedEmployee")
-                        } -ClientOnly)
-                        attestations = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestations -Property @{
-                            accessTokens =  [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestationValues -Property @{
-                                    mapping =  [CimInstance[]]@(
-                                        (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractClaimMapping -Property @{
+                        })
+                        attestations = ([MSFT_AADVerifiedIdAuthorityContractAttestations] @{
+                            accessTokens =  @(
+                                ([MSFT_AADVerifiedIdAuthorityContractAttestationValues] @{
+                                    mapping =  @(
+                                        ([MSFT_AADVerifiedIdAuthorityContractClaimMapping] @{
                                             inputClaim = "photo"
                                             indexed = $False
                                             outputClaim = "photo"
                                             required = $False
-                                        } -ClientOnly)
+                                        })
                                     )
                                     required = $True
-                                } -ClientOnly)
+                                })
                             )
-                        } -ClientOnly)
-                    } -ClientOnly)
+                        })
+                    })
                     Ensure = 'Present'
                 }
 
-                Mock -CommandName Invoke-M365DSCVerifiedIdWebRequest -MockWith {
+                Mock -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -MockWith {
                     param ($Uri)
                     switch ($Uri) {
                         "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities" {
@@ -231,14 +231,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should Create the id from the Set method' {
-                Set-TargetResource @testParams
-                Should -Invoke -CommandName Invoke-M365DSCVerifiedIdWebRequest -Exactly 4
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Set()
+                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Exactly 4
             }
         }
 
@@ -249,69 +249,69 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authorityId = "FakeStringValue"
                     name = "FakeStringValue"
                     linkedDomainUrl = "FakeStringValue"
-                    displays =  [CimInstance[]]@(
-                            (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayModel -Property @{
-                                consent = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayConsent -Property @{
+                    displays =  @(
+                            ([MSFT_AADVerifiedIdAuthorityContractDisplayModel] @{
+                                consent = ([MSFT_AADVerifiedIdAuthorityContractDisplayConsent] @{
                                     instructions = "Verify your identity and workplace the easy way. Add this ID for online and in-person use."
                                     title = "Do you really want to accept the verified employee credential from Contoso."
-                                } -ClientOnly)
-                                card = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCard -Property @{
+                                })
+                                card = ([MSFT_AADVerifiedIdAuthorityContractDisplayCard] @{
                                     description = "This verifiable credential is issued to all members of the Contoso org."
                                     issuedBy = "Contoso"
                                     backgroundColor = "#000000"
                                     textColor = "#FFFFFA"
-                                    logo = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo -Property @{
+                                    logo = ([MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo] @{
                                         uri = "https://proddideussg1.z13.web.core.windows.net/systemgeneratedcontractlogo.png"
                                         description = "Default verified employee logo"
-                                    } -ClientOnly)
+                                    })
                                     title = "Verified Employee"
-                                } -ClientOnly)
+                                })
                                 locale = "en-US"
-                                claims =  [CimInstance[]]@(
-                                    (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayClaims -Property @{
+                                claims =  @(
+                                    ([MSFT_AADVerifiedIdAuthorityContractDisplayClaims] @{
                                         label = "Revocation id"
                                         claim = "vc.credentialSubject.revocationId"
                                         type = "String"
-                                    } -ClientOnly)
+                                    })
                                 )
-                            } -ClientOnly)
+                            })
                         )
-                    rules = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractRulesModel -Property @{
+                    rules = ([MSFT_AADVerifiedIdAuthorityContractRulesModel] @{
                             validityInterval = 15552000
-                            vc = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractVcType -Property @{
+                            vc = ([MSFT_AADVerifiedIdAuthorityContractVcType] @{
                                 type = @("VerifiedEmployee")
-                            } -ClientOnly)
-                            attestations = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestations -Property @{
-                                accessTokens =  [CimInstance[]]@(
-                                    (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestationValues -Property @{
-                                        mapping =  [CimInstance[]]@(
-                                            (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractClaimMapping -Property @{
+                            })
+                            attestations = ([MSFT_AADVerifiedIdAuthorityContractAttestations] @{
+                                accessTokens =  @(
+                                    ([MSFT_AADVerifiedIdAuthorityContractAttestationValues] @{
+                                        mapping =  @(
+                                            ([MSFT_AADVerifiedIdAuthorityContractClaimMapping] @{
                                                 inputClaim = "photo"
                                                 indexed = $False
                                                 outputClaim = "photo"
                                                 required = $False
-                                            } -ClientOnly)
+                                            })
                                         )
                                         required = $True
-                                    } -ClientOnly)
+                                    })
                                 )
-                            } -ClientOnly)
-                        } -ClientOnly)
+                            })
+                        })
                     Ensure = 'Absent'
                 }
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should Remove the group from the Set method' {
-                Set-TargetResource @testParams
-                Should -Invoke -CommandName Invoke-M365DSCVerifiedIdWebRequest -Exactly 2
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Set()
+                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Exactly 2
             }
         }
         Context -Name "The AADVerifiedIdAuthorityContract Exists and Values are already in the desired state" -Fixture {
@@ -321,60 +321,60 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authorityId = "FakeStringValue"
                     name = "FakeStringValue"
                     linkedDomainUrl = "FakeStringValue"
-                    displays =  [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayModel -Property @{
-                            consent = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayConsent -Property @{
+                    displays =  @(
+                        ([MSFT_AADVerifiedIdAuthorityContractDisplayModel] @{
+                            consent = ([MSFT_AADVerifiedIdAuthorityContractDisplayConsent] @{
                                 instructions = "Verify your identity and workplace the easy way. Add this ID for online and in-person use."
                                 title = "Do you really want to accept the verified employee credential from Contoso."
-                            } -ClientOnly)
-                            card = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCard -Property @{
+                            })
+                            card = ([MSFT_AADVerifiedIdAuthorityContractDisplayCard] @{
                                 description = "This verifiable credential is issued to all members of the Contoso org."
                                 issuedBy = "Contoso"
                                 backgroundColor = "#000000"
                                 textColor = "#FFFFFA"
-                                logo = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo -Property @{
+                                logo = ([MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo] @{
                                     uri = "https://proddideussg1.z13.web.core.windows.net/systemgeneratedcontractlogo.png"
                                     description = "Default verified employee logo"
-                                } -ClientOnly)
+                                })
                                 title = "Verified Employee"
-                            } -ClientOnly)
+                            })
                             locale = "en-US"
-                            claims =  [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayClaims -Property @{
+                            claims =  @(
+                                ([MSFT_AADVerifiedIdAuthorityContractDisplayClaims] @{
                                     label = "Revocation id"
                                     claim = "vc.credentialSubject.revocationId"
                                     type = "String"
-                                } -ClientOnly)
+                                })
                             )
-                        } -ClientOnly)
+                        })
                     )
-                    rules = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractRulesModel -Property @{
+                    rules = ([MSFT_AADVerifiedIdAuthorityContractRulesModel] @{
                         validityInterval = 15552000
-                        vc = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractVcType -Property @{
+                        vc = ([MSFT_AADVerifiedIdAuthorityContractVcType] @{
                             type = @("VerifiedEmployee")
-                        } -ClientOnly)
-                        attestations = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestations -Property @{
-                            accessTokens =  [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestationValues -Property @{
-                                    mapping =  [CimInstance[]]@(
-                                        (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractClaimMapping -Property @{
+                        })
+                        attestations = ([MSFT_AADVerifiedIdAuthorityContractAttestations] @{
+                            accessTokens =  @(
+                                ([MSFT_AADVerifiedIdAuthorityContractAttestationValues] @{
+                                    mapping =  @(
+                                        ([MSFT_AADVerifiedIdAuthorityContractClaimMapping] @{
                                             inputClaim = "photo"
                                             indexed = $False
                                             outputClaim = "photo"
                                             required = $False
-                                        } -ClientOnly)
+                                        })
                                     )
                                     required = $True
-                                } -ClientOnly)
+                                })
                             )
-                        } -ClientOnly)
-                    } -ClientOnly)
+                        })
+                    })
                     Ensure = 'Present'
                 }
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -385,69 +385,69 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     authorityId = "FakeStringValue"
                     name = "FakeStringValue"
                     linkedDomainUrl = "FakeStringValue"
-                    displays =  [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayModel -Property @{
-                            consent = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayConsent -Property @{
+                    displays =  @(
+                        ([MSFT_AADVerifiedIdAuthorityContractDisplayModel] @{
+                            consent = ([MSFT_AADVerifiedIdAuthorityContractDisplayConsent] @{
                                 instructions = "Verify your identity and workplace the easy way. Add this ID for online and in-person use."
                                 title = "Do you want to accept the verified employee credential from Contoso." #drift
-                            } -ClientOnly)
-                            card = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCard -Property @{
+                            })
+                            card = ([MSFT_AADVerifiedIdAuthorityContractDisplayCard] @{
                                 description = "This verifiable credential is issued to all members of the Contoso org."
                                 issuedBy = "Contoso"
                                 backgroundColor = "#000000"
                                 textColor = "#FFFFFA"
-                                logo = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo -Property @{
+                                logo = ([MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo] @{
                                     uri = "https://proddideussg1.z13.web.core.windows.net/systemgeneratedcontractlogo.png"
                                     description = "Default verified employee logo"
-                                } -ClientOnly)
+                                })
                                 title = "Verified Employee"
-                            } -ClientOnly)
+                            })
                             locale = "en-US"
-                            claims =  [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractDisplayClaims -Property @{
+                            claims =  @(
+                                ([MSFT_AADVerifiedIdAuthorityContractDisplayClaims] @{
                                     label = "Revocation id"
                                     claim = "vc.credentialSubject.revocationId"
                                     type = "String"
-                                } -ClientOnly)
+                                })
                             )
-                        } -ClientOnly)
+                        })
                     )
-                    rules = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractRulesModel -Property @{
+                    rules = ([MSFT_AADVerifiedIdAuthorityContractRulesModel] @{
                         validityInterval = 15552000
-                        vc = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractVcType -Property @{
+                        vc = ([MSFT_AADVerifiedIdAuthorityContractVcType] @{
                             type = @("VerifiedEmployee")
-                        } -ClientOnly)
-                        attestations = (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestations -Property @{
-                            accessTokens =  [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractAttestationValues -Property @{
-                                    mapping =  [CimInstance[]]@(
-                                        (New-CimInstance -ClassName MSFT_AADVerifiedIdAuthorityContractClaimMapping -Property @{
+                        })
+                        attestations = ([MSFT_AADVerifiedIdAuthorityContractAttestations] @{
+                            accessTokens =  @(
+                                ([MSFT_AADVerifiedIdAuthorityContractAttestationValues] @{
+                                    mapping =  @(
+                                        ([MSFT_AADVerifiedIdAuthorityContractClaimMapping] @{
                                             inputClaim = "photo"
                                             indexed = $False
                                             outputClaim = "photo"
                                             required = $False
-                                        } -ClientOnly)
+                                        })
                                     )
                                     required = $True
-                                } -ClientOnly)
+                                })
                             )
-                        } -ClientOnly)
-                    } -ClientOnly)
+                        })
+                    })
                     Ensure = 'Present'
                 }
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
-                Should -Invoke -CommandName Invoke-M365DSCVerifiedIdWebRequest -Exactly 3
+                (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Set()
+                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Exactly 3
             }
         }
 
@@ -460,7 +460,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'AADVerifiedIdAuthorityContract' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

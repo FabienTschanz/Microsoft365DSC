@@ -22,7 +22,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         BeforeAll {
 
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
@@ -134,7 +134,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential      = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -144,14 +144,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should Create the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'New-MgGroup' -Exactly 1
             }
         }
@@ -170,7 +170,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential      = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -183,16 +183,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should Remove the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Remove-MgGroup' -Exactly 1
             }
         }
@@ -213,7 +213,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -232,12 +232,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -258,7 +258,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential      = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -283,12 +283,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should not retrieve all group members from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgGroupMember' -Exactly 0
             }
 
             It 'Should return existing group members so empty desired members can detect drift' {
-                $result = Get-TargetResource @testParams
+                $result = (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
 
                 $result.Members | Should -Contain 'user1.contoso.com'
                 Should -Invoke -CommandName 'Get-MgGroupMember' -Exactly 0
@@ -310,11 +310,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential      = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
-                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $Id -eq '12345-12345-12345-12345-12345' -or $Filter -eq "DisplayName eq 'DSCGroup'" } -MockWith {
+                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $GroupId -eq '12345-12345-12345-12345-12345' -or $Filter -eq "DisplayName eq 'DSCGroup'" } -MockWith {
                     return @{
                         DisplayName     = 'DSCGroup'
                         ID              = '12345-12345-12345-12345-12345'
@@ -338,7 +338,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         }
                     )
                 }
-                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $Id -eq '67890-67890-67890-67890' -or $Filter -eq "DisplayName -eq 'DSCMemberOfGroup'" } -MockWith {
+                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $GroupId -eq '67890-67890-67890-67890' -or $Filter -eq "DisplayName eq 'DSCMemberOfGroup'" } -MockWith {
                     $returnData = @{
                         DisplayName     = 'DSCMemberOfGroup'
                         ID              = '67890-67890-67890-67890'
@@ -353,13 +353,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Invoke-M365DSCGraphBatchRequest' -Exactly 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -380,7 +380,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -413,13 +413,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Invoke-M365DSCGraphBatchRequest' -Exactly 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -437,7 +437,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential      = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -456,16 +456,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Update-MgGroup' -Exactly 1
             }
         }
@@ -486,10 +486,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
-                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $Id -eq '12345-12345-12345-12345-12345' -or $Filter -eq "DisplayName eq 'DSCGroup'" } -MockWith {
+                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $GroupId -eq '12345-12345-12345-12345-12345' -or $Filter -eq "DisplayName eq 'DSCGroup'" } -MockWith {
                     $returnData = @{
                         DisplayName     = 'DSCGroup'
                         ID              = '12345-12345-12345-12345-12345'
@@ -501,7 +501,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                     return $returnData
                 }
-                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $Id -eq '67890-67890-67890-67890' -or $Filter -eq "DisplayName -eq 'DSCMemberOfGroup'" } -MockWith {
+                Mock -CommandName Get-MgBetaGroup -ParameterFilter { $GroupId -eq '67890-67890-67890-67890' -or $Filter -eq "DisplayName eq 'DSCMemberOfGroup'" } -MockWith {
                     $returnData = @{
                         DisplayName     = 'DSCMemberOfGroup'
                         ID              = '67890-67890-67890-67890'
@@ -516,16 +516,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 2
             }
         }
@@ -546,7 +546,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential         = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -570,16 +570,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 2
                 Should -Invoke -CommandName 'New-MgBetaGroupMemberByRef' -Exactly 1
             }
@@ -602,7 +602,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -634,19 +634,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Invoke-M365DSCGraphBatchRequest' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
-                Should -Invoke -CommandName 'Get-MgBetaRoleManagementDirectoryRoleDefinition' -Exactly 2
+                Should -Invoke -CommandName 'Get-MgBetaRoleManagementDirectoryRoleDefinition' -Exactly 3
                 Should -Invoke -CommandName 'Remove-MgBetaRoleManagementDirectoryRoleAssignment' -Exactly 1
             }
         }
@@ -662,16 +662,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     GroupTypes         = @()
                     MailNickname       = 'M365DSC'
                     AssignedLicenses   = @(
-                        (New-CimInstance -ClassName MSFT_AADGroupLicense -Property @{
+                        ([MSFT_AADGroupLicense] @{
                             DisabledPlans  = [string[]]@()
                             SkuId          = 'AAD_PREMIUM_P2'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure             = 'Present'
                     Credential         = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -693,16 +693,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'New-MgGroup' -Exactly 1
                 Should -Invoke -CommandName 'Set-MgGroupLicense' -Exactly 1
             }
@@ -719,16 +719,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     GroupTypes         = @()
                     MailNickname       = 'M365DSC'
                     AssignedLicenses   = @(
-                        (New-CimInstance -ClassName MSFT_AADGroupLicense -Property @{
+                        ([MSFT_AADGroupLicense] @{
                             DisabledPlans  = [string[]]@()
                             SkuId          = 'AAD_PREMIUM_P2'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure             = 'Present'
                     Credential         = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -774,13 +774,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Invoke-M365DSCGraphBatchRequest' -Exactly 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -795,16 +795,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     GroupTypes         = @()
                     MailNickname       = 'M365DSC'
                     AssignedLicenses   = @(
-                        (New-CimInstance -ClassName MSFT_AADGroupLicense -Property @{
+                        ([MSFT_AADGroupLicense] @{
                             DisabledPlans  = [string[]]@()
                             SkuId          = 'AAD_PREMIUM_P2'
-                        } -ClientOnly)
+                        })
                     )
                     Ensure             = 'Present'
                     Credential         = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -836,16 +836,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Set-MgGroupLicense' -Exactly 1
             }
@@ -865,7 +865,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential         = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -911,17 +911,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Invoke-M365DSCGraphBatchRequest' -Exactly 1
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Set-MgGroupLicense' -Exactly 1
             }
@@ -941,7 +941,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential         = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -973,12 +973,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                Get-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -990,7 +990,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                 }
 
-                Mock -CommandName New-M365DSCConnection -MockWith {
+                Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                     return 'Credentials'
                 }
 
@@ -1009,7 +1009,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'AADGroup' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

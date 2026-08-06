@@ -22,7 +22,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         BeforeAll {
 
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
@@ -36,7 +36,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgBetaDeviceManagementDeviceConfiguration -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }
 
@@ -171,11 +171,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     KioskBrowserEnableHomeButton = $True
                     KioskBrowserEnableNavigationButtons = $True
                     KioskBrowserRestartOnIdleTimeInMinutes = 25
-                    kioskProfiles = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskProfile -Property @{
-                            profileId = "FakeStringValue"
-                            userAccountsConfiguration = [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUser -Property @{
+                    kioskProfiles = @(
+                        ([MSFT_MicrosoftGraphwindowsKioskProfile] @{
+                            userAccountsConfiguration = @(
+                                ([MSFT_MicrosoftGraphWindowsKioskUser] @{
                                     groupId = "FakeStringValue"
                                     userName = "FakeStringValue"
                                     userPrincipalName = "FakeStringValue"
@@ -183,11 +182,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     groupName = "FakeStringValue"
                                     userId = "FakeStringValue"
                                     displayName = "FakeStringValue"
-                                } -ClientOnly)
+                                })
                             )
                             profileName = "FakeStringValue"
-                            appConfiguration = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppConfiguration -Property @{
-                                uwpApp = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUWPApp -Property @{
+                            appConfiguration = ([MSFT_MicrosoftGraphWindowsKioskAppConfiguration] @{
+                                uwpApp = ([MSFT_MicrosoftGraphWindowsKioskUWPApp] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -204,8 +203,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                win32App = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskWin32App -Property @{
+                                })
+                                win32App = ([MSFT_MicrosoftGraphWindowsKioskWin32App] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -222,9 +221,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                apps = [CimInstance[]]@(
-                                    (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppBase -Property @{
+                                })
+                                apps = @(
+                                    ([MSFT_MicrosoftGraphWindowsKioskAppBase] @{
                                         edgeNoFirstRun = $True
                                         name = "FakeStringValue"
                                         edgeKiosk = "FakeStringValue"
@@ -241,23 +240,23 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         desktopApplicationLinkPath = "FakeStringValue"
                                         path = "FakeStringValue"
                                         odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                    } -ClientOnly)
+                                    })
                                 )
                                 allowAccessToDownloadsFolder = $True
                                 showTaskBar = $True
                                 disallowDesktopApps = $True
                                 odataType = "#microsoft.graph.windowsKioskMultipleApps"
                                 startMenuLayoutXml = $True
-                            } -ClientOnly)
-                        } -ClientOnly)
+                            })
+                        })
                     )
-                    windowsKioskForceUpdateSchedule = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule -Property @{
+                    windowsKioskForceUpdateSchedule = ([MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule] @{
                         runImmediatelyIfAfterStartDateTime = $True
                         startDateTime = "2023-01-01T00:00:00.0000000+00:00"
                         dayofMonth = 25
                         recurrence = "none"
                         dayofWeek = "sunday"
-                    } -ClientOnly)
+                    })
                     Ensure = "Present"
                     Credential = $Credential;
                 }
@@ -267,13 +266,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should Create the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName New-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -292,11 +291,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     KioskBrowserEnableHomeButton = $True
                     KioskBrowserEnableNavigationButtons = $True
                     KioskBrowserRestartOnIdleTimeInMinutes = 25
-                    kioskProfiles = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskProfile -Property @{
-                            profileId = "FakeStringValue"
-                            userAccountsConfiguration = [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUser -Property @{
+                    kioskProfiles = @(
+                        ([MSFT_MicrosoftGraphwindowsKioskProfile] @{
+                            userAccountsConfiguration = @(
+                                ([MSFT_MicrosoftGraphWindowsKioskUser] @{
                                     groupId = "FakeStringValue"
                                     userName = "FakeStringValue"
                                     userPrincipalName = "FakeStringValue"
@@ -304,11 +302,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     groupName = "FakeStringValue"
                                     userId = "FakeStringValue"
                                     displayName = "FakeStringValue"
-                                } -ClientOnly)
+                                })
                             )
                             profileName = "FakeStringValue"
-                            appConfiguration = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppConfiguration -Property @{
-                                uwpApp = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUWPApp -Property @{
+                            appConfiguration = ([MSFT_MicrosoftGraphWindowsKioskAppConfiguration] @{
+                                uwpApp = ([MSFT_MicrosoftGraphWindowsKioskUWPApp] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -325,8 +323,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                win32App = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskWin32App -Property @{
+                                })
+                                win32App = ([MSFT_MicrosoftGraphWindowsKioskWin32App] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -343,9 +341,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                apps = [CimInstance[]]@(
-                                    (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppBase -Property @{
+                                })
+                                apps = @(
+                                    ([MSFT_MicrosoftGraphWindowsKioskAppBase] @{
                                         edgeNoFirstRun = $True
                                         name = "FakeStringValue"
                                         edgeKiosk = "FakeStringValue"
@@ -362,38 +360,38 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         desktopApplicationLinkPath = "FakeStringValue"
                                         path = "FakeStringValue"
                                         odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                    } -ClientOnly)
+                                    })
                                 )
                                 allowAccessToDownloadsFolder = $True
                                 showTaskBar = $True
                                 disallowDesktopApps = $True
                                 odataType = "#microsoft.graph.windowsKioskMultipleApps"
                                 startMenuLayoutXml = $True
-                            } -ClientOnly)
-                        } -ClientOnly)
+                            })
+                        })
                     )
-                    windowsKioskForceUpdateSchedule = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule -Property @{
+                    windowsKioskForceUpdateSchedule = ([MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule] @{
                         runImmediatelyIfAfterStartDateTime = $True
                         startDateTime = "2023-01-01T00:00:00.0000000+00:00"
                         dayofMonth = 25
                         recurrence = "none"
                         dayofWeek = "sunday"
-                    } -ClientOnly)
+                    })
                     Ensure = 'Absent'
                     Credential = $Credential;
                 }
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should Remove the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Remove-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -411,11 +409,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     KioskBrowserEnableHomeButton = $True
                     KioskBrowserEnableNavigationButtons = $True
                     KioskBrowserRestartOnIdleTimeInMinutes = 25
-                    kioskProfiles = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskProfile -Property @{
-                            profileId = "FakeStringValue"
-                            userAccountsConfiguration = [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUser -Property @{
+                    kioskProfiles = @(
+                        ([MSFT_MicrosoftGraphwindowsKioskProfile] @{
+                            userAccountsConfiguration = @(
+                                ([MSFT_MicrosoftGraphWindowsKioskUser] @{
                                     groupId = "FakeStringValue"
                                     userName = "FakeStringValue"
                                     userPrincipalName = "FakeStringValue"
@@ -423,11 +420,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     groupName = "FakeStringValue"
                                     userId = "FakeStringValue"
                                     displayName = "FakeStringValue"
-                                } -ClientOnly)
+                                })
                             )
                             profileName = "FakeStringValue"
-                            appConfiguration = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppConfiguration -Property @{
-                                uwpApp = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUWPApp -Property @{
+                            appConfiguration = ([MSFT_MicrosoftGraphWindowsKioskAppConfiguration] @{
+                                uwpApp = ([MSFT_MicrosoftGraphWindowsKioskUWPApp] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -444,8 +441,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                win32App = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskWin32App -Property @{
+                                })
+                                win32App = ([MSFT_MicrosoftGraphWindowsKioskWin32App] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -462,9 +459,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                apps = [CimInstance[]]@(
-                                    (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppBase -Property @{
+                                })
+                                apps = @(
+                                    ([MSFT_MicrosoftGraphWindowsKioskAppBase] @{
                                         edgeNoFirstRun = $True
                                         name = "FakeStringValue"
                                         edgeKiosk = "FakeStringValue"
@@ -481,30 +478,30 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         desktopApplicationLinkPath = "FakeStringValue"
                                         path = "FakeStringValue"
                                         odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                    } -ClientOnly)
+                                    })
                                 )
                                 allowAccessToDownloadsFolder = $True
                                 showTaskBar = $True
                                 disallowDesktopApps = $True
                                 odataType = "#microsoft.graph.windowsKioskMultipleApps"
                                 startMenuLayoutXml = $True
-                            } -ClientOnly)
-                        } -ClientOnly)
+                            })
+                        })
                     )
-                    windowsKioskForceUpdateSchedule = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule -Property @{
+                    windowsKioskForceUpdateSchedule = ([MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule] @{
                         runImmediatelyIfAfterStartDateTime = $True
                         startDateTime = "2023-01-01T00:00:00.0000000+00:00"
                         dayofMonth = 25
                         recurrence = "none"
                         dayofWeek = "sunday"
-                    } -ClientOnly)
+                    })
                     Ensure = 'Present'
                     Credential = $Credential;
                 }
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -522,11 +519,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     KioskBrowserEnableHomeButton = $True
                     KioskBrowserEnableNavigationButtons = $True
                     KioskBrowserRestartOnIdleTimeInMinutes = 7 # Updated property
-                    kioskProfiles = [CimInstance[]]@(
-                        (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskProfile -Property @{
-                            profileId = "FakeStringValue"
-                            userAccountsConfiguration = [CimInstance[]]@(
-                                (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUser -Property @{
+                    kioskProfiles = @(
+                        ([MSFT_MicrosoftGraphwindowsKioskProfile] @{
+                            userAccountsConfiguration = @(
+                                ([MSFT_MicrosoftGraphWindowsKioskUser] @{
                                     groupId = "FakeStringValue"
                                     userName = "FakeStringValue"
                                     userPrincipalName = "FakeStringValue"
@@ -534,11 +530,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     groupName = "FakeStringValue"
                                     userId = "FakeStringValue"
                                     displayName = "FakeStringValue"
-                                } -ClientOnly)
+                                })
                             )
                             profileName = "FakeStringValue"
-                            appConfiguration = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppConfiguration -Property @{
-                                uwpApp = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskUWPApp -Property @{
+                            appConfiguration = ([MSFT_MicrosoftGraphWindowsKioskAppConfiguration] @{
+                                uwpApp = ([MSFT_MicrosoftGraphWindowsKioskUWPApp] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -555,8 +551,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                win32App = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskWin32App -Property @{
+                                })
+                                win32App = ([MSFT_MicrosoftGraphWindowsKioskWin32App] @{
                                     edgeNoFirstRun = $True
                                     name = "FakeStringValue"
                                     edgeKiosk = "FakeStringValue"
@@ -573,9 +569,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     desktopApplicationLinkPath = "FakeStringValue"
                                     path = "FakeStringValue"
                                     odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                } -ClientOnly)
-                                apps = [CimInstance[]]@(
-                                    (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskAppBase -Property @{
+                                })
+                                apps = @(
+                                    ([MSFT_MicrosoftGraphWindowsKioskAppBase] @{
                                         edgeNoFirstRun = $True
                                         name = "FakeStringValue"
                                         edgeKiosk = "FakeStringValue"
@@ -592,38 +588,38 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                         desktopApplicationLinkPath = "FakeStringValue"
                                         path = "FakeStringValue"
                                         odataType = "#microsoft.graph.windowsKioskDesktopApp"
-                                    } -ClientOnly)
+                                    })
                                 )
                                 allowAccessToDownloadsFolder = $True
                                 showTaskBar = $True
                                 disallowDesktopApps = $True
                                 odataType = "#microsoft.graph.windowsKioskMultipleApps"
                                 startMenuLayoutXml = $True
-                            } -ClientOnly)
-                        } -ClientOnly)
+                            })
+                        })
                     )
-                    windowsKioskForceUpdateSchedule = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule -Property @{
+                    windowsKioskForceUpdateSchedule = ([MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule] @{
                         runImmediatelyIfAfterStartDateTime = $True
                         startDateTime = "2023-01-01T00:00:00.0000000+00:00"
                         dayofMonth = 25
                         recurrence = "none"
                         dayofWeek = "sunday"
-                    } -ClientOnly)
+                    })
                     Ensure = 'Present'
                     Credential = $Credential;
                 }
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -637,7 +633,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

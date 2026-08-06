@@ -1,860 +1,708 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_PPTenantIsolationSettings'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class PPTenantIsolationSettings : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Should be set to yes')]
+    [ValidateSet('Yes')]
+    [System.String] $IsSingleInstance
 
-        [Parameter()]
-        [System.Boolean]
-        $Enabled = $true,
+    [DscProperty()]
+    [System.ComponentModel.Description('When set to true this will enable the tenant isolation settings.')]
+    [System.Nullable[System.Boolean]] $Enabled
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Rules,
+    [DscProperty()]
+    [System.ComponentModel.Description('The exact list of tenant rules to be configured.')]
+    [MSFT_PPTenantRule[]] $Rules
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $RulesToInclude,
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of tenant rules that has to be added.')]
+    [MSFT_PPTenantRule[]] $RulesToInclude
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $RulesToExclude,
+    [DscProperty()]
+    [System.ComponentModel.Description('A list of tenant rules that is now allowed to be added.')]
+    [MSFT_PPTenantRule[]] $RulesToExclude
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Power Platform Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access tokens used for authentication in scenarios requiring multiple tokens.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    PPTenantIsolationSettings() : base()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        $this.ResourceCache['TenantNameToGuidCache'] = @{}
     }
 
-    Write-Verbose -Message 'Getting the Power Platform Tenant Isolation Settings Configuration'
-
-    try
+    [PPTenantIsolationSettings] Get()
     {
-        if ($PSBoundParameters.ContainsKey('Rules') -and `
-            ($PSBoundParameters.ContainsKey('RulesToInclude') -or `
-                    $PSBoundParameters.ContainsKey('RulesToExclude')))
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $RequestBody = $null
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [PPTenantIsolationSettings]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
+        Write-Verbose -Message 'Getting the Power Platform Tenant Isolation Settings Configuration'
+
+        try
+        {
+            if ($this.GetBoundParameters().ContainsKey('Rules') -and `
+                ($this.GetBoundParameters().ContainsKey('RulesToInclude') -or `
+                        $this.GetBoundParameters().ContainsKey('RulesToExclude')))
+            {
+                $message = 'You cannot specify Rules and RulesToInclude/RulesToExclude.'
+                Add-M365DSCEvent -Message $message -EntryType 'Error' `
+                    -EventID 1 -Source $($this.GetResourceName())
+                throw $message
+            }
+
+            $null = $this.Connect('MicrosoftGraph')
+
+            $graphTenantId = (Get-MgContext).TenantId
+
+            $null = $this.Connect('PowerPlatformREST')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
+
+            #region Telemetry
+            $this.AddTelemetry('Get')
+            #endregion
+
+            $uri = 'https://' + (Get-MSCloudLoginConnectionProfile -Workload 'PowerPlatformREST').BapEndpoint + `
+                "/providers/PowerPlatform.Governance/v1/tenants/$($graphTenantId)/tenantIsolationPolicy?api-version=2016-11-01"
+            $tenantIsolationPolicy = Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'GET' -Body $RequestBody
+            if ($tenantIsolationPolicy.StatusCode -eq 403)
+            {
+                throw 'Invalid permission for the application. If you are using a custom app registration to authenticate, make sure it is defined as a Power Platform admin management application. For additional information refer to https://learn.microsoft.com/en-us/power-platform/admin/powershell-create-service-principal#registering-an-admin-management-application'
+            }
+
+            [Array]$allowedTenants = $tenantIsolationPolicy.properties.allowedTenants | ForEach-Object {
+                $directions = $_.direction
+                if ($directions.inbound -eq $true)
+                {
+                    if ($directions.outbound -eq $true)
+                    {
+                        $direction = 'Both'
+                    }
+                    else
+                    {
+                        $direction = 'Inbound'
+                    }
+                }
+                elseif ($directions.outbound -eq $true)
+                {
+                    $direction = 'Outbound'
+                }
+                else
+                {
+                    $direction = 'unknown'
+                }
+
+                return [MSFT_PPTenantRule] @{
+                    TenantName = $_.tenantId
+                    Direction  = $direction
+                }
+            }
+
+            return $this.AsResult(@{
+                IsSingleInstance      = 'Yes'
+                Enabled               = ($tenantIsolationPolicy.properties.isDisabled -eq $false)
+                Rules                 = $allowedTenants
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            })
+        }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message 'Setting Power Platform Tenant Isolation Settings configuration'
+
+        if ($this.GetBoundParameters().ContainsKey('Rules') -and `
+            ($this.GetBoundParameters().ContainsKey('RulesToInclude') -or `
+                    $this.GetBoundParameters().ContainsKey('RulesToExclude')))
         {
             $message = 'You cannot specify Rules and RulesToInclude/RulesToExclude.'
             Add-M365DSCEvent -Message $message -EntryType 'Error' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source $($this.GetResourceName())
             throw $message
         }
-
-        $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-            -InboundParameters $PSBoundParameters
-
-        $tenantid = (Get-MgContext).TenantId
-
-        $null = New-M365DSCConnection -Workload 'PowerPlatformREST' `
-            -InboundParameters $PSBoundParameters
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
         #region Telemetry
-        $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-        $CommandName = $MyInvocation.MyCommand
-        $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-            -CommandName $CommandName `
-            -Parameters $PSBoundParameters
-        Add-M365DSCTelemetryEvent -Data $data
+        $this.AddTelemetry('Set')
         #endregion
 
-        $uri = 'https://' + (Get-MSCloudLoginConnectionProfile -Workload 'PowerPlatformREST').BapEndpoint + `
-            "/providers/PowerPlatform.Governance/v1/tenants/$($tenantId)/tenantIsolationPolicy?api-version=2016-11-01"
-        $tenantIsolationPolicy = Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'GET' -Body $RequestBody
-        if ($tenantIsolationPolicy.StatusCode -eq 403)
-        {
-            throw 'Invalid permission for the application. If you are using a custom app registration to authenticate, make sure it is defined as a Power Platform admin management application. For additional information refer to https://learn.microsoft.com/en-us/power-platform/admin/powershell-create-service-principal#registering-an-admin-management-application'
+        $null = $this.Connect('PowerPlatformREST')
+
+        $null = $this.Connect('MicrosoftGraph')
+
+        $tenantinfo = (Get-MgContext).TenantId
+
+        $tenantIsolationPolicy = @{
+            properties = @{
+                tenantId       = $tenantinfo
+                isDisabled     = $false
+                allowedTenants = @()
+            }
         }
 
-        [Array]$allowedTenants = $tenantIsolationPolicy.properties.allowedTenants | ForEach-Object {
-            $directions = $_.direction
-            if ($directions.inbound -eq $true)
+        $tenantIsolationPolicy.Properties.isDisabled = -not $this.Enabled
+
+        [Array]$existingAllowedRules = $tenantIsolationPolicy.Properties.allowedTenants
+
+        if ($this.GetBoundParameters().ContainsKey('Rules'))
+        {
+            Write-Verbose 'Processing parameter Rules'
+            foreach ($rule in $this.Rules)
             {
-                if ($directions.outbound -eq $true)
+                # Check if Rules exist
+                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
+
+                $direction = @{
+                    inbound  = $false
+                    outbound = $false
+                }
+
+                $existingRule = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -eq $ruleTenantId }
+                if ($null -eq $existingRule)
                 {
-                    $direction = 'Both'
+                    Write-Verbose "Rule for $($rule.TenantName) does not exist. Adding with direction $($rule.Direction)"
+                    switch ($rule.Direction)
+                    {
+                        'Inbound'
+                        {
+                            $direction.inbound = $true
+                        }
+                        'Outbound'
+                        {
+                            $direction.outbound = $true
+                        }
+                        'Both'
+                        {
+                            $direction.inbound = $true
+                            $direction.outbound = $true
+                        }
+                    }
+
+                    $newRule = @{
+                        tenantId  = $ruleTenantId
+                        direction = $direction
+                    }
+
+                    $existingAllowedRules += $newRule
                 }
                 else
                 {
-                    $direction = 'Inbound'
-                }
-            }
-            elseif ($directions.outbound -eq $true)
-            {
-                $direction = 'Outbound'
-            }
-            else
-            {
-                $direction = 'unknown'
-            }
-
-            return @{
-                TenantName = $_.tenantId
-                Direction  = $direction
-            }
-        }
-
-        return @{
-            IsSingleInstance      = 'Yes'
-            Enabled               = ($tenantIsolationPolicy.properties.isDisabled -eq $false)
-            Rules                 = $allowedTenants
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled = $true,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Rules,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $RulesToInclude,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $RulesToExclude,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message 'Setting Power Platform Tenant Isolation Settings configuration'
-
-    if ($PSBoundParameters.ContainsKey('Rules') -and `
-        ($PSBoundParameters.ContainsKey('RulesToInclude') -or `
-                $PSBoundParameters.ContainsKey('RulesToExclude')))
-    {
-        $message = 'You cannot specify Rules and RulesToInclude/RulesToExclude.'
-        Add-M365DSCEvent -Message $message -EntryType 'Error' `
-            -EventID 1 -Source $($MyInvocation.MyCommand.Source)
-        throw $message
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $null = New-M365DSCConnection -Workload 'PowerPlatformREST' `
-        -InboundParameters $PSBoundParameters
-
-    $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    $tenantinfo = (Get-MgContext).TenantId
-
-    $tenantIsolationPolicy = @{
-        properties = @{
-            tenantId       = $tenantinfo
-            isDisabled     = $false
-            allowedTenants = @()
-        }
-    }
-
-    $tenantIsolationPolicy.Properties.isDisabled = -not $Enabled
-
-    [Array]$existingAllowedRules = $tenantIsolationPolicy.Properties.allowedTenants
-
-    if ($PSBoundParameters.ContainsKey('Rules'))
-    {
-        Write-Verbose 'Processing parameter Rules'
-        foreach ($rule in $Rules)
-        {
-            # Check if Rules exist
-            $ruleTenantId = Get-M365TenantId -TenantName $rule.TenantName
-
-            $direction = @{
-                inbound  = $false
-                outbound = $false
-            }
-
-            $existingRule = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -eq $ruleTenantId }
-            if ($null -eq $existingRule)
-            {
-                Write-Verbose "Rule for $($rule.TenantName) does not exist. Adding with direction $($rule.Direction)"
-                switch ($rule.Direction)
-                {
-                    'Inbound'
+                    Write-Verbose "Rule for $($rule.TenantName) exists. Setting specified direction."
+                    switch ($rule.Direction)
                     {
-                        $direction.inbound = $true
-                    }
-                    'Outbound'
-                    {
-                        $direction.outbound = $true
-                    }
-                    'Both'
-                    {
-                        $direction.inbound = $true
-                        $direction.outbound = $true
-                    }
-                }
-
-                $newRule = @{
-                    tenantId  = $ruleTenantId
-                    direction = $direction
-                }
-
-                $existingAllowedRules += $newRule
-            }
-            else
-            {
-                Write-Verbose "Rule for $($rule.TenantName) exists. Setting specified direction."
-                switch ($rule.Direction)
-                {
-                    'Inbound'
-                    {
-                        $existingRule.Direction.inbound = $true
-                        $existingRule.Direction.outbound = $false
-                    }
-                    'Outbound'
-                    {
-                        $existingRule.Direction.inbound = $false
-                        $existingRule.Direction.outbound = $true
-                    }
-                    'Both'
-                    {
-                        $existingRule.Direction.inbound = $true
-                        $existingRule.Direction.outbound = $true
+                        'Inbound'
+                        {
+                            $existingRule.Direction.inbound = $true
+                            $existingRule.Direction.outbound = $false
+                        }
+                        'Outbound'
+                        {
+                            $existingRule.Direction.inbound = $false
+                            $existingRule.Direction.outbound = $true
+                        }
+                        'Both'
+                        {
+                            $existingRule.Direction.inbound = $true
+                            $existingRule.Direction.outbound = $true
+                        }
                     }
                 }
             }
-        }
 
-        $removeRules = @()
-        foreach ($existingRule in $existingAllowedRules)
-        {
-            # Check if rules are not in the specified list
-            if ($null -eq ($Rules | Where-Object -FilterScript { (Get-M365TenantId -TenantName $_.TenantName) -eq $existingRule.tenantId }))
+            # Resolved up front rather than inside the Where-Object below because $this does not resolve
+            # inside a scriptblock nested in a class method.
+            $desiredTenantIds = @()
+            foreach ($rule in $this.Rules)
             {
-                Write-Verbose "Rule for tenant id $($existingRule.tenantId) does not exist in the Rules parameter. Deleting rule."
-                $removeRules += $existingRule.tenantId
+                $desiredTenantIds += $this.GetM365TenantId($rule.TenantName)
             }
-        }
-        [Array]$newRules = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -notin $removeRules }
-        $tenantIsolationPolicy.Properties.allowedTenants = $newRules
-    }
-
-    if ($PSBoundParameters.ContainsKey('RulesToInclude'))
-    {
-        Write-Verbose 'Processing parameter RulesToInclude'
-        foreach ($rule in $RulesToInclude)
-        {
-            Write-Verbose "Checking rule for TenantName $($rule.TenantName) with direction $($rule.Direction)"
-            $ruleTenantId = Get-M365TenantId -TenantName $rule.TenantName
-            Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-            $direction = @{
-                inbound  = $false
-                outbound = $false
-            }
-
-            $existingRule = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -eq $ruleTenantId }
-            if ($null -eq $existingRule)
-            {
-                Write-Verbose "Rule does not exist. Adding with direction $($rule.Direction)"
-                # Rule does not exist, add rule
-                switch ($rule.Direction)
-                {
-                    'Inbound'
-                    {
-                        $direction.inbound = $true
-                    }
-                    'Outbound'
-                    {
-                        $direction.outbound = $true
-                    }
-                    'Both'
-                    {
-                        $direction.inbound = $true
-                        $direction.outbound = $true
-                    }
-                }
-
-                $newRule = @{
-                    tenantId          = $ruleTenantId
-                    tenantDisplayName = ''
-                    direction         = $direction
-                }
-
-                $existingAllowedRules += $newRule
-            }
-            else
-            {
-                Write-Verbose 'Rule exists. Setting specified direction.'
-                switch ($rule.Direction)
-                {
-                    'Inbound'
-                    {
-                        $existingRule.Direction.inbound = $true
-                        $existingRule.Direction.outbound = $false
-                    }
-                    'Outbound'
-                    {
-                        $existingRule.Direction.inbound = $false
-                        $existingRule.Direction.outbound = $true
-                    }
-                    'Both'
-                    {
-                        $existingRule.Direction.inbound = $true
-                        $existingRule.Direction.outbound = $true
-                    }
-                }
-            }
-        }
-        $tenantIsolationPolicy.Properties.allowedTenants = $existingAllowedRules
-    }
-
-    if ($PSBoundParameters.ContainsKey('RulesToExclude'))
-    {
-        Write-Verbose 'Processing parameter RulesToExclude'
-        foreach ($rule in $RulesToExclude)
-        {
-            Write-Verbose "Checking rule for TenantName $($rule.TenantName) RulesToExclude"
-            $ruleTenantId = Get-M365TenantId -TenantName $rule.TenantName
-            Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
 
             $removeRules = @()
-            if ($null -ne ($existingAllowedRules | Where-Object -FilterScript { $_.tenantId -eq $ruleTenantId }))
+            foreach ($existingRule in $existingAllowedRules)
             {
-                Write-Verbose "Rule for $($rule.TenantName) is currently configured in the rules. Deleting rule."
-                $removeRules += $ruleTenantId
-            }
-        }
-
-        [Array]$newRules = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -notin $removeRules }
-        $tenantIsolationPolicy.Properties.allowedTenants = $newRules
-    }
-    $uri = 'https://' + (Get-MSCloudLoginConnectionProfile -Workload 'PowerPlatformREST').BapEndpoint + `
-        "/providers/PowerPlatform.Governance/v1/tenants/$($tenantinfo)/tenantIsolationPolicy?api-version=2020-06-01"
-    Write-Verbose -Message "Updating with payload:`r`n$(ConvertTo-Json $tenantIsolationPolicy -Depth 20)"
-    Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'PUT' -Body $tenantIsolationPolicy
-}
-
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Yes')]
-        [System.String]
-        $IsSingleInstance,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled = $true,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $Rules,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $RulesToInclude,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $RulesToExclude,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message 'Testing Power Platform Tenant Isolation Settings configuration'
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $CurrentValues = Get-TargetResource @PSBoundParameters
-
-    Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
-    Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $PSBoundParameters)"
-
-    $result = $true
-    $driftedRules = @{}
-    if ($PSBoundParameters.ContainsKey('Rules'))
-    {
-        Write-Verbose 'Processing parameter Rules'
-        foreach ($rule in $Rules)
-        {
-            Write-Verbose "Checking Rule for TenantName $($rule.TenantName). Rules"
-            $ruleTenantId = Get-M365TenantId -TenantName $rule.TenantName
-            Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-            $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
-            if ($null -eq $existingRule)
-            {
-                Write-Verbose "Rule for $($rule.TenantName) does not exist."
-                $driftedRules.($rule.TenantName) = @{
-                    CurrentValue = 'Rule does not exist'
-                    DesiredValue = "Direction: $($rule.Direction)"
-                }
-                $result = $false
-            }
-            else
-            {
-                Write-Verbose "Rule for $($rule.TenantName) exists. Checking specified direction."
-                if ($rule.Direction -ne $existingRule.Direction)
+                # Check if rules are not in the specified list
+                if ($existingRule.tenantId -notin $desiredTenantIds)
                 {
-                    Write-Verbose "Direction for rule incorrect: Current = $($existingRule.Direction) / Desired = $($rule.Direction)"
-                    $driftedRules.($rule.TenantName) = @{
-                        CurrentValue = "Direction: $($existingRule.Direction)"
-                        DesiredValue = "Direction: $($rule.Direction)"
-                    }
-                    $result = $false
+                    Write-Verbose "Rule for tenant id $($existingRule.tenantId) does not exist in the Rules parameter. Deleting rule."
+                    $removeRules += $existingRule.tenantId
                 }
             }
+            [Array]$newRules = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -notin $removeRules }
+            $tenantIsolationPolicy.Properties.allowedTenants = $newRules
         }
 
-        foreach ($existingRule in $CurrentValues.Rules)
+        if ($this.GetBoundParameters().ContainsKey('RulesToInclude'))
         {
-            # Check if rules are not in the specified list
-            if ($null -eq ($Rules | Where-Object -FilterScript { (Get-M365TenantId -TenantName $_.TenantName) -eq $existingRule.TenantName }))
+            Write-Verbose 'Processing parameter RulesToInclude'
+            foreach ($rule in $this.RulesToInclude)
             {
-                Write-Verbose "Rule for tenant id $($existingRule.TenantName) does not exist in the Desired State."
+                Write-Verbose "Checking rule for TenantName $($rule.TenantName) with direction $($rule.Direction)"
+                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
+                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
 
-                $driftedRules.($existingRule.TenantName) = @{
-                    CurrentValue = "Direction: $($existingRule.Direction)"
-                    DesiredValue = "Direction: $($rule.Direction)"
+                $direction = @{
+                    inbound  = $false
+                    outbound = $false
                 }
-                $result = $false
-            }
-        }
-    }
 
-    if ($PSBoundParameters.ContainsKey('RulesToInclude'))
-    {
-        Write-Verbose 'Processing parameter RulesToInclude'
-        $driftedRules = @{}
-        foreach ($rule in $RulesToInclude)
-        {
-            Write-Verbose "Checking Rule for TenantName $($rule.TenantName). RulesToInclude"
-            $ruleTenantId = Get-M365TenantId -TenantName $rule.TenantName
-            Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-            $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
-            if ($null -eq $existingRule)
-            {
-                Write-Verbose "Rule for $($rule.TenantName) does not exist."
-                $driftedRules.($rule.TenantName) = @{
-                    CurrentValue = 'Rule does not exist'
-                    DesiredValue = "Direction: $($rule.Direction)"
-                }
-                $result = $false
-            }
-            else
-            {
-                Write-Verbose "Rule for $($rule.TenantName) exists. Checking specified direction."
-                if ($rule.Direction -ne $existingRule.Direction)
+                $existingRule = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -eq $ruleTenantId }
+                if ($null -eq $existingRule)
                 {
-                    Write-Verbose "Direction for rule incorrect: Current = $($existingRule.Direction) / Desired = $($rule.Direction)"
-                    $driftedRules.($rule.TenantName) = @{
-                        CurrentValue = "Direction: $($existingRule.Direction)"
-                        DesiredValue = "Direction: $($rule.Direction)"
+                    Write-Verbose "Rule does not exist. Adding with direction $($rule.Direction)"
+                    # Rule does not exist, add rule
+                    switch ($rule.Direction)
+                    {
+                        'Inbound'
+                        {
+                            $direction.inbound = $true
+                        }
+                        'Outbound'
+                        {
+                            $direction.outbound = $true
+                        }
+                        'Both'
+                        {
+                            $direction.inbound = $true
+                            $direction.outbound = $true
+                        }
                     }
-                    $result = $false
-                }
-            }
-        }
-    }
 
-    if ($PSBoundParameters.ContainsKey('RulesToExclude'))
-    {
-        Write-Verbose 'Processing parameter RulesToExclude'
-        $driftedRules = @{}
-        foreach ($rule in $RulesToExclude)
-        {
-            Write-Verbose "Checking Rule for TenantName $($rule.TenantName). RulesToExclude"
-            $ruleTenantId = Get-M365TenantId -TenantName $rule.TenantName
-            Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-            $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
-            if ($null -ne $existingRule)
-            {
-                Write-Verbose "Rule for $($rule.TenantName) exists."
-                $driftedRules.($rule.TenantName) = @{
-                    CurrentValue = "Direction: $($existingRule.Direction)"
-                    DesiredValue = 'Should not exist'
-                }
-                $result = $false
-            }
-        }
-    }
-
-    if ($result -eq $false)
-    {
-        $message = "Tenant Isolation Rules not in the Desired State:`n"
-        $message += "<Rules>`n"
-        foreach ($driftedRule in $driftedRules.GetEnumerator())
-        {
-            $message += "    <Rule>`n"
-            $message += "        <TenantName>$($driftedRule.Name)</TenantName>`n"
-            $message += "        <CurrentValue>$($driftedRule.Value.CurrentValue)</CurrentValue>`n"
-            $message += "        <DesiredValue>$($driftedRule.Value.DesiredValue)</DesiredValue>`n"
-            $message += "    </Rule>`n"
-        }
-        $message += '</Rules>'
-        Add-M365DSCEvent -Message $message -EntryType 'Error' `
-            -EventID 1 -Source $($MyInvocation.MyCommand.Source)
-        Write-Verbose -Message 'Test-TargetResource returned False'
-        return $false
-    }
-
-    $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-        -Source $($MyInvocation.MyCommand.Source) `
-        -DesiredValues $PSBoundParameters `
-        -ValuesToCheck @('Enabled')
-
-    Write-Verbose -Message "Test-TargetResource returned $TestResult"
-
-    return $TestResult
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName -replace 'MSFT_', ''
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        $ConnectionMode = New-M365DSCConnection -Workload 'PowerPlatformREST' `
-            -InboundParameters $PSBoundParameters
-        if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-        {
-            $Global:M365DSCExportResourceInstancesCount++
-        }
-
-        $dscContent = [System.Text.StringBuilder]::new()
-
-        $Params = @{
-            IsSingleInstance      = 'Yes'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            ApplicationSecret     = $ApplicationSecret
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-
-        $Results = Get-TargetResource @Params
-
-        if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)
-        {
-            if ($null -ne $Results.Rules)
-            {
-                $complexMapping = @(
-                    @{
-                        Name            = 'Rules'
-                        CimInstanceName = 'MSFT_PPTenantRule'
-                        IsRequired      = $False
+                    $newRule = @{
+                        tenantId          = $ruleTenantId
+                        tenantDisplayName = ''
+                        direction         = $direction
                     }
-                )
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.Rules `
-                    -CIMInstanceName 'MSFT_PPTenantRule' `
-                    -ComplexTypeMapping $complexMapping
 
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.Rules = $complexTypeStringResult
+                    $existingAllowedRules += $newRule
                 }
                 else
                 {
-                    $Results.Remove('Rules') | Out-Null
+                    Write-Verbose 'Rule exists. Setting specified direction.'
+                    switch ($rule.Direction)
+                    {
+                        'Inbound'
+                        {
+                            $existingRule.Direction.inbound = $true
+                            $existingRule.Direction.outbound = $false
+                        }
+                        'Outbound'
+                        {
+                            $existingRule.Direction.inbound = $false
+                            $existingRule.Direction.outbound = $true
+                        }
+                        'Both'
+                        {
+                            $existingRule.Direction.inbound = $true
+                            $existingRule.Direction.outbound = $true
+                        }
+                    }
                 }
             }
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('Rules')
-
-            [void]$dscContent.Append($currentDSCBlock)
-
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            $tenantIsolationPolicy.Properties.allowedTenants = $existingAllowedRules
         }
-        else
+
+        if ($this.GetBoundParameters().ContainsKey('RulesToExclude'))
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiRedX -CommitWrite
+            Write-Verbose 'Processing parameter RulesToExclude'
+            foreach ($rule in $this.RulesToExclude)
+            {
+                Write-Verbose "Checking rule for TenantName $($rule.TenantName) RulesToExclude"
+                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
+                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
+
+                $removeRules = @()
+                if ($null -ne ($existingAllowedRules | Where-Object -FilterScript { $_.tenantId -eq $ruleTenantId }))
+                {
+                    Write-Verbose "Rule for $($rule.TenantName) is currently configured in the rules. Deleting rule."
+                    $removeRules += $ruleTenantId
+                }
+            }
+
+            [Array]$newRules = $existingAllowedRules | Where-Object -FilterScript { $_.tenantId -notin $removeRules }
+            $tenantIsolationPolicy.Properties.allowedTenants = $newRules
+        }
+        $uri = 'https://' + (Get-MSCloudLoginConnectionProfile -Workload 'PowerPlatformREST').BapEndpoint + `
+            "/providers/PowerPlatform.Governance/v1/tenants/$($tenantinfo)/tenantIsolationPolicy?api-version=2020-06-01"
+        Write-Verbose -Message "Updating with payload:`r`n$(ConvertTo-Json $tenantIsolationPolicy -Depth 20)"
+        Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'PUT' -Body $tenantIsolationPolicy
+    }
+
+    [bool] Test()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
         }
 
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+        Write-Verbose -Message 'Testing Power Platform Tenant Isolation Settings configuration'
 
-        throw
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $CurrentValues = $this.Get().ToHashtable()
+
+        Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
+        Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $this.GetBoundParameters())"
+
+        $result = $true
+        $driftedRules = @{}
+        if ($this.GetBoundParameters().ContainsKey('Rules'))
+        {
+            Write-Verbose 'Processing parameter Rules'
+            foreach ($rule in $this.Rules)
+            {
+                Write-Verbose "Checking Rule for TenantName $($rule.TenantName). Rules"
+                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
+                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
+
+                $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
+                if ($null -eq $existingRule)
+                {
+                    Write-Verbose "Rule for $($rule.TenantName) does not exist."
+                    $driftedRules.($rule.TenantName) = @{
+                        CurrentValue = 'Rule does not exist'
+                        DesiredValue = "Direction: $($rule.Direction)"
+                    }
+                    $result = $false
+                }
+                else
+                {
+                    Write-Verbose "Rule for $($rule.TenantName) exists. Checking specified direction."
+                    if ($rule.Direction -ne $existingRule.Direction)
+                    {
+                        Write-Verbose "Direction for rule incorrect: Current = $($existingRule.Direction) / Desired = $($rule.Direction)"
+                        $driftedRules.($rule.TenantName) = @{
+                            CurrentValue = "Direction: $($existingRule.Direction)"
+                            DesiredValue = "Direction: $($rule.Direction)"
+                        }
+                        $result = $false
+                    }
+                }
+            }
+
+            # Resolved up front rather than inside the Where-Object below because $this does not resolve
+            # inside a scriptblock nested in a class method.
+            $desiredTenantIds = @()
+            foreach ($rule in $this.Rules)
+            {
+                $desiredTenantIds += $this.GetM365TenantId($rule.TenantName)
+            }
+
+            foreach ($existingRule in $CurrentValues.Rules)
+            {
+                # Check if rules are not in the specified list
+                if ($existingRule.TenantName -notin $desiredTenantIds)
+                {
+                    Write-Verbose "Rule for tenant id $($existingRule.TenantName) does not exist in the Desired State."
+
+                    $driftedRules.($existingRule.TenantName) = @{
+                        CurrentValue = "Direction: $($existingRule.Direction)"
+                        DesiredValue = "Direction: $($rule.Direction)"
+                    }
+                    $result = $false
+                }
+            }
+        }
+
+        if ($this.GetBoundParameters().ContainsKey('RulesToInclude'))
+        {
+            Write-Verbose 'Processing parameter RulesToInclude'
+            $driftedRules = @{}
+            foreach ($rule in $this.RulesToInclude)
+            {
+                Write-Verbose "Checking Rule for TenantName $($rule.TenantName). RulesToInclude"
+                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
+                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
+
+                $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
+                if ($null -eq $existingRule)
+                {
+                    Write-Verbose "Rule for $($rule.TenantName) does not exist."
+                    $driftedRules.($rule.TenantName) = @{
+                        CurrentValue = 'Rule does not exist'
+                        DesiredValue = "Direction: $($rule.Direction)"
+                    }
+                    $result = $false
+                }
+                else
+                {
+                    Write-Verbose "Rule for $($rule.TenantName) exists. Checking specified direction."
+                    if ($rule.Direction -ne $existingRule.Direction)
+                    {
+                        Write-Verbose "Direction for rule incorrect: Current = $($existingRule.Direction) / Desired = $($rule.Direction)"
+                        $driftedRules.($rule.TenantName) = @{
+                            CurrentValue = "Direction: $($existingRule.Direction)"
+                            DesiredValue = "Direction: $($rule.Direction)"
+                        }
+                        $result = $false
+                    }
+                }
+            }
+        }
+
+        if ($this.GetBoundParameters().ContainsKey('RulesToExclude'))
+        {
+            Write-Verbose 'Processing parameter RulesToExclude'
+            $driftedRules = @{}
+            foreach ($rule in $this.RulesToExclude)
+            {
+                Write-Verbose "Checking Rule for TenantName $($rule.TenantName). RulesToExclude"
+                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
+                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
+
+                $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
+                if ($null -ne $existingRule)
+                {
+                    Write-Verbose "Rule for $($rule.TenantName) exists."
+                    $driftedRules.($rule.TenantName) = @{
+                        CurrentValue = "Direction: $($existingRule.Direction)"
+                        DesiredValue = 'Should not exist'
+                    }
+                    $result = $false
+                }
+            }
+        }
+
+        if ($result -eq $false)
+        {
+            $message = "Tenant Isolation Rules not in the Desired State:`n"
+            $message += "<Rules>`n"
+            foreach ($driftedRule in $driftedRules.GetEnumerator())
+            {
+                $message += "    <Rule>`n"
+                $message += "        <TenantName>$($driftedRule.Name)</TenantName>`n"
+                $message += "        <CurrentValue>$($driftedRule.Value.CurrentValue)</CurrentValue>`n"
+                $message += "        <DesiredValue>$($driftedRule.Value.DesiredValue)</DesiredValue>`n"
+                $message += "    </Rule>`n"
+            }
+            $message += '</Rules>'
+            Add-M365DSCEvent -Message $message -EntryType 'Error' `
+                -EventID 1 -Source $($this.GetResourceName())
+            Write-Verbose -Message 'Test-TargetResource returned False'
+            return $false
+        }
+
+        $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
+            -Source $($this.GetResourceName()) `
+            -DesiredValues $this.GetBoundParameters() `
+            -ValuesToCheck @('Enabled')
+
+        Write-Verbose -Message "Test-TargetResource returned $TestResult"
+
+        return $TestResult
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            $ConnectionMode = $this.Connect('PowerPlatformREST')
+            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+            {
+                $Global:M365DSCExportResourceInstancesCount++
+            }
+
+            $dscContent = [System.Text.StringBuilder]::new()
+
+            $Params = @{
+                IsSingleInstance      = 'Yes'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                ApplicationSecret     = $this.ApplicationSecret
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+
+            $Results = $this.GetForExport($Params)
+
+            if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)
+            {
+                if ($null -ne $Results.Rules)
+                {
+                    $complexMapping = @(
+                        @{
+                            Name            = 'Rules'
+                            CimInstanceName = 'MSFT_PPTenantRule'
+                            IsRequired      = $False
+                        }
+                    )
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.Rules `
+                        -CIMInstanceName 'MSFT_PPTenantRule' `
+                        -ComplexTypeMapping $complexMapping
+
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.Rules = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('Rules') | Out-Null
+                    }
+                }
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('Rules')
+
+                [void]$dscContent.Append($currentDSCBlock)
+
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+            }
+            else
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiRedX -CommitWrite
+            }
+
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [PPTenantIsolationSettings] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [PPTenantIsolationSettings])
+        {
+            return $Values
+        }
+
+        $result = [PPTenantIsolationSettings]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
+    }
+
+    <#
+        Was the module-scope Get-M365TenantId, backed by a $Script: cache. Both had to go: every
+        resource compiles into a shared Classes/Part<NN>.psm1, so script scope is one namespace
+        across unrelated resources. The cache lives on the instance instead.
+    #>
+    hidden [System.String] GetM365TenantId([System.String] $TenantName)
+    {
+        if ($TenantName -eq '*')
+        {
+            return '*'
+        }
+
+        $cache = $this.ResourceCache['TenantNameToGuidCache']
+        if ($cache.ContainsKey($TenantName))
+        {
+            return $cache[$TenantName]
+        }
+
+        $result = Invoke-WebRequest "https://login.windows.net/$TenantName/.well-known/openid-configuration" -UseBasicParsing
+        $jsonResult = $result | ConvertFrom-Json
+        $resolvedTenantId = $jsonResult.token_endpoint.Split('/')[3]
+        $cache[$TenantName] = $resolvedTenantId
+        return $resolvedTenantId
     }
 }
 
-$Script:TenantNameToGuidCache = @{}
-function Get-M365TenantId
+class MSFT_PPTenantRule
 {
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantName
-    )
-
-    if ($TenantName -eq '*')
-    {
-        return '*'
-    }
-
-    if ($Script:TenantNameToGuidCache.ContainsKey($TenantName))
-    {
-        return $Script:TenantNameToGuidCache[$TenantName]
-    }
-
-    $result = Invoke-WebRequest "https://login.windows.net/$TenantName/.well-known/openid-configuration" -UseBasicParsing
-    $jsonResult = $result | ConvertFrom-Json
-    $tenantId = $jsonResult.token_endpoint.Split('/')[3]
-    $Script:TenantNameToGuidCache[$TenantName] = $tenantId
-    return $tenantId
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the trusted tenant.')]
+    [System.String] $TenantName
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Direction of tenant trust.')]
+    [System.String] $Direction
 }
-
-Export-ModuleMember -Function *-TargetResource

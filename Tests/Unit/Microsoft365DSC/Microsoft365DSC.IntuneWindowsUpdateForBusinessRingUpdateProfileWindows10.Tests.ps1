@@ -22,7 +22,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         BeforeAll {
 
             $secpasswd = ConvertTo-SecureString (New-GUID).ToString() -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
@@ -36,7 +36,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgBetaDeviceManagementDeviceConfiguration -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return 'Credentials'
             }
 
@@ -125,13 +125,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     FeatureUpdatesRollbackStartDateTime     = '2023-01-01T00:00:00.0000000+00:00'
                     FeatureUpdatesRollbackWindowInDays      = 25
                     id                                      = 'FakeStringValue'
-                    installationSchedule                    = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType -Property @{
+                    installationSchedule                    = ([MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType] @{
                             activeHoursStart     = '00:00:00'
                             scheduledInstallTime = '00:00:00'
                             scheduledInstallDay  = 'userDefined'
                             activeHoursEnd       = '00:00:00'
                             odataType            = '#microsoft.graph.windowsUpdateActiveHoursInstall'
-                        } -ClientOnly)
+                        })
                     microsoftUpdateServiceAllowed           = $True
                     postponeRebootUntilAfterDeadline        = $True
                     prereleaseFeatures                      = 'userDefined'
@@ -156,13 +156,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should Create the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName New-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -191,13 +191,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     FeatureUpdatesRollbackStartDateTime     = '2023-01-01T00:00:00.0000000+00:00'
                     FeatureUpdatesRollbackWindowInDays      = 25
                     id                                      = 'FakeStringValue'
-                    installationSchedule                    = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType -Property @{
+                    installationSchedule                    = ([MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType] @{
                             activeHoursStart     = '00:00:00'
                             scheduledInstallTime = '00:00:00'
                             scheduledInstallDay  = 'userDefined'
                             activeHoursEnd       = '00:00:00'
                             odataType            = '#microsoft.graph.windowsUpdateActiveHoursInstall'
-                        } -ClientOnly)
+                        })
                     microsoftUpdateServiceAllowed           = $True
                     postponeRebootUntilAfterDeadline        = $True
                     prereleaseFeatures                      = 'userDefined'
@@ -219,15 +219,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should Remove the group from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Remove-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -256,13 +256,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     FeatureUpdatesRollbackStartDateTime     = '2023-01-01T00:00:00.0000000+00:00'
                     FeatureUpdatesRollbackWindowInDays      = 25
                     id                                      = 'FakeStringValue'
-                    installationSchedule                    = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType -Property @{
+                    installationSchedule                    = ([MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType] @{
                             activeHoursStart     = '00:00:00'
                             scheduledInstallTime = '00:00:00'
                             scheduledInstallDay  = 'userDefined'
                             activeHoursEnd       = '00:00:00'
                             odataType            = '#microsoft.graph.windowsUpdateActiveHoursInstall'
-                        } -ClientOnly)
+                        })
                     microsoftUpdateServiceAllowed           = $True
                     postponeRebootUntilAfterDeadline        = $True
                     prereleaseFeatures                      = 'userDefined'
@@ -284,7 +284,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -312,13 +312,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     FeatureUpdatesRollbackStartDateTime     = '2023-01-01T00:00:00.0000000+00:00'
                     FeatureUpdatesRollbackWindowInDays      = 25
                     id                                      = 'FakeStringValue'
-                    installationSchedule                    = (New-CimInstance -ClassName MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType -Property @{
+                    installationSchedule                    = ([MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType] @{
                             activeHoursStart     = '00:00:00'
                             scheduledInstallTime = '00:00:00'
                             scheduledInstallDay  = 'userDefined'
                             activeHoursEnd       = '00:00:00'
                             odataType            = '#microsoft.graph.windowsUpdateActiveHoursInstall'
-                        } -ClientOnly)
+                        })
                     microsoftUpdateServiceAllowed           = $True
                     postponeRebootUntilAfterDeadline        = $True
                     prereleaseFeatures                      = 'userDefined'
@@ -340,15 +340,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It 'Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Test() | Should -Be $false
             }
 
             It 'Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementDeviceConfiguration -Exactly 1
             }
         }
@@ -363,7 +363,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }

@@ -1,610 +1,422 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_AADAuthenticationMethodPolicyEmail'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class AADAuthenticationMethodPolicyEmail : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        #region resource generator code
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('Determines whether email OTP is usable by external users for authentication. Possible values are: default, enabled, disabled, unknownFutureValue. Tenants in the default state who did not use public preview will automatically have email OTP enabled beginning in October 2021.')]
+    [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
+    [System.String] $AllowExternalIdToUseEmailOtp
 
-        [Parameter()]
-        [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
-        [System.String]
-        $AllowExternalIdToUseEmailOtp,
+    [DscProperty()]
+    [System.ComponentModel.Description('Displayname of the groups of users that are excluded from a policy.')]
+    [MSFT_AADAuthenticationMethodPolicyEmailExcludeTarget[]] $ExcludeTargets
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExcludeTargets,
+    [DscProperty()]
+    [System.ComponentModel.Description('Displayname of the groups of users that are included from a policy.')]
+    [MSFT_AADAuthenticationMethodPolicyEmailIncludeTarget[]] $IncludeTargets
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $IncludeTargets,
+    [DscProperty()]
+    [System.ComponentModel.Description('The state of the policy. Possible values are: enabled, disabled.')]
+    [ValidateSet('enabled', 'disabled')]
+    [System.String] $State
 
-        [Parameter()]
-        [ValidateSet('enabled', 'disabled')]
-        [System.String]
-        $State,
-        #endregion
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the policy exists, absent ensures it is removed.')]
+    [ValidateSet('Present', 'Absent')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
+    [DscProperty()]
+    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
+    [System.Management.Automation.PSCredential] $ApplicationSecret
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    [AADAuthenticationMethodPolicyEmail] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting the Azure AD Authentication Method Policy Email with Id {$Id}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Id -ne $Id)
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            $getValue = $null
-            #region resource generator code
-            $getValue = Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $Id -ErrorAction SilentlyContinue
-
-            #endregion
-            if ($null -eq $getValue)
-            {
-                Write-Verbose -Message "Could not find an Azure AD Authentication Method Policy Email with id {$id}"
-                return $nullResult
-            }
+            $remote = [AADAuthenticationMethodPolicyEmail]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
         }
-        else
-        {
-            $getValue = $Script:exportedInstance
-        }
-        $Id = $getValue.Id
-        Write-Verbose -Message "An Azure AD Authentication Method Policy Email with Id {$Id} was found."
 
-        #region resource generator code
-        $complexExcludeTargets = @()
-        foreach ($currentExcludeTargets in $getValue.excludeTargets)
+        Write-Verbose -Message "Getting the Azure AD Authentication Method Policy Email with Id {$($this.Id)}"
+
+        try
         {
-            $myExcludeTargets = [ordered]@{}
-            if ($currentExcludeTargets.id -ne 'all_users')
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Id -ne $this.Id)
             {
-                $myExcludeTargetsDisplayName = Get-M365DSCGroupDisplayNameById -GroupId $currentExcludeTargets.id
-                if ($null -eq $myExcludeTargetsDisplayName)
+                $null = $this.Connect('MicrosoftGraph')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $getValue = $null
+                #region resource generator code
+                $getValue = Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $this.Id -ErrorAction SilentlyContinue
+
+                #endregion
+                if ($null -eq $getValue)
                 {
-                    continue
+                    Write-Verbose -Message "Could not find an Azure AD Authentication Method Policy Email with id {$($this.id)}"
+                    return $this.AsResult($nullResult)
                 }
-                $myExcludeTargets.Add('Id', $myExcludeTargetsDisplayName)
             }
             else
             {
-                $myExcludeTargets.Add('Id', $currentExcludeTargets.id)
+                $getValue = $this.ExportedInstance
+            }
+            $this.Id = $getValue.Id
+            Write-Verbose -Message "An Azure AD Authentication Method Policy Email with Id {$($this.Id)} was found."
+
+            #region resource generator code
+            $complexExcludeTargets = @()
+            foreach ($currentExcludeTargets in $getValue.excludeTargets)
+            {
+                $myExcludeTargets = [ordered]@{}
+                if ($currentExcludeTargets.id -ne 'all_users')
+                {
+                    $myExcludeTargetsDisplayName = Get-M365DSCGroupDisplayNameById -GroupId $currentExcludeTargets.id
+                    if ($null -eq $myExcludeTargetsDisplayName)
+                    {
+                        continue
+                    }
+                    $myExcludeTargets.Add('Id', $myExcludeTargetsDisplayName)
+                }
+                else
+                {
+                    $myExcludeTargets.Add('Id', $currentExcludeTargets.id)
+                }
+
+                if ($null -ne $currentExcludeTargets.targetType)
+                {
+                    $myExcludeTargets.Add('TargetType', $currentExcludeTargets.targetType.ToString())
+                }
+
+                if ($myExcludeTargets.values.Where({ $null -ne $_ }).Count -gt 0)
+                {
+                    $complexExcludeTargets += $myExcludeTargets
+                }
+            }
+            #endregion
+
+            #region resource generator code
+            $enumAllowExternalIdToUseEmailOtp = $null
+            if ($null -ne $getValue.allowExternalIdToUseEmailOtp)
+            {
+                $enumAllowExternalIdToUseEmailOtp = $getValue.allowExternalIdToUseEmailOtp.ToString()
             }
 
-            if ($null -ne $currentExcludeTargets.targetType)
+            $complexIncludeTargets = @()
+            foreach ($currentincludeTargets in $getValue.includeTargets)
             {
-                $myExcludeTargets.Add('TargetType', $currentExcludeTargets.targetType.ToString())
+                $myincludeTargets = [ordered]@{}
+                if ($currentIncludeTargets.id -ne 'all_users')
+                {
+                    $myincludeTargetsDisplayName = Get-M365DSCGroupDisplayNameById -GroupId $currentIncludeTargets.id
+                    if ($null -eq $myIncludeTargetsDisplayName)
+                    {
+                        continue
+                    }
+                    $myIncludeTargets.Add('Id', $myIncludeTargetsDisplayName)
+                }
+                else
+                {
+                    $myIncludeTargets.Add('Id', $currentIncludeTargets.id)
+                }
+
+                if ($null -ne $currentIncludeTargets.targetType)
+                {
+                    $myIncludeTargets.Add('TargetType', $currentIncludeTargets.targetType.ToString())
+                }
+
+                if ($myIncludeTargets.values.Where({ $null -ne $_ }).Count -gt 0)
+                {
+                    $complexIncludeTargets += $myIncludeTargets
+                }
             }
 
-            if ($myExcludeTargets.values.Where({ $null -ne $_ }).Count -gt 0)
+            $enumState = $null
+            if ($null -ne $getValue.State)
             {
-                $complexExcludeTargets += $myExcludeTargets
+                $enumState = $getValue.State.ToString()
             }
+            #endregion
+
+            $results = @{
+                #region resource generator code
+                AllowExternalIdToUseEmailOtp = $enumAllowExternalIdToUseEmailOtp
+                ExcludeTargets               = $complexExcludeTargets
+                IncludeTargets               = $complexIncludeTargets
+                State                        = $enumState
+                Id                           = $getValue.Id
+                Ensure                       = 'Present'
+                Credential                   = $this.Credential
+                ApplicationId                = $this.ApplicationId
+                TenantId                     = $this.TenantId
+                ApplicationSecret            = $this.ApplicationSecret
+                CertificateThumbprint        = $this.CertificateThumbprint
+                CertificatePath              = $this.CertificatePath
+                CertificatePassword          = $this.CertificatePassword
+                ManagedIdentity              = $this.ManagedIdentity.IsPresent
+                AccessTokens                 = $this.AccessTokens
+                #endregion
+            }
+
+            return $this.AsResult($results)
         }
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        Write-Verbose -Message "Setting the Azure AD Authentication Method Policy Email with Id {$($this.Id)}"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
         #endregion
 
-        #region resource generator code
-        $enumAllowExternalIdToUseEmailOtp = $null
-        if ($null -ne $getValue.allowExternalIdToUseEmailOtp)
+        $currentInstance = $this.Get().ToHashtable()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+
+        if ($this.Ensure -eq 'Present')
         {
-            $enumAllowExternalIdToUseEmailOtp = $getValue.allowExternalIdToUseEmailOtp.ToString()
+            Write-Verbose -Message "Updating the Azure AD Authentication Method Policy Email with Id {$($currentInstance.Id)}"
+
+            $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
+            $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
+            $UpdateParameters.Remove('Id') | Out-Null
+
+            Update-M365DSCAuthenticationTargets -Targets $UpdateParameters.ExcludeTargets
+            Update-M365DSCAuthenticationTargets -Targets $UpdateParameters.IncludeTargets
+
+            #region resource generator code
+            $UpdateParameters.Add('@odata.type', '#microsoft.graph.emailAuthenticationMethodConfiguration')
+            Update-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
+                -AuthenticationMethodConfigurationId $currentInstance.Id `
+                -BodyParameter $UpdateParameters
+            #endregion
+        }
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing the Azure AD Authentication Method Policy Email with Id {$($currentInstance.Id)}"
+            #region resource generator code
+            Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $currentInstance.Id
+            #endregion
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
         }
 
-        $complexIncludeTargets = @()
-        foreach ($currentincludeTargets in $getValue.includeTargets)
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
         {
-            $myincludeTargets = [ordered]@{}
-            if ($currentIncludeTargets.id -ne 'all_users')
+            #region resource generator code
+            [array]$getValue = Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
+                -AuthenticationMethodConfigurationId Email `
+                -ErrorAction Stop | Where-Object -FilterScript { $null -ne $_.Id }
+            #endregion
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($getValue.Length -eq 0)
             {
-                $myincludeTargetsDisplayName = Get-M365DSCGroupDisplayNameById -GroupId $currentIncludeTargets.id
-                if ($null -eq $myIncludeTargetsDisplayName)
-                {
-                    continue
-                }
-                $myIncludeTargets.Add('Id', $myIncludeTargetsDisplayName)
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
             else
             {
-                $myIncludeTargets.Add('Id', $currentIncludeTargets.id)
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
-
-            if ($null -ne $currentIncludeTargets.targetType)
+            foreach ($config in $getValue)
             {
-                $myIncludeTargets.Add('TargetType', $currentIncludeTargets.targetType.ToString())
-            }
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                {
+                    $Global:M365DSCExportResourceInstancesCount++
+                }
 
-            if ($myIncludeTargets.values.Where({ $null -ne $_ }).Count -gt 0)
-            {
-                $complexIncludeTargets += $myIncludeTargets
+                $displayedKey = $config.Id
+
+                Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Id                    = $config.Id
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+                if ($Results.ExcludeTargets)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.ExcludeTargets `
+                        -CIMInstanceName 'AADAuthenticationMethodPolicyEmailExcludeTarget'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.ExcludeTargets = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('ExcludeTargets') | Out-Null
+                    }
+                }
+
+                if ($Results.IncludeTargets)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.IncludeTargets `
+                        -CIMInstanceName 'AADAuthenticationMethodPolicyEmailIncludeTarget'
+                    if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.IncludeTargets = $complexTypeStringResult
+                    }
+                    else
+                    {
+                        $Results.Remove('IncludeTargets') | Out-Null
+                    }
+                }
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential `
+                    -NoEscape @('ExcludeTargets', 'IncludeTargets')
+
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
+            return $dscContent.ToString()
         }
-
-        $enumState = $null
-        if ($null -ne $getValue.State)
+        catch
         {
-            $enumState = $getValue.State.ToString()
-        }
-        #endregion
+            $this.LogError($_, 'Error during Export:')
 
-        $results = @{
-            #region resource generator code
-            AllowExternalIdToUseEmailOtp = $enumAllowExternalIdToUseEmailOtp
-            ExcludeTargets               = $complexExcludeTargets
-            IncludeTargets               = $complexIncludeTargets
-            State                        = $enumState
-            Id                           = $getValue.Id
-            Ensure                       = 'Present'
-            Credential                   = $Credential
-            ApplicationId                = $ApplicationId
-            TenantId                     = $TenantId
-            ApplicationSecret            = $ApplicationSecret
-            CertificateThumbprint        = $CertificateThumbprint
-            CertificatePath              = $CertificatePath
-            CertificatePassword          = $CertificatePassword
-            ManagedIdentity              = $ManagedIdentity.IsPresent
-            AccessTokens                 = $AccessTokens
-            #endregion
+            throw
         }
-
-        return $results
     }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [AADAuthenticationMethodPolicyEmail] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [AADAuthenticationMethodPolicyEmail])
+        {
+            return $Values
+        }
+
+        $result = [AADAuthenticationMethodPolicyEmail]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Set-TargetResource
+class MSFT_AADAuthenticationMethodPolicyEmailExcludeTarget
 {
-    [CmdletBinding()]
-    param
-    (
-        #region resource generator code
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
-        [System.String]
-        $AllowExternalIdToUseEmailOtp,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExcludeTargets,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $IncludeTargets,
-
-        [Parameter()]
-        [ValidateSet('enabled', 'disabled')]
-        [System.String]
-        $State,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting the Azure AD Authentication Method Policy Email with Id {$Id}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-    $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $PSBoundParameters
-
-    if ($Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating the Azure AD Authentication Method Policy Email with Id {$($currentInstance.Id)}"
-
-        $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
-        $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
-        $UpdateParameters.Remove('Id') | Out-Null
-
-        Update-M365DSCAuthenticationTargets -Targets $UpdateParameters.ExcludeTargets
-        Update-M365DSCAuthenticationTargets -Targets $UpdateParameters.IncludeTargets
-
-        #region resource generator code
-        $UpdateParameters.Add('@odata.type', '#microsoft.graph.emailAuthenticationMethodConfiguration')
-        Update-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
-            -AuthenticationMethodConfigurationId $currentInstance.Id `
-            -BodyParameter $UpdateParameters
-        #endregion
-    }
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing the Azure AD Authentication Method Policy Email with Id {$($currentInstance.Id)}"
-        #region resource generator code
-        Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $currentInstance.Id
-        #endregion
-    }
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
+    [System.String] $Id
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [System.String] $TargetType
 }
 
-function Test-TargetResource
+class MSFT_AADAuthenticationMethodPolicyEmailIncludeTarget
 {
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        #region resource generator code
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
-        [System.String]
-        $AllowExternalIdToUseEmailOtp,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExcludeTargets,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $IncludeTargets,
-
-        [Parameter()]
-        [ValidateSet('enabled', 'disabled')]
-        [System.String]
-        $State,
-        #endregion
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
+    [System.String] $Id
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [System.String] $TargetType
 }
 
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        #region resource generator code
-        [array]$getValue = Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
-            -AuthenticationMethodConfigurationId Email `
-            -ErrorAction Stop | Where-Object -FilterScript { $null -ne $_.Id }
-        #endregion
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($getValue.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $getValue)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-
-            $displayedKey = $config.Id
-
-            Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Id                    = $config.Id
-                Ensure                = 'Present'
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                ApplicationSecret     = $ApplicationSecret
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-            if ($Results.ExcludeTargets)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.ExcludeTargets `
-                    -CIMInstanceName 'AADAuthenticationMethodPolicyEmailExcludeTarget'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.ExcludeTargets = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('ExcludeTargets') | Out-Null
-                }
-            }
-
-            if ($Results.IncludeTargets)
-            {
-                $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                    -ComplexObject $Results.IncludeTargets `
-                    -CIMInstanceName 'AADAuthenticationMethodPolicyEmailIncludeTarget'
-                if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
-                {
-                    $Results.IncludeTargets = $complexTypeStringResult
-                }
-                else
-                {
-                    $Results.Remove('IncludeTargets') | Out-Null
-                }
-            }
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential `
-                -NoEscape @('ExcludeTargets', 'IncludeTargets')
-
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

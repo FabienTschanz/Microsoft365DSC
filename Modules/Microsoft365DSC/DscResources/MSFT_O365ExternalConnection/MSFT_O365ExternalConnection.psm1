@@ -1,501 +1,326 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_O365ExternalConnection'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class O365ExternalConnection : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('The name of the external connector.')]
+    [System.String] $Name
 
-        [Parameter()]
-        [System.String]
-        $Id,
+    [DscProperty()]
+    [System.ComponentModel.Description('The unique identifier of the external connector.')]
+    [System.String] $Id
 
-        [Parameter()]
-        [System.String]
-        $Description,
+    [DscProperty()]
+    [System.ComponentModel.Description('The description of the external connector.')]
+    [System.String] $Description
 
-        [Parameter()]
-        [System.String[]]
-        $AuthorizedAppIds,
+    [DscProperty()]
+    [System.ComponentModel.Description('A collection of application IDs for registered Microsoft Entra apps that are allowed to manage the externalConnection and to index content in the externalConnection.')]
+    [System.String[]] $AuthorizedAppIds
 
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
+    [DscProperty()]
+    [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
+    [ValidateSet('Absent', 'Present')]
+    [System.String] $Ensure
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [O365ExternalConnection] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for O365ExternalConnection with Name {$Name} and Id {$Id}"
-
-    try
-    {
-        if (-not $Script:exportedInstance -or $Script:exportedInstance.Id -ne $Id)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $instance = $null
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $nullResult = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-                -InboundParameters $PSBoundParameters
+            $remote = [O365ExternalConnection]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+        Write-Verbose -Message "Getting configuration for O365ExternalConnection with Name {$($this.Name)} and Id {$($this.Id)}"
 
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            $nullResult.Ensure = 'Absent'
-
-            if (-not [System.String]::IsNullOrEmpty($Id))
+        try
+        {
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Id -ne $this.Id)
             {
-                $instance = Get-MgBetaExternalConnection -ExternalConnectionId $Id -ErrorAction SilentlyContinue
+                $null = $this.Connect('MicrosoftGraph')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
+                {
+                    $instance = Get-MgBetaExternalConnection -ExternalConnectionId $this.Id -ErrorAction SilentlyContinue
+                }
+                if ($null -eq $instance)
+                {
+                    $instance = Get-MgBetaExternalConnection -Filter "Name eq '$($this.Name -replace "'", "''")'"
+                }
             }
+            else
+            {
+                $instance = $this.ExportedInstance
+            }
+
             if ($null -eq $instance)
             {
-                $instance = Get-MgBetaExternalConnection -Filter "Name eq '$($Name -replace "'", "''")'"
+                return $this.AsResult($nullResult)
             }
+
+            $AuthorizedAppIdsValue = @()
+            foreach ($app in $instance.Configuration.AuthorizedAppIds)
+            {
+                $appInstance = Get-MgApplication -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
+                if ($null -eq $appInstance)
+                {
+                    # Try to find it as a service principal
+                    $sp = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
+                    if ($null -eq $sp)
+                    {
+                        throw "Could not find referenced application or service principal {$app} in the tenant."
+                    }
+                    $AuthorizedAppIdsValue += $sp.DisplayName
+                }
+                else
+                {
+                    $AuthorizedAppIdsValue += $appInstance.DisplayName
+                }
+            }
+
+            $results = @{
+                Name                  = $instance.Name
+                Id                    = $instance.id
+                Description           = $instance.Description
+                AuthorizedAppIds      = $AuthorizedAppIdsValue
+                Ensure                = 'Present'
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
         }
-        else
+        catch
         {
-            $instance = $Script:exportedInstance
+            $this.LogError($_, 'Error retrieving data:')
+
+            throw
+        }
+    }
+
+    [void] Set()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
         }
 
-        if ($null -eq $instance)
-        {
-            return $nullResult
-        }
+        Write-Verbose -Message "Setting configuration for O365ExternalConnection with Name {$($this.Name)} and Id {$($this.Id)}"
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
 
         $AuthorizedAppIdsValue = @()
-        foreach ($app in $instance.Configuration.AuthorizedAppIds)
+        if ($null -ne $this.AuthorizedAppIds)
         {
-            $appInstance = Get-MgApplication -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
-            if ($null -eq $appInstance)
+            foreach ($app in $this.AuthorizedAppIds)
             {
-                # Try to find it as a service principal
-                $sp = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
-                if ($null -eq $sp)
+                $appInstance = Get-MgApplication -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
+                if ($null -eq $appInstance)
                 {
-                    throw "Could not find referenced application or service principal {$app} in the tenant."
+                    # Try to find it as a service principal
+                    $sp = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
+                    if ($null -eq $sp)
+                    {
+                        throw "Could not find referenced application or service principal {$app} in the tenant."
+                    }
+                    $AuthorizedAppIdsValue += $sp.DisplayName
                 }
-                $AuthorizedAppIdsValue += $sp.DisplayName
+                else
+                {
+                    $AuthorizedAppIdsValue += $appInstance.DisplayName
+                }
+            }
+        }
+        $body = @{
+            id            = $this.Id
+            name          = $this.Name
+            description   = $this.Description
+            configuration = @{
+                AuthorizedAppIds = $AuthorizedAppIdsValue
+            }
+        }
+        # CREATE
+        if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
+        {
+            Write-Verbose -Message "Creating new external connection {$($this.Name)}"
+            New-MgBetaExternalConnection -BodyParameter $body
+        }
+        # UPDATE
+        elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Updating new external connection {$($this.Name)}"
+            $body.Remove('Id') | Out-Null
+            Update-MgBetaExternalConnection -ExternalConnectionId $currentInstance.Id -BodyParameter $body
+        }
+        # REMOVE
+        elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
+        {
+            Write-Verbose -Message "Removing external connection {$($this.Name)}"
+            Remove-MgBetaExternalConnection -ExternalConnectionId $currentInstance.Id
+        }
+    }
+
+    [bool] Test()
+    {
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
+        $ConnectionMode = $this.Connect('MicrosoftGraph')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            [array] $exportedInstances = Get-MgBetaExternalConnection -ErrorAction Stop
+
+            $i = 1
+            $dscContent = [System.Text.StringBuilder]::new()
+            if ($exportedInstances.Length -eq 0)
+            {
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
             else
             {
-                $AuthorizedAppIdsValue += $appInstance.DisplayName
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
-        }
-
-        $results = @{
-            Name                  = $instance.Name
-            Id                    = $instance.id
-            Description           = $instance.Description
-            AuthorizedAppIds      = $AuthorizedAppIdsValue
-            Ensure                = 'Present'
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $AuthorizedAppIds,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Setting configuration for O365ExternalConnection with Name {$Name} and Id {$Id}"
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    $AuthorizedAppIdsValue = @()
-    if ($null -ne $AuthorizedAppIds)
-    {
-        foreach ($app in $AuthorizedAppIds)
-        {
-            $appInstance = Get-MgApplication -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
-            if ($null -eq $appInstance)
+            foreach ($config in $exportedInstances)
             {
-                # Try to find it as a service principal
-                $sp = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
-                if ($null -eq $sp)
+                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
                 {
-                    throw "Could not find referenced application or service principal {$app} in the tenant."
+                    $Global:M365DSCExportResourceInstancesCount++
                 }
-                $AuthorizedAppIdsValue += $sp.DisplayName
+                $displayedKey = $config.Id
+                Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
+                $params = @{
+                    Name                  = $config.Name
+                    Id                    = $config.Id
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+
+                $this.ExportedInstance = $config
+                $Results = $this.GetForExport($Params)
+
+                $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                    -ConnectionMode $ConnectionMode `
+                    -ModulePath $this.GetModulePath() `
+                    -Results $Results `
+                    -Credential $this.Credential
+                [void]$dscContent.Append($currentDSCBlock)
+                Save-M365DSCPartialExport -Content $currentDSCBlock `
+                    -FileName $Global:PartialExportFileName
+                $i++
+                Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
-            else
-            {
-                $AuthorizedAppIdsValue += $appInstance.DisplayName
-            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
         }
     }
-    $body = @{
-        id            = $Id
-        name          = $Name
-        description   = $Description
-        configuration = @{
-            AuthorizedAppIds = $AuthorizedAppIdsValue
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [O365ExternalConnection] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [O365ExternalConnection])
+        {
+            return $Values
         }
-    }
-    # CREATE
-    if ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
-    {
-        Write-Verbose -Message "Creating new external connection {$Name}"
-        New-MgBetaExternalConnection -BodyParameter $body
-    }
-    # UPDATE
-    elseif ($Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Updating new external connection {$Name}"
-        $body.Remove('Id') | Out-Null
-        Update-MgBetaExternalConnection -ExternalConnectionId $currentInstance.Id -BodyParameter $body
-    }
-    # REMOVE
-    elseif ($Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
-    {
-        Write-Verbose -Message "Removing external connection {$Name}"
-        Remove-MgBetaExternalConnection -ExternalConnectionId $currentInstance.Id
+
+        $result = [O365ExternalConnection]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name,
-
-        [Parameter()]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.String]
-        $Description,
-
-        [Parameter()]
-        [System.String[]]
-        $AuthorizedAppIds,
-
-        [Parameter()]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure = 'Present',
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    $ConnectionMode = New-M365DSCConnection -Workload 'MicrosoftGraph' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
-    {
-        [array] $exportedInstances = Get-MgBetaExternalConnection -ErrorAction Stop
-
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($exportedInstances.Length -eq 0)
-        {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($config in $exportedInstances)
-        {
-            if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-            {
-                $Global:M365DSCExportResourceInstancesCount++
-            }
-            $displayedKey = $config.Id
-            Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
-            $params = @{
-                Name                  = $config.Name
-                Id                    = $config.Id
-                Credential            = $Credential
-                ApplicationId         = $ApplicationId
-                TenantId              = $TenantId
-                CertificateThumbprint = $CertificateThumbprint
-                CertificatePath       = $CertificatePath
-                CertificatePassword   = $CertificatePassword
-                ManagedIdentity       = $ManagedIdentity.IsPresent
-                AccessTokens          = $AccessTokens
-            }
-
-            $Script:exportedInstance = $config
-            $Results = Get-TargetResource @Params
-
-            $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                -ConnectionMode $ConnectionMode `
-                -ModulePath $PSScriptRoot `
-                -Results $Results `
-                -Credential $Credential
-            [void]$dscContent.Append($currentDSCBlock)
-            Save-M365DSCPartialExport -Content $currentDSCBlock `
-                -FileName $Global:PartialExportFileName
-            $i++
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-Export-ModuleMember -Function *-TargetResource

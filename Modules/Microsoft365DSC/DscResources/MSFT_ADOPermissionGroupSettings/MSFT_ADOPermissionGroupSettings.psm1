@@ -1,552 +1,396 @@
-Confirm-M365DSCModuleDependency -ModuleName 'MSFT_ADOPermissionGroupSettings'
-$script:CurrentResource = ($PSCommandPath | Split-Path -Leaf).Replace('MSFT_', '').Replace('.psm1', '')
+# Editor-only: lets this file resolve [M365DSCResourceBase] when parsed on its own.
+# Build-Microsoft365DSC.ps1 emits only the class extent, so this line is not shipped.
+using module ..\_Base\M365DSCResourceBase.psm1
 
-function Get-TargetResource
+[DscResource()]
+class ADOPermissionGroupSettings : M365DSCResourceBase
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
+    [DscProperty(Key)]
+    [System.ComponentModel.Description('Name of the group.')]
+    [System.String] $GroupName
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $OrganizationName,
+    [DscProperty()]
+    [System.ComponentModel.Description('Name of the DevOPS Organization.')]
+    [System.String] $OrganizationName
 
-        [Parameter()]
-        [System.String]
-        $Descriptor,
+    [DscProperty()]
+    [System.ComponentModel.Description('Descriptor for the group.')]
+    [System.String] $Descriptor
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AllowPermissions,
+    [DscProperty()]
+    [System.ComponentModel.Description('Allow permissions.')]
+    [MSFT_ADOPermission[]] $AllowPermissions
 
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DenyPermissions,
+    [DscProperty()]
+    [System.ComponentModel.Description('Deny permissions')]
+    [MSFT_ADOPermission[]] $DenyPermissions
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+    [DscProperty()]
+    [System.ComponentModel.Description('Credentials of the workload''s Admin')]
+    [System.Management.Automation.PSCredential] $Credential
 
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory application to authenticate with.')]
+    [System.String] $ApplicationId
 
-        [Parameter()]
-        [System.String]
-        $TenantId,
+    [DscProperty()]
+    [System.ComponentModel.Description('Id of the Azure Active Directory tenant used for authentication.')]
+    [System.String] $TenantId
 
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
+    [DscProperty()]
+    [System.ComponentModel.Description('Thumbprint of the Azure Active Directory application''s authentication certificate to use for authentication.')]
+    [System.String] $CertificateThumbprint
 
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
+    [DscProperty()]
+    [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
+    [System.Management.Automation.PSCredential] $CertificatePassword
 
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
+    [DscProperty()]
+    [System.ComponentModel.Description('Path to certificate used in service principal usually a PFX file.')]
+    [System.String] $CertificatePath
 
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
+    [DscProperty()]
+    [System.ComponentModel.Description('Managed ID being used for authentication.')]
+    [System.Nullable[System.Boolean]] $ManagedIdentity
 
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
+    [DscProperty()]
+    [System.ComponentModel.Description('Access token used for authentication.')]
+    [System.String[]] $AccessTokens
 
-    if ($PSEdition -ne 'Core')
+    # Export-only. Not part of the resource schema.
+    [System.Management.Automation.PSCredential] $ApplicationSecret
+
+    [ADOPermissionGroupSettings] Get()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    Write-Verbose -Message "Getting configuration for ADO Permission Group Settings for Organization {$OrganizationName} and Group {$GroupName}"
-
-    try
-    {
-        if ($null -eq $Script:exportedInstances -or -not $Script:ExportMode)
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $instance = $null
+        if ($this.RequiresPowerShellCore())
         {
-            $null = New-M365DSCConnection -Workload 'AzureDevOPS' `
-            -InboundParameters $PSBoundParameters
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-            $CommandName = $MyInvocation.MyCommand
-            $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-                -CommandName $CommandName `
-                -Parameters $PSBoundParameters
-            Add-M365DSCTelemetryEvent -Data $data
-            #endregion
-
-            $nullResult = $PSBoundParameters
-            if ($null -eq $Script:AllGroups -or $Script:CurrentOrganization -ne $OrganizationName)
-            {
-                $uri = "https://vssps.dev.azure.com/$OrganizationName/_apis/graph/groups?api-version=7.1-preview.1"
-                $Script:AllGroups = (Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri).value
-                $Script:CurrentOrganization = $OrganizationName
-            }
-
-            if (-not [System.String]::IsNullOrEmpty($Descriptor))
-            {
-                $instance = $Script:AllGroups | Where-Object -FilterScript { $_.descriptor -eq $Descriptor }
-            }
-            if ($null -eq $instance)
-            {
-                $instance = $Script:AllGroups | Where-Object -FilterScript { $_.principalName -eq $GroupName }
-            }
-
-            if ($null -eq $instance)
-            {
-                return $nullResult
-            }
+            $remote = [ADOPermissionGroupSettings]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
         }
-        else
+
+        Write-Verbose -Message "Getting configuration for ADO Permission Group Settings for Organization {$($this.OrganizationName)} and Group {$($this.GroupName)}"
+
+        try
         {
-            if (-not [System.String]::IsNullOrEmpty($Descriptor))
+            if ($null -eq $this.ResourceCache['exportedInstances'] -or -not $this.ResourceCache['ExportMode'])
             {
-                $instance = $Script:exportedInstances | Where-Object -FilterScript { $_.descriptor -eq $Descriptor }
-            }
+                $null = $this.Connect('AzureDevOPS')
 
-            if ($null -eq $instance)
-            {
-                $instance = $Script:exportedInstances | Where-Object -FilterScript { $_.principalName -eq $GroupName }
-            }
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
 
-            $Script:AllGroups = $Script:exportedInstances
-            $Script:CurrentOrganization = $OrganizationName
-        }
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
 
-        $groupPermissions = Get-M365DSCADOGroupPermission -GroupName $instance.principalName -OrganizationName $OrganizationName
-
-        $results = @{
-            OrganizationName      = $OrganizationName
-            GroupName             = $instance.principalName
-            Descriptor            = $instance.Descriptor
-            AllowPermissions      = $groupPermissions.Allow
-            DenyPermissions       = $groupPermissions.Deny
-            Credential            = $Credential
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            CertificatePath       = $CertificatePath
-            CertificatePassword   = $CertificatePassword
-            ManagedIdentity       = $ManagedIdentity.IsPresent
-            AccessTokens          = $AccessTokens
-        }
-        return $results
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Set-TargetResource
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $OrganizationName,
-
-        [Parameter()]
-        [System.String]
-        $Descriptor,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AllowPermissions,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DenyPermissions,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
-    }
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $currentInstance = Get-TargetResource @PSBoundParameters
-
-    $uri = "https://vssps.dev.azure.com/$($OrganizationName)/_apis/identities?subjectDescriptors=$($currentInstance.Descriptor)&api-version=7.2-preview.1"
-    $info = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-    $descriptor = $info.value.descriptor
-
-    # Get all Namespaces from the Allow and Deny
-    $namespacesToUpdate = @()
-    foreach ($namespace in $AllowPermissions)
-    {
-        if ($namespacesToUpdate.Length -eq 0 -or -not $namespacesToUpdate.NameSpaceId.Contains($namespace.namespaceId))
-        {
-            $namespacesToUpdate += $namespace
-        }
-    }
-    foreach ($namespace in $DenyPermissions)
-    {
-        if ($namespacesToUpdate.Length -eq 0 -or -not $namespacesToUpdate.NameSpaceId.Contains($namespace.namespaceId))
-        {
-            $namespacesToUpdate += $namespace
-        }
-    }
-
-    foreach ($namespace in $namespacesToUpdate)
-    {
-        $allowPermissionValue = 0
-        $denyPermissionValue = 0
-        $allowPermissionsEntries = $AllowPermissions | Where-Object -FilterScript { $_.NamespaceId -eq $namespace.namespaceId }
-        foreach ($entry in $allowPermissionsEntries)
-        {
-            $allowPermissionValue += [Uint32]::Parse($entry.Bit)
-        }
-
-        $denyPermissionsEntries = $DenyPermissions | Where-Object -FilterScript { $_.NamespaceId -eq $namespace.namespaceId }
-        foreach ($entry in $denyPermissionsEntries)
-        {
-            $denyPermissionValue += [Uint32]::Parse($entry.Bit)
-        }
-
-        $updateParams = @{
-            merge                = $false
-            token                = $namespace.token
-            accessControlEntries = @(
-                @{
-                    descriptor   = $descriptor
-                    allow        = $allowPermissionValue
-                    deny         = $denyPermissionValue
-                    extendedInfo = @{}
+                $nullResult = $this.GetBoundParameters()
+                if ($null -eq $this.ResourceCache['AllGroups'] -or $this.ResourceCache['CurrentOrganization'] -ne $this.OrganizationName)
+                {
+                    $uri = "https://vssps.dev.azure.com/$($this.OrganizationName)/_apis/graph/groups?api-version=7.1-preview.1"
+                    $this.ResourceCache['AllGroups'] = (Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri).value
+                    $this.ResourceCache['CurrentOrganization'] = $this.OrganizationName
                 }
-            )
+
+                if (-not [System.String]::IsNullOrEmpty($this.Descriptor))
+                {
+                    $instance = $this.ResourceCache['AllGroups'] | Where-Object -FilterScript { $_.descriptor -eq $this.Descriptor }
+                }
+                if ($null -eq $instance)
+                {
+                    $instance = $this.ResourceCache['AllGroups'] | Where-Object -FilterScript { $_.principalName -eq $this.GroupName }
+                }
+
+                if ($null -eq $instance)
+                {
+                    return $this.AsResult($nullResult)
+                }
+            }
+            else
+            {
+                if (-not [System.String]::IsNullOrEmpty($this.Descriptor))
+                {
+                    $instance = $this.ResourceCache['exportedInstances'] | Where-Object -FilterScript { $_.descriptor -eq $this.Descriptor }
+                }
+
+                if ($null -eq $instance)
+                {
+                    $instance = $this.ResourceCache['exportedInstances'] | Where-Object -FilterScript { $_.principalName -eq $this.GroupName }
+                }
+
+                $this.ResourceCache['AllGroups'] = $this.ResourceCache['exportedInstances']
+                $this.ResourceCache['CurrentOrganization'] = $this.OrganizationName
+            }
+
+            $groupPermissions = Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission -GroupName $instance.principalName -OrganizationName $this.OrganizationName
+
+            $results = @{
+                OrganizationName      = $this.OrganizationName
+                GroupName             = $instance.principalName
+                Descriptor            = $instance.Descriptor
+                AllowPermissions      = $groupPermissions.Allow
+                DenyPermissions       = $groupPermissions.Deny
+                Credential            = $this.Credential
+                ApplicationId         = $this.ApplicationId
+                TenantId              = $this.TenantId
+                CertificateThumbprint = $this.CertificateThumbprint
+                CertificatePath       = $this.CertificatePath
+                CertificatePassword   = $this.CertificatePassword
+                ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
+            }
+            return $this.AsResult($results)
         }
-        $uri = "https://dev.azure.com/$($OrganizationName)/_apis/accesscontrolentries/$($namespace.namespaceId)?api-version=7.1"
-        $body = ConvertTo-Json $updateParams -Depth 10 -Compress
-        Write-Verbose -Message "Updating with payload:`r`n$body"
-        Invoke-M365DSCAzureDevOPSWebRequest -Method POST `
-            -Uri $uri `
-            -Body $body `
-            -ContentType 'application/json'
-    }
-}
+        catch
+        {
+            $this.LogError($_, 'Error retrieving data:')
 
-function Test-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $OrganizationName,
-
-        [Parameter()]
-        [System.String]
-        $Descriptor,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $AllowPermissions,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $DenyPermissions,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
-    {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+            throw
+        }
     }
 
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    $result = Test-M365DSCTargetResource -DesiredValues $PSBoundParameters `
-        -ResourceName $($MyInvocation.MyCommand.Source).Replace('MSFT_', '')
-    return $result
-}
-
-function Export-TargetResource
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $ApplicationSecret,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-
-    if ($PSEdition -ne 'Core')
+    [void] Set()
     {
-        Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
-        return
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Set')
+        #endregion
+
+        $currentInstance = $this.Get().ToHashtable()
+
+        $uri = "https://vssps.dev.azure.com/$($this.OrganizationName)/_apis/identities?subjectDescriptors=$($currentInstance.Descriptor)&api-version=7.2-preview.1"
+        $info = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
+        $this.descriptor = $info.value.descriptor
+
+        # Get all Namespaces from the Allow and Deny
+        $namespacesToUpdate = @()
+        foreach ($namespace in $this.AllowPermissions)
+        {
+            if ($namespacesToUpdate.Length -eq 0 -or -not $namespacesToUpdate.NameSpaceId.Contains($namespace.namespaceId))
+            {
+                $namespacesToUpdate += $namespace
+            }
+        }
+        foreach ($namespace in $this.DenyPermissions)
+        {
+            if ($namespacesToUpdate.Length -eq 0 -or -not $namespacesToUpdate.NameSpaceId.Contains($namespace.namespaceId))
+            {
+                $namespacesToUpdate += $namespace
+            }
+        }
+
+        foreach ($namespace in $namespacesToUpdate)
+        {
+            $allowPermissionValue = 0
+            $denyPermissionValue = 0
+            $allowPermissionsEntries = $this.AllowPermissions | Where-Object -FilterScript { $_.NamespaceId -eq $namespace.namespaceId }
+            foreach ($entry in $allowPermissionsEntries)
+            {
+                $allowPermissionValue += [Uint32]::Parse($entry.Bit)
+            }
+
+            $denyPermissionsEntries = $this.DenyPermissions | Where-Object -FilterScript { $_.NamespaceId -eq $namespace.namespaceId }
+            foreach ($entry in $denyPermissionsEntries)
+            {
+                $denyPermissionValue += [Uint32]::Parse($entry.Bit)
+            }
+
+            $updateParams = @{
+                merge                = $false
+                token                = $namespace.token
+                accessControlEntries = @(
+                    @{
+                        descriptor   = $this.descriptor
+                        allow        = $allowPermissionValue
+                        deny         = $denyPermissionValue
+                        extendedInfo = @{}
+                    }
+                )
+            }
+            $uri = "https://dev.azure.com/$($this.OrganizationName)/_apis/accesscontrolentries/$($namespace.namespaceId)?api-version=7.1"
+            $body = ConvertTo-Json $updateParams -Depth 10 -Compress
+            Write-Verbose -Message "Updating with payload:`r`n$body"
+            Invoke-M365DSCAzureDevOPSWebRequest -Method POST `
+                -Uri $uri `
+                -Body $body `
+                -ContentType 'application/json'
+        }
     }
 
-    $ConnectionMode = New-M365DSCConnection -Workload 'AzureDevOPS' `
-        -InboundParameters $PSBoundParameters
-
-    #Ensure the proper dependencies are installed in the current environment.
-    Confirm-M365DSCDependencies
-
-    #region Telemetry
-    $ResourceName = $MyInvocation.MyCommand.ModuleName.Replace('MSFT_', '')
-    $CommandName = $MyInvocation.MyCommand
-    $data = Format-M365DSCTelemetryParameters -ResourceName $ResourceName `
-        -CommandName $CommandName `
-        -Parameters $PSBoundParameters
-    Add-M365DSCTelemetryEvent -Data $data
-    #endregion
-
-    try
+    [bool] Test()
     {
-        $Script:ExportMode = $true
-        $profileValue = Invoke-M365DSCAzureDevOPSWebRequest -Uri 'https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1'
-        $accounts = Invoke-M365DSCAzureDevOPSWebRequest -Uri "https://app.vssps.visualstudio.com/_apis/accounts?api-version=7.1-preview.1&memberId=$($profileValue.id)"
+        return ([M365DSCResourceBase] $this).Test()
+    }
 
-        $i = 1
-        $dscContent = [System.Text.StringBuilder]::new()
-        if ($accounts.Count -eq 0)
+    [string] Export()
+    {
+        if ($this.RequiresPowerShellCore())
         {
-            Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
-            return ''
+            return [string] $this.InvokeInPowerShellCore('Export')
         }
-        else
-        {
-            Write-M365DSCHost -Message "`r`n" -DeferWrite
-        }
-        foreach ($account in $accounts)
-        {
-            $organization = $account.Value.accountName
-            $uri = "https://vssps.dev.azure.com/$organization/_apis/graph/groups?api-version=7.1-preview.1"
 
-            [array] $Script:exportedInstances = (Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri).Value
+        $ConnectionMode = $this.Connect('AzureDevOPS')
+
+        #Ensure the proper dependencies are installed in the current environment.
+        Confirm-M365DSCDependencies
+
+        #region Telemetry
+        $this.AddTelemetry('Export')
+        #endregion
+
+        try
+        {
+            $this.ResourceCache['ExportMode'] = $true
+            $profileValue = Invoke-M365DSCAzureDevOPSWebRequest -Uri 'https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=5.1'
+            $accounts = Invoke-M365DSCAzureDevOPSWebRequest -Uri "https://app.vssps.visualstudio.com/_apis/accounts?api-version=7.1-preview.1&memberId=$($profileValue.id)"
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
-            foreach ($config in $Script:exportedInstances)
+            if ($accounts.Count -eq 0)
             {
-                $displayedKey = $config.principalName
-                if ($null -ne $Global:M365DSCExportResourceInstancesCount)
-                {
-                    $Global:M365DSCExportResourceInstancesCount++
-                }
-                Write-M365DSCHost -Message "    |---[$i/$($Script:exportedInstances.Count)] $displayedKey" -DeferWrite
-                $params = @{
-                    OrganizationName      = $Organization
-                    GroupName             = $config.principalName
-                    Descriptor            = $config.descriptor
-                    Credential            = $Credential
-                    ApplicationId         = $ApplicationId
-                    TenantId              = $TenantId
-                    CertificateThumbprint = $CertificateThumbprint
-                    ManagedIdentity       = $ManagedIdentity.IsPresent
-                    AccessTokens          = $AccessTokens
-                }
-
-                if (-not $config.principalName.StartsWith('[TEAM FOUNDATION]'))
-                {
-                    $Results = Get-TargetResource @Params
-                    if ($results.AllowPermissions.Length -gt 0)
-                    {
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.AllowPermissions `
-                            -CIMInstanceName 'ADOPermission' `
-                            -IsArray
-                        if (-not [String]::IsNullOrEmpty($complexTypeStringResult))
-                        {
-                            $Results.AllowPermissions = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('AllowPermissions') | Out-Null
-                        }
-                    }
-
-                    if ($results.DenyPermissions.Length -gt 0)
-                    {
-                        $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                            -ComplexObject $Results.DenyPermissions `
-                            -CIMInstanceName 'ADOPermission' `
-                            -IsArray
-                        if (-not [String]::IsNullOrEmpty($complexTypeStringResult))
-                        {
-                            $Results.DenyPermissions = $complexTypeStringResult
-                        }
-                        else
-                        {
-                            $Results.Remove('DenyPermissions') | Out-Null
-                        }
-                    }
-
-                    $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $ResourceName `
-                        -ConnectionMode $ConnectionMode `
-                        -ModulePath $PSScriptRoot `
-                        -Results $Results `
-                        -Credential $Credential `
-                        -NoEscape @('AllowPermissions', 'DenyPermissions')
-
-                    [void]$dscContent.Append($currentDSCBlock)
-                    Save-M365DSCPartialExport -Content $currentDSCBlock `
-                        -FileName $Global:PartialExportFileName
-                }
-                $i++
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                return ''
             }
-        }
-        return $dscContent.ToString()
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error during Export:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
+            else
+            {
+                Write-M365DSCHost -Message "`r`n" -DeferWrite
+            }
+            foreach ($account in $accounts)
+            {
+                $organization = $account.Value.accountName
+                $uri = "https://vssps.dev.azure.com/$organization/_apis/graph/groups?api-version=7.1-preview.1"
 
-        throw
+                [array] $this.ResourceCache['exportedInstances'] = (Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri).Value
+
+                $i = 1
+                $dscContent = [System.Text.StringBuilder]::new()
+                foreach ($config in $this.ResourceCache['exportedInstances'])
+                {
+                    $displayedKey = $config.principalName
+                    if ($null -ne $Global:M365DSCExportResourceInstancesCount)
+                    {
+                        $Global:M365DSCExportResourceInstancesCount++
+                    }
+                    Write-M365DSCHost -Message "    |---[$i/$($this.ResourceCache['exportedInstances'].Count)] $displayedKey" -DeferWrite
+                    $params = @{
+                        OrganizationName      = $Organization
+                        GroupName             = $config.principalName
+                        Descriptor            = $config.descriptor
+                        Credential            = $this.Credential
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        AccessTokens          = $this.AccessTokens
+                    }
+
+                    if (-not $config.principalName.StartsWith('[TEAM FOUNDATION]'))
+                    {
+                        $Results = $this.GetForExport($Params)
+                        if ($results.AllowPermissions.Length -gt 0)
+                        {
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.AllowPermissions `
+                                -CIMInstanceName 'ADOPermission' `
+                                -IsArray
+                            if (-not [String]::IsNullOrEmpty($complexTypeStringResult))
+                            {
+                                $Results.AllowPermissions = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('AllowPermissions') | Out-Null
+                            }
+                        }
+
+                        if ($results.DenyPermissions.Length -gt 0)
+                        {
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject $Results.DenyPermissions `
+                                -CIMInstanceName 'ADOPermission' `
+                                -IsArray
+                            if (-not [String]::IsNullOrEmpty($complexTypeStringResult))
+                            {
+                                $Results.DenyPermissions = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('DenyPermissions') | Out-Null
+                            }
+                        }
+
+                        $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
+                            -ConnectionMode $ConnectionMode `
+                            -ModulePath $this.GetModulePath() `
+                            -Results $Results `
+                            -Credential $this.Credential `
+                            -NoEscape @('AllowPermissions', 'DenyPermissions')
+
+                        [void]$dscContent.Append($currentDSCBlock)
+                        Save-M365DSCPartialExport -Content $currentDSCBlock `
+                            -FileName $Global:PartialExportFileName
+                    }
+                    $i++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                }
+            }
+            return $dscContent.ToString()
+        }
+        catch
+        {
+            $this.LogError($_, 'Error during Export:')
+
+            throw
+        }
+    }
+
+    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [ADOPermissionGroupSettings] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [ADOPermissionGroupSettings])
+        {
+            return $Values
+        }
+
+        $result = [ADOPermissionGroupSettings]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
     }
 }
 
-function Get-M365DSCADOGroupPermission
+class MSFT_ADOPermission
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Id of the associate security namespace.')]
+    [System.String] $NamespaceId
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Display name of the permission scope.')]
+    [System.String] $DisplayName
+    [DscProperty()]
+    [System.ComponentModel.Description('Bit mask for the permission')]
+    [System.Nullable[System.UInt32]] $Bit
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Token value')]
+    [System.String] $Token
+}
+
+# Was Get-M365DSCADOGroupPermission. Renamed because helper names recur across resources and the
+# generated part file holds several of them.
+function Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -689,4 +533,3 @@ function Get-M365DSCADOGroupPermission
     return $results
 }
 
-Export-ModuleMember -Function *-TargetResource

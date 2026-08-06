@@ -446,9 +446,9 @@ class SCDLPComplianceRule : M365DSCResourceBase
                 BlockAccessScope                             = $PolicyRule.BlockAccessScope
                 Comment                                      = $PolicyRule.Comment
                 AdvancedRule                                 = $newAdvancedRule
-                ContentContainsSensitiveInformation          = $PolicyRule.ContentContainsSensitiveInformation
+                ContentContainsSensitiveInformation          = ConvertTo-SCDLPComplianceRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ContentContainsSensitiveInformation
                 EndpointDlpRestrictions                      = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $PolicyRule.EndpointDlpRestrictions
-                ExceptIfContentContainsSensitiveInformation  = $PolicyRule.ExceptIfContentContainsSensitiveInformation
+                ExceptIfContentContainsSensitiveInformation  = ConvertTo-SCDLPComplianceRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ExceptIfContentContainsSensitiveInformation
                 ContentPropertyContainsWords                 = $PolicyRule.ContentPropertyContainsWords
                 Disabled                                     = $PolicyRule.Disabled
                 Quarantine                                   = $PolicyRule.Quarantine
@@ -731,12 +731,14 @@ class SCDLPComplianceRule : M365DSCResourceBase
             if ($null -ne $ValuesToCheck['ContentContainsSensitiveInformation'].groups)
             {
                 $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $ValuesToCheck['ContentContainsSensitiveInformation']
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $CurrentValues.ContentContainsSensitiveInformation
+                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues.ContentContainsSensitiveInformation
+                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
             }
             else
             {
                 $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $ValuesToCheck['ContentContainsSensitiveInformation']
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $CurrentValues.ContentContainsSensitiveInformation
+                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues.ContentContainsSensitiveInformation
+                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
             }
         }
 
@@ -751,12 +753,14 @@ class SCDLPComplianceRule : M365DSCResourceBase
             if ($null -ne $ValuesToCheck['ExceptIfContentContainsSensitiveInformation'].groups)
             {
                 $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $ValuesToCheck['ExceptIfContentContainsSensitiveInformation']
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $CurrentValues.ExceptIfContentContainsSensitiveInformation
+                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues.ExceptIfContentContainsSensitiveInformation
+                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
             }
             else
             {
                 $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $ValuesToCheck['ExceptIfContentContainsSensitiveInformation']
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $CurrentValues.ExceptIfContentContainsSensitiveInformation
+                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues.ExceptIfContentContainsSensitiveInformation
+                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
             }
         }
 
@@ -773,6 +777,7 @@ class SCDLPComplianceRule : M365DSCResourceBase
         if ($null -ne $ValuesToCheck['EndpointDlpRestrictions'])
         {
             $ValuesToCheck['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $ValuesToCheck['EndpointDlpRestrictions']
+            $CurrentValues['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $CurrentValues['EndpointDlpRestrictions']
         }
 
         if ($null -ne $ValuesToCheck['AdvancedRule'])
@@ -883,31 +888,6 @@ class SCDLPComplianceRule : M365DSCResourceBase
                         }
                     )
 
-                    if ($null -ne $Results.ContentContainsSensitiveInformation.groups)
-                    {
-                        foreach ($group in $Results.ContentContainsSensitiveInformation.groups)
-                        {
-                            foreach ($sensitiveType in $group.sensitivetypes)
-                            {
-                                $sensitiveType.Remove('confidencelevel') | Out-Null
-                                $sensitiveType.Remove('rulePackId') | Out-Null
-                            }
-                            $group.SensitiveInformation = [array]$group.sensitivetypes
-                            $group.Remove('sensitivetypes') | Out-Null
-                        }
-                    }
-                    else
-                    {
-                        foreach ($sensitiveInformation in $Results.ContentContainsSensitiveInformation)
-                        {
-                            $sensitiveInformation.Remove('confidencelevel') | Out-Null
-                            $sensitiveInformation.Remove('rulePackId') | Out-Null
-                        }
-                        $Results.ContentContainsSensitiveInformation = @{
-                            SensitiveInformation = [array]$Results.ContentContainsSensitiveInformation
-                        }
-                    }
-
                     $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
                         -ComplexObject $Results.ContentContainsSensitiveInformation `
                         -CIMInstanceName 'SCDLPContainsSensitiveInformation' `
@@ -945,31 +925,6 @@ class SCDLPComplianceRule : M365DSCResourceBase
                             IsArray         = $true
                         }
                     )
-
-                    if ($null -ne $Results.ExceptIfContentContainsSensitiveInformation.groups)
-                    {
-                        foreach ($group in $Results.ExceptIfContentContainsSensitiveInformation.groups)
-                        {
-                            foreach ($sensitiveType in $group.sensitivetypes)
-                            {
-                                $sensitiveType.Remove('confidencelevel') | Out-Null
-                                $sensitiveType.Remove('rulePackId') | Out-Null
-                            }
-                            $group.SensitiveInformation = [array]$group.sensitivetypes
-                            $group.Remove('sensitivetypes') | Out-Null
-                        }
-                    }
-                    else
-                    {
-                        foreach ($sensitiveInformation in $Results.ExceptIfContentContainsSensitiveInformation)
-                        {
-                            $sensitiveInformation.Remove('confidencelevel') | Out-Null
-                            $sensitiveInformation.Remove('rulePackId') | Out-Null
-                        }
-                        $Results.ExceptIfContentContainsSensitiveInformation = @{
-                            SensitiveInformation = [array]$Results.ExceptIfContentContainsSensitiveInformation
-                        }
-                    }
 
                     $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
                         -ComplexObject $Results.ExceptIfContentContainsSensitiveInformation `
@@ -1613,6 +1568,86 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationLabels
                 -EventID 1 -Source $($MyInvocation.MyCommand.Source)
             return $false
         }
+    }
+}
+
+function ConvertTo-SCDLPComplianceRuleContainsSensitiveInformation
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter()]
+        $SensitiveInformation
+    )
+
+    if ($null -eq $SensitiveInformation)
+    {
+        return $null
+    }
+
+    if ($null -ne $SensitiveInformation.groups)
+    {
+        $shapedGroups = @()
+        foreach ($group in $SensitiveInformation.groups)
+        {
+            $shapedGroup = @{}
+            foreach ($key in $group.Keys)
+            {
+                $shapedGroup[$key] = $group[$key]
+            }
+
+            $shapedTypes = @()
+            foreach ($sensitiveType in $group.sensitivetypes)
+            {
+                $shapedType = @{}
+                foreach ($key in $sensitiveType.Keys)
+                {
+                    if ($key -in @('confidencelevel', 'rulePackId'))
+                    {
+                        continue
+                    }
+                    $shapedType[$key] = $sensitiveType[$key]
+                }
+                $shapedTypes += $shapedType
+            }
+
+            $shapedGroup.Remove('sensitivetypes') | Out-Null
+            if ($shapedTypes.Count -gt 0)
+            {
+                $shapedGroup.SensitiveInformation = [array]$shapedTypes
+            }
+            $shapedGroups += $shapedGroup
+        }
+
+        return @{
+            Groups   = [array]$shapedGroups
+            Operator = $SensitiveInformation.operator
+        }
+    }
+
+    $shapedInformation = @()
+    foreach ($item in $SensitiveInformation)
+    {
+        $shapedItem = @{}
+        foreach ($key in $item.Keys)
+        {
+            if ($key -in @('confidencelevel', 'rulePackId'))
+            {
+                continue
+            }
+            $shapedItem[$key] = $item[$key]
+        }
+        $shapedInformation += $shapedItem
+    }
+
+    if ($shapedInformation.Count -eq 0)
+    {
+        return $null
+    }
+
+    return @{
+        SensitiveInformation = [array]$shapedInformation
     }
 }
 

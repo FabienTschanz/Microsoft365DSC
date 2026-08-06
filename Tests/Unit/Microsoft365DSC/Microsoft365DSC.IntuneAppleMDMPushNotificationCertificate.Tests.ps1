@@ -26,7 +26,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         BeforeAll {
 
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
-            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@mydomain.com', $secpasswd)
+            $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
             Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
@@ -34,7 +34,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Get-MSCloudLoginConnectionProfile -MockWith {
             }
 
-            Mock -CommandName New-M365DSCConnection -MockWith {
+            Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }
 
@@ -86,13 +86,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It '1.1 Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Absent'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
             }
             It '1.2 Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Test() | Should -Be $false
             }
             It '1.3 Should create a new instance from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementApplePushNotificationCertificate -Exactly 1
             }
         }
@@ -109,13 +109,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It '2.1 Should return values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
             It '2.2 Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Test() | Should -Be $false
             }
             It '2.3 Should remove the instance from the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementApplePushNotificationCertificate -Exactly 1
             }
         }
@@ -132,7 +132,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It '3.0 Should return true from the Test method' {
-                Test-TargetResource @testParams | Should -Be $true
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Test() | Should -Be $true
             }
         }
 
@@ -148,15 +148,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It '4.1 Should return Values from the Get method' {
-                (Get-TargetResource @testParams).Ensure | Should -Be 'Present'
+                ((New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
             }
 
             It '4.2 Should return false from the Test method' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Test() | Should -Be $false
             }
 
             It '4.3 Should call the Set method' {
-                Set-TargetResource @testParams
+                (New-M365DSCResourceInstance -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementApplePushNotificationCertificate -Exactly 1
             }
         }
@@ -171,7 +171,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It '5.0 Should Reverse Engineer resource from the Export method' {
-                $result = Export-TargetResource @testParams
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'IntuneAppleMDMPushNotificationCertificate' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
         }
