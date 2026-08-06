@@ -52,7 +52,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     EnrollmentTokenType     = 'TokenType'
                     QrCodeContent           = "your-qr-code-content"
                     WifiSsid                = "your-wifi-ssid"
-                    WifiPassword            = "your-wifi-password"
                     WifiSecurityType        = "wpa"
                 }
             }

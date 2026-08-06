@@ -12,8 +12,23 @@ $Script:M365DSCAuthenticationParameterSet = @{
     AccessTokens = @('AccessTokens', 'TenantId')
 }
 $Script:M365DSCRelationIndex = $null
-$allResourcesArgumentCompleter = Get-ChildItem -Path ($PSScriptRoot + '/../DscResources/') -Recurse -Filter '*.psm1' -File | Foreach-Object {
-    $_.Name -replace 'MSFT_', '' -replace '.psm1', ''
+$allResourcesArgumentCompleter = @()
+$dscResourcesFolder = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources/'
+
+if (Test-Path -Path $dscResourcesFolder)
+{
+    $allResourcesArgumentCompleter = @(Get-ChildItem -Path $dscResourcesFolder -Recurse -Filter 'MSFT_*.psm1' -File | ForEach-Object {
+        $_.Name -replace 'MSFT_', '' -replace '.psm1', ''
+    })
+}
+
+if ($allResourcesArgumentCompleter.Count -eq 0)
+{
+    $manifestPath = Join-Path -Path $PSScriptRoot -ChildPath '../Microsoft365DSC.psd1'
+    if (Test-Path -Path $manifestPath)
+    {
+        $allResourcesArgumentCompleter = @((Import-PowerShellDataFile -Path $manifestPath).DscResourcesToExport)
+    }
 }
 Register-ArgumentCompleter -CommandName Export-M365DSCConfiguration -ParameterName Components -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
@@ -703,20 +718,7 @@ function Get-M365DSCExportContentForResource
     }
     else
     {
-        $Resource = (Get-M365DSCAllResourcesDictionary).$ResourceName
-        $Keys = $Resource.Properties.Where({ $_.IsMandatory }) | Select-Object -ExpandProperty Name
-        if ($null -eq $Keys)
-        {
-            $moduleFullName = 'MSFT_' + $ResourceName
-            if (-not (Get-Module $moduleFullName))
-            {
-                $m365dscModuleBase = (Get-Module -Name 'Microsoft365DSC').ModuleBase
-                $moduleFullNamePath = Join-Path -Path $m365dscModuleBase -ChildPath "DscResources/$moduleFullName/$moduleFullName.psm1"
-                Import-Module $moduleFullNamePath -Force
-            }
-            $cmdInfo = Get-Command $moduleFullName\Get-TargetResource -ErrorAction SilentlyContinue
-            $Keys = $cmdInfo.Parameters.Values.Where({ $_.ParameterSets.Values.IsMandatory }).Name
-        }
+        $Keys = @(Get-M365DSCResourceMandatoryKey -ResourceName $ResourceName)
         $Script:M365DSCMandatoryKeyCache[$ResourceName] = $Keys
     }
 

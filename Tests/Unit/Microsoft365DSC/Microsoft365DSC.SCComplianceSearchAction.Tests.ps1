@@ -246,7 +246,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         Results                             = 'Container url:
                         https://gabwedisccan.blob.core.windows.net/267bbbb1-2630-41ba-d56b-08d73612df43;
                         SAS token: <Specify -IncludeCredential parameter to show the SAS token>;
-                        Scenario: RetentionReports; Purge Type: Delete; Scope: IndexedItemsOnly; Scope details:
+                        Scenario: RetentionReports; Purge Type: SoftDelete; Scope: IndexedItemsOnly; Scope details:
                         AllUnindexed; Max unindexed size: 0; File type exclusions for unindexed: <null>;
                         Total sources: 0; Include SharePoint versions: False; Enable dedupe: False;
                         Reference action: "<null>"; Region: ; Started sources: 1; Succeeded sources: 1;

@@ -85,7 +85,59 @@ namespace Microsoft365DSC.Converter
                 return GetValueFromGraphObject(complexObject);
             }
 
-            return new(StringComparer.OrdinalIgnoreCase);
+            return GetValueFromClrObject(complexObject);
+        }
+
+        /// <summary>
+        /// Converts an arbitrary CLR object - in practice a PowerShell class instance, which is what
+        /// a class-based resource holds in a complex property - into a hashtable by reflecting over
+        /// its public instance properties.
+        /// </summary>
+        /// <remarks>
+        /// Null-valued properties are omitted. A PowerShell class materialises every property it
+        /// declares, so keeping the nulls would make every property the configuration never
+        /// specified look like drift. This mirrors the CimInstance branch above, which already
+        /// filters on IsValueModified, and the "null means unspecified" rule the resource base class
+        /// relies on.
+        /// </remarks>
+        /// <param name="complexObject">The object whose properties are to be extracted.</param>
+        /// <returns>A case-insensitive hashtable of the object's non-null property values.</returns>
+        private static Hashtable GetValueFromClrObject(object complexObject)
+        {
+            var type = complexObject.GetType();
+            PropertyInfo[] properties;
+            lock (_cacheLock)
+            {
+                if (!_propertyCache.TryGetValue(type.FullName!, out properties))
+                {
+                    properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                        .Where(property => property.CanRead && property.GetIndexParameters().Length == 0)
+                        .ToArray();
+                    _propertyCache[type.FullName!] = properties;
+                }
+            }
+
+            var result = new Hashtable(StringComparer.OrdinalIgnoreCase);
+            foreach (var property in properties)
+            {
+                object? value;
+                try
+                {
+                    value = property.GetValue(complexObject);
+                }
+                catch
+                {
+                    // Some properties throw on access; they carry no configuration state.
+                    continue;
+                }
+
+                if (value is null)
+                    continue;
+
+                result[property.Name] = GetValueFromObject(value);
+            }
+
+            return result;
         }
 
         /// <summary>

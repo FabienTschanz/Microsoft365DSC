@@ -4017,7 +4017,11 @@ function Get-MgBetaRoleManagementEntitlementManagementRoleAssignment
 
         [Parameter()]
         [System.String]
-        $ExpandProperty
+        $ExpandProperty,
+
+        [Parameter()]
+        [System.Int32]
+        $Top
     )
 }
 function Update-MgBetaEntitlementManagementSetting
@@ -4142,7 +4146,11 @@ function Get-MgBetaRoleManagementEntitlementManagementRoleDefinition
 
         [Parameter()]
         [Switch]
-        $All
+        $All,
+
+        [Parameter()]
+        [System.Int32]
+        $Top
     )
 }
 function Get-MgBetaDirectoryCertificateAuthorityCertificateBasedApplicationConfiguration

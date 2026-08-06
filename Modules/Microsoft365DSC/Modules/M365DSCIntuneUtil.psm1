@@ -346,6 +346,12 @@ function ConvertFrom-IntuneMobileAppAssignment
         if ($null -ne $assignment.settings -and $assignment.settings.Count -gt 0)
         {
             $settings = (Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $assignment.settings)
+            if ($settings.Contains('@odata.type'))
+            {
+                $settings['odataType'] = $settings['@odata.type']
+                $settings.Remove('@odata.type')
+            }
+
             $hashAssignment.Add('assignmentSettings', $settings)
         }
 

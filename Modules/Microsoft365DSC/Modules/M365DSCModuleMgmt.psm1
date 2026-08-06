@@ -43,7 +43,18 @@ function Initialize-M365DSCModuleMgmt
 
         $commandToModuleMap = @{}
         $Script:M365DSCResourceSettings = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::OrdinalIgnoreCase)
-        foreach ($file in (Get-ChildItem -Path "$PSScriptRoot/../DscResources" -Filter 'settings.json' -Recurse -File)) {
+        $dscResourcesFolder = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources'
+        $settingsFiles = @()
+        if (Test-Path -Path $dscResourcesFolder)
+        {
+            $settingsFiles = @(Get-ChildItem -Path $dscResourcesFolder -Filter 'settings.json' -Recurse -File)
+        }
+        else
+        {
+            Write-Verbose -Message "No DscResources folder at '$dscResourcesFolder', resource settings will be empty."
+        }
+
+        foreach ($file in $settingsFiles) {
             Write-Verbose -Message "Processing settings.json file at path: $($file.FullName)"
             $jsonContent = [System.IO.File]::ReadAllText($file.FullName) | ConvertFrom-Json
             foreach ($commandMap in ($jsonContent.commands | Where-Object -Property module -NotIn $Script:M365DSCDevDependencies.Keys)) {

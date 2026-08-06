@@ -106,8 +106,15 @@ function Get-PropertyReport
         $PSBoundParameters.Add('Credential', $Credential)
     }
 
-    $folderPath = Join-Path $PSScriptRoot -ChildPath '../DscResources'
-    Write-Verbose "Folderpath of DSC resources: $folderPath"
+    # Resources are classes. There is no DscResources folder holding one .psm1 per resource to scan
+    # any more, so both "does this resource exist" and "what properties does it have" come off the
+    # discovered-resource dictionary instead.
+    Initialize-M365DSCAllResourcesDictionary
+    $allResources = Get-M365DSCAllResourcesDictionary
+    if ($null -eq $allResources)
+    {
+        throw 'Could not enumerate the Microsoft365DSC resources. Confirm the module is installed and importable.'
+    }
 
     foreach ($module in $workloads)
     {
@@ -144,7 +151,7 @@ function Get-PropertyReport
             Write-Progress -Activity 'Checking resources' -Status $cmdlet.Name -PercentComplete (($i / $setCmdlets.Length) * 100)
 
             $resourceExists = $false
-            $resourceName = 'MSFT_' + $module.Prefix + $cmdlet.Name.Split('-')[1]
+            $resourceName = $module.Prefix + $cmdlet.Name.Split('-')[1]
 
             if ($module.ModuleName -eq 'MicrosoftTeams' -and $resourceName -like '*TeamsCsTeams*')
             {
@@ -154,24 +161,16 @@ function Get-PropertyReport
             {
                 $resourceName = $resourceName -replace ('TeamsCs', 'Teams')
             }
-            $foundInFiles = Get-ChildItem -Path $folderPath | Where-Object -Property Name -Like $resourceName
+            $resourceExists = $allResources.ContainsKey($resourceName)
 
-            if ($null -eq $foundInFiles)
+            if (-not $resourceExists)
             {
                 $resourceNameFromMapping = $cmdletMapping[$cmdlet.Name.Split('-')[1]]
                 if ($null -ne $resourceNameFromMapping)
                 {
-                    $resourceName = 'MSFT_' + $module.Prefix + $resourceNameFromMapping
-                    $foundInFiles = Get-ChildItem -Path $folderPath | Where-Object -Property Name -Like $resourceName
-                    if ($null -ne $foundInFiles)
-                    {
-                        $resourceExists = $true
-                    }
+                    $resourceName = $module.Prefix + $resourceNameFromMapping
+                    $resourceExists = $allResources.ContainsKey($resourceName)
                 }
-            }
-            else
-            {
-                $resourceExists = $true
             }
 
             if ($resourceExists)
@@ -192,17 +191,15 @@ function Get-PropertyReport
 
                 # Get properties of DSC resource
                 Write-Verbose "Get properties of resource $resourceName"
-                Import-Module $($folderPath + '/' + $resourceName) -Force
-                $resourceProperties = (Get-Command Set-TargetResource -Module $resourceName).Parameters
+                $resourceProperties = $allResources[$resourceName].Properties.Name
 
-                foreach ($property in $resourceProperties.Keys)
+                foreach ($property in $resourceProperties)
                 {
                     if ($property -notin $invalidProperties)
                     {
                         $resourceParameters += $property
                     }
                 }
-                Remove-Module -Name $resourceName -Force -Confirm:$false
 
                 # Compare properties
                 Write-Verbose "Compare parameters of $resourceName"

@@ -34,7 +34,7 @@ namespace Microsoft365DSC.Converter
                 // PSObject can wrap null
                 if (psObject.BaseObject is null || psObject.BaseObject is PSCustomObject)
                 {
-                    return Normalize(psObject);
+                    return ComplexObjectConverter.ToHashtable(psObject);
                 }
                 obj = psObject.BaseObject;
             }
@@ -46,8 +46,16 @@ namespace Microsoft365DSC.Converter
             // Arrays (including CimInstance[], object[], string[]): normalize each element
             if (obj is Array array)
                 return NormalizeArray(array);
-                
+
             if (obj is IDictionary or CimInstance)
+                return ComplexObjectConverter.ToHashtable(obj);
+
+            // Complex values that are neither dictionaries nor CIM instances: a PowerShell class
+            // instance (what a class-based resource holds in a complex property) or a Graph SDK
+            // model. Both decompose by reflection. The test is deliberately narrow rather than
+            // "any object with properties", so Uri, Version, PSCredential and the like keep their
+            // leaf behaviour.
+            if (IsReflectableComplexType(obj.GetType()))
                 return ComplexObjectConverter.ToHashtable(obj);
 
             // IEnumerable but not primitive/array/dictionary: treat as array
@@ -91,6 +99,18 @@ namespace Microsoft365DSC.Converter
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns true if the type is a complex type whose state must be read by reflection:
+        /// a PowerShell-defined class (PowerShell classes have no namespace) or a Graph SDK model.
+        /// </summary>
+        private static bool IsReflectableComplexType(Type type)
+        {
+            if (type.Namespace is null)
+                return true;
+
+            return type.FullName?.StartsWith("Microsoft.Graph.", StringComparison.OrdinalIgnoreCase) == true;
         }
 
         /// <summary>

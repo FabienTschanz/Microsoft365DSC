@@ -67,9 +67,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                = 'Present'
                     SubscriptionId        = "00000000-0000-0000-0000-000000000000"
                     Credential            = $Credential
-                    ApplicationId         = "00000000-0000-0000-0000-000000000010"
-                    TenantId              = "00000000-0000-0000-0000-000000000020"
-                    CertificateThumbprint = "AABBCCDDEEFF00112233"
                 }
 
                 Mock -CommandName Get-AzRoleDefinition -MockWith {
@@ -104,9 +101,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                = 'Absent'
                     SubscriptionId        = "00000000-0000-0000-0000-000000000000"
                     Credential            = $Credential
-                    ApplicationId         = "00000000-0000-0000-0000-000000000010"
-                    TenantId              = "00000000-0000-0000-0000-000000000020"
-                    CertificateThumbprint = "AABBCCDDEEFF00112233"
                 }
 
                 Mock -CommandName Get-AzRoleDefinition -MockWith {
@@ -151,9 +145,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                = 'Present'
                     SubscriptionId        = "00000000-0000-0000-0000-000000000000"
                     Credential            = $Credential
-                    ApplicationId         = "00000000-0000-0000-0000-000000000010"
-                    TenantId              = "00000000-0000-0000-0000-000000000020"
-                    CertificateThumbprint = "AABBCCDDEEFF00112233"
                 }
 
                 Mock -CommandName Get-AzRoleDefinition -MockWith {
@@ -189,9 +180,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                = 'Present'
                     SubscriptionId        = "00000000-0000-0000-0000-000000000000"
                     Credential            = $Credential
-                    ApplicationId         = "00000000-0000-0000-0000-000000000010"
-                    TenantId              = "00000000-0000-0000-0000-000000000020"
-                    CertificateThumbprint = "AABBCCDDEEFF00112233"
                 }
 
                 Mock -CommandName Get-AzRoleDefinition -MockWith {

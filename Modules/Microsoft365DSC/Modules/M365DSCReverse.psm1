@@ -695,8 +695,9 @@ function Start-M365DSCConfigurationExtract
             -Description 'Default Value Used to Ensure a Configuration Data File is Generated'
 
         $resourcesToExport = [System.Collections.Generic.List[Hashtable[]]]::new()
-        $resourcesPath = [System.Collections.Generic.List[System.IO.FileInfo[]]]::new()
-        $allResourcesPath = Get-M365DSCAllResourcesPath
+        $resourcesToProcess = [System.Collections.Generic.List[System.Object]]::new()
+        Initialize-M365DSCAllResourcesDictionary
+        $allResources = Get-M365DSCAllResourcesDictionary
 
         $containsConfigurationPolicies = $false
         $requestedConfigurationPolicyTemplateIds = @()
@@ -724,8 +725,15 @@ function Start-M365DSCConfigurationExtract
                         AuthenticationMethod = $authMethod.AuthMethod
                     }
                     $resourcesToExport.Add($resourceInfo)
-                    $resourcePath = $allResourcesPath | Where-Object -Property Name -EQ "MSFT_$resourceModule.psm1"
-                    $resourcesPath.Add($resourcePath)
+
+                    if ($null -ne $allResources -and $allResources.ContainsKey($resourceModule))
+                    {
+                        $resourcesToProcess.Add($allResources[$resourceModule])
+                    }
+                    else
+                    {
+                        Write-Warning -Message "Resource {$resourceModule} was not found in the resource dictionary and will be skipped."
+                    }
 
                     if ($intuneTemplateRegistry.ContainsKey($resourceModule))
                     {
@@ -741,7 +749,7 @@ function Start-M365DSCConfigurationExtract
                     -Source "[M365DSCReverse]$resourceModule"
             }
         }
-        $resourcesPath = $resourcesPath | Sort-Object $_.Name
+        $resourcesToProcess = $resourcesToProcess | Sort-Object $_.Name
 
         # If the tenant id is not a GUID, retrieve it based on the organization name
         # Only implemented for public cloud tenants
@@ -781,7 +789,7 @@ function Start-M365DSCConfigurationExtract
             $Global:M365DSCStringReplacementMap = $using:M365DSCStringReplacementMap
             $resource = $_
             Set-M365DSCAllResourcesDictionary -DscResourceDictionary $using:resourceDictionary
-            $resourceName = $resource.Name.Split('.')[0] -replace 'MSFT_', ''
+            $resourceName = $resource.Name
             $mostSecureAuthMethod = ($using:allSupportedResourcesWithMostSecureAuthMethod | Where-Object -Property Resource -EQ $resourceName).AuthMethod
 
             $parameters = @{}
@@ -844,14 +852,12 @@ function Start-M365DSCConfigurationExtract
                 if ($using:GenerateInfo)
                 {
                     $exportString.Append("`r`n        # For information on how to use this resource, please refer to:`r`n") | Out-Null
-                    $exportString.Append("        # https://github.com/microsoft/Microsoft365DSC/wiki/$($resource.Name.Split('.')[0] -replace 'MSFT_', '')`r`n") | Out-Null
+                    $exportString.Append("        # https://github.com/microsoft/Microsoft365DSC/wiki/$($resource.Name)`r`n") | Out-Null
                 }
 
                 # Check if filters for the current resource were specified.
                 $resourceFilter = $null
-
-                Import-Module $resource.FullName -Force | Out-Null
-                $filterExists = (Get-Command 'Export-TargetResource').Parameters.Keys.Contains('Filter')
+                $filterExists = Test-M365DSCResourceProperty -ResourceName $resourceName -PropertyName 'Filter'
                 if ($filterExists -and $null -ne $using:Filters -and ($using:Filters).Keys.Contains($resourceName))
                 {
                     $resourceFilter = ($using:Filters).$resourceName
@@ -865,9 +871,10 @@ function Start-M365DSCConfigurationExtract
                     }
                 }
 
-                # Check for Export-TargetResource parameters supports -SubscriptionId
-                $functionParameters = (Get-Command 'Export-TargetResource').Parameters
-                if ($functionParameters.Keys.Contains('SubscriptionId') -and -not [System.String]::IsNullOrEmpty($using:SubscriptionId))
+                # Check whether the resource's export supports -SubscriptionId.
+                $supportsSubscriptionId = Test-M365DSCResourceProperty -ResourceName $resourceName -PropertyName 'SubscriptionId'
+
+                if ($supportsSubscriptionId -and -not [System.String]::IsNullOrEmpty($using:SubscriptionId))
                 {
                     $parameters.Add('SubscriptionId', $using:SubscriptionId)
                 }
@@ -878,7 +885,7 @@ function Start-M365DSCConfigurationExtract
 
                 try
                 {
-                    $exportOutput = Export-TargetResource @parameters
+                    $exportOutput = Invoke-M365DSCResourceMethod -ResourceName $resourceName -MethodName 'Export' -Parameters $parameters
                     $exportString.Append($exportOutput) | Out-Null
                     [void]($using:synchronizedHashtable).ResourcesResult.TryAdd($resourceName, $exportString.ToString())
                     ($using:synchronizedHashtable).SuccessfulResources++
@@ -958,14 +965,14 @@ function Start-M365DSCConfigurationExtract
                     $arguments.Add('ModuleName', $requiredModules)
                 }
                 #>
-                $resourcesPath | Where-Object -FilterScript { $_.Name -Like "*MSFT_$workload*" } | Invoke-Parallel @arguments -Verbose
+                $resourcesToProcess | Where-Object -FilterScript { $_.Name -like "$workload*" } | Invoke-Parallel @arguments -Verbose
             }
         }
         else
         {
             Write-M365DSCHost -Message 'Starting export in sequential mode...'
             $exportScriptBlock = [ScriptBlock]::Create($exportScriptBlock.ToString().Replace('$using:', '$'))
-            $resourcesPath | ForEach-Object -Process $exportScriptBlock
+            $resourcesToProcess | ForEach-Object -Process $exportScriptBlock
         }
 
         foreach ($resource in $($synchronizedHashtable.ResourcesResult.Keys | Sort-Object))

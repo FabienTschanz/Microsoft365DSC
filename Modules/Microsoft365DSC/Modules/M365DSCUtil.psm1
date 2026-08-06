@@ -542,6 +542,11 @@ function Test-M365DSCParameterState
 .PARAMETER IncludedProperties
     Specifies the explicit property names to compare.
 
+.PARAMETER CurrentValues
+    Specifies the current state to compare against. Mandatory: resources are classes, so there is no
+    Get-TargetResource for this function to call on the caller's behalf. M365DSCResourceBase.Test()
+    passes the result of its own Get().
+
 .PARAMETER PostProcessing
     Specifies an optional callback to transform compare inputs before evaluation.
 
@@ -578,6 +583,10 @@ function Test-M365DSCTargetResource
         [Parameter()]
         [System.String[]]
         $IncludedProperties,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $CurrentValues,
 
         [Parameter()]
         [System.Func[Hashtable, Hashtable, Hashtable, [Object[]], Tuple[Hashtable, Hashtable, Hashtable]]]
@@ -641,8 +650,6 @@ function Test-M365DSCTargetResource
     }
 
     Write-Verbose -Message "Testing configuration of the $ResourceName with $finalString" -Verbose:$Verbose
-
-    $CurrentValues = & MSFT_$ResourceName\Get-TargetResource @DesiredValues
 
     $testTargetResource = Compare-M365DSCResourceState -ResourceName $ResourceName `
         -DesiredValues $DesiredValues `
@@ -738,7 +745,9 @@ function Initialize-M365DSCAllResourcesDictionary
     if ($null -eq $Script:AllM365DSCResources -and -not $Global:IsTestEnvironment)
     {
         $Script:AllM365DSCResources = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::InvariantCultureIgnoreCase)
-        $resources = Get-DscResourceV2 -Module 'Microsoft365DSC'
+        $resources = Get-DscResourceV2 -Module 'Microsoft365DSC' |
+            Where-Object -FilterScript { $_.ImplementationDetail -eq 'ClassBased' }
+
         foreach ($resource in $resources)
         {
             $Script:AllM365DSCResources.Add($resource.Name, $resource)
@@ -1390,40 +1399,15 @@ function Get-M365DSCAllResources
     [CmdletBinding()]
     param ()
 
-    if ($null -eq $Script:allResourcesPath)
+    Initialize-M365DSCAllResourcesDictionary
+    $dictionary = Get-M365DSCAllResourcesDictionary
+
+    if ($null -eq $dictionary)
     {
-        $Script:allResourcesPath = Get-M365DSCAllResourcesPath
+        return [System.String[]] @()
     }
 
-    return $Script:allResourcesPath.Name -replace 'MSFT_', '' -replace '.psm1', ''
-}
-
-<#
-.SYNOPSIS
-    Returns the Microsoft365DSC DSC resource module files from the DscResources folder.
-
-.DESCRIPTION
-    Enumerates the Microsoft365DSC DscResources directory and returns the PowerShell module files for all DSC resources.
-
-.FUNCTIONALITY
-    Internal
-
-.OUTPUTS
-    System.IO.FileInfo[]
-
-.NOTES
-    This helper is used by Get-M365DSCAllResources to discover available resources.
-#>
-function Get-M365DSCAllResourcesPath
-{
-    [CmdletBinding()]
-    [OutputType([System.IO.FileInfo[]])]
-    [CmdletBinding()]
-    param ()
-
-    $Script:allResourcesPath = Get-ChildItem -Path ($PSScriptRoot + '/../DscResources/') -Recurse -Filter '*.psm1' -File
-
-    return $Script:allResourcesPath
+    return [System.String[]] $dictionary.Keys
 }
 
 <#
@@ -1500,11 +1484,11 @@ function Get-M365DSCResourceDifferences
     $currentResourcesPath = Join-Path -Path $currentModule.ModuleBase -ChildPath 'DscResources'
     $previousResourcesPath = Join-Path -Path $previousModule.ModuleBase -ChildPath 'DscResources'
 
-    $currentResources = Get-ChildItem -Path $currentResourcesPath -Recurse -Filter '*.psm1' -File |
-        ForEach-Object { $_.Name -replace 'MSFT_', '' -replace '\.psm1', '' }
+    $currentResources = Get-ChildItem -Path $currentResourcesPath -Directory -Filter 'MSFT_*' |
+        ForEach-Object { $_.Name -replace '^MSFT_', '' }
 
-    $previousResources = Get-ChildItem -Path $previousResourcesPath -Recurse -Filter '*.psm1' -File |
-        ForEach-Object { $_.Name -replace 'MSFT_', '' -replace '\.psm1', '' }
+    $previousResources = Get-ChildItem -Path $previousResourcesPath -Directory -Filter 'MSFT_*' |
+        ForEach-Object { $_.Name -replace '^MSFT_', '' }
 
     # Return resources present in current but not in previous
     $newResources = $currentResources | Where-Object -FilterScript { $_ -notin $previousResources } | Sort-Object
@@ -2057,47 +2041,46 @@ function Get-M365DSCConfigurationConflict
 
 <#
 .SYNOPSIS
-    Invokes a DSC resource function in a PowerShell 7 session.
+    Invokes a method on a class-based DSC resource in a PowerShell 7 session.
 
 .DESCRIPTION
-    Ensures a PowerShell Core remoting session exists, imports the target resource module, and invokes the selected resource function with provided parameters.
+    Marshals by class name plus method name plus the bound-parameter hashtable. Its script-based
+    predecessor marshalled by file path plus function name, neither of which survives the move to
+    classes: there is no per-resource .psm1 any more, and methods are not commands.
 
-.PARAMETER Path
-    Specifies the resource module path to import in the Core session.
+.PARAMETER ClassName
+    Specifies the name of the resource class, e.g. 'AADGroup'.
 
-.PARAMETER FunctionName
-    Specifies the target resource function to invoke.
+.PARAMETER MethodName
+    Specifies the method to invoke. Must be passed as a literal by the caller:
+    $MyInvocation.MyCommand.Name does not resolve to the enclosing method inside a class.
 
 .PARAMETER Parameters
-    Specifies parameters passed to the invoked function.
+    Specifies the bound parameters, as returned by $this.GetBoundParameters().
 
 .EXAMPLE
-    Invoke-PowerShellCoreResource -Path 'C:\Program Files\...\DscResources\MSFT_Resource\MSFT_Resource.psm1' -FunctionName Test-TargetResource -Parameters @{ Name = 'Value' }
-
-.EXAMPLE
-    # From inside of a DSC resource
-    Invoke-PowerShellCoreResource -Path $PSCommandPath -FunctionName $MyInvocation.MyCommand.Name -Parameters $PSBoundParameters
+    Invoke-M365DSCClassResourceInPowerShellCore -ClassName 'AADGroup' -MethodName 'Get' -Parameters @{ DisplayName = 'Value' }
 
 .FUNCTIONALITY
     Internal
 
 .OUTPUTS
-    Result of the invoked function.
+    Result of the invoked method. A Get returns a hashtable, not a resource instance.
 #>
-function Invoke-PowerShellCoreResource
+function Invoke-M365DSCClassResourceInPowerShellCore
 {
     [CmdletBinding()]
     [OutputType([System.Object])]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Path', Justification = 'Using statement not detected')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'FunctionName', Justification = 'Using statement not detected')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ClassName', Justification = 'Using statement not detected')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'MethodName', Justification = 'Using statement not detected')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Parameters', Justification = 'Using statement not detected')]
     param (
         [Parameter(Mandatory = $true)]
-        [System.String]$Path,
+        [System.String]$ClassName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Get-TargetResource', 'Set-TargetResource', 'Test-TargetResource', 'Export-TargetResource')]
-        [System.String]$FunctionName,
+        [ValidateSet('Get', 'Set', 'Test', 'Export')]
+        [System.String]$MethodName,
 
         [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]$Parameters
@@ -2109,8 +2092,9 @@ function Invoke-PowerShellCoreResource
     }
 
     $output = Invoke-Command -Session $Script:PSCoreSession -ScriptBlock {
-        Import-Module -Name $using:Path
-        & $using:FunctionName @using:Parameters
+        Invoke-M365DSCResourceMethod -ResourceName $using:ClassName `
+            -MethodName $using:MethodName `
+            -Parameters $using:Parameters
     }
 
     return $output
@@ -2140,7 +2124,7 @@ function Get-PowerShellSession
 
 <#
 .DESCRIPTION
-    Initializes a PowerShell Core session for use with Invoke-PowerShellCoreResource.
+    Initializes a PowerShell Core session for use with Invoke-M365DSCClassResourceInPowerShellCore.
 
 .FUNCTIONALITY
     Private
@@ -2829,7 +2813,7 @@ function Update-M365DSCAuthenticationTargets
 
     foreach ($target in $targets)
     {
-        if ($target.ContainsKey('Id') -and $target.ContainsKey('TargetType'))
+        if ($null -ne $target.Id -and $null -ne $target.TargetType)
         {
             if ($target.Id -eq '0000000-0000-0000-0000-000000000000' -or $target.Id -eq 'all_users' `
                 -or $target.Id -match '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
@@ -3172,7 +3156,6 @@ Export-ModuleMember -Function @(
     'Convert-M365DscHashtableToString',
     'Get-AllSPOPackages',
     'Get-M365DSCAllResources',
-    'Get-M365DSCAllResourcesPath',
     'Get-M365DSCAllResourcesDictionary',
     'Get-M365DSCArrayFromProperty',
     'Get-M365DSCAuthenticationMode',
@@ -3191,8 +3174,8 @@ Export-ModuleMember -Function @(
     'Initialize-PowerShellCoreSession',
     'Initialize-WindowsPowerShellSession',
     'Install-M365DSCDevBranch',
+    'Invoke-M365DSCClassResourceInPowerShellCore',
     'Invoke-M365DSCGraphBatchRequest',
-    'Invoke-PowerShellCoreResource',
     'New-M365DSCCmdletDocumentation',
     'New-M365DSCMissingResourcesExample',
     'Remove-M365DSCAuthenticationParameter',
