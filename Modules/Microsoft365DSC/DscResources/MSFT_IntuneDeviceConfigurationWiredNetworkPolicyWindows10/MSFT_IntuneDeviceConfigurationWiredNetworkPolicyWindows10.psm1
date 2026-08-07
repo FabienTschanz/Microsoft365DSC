@@ -607,7 +607,47 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
 
     [bool] Test()
     {
-        return ([M365DSCResourceBase] $this).Test()
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $boundParameters = $this.GetBoundParameters()
+        $excludedProperties = @()
+        if ($boundParameters.ContainsKey('RootCertificatesForServerValidationDisplayNames'))
+        {
+            $excludedProperties += 'RootCertificatesForServerValidationIds'
+        }
+
+        if ($boundParameters.ContainsKey('IdentityCertificateForClientAuthenticationDisplayName'))
+        {
+            $excludedProperties += 'IdentityCertificateForClientAuthenticationId'
+        }
+
+        if ($boundParameters.ContainsKey('SecondaryIdentityCertificateForClientAuthenticationDisplayName'))
+        {
+            $excludedProperties += 'SecondaryIdentityCertificateForClientAuthenticationId'
+        }
+
+        if ($boundParameters.ContainsKey('RootCertificateForClientValidationDisplayName'))
+        {
+            $excludedProperties += 'RootCertificateForClientValidationId'
+        }
+
+        if ($boundParameters.ContainsKey('SecondaryRootCertificateForClientValidationDisplayName'))
+        {
+            $excludedProperties += 'SecondaryRootCertificateForClientValidationId'
+        }
+
+        $result = Test-M365DSCTargetResource -DesiredValues $boundParameters `
+            -ResourceName $this.GetResourceName() `
+            -ExcludedProperties $excludedProperties `
+            -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
     [string] Export()

@@ -353,6 +353,18 @@ class IntuneUserSettingsPolicyWindows365 : M365DSCResourceBase
 
     [bool] Test()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        if ($null -ne $this.CrossRegionDisasterRecoverySetting -and
+            $this.CrossRegionDisasterRecoverySetting.UserInitiatedDisasterRecoveryAllowed -and
+            $this.CrossRegionDisasterRecoverySetting.DisasterRecoveryType -ne 'premium')
+        {
+            throw "The property UserInitiatedDisasterRecoveryAllowed can only be set to 'True' when DisasterRecoveryType is configured as 'premium'."
+        }
+
         return ([M365DSCResourceBase] $this).Test()
     }
 

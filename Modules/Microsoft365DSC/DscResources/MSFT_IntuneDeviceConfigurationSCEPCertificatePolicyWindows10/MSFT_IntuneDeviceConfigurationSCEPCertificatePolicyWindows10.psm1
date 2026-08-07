@@ -483,7 +483,26 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
 
     [bool] Test()
     {
-        return ([M365DSCResourceBase] $this).Test()
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $excludedProperties = @()
+        if (-not [System.String]::IsNullOrEmpty($this.RootCertificateDisplayName))
+        {
+            $excludedProperties += 'RootCertificateId'
+        }
+
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            -ExcludedProperties $excludedProperties `
+            -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
     [string] Export()

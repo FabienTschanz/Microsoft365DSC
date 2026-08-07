@@ -262,6 +262,17 @@ class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResou
 
     [bool] Test()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        if ($null -ne $this.ExpeditedUpdateSettings -and
+            ($this.ExpeditedUpdateSettings.DaysUntilForcedReboot -lt 0 -or $this.ExpeditedUpdateSettings.DaysUntilForcedReboot -gt 2))
+        {
+            throw 'DaysUntilForcedReboot must be between 0 and 2.'
+        }
+
         return ([M365DSCResourceBase] $this).Test()
     }
 

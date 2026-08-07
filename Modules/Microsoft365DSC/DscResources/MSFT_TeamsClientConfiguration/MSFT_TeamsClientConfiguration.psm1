@@ -221,7 +221,26 @@ class TeamsClientConfiguration : M365DSCResourceBase
 
     [bool] Test()
     {
-        return ([M365DSCResourceBase] $this).Test()
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $excludedProperties = @()
+        if ([System.String]::IsNullOrEmpty($this.RestrictedSenderList))
+        {
+            $excludedProperties += 'RestrictedSenderList'
+        }
+
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            -ExcludedProperties $excludedProperties `
+            -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
     [string] Export()

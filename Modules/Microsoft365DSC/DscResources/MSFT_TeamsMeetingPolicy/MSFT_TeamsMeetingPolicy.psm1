@@ -734,7 +734,32 @@ class TeamsMeetingPolicy : M365DSCResourceBase
 
     [bool] Test()
     {
-        return ([M365DSCResourceBase] $this).Test()
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $excludedProperties = @('AllowAnonymousUsersToDialOut', 'AllowIPVideo', 'AllowUserToJoinExternalMeeting')
+        if ($this.AllowCloudRecording -eq $false -and $this.GetBoundParameters().ContainsKey('AllowRecordingStorageOutsideRegion'))
+        {
+            $excludedProperties += 'AllowCloudRecording'
+        }
+        elseif ($this.AllowCloudRecording -eq $false)
+        {
+            # AllowRecordingStorageOutsideRegion and RecordingStorageMode only work if AllowCloudRecording is set to True
+            $excludedProperties += 'AllowRecordingStorageOutsideRegion'
+            $excludedProperties += 'RecordingStorageMode'
+        }
+
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            -ExcludedProperties $excludedProperties `
+            -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
     [string] Export()

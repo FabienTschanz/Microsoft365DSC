@@ -144,7 +144,25 @@ class EXOArcConfig : M365DSCResourceBase
 
     [bool] Test()
     {
-        return ([M365DSCResourceBase] $this).Test()
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $desiredValues = $this.GetBoundParameters()
+        if ($desiredValues.ContainsKey('ArcTrustedSealers'))
+        {
+            $desiredValues.ArcTrustedSealers = $desiredValues.ArcTrustedSealers -join ','
+        }
+
+        $result = Test-M365DSCTargetResource -DesiredValues $desiredValues `
+            -ResourceName $this.GetResourceName() `
+            -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
     [string] Export()

@@ -1160,6 +1160,11 @@ function Repair-MissingReturn
     True when Test-TargetResource is the standard shape - telemetry plus a single
     Test-M365DSCTargetResource call - in which case the base class already implements it and no
     override is emitted.
+
+    Command names alone are not enough: custom logic frequently contains no commands at all -
+    assignments ($excludedProperties = @()), method calls ($ValuesToCheck.Remove(...)), if/throw
+    statements, scriptblock definitions. So on top of the command check, every top-level statement
+    must match one of the standard shapes; anything else makes the body non-standard.
 #>
 function Test-IsStandardTestBody
 {
@@ -1172,19 +1177,87 @@ function Test-IsStandardTestBody
         $Function
     )
 
-    $commands = @($Function.Body.FindAll({ $args[0] -is [CommandAst] }, $true) |
-            ForEach-Object { $_.GetCommandName() } |
-            Where-Object { $_ -and $_ -notin @('Write-Verbose', 'Write-M365DSCHost', 'Convert-M365DscHashtableToString') })
-
+    $benign = @('Write-Verbose', 'Write-M365DSCHost', 'Convert-M365DscHashtableToString')
     $expected = @('Add-M365DSCTelemetryEvent', 'Format-M365DSCTelemetryParameters',
         'Invoke-PowerShellCoreResource', 'Test-M365DSCTargetResource')
+
+    $commands = @($Function.Body.FindAll({ $args[0] -is [CommandAst] }, $true) |
+            ForEach-Object { $_.GetCommandName() } |
+            Where-Object { $_ -and $_ -notin $benign })
 
     if (@($commands | Where-Object { $_ -eq 'Test-M365DSCTargetResource' }).Count -ne 1)
     {
         return $false
     }
 
-    return (@($commands | Where-Object { $_ -notin $expected }).Count -eq 0)
+    if (@($commands | Where-Object { $_ -notin $expected }).Count -gt 0)
+    {
+        return $false
+    }
+
+    if ($null -eq $Function.Body.EndBlock)
+    {
+        return $false
+    }
+
+    foreach ($statement in $Function.Body.EndBlock.Statements)
+    {
+        # The PowerShell 5.1 dispatch shim.
+        if ($statement -is [IfStatementAst] -and
+            $statement.Clauses[0].Item1.Extent.Text -match '\$PSEdition\s*-ne\s*[''"]Core[''"]')
+        {
+            continue
+        }
+
+        if ($statement -is [AssignmentStatementAst])
+        {
+            # The telemetry block.
+            if ($statement.Left.Extent.Text -in @('$ResourceName', '$CommandName', '$data'))
+            {
+                continue
+            }
+
+            # Capturing the comparison result before returning it.
+            $rightCommands = @($statement.Right.FindAll({ $args[0] -is [CommandAst] }, $true) |
+                    ForEach-Object { $_.GetCommandName() })
+            if ($rightCommands -contains 'Test-M365DSCTargetResource')
+            {
+                continue
+            }
+
+            return $false
+        }
+
+        if ($statement -is [ReturnStatementAst])
+        {
+            $pipelineText = if ($null -ne $statement.Pipeline) { $statement.Pipeline.Extent.Text } else { '' }
+            if ($pipelineText -match 'Test-M365DSCTargetResource' -or $pipelineText -match '^\$\w+$')
+            {
+                continue
+            }
+
+            return $false
+        }
+
+        if ($statement -is [PipelineAst])
+        {
+            $pipelineCommands = @($statement.FindAll({ $args[0] -is [CommandAst] }, $true) |
+                    ForEach-Object { $_.GetCommandName() } | Where-Object { $_ })
+
+            # An expression statement without any command (a bare method call, say) is custom logic.
+            if ($pipelineCommands.Count -gt 0 -and
+                @($pipelineCommands | Where-Object { $_ -notin ($benign + $expected) }).Count -eq 0)
+            {
+                continue
+            }
+
+            return $false
+        }
+
+        return $false
+    }
+
+    return $true
 }
 
 <#

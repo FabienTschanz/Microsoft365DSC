@@ -692,7 +692,29 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
 
     [bool] Test()
     {
-        return ([M365DSCResourceBase] $this).Test()
+        if ($this.RequiresPowerShellCore())
+        {
+            return [bool] $this.InvokeInPowerShellCore('Test')
+        }
+
+        #region Telemetry
+        $this.AddTelemetry('Test')
+        #endregion
+
+        $postProcessingScript = {
+            param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+            if ($DesiredValues.AppGroupType -ne 'SelectedPublicApps')
+            {
+                $ValuesToCheck.Remove('Apps')
+            }
+            return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+        }
+
+        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+            -ResourceName $this.GetResourceName() `
+            -PostProcessing $postProcessingScript `
+            -CurrentValues $this.Get().ToHashtable()
+        return $result
     }
 
     [string] Export()
