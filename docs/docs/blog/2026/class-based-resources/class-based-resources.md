@@ -136,6 +136,64 @@ One more discovery rule cost us the most debugging time of the entire project, a
 
 > **[Image placeholder: Screenshot of a terminal showing `Get-DscResource -Module Microsoft365DSC` returning the full resource list, next to the manifest's commented-out `FunctionsToExport` line.]**
 
+### The second manifest trap: `ScriptsToProcess`
+
+There is a second manifest key that breaks class-based resources, and it is far nastier than the first one, because it leaves discovery completely intact. **If your manifest declares `ScriptsToProcess`, the LCM cannot instantiate your class-based resources.** `Get-DscResource` still lists every resource, so by every check you would think to run, the module looks healthy. Then you apply a configuration and get:
+
+```text
+Could not find the type of DSC resource class IntuneAccountProtectionLocalUserGroupMembershipPolicy.
+    + FullyQualifiedErrorId : ClassTypeNotFound
+```
+
+or, through `Invoke-DscResource`, the equally unhelpful:
+
+```text
+The property 'DisplayName' cannot be found on this object. Verify that the property exists and can be set.
+```
+
+Reduced to a minimal two-class module, the two keys fail in completely different places:
+
+| manifest key | `Get-DscResource` | `Invoke-DscResource` / LCM |
+| --- | --- | --- |
+| neither key present | all resources found | works |
+| `FunctionsToExport` = explicit list | **0 resources, no error** | resource not found |
+| `ScriptsToProcess` = any script | all resources found | **fails - "The property '&lt;Name&gt;' cannot be found on this object"** |
+
+![Test-DscConfiguration Failing With ScriptsToProcess](Test-DscConfiguration_Failing_With_ScriptsToProcess.png)
+
+The mechanism is worth understanding, because the error message points nowhere near the cause. To run a class-based resource, DSC builds a small script in a fresh runspace that boils down to `using module "<path to your .psd1>"` followed by `[YourResource]::new()`, and takes the first object that comes back. With `ScriptsToProcess` present, that `using module` no longer surfaces the module's classes - the type does not resolve, nothing is returned, and DSC then dutifully assigns your configuration's property values onto `$null`. Hence a message about a missing property when the real failure was that the class never materialized.
+
+The fix is to stop using the key. `ScriptsToProcess` only exists to run something in the caller's session before the module loads, and a nested module listed first does the same job without breaking class visibility:
+
+![Test-DscConfiguration Succeeds Without ScriptsToProcess](Test-DscConfiguration_Succeeds_Without_ScriptsToProcess.png)
+
+```powershell
+# Microsoft365DSC.psd1
+#
+# ScriptsToProcess = @(                          # breaks class instantiation under the LCM
+#   'Import-M365DSCDllLoaderModule.ps1',
+#   'Show-PwshWarning.ps1',
+#   'Update-MaximumFunctionCount.ps1'
+# )
+
+NestedModules = @(
+    'Modules/M365DSCInit.psm1',                  # runs the three scripts instead
+    ...
+)
+```
+
+with `M365DSCInit.psm1` doing nothing more than invoking them in order:
+
+```powershell
+& (Join-Path $PSScriptRoot '../Import-M365DSCDllLoaderModule.ps1' -Resolve)
+& (Join-Path $PSScriptRoot '../Show-PwshWarning.ps1' -Resolve)
+& (Join-Path $PSScriptRoot '../Update-MaximumFunctionCount.ps1' -Resolve)
+```
+
+The ordering matters: it has to be the first entry, because the DLL loader has to run before any class module that depends on the compiled assemblies is parsed.
+
+What makes this one expensive to diagnose is that every cheap check passes. The module imports, `Get-DscResource` lists all 530+ resources, configurations compile to MOF without complaint - and then the LCM reports a missing class or a missing property. If you are building a class-based module and see `ClassTypeNotFound` for a resource you can plainly see in `Get-DscResource`, check your manifest for `ScriptsToProcess` before you look anywhere else.
+
 ## Issue #2: Import time explodes at scale
 
 The original plan concatenated all 530+ classes into one big root module at build time. Spike 1 generated exactly that, all resources plus more than 470 complex-type classes with stub bodies, and measured a cold `Import-Module`:
@@ -315,7 +373,7 @@ For most users, remarkably little. That was the design goal.
 
 ## The effort behind it
 
-From the first comment in the PowerShell Core thread in November 2024 to this release is just under two years of discussion, prototyping and implementation. The proposal itself is from June 20th, 2025. What I want to emphasize is how much of that time was *not* writing the converter: the spikes that killed the consolidated-module layout, the weeks isolating why the LCM received empty objects, the discovery that `FunctionsToExport` silently disables class discovery - each of these findings is a paragraph in this post and was days or weeks in real life. The conversion itself, once the foundation was measured and solid, went from first hand-converted resource to all 535 converting and running cleanly in a matter of weeks.
+From the first comment in the PowerShell Core thread in November 2024 to this release is just under two years of discussion, prototyping and implementation. The proposal itself is from June 20th, 2025. What I want to emphasize is how much of that time was *not* writing the converter: the spikes that killed the consolidated-module layout, the weeks isolating why the LCM received empty objects, the discovery that two ordinary manifest keys - `FunctionsToExport` and `ScriptsToProcess` - silently break class-based resources in two entirely different ways - each of these findings is a paragraph in this post and was days or weeks in real life. The conversion itself, once the foundation was measured and solid, went from first hand-converted resource to all 535 converting and running cleanly in a matter of weeks.
 
 None of it would have happened this way without the community. Borgquite's insistence on LCM support shaped the dispatch design; ykuijs and salbeck-sit stress-tested the proposal early; indented-automation's code review made the base class better; ricmestre root-caused and fixed a DSCv3 adapter bug upstream in the middle of it all. Thank you - this is what an open-source project is supposed to look like.
 
