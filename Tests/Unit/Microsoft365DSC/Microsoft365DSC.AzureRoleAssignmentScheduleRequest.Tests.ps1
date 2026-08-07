@@ -212,7 +212,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName New-AzRoleAssignmentScheduleRequest -Exactly 1
             }
         }
-        Context -Name 'Set-TargetResource should throw when Role Definition is not found' -Fixture {
+        Context -Name 'Set() should throw when Role Definition is not found' -Fixture {
             BeforeAll {
                 $Script:RoleDefinitions = $null
                 $Script:AllSchedules = $null
@@ -247,7 +247,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name 'Set-TargetResource should throw when Principal is not found' -Fixture {
+        Context -Name 'Set() should throw when Principal is not found' -Fixture {
             BeforeAll {
                 $Script:RoleDefinitions = $null
                 $Script:AllSchedules = $null

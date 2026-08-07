@@ -118,7 +118,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (New-M365DSCResourceInstance -ResourceName 'EXOGroupSettings' -Property $testParams).Test() | Should -Be $False
             }
 
-            It 'Should call New-UnifiedGroup from the Set-TargetResource method' {
+            It 'Should call New-UnifiedGroup from the Set() method' {
                 (New-M365DSCResourceInstance -ResourceName 'EXOGroupSettings' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Set-UnifiedGroup' -Exactly 1
             }
@@ -190,7 +190,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             It 'Should return False from the Test method' {
                 (New-M365DSCResourceInstance -ResourceName 'EXOGroupSettings' -Property $testParams).Test() | Should -Be $False
             }
-            It 'Should call Set-UnifiedGroup from the Set-TargetResource method' {
+            It 'Should call Set-UnifiedGroup from the Set() method' {
                 (New-M365DSCResourceInstance -ResourceName 'EXOGroupSettings' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Set-UnifiedGroup' -Exactly 1
             }

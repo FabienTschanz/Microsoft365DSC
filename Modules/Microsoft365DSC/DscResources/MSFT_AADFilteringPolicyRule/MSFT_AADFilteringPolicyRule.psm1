@@ -173,7 +173,7 @@ class AADFilteringPolicyRule : M365DSCResourceBase
             return
         }
 
-        Write-Verbose -Message 'Entering the Set-TargetResource function'
+        Write-Verbose -Message "Setting configuration for the Azure AD Filtering Policy Rule with Id {$($this.Id)} and Name {$($this.Name)}"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies

@@ -934,7 +934,7 @@ class SCSensitivityLabel : M365DSCResourceBase
 
         if ($this.Ensure -eq 'Present' -and $label.Ensure -eq 'Absent')
         {
-            Write-Verbose -Message "Label {$($this.Name)} doesn't already exist, creating it from the Set-TargetResource function."
+            Write-Verbose -Message "Label {$($this.Name)} doesn't already exist, creating it"
             $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
             if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))
@@ -991,7 +991,7 @@ class SCSensitivityLabel : M365DSCResourceBase
         }
         elseif ($this.Ensure -eq 'Present' -and $label.Ensure -eq 'Present')
         {
-            Write-Verbose -Message "Label {$($this.Name)} already exist, updating it from the Set-TargetResource function."
+            Write-Verbose -Message "Label {$($this.Name)} already exist, updating it"
             $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
             if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))

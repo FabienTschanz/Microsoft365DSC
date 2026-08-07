@@ -745,8 +745,7 @@ function Initialize-M365DSCAllResourcesDictionary
     if ($null -eq $Script:AllM365DSCResources -and -not $Global:IsTestEnvironment)
     {
         $Script:AllM365DSCResources = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::InvariantCultureIgnoreCase)
-        $resources = Get-DscResourceV2 -Module 'Microsoft365DSC' |
-            Where-Object -FilterScript { $_.ImplementationDetail -eq 'ClassBased' }
+        $resources = Get-DscResourceV2 -Module 'Microsoft365DSC' | Where-Object ImplementationDetail -EQ 'ClassBased'
 
         foreach ($resource in $resources)
         {

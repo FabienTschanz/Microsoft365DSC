@@ -842,7 +842,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
 
         if ($this.Ensure -eq 'Present')#create policy attribute objects
         {
-            Write-Verbose -Message "Set-Targetresource: Policy $($this.Displayname) Ensure Present"
+            Write-Verbose -Message "Set(): Policy $($this.Displayname) Ensure Present"
             $NewParameters = @{}
             $NewParameters.Add('displayName', $this.DisplayName)
             if (-not [system.string]::IsNullOrEmpty($this.State))
@@ -852,7 +852,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             #create Conditions object
             $conditions = @{}
             #create and provision Application Condition object
-            Write-Verbose -Message 'Set-Targetresource: create Application Condition object'
+            Write-Verbose -Message 'Set(): create Application Condition object'
             if ($currentParameters.ContainsKey('IncludeApplications'))
             {
                 $conditions.Add('applications', @{})
@@ -976,7 +976,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             }
 
             #create and provision User Condition object
-            Write-Verbose -Message 'Set-Targetresource: process includeusers'
+            Write-Verbose -Message 'Set(): process includeusers'
             if ($currentParameters.ContainsKey('IncludeUsers'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1002,7 +1002,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process excludeusers'
+            Write-Verbose -Message 'Set(): process excludeusers'
             if ($currentParameters.ContainsKey('ExcludeUsers'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1028,7 +1028,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process includegroups'
+            Write-Verbose -Message 'Set(): process includegroups'
             if ($currentParameters.ContainsKey('IncludeGroups'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1058,7 +1058,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process excludegroups'
+            Write-Verbose -Message 'Set(): process excludegroups'
             if ($currentParameters.ContainsKey('ExcludeGroups'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1088,7 +1088,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process includeroles'
+            Write-Verbose -Message 'Set(): process includeroles'
             if ($currentParameters.ContainsKey('IncludeRoles'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1121,7 +1121,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process excluderoles'
+            Write-Verbose -Message 'Set(): process excluderoles'
             if ($currentParameters.ContainsKey('ExcludeRoles'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1154,7 +1154,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process includeGuestOrExternalUser'
+            Write-Verbose -Message 'Set(): process includeGuestOrExternalUser'
             if ($currentParameters.ContainsKey('IncludeGuestOrExternalUserTypes'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1189,7 +1189,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $conditions.Users.Add('includeGuestsOrExternalUsers', $includeGuestsOrExternalUsers)
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process excludeGuestsOrExternalUsers'
+            Write-Verbose -Message 'Set(): process excludeGuestsOrExternalUsers'
             if ($currentParameters.ContainsKey('ExcludeGuestOrExternalUserTypes'))
             {
                 if (-not $conditions.ContainsKey('users'))
@@ -1215,7 +1215,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                             $externalTenants.Add('@odata.type', '#microsoft.graph.conditionalAccessAllExternalTenants')
                             if ($this.GetBoundParameters().ContainsKey('ExcludeExternalTenantsMembers') -and $this.ExcludeExternalTenantsMembers.Count -gt 0)
                             {
-                                throw "Set-Targetresource: ExcludeExternalTenantsMembers is defined, but ExcludeExternalTenantsMembershipKind is 'All'. Please set ExcludeExternalTenantsMembershipKind to 'enumerated' to use ExcludeExternalTenantsMembers."
+                                throw "Set(): ExcludeExternalTenantsMembers is defined, but ExcludeExternalTenantsMembershipKind is 'All'. Please set ExcludeExternalTenantsMembershipKind to 'enumerated' to use ExcludeExternalTenantsMembers."
                             }
                         }
                         elseif ($this.ExcludeExternalTenantsMembershipKind -eq 'enumerated')
@@ -1233,7 +1233,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $conditions.Users.Add('excludeGuestsOrExternalUsers', $excludeGuestsOrExternalUsers)
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process includeServicePrincipals'
+            Write-Verbose -Message 'Set(): process includeServicePrincipals'
             if ($currentParameters.ContainsKey('IncludeServicePrincipals'))
             {
                 if (-not $conditions.ContainsKey('clientApplications'))
@@ -1243,7 +1243,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $conditions.clientApplications.Add('includeServicePrincipals', $this.IncludeServicePrincipals)
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process excludeServicePrincipals'
+            Write-Verbose -Message 'Set(): process excludeServicePrincipals'
             if ($currentParameters.ContainsKey('ExcludeServicePrincipals'))
             {
                 if (-not $conditions.ContainsKey('clientApplications'))
@@ -1253,7 +1253,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $conditions.clientApplications.Add('excludeServicePrincipals', $this.ExcludeServicePrincipals)
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process servicePrincipalFilter'
+            Write-Verbose -Message 'Set(): process servicePrincipalFilter'
             if ($currentParameters.ContainsKey('ServicePrincipalFilterMode') -and $currentParameters.ContainsKey('ServicePrincipalFilterRule'))
             {
                 $attributeMatches = [regex]::Matches($this.ServicePrincipalFilterRule, 'CustomSecurityAttribute\.(\w+)')
@@ -1291,7 +1291,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process platform condition'
+            Write-Verbose -Message 'Set(): process platform condition'
             if ($currentParameters.ContainsKey('IncludePlatforms') -or $currentParameters.ContainsKey('ExcludePlatforms'))
             {
                 if ($this.IncludePlatforms -or $this.ExcludePlatforms)
@@ -1307,7 +1307,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     {
                         $conditions.platforms.Add('includePlatforms', @())
                     }
-                    Write-Verbose -Message "Set-Targetresource: IncludePlatforms: $($this.IncludePlatforms)"
+                    Write-Verbose -Message "Set(): IncludePlatforms: $($this.IncludePlatforms)"
                     if (([Array]$this.IncludePlatforms).Length -eq 0)
                     {
                         $conditions.platforms.includePlatforms = @('all')
@@ -1330,12 +1330,12 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
                 else
                 {
-                    Write-Verbose -Message 'Set-Targetresource: setting platform condition to null'
+                    Write-Verbose -Message 'Set(): setting platform condition to null'
                     $conditions.platforms = $null
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process include and exclude locations'
+            Write-Verbose -Message 'Set(): process include and exclude locations'
             if ($currentParameters.ContainsKey('IncludeLocations') -or $currentParameters.ContainsKey('ExcludeLocations'))
             {
                 if ($this.IncludeLocations -or $this.ExcludeLocations)
@@ -1346,7 +1346,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         })
                     $conditions.locations.includeLocations = @()
                     $conditions.locations.excludeLocations = @()
-                    Write-Verbose -Message 'Set-Targetresource: locations specified'
+                    Write-Verbose -Message 'Set(): locations specified'
                     #create and provision Location condition object if used, translate Location names to guid
                     $LocationLookup = @{}
                     foreach ($Location in Get-MgBetaIdentityConditionalAccessNamedLocation)
@@ -1404,7 +1404,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process device filter'
+            Write-Verbose -Message 'Set(): process device filter'
             if ($currentParameters.ContainsKey('DeviceFilterMode') -and $currentParameters.ContainsKey('DeviceFilterRule'))
             {
                 if ($this.DeviceFilterMode -and $this.DeviceFilterRule)
@@ -1457,29 +1457,29 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $conditions.Add('servicePrincipalRiskLevels', $this.ServicePrincipalRiskLevels)
             }
 
-            Write-Verbose -Message 'Set-Targetresource: process risk levels and app types'
-            Write-Verbose -Message "Set-Targetresource: UserRiskLevels: $($this.UserRiskLevels)"
+            Write-Verbose -Message 'Set(): process risk levels and app types'
+            Write-Verbose -Message "Set(): UserRiskLevels: $($this.UserRiskLevels)"
             if ($currentParameters.ContainsKey('UserRiskLevels'))
             {
                 $Conditions.Add('userRiskLevels', $this.UserRiskLevels)
                 #no translation or conversion needed
             }
 
-            Write-Verbose -Message "Set-Targetresource: SignInRiskLevels: $($this.SignInRiskLevels)"
+            Write-Verbose -Message "Set(): SignInRiskLevels: $($this.SignInRiskLevels)"
             if ($currentParameters.ContainsKey('SignInRiskLevels'))
             {
                 $Conditions.Add('signInRiskLevels', $this.SignInRiskLevels)
                 #no translation or conversion needed
             }
 
-            Write-Verbose -Message "Set-Targetresource: ClientAppTypes: $($this.ClientAppTypes)"
+            Write-Verbose -Message "Set(): ClientAppTypes: $($this.ClientAppTypes)"
             if ($currentParameters.ContainsKey('ClientAppTypes'))
             {
                 $Conditions.Add('clientAppTypes', $this.ClientAppTypes)
                 #no translation or conversion needed
             }
 
-            Write-Verbose -Message "Set-TargetResource: authenticationFlows transferMethods: $($this.TransferMethods)"
+            Write-Verbose -Message "Set(): authenticationFlows transferMethods: $($this.TransferMethods)"
             if ($currentParameters.ContainsKey('TransferMethods') -or `
                 $currentParameters.ContainsKey('ProtocolFlows'))
             {
@@ -1511,11 +1511,11 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     $conditions.authenticationFlows = $authenticationFlows
                 }
             }
-            Write-Verbose -Message 'Set-Targetresource: Adding processed conditions'
+            Write-Verbose -Message 'Set(): Adding processed conditions'
             #add all conditions to the parameter list
             $NewParameters.Add('conditions', $Conditions)
             #create and provision Grant Control object
-            Write-Verbose -Message 'Set-Targetresource: create and provision Grant Control object'
+            Write-Verbose -Message 'Set(): create and provision Grant Control object'
 
             if ($this.GrantControlOperator -and ($this.BuiltInControls -or $this.TermsOfUse -or $this.CustomAuthenticationFactors -or $this.AuthenticationStrength))
             {
@@ -1555,7 +1555,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
 
                 #no translation or conversion needed
-                Write-Verbose -Message 'Set-Targetresource: Adding processed grant controls'
+                Write-Verbose -Message 'Set(): Adding processed grant controls'
                 $NewParameters.Add('grantControls', $GrantControls)
             }
 
@@ -1563,8 +1563,8 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 -or $this.GetBoundParameters().ContainsKey('SignInFrequencyIsEnabled') -or $this.GetBoundParameters().ContainsKey('PersistentBrowserIsEnabled') `
                 -or ($null -ne $this.DisableResilienceDefaultsIsEnabled) -or $this.GetBoundParameters().ContainsKey('SecureSignInSessionIsEnabled'))
             {
-                Write-Verbose -Message 'Set-Targetresource: process session controls'
-                Write-Verbose -Message 'Set-Targetresource: create provision Session Control object'
+                Write-Verbose -Message 'Set(): process session controls'
+                Write-Verbose -Message 'Set(): create provision Session Control object'
                 $sessionControls = @{
                     applicationEnforcedRestrictions = $null
                     cloudAppSecurity                = $null
@@ -1657,7 +1657,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
 
         if ($this.Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Present')
         {
-            Write-Verbose -Message "Set-Targetresource: Change policy $($this.DisplayName)"
+            Write-Verbose -Message "Set(): Change policy $($this.DisplayName)"
             try
             {
                 Write-Verbose -Message "Updating existing policy with values: $(Convert-M365DscHashtableToString -Hashtable $NewParameters)"
@@ -1669,12 +1669,12 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             {
                 $this.LogError($_, 'Error updating data:')
 
-                Write-Error -Message "Set-Targetresource: Failed changing policy $($this.DisplayName)"
+                Write-Error -Message "Set(): Failed changing policy $($this.DisplayName)"
             }
         }
         elseif ($this.Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Absent')
         {
-            Write-Verbose -Message "Set-Targetresource: create policy $($this.DisplayName)"
+            Write-Verbose -Message "Set(): create policy $($this.DisplayName)"
             Write-Verbose -Message 'Create Parameters:'
             Write-Verbose -Message (Convert-M365DscHashtableToString $NewParameters)
 
@@ -1689,19 +1689,19 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 {
                     $this.LogError($_, 'Error creating new policy:')
 
-                    Write-Error -Message 'Set-Targetresource: Failed creating new policy'
+                    Write-Error -Message 'Set(): Failed creating new policy'
                 }
             }
             else
             {
                 $this.LogError($_, 'Error creating new policy:')
 
-                Write-Error -Message 'Set-Targetresource: Failed creating new policy. At least a user rule, application rule and grant or session control is required'
+                Write-Error -Message 'Set(): Failed creating new policy. At least a user rule, application rule and grant or session control is required'
             }
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentPolicy.Ensure -eq 'Present')
         {
-            Write-Verbose -Message "Set-Targetresource: delete policy $($this.DisplayName)"
+            Write-Verbose -Message "Set(): delete policy $($this.DisplayName)"
             try
             {
                 Remove-MgBetaIdentityConditionalAccessPolicy -ConditionalAccessPolicyId $currentPolicy.Id
@@ -1710,10 +1710,10 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             {
                 $this.LogError($_, 'Error updating data:')
 
-                Write-Error -Message "Set-Targetresource: Failed deleting policy $($this.DisplayName)"
+                Write-Error -Message "Set(): Failed deleting policy $($this.DisplayName)"
             }
         }
-        Write-Verbose -Message "Set-Targetresource: Finished processing Policy $($this.Displayname)"
+        Write-Verbose -Message "Set(): Finished processing Policy $($this.Displayname)"
     }
 
     [bool] Test()

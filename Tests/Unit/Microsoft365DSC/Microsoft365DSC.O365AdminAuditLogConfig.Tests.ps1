@@ -40,7 +40,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         }
 
         # Test contexts
-        Context -Name 'Set-TargetResource When the Unified Audit Log Ingestion is Disabled' -Fixture {
+        Context -Name 'Set() When the Unified Audit Log Ingestion is Disabled' -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance                = 'Yes'
@@ -68,7 +68,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name 'Set-TargetResource When the Unified Audit Log Ingestion is Enabled' -Fixture {
+        Context -Name 'Set() When the Unified Audit Log Ingestion is Enabled' -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance                = 'Yes'

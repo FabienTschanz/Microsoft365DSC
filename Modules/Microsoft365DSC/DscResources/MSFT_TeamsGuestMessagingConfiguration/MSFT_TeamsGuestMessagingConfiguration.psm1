@@ -183,8 +183,7 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
 
         if ($inputValues.Count -eq 0)
         {
-            throw "You need to specify at least one optional parameter for the Set-TargetResource function `
-            of the [TeamsGuestMessagingConfiguration] instance {$Identity}"
+            throw "You need to specify at least one optional parameter for the [TeamsGuestMessagingConfiguration] instance {$Identity}"
         }
 
         $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()

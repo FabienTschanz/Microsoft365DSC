@@ -332,7 +332,6 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
 
         $currentInstance = $this.Get().ToHashtable()
 
-        Write-Verbose -Message "Retrieving Principal Id from Set-TargetResource"
         $PrincipalId = $null
         if ($this.PrincipalType -eq 'User')
         {
@@ -353,7 +352,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
             $PrincipalId = $PrincipalInstance.Id
         }
 
-        Write-Verbose -Message "Retrieving RoleDefinitionId from Set-TargetResource"
+        Write-Verbose -Message "Retrieving RoleDefinitionId from Set()"
         $roleDefinitionId = (Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter "DisplayName eq '$($this.RoleDefinition -replace "'", "''")'").Id
         if ([System.String]::IsNullOrEmpty($roleDefinitionId))
         {

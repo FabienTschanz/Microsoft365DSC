@@ -209,8 +209,7 @@ class TeamsEmergencyCallingPolicy : M365DSCResourceBase
 
         if ($inputValues.Count -eq 0)
         {
-            throw 'You need to specify at least one optional parameter for the Set-TargetResource function' + `
-                " of the [TeamsEmergencyCallingPolicy] instance {$($this.Identity)}"
+            throw "You need to specify at least one optional parameter for the [TeamsEmergencyCallingPolicy] instance {$($this.Identity)}"
         }
 
         #Ensure the proper dependencies are installed in the current environment.

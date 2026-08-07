@@ -930,7 +930,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name 'Set-TargetResource uses content-based matching for includes' -Fixture {
+        Context -Name 'Set() uses content-based matching for includes' -Fixture {
             It 'Should match desired include without Id to current include with Id via Test-ConditionSetsEqual' {
                 $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
 
@@ -1004,7 +1004,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 )
 
-                # Simulate the content-based matching loop from Set-TargetResource
+                # Simulate the content-based matching loop from Set()
                 $matchedCurrentIds = @()
                 foreach ($desired in $desiredIncludes)
                 {

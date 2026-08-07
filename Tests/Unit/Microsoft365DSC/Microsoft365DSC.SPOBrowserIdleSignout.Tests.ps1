@@ -42,6 +42,35 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         }
 
         # Test contexts
+        Context -Name 'SPOBrowserIdleSignout settings are not configured' -Fixture {
+            BeforeAll {
+                $testParams = @{
+                    Credential       = $Credential
+                    Enabled          = $True
+                    IsSingleInstance = 'Yes'
+                    SignOutAfter     = '04:00:00'
+                    WarnAfter        = '03:30:00'
+                }
+
+                Mock -CommandName Get-PnPBrowserIdleSignout -MockWith {
+                    return @{
+                        Enabled      = $True
+                        SignOutAfter = '02:00:00'
+                        WarnAfter    = '01:30:00'
+                    }
+                }
+            }
+
+            It 'Should return false from the Test method' {
+                (New-M365DSCResourceInstance -ResourceName 'SPOBrowserIdleSignout' -Property $testParams).Test() | Should -Be $false
+            }
+
+            It 'Sets the SharePoint browser idle signout settings in Set method' {
+                (New-M365DSCResourceInstance -ResourceName 'SPOBrowserIdleSignout' -Property $testParams).Set()
+                Should -Invoke -CommandName Set-PnPBrowserIdleSignout -Exactly 1
+            }
+        }
+
         Context -Name 'Settings need to be updated.' -Fixture {
             BeforeAll {
                 $testParams = @{
@@ -92,7 +121,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            It 'Should return false from the Test method' {
+            It 'Should return true from the Test method' {
                 (New-M365DSCResourceInstance -ResourceName 'SPOBrowserIdleSignout' -Property $testParams).Test() | Should -Be $true
             }
         }

@@ -15,8 +15,9 @@ namespace Microsoft365DSC.Connection
         /// Gets all resources that support the specified authentication method and
         /// determines the most secure authentication method supported by each resource.
         /// </summary>
-        /// <param name="dscResourcesPath">
-        /// The path to the DSCResources folder containing the .psm1 resource modules.
+        /// <param name="resourceModulesPath">
+        /// The path to the folder containing the class-based resource modules. Both the generated
+        /// Classes folder and the per-resource DscResources folder are supported.
         /// </param>
         /// <param name="authenticationMethods">
         /// The authentication methods to evaluate, in order of preference:
@@ -24,19 +25,19 @@ namespace Microsoft365DSC.Connection
         /// CredentialsWithTenantId, CredentialsWithApplicationId, ManagedIdentity, AccessTokens.
         /// </param>
         /// <param name="resources">
-        /// The resource names to evaluate (without MSFT_ prefix and .psm1 extension).
+        /// The resource names to evaluate (without MSFT_ prefix).
         /// </param>
         /// <returns>
         /// A list of Hashtable objects, each containing 'Resource' (string) and 'AuthMethod' (string).
         /// </returns>
         public static List<Hashtable> GetComponentsWithMostSecureAuthenticationType(
-            string dscResourcesPath,
+            string resourceModulesPath,
             string[] authenticationMethods,
             string[] resources)
         {
-            if (string.IsNullOrEmpty(dscResourcesPath))
+            if (string.IsNullOrEmpty(resourceModulesPath))
             {
-                throw new ArgumentNullException(nameof(dscResourcesPath));
+                throw new ArgumentNullException(nameof(resourceModulesPath));
             }
 
             if (authenticationMethods == null || authenticationMethods.Length == 0)
@@ -49,42 +50,39 @@ namespace Microsoft365DSC.Connection
                 throw new ArgumentNullException(nameof(resources));
             }
 
+            if (!Directory.Exists(resourceModulesPath))
+            {
+                throw new DirectoryNotFoundException($"The resource modules folder '{resourceModulesPath}' does not exist.");
+            }
+
             HashSet<string>? resourceSet = new(resources, StringComparer.OrdinalIgnoreCase);
             HashSet<string>? authMethodSet = new(authenticationMethods, StringComparer.OrdinalIgnoreCase);
             List<Hashtable>? components = [];
 
-            string[]? modules = Directory.GetFiles(dscResourcesPath, "*.psm1", SearchOption.AllDirectories);
+            string[]? modules = Directory.GetFiles(resourceModulesPath, "*.psm1", SearchOption.AllDirectories);
 
             foreach (string modulePath in modules)
             {
-                string fileName = Path.GetFileNameWithoutExtension(modulePath);
-                string resourceName = StripPrefix(fileName, "MSFT_");
-
-                if (!resourceSet.Contains(resourceName))
+                foreach (KeyValuePair<string, List<string>> resourceClass in Utilities.Utilities.GetDscResourcePropertyNamesByAST(modulePath))
                 {
-                    continue;
-                }
+                    string resourceName = StripPrefix(resourceClass.Key, "MSFT_");
 
-                List<string> parameters;
-                try
-                {
-                    parameters = Utilities.Utilities.GetFunctionParameterNamesByAST(modulePath, "Set-TargetResource");
-                }
-                catch (InvalidOperationException)
-                {
-                    continue;
-                }
-
-                HashSet<string>? paramSet = new(parameters, StringComparer.OrdinalIgnoreCase);
-                string? authMethod = DetermineMostSecureAuthMethod(authMethodSet, paramSet, fileName);
-
-                if (authMethod != null)
-                {
-                    components.Add(new Hashtable
+                    if (!resourceSet.Contains(resourceName))
                     {
-                        { "Resource", resourceName },
-                        { "AuthMethod", authMethod }
-                    });
+                        continue;
+                    }
+
+                    HashSet<string>? propertySet = new(resourceClass.Value, StringComparer.OrdinalIgnoreCase);
+                    string? authMethod = DetermineMostSecureAuthMethod(authMethodSet, propertySet, resourceName);
+
+                    if (authMethod != null)
+                    {
+                        components.Add(new Hashtable
+                        {
+                            { "Resource", resourceName },
+                            { "AuthMethod", authMethod }
+                        });
+                    }
                 }
             }
 
@@ -93,13 +91,13 @@ namespace Microsoft365DSC.Connection
 
         /// <summary>
         /// Determines the most secure authentication method for a resource based on
-        /// the authentication methods requested and the parameters the resource supports.
+        /// the authentication methods requested and the DSC properties the resource declares.
         /// The priority order matches the original PowerShell elseif chain.
         /// </summary>
         private static string? DetermineMostSecureAuthMethod(
             HashSet<string> authMethods,
             HashSet<string> parameters,
-            string fileName)
+            string resourceName)
         {
             // CertificateThumbprint
             if (authMethods.Contains("CertificateThumbprint") &&
@@ -132,9 +130,9 @@ namespace Microsoft365DSC.Connection
             if (authMethods.Contains("CredentialsWithTenantId") &&
                 parameters.Contains("Credential") &&
                 parameters.Contains("TenantId") &&
-                !fileName.StartsWith("MSFT_SPO", StringComparison.OrdinalIgnoreCase) &&
-                !fileName.StartsWith("MSFT_OD", StringComparison.OrdinalIgnoreCase) &&
-                !fileName.StartsWith("MSFT_PP", StringComparison.OrdinalIgnoreCase))
+                !resourceName.StartsWith("SPO", StringComparison.OrdinalIgnoreCase) &&
+                !resourceName.StartsWith("OD", StringComparison.OrdinalIgnoreCase) &&
+                !resourceName.StartsWith("PP", StringComparison.OrdinalIgnoreCase))
             {
                 return "CredentialsWithTenantId";
             }

@@ -37,9 +37,14 @@ function Get-M365DSCComponentsWithMostSecureAuthenticationType
 
     Initialize-M365DSCDllLoader -ErrorAction Stop
 
-    $dscResourcesPath = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources'
+    $resourceModulesPath = Join-Path -Path $PSScriptRoot -ChildPath '../Classes'
+    if (-not (Test-Path -Path $resourceModulesPath))
+    {
+        $resourceModulesPath = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources'
+    }
+
     return [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-        $dscResourcesPath,
+        $resourceModulesPath,
         $AuthenticationMethod,
         $Resources
     )
@@ -485,7 +490,6 @@ function Set-M365DSCTelemetryConnectionParameter
 Export-ModuleMember -Function @(
     'Get-M365DSCAuthenticationMode',
     'Get-M365DSCComponentsWithMostSecureAuthenticationType',
-    'Get-M365DSCFunctionParameterNamesByAST',
     'Get-M365DSCTelemetryConnectionParameter',
     'New-M365DSCConnection',
     'Set-M365DSCTelemetryConnectionParameter'

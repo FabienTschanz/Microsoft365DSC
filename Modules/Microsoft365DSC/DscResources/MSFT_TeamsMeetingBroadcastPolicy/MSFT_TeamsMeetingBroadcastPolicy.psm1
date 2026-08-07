@@ -154,8 +154,7 @@ class TeamsMeetingBroadcastPolicy : M365DSCResourceBase
 
         if ($inputValues.Count -eq 0)
         {
-            throw 'You need to specify at least one optional parameter for the Set-TargetResource function' + `
-                " of the [TeamsMeetingBroadcastPolicy] instance {$($this.Identity)}"
+            throw "You need to specify at least one optional parameter for the [TeamsMeetingBroadcastPolicy] instance {$($this.Identity)}"
         }
 
         #Ensure the proper dependencies are installed in the current environment.

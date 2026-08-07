@@ -282,8 +282,6 @@ class SCComplianceSearchAction : M365DSCResourceBase
 
             Write-Verbose -Message 'Creating new Compliance Search Action calling the New-ComplianceSearchAction cmdlet'
 
-            Write-Verbose -Message "Set-TargetResource Creation Parameters: `n $(Convert-M365DscHashtableToString -Hashtable $CreationParams)"
-
             try
             {
                 New-ComplianceSearchAction @CreationParams -ErrorAction Stop

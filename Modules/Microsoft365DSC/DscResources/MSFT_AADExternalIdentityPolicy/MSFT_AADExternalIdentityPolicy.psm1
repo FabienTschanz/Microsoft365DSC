@@ -133,11 +133,9 @@ class AADExternalIdentityPolicy : M365DSCResourceBase
         catch
         {
             $this.LogError($_, 'Error updating data:')
-
-            Write-Verbose -Message "Set-Targetresource: Failed change policy $DisplayName"
-            throw $_
+            throw
         }
-        Write-Verbose -Message "Set-Targetresource: finished processing Policy $Displayname"
+        Write-Verbose -Message "Set(): finished processing Policy $Displayname"
     }
 
     [bool] Test()
