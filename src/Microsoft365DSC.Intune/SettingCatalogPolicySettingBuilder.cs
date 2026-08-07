@@ -174,8 +174,11 @@ namespace Microsoft365DSC.Intune
             List<SettingTemplateInfo> settingTemplates,
             Hashtable dscParams)
         {
+            // User scope is always announced through the user_ prefix; everything else is
+            // device-scoped (the CSP default context), including definitions without a
+            // device_ prefix whose base URI goes straight to ./Vendor/MSFT.
             var deviceTemplates = settingTemplates
-                .Where(t => t.SettingInstanceTemplate?.SettingDefinitionId?.StartsWith("device_", StringComparison.OrdinalIgnoreCase) == true)
+                .Where(t => t.SettingInstanceTemplate?.SettingDefinitionId?.StartsWith("user_", StringComparison.OrdinalIgnoreCase) != true)
                 .ToList();
             var userTemplates = settingTemplates
                 .Where(t => t.SettingInstanceTemplate?.SettingDefinitionId?.StartsWith("user_", StringComparison.OrdinalIgnoreCase) == true)

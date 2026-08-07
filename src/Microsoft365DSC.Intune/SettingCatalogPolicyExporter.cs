@@ -331,18 +331,22 @@ namespace Microsoft365DSC.Intune
             List<SettingDefinitionInfo> allSettingDefinitions,
             Hashtable returnHashtable)
         {
-            var deviceSettings = settings.Where(s =>
-                s.SettingInstance.SettingDefinitionId?.StartsWith("device_", StringComparison.OrdinalIgnoreCase) == true).ToList();
+            // User scope is always announced through the user_ prefix. Everything else is
+            // device-scoped, including settings whose base URI goes straight to ./Vendor/MSFT
+            // without a device_ prefix (e.g. the firewall settings of the Defender for
+            // Endpoint baseline) - the device context is the CSP default.
             var userSettings = settings.Where(s =>
                 s.SettingInstance.SettingDefinitionId?.StartsWith("user_", StringComparison.OrdinalIgnoreCase) == true).ToList();
-
-            var allDeviceDefs = (allSettingDefinitions?.Count > 0)
-                ? allSettingDefinitions.Where(d => d.Id?.StartsWith("device_", StringComparison.OrdinalIgnoreCase) == true).ToList()
-                : deviceSettings.SelectMany(s => s.SettingDefinitions).ToList();
+            var deviceSettings = settings.Where(s =>
+                s.SettingInstance.SettingDefinitionId?.StartsWith("user_", StringComparison.OrdinalIgnoreCase) != true).ToList();
 
             var allUserDefs = (allSettingDefinitions?.Count > 0)
                 ? allSettingDefinitions.Where(d => d.Id?.StartsWith("user_", StringComparison.OrdinalIgnoreCase) == true).ToList()
                 : userSettings.SelectMany(s => s.SettingDefinitions).ToList();
+
+            var allDeviceDefs = (allSettingDefinitions?.Count > 0)
+                ? allSettingDefinitions.Where(d => d.Id?.StartsWith("user_", StringComparison.OrdinalIgnoreCase) != true).ToList()
+                : deviceSettings.SelectMany(s => s.SettingDefinitions).ToList();
 
             var deviceResult = new Hashtable(StringComparer.OrdinalIgnoreCase);
             foreach (var setting in deviceSettings)
