@@ -717,7 +717,7 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
@@ -1027,7 +1027,7 @@ class MSFT_iosWebContentFilterBase
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('url.')]
     [System.String] $url
-    [DscProperty(Mandatory)]
+    [DscProperty()]
     [System.ComponentModel.Description('bookmarkFolder.')]
     [System.String] $bookmarkFolder
     [DscProperty(Mandatory)]
