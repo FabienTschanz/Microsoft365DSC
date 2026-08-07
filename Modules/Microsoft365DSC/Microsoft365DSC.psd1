@@ -55,11 +55,13 @@
   # RequiredAssemblies = @()
 
   # Script files (.ps1) that are run in the caller's environment prior to importing this module.
+  <#
   ScriptsToProcess = @(
     'Import-M365DSCDllLoaderModule.ps1',
     'Show-PwshWarning.ps1',
     'Update-MaximumFunctionCount.ps1'
   )
+  #>
 
   # Type files (.ps1xml) to be loaded when importing this module
   # TypesToProcess = @()
@@ -69,6 +71,7 @@
 
   # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
   NestedModules     = @(
+    'Modules/M365DSCInit.psm1',
     'Modules/M365DSCAgent.psm1',
     'Modules/M365DSCCompare.psm1',
     'Modules/M365DSCConnection.psm1',
