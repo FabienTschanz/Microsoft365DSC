@@ -514,9 +514,11 @@ function Update-M365DSCBuildManifest
 
     $content = Get-Content -Path $Path -Raw
 
-    # 1. Drop any previously generated block so re-runs are idempotent.
-    $pattern = [System.Text.RegularExpressions.Regex]::Escape($script:BeginMarker) +
-    '.*?' + [System.Text.RegularExpressions.Regex]::Escape($script:EndMarker) + '\r?\n?'
+    # 1. Drop any previously generated block so re-runs are idempotent. The leading newline and
+    #    indent are part of the block: leaving them behind made each run inherit the previous
+    #    run's padding, which grew the NestedModules closing line by four spaces every build.
+    $pattern = '\r?\n[ \t]*' + [System.Text.RegularExpressions.Regex]::Escape($script:BeginMarker) +
+    '.*?' + [System.Text.RegularExpressions.Regex]::Escape($script:EndMarker)
     $content = [System.Text.RegularExpressions.Regex]::Replace($content, $pattern, '', 'Singleline')
 
     # 2. Insert the class modules at the end of the NestedModules array.
@@ -539,7 +541,7 @@ function Update-M365DSCBuildManifest
 
     $content = $content.Remove($nestedMatch.Index, $nestedMatch.Length).Insert(
         $nestedMatch.Index,
-        $nestedMatch.Groups[1].Value + $body + $block + $nestedMatch.Groups[3].Value)
+        $nestedMatch.Groups[1].Value + $body + $block + "`r`n  )")
 
     # 3. DscResourcesToExport. Mandatory: DscClassCache returns immediately when it is missing or
     #    empty, so without it discovery yields zero resources.

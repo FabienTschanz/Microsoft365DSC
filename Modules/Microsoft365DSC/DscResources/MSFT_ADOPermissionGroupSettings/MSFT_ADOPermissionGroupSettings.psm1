@@ -124,7 +124,7 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
                 $this.ResourceCache['CurrentOrganization'] = $this.OrganizationName
             }
 
-            $groupPermissions = Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission -GroupName $instance.principalName -OrganizationName $this.OrganizationName
+            $groupPermissions = Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission -GroupName $instance.principalName -OrganizationName $this.OrganizationName -Cache $this.ResourceCache
 
             $results = @{
                 OrganizationName      = $this.OrganizationName
@@ -401,7 +401,11 @@ function Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $OrganizationName
+        $OrganizationName,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache
     )
 
     $results = @{
@@ -411,37 +415,37 @@ function Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission
 
     try
     {
-        $mygroup = $Script:AllGroups | Where-Object -FilterScript { $_.principalName -eq $GroupName }
+        $mygroup = $Cache['AllGroups'] | Where-Object -FilterScript { $_.principalName -eq $GroupName }
 
         $uri = "https://vssps.dev.azure.com/$($OrganizationName)/_apis/identities?subjectDescriptors=$($mygroup.descriptor)&api-version=7.2-preview.1"
         $info = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
         $descriptor = $info.value.descriptor
 
-        if ($null -eq $Script:AllSecurityNamespaces -or $Script:CurrentOrganization -ne $OrganizationName)
+        if ($null -eq $Cache['AllSecurityNamespaces'] -or $Cache['CurrentOrganization'] -ne $OrganizationName)
         {
             $uri = "https://dev.azure.com/$($OrganizationName)/_apis/securitynamespaces?api-version=7.1-preview.1"
             $response = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-            $Script:AllSecurityNamespaces = $response.Value
-            $Script:CurrentOrganization = $OrganizationName
+            $Cache['AllSecurityNamespaces'] = $response.Value
+            $Cache['CurrentOrganization'] = $OrganizationName
         }
 
-        if ($null -eq $Script:AllAccessControlLists -or $Script:CurrentOrganization -ne $OrganizationName)
+        if ($null -eq $Cache['AllAccessControlLists'] -or $Cache['CurrentOrganization'] -ne $OrganizationName)
         {
-            $Script:AllAccessControlLists = [System.Collections.Generic.Dictionary[System.String, System.Object[]]]::new(100)
-            foreach ($namespace in $Script:AllSecurityNamespaces)
+            $Cache['AllAccessControlLists'] = [System.Collections.Generic.Dictionary[System.String, System.Object[]]]::new(100)
+            foreach ($namespace in $Cache['AllSecurityNamespaces'])
             {
                 $uri = "https://dev.azure.com/$($OrganizationName)/_apis/accesscontrollists/$($namespace.namespaceId)?api-version=7.2-preview.1"
                 $response = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
                 if ($response.value.Count -gt 0)
                 {
-                    $Script:AllAccessControlLists.Add($namespace.namespaceId, @($response.value))
+                    $Cache['AllAccessControlLists'].Add($namespace.namespaceId, @($response.value))
                 }
             }
         }
 
-        foreach ($namespace in $Script:AllSecurityNamespaces)
+        foreach ($namespace in $Cache['AllSecurityNamespaces'])
         {
-            foreach ($entry in $Script:AllAccessControlLists[$namespace.namespaceId])
+            foreach ($entry in $Cache['AllAccessControlLists'][$namespace.namespaceId])
             {
                 $token = $entry.token
                 foreach ($ace in $entry.acesDictionary)
@@ -532,4 +536,3 @@ function Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission
     }
     return $results
 }
-

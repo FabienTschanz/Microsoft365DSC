@@ -222,6 +222,19 @@ class EXODistributionGroup : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    EXODistributionGroup() : base()
+    {
+        $this.ResourceCache['displayNameProperties'] = @{
+            IncludeAcceptMessagesOnlyFromDLMembersWithDisplayNames        = $true
+            IncludeAcceptMessagesOnlyFromSendersOrMembersWithDisplayNames = $true
+            IncludeAcceptMessagesOnlyFromWithDisplayNames                 = $true
+            IncludeBypassModerationFromSendersOrMembersWithDisplayNames   = $true
+            IncludeGrantSendOnBehalfToWithDisplayNames                    = $true
+            IncludeManagedByWithDisplayNames                              = $true
+            IncludeModeratedByWithDisplayNames                            = $true
+        }
+    }
+
     [EXODistributionGroup] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -256,13 +269,14 @@ class EXODistributionGroup : M365DSCResourceBase
                 $nullReturn = $this.GetBoundParameters()
                 $nullReturn.Ensure = 'Absent'
 
+                $displayNameProperties = $this.ResourceCache['displayNameProperties']
                 if (-not [System.String]::IsNullOrEmpty($this.PrimarySmtpAddress))
                 {
-                    $distributionGroup = Get-DistributionGroup -Identity $this.PrimarySmtpAddress $this.ResourceCache['displayNameProperties'] -ErrorAction SilentlyContinue
+                    $distributionGroup = Get-DistributionGroup -Identity $this.PrimarySmtpAddress @displayNameProperties -ErrorAction SilentlyContinue
                 }
                 else
                 {
-                    $distributionGroup = Get-DistributionGroup -Identity $this.Identity $this.ResourceCache['displayNameProperties'] -ErrorAction SilentlyContinue
+                    $distributionGroup = Get-DistributionGroup -Identity $this.Identity @displayNameProperties -ErrorAction SilentlyContinue
                 }
 
                 if ($null -eq $distributionGroup)
@@ -570,7 +584,8 @@ class EXODistributionGroup : M365DSCResourceBase
         #endregion
         try
         {
-            [array] $exportedInstances = Get-DistributionGroup $this.ResourceCache['displayNameProperties'] -ResultSize 'Unlimited' -ErrorAction Stop
+            $displayNameProperties = $this.ResourceCache['displayNameProperties']
+            [array] $exportedInstances = Get-DistributionGroup @displayNameProperties -ResultSize 'Unlimited' -ErrorAction Stop
 
             $i = 1
             if ($exportedInstances.Length -eq 0)
@@ -649,13 +664,15 @@ class EXODistributionGroup : M365DSCResourceBase
     {
         return @{
             ExcludedProperties = @('Notes')
+            # The script block is invoked by Test-M365DSCTargetResource, outside this instance's
+            # scope, so $this is not available inside it. State travels via PostProcessingArgs.
             PostProcessing = {
-                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
                 if (-not $ValuesToCheck.OrganizationalUnit)
                 {
                     $ValuesToCheck.Remove('OrganizationalUnit') | Out-Null
                 }
-                foreach ($key in $this.ResourceCache['displayNameProperties'].Keys)
+                foreach ($key in $PostProcessingArgs[0])
                 {
                     $key = $key.Replace("Include", "").Replace("WithDisplayNames", "").Replace("WithDisplayName", "")
                     if ($DesiredValues.ContainsKey($key))
@@ -678,6 +695,8 @@ class EXODistributionGroup : M365DSCResourceBase
                 }
                 return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
             }
+            # Prevent array unrolling
+            PostProcessingArgs = @(, [System.String[]] $this.ResourceCache['displayNameProperties'].Keys)
         }
     }
 
@@ -722,4 +741,3 @@ function Get-EXODistributionGroupDisplayNameSimplified
     }
     return ,@($simplifiedNames | Sort-Object)
 }
-

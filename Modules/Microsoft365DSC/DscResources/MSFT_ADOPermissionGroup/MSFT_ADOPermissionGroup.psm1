@@ -236,7 +236,8 @@ class ADOPermissionGroup : M365DSCResourceBase
                 Write-Verbose -Message "Adding Member {$member} to group ${$PrincipalName}"
                 Set-ADOPermissionGroupM365DSCADOPermissionGroupMember -OrganizationName $this.OrganizationName `
                     -GroupId $newGroup.originId `
-                    -PrincipalName $member
+                    -PrincipalName $member `
+                    -Cache $this.ResourceCache
             }
         }
         # UPDATE
@@ -258,7 +259,8 @@ class ADOPermissionGroup : M365DSCResourceBase
                     Set-ADOPermissionGroupM365DSCADOPermissionGroupMember -OrganizationName $this.OrganizationName `
                         -GroupId $currentInstance.Id `
                         -PrincipalName $diff.InputObject `
-                        -Method 'PUT'
+                        -Method 'PUT' `
+                        -Cache $this.ResourceCache
                 }
                 else
                 {
@@ -266,7 +268,8 @@ class ADOPermissionGroup : M365DSCResourceBase
                     Set-ADOPermissionGroupM365DSCADOPermissionGroupMember -OrganizationName $this.OrganizationName `
                         -GroupId $currentInstance.Id `
                         -PrincipalName $diff.InputObject `
-                        -Method 'DELETE'
+                        -Method 'DELETE' `
+                        -Cache $this.ResourceCache
                 }
             }
         }
@@ -412,17 +415,20 @@ function Set-ADOPermissionGroupM365DSCADOPermissionGroupMember
 
         [Parameter()]
         [System.String]
-        $Method = 'Put'
+        $Method = 'Put',
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache
     )
 
-    if ($null -eq $Script:allUsers)
+    if ($null -eq $Cache['allUsers'])
     {
         $uri = "https://vsaex.dev.azure.com/$($OrganizationName)/_apis/userentitlements?api-version=7.2-preview.4"
-        $Script:allUsers = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
+        $Cache['allUsers'] = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
     }
-    $user = $Script:allUsers.items | Where-Object -FilterScript { $_.user.principalName -eq $PrincipalName }
+    $user = $Cache['allUsers'].items | Where-Object -FilterScript { $_.user.principalName -eq $PrincipalName }
     $UserId = $user.id
     $uri = "https://vsaex.dev.azure.com/$($OrganizationName)/_apis/GroupEntitlements/$($GroupId)/members/$($UserId)?api-version=5.0-preview.1"
     Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri -Method $Method | Out-Null
 }
-

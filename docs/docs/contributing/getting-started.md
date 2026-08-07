@@ -75,6 +75,34 @@ In the example above, Feature 1 and Feature 2 are both branches that were create
 
 - Once you made sure the branch representing the feature or the issue you are about to work on is selected in the Current Branch of the GitHub client for Windows, you can go ahead and start making changes to the local files. I personally recommend editing the files in Visual Studio Code (<https://code.visualstudio.com/>), but using other tools such as the PowerShell Integrated Script Editor (ISE) or even other Scripting Editor tool will work just as good.
 
+## Building the Module
+
+The DSC resources under `Modules/Microsoft365DSC/DscResources/MSFT_*/` are **source**, not what the
+module loads at runtime. `Utilities/Build-Microsoft365DSC.ps1` compiles them into
+`Modules/Microsoft365DSC/Classes/`, wires those files into `Microsoft365DSC.psd1` and regenerates
+`SchemaDefinition.json`. The `Classes/` output is not in version control — it is roughly 13 MB, and
+because resources are distributed across the part files in alphabetical order, adding a single
+resource rewrites all of them.
+
+So after editing anything under `DscResources/`, run the build before importing the module or
+running tests:
+
+```powershell
+./Utilities/Build-Microsoft365DSC.ps1
+```
+
+A few things worth knowing:
+
+- A fresh clone cannot import the module until you have run this at least once. The same is true of
+  `Utilities/Build-DllFiles.ps1` for the assemblies.
+- `Microsoft365DSC.psd1` **is** in version control, including the two regions the build rewrites
+  (the `Classes/*` entries in `NestedModules`, and `DscResourcesToExport`). Expect it to show up as
+  modified only when you add or remove a resource — commit it when it does.
+- The committed manifest assumes the default `-BucketCount 16`. Building with a different bucket
+  count changes the part list and will dirty the manifest.
+- Use `-SkipValidation` to skip the post-build import and discovery check when iterating, and
+  `-SkipSchema` to leave `SchemaDefinition.json` alone.
+
 ## Committing Changes
 
 - Committing changes in the context of Git means saving the changes in the currently selected branch, but **locally**. Git keeps some sort of a local database when a repository is cloned, and upon committing changes, these are saved back to the local database. So for example, if you are working on multiple changes in various branches at the same time, you want to make sure you commit your changes to the current branch before using the GitHub client for Windows to change branch. Otherwise your changes will get overwritten by the changes in the newly selected branch (remember that changing a branch updates the local files).

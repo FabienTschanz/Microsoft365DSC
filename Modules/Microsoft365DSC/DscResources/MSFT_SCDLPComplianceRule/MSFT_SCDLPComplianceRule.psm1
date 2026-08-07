@@ -561,7 +561,7 @@ class SCDLPComplianceRule : M365DSCResourceBase
         if ($null -ne $this.GetBoundParameters().AdvancedRule)
         {
             $newAdvancedRule = $this.GetBoundParameters().AdvancedRule | ConvertFrom-Json | ConvertFrom-Json
-            $newAdvancedRule.Condition = Add-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $newAdvancedRule.Condition
+            $newAdvancedRule.Condition = Add-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $newAdvancedRule.Condition -Cache $this.ResourceCache
             $this.GetBoundParameters().AdvancedRule = $newAdvancedRule | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
         }
 
@@ -1355,12 +1355,16 @@ function Add-SCDLPComplianceRuleAdvancedRuleConditionId
     param(
         [Parameter(Mandatory = $true)]
         [PSCustomObject]
-        $Condition
+        $Condition,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache
     )
 
     for ($i = 0; $i -lt $Condition.SubConditions.Count; $i++)
     {
-        $Condition.SubConditions[$i] = Add-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $Condition.SubConditions[$i]
+        $Condition.SubConditions[$i] = Add-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $Condition.SubConditions[$i] -Cache $Cache
     }
 
     if ([System.String]::IsNullOrEmpty($Condition.ConditionName))
@@ -1373,9 +1377,9 @@ function Add-SCDLPComplianceRuleAdvancedRuleConditionId
     {
         if ($null -ne $Condition.Value.Groups.Sensitivetypes)
         {
-            if ($null -eq $Script:SensitiveInformationTypes)
+            if ($null -eq $Cache['SensitiveInformationTypes'])
             {
-                $Script:SensitiveInformationTypes = Get-DlpSensitiveInformationType
+                $Cache['SensitiveInformationTypes'] = Get-DlpSensitiveInformationType
             }
 
             $sensitiveTypesValue = $Condition.Value.Groups.Sensitivetypes
@@ -1385,7 +1389,7 @@ function Add-SCDLPComplianceRuleAdvancedRuleConditionId
                 # See https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7156
                 if ($null -eq $stype.Id -and [System.String]::IsNullOrEmpty($stype.Classifiertype))
                 {
-                    $stype.Id = $Script:SensitiveInformationTypes | Where-Object -FilterScript { $_.Name -eq $stype.Name } | Select-Object -ExpandProperty Id
+                    $stype.Id = $Cache['SensitiveInformationTypes'] | Where-Object -FilterScript { $_.Name -eq $stype.Name } | Select-Object -ExpandProperty Id
                 }
             }
         }

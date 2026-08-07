@@ -20,11 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Generate SchemaDefinition.json
+      - name: Build Class Modules
         shell: pwsh
         run: |
-          Import-Module './Modules/Microsoft365DSC/Modules/M365DSCSchemaHandler.psm1'
-          New-M365DSCSchemaDefinition
+          & ./Utilities/Build-Microsoft365DSC.ps1
 
       - name: Import Module & Generate Documentation
         shell: pwsh

@@ -226,6 +226,12 @@ class AADPIMGroupSetting : M365DSCResourceBase
     # Export-only. Not part of the resource schema.
     [System.String] $Filter
 
+    AADPIMGroupSetting() : base()
+    {
+        # $Global: is required: class methods cannot see automatic variables from the caller's scope.
+        $this.ResourceCache['IsPowerShell75OrGreater'] = $Global:PSVersionTable.PSVersion -ge [Version]'7.5'
+    }
+
     [AADPIMGroupSetting] Get()
     {
         # Declared up front: assigned conditionally below, which class methods reject.

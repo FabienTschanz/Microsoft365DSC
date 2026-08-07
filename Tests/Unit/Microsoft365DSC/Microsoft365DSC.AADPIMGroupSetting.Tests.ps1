@@ -506,6 +506,20 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 )
             }
 
+            # On PowerShell 7.5+ the resource batches through mgx instead.
+            Mock -CommandName Invoke-MgxBatchRequest -MockWith {
+                return @(
+                    @{
+                        Url  = "/policies/roleManagementPolicyAssignments?filter=scopeId eq '81c3d8db-c61c-4dd7-bf63-a9a184f04e50' and scopeType eq 'Group'"
+                        body = @{
+                            value = $mockPolicy
+                        }
+                    }
+                )
+            }
+
+            $isPowerShell75OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.5'
+
             # Mock Write-M365DSCHost to hide output during the tests
             Mock -CommandName Write-M365DSCHost -MockWith {
             }
@@ -655,7 +669,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Get-MgGroup -Exactly 1
                 if ($isM365DSCAvailable)
                 {
-                    Should -Invoke -CommandName Invoke-M365DSCGraphBatchRequest -Exactly 1
+                    if ($isPowerShell75OrGreater)
+                    {
+                        Should -Invoke -CommandName Invoke-MgxBatchRequest -Exactly 1
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Invoke-M365DSCGraphBatchRequest -Exactly 1
+                    }
                 }
                 $result | Should -Not -BeNullOrEmpty
             }
@@ -666,7 +687,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Get-MgGroup -Exactly 1
                 if ($isM365DSCAvailable)
                 {
-                    Should -Invoke -CommandName Invoke-M365DSCGraphBatchRequest -Exactly 1
+                    if ($isPowerShell75OrGreater)
+                    {
+                        Should -Invoke -CommandName Invoke-MgxBatchRequest -Exactly 1
+                    }
+                    else
+                    {
+                        Should -Invoke -CommandName Invoke-M365DSCGraphBatchRequest -Exactly 1
+                    }
                 }
                 $result | Should -Not -BeNullOrEmpty
             }

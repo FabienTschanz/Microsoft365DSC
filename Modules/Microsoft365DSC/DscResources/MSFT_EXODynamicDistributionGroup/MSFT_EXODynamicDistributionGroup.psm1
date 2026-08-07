@@ -399,56 +399,56 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
             if ($null -ne $instance.AcceptMessagesOnlyFrom)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group AcceptMessagesOnlyFrom for $($this.Identity)"
-                $acceptMessagesOnlyFromValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.AcceptMessagesOnlyFrom
+                $acceptMessagesOnlyFromValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.AcceptMessagesOnlyFrom -Cache $this.ResourceCache
             }
 
             $acceptMessagesOnlyFromDLMembersValue = @()
             if ($null -ne $instance.AcceptMessagesOnlyFromDLMembers)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group AcceptMessagesOnlyFromDLMembers for $($this.Identity)"
-                $acceptMessagesOnlyFromDLMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.AcceptMessagesOnlyFromDLMembers
+                $acceptMessagesOnlyFromDLMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.AcceptMessagesOnlyFromDLMembers -Cache $this.ResourceCache
             }
 
             $bypassModerationFromSendersOrMembersValue = @()
             if ($null -ne $instance.BypassModerationFromSendersOrMembers)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group BypassModerationFromSendersOrMembers for $($this.Identity)"
-                $bypassModerationFromSendersOrMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.BypassModerationFromSendersOrMembers
+                $bypassModerationFromSendersOrMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.BypassModerationFromSendersOrMembers -Cache $this.ResourceCache
             }
 
             $grantSendOnBehalfToValue = @()
             if ($null -ne $instance.GrantSendOnBehalfTo)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group GrantSendOnBehalfTo for $($this.Identity)"
-                $grantSendOnBehalfToValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.GrantSendOnBehalfTo
+                $grantSendOnBehalfToValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.GrantSendOnBehalfTo -Cache $this.ResourceCache
             }
 
             $managedByValue = $null
             if ($null -ne $instance.ManagedBy)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group manager for $($this.Identity)"
-                $managedByValue = Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.ManagedBy
+                $managedByValue = Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.ManagedBy -Cache $this.ResourceCache
             }
 
             $moderatedByValue = @()
             if ($null -ne $instance.ModeratedBy)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group moderators for $($this.Identity)"
-                $moderatedByValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.ModeratedBy
+                $moderatedByValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.ModeratedBy -Cache $this.ResourceCache
             }
 
             $rejectMessagesFromValue = @()
             if ($null -ne $instance.RejectMessagesFrom)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group RejectMessagesFrom for $($this.Identity)"
-                $rejectMessagesFromValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.RejectMessagesFrom
+                $rejectMessagesFromValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.RejectMessagesFrom -Cache $this.ResourceCache
             }
 
             $rejectMessagesFromDLMembersValue = @()
             if ($null -ne $instance.RejectMessagesFromDLMembers)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group RejectMessagesFromDLMembers for $($this.Identity)"
-                $rejectMessagesFromDLMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.RejectMessagesFromDLMembers
+                $rejectMessagesFromDLMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.RejectMessagesFromDLMembers -Cache $this.ResourceCache
             }
 
             $results = @{
@@ -805,30 +805,31 @@ function Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpA
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
         [System.String[]]
-        $RecipientName
+        $RecipientName,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache
     )
 
-    if ($null -eq $Script:RecipientsCache)
+    if ($null -eq $Cache['RecipientsCache'])
     {
-        if ($null -eq $Script:RecipientsCache)
-        {
-            $Script:RecipientsCache = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
-
-        }
+        $Cache['RecipientsCache'] = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
     }
 
+    $recipientsCache = $Cache['RecipientsCache']
     foreach ($name in $RecipientName)
     {
-        if (-not $Script:RecipientsCache.ContainsKey($name))
+        if (-not $recipientsCache.ContainsKey($name))
         {
             Get-Recipient -Identity $name -ErrorAction SilentlyContinue | ForEach-Object {
-                $Script:RecipientsCache[$_.Name] = @{
+                $recipientsCache[$_.Name] = @{
                     PrimarySmtpAddress = $_.PrimarySmtpAddress
                     WindowsLiveID      = $_.WindowsLiveID
                 }
             }
         }
-        $Script:RecipientsCache[$name].PrimarySmtpAddress
+        $recipientsCache[$name].PrimarySmtpAddress
     }
 }
 
@@ -1023,4 +1024,3 @@ function Restore-EXODynamicDistributionGroupOriginalRecipientFilter
 
     return $trimmed
 }
-

@@ -528,7 +528,7 @@ class SPOSearchManagedProperty : M365DSCResourceBase
             {
                 # Get the managed property back. This is the only way to ensure we have the right PID
                 $currentConfigXML = [XML] (Get-PnPSearchConfiguration -Scope Subscription)
-                [System.Xml.XmlElement]$property = $this.ResourceCache['currentConfigXML'].SearchConfigurationSettings.SearchSchemaConfigurationSettings.ManagedProperties.dictionary.KeyValueOfstringManagedPropertyInfoy6h3NzC8 `
+                [System.Xml.XmlElement]$property = $currentConfigXML.SearchConfigurationSettings.SearchSchemaConfigurationSettings.ManagedProperties.dictionary.KeyValueOfstringManagedPropertyInfoy6h3NzC8 `
                 | Where-Object -FilterScript { $_.Value.Name -eq $this.Name }
 
                 $currentPID = $property.Value.Pid

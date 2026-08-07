@@ -61,8 +61,6 @@ class TeamsNotificationAndFeedsPolicy : M365DSCResourceBase
 
     [TeamsNotificationAndFeedsPolicy] Get()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $Identity = $null
         if ($this.RequiresPowerShellCore())
         {
             $remote = [TeamsNotificationAndFeedsPolicy]::new()
@@ -74,7 +72,8 @@ class TeamsNotificationAndFeedsPolicy : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $Identity)
+            # Single-instance policy: it always targets the Global identity.
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne 'Global')
             {
                 $null = $this.Connect('MicrosoftTeams')
 

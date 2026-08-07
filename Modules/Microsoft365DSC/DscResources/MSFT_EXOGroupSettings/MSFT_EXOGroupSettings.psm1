@@ -287,11 +287,12 @@ class EXOGroupSettings : M365DSCResourceBase
 
                 Write-Verbose -Message "Retrieving group by id {$($this.Id)}"
 
-                $group = Get-UnifiedGroup -Identity $this.Id -IncludeAllProperties $this.ResourceCache['displayNameProperties'] -ErrorAction SilentlyContinue
+                $displayNameProperties = $this.ResourceCache['displayNameProperties']
+                $group = Get-UnifiedGroup -Identity $this.Id -IncludeAllProperties @displayNameProperties -ErrorAction SilentlyContinue
                 if ($null -eq $group)
                 {
                     Write-Verbose -Message "Couldn't retrieve group by ID. Trying by DisplayName {$($this.DisplayName)}"
-                    $group = Get-UnifiedGroup -Identity $this.DisplayName -IncludeAllProperties $this.ResourceCache['displayNameProperties'] -ErrorAction SilentlyContinue
+                    $group = Get-UnifiedGroup -Identity $this.DisplayName -IncludeAllProperties @displayNameProperties -ErrorAction SilentlyContinue
                 }
 
                 if ($null -eq $group)
@@ -543,7 +544,8 @@ class EXOGroupSettings : M365DSCResourceBase
 
         try
         {
-            [array] $exportedInstances = Get-UnifiedGroup -ResultSize Unlimited $this.ResourceCache['displayNameProperties'] -ErrorAction SilentlyContinue
+            $displayNameProperties = $this.ResourceCache['displayNameProperties']
+            [array] $exportedInstances = Get-UnifiedGroup -ResultSize Unlimited @displayNameProperties -ErrorAction SilentlyContinue
 
             $i = 1
             if ($exportedInstances.Length -eq 0)
@@ -617,9 +619,11 @@ class EXOGroupSettings : M365DSCResourceBase
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{
+            # The script block is invoked by Test-M365DSCTargetResource, outside this instance's
+            # scope, so $this is not available inside it. State travels via PostProcessingArgs.
             PostProcessing = {
-                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
-                foreach ($key in $this.ResourceCache['displayNameProperties'].Keys)
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                foreach ($key in $PostProcessingArgs[0])
                 {
                     $key = $key.Replace('Include', '').Replace('WithDisplayNames', '')
                     if ($DesiredValues.ContainsKey($key))
@@ -642,6 +646,8 @@ class EXOGroupSettings : M365DSCResourceBase
                 }
                 return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
             }
+            # Prevent array unrolling
+            PostProcessingArgs = @(, [System.String[]] $this.ResourceCache['displayNameProperties'].Keys)
         }
     }
 

@@ -124,7 +124,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
             {
                 foreach ($include in $getValue.Includes)
                 {
-                    $includesArray += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $include
+                    $includesArray += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $include -Cache $this.ResourceCache
                 }
             }
 
@@ -134,7 +134,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
             {
                 foreach ($exclude in $getValue.Excludes)
                 {
-                    $excludesArray += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $exclude
+                    $excludesArray += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $exclude -Cache $this.ResourceCache
                 }
             }
 
@@ -186,7 +186,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
         try
         {
             # Clear the service principal cache for fresh lookups
-            $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset
+            $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $this.ResourceCache -Reset
 
             $null = $this.Connect('MicrosoftGraph')
 
@@ -211,7 +211,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                     foreach ($include in $this.Includes)
                     {
                         Write-Verbose -Message "Adding include condition set {$($include.Id)}"
-                        $includeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $include
+                        $includeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $include -Cache $this.ResourceCache
                         New-MgBetaPolicyPermissionGrantPolicyInclude -PermissionGrantPolicyId $this.Id -BodyParameter $includeParams | Out-Null
                     }
                 }
@@ -222,7 +222,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                     foreach ($exclude in $this.Excludes)
                     {
                         Write-Verbose -Message "Adding exclude condition set {$($exclude.Id)}"
-                        $excludeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $exclude
+                        $excludeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $exclude -Cache $this.ResourceCache
                         New-MgBetaPolicyPermissionGrantPolicyExclude -PermissionGrantPolicyId $this.Id -BodyParameter $excludeParams | Out-Null
                     }
                 }
@@ -262,7 +262,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         foreach ($currentInclude in $currentPolicy.Includes)
                         {
                             if ($currentInclude.Id -notin $matchedCurrentIncludeIds -and
-                                (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredInclude -ConditionSet2 $currentInclude))
+                                (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredInclude -ConditionSet2 $currentInclude -Cache $this.ResourceCache))
                             {
                                 $matchedCurrentIncludeIds += $currentInclude.Id
                                 $matchFound = $true
@@ -273,7 +273,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         if (-not $matchFound)
                         {
                             Write-Verbose -Message "Adding include condition set"
-                            $includeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $desiredInclude
+                            $includeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $desiredInclude -Cache $this.ResourceCache
                             New-MgBetaPolicyPermissionGrantPolicyInclude -PermissionGrantPolicyId $this.Id -BodyParameter $includeParams | Out-Null
                         }
                     }
@@ -305,7 +305,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         foreach ($currentExclude in $currentPolicy.Excludes)
                         {
                             if ($currentExclude.Id -notin $matchedCurrentExcludeIds -and
-                                (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredExclude -ConditionSet2 $currentExclude))
+                                (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredExclude -ConditionSet2 $currentExclude -Cache $this.ResourceCache))
                             {
                                 $matchedCurrentExcludeIds += $currentExclude.Id
                                 $matchFound = $true
@@ -316,7 +316,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         if (-not $matchFound)
                         {
                             Write-Verbose -Message "Adding exclude condition set"
-                            $excludeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $desiredExclude
+                            $excludeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $desiredExclude -Cache $this.ResourceCache
                             New-MgBetaPolicyPermissionGrantPolicyExclude -PermissionGrantPolicyId $this.Id -BodyParameter $excludeParams | Out-Null
                         }
                     }
@@ -496,8 +496,10 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
         # Normalize condition sets in desired values so that permission names
         # compare correctly against the current values.
         return @{
+            # The script block is invoked by Test-M365DSCTargetResource, outside this instance's
+            # scope, so $this is not available inside it. State travels via PostProcessingArgs.
             PostProcessing = {
-                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
 
                 foreach ($propertyName in @('Includes', 'Excludes'))
                 {
@@ -506,7 +508,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         $normalizedSets = @()
                         foreach ($conditionSet in $ValuesToCheck[$propertyName])
                         {
-                            $normalizedSets += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet
+                            $normalizedSets += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $PostProcessingArgs[0]
                         }
                         $ValuesToCheck[$propertyName] = [Array]$normalizedSets
                         $DesiredValues[$propertyName] = [Array]$normalizedSets
@@ -515,6 +517,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
 
                 return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
             }
+            PostProcessingArgs = @($this.ResourceCache)
         }
     }
 
@@ -570,26 +573,28 @@ class MSFT_AADPermissionGrantConditionSet
     [System.String] $ResourceApplication
 }
 
-# Memoises Get-MgServicePrincipal lookups, keyed by both AppId and DisplayName. Module-scoped rather
-# than on $this.ResourceCache: the helpers below are plain functions, so they have no $this when
-# called from a class method. Name is resource-prefixed because every resource shares one module scope.
+# Memoises Get-MgServicePrincipal lookups, keyed by both AppId and DisplayName.
 function Get-AADPermissionGrantPolicyServicePrincipalCache
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Reset
     )
 
-    if ($Reset -or $null -eq $Script:AADPermissionGrantPolicyServicePrincipalCache)
+    if ($Reset -or $null -eq $Cache['ServicePrincipalCache'])
     {
-        $Script:AADPermissionGrantPolicyServicePrincipalCache = @{}
+        $Cache['ServicePrincipalCache'] = @{}
     }
 
-    return $Script:AADPermissionGrantPolicyServicePrincipalCache
+    return $Cache['ServicePrincipalCache']
 }
 
 # Was Resolve-ResourceApplicationName. Renamed because helper names recur across resources and the
@@ -600,6 +605,10 @@ function Resolve-AADPermissionGrantPolicyResourceApplicationName
     [OutputType([System.String])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $ResourceApplication
@@ -620,19 +629,19 @@ function Resolve-AADPermissionGrantPolicyResourceApplicationName
 
     try
     {
-        $cache = Get-AADPermissionGrantPolicyServicePrincipalCache
+        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
         $cacheKey = $guidResult.ToString()
-        if ($cache.ContainsKey($cacheKey))
+        if ($servicePrincipalCache.ContainsKey($cacheKey))
         {
-            $servicePrincipal = $cache[$cacheKey]
+            $servicePrincipal = $servicePrincipalCache[$cacheKey]
         }
         else
         {
             $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
-            $cache[$cacheKey] = $servicePrincipal
+            $servicePrincipalCache[$cacheKey] = $servicePrincipal
             if ($null -ne $servicePrincipal -and -not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
             {
-                $cache[$servicePrincipal.DisplayName] = $servicePrincipal
+                $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
             }
         }
 
@@ -658,6 +667,10 @@ function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
         [Parameter(Mandatory = $true)]
         [System.Object]
         $ConditionSet
@@ -715,7 +728,8 @@ function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable
             $resolvedPermissions += ConvertTo-AADPermissionGrantPolicyPermissionName `
                 -PermissionId $permission `
                 -ResourceApplicationId $ConditionSet.ResourceApplication `
-                -PermissionType $ConditionSet.PermissionType
+                -PermissionType $ConditionSet.PermissionType `
+                -Cache $Cache
         }
         $result.Add('Permissions', [string[]]$resolvedPermissions)
     }
@@ -732,6 +746,10 @@ function Test-AADPermissionGrantPolicyConditionSetsEqual
     param
     (
         [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ConditionSet1,
 
@@ -741,8 +759,8 @@ function Test-AADPermissionGrantPolicyConditionSetsEqual
     )
 
     # Convert both to hashtables for comparison
-    $hash1 = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $ConditionSet1
-    $hash2 = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $ConditionSet2
+    $hash1 = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $ConditionSet1 -Cache $Cache
+    $hash2 = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $ConditionSet2 -Cache $Cache
 
     # Compare each property, skipping Id (auto-generated by Graph API)
     foreach ($key in $hash1.Keys)
@@ -814,6 +832,10 @@ function ConvertTo-AADPermissionGrantPolicyPermissionName
     param
     (
         [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
+        [Parameter(Mandatory = $true)]
         [System.String]
         $PermissionId,
 
@@ -851,7 +873,7 @@ function ConvertTo-AADPermissionGrantPolicyPermissionName
     $appIdGuid = [System.Guid]::Empty
     if (-not [System.Guid]::TryParse($ResourceApplicationId, [ref]$appIdGuid))
     {
-        $resolvedId = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication $ResourceApplicationId
+        $resolvedId = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication $ResourceApplicationId -Cache $Cache
         if (-not [System.Guid]::TryParse($resolvedId, [ref]$appIdGuid))
         {
             Write-Verbose -Message "ResourceApplication '$ResourceApplicationId' could not be resolved to a valid GUID."
@@ -862,17 +884,17 @@ function ConvertTo-AADPermissionGrantPolicyPermissionName
 
     try
     {
-        $cache = Get-AADPermissionGrantPolicyServicePrincipalCache
+        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
         $cacheKey = $appIdGuid.ToString()
-        if ($cache.ContainsKey($cacheKey))
+        if ($servicePrincipalCache.ContainsKey($cacheKey))
         {
             Write-Verbose -Message "Using cached service principal for ResourceApplication '$ResourceApplicationId'."
-            $servicePrincipal = $cache[$cacheKey]
+            $servicePrincipal = $servicePrincipalCache[$cacheKey]
         }
         else
         {
             $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
-            $cache[$cacheKey] = $servicePrincipal
+            $servicePrincipalCache[$cacheKey] = $servicePrincipal
         }
 
         if ($null -eq $servicePrincipal)
@@ -934,6 +956,10 @@ function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters
     param
     (
         [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ConditionSet
     )
@@ -992,7 +1018,8 @@ function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters
             $resolvedPermissions += ConvertTo-AADPermissionGrantPolicyPermissionGuid `
                 -PermissionName $permission `
                 -ResourceApplicationId $resourceAppValue `
-                -PermissionType $ConditionSet.PermissionType
+                -PermissionType $ConditionSet.PermissionType `
+                -Cache $Cache
         }
         $params.Add('Permissions', [string[]]$resolvedPermissions)
     }
@@ -1008,6 +1035,10 @@ function ConvertTo-AADPermissionGrantPolicyPermissionGuid
     [OutputType([System.String])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $PermissionName,
@@ -1045,7 +1076,7 @@ function ConvertTo-AADPermissionGrantPolicyPermissionGuid
     $appIdGuid = [System.Guid]::Empty
     if (-not [System.Guid]::TryParse($ResourceApplicationId, [ref]$appIdGuid))
     {
-        $resolvedId = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication $ResourceApplicationId
+        $resolvedId = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication $ResourceApplicationId -Cache $Cache
         if (-not [System.Guid]::TryParse($resolvedId, [ref]$appIdGuid))
         {
             Write-Verbose -Message "ResourceApplication '$ResourceApplicationId' could not be resolved to a valid GUID."
@@ -1056,20 +1087,20 @@ function ConvertTo-AADPermissionGrantPolicyPermissionGuid
 
     try
     {
-        $cache = Get-AADPermissionGrantPolicyServicePrincipalCache
+        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
         $cacheKey = $appIdGuid.ToString()
-        if ($cache.ContainsKey($cacheKey))
+        if ($servicePrincipalCache.ContainsKey($cacheKey))
         {
             Write-Verbose -Message "Using cached service principal for ResourceApplication '$ResourceApplicationId'."
-            $servicePrincipal = $cache[$cacheKey]
+            $servicePrincipal = $servicePrincipalCache[$cacheKey]
         }
         else
         {
             $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
-            $cache[$cacheKey] = $servicePrincipal
+            $servicePrincipalCache[$cacheKey] = $servicePrincipal
             if ($null -ne $servicePrincipal -and -not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
             {
-                $cache[$servicePrincipal.DisplayName] = $servicePrincipal
+                $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
             }
         }
 
@@ -1132,6 +1163,10 @@ function Resolve-AADPermissionGrantPolicyResourceApplicationId
     param
     (
         [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache,
+
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ResourceApplication
     )
@@ -1151,12 +1186,12 @@ function Resolve-AADPermissionGrantPolicyResourceApplicationId
 
     try
     {
-        $cache = Get-AADPermissionGrantPolicyServicePrincipalCache
+        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
 
         # Check if the display name is already in the cache
-        if ($cache.ContainsKey($ResourceApplication))
+        if ($servicePrincipalCache.ContainsKey($ResourceApplication))
         {
-            $servicePrincipal = $cache[$ResourceApplication]
+            $servicePrincipal = $servicePrincipalCache[$ResourceApplication]
         }
         else
         {
@@ -1174,10 +1209,10 @@ function Resolve-AADPermissionGrantPolicyResourceApplicationId
                 $servicePrincipal = $servicePrincipal[0]
             }
 
-            $cache[$servicePrincipal.AppId] = $servicePrincipal
+            $servicePrincipalCache[$servicePrincipal.AppId] = $servicePrincipal
             if (-not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
             {
-                $cache[$servicePrincipal.DisplayName] = $servicePrincipal
+                $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
             }
             Write-Verbose -Message "Resolved ResourceApplication name '$ResourceApplication' to AppId '$($servicePrincipal.AppId)'."
             return $servicePrincipal.AppId

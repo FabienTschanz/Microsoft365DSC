@@ -314,7 +314,7 @@ class AADGroup : M365DSCResourceBase
             $assignedLicensesRequest = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Licenses' }).body
             if ($assignedLicensesRequest.value.Length -gt 0)
             {
-                [Array]$assignedLicensesValues = Get-AADGroupM365DSCAzureADGroupLicenses -AssignedLicenses $assignedLicensesRequest.value
+                [Array]$assignedLicensesValues = Get-AADGroupM365DSCAzureADGroupLicenses -AssignedLicenses $assignedLicensesRequest.value -Cache $this.ResourceCache
             }
 
             # GroupLifecyclePolicies
@@ -1132,19 +1132,23 @@ function Get-AADGroupM365DSCAzureADGroupLicenses
     [OutputType([System.Collections.Hashtable[]])]
     param(
         [Parameter(Mandatory = $true)]
-        $AssignedLicenses
+        $AssignedLicenses,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Cache
     )
 
     $returnValue = @()
-    if ($null -eq $Script:SubscribedSkus)
+    if ($null -eq $Cache['SubscribedSkus'])
     {
-        $Script:SubscribedSkus = Get-MgBetaSubscribedSku
+        $Cache['SubscribedSkus'] = Get-MgBetaSubscribedSku
     }
 
     # Create complete list of all Service Plans
     $allServicePlans = @()
     Write-Verbose -Message 'Getting all Service Plans'
-    foreach ($sku in $Script:SubscribedSkus)
+    foreach ($sku in $Cache['SubscribedSkus'])
     {
         foreach ($serviceplan in $sku.ServicePlans)
         {
@@ -1160,7 +1164,7 @@ function Get-AADGroupM365DSCAzureADGroupLicenses
 
     foreach ($assignedLicense in $AssignedLicenses)
     {
-        $skuPartNumber = $Script:SubscribedSkus | Where-Object -FilterScript { $_.SkuId -eq $assignedLicense.SkuId }
+        $skuPartNumber = $Cache['SubscribedSkus'] | Where-Object -FilterScript { $_.SkuId -eq $assignedLicense.SkuId }
         $disabledPlansValues = @()
         foreach ($plan in $assignedLicense.DisabledPlans)
         {
