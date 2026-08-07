@@ -1258,11 +1258,15 @@ class MSFT_AADAccessReviewDefinitionReviewer
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the display name of the current reviewer, either of a group or of a user.')]
     [System.String] $DisplayName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Indicates the type of reviewer. Possible values: Manager, Owner, User, Group')]
+    [ValidateSet('Manager', 'Owner', 'User', 'Group')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of reviewer. Possible values: User, Group, Self, Manager, Sponsor, ResourceOwner, ManagerOrSponsor')]
+    [ValidateSet('User', 'Group', 'Self', 'Manager', 'Sponsor', 'ResourceOwner', 'ManagerOrSponsor')]
     [System.String] $ScopeType
 }
 
@@ -1271,6 +1275,7 @@ class MSFT_MicrosoftGraphAccessReviewScope2
     [DscProperty()]
     [System.ComponentModel.Description('The query representing what will be reviewed in an access review.')]
     [System.String] $Query
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of query. Types include MicrosoftGraph and ARM.')]
     [System.String] $QueryType
@@ -1281,20 +1286,26 @@ class MSFT_MicrosoftGraphaccessReviewScope
     [DscProperty()]
     [System.ComponentModel.Description('The query representing what will be reviewed in an access review.')]
     [System.String] $Query
+
     [DscProperty()]
     [System.ComponentModel.Description('In the scenario where reviewers need to be specified dynamically, this property is used to indicate the relative source of the query. This property is only required if a relative query is specified. For example, ./manager.')]
     [System.String] $QueryRoot
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of query. Types include MicrosoftGraph and ARM.')]
     [System.String] $QueryType
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the scopes of the principals for which access to resources are reviewed in the access review.')]
     [MSFT_MicrosoftGraphAccessReviewPrincipalScope[]] $PrincipalScopes
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the scopes of the resources for which access is reviewed.')]
     [MSFT_MicrosoftGraphAccessReviewResourceScope[]] $ResourceScopes
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.accessReviewQueryScope', '#microsoft.graph.accessReviewReviewerScope', '#microsoft.graph.principalResourceMembershipsScope', '#microsoft.graph.accessReviewInactiveUsersQueryScope')]
     [System.String] $odataType
 }
 
@@ -1303,39 +1314,51 @@ class MSFT_MicrosoftGraphaccessReviewScheduleSettings
     [DscProperty()]
     [System.ComponentModel.Description('Optional field. Describes the  actions to take once a review is complete. There are two types that are currently supported: removeAccessApplyAction (default) and disableAndDeleteUserApplyAction. Field only needs to be specified in the case of disableAndDeleteUserApplyAction.')]
     [MSFT_MicrosoftGraphAccessReviewApplyAction[]] $ApplyActions
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether decisions are automatically applied. When set to false, an admin must apply the decisions manually once the reviewer completes the access review. When set to true, decisions are applied automatically after the access review instance duration ends, whether or not the reviewers have responded. Default value is false.  CAUTION: If both autoApplyDecisionsEnabled and defaultDecisionEnabled are true, all access for the principals to the resource risks being revoked if the reviewers fail to respond.')]
     [System.Nullable[System.Boolean]] $AutoApplyDecisionsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether decisions on previous access review stages are available for reviewers on an accessReviewInstance with multiple subsequent stages. If not provided, the default is disabled (false).')]
     [System.Nullable[System.Boolean]] $DecisionHistoriesForReviewersEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Decision chosen if defaultDecisionEnabled is enabled. Can be one of Approve, Deny, or Recommendation.')]
     [System.String] $DefaultDecision
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the default decision is enabled or disabled when reviewers do not respond. Default value is false.  CAUTION: If both autoApplyDecisionsEnabled and defaultDecisionEnabled are true, all access for the principals to the resource risks being revoked if the reviewers fail to respond.')]
     [System.Nullable[System.Boolean]] $DefaultDecisionEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Duration of each recurrence of review (accessReviewInstance) in number of days. NOTE: If the stageSettings of the accessReviewScheduleDefinition object is defined, its durationInDays setting will be used instead of the value of this property.')]
     [System.Nullable[System.UInt32]] $InstanceDurationInDays
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether reviewers are required to provide justification with their decision. Default value is false.')]
     [System.Nullable[System.Boolean]] $JustificationRequiredOnApproval
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether emails are enabled or disabled. Default value is false.')]
     [System.Nullable[System.Boolean]] $MailNotificationsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Optional. Describes the types of insights that aid reviewers to make access review decisions. NOTE: If the stageSettings of the accessReviewScheduleDefinition object is defined, its recommendationInsightSettings setting will be used instead of the value of this property.')]
     [MSFT_MicrosoftGraphAccessReviewRecommendationInsightSetting[]] $RecommendationInsightSettings
+
     [DscProperty()]
     [System.ComponentModel.Description('Optional field. Indicates the period of inactivity (with respect to the start date of the review instance) that recommendations will be configured from. The recommendation will be to deny if the user is inactive during the look-back duration. For reviews of groups and Microsoft Entra roles, any duration is accepted. For reviews of applications, 30 days is the maximum duration. If not specified, the duration is 30 days. NOTE: If the stageSettings of the accessReviewScheduleDefinition object is defined, its recommendationLookBackDuration setting will be used instead of the value of this property.')]
     [System.String] $RecommendationLookBackDuration
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether decision recommendations are enabled or disabled. NOTE: If the stageSettings of the accessReviewScheduleDefinition object is defined, its recommendationsEnabled setting will be used instead of the value of this property.')]
     [System.Nullable[System.Boolean]] $RecommendationsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Detailed settings for recurrence using the standard Outlook recurrence object. Note: Only dayOfMonth, interval, and type (weekly, absoluteMonthly) properties are supported. Use the property startDate on recurrenceRange to determine the day the review starts.')]
     [MSFT_MicrosoftGraphPatternedRecurrence] $Recurrence
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether reminders are enabled or disabled. Default value is false.')]
     [System.Nullable[System.Boolean]] $ReminderNotificationsEnabled
@@ -1346,21 +1369,27 @@ class MSFT_MicrosoftGraphaccessReviewStageSettings
     [DscProperty()]
     [System.ComponentModel.Description('Indicate which decisions will go to the next stage. Can be a subset of Approve, Deny, Recommendation, or NotReviewed. If not provided, all decisions will go to the next stage. Optional.')]
     [System.String[]] $DecisionsThatWillMoveToNextStage
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the sequential or parallel order of the stages and depends on the stageId. Only sequential stages are currently supported. For example, if stageId is 2, then dependsOn must be 1. If stageId is 1, don''t specify dependsOn. Required if stageId isn''t 1.')]
     [System.String[]] $DependsOnValue
+
     [DscProperty()]
     [System.ComponentModel.Description('The duration of the stage. Required.  NOTE: The cumulative value of this property across all stages  1. Will override the instanceDurationInDays setting on the accessReviewScheduleDefinition object. 2. Can''t exceed the length of one recurrence. That is, if the review recurs weekly, the cumulative durationInDays can''t exceed 7.')]
     [System.Nullable[System.UInt32]] $DurationInDays
+
     [DscProperty()]
     [System.ComponentModel.Description('Recommendation Insights Settings')]
     [MSFT_MicrosoftGraphAccessReviewRecommendationInsightSetting[]] $RecommendationInsightSettings
+
     [DscProperty()]
     [System.ComponentModel.Description('Optional field. Indicates the time period of inactivity (with respect to the start date of the review instance) from which that recommendations will be configured. The recommendation is to deny if the user is inactive during the look back duration. For reviews of groups and Microsoft Entra roles, any duration is accepted. For reviews of applications, 30 days is the maximum duration. If not specified, the duration is 30 days. NOTE: The value of this property overrides the corresponding setting on the accessReviewScheduleDefinition object.')]
     [System.String] $RecommendationLookBackDuration
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Indicates whether showing recommendations to reviewers is enabled. Required. NOTE: The value of this property overrides the corresponding setting on the accessReviewScheduleDefinition object.')]
     [System.Nullable[System.Boolean]] $RecommendationsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Unique identifier of the accessReviewStageSettings. The stageId is used in dependsOn property to indicate the stage relationship. Required.')]
     [System.String] $StageId
@@ -1371,17 +1400,23 @@ class MSFT_MicrosoftGraphAccessReviewPrincipalScope
     [DscProperty()]
     [System.ComponentModel.Description('The query representing what will be reviewed in an access review.')]
     [System.String] $Query
+
     [DscProperty()]
     [System.ComponentModel.Description('In the scenario where reviewers need to be specified dynamically, this property is used to indicate the relative source of the query. This property is only required if a relative query is specified. For example, ./manager.')]
     [System.String] $QueryRoot
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of query. Types include MicrosoftGraph and ARM.')]
     [System.String] $QueryType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.accessReviewPrincipalScope', '#microsoft.graph.accessReviewQueryScope')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of users to include in the review. The possible values are: allUsers, guestUsers, inactiveUsers, inactiveGuestUsers.')]
+    [ValidateSet('allUsers', 'guestUsers', 'inactiveUsers', 'inactiveGuestUsers')]
     [System.String] $scopeType
 }
 
@@ -1390,23 +1425,31 @@ class MSFT_MicrosoftGraphAccessReviewResourceScope
     [DscProperty()]
     [System.ComponentModel.Description('The query representing what will be reviewed in an access review.')]
     [System.String] $Query
+
     [DscProperty()]
     [System.ComponentModel.Description('In the scenario where reviewers need to be specified dynamically, this property is used to indicate the relative source of the query. This property is only required if a relative query is specified. For example, ./manager.')]
     [System.String] $QueryRoot
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of query. Types include MicrosoftGraph and ARM.')]
     [System.String] $QueryType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.accessReviewResourceScope', '#microsoft.graph.accessReviewQueryScope')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the resource.')]
     [System.String] $displayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The identifier of the resource.')]
     [System.String] $resourceScopeId
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of users to include in the review. The possible values are: group, catalog, servicePrincipal, directoryRole, accessPackageAssignmentPolicy.')]
+    [ValidateSet('group', 'catalog', 'servicePrincipal', 'directoryRole', 'accessPackageAssignmentPolicy')]
     [System.String] $scopeType
 }
 
@@ -1414,6 +1457,7 @@ class MSFT_MicrosoftGraphAccessReviewApplyAction
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.disableAndDeleteUserApplyAction', '#microsoft.graph.removeAccessApplyAction')]
     [System.String] $odataType
 }
 
@@ -1422,11 +1466,15 @@ class MSFT_MicrosoftGraphAccessReviewRecommendationInsightSetting
     [DscProperty()]
     [System.ComponentModel.Description('Optional. Indicates the time period of inactivity (with respect to the start date of the review instance) that recommendations will be configured from. The recommendation will be to deny if the user is inactive during the look-back duration. For reviews of groups and Microsoft Entra roles, any duration is accepted. For reviews of applications, 30 days is the maximum duration. If not specified, the duration is 30 days.')]
     [System.String] $RecommendationLookBackDuration
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether inactivity is calculated based on the user''s inactivity in the tenant or in the application. The possible values are tenant, application, unknownFutureValue. application is only relevant when the access review is a review of an assignment to an application.')]
+    [ValidateSet('tenant', 'application', 'unknownFutureValue')]
     [System.String] $SignInScope
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.groupPeerOutlierRecommendationInsightSettings', '#microsoft.graph.userLastSignInRecommendationInsightSetting')]
     [System.String] $odataType
 }
 
@@ -1435,6 +1483,7 @@ class MSFT_MicrosoftGraphPatternedRecurrence
     [DscProperty()]
     [System.ComponentModel.Description('The frequency of an event. Do not specify for a one-time access review.  For access reviews: Do not specify this property for a one-time access review.   Only interval, dayOfMonth, and type (weekly, absoluteMonthly) properties of recurrencePattern are supported.')]
     [MSFT_MicrosoftGraphRecurrencePattern] $Pattern
+
     [DscProperty()]
     [System.ComponentModel.Description('The duration of an event.')]
     [MSFT_MicrosoftGraphRecurrenceRange] $Range
@@ -1445,23 +1494,31 @@ class MSFT_MicrosoftGraphRecurrencePattern
     [DscProperty()]
     [System.ComponentModel.Description('The day of the month on which the event occurs. Required if type is absoluteMonthly or absoluteYearly.')]
     [System.Nullable[System.UInt32]] $DayOfMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('A collection of the days of the week on which the event occurs. The possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. If type is relativeMonthly or relativeYearly, and daysOfWeek specifies more than one day, the event falls on the first day that satisfies the pattern.  Required if type is weekly, relativeMonthly, or relativeYearly.')]
     [System.String[]] $DaysOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('The first day of the week. The possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. Default is sunday. Required if type is weekly.')]
     [System.String] $FirstDayOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies on which instance of the allowed days specified in daysOfWeek the event occurs, counted from the first instance in the month. The possible values are: first, second, third, fourth, last. Default is first. Optional and used if type is relativeMonthly or relativeYearly.')]
+    [ValidateSet('first', 'second', 'third', 'fourth', 'last')]
     [System.String] $Index
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of units between occurrences, where units can be in days, weeks, months, or years, depending on the type. Required.')]
     [System.Nullable[System.UInt32]] $Interval
+
     [DscProperty()]
     [System.ComponentModel.Description('The month in which the event occurs.  This is a number from 1 to 12.')]
     [System.Nullable[System.UInt32]] $Month
+
     [DscProperty()]
     [System.ComponentModel.Description('The recurrence pattern type: daily, weekly, absoluteMonthly, relativeMonthly, absoluteYearly, relativeYearly. Required. For more information, see values of type property.')]
+    [ValidateSet('daily', 'weekly', 'absoluteMonthly', 'relativeMonthly', 'absoluteYearly', 'relativeYearly')]
     [System.String] $Type
 }
 
@@ -1470,16 +1527,21 @@ class MSFT_MicrosoftGraphRecurrenceRange
     [DscProperty()]
     [System.ComponentModel.Description('The date to stop applying the recurrence pattern. Depending on the recurrence pattern of the event, the last occurrence of the meeting may not be this date. Required if type is endDate.')]
     [System.String] $EndDate
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of times to repeat the event. Required and must be positive if type is numbered.')]
     [System.Nullable[System.UInt32]] $NumberOfOccurrences
+
     [DscProperty()]
     [System.ComponentModel.Description('Time zone for the startDate and endDate properties. Optional. If not specified, the time zone of the event is used.')]
     [System.String] $RecurrenceTimeZone
+
     [DscProperty()]
     [System.ComponentModel.Description('The date to start applying the recurrence pattern. The first occurrence of the meeting may be this date or later, depending on the recurrence pattern of the event. Must be the same value as the start property of the recurring event. Required.')]
     [System.String] $StartDate
+
     [DscProperty()]
     [System.ComponentModel.Description('The recurrence range. Possible values are: endDate, noEnd, numbered. Required.')]
+    [ValidateSet('endDate', 'noEnd', 'numbered')]
     [System.String] $Type
 }

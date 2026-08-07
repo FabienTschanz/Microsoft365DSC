@@ -403,6 +403,7 @@ class MSFT_AADAppManagementPolicyRestrictions
     [DscProperty()]
     [System.ComponentModel.Description('Collection of keyCredential restrictions settings to be applied to an application or service principal.')]
     [MSFT_AADAppManagementPolicyRestrictionsCredential[]] $KeyCredentials
+
     [DscProperty()]
     [System.ComponentModel.Description('Collection of password restrictions settings to be applied to an application or service principal.')]
     [MSFT_AADAppManagementPolicyRestrictionsCredential[]] $PasswordCredentials
@@ -413,15 +414,19 @@ class MSFT_AADAppManagementPolicyRestrictionsCredential
     [DscProperty()]
     [System.ComponentModel.Description('Collection of GUIDs of certificateBasedApplicationConfiguration objects that represent trusted certificate authorities. Used when restrictionType is set to trustedCertificateAuthority for keyCredentials.')]
     [System.String[]] $CertificateBasedApplicationConfigurationIds
+
     [DscProperty()]
     [System.ComponentModel.Description('String value that indicates the maximum lifetime for password expiration, defined as an ISO 8601 duration. For example, P4DT12H30M5S represents four days, 12 hours, 30 minutes, and five seconds. This property is required when restrictionType is set to passwordLifetime.')]
     [System.String] $MaxLifetime
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the date from which the policy restriction applies to newly created applications. For existing applications, the enforcement date can be retroactively applied.')]
     [System.String] $RestrictForAppsCreatedAfterDateTime
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of restriction being applied. The possible values are: passwordAddition, passwordLifetime, symmetricKeyAddition, symmetricKeyLifetime, customPasswordAddition, asymmetricKeyLifetime, trustedCertificateAuthority, and unknownFutureValue. Each value of restrictionType can be used only once per policy.')]
     [System.String] $RestrictionType
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the restriction is evaluated. The possible values are: enabled, disabled, unknownFutureValue. If enabled, the restriction is evaluated. If disabled, the restriction isn''t evaluated or enforced.')]
     [System.String] $State

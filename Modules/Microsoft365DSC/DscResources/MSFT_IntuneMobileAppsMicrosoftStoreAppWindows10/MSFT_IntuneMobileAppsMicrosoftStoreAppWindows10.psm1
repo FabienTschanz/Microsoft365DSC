@@ -560,6 +560,7 @@ class MSFT_MicrosoftGraphwinGetAppInstallExperience
 {
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of execution context the app setup runs in on target devices. Options include values of the RunAsAccountType enum, which are System and User. Required at creation time, cannot be modified on existing objects. Possible values are: system, user.')]
+    [ValidateSet('system', 'user')]
     [System.String] $RunAsAccount
 }
 
@@ -568,6 +569,7 @@ class MSFT_MicrosoftGraphMimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the content mime type.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('The Base64 encoded string content.')]
     [System.String] $Value
@@ -578,6 +580,7 @@ class MSFT_DeviceManagementMobileAppCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the app category.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -587,24 +590,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 
@@ -619,6 +631,7 @@ class MSFT_DeviceManagementMobileAppAssignmentSettings
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The odata type of the assignment type.')]
+    [ValidateSet('#microsoft.graph.androidManagedStoreAppAssignmentSettings', '#microsoft.graph.iosStoreAppAssignmentSettings', '#microsoft.graph.iosLobAppAssignmentSettings', '#microsoft.graph.macOsLobAppAssignmentSettings', '#microsoft.graph.win32LobAppAssignmentSettings', '#microsoft.graph.winGetAppAssignmentSettings', '#microsoft.graph.windowsUniversalAppXAppAssignmentSettings')]
     [System.String] $odataType
 }
 
@@ -627,9 +640,12 @@ class MSFT_DeviceManagementWingetMobileAppAssignmentSettings : MSFT_DeviceManage
     [DscProperty()]
     [System.ComponentModel.Description('The install time settings to apply for this app assignment.')]
     [MSFT_DeviceManagementWinGetMobileAppAssignmentSettingsInstallTimeSettings] $installTimeSettings
+
     [DscProperty()]
     [System.ComponentModel.Description('The notification status for this app assignment. Possible values are: showAll, showReboot, hideAll.')]
+    [ValidateSet('showAll', 'showReboot', 'hideAll')]
     [System.String] $notifications
+
     [DscProperty()]
     [System.ComponentModel.Description('The reboot settings to apply for this app assignment.')]
     [MSFT_DeviceManagementWinGetMobileAppAssignmentSettingsRestartSettings] $restartSettings
@@ -640,9 +656,11 @@ class MSFT_DeviceManagementWinGetMobileAppAssignmentSettingsInstallTimeSettings
     [DscProperty()]
     [System.ComponentModel.Description('Whether the local device time or UTC time should be used when determining the available and deadline times.')]
     [System.Nullable[System.Boolean]] $useLocalTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The time at which the app should be available for installation.')]
     [System.String] $startDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The time at which the app should be installed.')]
     [System.String] $deadlineDateTime
@@ -653,9 +671,11 @@ class MSFT_DeviceManagementWinGetMobileAppAssignmentSettingsRestartSettings
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes to wait before restarting the device after an app installation.')]
     [System.Nullable[System.Int32]] $countdownDisplayBeforeRestartInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes before the restart time to display the countdown dialog for pending restarts.')]
     [System.Nullable[System.Int32]] $gracePeriodInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes to snooze the restart notification dialog when the snooze button is selected.')]
     [System.Nullable[System.Int32]] $restartNotificationSnoozeDurationInMinutes

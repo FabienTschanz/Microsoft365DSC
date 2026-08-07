@@ -821,6 +821,7 @@ class MSFT_AADCrossTenantAccessPolicyB2BSetting
     [DscProperty()]
     [System.ComponentModel.Description('The list of applications targeted with your cross-tenant access policy.')]
     [MSFT_AADCrossTenantAccessPolicyTargetConfiguration] $Applications
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of users and groups targeted with your cross-tenant access policy.')]
     [MSFT_AADCrossTenantAccessPolicyTargetConfiguration] $UsersAndGroups
@@ -831,9 +832,11 @@ class MSFT_AADCrossTenantAccessPolicyInboundTrust
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether compliant devices from external Azure AD organizations are trusted.')]
     [System.Nullable[System.Boolean]] $IsCompliantDeviceAccepted
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether hybrid Azure AD joined devices from external Azure AD organizations are trusted.')]
     [System.Nullable[System.Boolean]] $IsHybridAzureADJoinedDeviceAccepted
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether MFA from external Azure AD organizations is trusted.')]
     [System.Nullable[System.Boolean]] $IsMfaAccepted
@@ -843,9 +846,12 @@ class MSFT_AADDefaultInvitationRedemptionIdentityProviderConfiguration
 {
     [DscProperty()]
     [System.ComponentModel.Description('Collection of identity providers in priority order of preference to be used for guest invitation redemption. The possible values are: azureActiveDirectory, externalFederation, or socialIdentityProviders.')]
+    [ValidateSet('azureActiveDirectory', 'externalFederation', 'socialIdentityProviders')]
     [System.String[]] $PrimaryIdentityProviderPrecedenceOrder
+
     [DscProperty()]
     [System.ComponentModel.Description('The fallback identity provider to be used in case no primary identity provider can be used for guest invitation redemption. The possible values are: defaultConfiguredIdp, emailOneTimePasscode, or microsoftAccount.')]
+    [ValidateSet('defaultConfiguredIdp', 'emailOneTimePasscode', 'microsoftAccount')]
     [System.String] $FallbackIdentityProvider
 }
 
@@ -854,9 +860,11 @@ class MSFT_AADCrossTenantAccessPolicyTenantRestrictions
     [DscProperty()]
     [System.ComponentModel.Description('The list of applications targeted with your cross-tenant access policy.')]
     [MSFT_AADCrossTenantAccessPolicyTargetConfiguration] $Applications
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the rule for filtering devices and whether devices satisfying the rule should be allowed or blocked. This property isn''t supported on the server side yet.')]
     [MSFT_AADDevicesFilter] $Devices
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of users and groups targeted with your cross-tenant access policy.')]
     [MSFT_AADCrossTenantAccessPolicyTargetConfiguration] $UsersAndGroups
@@ -866,7 +874,9 @@ class MSFT_AADCrossTenantAccessPolicyTargetConfiguration
 {
     [DscProperty()]
     [System.ComponentModel.Description('Defines whether access is allowed or blocked. The possible values are: allowed, blocked, unknownFutureValue.')]
+    [ValidateSet('allowed', 'blocked', 'unknownFutureValue')]
     [System.String] $AccessType
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to target users, groups, or applications with this rule.')]
     [MSFT_AADCrossTenantAccessPolicyTarget[]] $Targets
@@ -876,7 +886,9 @@ class MSFT_AADDevicesFilter
 {
     [DscProperty()]
     [System.ComponentModel.Description('Determines whether devices that satisfy the rule should be allowed or blocked. The possible values are: allowed, blocked.')]
+    [ValidateSet('allowed', 'blocked')]
     [System.String] $Mode
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the rule to filter the devices. For example, ''device.deviceAttribute2 -eq ''PrivilegedAccessWorkstation''.')]
     [System.String] $Rule
@@ -887,8 +899,10 @@ class MSFT_AADCrossTenantAccessPolicyTarget
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The unique identifier of the user, group, or application; one of the following keywords: AllUsers and AllApplications; or for targets that are applications, you may use reserved values.')]
     [System.String] $Target
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of resource that you want to target. The possible values are: user, group, application, unknownFutureValue.')]
+    [ValidateSet('user', 'group', 'application', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 

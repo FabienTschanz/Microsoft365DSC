@@ -860,12 +860,15 @@ class MSFT_MicrosoftGraphwindowsInformationProtectionDataRecoveryCertificate
     [DscProperty()]
     [System.ComponentModel.Description('Data recovery Certificate')]
     [System.String] $Certificate
+
     [DscProperty()]
     [System.ComponentModel.Description('Data recovery Certificate description')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('Data recovery Certificate expiration datetime')]
     [System.String] $ExpirationDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('Data recovery Certificate subject name')]
     [System.String] $SubjectName
@@ -876,6 +879,7 @@ class MSFT_MicrosoftGraphwindowsInformationProtectionResourceCollection
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Display name')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Collection of resources')]
     [System.String[]] $Resources
@@ -886,6 +890,7 @@ class MSFT_MicrosoftGraphwindowsInformationProtectionIPRangeCollection
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Display name')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Collection of ip ranges')]
     [MSFT_MicrosoftGraphIpRange[]] $Ranges
@@ -896,6 +901,7 @@ class MSFT_MicrosoftGraphwindowsInformationProtectionProxiedDomainCollection
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Display name')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Collection of proxied domains')]
     [MSFT_MicrosoftGraphProxiedDomain[]] $ProxiedDomains
@@ -906,29 +912,38 @@ class MSFT_MicrosoftGraphwindowsInformationProtectionApp
     [DscProperty()]
     [System.ComponentModel.Description('If true, app is denied protection or exemption.')]
     [System.Nullable[System.Boolean]] $Denied
+
     [DscProperty()]
     [System.ComponentModel.Description('The app''s description.')]
     [System.String] $Description
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('App display name.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The product name.')]
     [System.String] $ProductName
+
     [DscProperty()]
     [System.ComponentModel.Description('The publisher name')]
     [System.String] $PublisherName
+
     [DscProperty()]
     [System.ComponentModel.Description('The binary name.')]
     [System.String] $BinaryName
+
     [DscProperty()]
     [System.ComponentModel.Description('The high binary version.')]
     [System.String] $BinaryVersionHigh
+
     [DscProperty()]
     [System.ComponentModel.Description('The lower binary version.')]
     [System.String] $BinaryVersionLow
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windowsInformationProtectionDesktopApp', '#microsoft.graph.windowsInformationProtectionStoreApp')]
     [System.String] $odataType
 }
 
@@ -936,22 +951,30 @@ class MSFT_IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolledPolicyAss
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -962,14 +985,18 @@ class MSFT_MicrosoftGraphIpRange
     [DscProperty()]
     [System.ComponentModel.Description('CIDR address.')]
     [System.String] $CidrAddress
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Lower address.')]
     [System.String] $LowerAddress
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Upper address.')]
     [System.String] $UpperAddress
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.iPv4Range', '#microsoft.graph.iPv6Range')]
     [System.String] $odataType
 }
 
@@ -978,6 +1005,7 @@ class MSFT_MicrosoftGraphProxiedDomain
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The IP address or FQDN')]
     [System.String] $IpAddressOrFQDN
+
     [DscProperty()]
     [System.ComponentModel.Description('Proxy IP or FQDN')]
     [System.String] $Proxy

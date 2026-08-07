@@ -828,18 +828,24 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Type - Depends on exclusions (excludedPath: Path, excludedFileExtension: File extension, excludedFileName: Process name)')]
+    [ValidateSet('excludedPath', 'excludedFileExtension', 'excludedFileName')]
     [System.String] $exclusions_item_type
+
     [DscProperty()]
     [System.ComponentModel.Description('File extension - Depends on exclusions_item_type=excludedFileExtension')]
     [System.String] $exclusions_item_extension
+
     [DscProperty()]
     [System.ComponentModel.Description('File name - exclusions_item_type=excludedFileName')]
     [System.String] $exclusions_item_name
+
     [DscProperty()]
     [System.ComponentModel.Description('Path - exclusions_item_type=excludedPath')]
     [System.String] $exclusions_item_path
+
     [DscProperty()]
     [System.ComponentModel.Description('Is directory (false: Disabled, true: Enabled) - Depends on exclusions_item_type=excludedPath')]
+    [ValidateSet('false', 'true')]
     [System.String] $exclusions_item_isDirectory
 }
 
@@ -847,9 +853,12 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogthreatTypeSettings
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Threat type - Depends on threatTypeSettings (potentially_unwanted_application, archive_bomb)')]
+    [ValidateSet('potentially_unwanted_application', 'archive_bomb')]
     [System.String] $threatTypeSettings_item_key
+
     [DscProperty()]
     [System.ComponentModel.Description('Action to take - Depends on threatTypeSettings (audit, block, off)')]
+    [ValidateSet('audit', 'block', 'off')]
     [System.String] $threatTypeSettings_item_value
 }
 
@@ -857,22 +866,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

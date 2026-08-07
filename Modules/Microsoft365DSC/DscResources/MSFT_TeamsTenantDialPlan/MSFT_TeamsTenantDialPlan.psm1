@@ -383,18 +383,23 @@ class MSFT_TeamsVoiceNormalizationRule
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('A unique identifier for the rule. The Identity specified must include the scope followed by a slash and then the name; for example: site:Redmond/Rule1, where site:Redmond is the scope and Rule1 is the name. The name portion will automatically be stored in the Name property. You cannot specify values for Identity and Name in the same command.')]
     [System.String] $Identity
+
     [DscProperty()]
     [System.ComponentModel.Description('The order in which rules are applied. A phone number might match more than one rule. This parameter sets the order in which the rules are tested against the number.')]
     [System.Nullable[System.UInt32]] $Priority
+
     [DscProperty()]
     [System.ComponentModel.Description('A friendly description of the normalization rule.')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('A regular expression that the dialed number must match in order for this rule to be applied.')]
     [System.String] $Pattern
+
     [DscProperty()]
     [System.ComponentModel.Description('The regular expression pattern that will be applied to the number to convert it to E.164 format.')]
     [System.String] $Translation
+
     [DscProperty()]
     [System.ComponentModel.Description('If True, the result of applying this rule will be a number internal to the organization. If False, applying the rule results in an external number. This value is ignored if the value of the OptimizeDeviceDialing property of the associated dial plan is set to False.')]
     [System.Nullable[System.Boolean]] $IsInternalExtension

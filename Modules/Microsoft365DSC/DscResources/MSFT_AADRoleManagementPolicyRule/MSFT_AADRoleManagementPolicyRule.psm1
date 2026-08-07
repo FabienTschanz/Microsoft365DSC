@@ -609,6 +609,7 @@ class MSFT_AADRoleManagementPolicyExpirationRule
     [DscProperty()]
     [System.ComponentModel.Description('Specifies if expiration is required.')]
     [System.Nullable[System.Boolean]] $isExpirationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('The maximum duration for the expiration.')]
     [System.String] $maximumDuration
@@ -619,15 +620,19 @@ class MSFT_AADRoleManagementPolicyNotificationRule
     [DscProperty()]
     [System.ComponentModel.Description('Notification type for the rule.')]
     [System.String] $notificationType
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of the recipient for the notification.')]
     [System.String] $recipientType
+
     [DscProperty()]
     [System.ComponentModel.Description('Level of the notification.')]
     [System.String] $notificationLevel
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if default recipients are enabled.')]
     [System.Nullable[System.Boolean]] $isDefaultRecipientsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('List of notification recipients.')]
     [System.String[]] $notificationRecipients
@@ -652,6 +657,7 @@ class MSFT_AADRoleManagementPolicyAuthenticationContextRule
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the authentication context rule is enabled.')]
     [System.Nullable[System.Boolean]] $isEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Claim value associated with the rule.')]
     [System.String] $claimValue
@@ -662,15 +668,19 @@ class MSFT_AADRoleManagementPolicyApprovalSettings
     [DscProperty()]
     [System.ComponentModel.Description('One of SingleStage, Serial, Parallel, NoApproval (default). NoApproval is used when isApprovalRequired is false.')]
     [System.String] $approvalMode
+
     [DscProperty()]
     [System.ComponentModel.Description('If approval is required, the one or two elements of this collection define each of the stages of approval. An empty array if no approval is required.')]
     [MSFT_AADRoleManagementPolicyApprovalStage[]] $approvalStages
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether approval is required for requests in this policy.')]
     [System.Nullable[System.Boolean]] $isApprovalRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether approval is required for a user to extend their assignment.')]
     [System.Nullable[System.Boolean]] $isApprovalRequiredForExtension
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the requestor is required to supply a justification in their request.')]
     [System.Nullable[System.Boolean]] $isRequestorJustificationRequired
@@ -681,18 +691,23 @@ class MSFT_AADRoleManagementPolicyApprovalStage
     [DscProperty()]
     [System.ComponentModel.Description('The number of days that a request can be pending a response before it is automatically denied.')]
     [System.Nullable[System.UInt32]] $approvalStageTimeOutInDays
+
     [DscProperty()]
     [System.ComponentModel.Description('The time a request can be pending a response from a primary approver before it can be escalated to the escalation approvers.')]
     [System.Nullable[System.UInt32]] $escalationTimeInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the approver must provide justification for their reponse.')]
     [System.Nullable[System.Boolean]] $isApproverJustificationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether escalation if enabled.')]
     [System.Nullable[System.Boolean]] $isEscalationEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('The escalation approvers for this stage when the primary approvers don''t respond.')]
     [MSFT_AADRoleManagementPolicySubjectSet[]] $escalationApprovers
+
     [DscProperty()]
     [System.ComponentModel.Description('The primary approvers of this stage.')]
     [MSFT_AADRoleManagementPolicySubjectSet[]] $primaryApprovers

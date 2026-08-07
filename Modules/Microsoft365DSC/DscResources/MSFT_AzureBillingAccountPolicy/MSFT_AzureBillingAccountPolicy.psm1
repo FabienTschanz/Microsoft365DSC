@@ -327,9 +327,11 @@ class MSFT_AzureBillingAccountPolicyEnterpriseAgreementPolicy
     [DscProperty()]
     [System.ComponentModel.Description('The policy that controls whether account owner can view charges.')]
     [System.String] $accountOwnerViewCharges
+
     [DscProperty()]
     [System.ComponentModel.Description('The state showing the enrollment auth level.')]
     [System.String] $authenticationType
+
     [DscProperty()]
     [System.ComponentModel.Description('The policy that controls whether department admin can view charges.')]
     [System.String] $departmentAdminViewCharges

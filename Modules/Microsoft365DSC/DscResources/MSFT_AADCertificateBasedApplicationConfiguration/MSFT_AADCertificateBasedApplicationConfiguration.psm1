@@ -592,12 +592,15 @@ class MSFT_AADCertificateBasedApplicationConfigurationTrustedCertificateAuthorit
     [DscProperty()]
     [System.ComponentModel.Description('The certificate data in base64 encoded format.')]
     [System.String] $Certificate
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the certificate is a root authority.')]
     [System.Nullable[System.Boolean]] $IsRootAuthority
+
     [DscProperty()]
     [System.ComponentModel.Description('The issuer of the certificate.')]
     [System.String] $Issuer
+
     [DscProperty()]
     [System.ComponentModel.Description('The subject key identifier of the issuer.')]
     [System.String] $IssuerSubjectKeyIdentifier

@@ -1727,9 +1727,11 @@ class MSFT_MicrosoftGraphoptionalClaims
     [DscProperty()]
     [System.ComponentModel.Description('The optional claims returned in the JWT access token.')]
     [MSFT_MicrosoftGraphOptionalClaim[]] $AccessToken
+
     [DscProperty()]
     [System.ComponentModel.Description('The optional claims returned in the JWT ID token.')]
     [MSFT_MicrosoftGraphOptionalClaim[]] $IdToken
+
     [DscProperty()]
     [System.ComponentModel.Description('The optional claims returned in the SAML token.')]
     [MSFT_MicrosoftGraphOptionalClaim[]] $Saml2Token
@@ -1740,6 +1742,7 @@ class MSFT_MicrosoftGraphapiApplication
     [DscProperty()]
     [System.ComponentModel.Description('Lists the client applications that are preauthorized with the specified delegated permissions to access this application''s APIs. Users aren''t required to consent to any preauthorized application (for the permissions specified). However, any other permissions not listed in preAuthorizedApplications (requested through incremental consent for example) will require user consent.')]
     [MSFT_MicrosoftGraphPreAuthorizedApplication[]] $PreAuthorizedApplications
+
     [DscProperty()]
     [System.ComponentModel.Description('List of associated API scopes.')]
     [MSFT_MicrosoftGraphAPIOauth2PermissionScopes[]] $Oauth2PermissionScopes
@@ -1749,9 +1752,12 @@ class MSFT_MicrosoftGraphauthenticationBehaviors
 {
     [DscProperty()]
     [System.ComponentModel.Description('If false, allows the app to have extended access to Azure AD Graph until June 30, 2025 when Azure AD Graph is fully retired. For more information on Azure AD retirement updates, see June 2024 update on Azure AD Graph API retirement. Use ''Null'' to ensure the value is not configured.')]
+    [ValidateSet('True', 'False', 'Null')]
     [System.String] $BlockAzureADGraphAccess
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, removes the email claim from tokens sent to an application when the email address''s domain can''t be verified. Use ''Null'' to ensure the value is not configured.')]
+    [ValidateSet('True', 'False', 'Null')]
     [System.String] $RemoveUnverifiedEmailClaim
 }
 
@@ -1760,15 +1766,19 @@ class MSFT_MicrosoftGraphpasswordCredential
     [DscProperty()]
     [System.ComponentModel.Description('Friendly name for the password. Optional.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the password expires represented using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.')]
     [System.String] $EndDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('Contains the first three characters of the password. Read-only.')]
     [System.String] $Hint
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for the password.')]
     [System.String] $KeyId
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the password becomes valid. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.')]
     [System.String] $StartDateTime
@@ -1779,24 +1789,31 @@ class MSFT_MicrosoftGraphkeyCredential
     [DscProperty()]
     [System.ComponentModel.Description('A 40-character binary type that can be used to identify the credential. Optional. When not provided in the payload, defaults to the thumbprint of the certificate.')]
     [System.String] $CustomKeyIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('Friendly name for the key. Optional.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the credential expires. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.')]
     [System.String] $EndDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier (GUID) for the key.')]
     [System.String] $KeyId
+
     [DscProperty()]
     [System.ComponentModel.Description('The certificate''s raw data in byte array converted to Base64 string.')]
     [System.String] $Key
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.')]
     [System.String] $StartDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of key credential for example, Symmetric, AsymmetricX509Cert.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('A string that describes the purpose for which the key can be used for example, Verify.')]
     [System.String] $Usage
@@ -1807,12 +1824,15 @@ class MSFT_MicrosoftGraphInformationalUrl
     [DscProperty()]
     [System.ComponentModel.Description('Link to the application''s marketing page. For example, https://www.contoso.com/app/marketing')]
     [System.String] $MarketingUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Link to the application''s privacy statement. For example, https://www.contoso.com/app/privacy')]
     [System.String] $PrivacyStatementUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Link to the application''s support page. For example, https://www.contoso.com/app/support')]
     [System.String] $SupportUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Link to the application''s terms of service statement. For example, https://www.contoso.com/app/termsofservice')]
     [System.String] $TermsOfServiceUrl
@@ -1823,21 +1843,27 @@ class MSFT_MicrosoftGraphappRole
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether this app role can be assigned to users and groups (by setting to ''User''), to other application''s (by setting to ''Application'', or both (by setting to ''User'', ''Application'')). App roles supporting assignment to other applications'' service principals are also known as application permissions. The ''Application'' value is only supported for app roles defined on application entities.')]
     [System.String[]] $AllowedMemberTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('The description for the app role. This is displayed when the app role is being assigned and, if the app role functions as an application permission, during  consent experiences.')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('Display name for the permission that appears in the app role assignment and consent experiences.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Unique role identifier inside the appRoles collection. When creating a new app role, a new GUID identifier must be provided.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('When creating or updating an app role, this must be set to true (which is the default). To delete a role, this must first be set to false.  At that point, in a subsequent call, this role may be removed.')]
     [System.Nullable[System.Boolean]] $IsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies if the app role is defined on the application object or on the servicePrincipal entity. Must not be included in any POST or PATCH requests. Read-only.')]
     [System.String] $Origin
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Specifies the value to include in the roles claim in ID tokens and access tokens authenticating an assigned user or service principal. Must not exceed 120 characters in length. Allowed characters are : ! # $ % & '' ( ) * + , - . / :   =       + _    } , and characters in the ranges 0-9, A-Z and a-z. Any other character, including the space character, aren''t allowed. May not begin with ..')]
     [System.String] $Value
@@ -1848,42 +1874,55 @@ class MSFT_AADApplicationOnPremisesPublishing
     [DscProperty()]
     [System.ComponentModel.Description('If you''re configuring a traffic manager in front of multiple App Proxy applications, the alternateUrl is the user-friendly URL that points to the traffic manager.')]
     [System.String] $alternateUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('The duration the connector waits for a response from the backend application before closing the connection. Possible values are default, long.')]
     [System.String] $applicationServerTimeout
+
     [DscProperty()]
     [System.ComponentModel.Description('Details the pre-authentication setting for the application. Pre-authentication enforces that users must authenticate before accessing the app. Pass through doesn''t require authentication. Possible values are: passthru, aadPreAuthentication.')]
     [System.String] $externalAuthenticationType
+
     [DscProperty()]
     [System.ComponentModel.Description('The published external url for the application. For example, https://intranet-contoso.msappproxy.net/.')]
     [System.String] $externalUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('The internal url of the application. For example, https://intranet/.')]
     [System.String] $internalUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether backend SSL certificate validation is enabled for the application. For all new Application Proxy apps, the property is set to true by default. For all existing apps, the property is set to false.')]
     [System.Nullable[System.Boolean]] $isBackendCertificateValidationEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the HTTPOnly cookie flag should be set in the HTTP response headers. Set this value to true to have Application Proxy cookies include the HTTPOnly flag in the HTTP response headers. If using Remote Desktop Services, set this value to False. Default value is false.')]
     [System.Nullable[System.Boolean]] $isHttpOnlyCookieEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the Persistent cookie flag should be set in the HTTP response headers. Keep this value set to false. Only use this setting for applications that can''t share cookies between processes. For more information about cookie settings, see Cookie settings for accessing on-premises applications in Microsoft Entra ID. Default value is false.')]
     [System.Nullable[System.Boolean]] $isPersistentCookieEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the Secure cookie flag should be set in the HTTP response headers. Set this value to true to transmit cookies over a secure channel such as an encrypted HTTPS request. Default value is true.')]
     [System.Nullable[System.Boolean]] $isSecureCookieEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether validation of the state parameter when the client uses the OAuth 2.0 authorization code grant flow is enabled. This setting allows admins to specify whether they want to enable CSRF protection for their apps.')]
     [System.Nullable[System.Boolean]] $isStateSessionEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the application should translate urls in the response headers. Keep this value as true unless your application required the original host header in the authentication request. Default value is true.')]
     [System.Nullable[System.Boolean]] $isTranslateHostHeaderEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the application should translate urls in the application body. Keep this value as false unless you have hardcoded HTML links to other on-premises applications and don''t use custom domains. For more information, see Link translation with Application Proxy. Default value is false.')]
     [System.Nullable[System.Boolean]] $isTranslateLinksInBodyEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Represents the collection of application segments for an on-premises wildcard application that''s published through Microsoft Entra application proxy.')]
     [MSFT_AADApplicationOnPremisesPublishingSegment[]] $onPremisesApplicationSegments
+
     [DscProperty()]
     [System.ComponentModel.Description('Represents the single sign-on configuration for the on-premises application.')]
     [MSFT_AADApplicationOnPremisesPublishingSingleSignOnSetting] $singleSignOnSettings
@@ -1901,12 +1940,16 @@ class MSFT_AADApplicationPermission
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the requested permission.')]
     [System.String] $Name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the API from which the permission comes from.')]
     [System.String] $SourceAPI
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Type of permission.')]
+    [ValidateSet('AppOnly', 'Delegated')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('Represented whether or not the Admin consent been granted on the app.')]
     [System.Nullable[System.Boolean]] $AdminConsentGranted
@@ -1917,9 +1960,11 @@ class MSFT_MicrosoftGraphOptionalClaim
     [DscProperty()]
     [System.ComponentModel.Description('If the value is true, the claim specified by the client is necessary to ensure a smooth authorization experience for the specific task requested by the end user. The default value is false.')]
     [System.Nullable[System.Boolean]] $Essential
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the optional claim.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The source (directory object) of the claim. There are predefined claims and user-defined claims from extension properties. If the source value is null, the claim is a predefined optional claim. If the source value is user, the value in the name property is the extension property from the user object.')]
     [System.String] $Source
@@ -1930,6 +1975,7 @@ class MSFT_MicrosoftGraphPreAuthorizedApplication
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The unique identifier for the client application.')]
     [System.String] $AppId
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The unique identifier for the scopes the client application is granted.')]
     [System.String[]] $PermissionIds
@@ -1940,24 +1986,31 @@ class MSFT_MicrosoftGraphAPIOauth2PermissionScopes
     [DscProperty()]
     [System.ComponentModel.Description('A description of the delegated permissions, intended to be read by an administrator granting the permission on behalf of all users. This text appears in tenant-wide admin consent experiences.')]
     [System.String] $adminConsentDescription
+
     [DscProperty()]
     [System.ComponentModel.Description('The permission''s title, intended to be read by an administrator granting the permission on behalf of all users.')]
     [System.String] $adminConsentDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('A description of the delegated permissions, intended to be read by a user granting the permission on their own behalf. This text appears in consent experiences where the user is consenting only on behalf of themselves.')]
     [System.String] $userConsentDescription
+
     [DscProperty()]
     [System.ComponentModel.Description('A title for the permission, intended to be read by a user granting the permission on their own behalf. This text appears in consent experiences where the user is consenting only on behalf of themselves.')]
     [System.String] $userConsentDisplayName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Specifies the value to include in the scp (scope) claim in access tokens. Must not exceed 120 characters in length.')]
     [System.String] $value
+
     [DscProperty()]
     [System.ComponentModel.Description('When you create or update a permission, this property must be set to true (which is the default). To delete a permission, this property must first be set to false. At that point, in a subsequent call, the permission may be removed.')]
     [System.Nullable[System.Boolean]] $isEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('The possible values are: User and Admin. Specifies whether this delegated permission should be considered safe for non-admin users to consent to on behalf of themselves, or whether an administrator consent should always be required.')]
     [System.String] $type
+
     [DscProperty()]
     [System.ComponentModel.Description('Unique delegated permission identifier inside the collection of delegated permissions defined for a resource application.')]
     [System.String] $id
@@ -1968,12 +2021,15 @@ class MSFT_AADApplicationOnPremisesPublishingSegment
     [DscProperty()]
     [System.ComponentModel.Description('If you''re configuring a traffic manager in front of multiple App Proxy application segments, contains the user-friendly URL that will point to the traffic manager.')]
     [System.String] $alternateUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('CORS Rule definition for a particular application segment.')]
     [MSFT_AADApplicationOnPremisesPublishingSegmentCORS[]] $corsConfigurations
+
     [DscProperty()]
     [System.ComponentModel.Description('The published external URL for the application segment; for example, https://intranet.contoso.com./')]
     [System.String] $externalUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('The internal URL of the application segment; for example, https://intranet/.')]
     [System.String] $internalUrl
@@ -1984,6 +2040,7 @@ class MSFT_AADApplicationOnPremisesPublishingSingleSignOnSetting
     [DscProperty()]
     [System.ComponentModel.Description('The preferred single-sign on mode for the application. Possible values are: none, onPremisesKerberos, aadHeaderBased,pingHeaderBased, oAuthToken.')]
     [System.String] $singleSignOnMode
+
     [DscProperty()]
     [System.ComponentModel.Description('The Kerberos Constrained Delegation settings for applications that use Integrated Window Authentication.')]
     [MSFT_AADApplicationOnPremisesPublishingSingleSignOnSettingKerberos] $kerberosSignOnSettings
@@ -1994,15 +2051,19 @@ class MSFT_AADApplicationOnPremisesPublishingSegmentCORS
     [DscProperty()]
     [System.ComponentModel.Description('The request headers that the origin domain may specify on the CORS request. The wildcard character * indicates that any header beginning with the specified prefix is allowed.')]
     [System.String[]] $allowedHeaders
+
     [DscProperty()]
     [System.ComponentModel.Description('The maximum amount of time that a browser should cache the response to the preflight OPTIONS request.')]
     [System.Nullable[System.UInt32]] $maxAgeInSeconds
+
     [DscProperty()]
     [System.ComponentModel.Description('Resource within the application segment for which CORS permissions are granted. / grants permission for whole app segment.')]
     [System.String] $resource
+
     [DscProperty()]
     [System.ComponentModel.Description('The HTTP request methods that the origin domain may use for a CORS request.')]
     [System.String[]] $allowedMethods
+
     [DscProperty()]
     [System.ComponentModel.Description('The origin domains that are permitted to make a request against the service via CORS. The origin domain is the domain from which the request originates. The origin must be an exact case-sensitive match with the origin that the user age sends to the service.')]
     [System.String[]] $allowedOrigins
@@ -2013,6 +2074,7 @@ class MSFT_AADApplicationOnPremisesPublishingSingleSignOnSettingKerberos
     [DscProperty()]
     [System.ComponentModel.Description('The Internal Application SPN of the application server. This SPN needs to be in the list of services to which the connector can present delegated credentials.')]
     [System.String] $kerberosServicePrincipalName
+
     [DscProperty()]
     [System.ComponentModel.Description('The Delegated Login Identity for the connector to use on behalf of your users. For more information, see Working with different on-premises and cloud identities . Possible values are: userPrincipalName, onPremisesUserPrincipalName, userPrincipalUsername, onPremisesUserPrincipalUsername, onPremisesSAMAccountName.')]
     [System.String] $kerberosSignOnMappingAttributeType

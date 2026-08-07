@@ -125,6 +125,7 @@
     'AADAdministrativeUnit',
     'AADAgreement',
     'AADApplication',
+    'AADApplicationFederatedIdentityCredential',
     'AADAppManagementPolicy',
     'AADAttributeSet',
     'AADAuthenticationContextClassReference',

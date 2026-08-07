@@ -524,12 +524,16 @@ class MSFT_MicrosoftGraphdeviceManagementConfigurationPolicyTemplateReference
     [DscProperty()]
     [System.ComponentModel.Description('Template Display Name of the referenced template. This property is read-only.')]
     [System.String] $TemplateDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Template Display Version of the referenced Template. This property is read-only.')]
     [System.String] $TemplateDisplayVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Template Family of the referenced Template. This property is read-only. Possible values are: none, endpointSecurityAntivirus, endpointSecurityDiskEncryption, endpointSecurityFirewall, endpointSecurityEndpointDetectionAndResponse, endpointSecurityAttackSurfaceReduction, endpointSecurityAccountProtection, endpointSecurityApplicationControl, endpointSecurityEndpointPrivilegeManagement, enrollmentConfiguration, appQuietTime, baseline, unknownFutureValue, deviceConfigurationScripts.')]
+    [ValidateSet('none', 'endpointSecurityAntivirus', 'endpointSecurityDiskEncryption', 'endpointSecurityFirewall', 'endpointSecurityEndpointDetectionAndResponse', 'endpointSecurityAttackSurfaceReduction', 'endpointSecurityAccountProtection', 'endpointSecurityApplicationControl', 'endpointSecurityEndpointPrivilegeManagement', 'enrollmentConfiguration', 'appQuietTime', 'baseline', 'unknownFutureValue', 'deviceConfigurationScripts')]
     [System.String] $TemplateFamily
+
     [DscProperty()]
     [System.ComponentModel.Description('Template id')]
     [System.String] $TemplateId
@@ -540,6 +544,7 @@ class MSFT_MicrosoftGraphdeviceManagementConfigurationSetting
     [DscProperty()]
     [System.ComponentModel.Description('Setting Instance')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $SettingInstance
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -549,22 +554,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -575,29 +588,38 @@ class MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance
     [DscProperty()]
     [System.ComponentModel.Description('Setting Definition Id')]
     [System.String] $SettingDefinitionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Setting Instance Template Reference')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] $SettingInstanceTemplateReference
+
     [DscProperty()]
     [System.ComponentModel.Description('Choice setting collection value')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue[]] $ChoiceSettingCollectionValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Choice setting value')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue] $ChoiceSettingValue
+
     [DscProperty()]
     [System.ComponentModel.Description('A collection of GroupSetting values')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue[]] $GroupSettingCollectionValue
+
     [DscProperty()]
     [System.ComponentModel.Description('GroupSetting value')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue] $GroupSettingValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Simple setting collection instance value')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue[]] $SimpleSettingCollectionValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Simple setting instance value')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue] $SimpleSettingValue
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.deviceManagementConfigurationChoiceSettingCollectionInstance', '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance', '#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance', '#microsoft.graph.deviceManagementConfigurationGroupSettingInstance', '#microsoft.graph.deviceManagementConfigurationSettingGroupCollectionInstance', '#microsoft.graph.deviceManagementConfigurationSettingGroupInstance', '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance', '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance')]
     [System.String] $odataType
 }
 
@@ -613,14 +635,18 @@ class MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue
     [DscProperty()]
     [System.ComponentModel.Description('Child settings.')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $Children
+
     [DscProperty()]
     [System.ComponentModel.Description('Choice setting value: an OptionDefinition ItemId.')]
     [System.String] $Value
+
     [DscProperty()]
     [System.ComponentModel.Description('Setting value template reference')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] $SettingValueTemplateReference
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.deviceManagementConfigurationChoiceSettingValue', '#microsoft.graph.deviceManagementConfigurationGroupSettingValue', '#microsoft.graph.deviceManagementConfigurationSimpleSettingValue')]
     [System.String] $odataType
 }
 
@@ -629,14 +655,18 @@ class MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue
     [DscProperty()]
     [System.ComponentModel.Description('Collection of child setting instances contained within this GroupSetting')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $Children
+
     [DscProperty()]
     [System.ComponentModel.Description('Setting value template reference')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] $SettingValueTemplateReference
+
     [DscProperty()]
     [System.ComponentModel.Description('Choice setting value: an OptionDefinition ItemId.')]
     [System.String] $Value
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.deviceManagementConfigurationChoiceSettingValue', '#microsoft.graph.deviceManagementConfigurationGroupSettingValue', '#microsoft.graph.deviceManagementConfigurationSimpleSettingValue')]
     [System.String] $odataType
 }
 
@@ -645,18 +675,25 @@ class MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue
     [DscProperty()]
     [System.ComponentModel.Description('Value of the integer setting.')]
     [System.Nullable[System.UInt32]] $IntValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Value of the string setting.')]
     [System.String] $StringValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Gets or sets a value indicating the encryption state of the Value property. Possible values are: invalid, notEncrypted, encryptedValueToken.')]
+    [ValidateSet('invalid', 'notEncrypted', 'encryptedValueToken')]
     [System.String] $ValueState
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.deviceManagementConfigurationIntegerSettingValue', '#microsoft.graph.deviceManagementConfigurationStringSettingValue', '#microsoft.graph.deviceManagementConfigurationSecretSettingValue')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('Setting value template reference')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] $SettingValueTemplateReference
+
     [DscProperty()]
     [System.ComponentModel.Description('Child settings.')]
     [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $Children
@@ -667,6 +704,7 @@ class MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateRefere
     [DscProperty()]
     [System.ComponentModel.Description('Setting value template id')]
     [System.String] $settingValueTemplateId
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether to update policy setting value to match template setting default value')]
     [System.Nullable[System.Boolean]] $useTemplateDefault

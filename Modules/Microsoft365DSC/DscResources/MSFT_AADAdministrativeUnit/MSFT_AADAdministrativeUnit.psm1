@@ -922,8 +922,10 @@ class MSFT_MicrosoftGraphMember
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Identity of member. For users, specify a UserPrincipalName. For groups, devices and serviceprincipals, specify DisplayName')]
     [System.String] $Identity
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Specify User, Group or Device to interpret the identity for Members. Specify User, Group or ServicePrincipal for ScopedRoleMembers.')]
+    [ValidateSet('User', 'Group', 'Device', 'ServicePrincipal')]
     [System.String] $Type
 }
 
@@ -932,6 +934,7 @@ class MSFT_MicrosoftGraphScopedRoleMembership
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Azure AD Role that is assigned. See https://learn.microsoft.com/en-us/azure/active-directory/roles/admin-units-assign-roles#roles-that-can-be-assigned-with-administrative-unit-scope')]
     [System.String] $RoleName
+
     [DscProperty()]
     [System.ComponentModel.Description('Member that is assigned the scoped role. Note: Any groups must be role-enabled')]
     [MSFT_MicrosoftGraphMember] $RoleMemberInfo

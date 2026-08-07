@@ -511,6 +511,7 @@ class MSFT_MicrosoftGraphMimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the content mime type.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('The Base64 encoded string content.')]
     [System.String] $Value
@@ -521,6 +522,7 @@ class MSFT_DeviceManagementMobileAppCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the app category.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -530,24 +532,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 

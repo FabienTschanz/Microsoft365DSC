@@ -16,6 +16,9 @@
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
     to PSCredential and removed it from the export output.
+* EXOArcConfig
+  * Fixed an issue where the `ArcTrustedSealers` property was exported as
+    a single string instead of an array.
 * IntuneAppControlForBusinessPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneAppControlForBusinessPolicyWindows10V2` instead.

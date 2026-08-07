@@ -1315,6 +1315,7 @@ class MSFT_SCLabelSetting
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Advanced settings key.')]
     [System.String] $Key
+
     [DscProperty()]
     [System.ComponentModel.Description('Advanced settings value.')]
     [System.String[]] $Value
@@ -1325,6 +1326,7 @@ class MSFT_SCLabelLocaleSettings
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Local key.')]
     [System.String] $LocaleKey
+
     [DscProperty()]
     [System.ComponentModel.Description('The locale settings display names.')]
     [MSFT_SCLabelSetting[]] $LabelSettings
@@ -1335,14 +1337,19 @@ class MSFT_SCSLAutoLabelingSettings
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Groups of sensitive information types.')]
     [MSFT_SCSLSensitiveInformationGroup[]] $Groups
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('How to process the various groups')]
+    [ValidateSet('And', 'Or')]
     [System.String] $Operator
+
     [DscProperty()]
     [System.ComponentModel.Description('Display this message to users when the label is applied')]
     [System.String] $PolicyTip
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Specifies what to do when content matches the conditions')]
+    [ValidateSet('Automatic', 'Recommend')]
     [System.String] $AutoApplyType
 }
 
@@ -1351,14 +1358,18 @@ class MSFT_SCSLSensitiveInformationGroup
     [DscProperty()]
     [System.ComponentModel.Description('Sensitive Information Content Types')]
     [MSFT_SCSLSensitiveInformationType[]] $SensitiveInformationType
+
     [DscProperty()]
     [System.ComponentModel.Description('Trainable Classifiers')]
     [MSFT_SCSLTrainableClassifiers[]] $TrainableClassifier
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the group')]
     [System.String] $Name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('How to process the Sensitive Information Types and Trainable Classifiers')]
+    [ValidateSet('And', 'Or')]
     [System.String] $Operator
 }
 
@@ -1367,15 +1378,20 @@ class MSFT_SCSLSensitiveInformationType
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Sensitive Information Type')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Confidence level value for the Sensitive Information')]
+    [ValidateSet('Low', 'Medium', 'High')]
     [System.String] $confidencelevel
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of Classifier value for the Sensitive Information')]
     [System.String] $classifiertype
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum Count value for the Sensitive Information')]
     [System.String] $mincount
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum Count value for the Sensitive Information')]
     [System.String] $maxcount
@@ -1386,6 +1402,7 @@ class MSFT_SCSLTrainableClassifiers
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Trainable Classifier')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Id of the Trainable Classifier')]
     [System.String] $id

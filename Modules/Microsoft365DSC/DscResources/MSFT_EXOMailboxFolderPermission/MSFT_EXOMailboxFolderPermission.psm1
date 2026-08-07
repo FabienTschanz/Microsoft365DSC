@@ -320,9 +320,11 @@ class MSFT_EXOMailboxFolderUserPermission
     [DscProperty()]
     [System.ComponentModel.Description('The AccessRights parameter specifies the permissions that you want to add for the user on the mailbox folder.')]
     [System.String[]] $AccessRights
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The User parameter specifies who gets the permissions on the mailbox folder.')]
     [System.String] $User
+
     [DscProperty()]
     [System.ComponentModel.Description('The SharingPermissionFlags parameter assigns calendar delegate permissions. This parameter only applies to calendar folders and can only be used when the AccessRights parameter value is Editor. Valid values are: None, Delegate, CanViewPrivateItems')]
     [System.String] $SharingPermissionFlags

@@ -586,22 +586,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -612,6 +620,7 @@ class MSFT_IntuneAppConfigurationPolicyCustomSetting
     [DscProperty()]
     [System.ComponentModel.Description('Name of the custom setting.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Value of the custom setting.')]
     [System.String] $value
@@ -622,6 +631,7 @@ class MSFT_managedMobileApp
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Key of the entity.')]
     [System.String] $id
+
     [DscProperty()]
     [System.ComponentModel.Description('The identifier for an app with it''s operating system type.')]
     [MSFT_AppIdentifier] $mobileAppIdentifier
@@ -632,9 +642,11 @@ class MSFT_AppIdentifier
     [DscProperty()]
     [System.ComponentModel.Description('AppId iOS.')]
     [System.String] $bundleID
+
     [DscProperty()]
     [System.ComponentModel.Description('AppId Android.')]
     [System.String] $packageID
+
     [DscProperty()]
     [System.ComponentModel.Description('AppId Windows.')]
     [System.String] $windowsAppId

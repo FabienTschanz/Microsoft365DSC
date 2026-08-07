@@ -720,22 +720,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -746,6 +754,7 @@ class MSFT_MicrosoftGraphDeviceCompliancePolicyScript
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Device compliance script name.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Rules content of the custom settings.')]
     [System.String] $RulesContent
@@ -756,9 +765,11 @@ class MSFT_MicrosoftGraphOperatingSystemVersionRange
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The description of this range (e.g. Valid 1702 builds)')]
     [System.String] $Description
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The lowest inclusive version that this range contains.')]
     [System.String] $LowestVersion
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The highest inclusive version that this range contains.')]
     [System.String] $HighestVersion
@@ -768,13 +779,17 @@ class MSFT_MicrosoftGraphDeviceComplianceScheduledActionsForRuleConfiguration
 {
     [DscProperty()]
     [System.ComponentModel.Description('The action type of the compliance policy action.')]
+    [ValidateSet('block', 'notification', 'retire')]
     [System.String] $ActionType
+
     [DscProperty()]
     [System.ComponentModel.Description('Number of hours the device can be in grace period.')]
     [System.Nullable[System.UInt32]] $GracePeriodHours
+
     [DscProperty()]
     [System.ComponentModel.Description('Display names of the groups that should be notified if the compliance fails.')]
     [System.String[]] $NotificationMessageCCList
+
     [DscProperty()]
     [System.ComponentModel.Description('Display name of the Notification Template used in the compliance policy. Can only be used with ActionType ''notification''.')]
     [System.String] $NotificationTemplate

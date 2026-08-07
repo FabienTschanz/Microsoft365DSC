@@ -474,15 +474,20 @@ class MSFT_IntuneDeviceIdentifier
     [DscProperty()]
     [System.ComponentModel.Description('Unique identifier for the imported device identity.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('Imported Device Identifier')]
     [System.String] $importedDeviceIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of Imported Device Identity. Possible values are: unknown, imei, serialNumber, manufacturerModelSerial.')]
+    [ValidateSet('unknown', 'imei', 'serialNumber', 'manufacturerModelSerial')]
     [System.String] $importedDeviceIdentityType
+
     [DscProperty()]
     [System.ComponentModel.Description('Description for the device identity.')]
     [System.String] $description
+
     [DscProperty()]
     [System.ComponentModel.Description('Platform of the device (e.g., Windows, Android, iOS).')]
     [System.String] $platform

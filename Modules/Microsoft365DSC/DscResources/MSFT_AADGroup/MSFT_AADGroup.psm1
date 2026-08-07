@@ -1119,6 +1119,7 @@ class MSFT_AADGroupLicense
     [DscProperty()]
     [System.ComponentModel.Description('A collection of the unique identifiers for plans that have been disabled.')]
     [System.String[]] $DisabledPlans
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The unique identifier for the SKU.')]
     [System.String] $SkuId

@@ -725,16 +725,21 @@ class MSFT_MicrosoftGraphapplistitemMacOS
 {
     [DscProperty()]
     [System.ComponentModel.Description('Specify the odataType')]
+    [ValidateSet('#microsoft.graph.appleAppListItem')]
     [System.String] $odataType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The application or bundle identifier of the application')]
     [System.String] $appId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Store URL of the application')]
     [System.String] $appStoreUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('The application name')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('The publisher of the application')]
     [System.String] $publisher
@@ -744,81 +749,123 @@ class MSFT_MicrosoftGraphmacosprivacyaccesscontrolitem
 {
     [DscProperty()]
     [System.ComponentModel.Description('Allow the app or process to control the Mac via the Accessibility subsystem.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $accessibility
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to contact information managed by Contacts.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $addressBook
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or deny the app or process to send a restricted Apple event to another app or process. You will need to know the identifier, identifier type, and code requirement of the receiving app or process.')]
     [MSFT_MicrosoftGraphmacosappleeventreceiver[]] $appleEventsAllowedReceivers
+
     [DscProperty()]
     [System.ComponentModel.Description('Block access to camera app.')]
     [System.Nullable[System.Boolean]] $blockCamera
+
     [DscProperty()]
     [System.ComponentModel.Description('Block the app or process from listening to events from input devices such as mouse, keyboard, and trackpad.Requires macOS 10.15 or later.')]
     [System.Nullable[System.Boolean]] $blockListenEvent
+
     [DscProperty()]
     [System.ComponentModel.Description('Block access to microphone.')]
     [System.Nullable[System.Boolean]] $blockMicrophone
+
     [DscProperty()]
     [System.ComponentModel.Description('Block app from capturing contents of system display. Requires macOS 10.15 or later.')]
     [System.Nullable[System.Boolean]] $blockScreenCapture
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to event information managed by Calendar.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $calendar
+
     [DscProperty()]
     [System.ComponentModel.Description('Enter the code requirement, which can be obtained with the command ''codesign -display -r -'' in the Terminal app. Include everything after ''=>''.')]
     [System.String] $codeRequirement
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the app, process, or executable.')]
     [System.String] $displayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the app or process to access files managed by another app''s file provider extension. Requires macOS 10.15 or later.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $fileProviderPresence
+
     [DscProperty()]
     [System.ComponentModel.Description('The bundle ID or path of the app, process, or executable.')]
     [System.String] $identifier
+
     [DscProperty()]
     [System.ComponentModel.Description('A bundle ID is used to identify an app. A path is used to identify a process or executable.')]
+    [ValidateSet('bundleID', 'path')]
     [System.String] $identifierType
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to music and the media library.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $mediaLibrary
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to images managed by Photos.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $photos
+
     [DscProperty()]
     [System.ComponentModel.Description('Control access to CoreGraphics APIs, which are used to send CGEvents to the system event stream.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $postEvent
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to information managed by Reminders.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $reminders
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to system speech recognition facility.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $speechRecognition
+
     [DscProperty()]
     [System.ComponentModel.Description('Statically validates the code requirement. Use this setting if the process invalidates its dynamic code signature.')]
     [System.Nullable[System.Boolean]] $staticCodeValidation
+
     [DscProperty()]
     [System.ComponentModel.Description('Control access to all protected files on a device. Files might be in locations such as emails, messages, apps, and administrative settings. Apply this setting with caution.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicyAllFiles
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to Desktop folder.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicyDesktopFolder
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to Documents folder.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicyDocumentsFolder
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to Downloads folder.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicyDownloadsFolder
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block access to network volumes. Requires macOS 10.15 or later.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicyNetworkVolumes
+
     [DscProperty()]
     [System.ComponentModel.Description('Control access to removable volumes on the device, such as an external hard drive. Requires macOS 10.15 or later.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicyRemovableVolumes
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow app or process to access files used in system administration.')]
+    [ValidateSet('notConfigured', 'enabled', 'disabled')]
     [System.String] $systemPolicySystemAdminFiles
 }
 
@@ -826,22 +873,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -852,14 +907,18 @@ class MSFT_MicrosoftGraphmacosappleeventreceiver
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block this app from receiving Apple events.')]
     [System.Nullable[System.Boolean]] $allowed
+
     [DscProperty()]
     [System.ComponentModel.Description('Code requirement for the app or binary that receives the Apple Event.')]
     [System.String] $codeRequirement
+
     [DscProperty()]
     [System.ComponentModel.Description('Bundle ID of the app or file path of the process or executable that receives the Apple Event.')]
     [System.String] $identifier
+
     [DscProperty()]
     [System.ComponentModel.Description('Use bundle ID for an app or path for a process or executable that receives the Apple Event.')]
+    [ValidateSet('bundleID', 'path')]
     [System.String] $identifierType
 }
 

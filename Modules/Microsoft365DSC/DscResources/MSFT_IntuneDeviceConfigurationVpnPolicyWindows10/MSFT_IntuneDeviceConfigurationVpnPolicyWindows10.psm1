@@ -882,7 +882,9 @@ class MSFT_MicrosoftGraphwindows10AssociatedApps
 {
     [DscProperty()]
     [System.ComponentModel.Description('Application type. Possible values are: desktop, universal.')]
+    [ValidateSet('desktop', 'universal')]
     [System.String] $AppType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Identifier.')]
     [System.String] $Identifier
@@ -892,21 +894,32 @@ class MSFT_MicrosoftGraphcryptographySuite
 {
     [DscProperty()]
     [System.ComponentModel.Description('Authentication Transform Constants. Possible values are: md5_96, sha1_96, sha_256_128, aes128Gcm, aes192Gcm, aes256Gcm.')]
+    [ValidateSet('md5_96', 'sha1_96', 'sha_256_128', 'aes128Gcm', 'aes192Gcm', 'aes256Gcm')]
     [System.String] $AuthenticationTransformConstants
+
     [DscProperty()]
     [System.ComponentModel.Description('Cipher Transform Constants. Possible values are: aes256, des, tripleDes, aes128, aes128Gcm, aes256Gcm, aes192, aes192Gcm, chaCha20Poly1305.')]
+    [ValidateSet('aes256', 'des', 'tripleDes', 'aes128', 'aes128Gcm', 'aes256Gcm', 'aes192', 'aes192Gcm', 'chaCha20Poly1305')]
     [System.String] $CipherTransformConstants
+
     [DscProperty()]
     [System.ComponentModel.Description('Diffie Hellman Group. Possible values are: group1, group2, group14, ecp256, ecp384, group24.')]
+    [ValidateSet('group1', 'group2', 'group14', 'ecp256', 'ecp384', 'group24')]
     [System.String] $DhGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('Encryption Method. Possible values are: aes256, des, tripleDes, aes128, aes128Gcm, aes256Gcm, aes192, aes192Gcm, chaCha20Poly1305.')]
+    [ValidateSet('aes256', 'des', 'tripleDes', 'aes128', 'aes128Gcm', 'aes256Gcm', 'aes192', 'aes192Gcm', 'chaCha20Poly1305')]
     [System.String] $EncryptionMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('Integrity Check Method. Possible values are: sha2_256, sha1_96, sha1_160, sha2_384, sha2_512, md5.')]
+    [ValidateSet('sha2_256', 'sha1_96', 'sha1_160', 'sha2_384', 'sha2_512', 'md5')]
     [System.String] $IntegrityCheckMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('Perfect Forward Secrecy Group. Possible values are: pfs1, pfs2, pfs2048, ecp256, ecp384, pfsMM, pfs24.')]
+    [ValidateSet('pfs1', 'pfs2', 'pfs2048', 'ecp256', 'ecp384', 'pfsMM', 'pfs24')]
     [System.String] $PfsGroup
 }
 
@@ -915,15 +928,19 @@ class MSFT_MicrosoftGraphvpnDnsRule
     [DscProperty()]
     [System.ComponentModel.Description('Automatically connect to the VPN when the device connects to this domain: Default False.')]
     [System.Nullable[System.Boolean]] $AutoTrigger
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Keep this rule active even when the VPN is not connected: Default False')]
     [System.Nullable[System.Boolean]] $Persistent
+
     [DscProperty()]
     [System.ComponentModel.Description('Proxy Server Uri.')]
     [System.String] $ProxyServerUri
+
     [DscProperty()]
     [System.ComponentModel.Description('Servers.')]
     [System.String[]] $Servers
@@ -934,20 +951,26 @@ class MSFT_MicrosoftGraphwindows10VpnProxyServer
     [DscProperty()]
     [System.ComponentModel.Description('Bypass proxy server for local address.')]
     [System.Nullable[System.Boolean]] $BypassProxyServerForLocalAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('Address.')]
     [System.String] $Address
+
     [DscProperty()]
     [System.ComponentModel.Description('Proxy''s automatic configuration script url.')]
     [System.String] $AutomaticConfigurationScriptUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Port. Valid values 0 to 65535')]
     [System.Nullable[System.UInt32]] $Port
+
     [DscProperty()]
     [System.ComponentModel.Description('Automatically detect proxy settings.')]
     [System.Nullable[System.Boolean]] $AutomaticallyDetectProxySettings
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windows10VpnProxyServer', '#microsoft.graph.windows81VpnProxyServer')]
     [System.String] $odataType
 }
 
@@ -956,6 +979,7 @@ class MSFT_MicrosoftGraphvpnRoute
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Destination prefix (IPv4/v6 address).')]
     [System.String] $DestinationPrefix
+
     [DscProperty()]
     [System.ComponentModel.Description('Prefix size. (1-32). Valid values 1 to 32')]
     [System.Nullable[System.UInt32]] $PrefixSize
@@ -966,6 +990,7 @@ class MSFT_MicrosoftGraphextendedKeyUsage
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Extended Key Usage Name')]
     [System.String] $Name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Extended Key Usage Object Identifier')]
     [System.String] $ObjectIdentifier
@@ -976,35 +1001,48 @@ class MSFT_MicrosoftGraphvpnTrafficRule
     [DscProperty()]
     [System.ComponentModel.Description('App identifier, if this traffic rule is triggered by an app.')]
     [System.String] $AppId
+
     [DscProperty()]
     [System.ComponentModel.Description('App type, if this traffic rule is triggered by an app. Possible values are: none, desktop, universal.')]
+    [ValidateSet('none', 'desktop', 'universal')]
     [System.String] $AppType
+
     [DscProperty()]
     [System.ComponentModel.Description('Claims associated with this traffic rule.')]
     [System.String] $Claims
+
     [DscProperty()]
     [System.ComponentModel.Description('Local address range. This collection can contain a maximum of 500 elements.')]
     [MSFT_MicrosoftGraphIPv4Range[]] $LocalAddressRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Local port range can be set only when protocol is either TCP or UDP (6 or 17). This collection can contain a maximum of 500 elements.')]
     [MSFT_MicrosoftGraphNumberRange[]] $LocalPortRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Name.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Protocols (0-255). Valid values 0 to 255')]
     [System.Nullable[System.UInt32]] $Protocols
+
     [DscProperty()]
     [System.ComponentModel.Description('Remote address range. This collection can contain a maximum of 500 elements.')]
     [MSFT_MicrosoftGraphIPv4Range[]] $RemoteAddressRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Remote port range can be set only when protocol is either TCP or UDP (6 or 17). This collection can contain a maximum of 500 elements.')]
     [MSFT_MicrosoftGraphNumberRange[]] $RemotePortRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('When app triggered, indicates whether to enable split tunneling along this route. Possible values are: none, splitTunnel, forceTunnel.')]
+    [ValidateSet('none', 'splitTunnel', 'forceTunnel')]
     [System.String] $RoutingPolicyType
+
     [DscProperty()]
     [System.ComponentModel.Description('Specify whether the rule applies to inbound traffic or outbound traffic. Possible values are: outbound, inbound, unknownFutureValue.')]
+    [ValidateSet('outbound', 'inbound', 'unknownFutureValue')]
     [System.String] $VpnTrafficDirection
 }
 
@@ -1013,9 +1051,11 @@ class MSFT_MicrosoftGraphvpnServer
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Address (IP address, FQDN or URL)')]
     [System.String] $address
+
     [DscProperty()]
     [System.ComponentModel.Description('Description.')]
     [System.String] $description
+
     [DscProperty()]
     [System.ComponentModel.Description('Default server.')]
     [System.Nullable[System.Boolean]] $isDefaultServer
@@ -1025,22 +1065,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -1051,14 +1099,18 @@ class MSFT_MicrosoftGraphIPv4Range
     [DscProperty()]
     [System.ComponentModel.Description('Lower address.')]
     [System.String] $LowerAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('Upper address.')]
     [System.String] $UpperAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('IPv4 address in CIDR notation. Not nullable.')]
     [System.String] $CidrAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.iPv4CidrRange', '#microsoft.graph.iPv6CidrRange', '#microsoft.graph.iPv4Range', '#microsoft.graph.iPv6Range')]
     [System.String] $odataType
 }
 
@@ -1067,6 +1119,7 @@ class MSFT_MicrosoftGraphNumberRange
     [DscProperty()]
     [System.ComponentModel.Description('Lower number.')]
     [System.Nullable[System.UInt32]] $LowerNumber
+
     [DscProperty()]
     [System.ComponentModel.Description('Upper number.')]
     [System.Nullable[System.UInt32]] $UpperNumber

@@ -1608,16 +1608,21 @@ class MSFT_MicrosoftGraphapplistitem
 {
     [DscProperty()]
     [System.ComponentModel.Description('odatatype of the item.')]
+    [ValidateSet('#microsoft.graph.appleAppListItem')]
     [System.String] $odataType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Kiosk mode managed app id')]
     [System.String] $appId
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the app store URL.')]
     [System.String] $appStoreUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the name of the app.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the publisher of the app.')]
     [System.String] $publisher
@@ -1627,9 +1632,12 @@ class MSFT_MicrosoftGraphmediacontentratingaustralia
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for Australia')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'mature', 'agesAbove15', 'agesAbove18')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for Australia')]
+    [ValidateSet('allAllowed', 'allBlocked', 'preschoolers', 'children', 'general', 'parentalGuidance', 'mature', 'agesAbove15', 'agesAbove15AdultViolence')]
     [System.String] $tvRating
 }
 
@@ -1637,9 +1645,12 @@ class MSFT_MicrosoftGraphmediacontentratingcanada
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for Canada')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'agesAbove14', 'agesAbove18', 'restricted')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for Canada')]
+    [ValidateSet('allAllowed', 'allBlocked', 'children', 'childrenAbove8', 'general', 'parentalGuidance', 'agesAbove14', 'agesAbove18')]
     [System.String] $tvRating
 }
 
@@ -1647,9 +1658,12 @@ class MSFT_MicrosoftGraphmediacontentratingfrance
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for France')]
+    [ValidateSet('allAllowed', 'allBlocked', 'agesAbove10', 'agesAbove12', 'agesAbove16', 'agesAbove18')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for France')]
+    [ValidateSet('allAllowed', 'allBlocked', 'agesAbove10', 'agesAbove12', 'agesAbove16', 'agesAbove18')]
     [System.String] $tvRating
 }
 
@@ -1657,9 +1671,12 @@ class MSFT_MicrosoftGraphmediacontentratinggermany
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for Germany')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'agesAbove6', 'agesAbove12', 'agesAbove16', 'adults')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for Germany')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'agesAbove6', 'agesAbove12', 'agesAbove16', 'adults')]
     [System.String] $tvRating
 }
 
@@ -1667,9 +1684,12 @@ class MSFT_MicrosoftGraphmediacontentratingireland
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for Ireland')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'agesAbove12', 'agesAbove15', 'agesAbove16', 'adults')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for Ireland')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'children', 'youngAdults', 'parentalSupervision', 'mature')]
     [System.String] $tvRating
 }
 
@@ -1677,9 +1697,12 @@ class MSFT_MicrosoftGraphmediacontentratingjapan
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for Japan')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'agesAbove15', 'agesAbove18')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for Japan')]
+    [ValidateSet('allAllowed', 'allBlocked', 'explicitAllowed')]
     [System.String] $tvRating
 }
 
@@ -1687,9 +1710,12 @@ class MSFT_MicrosoftGraphmediacontentratingnewzealand
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for New Zealand')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'mature', 'agesAbove13', 'agesAbove15', 'agesAbove16', 'agesAbove18', 'restricted', 'agesAbove16Restricted')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for New Zealand')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'adults')]
     [System.String] $tvRating
 }
 
@@ -1697,9 +1723,12 @@ class MSFT_MicrosoftGraphmediacontentratingunitedkingdom
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for UK')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'universalChildren', 'parentalGuidance', 'agesAbove12Video', 'agesAbove12Cinema', 'agesAbove15', 'adults')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for UK')]
+    [ValidateSet('allAllowed', 'allBlocked', 'caution')]
     [System.String] $tvRating
 }
 
@@ -1707,9 +1736,12 @@ class MSFT_MicrosoftGraphmediacontentratingunitedstates
 {
     [DscProperty()]
     [System.ComponentModel.Description('Movies rating selected for USA')]
+    [ValidateSet('allAllowed', 'allBlocked', 'general', 'parentalGuidance', 'parentalGuidance13', 'restricted', 'adults')]
     [System.String] $movieRating
+
     [DscProperty()]
     [System.ComponentModel.Description('TV rating selected for USA')]
+    [ValidateSet('allAllowed', 'allBlocked', 'childrenAll', 'childrenAbove7', 'general', 'parentalGuidance', 'childrenAbove14', 'adults')]
     [System.String] $tvRating
 }
 
@@ -1718,9 +1750,11 @@ class MSFT_MicrosoftGraphiosnetworkusagerule
     [DscProperty()]
     [System.ComponentModel.Description('If set to true, corresponding managed apps will not be allowed to use cellular data at any time.')]
     [System.Nullable[System.Boolean]] $cellularDataBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('If set to true, corresponding managed apps will not be allowed to use cellular data when roaming.')]
     [System.Nullable[System.Boolean]] $cellularDataBlockWhenRoaming
+
     [DscProperty()]
     [System.ComponentModel.Description('Information about the managed apps that this rule is going to apply to.')]
     [MSFT_MicrosoftGraphapplistitem[]] $managedApps
@@ -1730,22 +1764,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

@@ -702,7 +702,9 @@ class MSFT_PPTenantRule
     [DscProperty(Key)]
     [System.ComponentModel.Description('Name of the trusted tenant.')]
     [System.String] $TenantName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Direction of tenant trust.')]
+    [ValidateSet('Inbound', 'Outbound', 'Both')]
     [System.String] $Direction
 }

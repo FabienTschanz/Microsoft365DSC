@@ -363,12 +363,15 @@ class MSFT_AADFilteringProfilePolicyLink
     [DscProperty()]
     [System.ComponentModel.Description('Logging state for the associated policy.')]
     [System.String] $LoggingState
+
     [DscProperty()]
     [System.ComponentModel.Description('Priority of the associated policy.')]
     [System.Nullable[System.UInt32]] $Priority
+
     [DscProperty()]
     [System.ComponentModel.Description('State of the associated policy.')]
     [System.String] $State
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the associated policy.')]
     [System.String] $PolicyName

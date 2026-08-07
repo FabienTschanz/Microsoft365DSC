@@ -578,60 +578,79 @@ class MSFT_MicrosoftGraphAndroidMinimumOperatingSystem
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 10.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V10_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 11.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V11_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 12.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V12_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 13.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V13_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 14.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V14_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 15.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V15_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 4.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V4_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 4.0.3 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V4_0_3
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 4.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V4_1
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 4.2 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V4_2
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 4.3 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V4_3
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 4.4 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V4_4
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 5.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V5_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 5.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V5_1
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 6.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V6_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 7.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V7_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 7.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V7_1
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 8.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V8_0
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 8.1 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V8_1
+
     [DscProperty()]
     [System.ComponentModel.Description('When TRUE, only Version 9.0 or later is supported. Default value is FALSE. Exactly one of the minimum operating system boolean values will be TRUE.')]
     [System.Nullable[System.Boolean]] $V9_0
@@ -642,6 +661,7 @@ class MSFT_DeviceManagementMobileAppCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the app category.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -652,6 +672,7 @@ class MSFT_DeviceManagementMimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of content mime.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('The Base64 encoded string content.')]
     [System.String] $Value
@@ -661,24 +682,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 

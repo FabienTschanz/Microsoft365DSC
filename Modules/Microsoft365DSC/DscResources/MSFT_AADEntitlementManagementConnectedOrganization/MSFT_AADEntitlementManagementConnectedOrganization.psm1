@@ -628,19 +628,25 @@ class MSFT_AADEntitlementManagementConnectedOrganizationIdentitySource
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Type of the identity source.')]
+    [ValidateSet('#microsoft.graph.azureActiveDirectoryTenant', '#microsoft.graph.crossCloudAzureActiveDirectoryTenant', '#microsoft.graph.domainIdentitySource', '#microsoft.graph.externalDomainFederation')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the Azure Active Directory tenant.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The ID of the Azure Active Directory tenant.')]
     [System.String] $ExternalTenantId
+
     [DscProperty()]
     [System.ComponentModel.Description('The ID of the cloud where the tenant is located, one of microsoftonline.com, microsoftonline.us or partner.microsoftonline.cn.')]
     [System.String] $CloudInstance
+
     [DscProperty()]
     [System.ComponentModel.Description('The domain name.')]
     [System.String] $DomainName
+
     [DscProperty()]
     [System.ComponentModel.Description('The issuerURI of the incoming federation.')]
     [System.String] $IssuerUri

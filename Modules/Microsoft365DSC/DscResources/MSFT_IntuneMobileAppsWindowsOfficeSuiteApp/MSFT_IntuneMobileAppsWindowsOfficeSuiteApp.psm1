@@ -640,6 +640,7 @@ class MSFT_DeviceManagementMobileAppCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the app category.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -649,24 +650,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 
@@ -675,45 +685,59 @@ class MSFT_DeviceManagementMobileAppExcludedApp
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Access from the installation.')]
     [System.Nullable[System.Boolean]] $Access
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Search (Bing) as the default from the installation.')]
     [System.Nullable[System.Boolean]] $Bing
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Excel from the installation.')]
     [System.Nullable[System.Boolean]] $Excel
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office OneDrive for Business (Groove) from the installation.')]
     [System.Nullable[System.Boolean]] $Groove
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office InfoPath from the installation.')]
     [System.Nullable[System.Boolean]] $InfoPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Skype for Business (Lync) from the installation.')]
     [System.Nullable[System.Boolean]] $Lync
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office OneDrive from the installation.')]
     [System.Nullable[System.Boolean]] $OneDrive
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office OneNote from the installation.')]
     [System.Nullable[System.Boolean]] $OneNote
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Outlook from the installation.')]
     [System.Nullable[System.Boolean]] $Outlook
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office PowerPoint from the installation.')]
     [System.Nullable[System.Boolean]] $PowerPoint
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Publisher from the installation.')]
     [System.Nullable[System.Boolean]] $Publisher
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office SharePoint Designer from the installation.')]
     [System.Nullable[System.Boolean]] $SharePointDesigner
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Teams from the installation.')]
     [System.Nullable[System.Boolean]] $Teams
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Visio from the installation.')]
     [System.Nullable[System.Boolean]] $Visio
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Word from the installation.')]
     [System.Nullable[System.Boolean]] $Word

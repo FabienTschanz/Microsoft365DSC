@@ -660,11 +660,14 @@ class MSFT_PlannerTaskAttachment
     [DscProperty()]
     [System.ComponentModel.Description('Alias of for the attachment.')]
     [System.String] $Alias
+
     [DscProperty()]
     [System.ComponentModel.Description('Uri of the link to the attachment.')]
     [System.String] $Uri
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of attachment.')]
+    [ValidateSet('PowerPoint', 'Word', 'Excel', 'Other')]
     [System.String] $Type
 }
 
@@ -673,6 +676,7 @@ class MSFT_PlannerTaskChecklistItem
     [DscProperty()]
     [System.ComponentModel.Description('Title of the checklist item.')]
     [System.String] $Title
+
     [DscProperty()]
     [System.ComponentModel.Description('True if the item is completed, false otherwise.')]
     [System.String] $Completed

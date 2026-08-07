@@ -645,6 +645,7 @@ class MSFT_MicrosoftGraphMimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the content mime type.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('The Base64 encoded string content.')]
     [System.String] $Value
@@ -655,6 +656,7 @@ class MSFT_DeviceManagementMobileAppCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the app category.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -665,6 +667,7 @@ class MSFT_MicrosoftGraphMacOSIncludedApp
     [DscProperty()]
     [System.ComponentModel.Description('The bundleId of the app. This maps to the CFBundleIdentifier in the app''s bundle configuration.')]
     [System.String] $BundleId
+
     [DscProperty()]
     [System.ComponentModel.Description('The version of the app. This maps to the CFBundleShortVersion in the app''s bundle configuration.')]
     [System.String] $BundleVersion
@@ -675,42 +678,55 @@ class MSFT_MicrosoftGraphMacOSMinimumOperatingSystem
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.7 or later is required to install the app. If ''False'', Version 10.7 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.8 or later is required to install the app. If ''False'', Version 10.8 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_8
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.9 or later is required to install the app. If ''False'', Version 10.9 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_9
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.10 or later is required to install the app. If ''False'', Version 10.10 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_10
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.11 or later is required to install the app. If ''False'', Version 10.11 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_11
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.12 or later is required to install the app. If ''False'', Version 10.12 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_12
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.13 or later is required to install the app. If ''False'', Version 10.13 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_13
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.14 or later is required to install the app. If ''False'', Version 10.14 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_14
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 10.15 or later is required to install the app. If ''False'', Version 10.15 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V10_15
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 11.0 or later is required to install the app. If ''False'', Version 11.0 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V11_0
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 12.0 or later is required to install the app. If ''False'', Version 12.0 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V12_0
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 13.0 or later is required to install the app. If ''False'', Version 13.0 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V13_0
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 14.0 or later is required to install the app. If ''False'', Version 14.0 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V14_0
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum version support required for the managed device. When ''True'', OS Version 15.0 or later is required to install the app. If ''False'', Version 15.0 is not the minimum version.')]
     [System.Nullable[System.Boolean]] $V15_0
@@ -720,24 +736,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 

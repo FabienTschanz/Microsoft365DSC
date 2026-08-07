@@ -415,21 +415,27 @@ class MSFT_AADRemoteNetworkDeviceLink
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Device Link')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('IP Address')]
     [System.String] $IPAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('Bandwidth Capacity in Mbps')]
     [System.String] $BandwidthCapacityInMbps
+
     [DscProperty()]
     [System.ComponentModel.Description('Device Vendor')]
     [System.String] $DeviceVendor
+
     [DscProperty()]
     [System.ComponentModel.Description('BgpConfiguration.')]
     [MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration] $BgpConfiguration
+
     [DscProperty()]
     [System.ComponentModel.Description('redundancyConfiguration.')]
     [MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration] $RedundancyConfiguration
+
     [DscProperty()]
     [System.ComponentModel.Description('tunnelConfiguration')]
     [MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration] $TunnelConfiguration
@@ -440,9 +446,11 @@ class MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('LocalIpAddress.')]
     [System.String] $LocalIPAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('PeerIpAddress.')]
     [System.String] $PeerIPAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('Asn.')]
     [System.Nullable[System.UInt32]] $Asn
@@ -453,6 +461,7 @@ class MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('ZoneLocalIpAddress.')]
     [System.String] $ZoneLocalIPAddress
+
     [DscProperty()]
     [System.ComponentModel.Description('RedundancyTier.')]
     [System.String] $RedundancyTier
@@ -463,30 +472,39 @@ class MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('PreSharedKey')]
     [System.String] $PreSharedKey
+
     [DscProperty()]
     [System.ComponentModel.Description('ZoneRedundancyPreSharedKey')]
     [System.String] $ZoneRedundancyPreSharedKey
+
     [DscProperty()]
     [System.ComponentModel.Description('SaLifeTimeSeconds')]
     [System.Nullable[System.UInt32]] $SaLifeTimeSeconds
+
     [DscProperty()]
     [System.ComponentModel.Description('IpSecEncryption')]
     [System.String] $IPSecEncryption
+
     [DscProperty()]
     [System.ComponentModel.Description('IpSecIntegrity')]
     [System.String] $IPSecIntegrity
+
     [DscProperty()]
     [System.ComponentModel.Description('IkeEncryption')]
     [System.String] $IKEEncryption
+
     [DscProperty()]
     [System.ComponentModel.Description('IkeIntegrity')]
     [System.String] $IKEIntegrity
+
     [DscProperty()]
     [System.ComponentModel.Description('DhGroup')]
     [System.String] $DHGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('PfsGroup')]
     [System.String] $PFSGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('ODataType')]
     [System.String] $ODataType

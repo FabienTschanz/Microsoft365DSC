@@ -665,6 +665,7 @@ class MSFT_SCLabelSetting
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Advanced settings key.')]
     [System.String] $Key
+
     [DscProperty()]
     [System.ComponentModel.Description('Advanced settings value.')]
     [System.String[]] $Value

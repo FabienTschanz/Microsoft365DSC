@@ -267,7 +267,7 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
             {
                 if ($this.GetBoundParameters().ContainsKey($propertyName))
                 {
-                    $bodyParameter.Add($propertyName.Substring(0, 1).ToLower() + $propertyName.Substring(1), (Get-Variable -Name $propertyName -ValueOnly))
+                    $bodyParameter.Add($propertyName.Substring(0, 1).ToLower() + $propertyName.Substring(1), $this.$propertyName)
                 }
             }
 

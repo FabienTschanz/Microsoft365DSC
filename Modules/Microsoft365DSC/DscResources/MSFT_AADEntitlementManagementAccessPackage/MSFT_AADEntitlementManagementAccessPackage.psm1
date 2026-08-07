@@ -825,12 +825,15 @@ class MSFT_AccessPackageResourceRoleScope
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the resource roleScope.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The origine Id of the resource.')]
     [System.String] $AccessPackageResourceOriginId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the resource role.')]
     [System.String] $AccessPackageResourceRoleDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the resource in the origin system.')]
     [System.String] $AccessPackageResourceScopeOriginSystem

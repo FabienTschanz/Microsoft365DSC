@@ -320,12 +320,15 @@ class MSFT_MicrosoftGraphcertificateAuthority
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Required. The base64 encoded string representing the public certificate.')]
     [System.String] $Certificate
+
     [DscProperty()]
     [System.ComponentModel.Description('The URL of the certificate revocation list.')]
     [System.String] $CertificateRevocationListUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('The URL contains the list of all revoked certificates since the last time a full certificate revocaton list was created.')]
     [System.String] $DeltaCertificateRevocationListUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Required. true if the trusted certificate is a root authority, false if the trusted certificate is an intermediate authority.')]
     [System.Nullable[System.Boolean]] $IsRootAuthority

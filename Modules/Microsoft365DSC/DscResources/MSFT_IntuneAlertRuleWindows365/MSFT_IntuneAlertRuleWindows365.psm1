@@ -390,16 +390,24 @@ class MSFT_IntuneAlertRuleCondition
 {
     [DscProperty()]
     [System.ComponentModel.Description('The built-in aggregation method for the rule condition. The possible values are: count, percentage, affectedCloudPcCount, affectedCloudPcPercentage, durationInMinutes.')]
+    [ValidateSet('count', 'percentage', 'affectedCloudPcCount', 'affectedCloudPcPercentage', 'durationInMinutes')]
     [System.String] $Aggregation
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The property that the rule condition monitors. Possible values are: provisionFailures, imageUploadFailures, azureNetworkConnectionCheckFailures, cloudPcInGracePeriod, frontlineInsufficientLicenses, cloudPcConnectionErrors, cloudPcHostHealthCheckFailures, cloudPcZoneOutage, unknownFutureValue, frontlineBufferUsageDuration, frontlineBufferUsageThreshold, cloudPcUserSettingsPersistenceUsageThreshold, cloudPcDeprovisionedThreshold, cloudPcReserveDeprovisionFailedThreshold.')]
+    [ValidateSet('provisionFailures', 'imageUploadFailures', 'azureNetworkConnectionCheckFailures', 'cloudPcInGracePeriod', 'frontlineInsufficientLicenses', 'cloudPcConnectionErrors', 'cloudPcHostHealthCheckFailures', 'cloudPcZoneOutage', 'unknownFutureValue', 'frontlineBufferUsageDuration', 'frontlineBufferUsageThreshold', 'cloudPcUserSettingsPersistenceUsageThreshold', 'cloudPcDeprovisionedThreshold', 'cloudPcReserveDeprovisionFailedThreshold')]
     [System.String] $ConditionCategory
+
     [DscProperty()]
     [System.ComponentModel.Description('The built-in operator for the rule condition. The possible values are: greaterOrEqual, equal, greater, less, lessOrEqual, notEqual.')]
+    [ValidateSet('greaterOrEqual', 'greater', 'equal', 'less', 'lessOrEqual')]
     [System.String] $Operator
+
     [DscProperty()]
     [System.ComponentModel.Description('The relationship type. Possible values are: and, or.')]
+    [ValidateSet('and', 'or')]
     [System.String] $RelationshipType
+
     [DscProperty()]
     [System.ComponentModel.Description('The threshold value of the alert condition. The threshold value can be a number in string form or string like ''WestUS''.')]
     [System.String] $ThresholdValue
@@ -409,7 +417,9 @@ class MSFT_IntuneAlertRuleNotificationChannel
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The notification channel type.')]
+    [ValidateSet('portal', 'email')]
     [System.String] $NotificationChannelType
+
     [DscProperty()]
     [System.ComponentModel.Description('The receivers of the notification. Only applicable if the NotificationChannelType is ''email''.')]
     [MSFT_IntuneAlertRuleNotificationChannelReceiver[]] $NotificationReceivers
@@ -420,8 +430,10 @@ class MSFT_IntuneAlertRuleNotificationChannelReceiver
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The email address of the receiver.')]
     [System.String] $ContactInformation
+
     [DscProperty()]
     [System.ComponentModel.Description('The locale of the email.')]
+    [ValidateSet('en-us', 'cs-cz', 'de-de', 'es-es', 'fr-fr', 'hu-hu', 'it-it', 'ja-jp', 'ko-kr', 'nl-nl', 'pl-pl', 'pt-br', 'pt-pt', 'ru-ru', 'sv-se', 'tr-tr', 'zh-cn', 'zh-tw')]
     [System.String] $Locale
 }
 

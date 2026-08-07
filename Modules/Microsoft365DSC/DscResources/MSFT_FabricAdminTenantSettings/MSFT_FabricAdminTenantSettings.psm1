@@ -1125,30 +1125,39 @@ class MSFT_FabricTenantSetting
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the tenant setting is enabled for a security group. 0 - The tenant setting is enabled for the entire organization.')]
     [System.Nullable[System.Boolean]] $canSpecifySecurityGroups
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the tenant setting can be delegated to a workspace admin. False - Workspace admin cannot override the tenant setting.')]
     [System.Nullable[System.Boolean]] $delegateToWorkspace
+
     [DscProperty()]
     [System.ComponentModel.Description('Tenant setting delegated from tenant, capacity or domain.')]
     [MSFT_FabricDelegatedFrom] $delegatedFrom
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the tenant setting.')]
     [System.String] $settingName
+
     [DscProperty()]
     [System.ComponentModel.Description('The status of the tenant setting.')]
     [System.Nullable[System.Boolean]] $enabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Tenant setting group name.')]
     [System.String] $tenantSettingGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('The title of the tenant setting.')]
     [System.String] $title
+
     [DscProperty()]
     [System.ComponentModel.Description('Tenant setting properties.')]
     [MSFT_FabricTenantSettingProperty[]] $properties
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of excluded security groups.')]
     [System.String[]] $excludedSecurityGroups
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of enabled security groups.')]
     [System.String[]] $enabledSecurityGroups
@@ -1159,9 +1168,11 @@ class MSFT_FabricDelegatedFrom
     [DscProperty()]
     [System.ComponentModel.Description('The setting is delegated from a capacity.')]
     [System.String] $Capacity
+
     [DscProperty()]
     [System.ComponentModel.Description('The setting is delegated from a domain.')]
     [System.String] $Domain
+
     [DscProperty()]
     [System.ComponentModel.Description('The setting is delegated from a tenant.')]
     [System.String] $Tenant
@@ -1172,9 +1183,11 @@ class MSFT_FabricTenantSettingProperty
     [DscProperty()]
     [System.ComponentModel.Description('The name of the property.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the property.')]
     [System.String] $type
+
     [DscProperty()]
     [System.ComponentModel.Description('The value of the property.')]
     [System.String] $value

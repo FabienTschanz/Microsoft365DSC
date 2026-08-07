@@ -823,31 +823,41 @@ class MSFT_MicrosoftGraphassignmentreviewsettings
 {
     [DscProperty()]
     [System.ComponentModel.Description('The default decision to apply if the request is not reviewed within the period specified in durationInDays.')]
+    [ValidateSet('acceptAccessRecommendation', 'keepAccess', 'removeAccess', 'unknownFutureValue')]
     [System.String] $AccessReviewTimeoutBehavior
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of days within which reviewers should provide input.')]
     [System.Nullable[System.UInt32]] $DurationInDays
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to display recommendations to the reviewer. The default value is true')]
     [System.Nullable[System.Boolean]] $IsAccessRecommendationEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether the agentic experience is enabled for this policy.')]
     [System.Nullable[System.Boolean]] $IsAgenticExperienceEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether the reviewer must provide justification for the approval. The default value is true.')]
     [System.Nullable[System.Boolean]] $IsApprovalJustificationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, access reviews are required for assignments from this policy.')]
     [System.Nullable[System.Boolean]] $IsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('The interval for recurrence, such as monthly or quarterly.')]
     [System.String] $RecurrenceType
+
     [DscProperty()]
     [System.ComponentModel.Description('Who should be asked to do the review, either Self or Reviewers.')]
     [System.String] $ReviewerType
+
     [DscProperty()]
     [System.ComponentModel.Description('If the reviewerType is Reviewers, this collection specifies the users who will be reviewers, either by ID or as members of a group, using a collection of singleUser and groupMembers.')]
     [MSFT_MicrosoftGraphuserset[]] $Reviewers
+
     [DscProperty()]
     [System.ComponentModel.Description('When the first review should start.')]
     [System.String] $StartDateTime
@@ -857,31 +867,41 @@ class MSFT_MicrosoftGraphaccesspackagequestion
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the resource')]
+    [ValidateSet('#microsoft.graph.accessPackageMultipleChoiceQuestion', '#microsoft.graph.accessPackageTextInputQuestion')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('ID of the question.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether the requestor is allowed to edit answers to questions.')]
     [System.Nullable[System.Boolean]] $IsAnswerEditable
+
     [DscProperty()]
     [System.ComponentModel.Description('Whether the requestor is required to supply an answer or not.')]
     [System.Nullable[System.Boolean]] $IsRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Relative position of this question when displaying a list of questions to the requestor.')]
     [System.Nullable[System.UInt32]] $Sequence
+
     [DscProperty()]
     [System.ComponentModel.Description('The text of the question to show to the requestor.')]
     [MSFT_MicrosoftGraphaccessPackageLocalizedContent] $QuestionText
+
     [DscProperty()]
     [System.ComponentModel.Description('List of answer choices.')]
     [MSFT_MicrosoftGraphaccessPackageAnswerChoice[]] $Choices
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether requestor can select multiple choices as their answer.')]
     [System.Nullable[System.Boolean]] $AllowsMultipleSelection
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the regex pattern that the corresponding text answer must follow.')]
     [System.String] $RegexPattern
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the answer will be in single or multiple line format.')]
     [System.Nullable[System.Boolean]] $IsSingleLineQuestion
@@ -891,16 +911,21 @@ class MSFT_MicrosoftGraphapprovalsettings
 {
     [DscProperty()]
     [System.ComponentModel.Description('One of SingleStage, Serial, Parallel, NoApproval (default). NoApproval is used when isApprovalRequired is false.')]
+    [ValidateSet('SingleStage', 'Serial', 'Parallel', 'NoApproval')]
     [System.String] $ApprovalMode
+
     [DscProperty()]
     [System.ComponentModel.Description('If approval is required, the one or two elements of this collection define each of the stages of approval. An empty array if no approval is required.')]
     [MSFT_MicrosoftGraphapprovalstage1[]] $ApprovalStages
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether approval is required for requests in this policy.')]
     [System.Nullable[System.Boolean]] $IsApprovalRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether approval is required for a user to extend their assignment.')]
     [System.Nullable[System.Boolean]] $IsApprovalRequiredForExtension
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the requestor is required to supply a justification in their request.')]
     [System.Nullable[System.Boolean]] $IsRequestorJustificationRequired
@@ -911,11 +936,14 @@ class MSFT_MicrosoftGraphrequestorsettings
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether new requests are accepted on this policy.')]
     [System.Nullable[System.Boolean]] $AcceptRequests
+
     [DscProperty()]
     [System.ComponentModel.Description('The users who are allowed to request on this policy, which can be singleUser, groupMembers, and connectedOrganizationMembers.')]
     [MSFT_MicrosoftGraphuserset[]] $AllowedRequestors
+
     [DscProperty()]
     [System.ComponentModel.Description('Who can request.')]
+    [ValidateSet('NoSubjects', 'SpecificDirectorySubjects', 'SpecificConnectedOrganizationSubjects', 'AllConfiguredConnectedOrganizationSubjects', 'AllExistingConnectedOrganizationSubjects', 'AllExistingDirectoryMemberUsers', 'AllExistingDirectorySubjects', 'AllExternalSubjects')]
     [System.String] $ScopeType
 }
 
@@ -924,9 +952,12 @@ class MSFT_MicrosoftGraphcustomextensionhandler
     [DscProperty()]
     [System.ComponentModel.Description('Indicates which custom workflow extension will be executed at this stage.')]
     [System.String] $CustomExtensionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the stage of the access package assignment request workflow when the access package custom extension runs.')]
+    [ValidateSet('assignmentRequestCreated', 'assignmentRequestApproved', 'assignmentRequestGranted', 'assignmentRequestRemoved', 'assignmentFourteenDaysBeforeExpiration', 'assignmentOneDayBeforeExpiration', 'unknownFutureValue')]
     [System.String] $Stage
+
     [DscProperty()]
     [System.ComponentModel.Description('Identifier of the stage.')]
     [System.String] $Id
@@ -936,13 +967,17 @@ class MSFT_MicrosoftGraphuserset
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the resource')]
+    [ValidateSet('#microsoft.graph.singleUser', '#microsoft.graph.groupMembers', '#microsoft.graph.requestorManager', '#microsoft.graph.internalSponsors', '#microsoft.graph.externalSponsors', '#microsoft.graph.connectedOrganizationMembers')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The id of the resource.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the resource is a backup fallback approver.')]
     [System.Nullable[System.Boolean]] $IsBackup
+
     [DscProperty()]
     [System.ComponentModel.Description('The hierarchical level of the manager with respect to the requestor. For example, the direct manager of a requestor would have a managerLevel of 1, while the manager of the requestor''s manager would have a managerLevel of 2. Default value for managerLevel is 1. Possible values for this property range from 1 to 2.')]
     [System.Nullable[System.UInt32]] $ManagerLevel
@@ -953,6 +988,7 @@ class MSFT_MicrosoftGraphaccessPackageLocalizedContent
     [DscProperty()]
     [System.ComponentModel.Description('The fallback string, which is used when a requested localization is not available. Required.')]
     [System.String] $DefaultText
+
     [DscProperty()]
     [System.ComponentModel.Description('Content represented in a format for a specific locale.')]
     [MSFT_MicrosoftGraphaccessPackageLocalizedText[]] $LocalizedTexts
@@ -963,6 +999,7 @@ class MSFT_MicrosoftGraphaccessPackageAnswerChoice
     [DscProperty()]
     [System.ComponentModel.Description('The actual value of the selected choice. This is typically a string value which is understandable by applications. Required.')]
     [System.String] $ActualValue
+
     [DscProperty()]
     [System.ComponentModel.Description('The localized display values shown to the requestor and approvers. Required.')]
     [MSFT_MicrosoftGraphaccessPackageLocalizedContent] $displayValue
@@ -973,21 +1010,28 @@ class MSFT_MicrosoftGraphapprovalstage1
     [DscProperty()]
     [System.ComponentModel.Description('The number of days that a request can be pending a response before it is automatically denied.')]
     [System.Nullable[System.UInt32]] $ApprovalStageTimeOutInDays
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines whether approver information is visible to the requestor in approval processes within Microsoft Entra entitlement management and related governance scenarios.')]
+    [ValidateSet('default', 'notVisible', 'visible', 'unknownFutureValue')]
     [System.String] $ApproverInformationVisibility
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the approver is required to provide a justification for approving a request.')]
     [System.Nullable[System.UInt32]] $EscalationTimeInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, then one or more escalation approvers are configured in this approval stage.')]
     [System.Nullable[System.Boolean]] $IsApproverJustificationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('If escalation is required, the time a request can be pending a response from a primary approver.')]
     [System.Nullable[System.Boolean]] $IsEscalationEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('The users who will be asked to approve requests. A collection of singleUser, groupMembers, requestorManager, internalSponsors and externalSponsors. When creating or updating a policy, include at least one userSet in this collection.')]
     [MSFT_MicrosoftGraphuserset[]] $PrimaryApprovers
+
     [DscProperty()]
     [System.ComponentModel.Description('If escalation is enabled and the primary approvers do not respond before the escalation time, the escalationApprovers are the users who will be asked to approve requests. This can be a collection of singleUser, groupMembers, requestorManager, internalSponsors and externalSponsors. When creating or updating a policy, if there are no escalation approvers, or escalation approvers are not required for the stage, the value of this property should be an empty collection.')]
     [MSFT_MicrosoftGraphuserset[]] $EscalationApprovers
@@ -998,6 +1042,7 @@ class MSFT_MicrosoftGraphaccessPackageLocalizedText
     [DscProperty()]
     [System.ComponentModel.Description('The text in the specific language. Required.')]
     [System.String] $Text
+
     [DscProperty()]
     [System.ComponentModel.Description('The ISO code for the intended language. Required.')]
     [System.String] $LanguageCode

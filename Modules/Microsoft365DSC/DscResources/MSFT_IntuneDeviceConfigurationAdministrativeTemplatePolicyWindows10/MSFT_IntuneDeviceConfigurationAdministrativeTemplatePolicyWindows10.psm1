@@ -747,16 +747,21 @@ class MSFT_IntuneGroupPolicyDefinitionValue
 {
     [DscProperty()]
     [System.ComponentModel.Description('Specifies how the value should be configured. This can be either as a Policy or as a Preference. Possible values are: policy, preference.')]
+    [ValidateSet('policy', 'preference')]
     [System.String] $ConfigurationType
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables the associated group policy definition.')]
     [System.Nullable[System.Boolean]] $Enabled
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The associated group policy definition with the value. Read-Only.')]
     [MSFT_IntuneGroupPolicyDefinitionValueDefinition] $Definition
+
     [DscProperty()]
     [System.ComponentModel.Description('The associated group policy presentation values with the definition value.')]
     [MSFT_IntuneGroupPolicyDefinitionValuePresentationValue[]] $PresentationValues
@@ -766,22 +771,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -792,33 +805,45 @@ class MSFT_IntuneGroupPolicyDefinitionValueDefinition
     [DscProperty()]
     [System.ComponentModel.Description('The localized full category path for the policy.')]
     [System.String] $CategoryPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Identifies the type of groups the policy can be applied to. Possible values are: user, machine.')]
+    [ValidateSet('user', 'machine')]
     [System.String] $ClassType
+
     [DscProperty()]
     [System.ComponentModel.Description('The localized policy name.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The localized explanation or help text associated with the policy. The default value is empty.')]
     [System.String] $ExplainText
+
     [DscProperty()]
     [System.ComponentModel.Description('The category id of the parent category')]
     [System.String] $GroupPolicyCategoryId
+
     [DscProperty()]
     [System.ComponentModel.Description('Signifies whether or not there are related definitions to this definition')]
     [System.Nullable[System.Boolean]] $HasRelatedDefinitions
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum required CSP version for device configuration in this definition')]
     [System.String] $MinDeviceCspVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum required CSP version for user configuration in this definition')]
     [System.String] $MinUserCspVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the type of group policy. Possible values are: admxBacked, admxIngested.')]
+    [ValidateSet('admxBacked', 'admxIngested')]
     [System.String] $PolicyType
+
     [DscProperty()]
     [System.ComponentModel.Description('Localized string used to specify what operating system or application version is affected by the policy.')]
     [System.String] $SupportedOn
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -829,29 +854,38 @@ class MSFT_IntuneGroupPolicyDefinitionValuePresentationValue
     [DscProperty()]
     [System.ComponentModel.Description('A value for the associated presentation.')]
     [System.Nullable[System.Boolean]] $BooleanValue
+
     [DscProperty()]
     [System.ComponentModel.Description('A value for the associated presentation.')]
     [System.Nullable[System.UInt64]] $DecimalValue
+
     [DscProperty()]
     [System.ComponentModel.Description('A value for the associated presentation.')]
     [System.String] $StringValue
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of pairs for the associated presentation.')]
     [MSFT_IntuneGroupPolicyDefinitionValuePresentationValueKeyValuePair[]] $KeyValuePairValues
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of pairs for the associated presentation.')]
     [System.String[]] $StringValues
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for presentation definition. Read-only.')]
     [System.String] $PresentationDefinitionId
+
     [DscProperty()]
     [System.ComponentModel.Description('The label of the presentation definition. Read-only.')]
     [System.String] $PresentationDefinitionLabel
+
     [DscProperty()]
     [System.ComponentModel.Description('A value for the associated presentation.')]
+    [ValidateSet('#microsoft.graph.groupPolicyPresentationValueBoolean', '#microsoft.graph.groupPolicyPresentationValueDecimal', '#microsoft.graph.groupPolicyPresentationValueList', '#microsoft.graph.groupPolicyPresentationValueLongDecimal', '#microsoft.graph.groupPolicyPresentationValueMultiText', '#microsoft.graph.groupPolicyPresentationValueText')]
     [System.String] $odataType
 }
 
@@ -860,6 +894,7 @@ class MSFT_IntuneGroupPolicyDefinitionValuePresentationValueKeyValuePair
     [DscProperty()]
     [System.ComponentModel.Description('Value for this key-value pair.')]
     [System.String] $Value
+
     [DscProperty()]
     [System.ComponentModel.Description('Name for this key-value pair.')]
     [System.String] $Name

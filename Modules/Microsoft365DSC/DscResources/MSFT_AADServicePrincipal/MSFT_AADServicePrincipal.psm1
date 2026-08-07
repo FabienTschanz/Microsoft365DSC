@@ -1089,7 +1089,9 @@ class MSFT_AADServicePrincipalRoleAssignment
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Type of principal. Accepted values are User or Group')]
+    [ValidateSet('Group', 'User')]
     [System.String] $PrincipalType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Unique identity representing the principal.')]
     [System.String] $Identity
@@ -1100,15 +1102,19 @@ class MSFT_AADServicePrincipalClaimsPolicy
     [DscProperty()]
     [System.ComponentModel.Description('If specified, it overrides the content of the audience claim for WS-Federation and SAML2 protocols. A custom signing key must be used for audienceOverride to be applied, otherwise, the audienceOverride value is ignored. The value provided must be in the format of an absolute URI.')]
     [System.String] $audienceOverride
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines which claims are present in the tokens affected by the policy, in addition to the basic claim and the core claim set.')]
     [MSFT_AADServicePrincipalCustomClaim[]] $Claims
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines which group filter is applied to the claim.')]
     [MSFT_AADServicePrincipalClaimsPolicyGroupFilter] $GroupFilter
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the application ID is added to the claim. It is relevant only for SAML2.0 and if a custom signing key is used. the default value is true. Optional.')]
     [System.Nullable[System.Boolean]] $includeApplicationIdInIssuer
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines whether the basic claim set is included in tokens affected by this policy. If set to true, all claims in the basic claim set are emitted in tokens affected by the policy. By default the basic claim set isn''t in the tokens unless they''re explicitly configured in this policy.')]
     [System.Nullable[System.Boolean]] $includeBasicClaimSet
@@ -1118,7 +1124,9 @@ class MSFT_AADServicePrincipalDelegatedPermissionClassification
 {
     [DscProperty()]
     [System.ComponentModel.Description('Classification of the delegated permission')]
+    [ValidateSet('low', 'medium', 'high')]
     [System.String] $Classification
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the permission')]
     [System.String] $PermissionName
@@ -1129,6 +1137,7 @@ class MSFT_AADServicePrincipalAttributeSet
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Attribute Set Name.')]
     [System.String] $AttributeSetName
+
     [DscProperty()]
     [System.ComponentModel.Description('List of attribute values.')]
     [MSFT_AADServicePrincipalAttributeValue[]] $AttributeValues
@@ -1139,15 +1148,19 @@ class MSFT_MicrosoftGraphpasswordCredential
     [DscProperty()]
     [System.ComponentModel.Description('Friendly name for the password. Optional.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the password expires represented using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.')]
     [System.String] $EndDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('Contains the first three characters of the password. Read-only.')]
     [System.String] $Hint
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for the password.')]
     [System.String] $KeyId
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the password becomes valid. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z. Optional.')]
     [System.String] $StartDateTime
@@ -1158,24 +1171,31 @@ class MSFT_MicrosoftGraphkeyCredential
     [DscProperty()]
     [System.ComponentModel.Description('A 40-character binary type that can be used to identify the credential. Optional. When not provided in the payload, defaults to the thumbprint of the certificate.')]
     [System.String] $CustomKeyIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('Friendly name for the key. Optional.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the credential expires. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.')]
     [System.String] $EndDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier (GUID) for the key.')]
     [System.String] $KeyId
+
     [DscProperty()]
     [System.ComponentModel.Description('The certificate''s raw data in byte array converted to Base64 string.')]
     [System.String] $Key
+
     [DscProperty()]
     [System.ComponentModel.Description('The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.')]
     [System.String] $StartDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of key credential for example, Symmetric, AsymmetricX509Cert.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('A string that describes the purpose for which the key can be used for example, Verify.')]
     [System.String] $Usage
@@ -1185,25 +1205,36 @@ class MSFT_AADServicePrincipalCustomClaim
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.customClaim', '#microsoft.graph.samlNameIdClaim')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('One or more configurations that describe how the claim is sourced and under what conditions.')]
     [MSFT_AADServicePrincipalCustomClaimConfiguration[]] $configurations
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the claim to be emitted.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('An optional namespace to be included as part of the claim name.')]
     [System.String] $namespace
+
     [DscProperty()]
     [System.ComponentModel.Description('If specified, it sets the nameFormat attribute associated with the claim in the SAML response. The possible values are: unspecified, uri, basic.')]
+    [ValidateSet('unspecified', 'uri', 'basic')]
     [System.String] $samlAttributeNameFormat
+
     [DscProperty()]
     [System.ComponentModel.Description('List of token formats for which this claim should be emitted. The possible values are: saml,jwt.')]
+    [ValidateSet('saml', 'jwt')]
     [System.String[]] $tokenFormat
+
     [DscProperty()]
     [System.ComponentModel.Description('Allows to specify the format of the saml nameID claim value. The possible values are: default, unspecified, emailAddress, windowsDomainQualifiedName, persistent, unknownFutureValue. Only applicable to samlNameIdClaim.')]
+    [ValidateSet('default', 'unspecified', 'emailAddress', 'windowsDomainQualifiedName', 'persistent')]
     [System.String] $nameIdFormat
+
     [DscProperty()]
     [System.ComponentModel.Description('Allows the specification of a service provider name qualifier reflected in the sAML response. The value provided must match one of the service provider names configured for the application and is only applicable for IdP-initiated applications (the sign-on URL should be empty for the IdP-initiated applications), in all other cases this value is ignored. Only applicable to samlNameIdClaim.')]
     [System.String] $serviceProviderNameQualifier
@@ -1213,13 +1244,19 @@ class MSFT_AADServicePrincipalClaimsPolicyGroupFilter
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.groupClaimFilter')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('Identifies the group attribute on which the filter would be applied. The possible values are: displayName, samAccountName.')]
+    [ValidateSet('displayName', 'samAccountName')]
     [System.String] $type
+
     [DscProperty()]
     [System.ComponentModel.Description('Selects the type of filter you wish to apply to the attribute selected by the matchOn property. The possible values are: prefix, suffix, contains.')]
+    [ValidateSet('prefix', 'suffix', 'contains')]
     [System.String] $matchOn
+
     [DscProperty()]
     [System.ComponentModel.Description('The value of the filter to be applied.')]
     [System.String] $value
@@ -1230,18 +1267,23 @@ class MSFT_AADServicePrincipalAttributeValue
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Attribute')]
     [System.String] $AttributeName
+
     [DscProperty()]
     [System.ComponentModel.Description('If the attribute has a string array value')]
     [System.String[]] $StringArrayValue
+
     [DscProperty()]
     [System.ComponentModel.Description('If the attribute has a int array value')]
     [System.UInt32[]] $IntArrayValue
+
     [DscProperty()]
     [System.ComponentModel.Description('If the attribute has a string value')]
     [System.String] $StringValue
+
     [DscProperty()]
     [System.ComponentModel.Description('If the attribute has a int value')]
     [System.Nullable[System.UInt32]] $IntValue
+
     [DscProperty()]
     [System.ComponentModel.Description('If the attribute has a boolean value')]
     [System.Nullable[System.Boolean]] $BoolValue
@@ -1252,9 +1294,11 @@ class MSFT_AADServicePrincipalCustomClaimConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('The attribute on which we source this property.')]
     [MSFT_AADServicePrincipalCustomClaimAttribute] $attribute
+
     [DscProperty()]
     [System.ComponentModel.Description('The condition, if any, associated with this configuration.')]
     [MSFT_AADServicePrincipalCustomClaimCondition] $condition
+
     [DscProperty()]
     [System.ComponentModel.Description('An ordered list of transformations that are applied in sequence.')]
     [MSFT_AADServicePrincipalCustomClaimTransformation[]] $transformations
@@ -1264,16 +1308,21 @@ class MSFT_AADServicePrincipalCustomClaimAttribute
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.sourcedAttribute', '#microsoft.graph.valueBasedAttribute')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The identifier of the attribute on the specified source. Only applicable for sourcedAttribute.')]
     [System.String] $id
+
     [DscProperty()]
     [System.ComponentModel.Description('A flag that indicates if the name specified is that of an extension attribute. Only applicable for sourcedAttribute.')]
     [System.Nullable[System.Boolean]] $isExtensionAttribute
+
     [DscProperty()]
     [System.ComponentModel.Description('The source where the claim is going to retrieve its value. Valid sources include user, application, resource, audience and company. Only applicable for sourcedAttribute.')]
     [System.String] $source
+
     [DscProperty()]
     [System.ComponentModel.Description('The static value to be used an the attribute. Only applicable for valueBasedAttribute.')]
     [System.String] $value
@@ -1283,12 +1332,16 @@ class MSFT_AADServicePrincipalCustomClaimCondition
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.customClaimCondition')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of groups (GUIDs) to which the user/application must be a member for this condition to be applied.')]
     [System.String[]] $memberOf
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of user this condition applies to. The possible values are: any, members, allGuests, aadGuests, externalGuests.')]
+    [ValidateSet('any', 'members', 'allGuests', 'aadGuests', 'externalGuests')]
     [System.String] $userType
 }
 
@@ -1296,16 +1349,21 @@ class MSFT_AADServicePrincipalCustomClaimTransformation
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.regexReplaceTransformation')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The regular expression to be applied on the input directory attribute or constant.')]
     [System.String] $regex
+
     [DscProperty()]
     [System.ComponentModel.Description('The transformation output replacement pattern with regular expression output group and input parameter group reference.')]
     [System.String] $replacement
+
     [DscProperty()]
     [System.ComponentModel.Description('Additional attributes that can be referenced within the replacement string.')]
     [System.String[]] $additionalAttributes
+
     [DscProperty()]
     [System.ComponentModel.Description('The input attribute that provides the source for the transformation. This parameter is required if it''s the first or only transformation in the list of transformations to be applied. Subsequent transformations use the output of the prior transformation as input.')]
     [MSFT_AADServicePrincipalTransformationAttribute] $input
@@ -1316,6 +1374,7 @@ class MSFT_AADServicePrincipalTransformationAttribute
     [DscProperty()]
     [System.ComponentModel.Description('This flag is only relevant in the case where the attribute is multivalued. By default, transformations are only applied to the first element in a multi-valued claim, however setting this flag to true ensures the transformation is applied to all values, resulting in a multivalued output.')]
     [System.Nullable[System.Boolean]] $treatAsMultiValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Attribute to be used as input for the transformation.')]
     [MSFT_AADServicePrincipalCustomClaimAttribute] $attribute

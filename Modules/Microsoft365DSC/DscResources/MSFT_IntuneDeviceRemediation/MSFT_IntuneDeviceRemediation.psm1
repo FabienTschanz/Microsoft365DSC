@@ -671,20 +671,26 @@ class MSFT_MicrosoftGraphdeviceHealthScriptParameter
     [DscProperty()]
     [System.ComponentModel.Description('Whether Apply DefaultValue When Not Assigned')]
     [System.Nullable[System.Boolean]] $ApplyDefaultValueWhenNotAssigned
+
     [DscProperty()]
     [System.ComponentModel.Description('The description of the param')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('Whether the param is required')]
     [System.Nullable[System.Boolean]] $IsRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the param')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The default value of boolean param')]
     [System.Nullable[System.Boolean]] $DefaultValue
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.deviceHealthScriptBooleanParameter', '#microsoft.graph.deviceHealthScriptIntegerParameter', '#microsoft.graph.deviceHealthScriptStringParameter')]
     [System.String] $odataType
 }
 
@@ -693,9 +699,11 @@ class MSFT_IntuneDeviceRemediationPolicyAssignments
     [DscProperty()]
     [System.ComponentModel.Description('If the remediation script should be run.')]
     [System.Nullable[System.Boolean]] $RunRemediationScript
+
     [DscProperty()]
     [System.ComponentModel.Description('The run schedule of the remediation.')]
     [MSFT_IntuneDeviceRemediationRunSchedule] $RunSchedule
+
     [DscProperty()]
     [System.ComponentModel.Description('Represents the assignment of the schedule.')]
     [MSFT_DeviceManagementConfigurationPolicyAssignments] $Assignment
@@ -705,16 +713,21 @@ class MSFT_IntuneDeviceRemediationRunSchedule
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the schedule.')]
+    [ValidateSet('#microsoft.graph.deviceHealthScriptRunOnceSchedule', '#microsoft.graph.deviceHealthScriptHourlySchedule', '#microsoft.graph.deviceHealthScriptDailySchedule')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The date when to run the schedule. Only applicable when the odataType is a run once schedule. Format: 2024-01-01')]
     [System.String] $Date
+
     [DscProperty()]
     [System.ComponentModel.Description('The interval of the schedule. Must be 1 in case of a run once schedule.')]
     [System.Nullable[System.UInt32]] $Interval
+
     [DscProperty()]
     [System.ComponentModel.Description('The time when to run the schedule. Only applicable when the dataType is not an hourly schedule. Format: 01:00:00')]
     [System.String] $Time
+
     [DscProperty()]
     [System.ComponentModel.Description('If to use UTC as the time source. Only applicable when the dataType is not an hourly schedule.')]
     [System.Nullable[System.Boolean]] $UseUtc
@@ -724,22 +737,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

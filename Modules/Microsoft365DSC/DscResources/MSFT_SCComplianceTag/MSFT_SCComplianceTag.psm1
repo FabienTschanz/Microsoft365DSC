@@ -377,18 +377,23 @@ class MSFT_SCFilePlanProperty
     [DscProperty()]
     [System.ComponentModel.Description('File plan department. Can get list by running Get-FilePlanPropertyDepartment.')]
     [System.String] $FilePlanPropertyDepartment
+
     [DscProperty()]
     [System.ComponentModel.Description('File plan Authority. Can get list by running Get-FilePlanPropertyAuthority.')]
     [System.String] $FilePlanPropertyAuthority
+
     [DscProperty()]
     [System.ComponentModel.Description('File plan category. Can get a list by running Get-FilePlanPropertyCategory.')]
     [System.String] $FilePlanPropertyCategory
+
     [DscProperty()]
     [System.ComponentModel.Description('File plan citation. Can get a list by running Get-FilePlanPropertyCitation.')]
     [System.String] $FilePlanPropertyCitation
+
     [DscProperty()]
     [System.ComponentModel.Description('File plan reference id. Can get a list by running Get-FilePlanPropertyReferenceId.')]
     [System.String] $FilePlanPropertyReferenceId
+
     [DscProperty()]
     [System.ComponentModel.Description('File plan subcategory. Can get a list by running Get-FilePlanPropertySubCategory.')]
     [System.String] $FilePlanPropertySubCategory

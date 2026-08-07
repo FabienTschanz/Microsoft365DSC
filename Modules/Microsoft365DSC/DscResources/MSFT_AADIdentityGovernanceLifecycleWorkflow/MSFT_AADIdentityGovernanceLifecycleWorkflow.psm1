@@ -488,24 +488,31 @@ class MSFT_AADIdentityGovernanceTask
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Specifies the display name of the Workflow Task')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Description of the Workflow Task')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('Category of the Workflow Task')]
     [System.String] $Category
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if the Workflow Task is enabled or not')]
     [System.Nullable[System.Boolean]] $IsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('The sequence in which the task is executed')]
     [System.Nullable[System.Int32]] $ExecutionSequence
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether the task should continue on error')]
     [System.Nullable[System.Boolean]] $ContinueOnError
+
     [DscProperty()]
     [System.ComponentModel.Description('ID of the task definition associated with this Workflow Task')]
     [System.String] $TaskDefinitionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Arguments for the Workflow Task')]
     [MSFT_AADIdentityGovernanceTaskArguments[]] $Arguments
@@ -516,9 +523,11 @@ class MSFT_IdentityGovernanceWorkflowExecutionConditions
     [DscProperty()]
     [System.ComponentModel.Description('The @odata.type for the Workflow Execution Conditions.')]
     [System.String] $OdataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The scope for the Workflow Execution Conditions.')]
     [MSFT_IdentityGovernanceScope] $ScopeValue
+
     [DscProperty()]
     [System.ComponentModel.Description('The trigger for the Workflow Execution Conditions.')]
     [MSFT_IdentityGovernanceTrigger] $TriggerValue
@@ -529,6 +538,7 @@ class MSFT_AADIdentityGovernanceTaskArguments
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the key')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The value associated with the key')]
     [System.String] $Value
@@ -539,6 +549,7 @@ class MSFT_IdentityGovernanceScope
     [DscProperty()]
     [System.ComponentModel.Description('The @odata.type for the Scope.')]
     [System.String] $OdataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The rule associated with the Scope.')]
     [System.String] $Rule
@@ -549,9 +560,11 @@ class MSFT_IdentityGovernanceTrigger
     [DscProperty()]
     [System.ComponentModel.Description('The @odata.type for the Trigger.')]
     [System.String] $OdataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The time-based attribute for the Trigger.')]
     [System.String] $TimeBasedAttribute
+
     [DscProperty()]
     [System.ComponentModel.Description('The offset in days for the Trigger.')]
     [System.Nullable[System.Int32]] $OffsetInDays

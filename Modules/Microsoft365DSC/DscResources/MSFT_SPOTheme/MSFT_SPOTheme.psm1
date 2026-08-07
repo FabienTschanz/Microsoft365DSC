@@ -316,6 +316,7 @@ class MSFT_SPOThemePaletteProperty
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the property.')]
     [System.String] $Property
+
     [DscProperty()]
     [System.ComponentModel.Description('Color value in Hexadecimal.')]
     [System.String] $Value

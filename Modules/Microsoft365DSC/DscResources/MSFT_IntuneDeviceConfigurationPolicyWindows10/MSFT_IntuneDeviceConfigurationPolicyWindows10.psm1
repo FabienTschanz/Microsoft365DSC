@@ -2346,15 +2346,22 @@ class MSFT_MicrosoftGraphdefenderDetectedMalwareActions1
 {
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for high severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $HighSeverity
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for low severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $LowSeverity
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for moderate severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $ModerateSeverity
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for severe severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $SevereSeverity
 }
 
@@ -2363,8 +2370,10 @@ class MSFT_MicrosoftGraphedgeHomeButtonConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('The specific URL to load.')]
     [System.String] $HomeButtonCustomURL
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.edgeHomeButtonHidden', '#microsoft.graph.edgeHomeButtonLoadsStartPage', '#microsoft.graph.edgeHomeButtonOpensCustomURL', '#microsoft.graph.edgeHomeButtonOpensNewTab')]
     [System.String] $odataType
 }
 
@@ -2372,12 +2381,16 @@ class MSFT_MicrosoftGraphedgeSearchEngineBase
 {
     [DscProperty()]
     [System.ComponentModel.Description('Allows IT admins to set a predefined default search engine for MDM-Controlled devices. Possible values are: default, bing.')]
+    [ValidateSet('default', 'bing')]
     [System.String] $EdgeSearchEngineType
+
     [DscProperty()]
     [System.ComponentModel.Description('Points to a https link containing the OpenSearch xml file that contains, at minimum, the short name and the URL to the search Engine.')]
     [System.String] $EdgeSearchEngineOpenSearchXmlUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.edgeSearchEngine', '#microsoft.graph.edgeSearchEngineCustom')]
     [System.String] $odataType
 }
 
@@ -2386,9 +2399,11 @@ class MSFT_MicrosoftGraphwindows10NetworkProxyServer
     [DscProperty()]
     [System.ComponentModel.Description('Address to the proxy server. Specify an address in the format '':''')]
     [System.String] $Address
+
     [DscProperty()]
     [System.ComponentModel.Description('Addresses that should not use the proxy server. The system will not use the proxy server for addresses beginning with what is specified in this node.')]
     [System.String[]] $Exceptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether the proxy server should be used for local (intranet) addresses.')]
     [System.Nullable[System.Boolean]] $UseForLocalAddresses
@@ -2398,10 +2413,13 @@ class MSFT_MicrosoftGraphwindows10AppsForceUpdateSchedule
 {
     [DscProperty()]
     [System.ComponentModel.Description('Recurrence schedule. Possible values are: none, daily, weekly, monthly.')]
+    [ValidateSet('none', 'daily', 'weekly', 'monthly')]
     [System.String] $Recurrence
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, runs the task immediately if StartDateTime is in the past, else, runs at the next recurrence.')]
     [System.Nullable[System.Boolean]] $RunImmediatelyIfAfterStartDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The start time for the force restart.')]
     [System.String] $StartDateTime
@@ -2411,22 +2429,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

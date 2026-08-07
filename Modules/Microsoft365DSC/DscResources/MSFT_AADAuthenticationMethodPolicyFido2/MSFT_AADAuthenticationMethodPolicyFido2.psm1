@@ -540,9 +540,12 @@ class MSFT_MicrosoftGraphFido2KeyRestrictions
     [DscProperty()]
     [System.ComponentModel.Description('A collection of Authenticator Attestation GUIDs. AADGUIDs define key types and manufacturers.')]
     [System.String[]] $AaGuids
+
     [DscProperty()]
     [System.ComponentModel.Description('Enforcement type. Possible values are: allow, block.')]
+    [ValidateSet('allow', 'block', 'unknownFutureValue')]
     [System.String] $EnforcementType
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines if the configured key enforcement is enabled.')]
     [System.Nullable[System.Boolean]] $IsEnforced
@@ -553,12 +556,16 @@ class MSFT_AADAuthenticationMethodPolicyFido2ExcludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines if registration is required for the authentication method.')]
     [System.Nullable[System.Boolean]] $IsRegistrationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Collection of allowed passkey profile IDs for this target.')]
     [System.String[]] $AllowedPasskeyProfiles
@@ -569,12 +576,16 @@ class MSFT_AADAuthenticationMethodPolicyFido2IncludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines if registration is required for the authentication method.')]
     [System.Nullable[System.Boolean]] $IsRegistrationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Collection of allowed passkey profile IDs for this target.')]
     [System.String[]] $AllowedPasskeyProfiles
@@ -585,15 +596,21 @@ class MSFT_AADAuthenticationMethodPolicyFido2PasskeyProfile
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for the passkey profile.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The display name for the passkey profile.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The passkey types supported by this profile.')]
+    [ValidateSet('deviceBound', 'deviceBound,synced', 'crossDevice', 'synced')]
     [System.String] $PasskeyTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('The attestation enforcement level for this profile.')]
+    [ValidateSet('disabled', 'registrationOnly', 'registrationAndSignIn')]
     [System.String] $AttestationEnforcement
+
     [DscProperty()]
     [System.ComponentModel.Description('Key restrictions for this passkey profile.')]
     [MSFT_MicrosoftGraphFido2KeyRestrictions] $KeyRestrictions

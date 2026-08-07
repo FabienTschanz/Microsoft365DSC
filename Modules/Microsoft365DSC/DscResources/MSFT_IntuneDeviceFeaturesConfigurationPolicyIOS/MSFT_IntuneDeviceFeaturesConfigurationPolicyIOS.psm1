@@ -744,22 +744,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -770,11 +778,14 @@ class MSFT_deviceManagementApplicabilityRuleOsEdition
     [DscProperty()]
     [System.ComponentModel.Description('Name for object')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability rule OS edition type')]
     [System.String[]] $OsEditionTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability Rule type')]
+    [ValidateSet('include', 'exclude')]
     [System.String] $RuleType
 }
 
@@ -783,14 +794,18 @@ class MSFT_deviceManagementApplicabilityRuleOsVersion
     [DscProperty()]
     [System.ComponentModel.Description('Name for object')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Min OS version for Applicability Rule')]
     [System.String] $MinOSVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Max OS version for Applicability Rule')]
     [System.String] $MaxOSVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability Rule type')]
+    [ValidateSet('include', 'exclude')]
     [System.String] $RuleType
 }
 
@@ -799,11 +814,15 @@ class MSFT_deviceManagementApplicabilityRuleDeviceMode
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name for object')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability rule for device mode')]
+    [ValidateSet('standardConfiguration', 'sModeConfiguration')]
     [System.String] $DeviceMode
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability Rule type')]
+    [ValidateSet('include', 'exclude')]
     [System.String] $RuleType
 }
 
@@ -812,12 +831,15 @@ class MSFT_airPrintDestination
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The IP Address of the AirPrint destination.')]
     [System.String] $ipAddress
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The Resource Path associated with the printer. This corresponds to the rp parameter of the _ipps.tcp Bonjour record. For example: printers/Canon_MG5300_series, printers/Xerox_Phaser_7600, ipp/print, Epson_IPP_Printer.')]
     [System.String] $resourcePath
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The listening port of the AirPrint destination. If this key is not specified, AirPrint will use the default port. Available in iOS 11.0 and later.')]
     [System.Nullable[System.UInt32]] $port
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, AirPrint connections are secured by Transport Layer Security (TLS). Default is false. Available in iOS 11.0 and later.')]
     [System.Nullable[System.Boolean]] $forceTls
@@ -828,15 +850,19 @@ class MSFT_iosWebContentFilterSpecificWebsitesAccess
     [DscProperty()]
     [System.ComponentModel.Description('The type of data.')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('specificWebsitesOnly, embedded instance of iosWebContentFilterBase.')]
     [MSFT_iosWebContentFilterBase[]] $specificWebsitesOnly
+
     [DscProperty()]
     [System.ComponentModel.Description('websiteList, embedded instance of iosWebContentFilterBase.')]
     [MSFT_iosWebContentFilterBase[]] $websiteList
+
     [DscProperty()]
     [System.ComponentModel.Description('allowedUrls.')]
     [System.String[]] $allowedUrls
+
     [DscProperty()]
     [System.ComponentModel.Description('blockedUrls.')]
     [System.String[]] $blockedUrls
@@ -847,12 +873,15 @@ class MSFT_iosHomeScreenApp
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the app. Inherited from iosHomeScreenItem.')]
     [System.String] $displayName
+
     [DscProperty()]
     [System.ComponentModel.Description('BundleID of the app if isWebClip is false or the URL of a web clip if isWebClip is true.')]
     [System.String] $bundleID
+
     [DscProperty()]
     [System.ComponentModel.Description('Is it a website URL or an app')]
     [System.Nullable[System.Boolean]] $isWebClip
+
     [DscProperty()]
     [System.ComponentModel.Description('Pages of the folder.')]
     [MSFT_iosHomeScreenFolderPage[]] $pages
@@ -870,32 +899,43 @@ class MSFT_iosNotificationSettings
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Bundle id of the app to which to apply these notification settings.')]
     [System.String] $bundleID
+
     [DscProperty()]
     [System.ComponentModel.Description('Application name to be associated with the BundleID.')]
     [System.String] $appName
+
     [DscProperty()]
     [System.ComponentModel.Description('Publisher to be associated with the BundleID.')]
     [System.String] $publisher
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether notifications are allowed for this app.')]
     [System.Nullable[System.Boolean]] $enabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether notifications can be shown in the notification center.')]
     [System.Nullable[System.Boolean]] $showInNotificationCenter
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether notifications can be shown on the lock screen.')]
     [System.Nullable[System.Boolean]] $showOnLockScreen
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of alert for notifications for this app. Possible values are: deviceDefault, banner, modal, none.')]
+    [ValidateSet('deviceDefault', 'banner', 'modal', 'none')]
     [System.String] $alertType
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether badges are allowed for this app.')]
     [System.Nullable[System.Boolean]] $badgesEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether sounds are allowed for this app.')]
     [System.Nullable[System.Boolean]] $soundsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Overrides the notification preview policy set by the user on an iOS device. Possible values are: notConfigured, alwaysShow, hideWhenLocked, neverShow.')]
+    [ValidateSet('notConfigured', 'alwaysShow', 'hideWhenLocked', 'neverShow')]
     [System.String] $previewVisibility
 }
 
@@ -904,15 +944,19 @@ class MSFT_iosSingleSignOnSettings
     [DscProperty()]
     [System.ComponentModel.Description('List of app identifiers that are allowed to use this login. If this field is omitted, the login applies to all applications on the device. This collection can contain a maximum of 500 elements.')]
     [MSFT_appListItem[]] $allowedAppsList
+
     [DscProperty()]
     [System.ComponentModel.Description('List of HTTP URLs that must be matched in order to use this login. With iOS 9.0 or later, wildcard characters may be used.')]
     [System.String[]] $allowedUrls
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of login settings shown on the receiving device.')]
     [System.String] $displayName
+
     [DscProperty()]
     [System.ComponentModel.Description('A Kerberos principal name. If not provided, the user is prompted for one during profile installation.')]
     [System.String] $kerberosPrincipalName
+
     [DscProperty()]
     [System.ComponentModel.Description('A Kerberos realm name. Case sensitive.')]
     [System.String] $kerberosRealm
@@ -923,6 +967,7 @@ class MSFT_mimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the content mime type.')]
     [System.String] $type
+
     [DscProperty()]
     [System.ComponentModel.Description('The byte array that contains the actual content.')]
     [System.String[]] $value
@@ -933,90 +978,119 @@ class MSFT_iosSingleSignOnExtension
     [DscProperty()]
     [System.ComponentModel.Description('The type of data.')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The case-sensitive realm name for this profile.')]
     [System.String] $Realm
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of hosts or domain names for which the app extension performs SSO.')]
     [System.String[]] $Domains
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables Keychain usage.')]
     [System.Nullable[System.Boolean]] $BlockAutomaticLogin
+
     [DscProperty()]
     [System.ComponentModel.Description('The Generic Security Services name of the Kerberos cache to use for this profile.')]
     [System.String] $CacheName
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of app Bundle IDs allowed to access the Kerberos Ticket Granting Ticket.')]
     [System.String[]] $CredentialBundleIdAccessControlList
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of realms for custom domain-realm mapping. Realms are case sensitive.')]
     [System.String[]] $DomainRealms
+
     [DscProperty()]
     [System.ComponentModel.Description('When true, this profile''s realm will be selected as the default. Necessary if multiple Kerberos-type profiles are configured.')]
     [System.Nullable[System.Boolean]] $IsDefaultRealm
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables password changes.')]
     [System.Nullable[System.Boolean]] $PasswordBlockModification
+
     [DscProperty()]
     [System.ComponentModel.Description('Overrides the default password expiration in days. For most domains, this value is calculated automatically.')]
     [System.Nullable[System.UInt32]] $PasswordExpirationDays
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of days until the user is notified that their password will expire (default is 15).')]
     [System.Nullable[System.UInt32]] $PasswordExpirationNotificationDays
+
     [DscProperty()]
     [System.ComponentModel.Description('The principal user name to use for this profile. The realm name does not need to be included.')]
     [System.String] $UserPrincipalName
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables whether passwords must meet Active Directory''s complexity requirements.')]
     [System.Nullable[System.Boolean]] $PasswordRequireActiveDirectoryComplexity
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of previous passwords to block.')]
     [System.Nullable[System.UInt32]] $PasswordPreviousPasswordBlockCount
+
     [DscProperty()]
     [System.ComponentModel.Description('The minimum length of a password.')]
     [System.Nullable[System.UInt32]] $PasswordMinimumLength
+
     [DscProperty()]
     [System.ComponentModel.Description('The minimum number of days until a user can change their password again.')]
     [System.Nullable[System.UInt32]] $PasswordMinimumAgeDays
+
     [DscProperty()]
     [System.ComponentModel.Description('A description of the password complexity requirements.')]
     [System.String] $PasswordRequirementsDescription
+
     [DscProperty()]
     [System.ComponentModel.Description('Whether to require authentication via Touch ID, Face ID, or a passcode to access the keychain entry.')]
     [System.Nullable[System.Boolean]] $RequireUserPresence
+
     [DscProperty()]
     [System.ComponentModel.Description('The Active Directory site.')]
     [System.String] $ActiveDirectorySiteCode
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables password syncing. This won''t affect users logged in with a mobile account on macOS.')]
     [System.Nullable[System.Boolean]] $PasswordEnableLocalSync
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables whether the Kerberos extension can automatically determine its site name.')]
     [System.Nullable[System.Boolean]] $BlockActiveDirectorySiteAutoDiscovery
+
     [DscProperty()]
     [System.ComponentModel.Description('The URL that the user will be sent to when they initiate a password change.')]
     [System.String] $PasswordChangeUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Text displayed to the user at the Kerberos sign-in window. Available for devices running iOS and iPadOS versions 14 and later.')]
     [System.String] $SignInHelpText
+
     [DscProperty()]
     [System.ComponentModel.Description('When set to True, the Kerberos extension allows managed apps, and any apps entered with the app bundle ID to access the credential. When set to False, the Kerberos extension allows all apps to access the credential. Available for devices running iOS and iPadOS versions 14 and later.')]
     [System.Nullable[System.Boolean]] $ManagedAppsInBundleIdACLIncluded
+
     [DscProperty()]
     [System.ComponentModel.Description('Enables or disables shared device mode.')]
     [System.Nullable[System.Boolean]] $EnableSharedDeviceMode
+
     [DscProperty()]
     [System.ComponentModel.Description('An optional list of additional bundle IDs allowed to use the AAD extension for single sign-on.')]
     [System.String[]] $BundleIdAccessControlList
+
     [DscProperty()]
     [System.ComponentModel.Description('Gets or sets a list of typed key-value pairs used to configure Credential-type profiles. This collection can contain a maximum of 500 elements.')]
     [MSFT_keyTypedValuePair[]] $Configurations
+
     [DscProperty()]
     [System.ComponentModel.Description('Gets or sets the bundle ID of the app extension that performs SSO for the specified URLs.')]
     [System.String] $ExtensionIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('Gets or sets the team ID of the app extension that performs SSO for the specified URLs.')]
     [System.String] $TeamIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('One or more URL prefixes of identity providers on whose behalf the app extension performs single sign-on. URLs must begin with http:// or https://. All URL prefixes must be unique for all profiles.')]
     [System.String[]] $urlPrefixes
@@ -1027,9 +1101,11 @@ class MSFT_iosWebContentFilterBase
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('url.')]
     [System.String] $url
+
     [DscProperty()]
     [System.ComponentModel.Description('bookmarkFolder.')]
     [System.String] $bookmarkFolder
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('displayName.')]
     [System.String] $displayName
@@ -1047,12 +1123,15 @@ class MSFT_appListItem
     [DscProperty()]
     [System.ComponentModel.Description('The application name.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('The publisher of the application.')]
     [System.String] $publisher
+
     [DscProperty()]
     [System.ComponentModel.Description('The Store URL of the application.')]
     [System.String] $appStoreUrl
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The application or bundle identifier of the application.')]
     [System.String] $appId
@@ -1063,9 +1142,11 @@ class MSFT_keyTypedValuePair
     [DscProperty()]
     [System.ComponentModel.Description('The type of data.')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('Key for the custom data entry.')]
     [System.String] $key
+
     [DscProperty()]
     [System.ComponentModel.Description('Value for the custom data entry.')]
     [System.String] $value

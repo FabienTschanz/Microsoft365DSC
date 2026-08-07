@@ -326,6 +326,7 @@ class MSFT_SPOUserProfilePropertyInstance
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the User Profile Property.')]
     [System.String] $Key
+
     [DscProperty()]
     [System.ComponentModel.Description('Value of the User Profile Property.')]
     [System.String] $Value

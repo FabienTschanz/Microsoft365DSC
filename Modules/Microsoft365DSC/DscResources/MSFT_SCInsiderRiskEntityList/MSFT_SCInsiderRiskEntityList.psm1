@@ -982,6 +982,7 @@ class MSFT_SCInsiderRiskEntityListDomain
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Domain name.')]
     [System.String] $Dmn
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines if the entry should include multi-level subdomains or not.')]
     [System.Nullable[System.Boolean]] $isMLSubDmn
@@ -992,9 +993,11 @@ class MSFT_SCInsiderRiskEntityListSite
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Url of the site.')]
     [System.String] $Url
+
     [DscProperty()]
     [System.ComponentModel.Description('Name of the site.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Unique identifier of the site.')]
     [System.String] $Guid

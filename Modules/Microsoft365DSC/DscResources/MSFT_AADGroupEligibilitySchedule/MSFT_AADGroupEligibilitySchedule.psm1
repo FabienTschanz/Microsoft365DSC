@@ -847,9 +847,11 @@ class MSFT_MicrosoftGraphrequestSchedule
     [DscProperty()]
     [System.ComponentModel.Description('When the eligible or active assignment expires.')]
     [MSFT_MicrosoftGraphExpirationPattern] $Expiration
+
     [DscProperty()]
     [System.ComponentModel.Description('The frequency of the  eligible or active assignment. This property is currently unsupported in PIM.')]
     [MSFT_MicrosoftGraphPatternedRecurrence1] $Recurrence
+
     [DscProperty()]
     [System.ComponentModel.Description('When the  eligible or active assignment becomes active.')]
     [System.String] $StartDateTime
@@ -860,11 +862,14 @@ class MSFT_MicrosoftGraphExpirationPattern
     [DscProperty()]
     [System.ComponentModel.Description('The requestor''s desired duration of access represented in ISO 8601 format for durations. For example, PT3H refers to three hours.  If specified in a request, endDateTime should not be present and the type property should be set to afterDuration.')]
     [System.String] $Duration
+
     [DscProperty()]
     [System.ComponentModel.Description('Timestamp of date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.')]
     [System.String] $EndDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The requestor''s desired expiration pattern type. The possible values are: notSpecified, noExpiration, afterDateTime, afterDuration.')]
+    [ValidateSet('notSpecified', 'noExpiration', 'afterDateTime', 'afterDuration')]
     [System.String] $Type
 }
 
@@ -873,6 +878,7 @@ class MSFT_MicrosoftGraphPatternedRecurrence1
     [DscProperty()]
     [System.ComponentModel.Description('The frequency of an event.  For access reviews: Do not specify this property for a one-time access review.  Only interval, dayOfMonth, and type (weekly, absoluteMonthly) properties of recurrencePattern are supported.')]
     [MSFT_MicrosoftGraphRecurrencePattern1] $Pattern
+
     [DscProperty()]
     [System.ComponentModel.Description('The duration of an event.')]
     [MSFT_MicrosoftGraphRecurrenceRange1] $Range
@@ -883,23 +889,33 @@ class MSFT_MicrosoftGraphRecurrencePattern1
     [DscProperty()]
     [System.ComponentModel.Description('The day of the month on which the event occurs. Required if type is absoluteMonthly or absoluteYearly.')]
     [System.Nullable[System.UInt32]] $DayOfMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('A collection of the days of the week on which the event occurs. The possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. If type is relativeMonthly or relativeYearly, and daysOfWeek specifies more than one day, the event falls on the first day that satisfies the pattern.  Required if type is weekly, relativeMonthly, or relativeYearly.')]
+    [ValidateSet('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')]
     [System.String[]] $DaysOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('The first day of the week. The possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. Default is sunday. Required if type is weekly.')]
+    [ValidateSet('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')]
     [System.String] $FirstDayOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies on which instance of the allowed days specified in daysOfWeek the event occurs, counted from the first instance in the month. The possible values are: first, second, third, fourth, last. Default is first. Optional and used if type is relativeMonthly or relativeYearly.')]
+    [ValidateSet('first', 'second', 'third', 'fourth', 'last')]
     [System.String] $Index
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of units between occurrences, where units can be in days, weeks, months, or years, depending on the type. Required.')]
     [System.Nullable[System.UInt32]] $Interval
+
     [DscProperty()]
     [System.ComponentModel.Description('The month in which the event occurs.  This is a number from 1 to 12.')]
     [System.Nullable[System.UInt32]] $Month
+
     [DscProperty()]
     [System.ComponentModel.Description('The recurrence pattern type: daily, weekly, absoluteMonthly, relativeMonthly, absoluteYearly, relativeYearly. Required. For more information, see values of type property.')]
+    [ValidateSet('daily', 'weekly', 'absoluteMonthly', 'relativeMonthly', 'absoluteYearly', 'relativeYearly')]
     [System.String] $Type
 }
 
@@ -908,16 +924,21 @@ class MSFT_MicrosoftGraphRecurrenceRange1
     [DscProperty()]
     [System.ComponentModel.Description('The date to stop applying the recurrence pattern. Depending on the recurrence pattern of the event, the last occurrence of the meeting may not be this date. Required if type is endDate.')]
     [System.String] $EndDate
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of times to repeat the event. Required and must be positive if type is numbered.')]
     [System.Nullable[System.UInt32]] $NumberOfOccurrences
+
     [DscProperty()]
     [System.ComponentModel.Description('Time zone for the startDate and endDate properties. Optional. If not specified, the time zone of the event is used.')]
     [System.String] $RecurrenceTimeZone
+
     [DscProperty()]
     [System.ComponentModel.Description('The date to start applying the recurrence pattern. The first occurrence of the meeting may be this date or later, depending on the recurrence pattern of the event. Must be the same value as the start property of the recurring event. Required.')]
     [System.String] $StartDate
+
     [DscProperty()]
     [System.ComponentModel.Description('The recurrence range. The possible values are: endDate, noEnd, numbered. Required.')]
+    [ValidateSet('endDate', 'noEnd', 'numbered')]
     [System.String] $Type
 }

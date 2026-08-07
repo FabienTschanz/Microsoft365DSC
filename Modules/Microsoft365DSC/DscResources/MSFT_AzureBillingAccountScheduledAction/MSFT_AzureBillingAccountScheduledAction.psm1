@@ -423,9 +423,11 @@ class MSFT_AzureBillingAccountScheduledActionNotification
     [DscProperty()]
     [System.ComponentModel.Description('Subject of the email. Length is limited to 70 characters.')]
     [System.String] $subject
+
     [DscProperty()]
     [System.ComponentModel.Description('Optional message to be added in the email. Length is limited to 250 characters.')]
     [System.String] $message
+
     [DscProperty()]
     [System.ComponentModel.Description('Array of email addresses.')]
     [System.String[]] $to
@@ -436,21 +438,27 @@ class MSFT_AzureBillingAccountScheduledActionSchedule
     [DscProperty()]
     [System.ComponentModel.Description('UTC day on which cost analysis data will be emailed. Must be between 1 and 31. This property is applicable when frequency is Monthly and overrides weeksOfMonth or daysOfWeek.')]
     [System.Nullable[System.UInt32]] $dayOfMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('Day names in english on which cost analysis data will be emailed. This property is applicable when frequency is Weekly or Monthly.')]
     [System.String[]] $daysOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('The start date and time of the scheduled action (UTC).')]
     [System.String] $startDate
+
     [DscProperty()]
     [System.ComponentModel.Description('The end date and time of the scheduled action (UTC).')]
     [System.String] $endDate
+
     [DscProperty()]
     [System.ComponentModel.Description('Weeks in which cost analysis data will be emailed. This property is applicable when frequency is Monthly and used in combination with daysOfWeek.')]
     [System.String[]] $weeksOfMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('Frequency of the schedule.')]
     [System.String] $frequency
+
     [DscProperty()]
     [System.ComponentModel.Description('UTC time at which cost analysis data will be emailed.')]
     [System.Nullable[System.UInt32]] $hourOfDay

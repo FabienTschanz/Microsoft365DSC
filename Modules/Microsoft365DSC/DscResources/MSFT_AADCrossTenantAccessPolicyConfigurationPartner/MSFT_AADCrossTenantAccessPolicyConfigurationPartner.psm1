@@ -652,6 +652,7 @@ class MSFT_AADCrossTenantAccessPolicyB2BSetting
     [DscProperty()]
     [System.ComponentModel.Description('The list of applications targeted with your cross-tenant access policy.')]
     [MSFT_AADCrossTenantAccessPolicyTargetConfiguration] $Applications
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of users and groups targeted with your cross-tenant access policy.')]
     [MSFT_AADCrossTenantAccessPolicyTargetConfiguration] $UsersAndGroups
@@ -662,6 +663,7 @@ class MSFT_AADCrossTenantAccessPolicyAutomaticUserConsentSettings
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether you want to automatically trust Inbound invitations.')]
     [System.Nullable[System.Boolean]] $InboundAllowed
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether you want to automatically trust Outbound invitations.')]
     [System.Nullable[System.Boolean]] $OutboundAllowed
@@ -672,6 +674,7 @@ class MSFT_AADCrossTenantIdentitySyncPolicyPartnerInbound
     [DscProperty()]
     [System.ComponentModel.Description('Defines whether groups can be synchronized from a partner tenant. Key.')]
     [MSFT_AADCrossTenantGroupSyncInbound] $GroupSyncInbound
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether you want to automatically trust Outbound invitations.')]
     [MSFT_AADCrossTenantUserSyncInbound] $UserSyncInbound
@@ -682,9 +685,11 @@ class MSFT_AADCrossTenantAccessPolicyInboundTrust
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether compliant devices from external Azure AD organizations are trusted.')]
     [System.Nullable[System.Boolean]] $IsCompliantDeviceAccepted
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether hybrid Azure AD joined devices from external Azure AD organizations are trusted.')]
     [System.Nullable[System.Boolean]] $IsHybridAzureADJoinedDeviceAccepted
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether MFA from external Azure AD organizations is trusted.')]
     [System.Nullable[System.Boolean]] $IsMfaAccepted
@@ -694,7 +699,9 @@ class MSFT_AADCrossTenantAccessPolicyTargetConfiguration
 {
     [DscProperty()]
     [System.ComponentModel.Description('Defines whether access is allowed or blocked. The possible values are: allowed, blocked, unknownFutureValue.')]
+    [ValidateSet('allowed', 'blocked', 'unknownFutureValue')]
     [System.String] $AccessType
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether to target users, groups, or applications with this rule.')]
     [MSFT_AADCrossTenantAccessPolicyTarget[]] $Targets
@@ -719,8 +726,10 @@ class MSFT_AADCrossTenantAccessPolicyTarget
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The unique identifier of the user, group, or application; one of the following keywords: AllUsers and AllApplications; or for targets that are applications, you may use reserved values.')]
     [System.String] $Target
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of resource that you want to target. The possible values are: user, group, application, unknownFutureValue.')]
+    [ValidateSet('user', 'group', 'application', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 

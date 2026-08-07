@@ -453,12 +453,15 @@ class MSFT_AADVerifiedIdAuthorityContractDisplayModel
     [DscProperty()]
     [System.ComponentModel.Description('The locale of this display.')]
     [System.String] $locale
+
     [DscProperty()]
     [System.ComponentModel.Description('The display properties of the verifiable credential.')]
     [MSFT_AADVerifiedIdAuthorityContractDisplayCard] $card
+
     [DscProperty()]
     [System.ComponentModel.Description('Supplemental data when the verifiable credential is issued.')]
     [MSFT_AADVerifiedIdAuthorityContractDisplayConsent] $consent
+
     [DscProperty()]
     [System.ComponentModel.Description('Labels for the claims included in the verifiable credential.')]
     [MSFT_AADVerifiedIdAuthorityContractDisplayClaims[]] $claims
@@ -469,12 +472,15 @@ class MSFT_AADVerifiedIdAuthorityContractRulesModel
     [DscProperty()]
     [System.ComponentModel.Description('Describing supported inputs for the rules.')]
     [MSFT_AADVerifiedIdAuthorityContractAttestations] $attestations
+
     [DscProperty()]
     [System.ComponentModel.Description('This value shows the lifespan of the credential.')]
     [System.Nullable[System.UInt32]] $validityInterval
+
     [DscProperty()]
     [System.ComponentModel.Description('Types for this contract.')]
     [MSFT_AADVerifiedIdAuthorityContractVcType] $vc
+
     [DscProperty()]
     [System.ComponentModel.Description('Status endpoint to include in the verifiable credential for this contract.')]
     [MSFT_AADVerifiedIdAuthorityContractCustomStatusEndpoint] $customStatusEndpoint
@@ -485,18 +491,23 @@ class MSFT_AADVerifiedIdAuthorityContractDisplayCard
     [DscProperty()]
     [System.ComponentModel.Description('Title of the credential.')]
     [System.String] $title
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the issuer of the credential.')]
     [System.String] $issuedBy
+
     [DscProperty()]
     [System.ComponentModel.Description('Background color of the credential in hex, for example, #FFAABB.')]
     [System.String] $backgroundColor
+
     [DscProperty()]
     [System.ComponentModel.Description('Text color of the credential in hex, for example, #FFAABB.')]
     [System.String] $textColor
+
     [DscProperty()]
     [System.ComponentModel.Description('Supplemental text displayed alongside each credential.')]
     [System.String] $description
+
     [DscProperty()]
     [System.ComponentModel.Description('The logo to use for the credential.')]
     [MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo] $logo
@@ -507,6 +518,7 @@ class MSFT_AADVerifiedIdAuthorityContractDisplayConsent
     [DscProperty()]
     [System.ComponentModel.Description('Title of the consent.')]
     [System.String] $title
+
     [DscProperty()]
     [System.ComponentModel.Description('Supplemental text to use when displaying consent.')]
     [System.String] $instructions
@@ -517,12 +529,15 @@ class MSFT_AADVerifiedIdAuthorityContractDisplayClaims
     [DscProperty()]
     [System.ComponentModel.Description('The label of the claim in display.')]
     [System.String] $label
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the claim to which the label applies.')]
     [System.String] $claim
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the claim.')]
     [System.String] $type
+
     [DscProperty()]
     [System.ComponentModel.Description('The description of the claim.')]
     [System.String] $description
@@ -533,15 +548,19 @@ class MSFT_AADVerifiedIdAuthorityContractAttestations
     [DscProperty()]
     [System.ComponentModel.Description('Id token hints attestations.')]
     [MSFT_AADVerifiedIdAuthorityContractAttestationValues[]] $idTokenHints
+
     [DscProperty()]
     [System.ComponentModel.Description('Id token attestations.')]
     [MSFT_AADVerifiedIdAuthorityContractAttestationValues[]] $idTokens
+
     [DscProperty()]
     [System.ComponentModel.Description('Presentations attestations.')]
     [MSFT_AADVerifiedIdAuthorityContractAttestationValues[]] $presentations
+
     [DscProperty()]
     [System.ComponentModel.Description('Self Issued attestations.')]
     [MSFT_AADVerifiedIdAuthorityContractAttestationValues[]] $selfIssued
+
     [DscProperty()]
     [System.ComponentModel.Description('Access Token attestations.')]
     [MSFT_AADVerifiedIdAuthorityContractAttestationValues[]] $accessTokens
@@ -559,6 +578,7 @@ class MSFT_AADVerifiedIdAuthorityContractCustomStatusEndpoint
     [DscProperty()]
     [System.ComponentModel.Description('The URL of the custom status endpoint.')]
     [System.String] $url
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the endpoint.')]
     [System.String] $type
@@ -569,6 +589,7 @@ class MSFT_AADVerifiedIdAuthorityContractDisplayCredentialLogo
     [DscProperty()]
     [System.ComponentModel.Description('URI of the logo. If this is a URL, it must be reachable over the public internet anonymously.')]
     [System.String] $uri
+
     [DscProperty()]
     [System.ComponentModel.Description('Description of the logo.')]
     [System.String] $description
@@ -579,24 +600,31 @@ class MSFT_AADVerifiedIdAuthorityContractAttestationValues
     [DscProperty()]
     [System.ComponentModel.Description('Rules to map input claims into output claims in the verifiable credential.')]
     [MSFT_AADVerifiedIdAuthorityContractClaimMapping[]] $mapping
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicating whether this attestation is required or not.')]
     [System.Nullable[System.Boolean]] $required
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of DIDs allowed to issue the verifiable credential for this contract.')]
     [System.String[]] $trustedIssuers
+
     [DscProperty()]
     [System.ComponentModel.Description('Required credential type of the input.')]
     [System.String] $credentialType
+
     [DscProperty()]
     [System.ComponentModel.Description('Location of the identity provider''s configuration document.')]
     [System.String] $configuration
+
     [DscProperty()]
     [System.ComponentModel.Description('Client ID to use when obtaining the ID token.')]
     [System.String] $clientId
+
     [DscProperty()]
     [System.ComponentModel.Description('Redirect URI to use when obtaining the ID token. MUST BE vcclient://openid/')]
     [System.String] $redirectUri
+
     [DscProperty()]
     [System.ComponentModel.Description('Space delimited list of scopes to use when obtaining the ID token.')]
     [System.String] $scopeValue
@@ -607,15 +635,19 @@ class MSFT_AADVerifiedIdAuthorityContractClaimMapping
     [DscProperty()]
     [System.ComponentModel.Description('The name of the claim to use from the input.')]
     [System.String] $inputClaim
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the claim in the verifiable credential.')]
     [System.String] $outputClaim
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicating whether the value of this claim is used for searching.')]
     [System.Nullable[System.Boolean]] $indexed
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicating whether this mapping is required or not.')]
     [System.Nullable[System.Boolean]] $required
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of claim.')]
     [System.String] $type

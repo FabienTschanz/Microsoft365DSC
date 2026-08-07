@@ -393,12 +393,15 @@ class MSFT_AADHomeRealDiscoveryPolicyDefinition
     [DscProperty()]
     [System.ComponentModel.Description('Accelerate to Federated Domain.')]
     [System.Nullable[System.Boolean]] $AccelerateToFederatedDomain
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow cloud password validation.')]
     [System.Nullable[System.Boolean]] $AllowCloudPasswordValidation
+
     [DscProperty()]
     [System.ComponentModel.Description('AlternateIdLogin complex object.')]
     [MSFT_AADHomeRealDiscoveryPolicyDefinitionAlternateIdLogin] $AlternateIdLogin
+
     [DscProperty()]
     [System.ComponentModel.Description('Preffered Domain value.')]
     [System.String] $PreferredDomain

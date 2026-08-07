@@ -430,12 +430,15 @@ class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicy
     [DscProperty()]
     [System.ComponentModel.Description('Set value of 1. Required.')]
     [System.Nullable[System.UInt32]] $Version
+
     [DscProperty()]
     [System.ComponentModel.Description('If set to true, all claims in the basic claim set are emitted in tokens affected by the policy. If set to false, claims in the basic claim set are not in the tokens, unless they are individually added in the ClaimsSchema property of the same policy.')]
     [System.Nullable[System.Boolean]] $IncludeBasicClaimSet
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines which claims are present in the tokens affected by the policy, in addition to the basic claim set and the core claim set.')]
     [MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsSchema[]] $ClaimsSchema
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines common transformations that can be applied to source data, to generate the output data for claims specified in the ClaimsSchema.')]
     [MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformation[]] $ClaimsTransformation
@@ -446,9 +449,11 @@ class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsSchema
     [DscProperty()]
     [System.ComponentModel.Description('The source name of the claims schema in the claims mapping policy.')]
     [System.String] $Source
+
     [DscProperty()]
     [System.ComponentModel.Description('The object identifier of the claims schema in the claims mapping policy.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The SAML claims type of the claims schema in the claims mapping policy.')]
     [System.String] $SamlClaimType
@@ -459,12 +464,15 @@ class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformation
     [DscProperty()]
     [System.ComponentModel.Description('The object identifier of the claims transformation in the claims mapping policy.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The transformation method of the claims transformation in the claims mapping policy.')]
     [System.String] $TransformationMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of input parameters of the claims transformation in the claims mapping policy.')]
     [MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationInputParameter[]] $InputParameters
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of output claims of the claims transformation in the claims mapping policy.')]
     [MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationOutputClaims[]] $OutputClaims
@@ -475,9 +483,11 @@ class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationInpu
     [DscProperty()]
     [System.ComponentModel.Description('The value of the input parameters of the claims transformation in the claims mapping policy.')]
     [System.String] $Value
+
     [DscProperty()]
     [System.ComponentModel.Description('The object identifier of the input parameters of the claims transformation in the claims mapping policy.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The data type of the input parameters of the claims transformation in the claims mapping policy.')]
     [System.String] $DataType
@@ -488,6 +498,7 @@ class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationOutp
     [DscProperty()]
     [System.ComponentModel.Description('The claim type reference ID of the output claims of the claims transformation in the claims mapping policy.')]
     [System.String] $ClaimTypeReferenceId
+
     [DscProperty()]
     [System.ComponentModel.Description('The transformation type of the output claims of the claims transformation in the claims mapping policy.')]
     [System.String] $TransformationClaimType

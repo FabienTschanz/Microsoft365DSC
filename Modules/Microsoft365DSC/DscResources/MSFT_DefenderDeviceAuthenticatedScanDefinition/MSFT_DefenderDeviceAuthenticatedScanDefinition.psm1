@@ -459,9 +459,11 @@ class MSFT_DefenderDeviceAuthenticatedScanDefinitionScanAgent
     [DscProperty()]
     [System.ComponentModel.Description('Unique identified for the scan agent.')]
     [System.String] $id
+
     [DscProperty()]
     [System.ComponentModel.Description('Id of the machine associated with the agent.')]
     [System.String] $machineId
+
     [DscProperty()]
     [System.ComponentModel.Description('Name of the machine associated with the agent.')]
     [System.String] $machineName
@@ -472,36 +474,47 @@ class MSFT_DefenderDeviceAuthenticatedScanDefinitionAuthenticationParams
     [DscProperty()]
     [System.ComponentModel.Description('Odata type associated with the request.')]
     [System.String] $DataType
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of scan.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('An optional property that specifies from which KeyVault the scanner should retrieve credentials. If KeyVault is specified there''s no need to specify username, password.')]
     [System.String] $KeyVaultUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('An optional property that specifies KeyVault secret name from which the scanner should retrieve credentials. If KeyVault is specified there''s no need to specify username, password.')]
     [System.String] $KeyVaultSecretName
+
     [DscProperty()]
     [System.ComponentModel.Description('Domain name when using WindowsAuthParams.')]
     [System.String] $Domain
+
     [DscProperty()]
     [System.ComponentModel.Description('Username when using WindowsAuthParams or the username when choosing SnmpAuthParams with any type other than CommunityString.')]
     [System.String] $Username
+
     [DscProperty()]
     [System.ComponentModel.Description('Must be set to true when choosing WindowsAuthParams.')]
     [System.Nullable[System.Boolean]] $IsGMSAUser
+
     [DscProperty()]
     [System.ComponentModel.Description('Community string to use when choosing SnmpAuthParams with CommunityString.')]
     [System.String] $CommunityString
+
     [DscProperty()]
     [System.ComponentModel.Description('Auth protocol to use with SnmpAuthParams and AuthNoPriv or AuthPriv. Possible values are MD5, SHA1.')]
     [System.String] $AuthProtocol
+
     [DscProperty()]
     [System.ComponentModel.Description('Auth password to use with SnmpAuthParams and AuthNoPriv or AuthPriv.')]
     [System.String] $AuthPassword
+
     [DscProperty()]
     [System.ComponentModel.Description('Priv protocol to use with SnmpAuthParams and AuthPriv. Possible values are DES, 3DES, AES.')]
     [System.String] $PrivProtocol
+
     [DscProperty()]
     [System.ComponentModel.Description('Priv password to use with SnmpAuthParams and AuthPriv.')]
     [System.String] $PrivPassword

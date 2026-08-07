@@ -809,11 +809,14 @@ class MSFT_SCDLPContainsSensitiveInformation
     [DscProperty()]
     [System.ComponentModel.Description('Sensitive Information Content Types')]
     [MSFT_SCDLPSensitiveInformation[]] $SensitiveInformation
+
     [DscProperty()]
     [System.ComponentModel.Description('Groups of sensitive information types.')]
     [MSFT_SCDLPContainsSensitiveInformationGroup[]] $Groups
+
     [DscProperty()]
     [System.ComponentModel.Description('Operator')]
+    [ValidateSet('And', 'Or')]
     [System.String] $Operator
 }
 
@@ -822,6 +825,7 @@ class MSFT_SCHeaderPattern
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the header pattern')]
     [System.String] $Name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Regular expressions for the pattern')]
     [System.String[]] $Values
@@ -832,21 +836,27 @@ class MSFT_SCDLPSensitiveInformation
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Sensitive Information Content')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Id of the Sensitive Information Content')]
     [System.String] $id
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum Confidence level value for the Sensitive Information')]
     [System.String] $maxconfidence
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum Confidence level value for the Sensitive Information')]
     [System.String] $minconfidence
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of Classifier value for the Sensitive Information')]
     [System.String] $classifiertype
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum Count value for the Sensitive Information')]
     [System.String] $mincount
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum Count value for the Sensitive Information')]
     [System.String] $maxcount
@@ -857,14 +867,18 @@ class MSFT_SCDLPContainsSensitiveInformationGroup
     [DscProperty()]
     [System.ComponentModel.Description('Sensitive Information Content Types')]
     [MSFT_SCDLPSensitiveInformation[]] $SensitiveInformation
+
     [DscProperty()]
     [System.ComponentModel.Description('Sensitive Information Labels')]
     [MSFT_SCDLPLabel[]] $Labels
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the group')]
     [System.String] $Name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Operator')]
+    [ValidateSet('And', 'Or')]
     [System.String] $Operator
 }
 
@@ -873,9 +887,11 @@ class MSFT_SCDLPLabel
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the Sensitive Label')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Id of the Sensitive Information label')]
     [System.String] $id
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of the Sensitive Information label')]
     [System.String] $type

@@ -801,9 +801,11 @@ class MSFT_AzureRoleEligibilityScheduleRequestSchedule
     [DscProperty()]
     [System.ComponentModel.Description('When the eligible or active assignment expires.')]
     [MSFT_AzureRoleEligibilityScheduleRequestScheduleExpiration] $expiration
+
     [DscProperty()]
     [System.ComponentModel.Description('The frequency of the eligible or active assignment. This property is currently unsupported in PIM.')]
     [MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrence] $recurrence
+
     [DscProperty()]
     [System.ComponentModel.Description('When the eligible or active assignment becomes active.')]
     [System.String] $startDateTime
@@ -814,11 +816,14 @@ class MSFT_AzureRoleEligibilityScheduleRequestScheduleExpiration
     [DscProperty()]
     [System.ComponentModel.Description('The requestor''s desired duration of access represented in ISO 8601 format for durations. For example, PT3H refers to three hours. If specified in a request, endDateTime should not be present and the type property should be set to afterDuration.')]
     [System.String] $duration
+
     [DscProperty()]
     [System.ComponentModel.Description('Timestamp of date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.')]
     [System.String] $endDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The requestor''s desired expiration pattern type. The possible values are: notSpecified, noExpiration, afterDateTime, afterDuration.')]
+    [ValidateSet('notSpecified', 'noExpiration', 'afterDateTime', 'afterDuration')]
     [System.String] $type
 }
 
@@ -827,6 +832,7 @@ class MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrence
     [DscProperty()]
     [System.ComponentModel.Description('The frequency of an event.')]
     [MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrencePattern] $pattern
+
     [DscProperty()]
     [System.ComponentModel.Description('The duration of an event.')]
     [MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrenceRange] $range
@@ -837,23 +843,33 @@ class MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrencePattern
     [DscProperty()]
     [System.ComponentModel.Description('The day of the month on which the event occurs.')]
     [System.Nullable[System.UInt32]] $dayOfMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('A collection of the days of the week on which the event occurs. The possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday')]
+    [ValidateSet('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')]
     [System.String[]] $daysOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('The first day of the week.')]
+    [ValidateSet('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')]
     [System.String] $firstDayOfWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies on which instance of the allowed days specified in daysOfWeek the event occurs, counted from the first instance in the month. The possible values are: first, second, third, fourth, last.')]
+    [ValidateSet('first', 'second', 'third', 'fourth', 'last')]
     [System.String] $index
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of units between occurrences, where units can be in days, weeks, months, or years, depending on the type.')]
     [System.Nullable[System.UInt32]] $interval
+
     [DscProperty()]
     [System.ComponentModel.Description('The month in which the event occurs. This is a number from 1 to 12.')]
     [System.Nullable[System.UInt32]] $month
+
     [DscProperty()]
     [System.ComponentModel.Description('The recurrence pattern type: daily, weekly, absoluteMonthly, relativeMonthly, absoluteYearly, relativeYearly.')]
+    [ValidateSet('daily', 'weekly', 'absoluteMonthly', 'relativeMonthly', 'absoluteYearly', 'relativeYearly')]
     [System.String] $type
 }
 
@@ -862,17 +878,22 @@ class MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrenceRange
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The date to stop applying the recurrence pattern. Depending on the recurrence pattern of the event, the last occurrence of the meeting may not be this date.')]
     [System.String] $endDate
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of times to repeat the event. Required and must be positive if type is numbered.')]
     [System.Nullable[System.UInt32]] $numberOfOccurrences
+
     [DscProperty()]
     [System.ComponentModel.Description('Time zone for the startDate and endDate properties.')]
     [System.String] $recurrenceTimeZone
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The date to start applying the recurrence pattern. The first occurrence of the meeting may be this date or later, depending on the recurrence pattern of the event. Must be the same value as the start property of the recurring event.')]
     [System.String] $startDate
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The recurrence range. The possible values are: endDate, noEnd, numbered.')]
+    [ValidateSet('endDate', 'noEnd', 'numbered')]
     [System.String] $type
 }
 

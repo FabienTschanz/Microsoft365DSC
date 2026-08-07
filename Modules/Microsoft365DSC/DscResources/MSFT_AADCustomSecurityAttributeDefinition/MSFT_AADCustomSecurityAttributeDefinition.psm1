@@ -449,6 +449,7 @@ class MSFT_CustomSecurityAttributeAllowedValue
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The id of the allowed value. Must be unique in the set of allowed values.')]
     [System.String] $ValueId
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('If the allowed value is active.')]
     [System.Nullable[System.Boolean]] $IsActive

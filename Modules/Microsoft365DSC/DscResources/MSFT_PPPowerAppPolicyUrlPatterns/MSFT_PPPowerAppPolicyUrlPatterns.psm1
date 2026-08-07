@@ -348,9 +348,11 @@ class MSFT_PPPowerAppPolicyUrlPatternsRule
     [DscProperty()]
     [System.ComponentModel.Description('Rule priority order.')]
     [System.Nullable[System.UInt32]] $order
+
     [DscProperty()]
     [System.ComponentModel.Description('Rule classification.')]
     [System.String] $customConnectorRuleClassification
+
     [DscProperty()]
     [System.ComponentModel.Description('Rule pattern.')]
     [System.String] $pattern

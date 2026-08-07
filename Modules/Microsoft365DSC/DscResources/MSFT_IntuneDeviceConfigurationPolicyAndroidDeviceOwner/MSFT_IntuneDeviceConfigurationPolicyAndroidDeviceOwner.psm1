@@ -1476,16 +1476,21 @@ class MSFT_MicrosoftGraphapplistitem
 {
     [DscProperty()]
     [System.ComponentModel.Description('odatatype of the item.')]
+    [ValidateSet('#microsoft.graph.appleAppListItem')]
     [System.String] $odataType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Kiosk mode managed app id')]
     [System.String] $appId
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the app store URL.')]
     [System.String] $appStoreUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the name of the app.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the publisher of the app.')]
     [System.String] $publisher
@@ -1496,6 +1501,7 @@ class MSFT_MicrosoftGraphandroiddeviceowneruserfacingmessage
     [DscProperty()]
     [System.ComponentModel.Description('The default message displayed if the user''s locale doesn''t match with any of the localized messages.')]
     [System.String] $defaultMessage
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of <locale, message> pairs. This collection can contain a maximum of 500 elements.')]
     [MSFT_MicrosoftGraphkeyvaluepair[]] $localizedMessages
@@ -1505,16 +1511,21 @@ class MSFT_MicrosoftGraphandroiddeviceownerglobalproxy
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the global proxy.')]
+    [ValidateSet('#microsoft.graph.androidDeviceOwnerGlobalProxyAutoConfig', '#microsoft.graph.androidDeviceOwnerGlobalProxyDirect')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The proxy auto-config URL.')]
     [System.String] $proxyAutoConfigURL
+
     [DscProperty()]
     [System.ComponentModel.Description('The excluded hosts.')]
     [System.String[]] $excludedHosts
+
     [DscProperty()]
     [System.ComponentModel.Description('The host name.')]
     [System.String] $host
+
     [DscProperty()]
     [System.ComponentModel.Description('The port.')]
     [System.Nullable[System.UInt32]] $port
@@ -1525,6 +1536,7 @@ class MSFT_MicrosoftGraphandroiddeviceownerkioskmodeapppositionitem
     [DscProperty()]
     [System.ComponentModel.Description('Item to be arranged.')]
     [MSFT_MicrosoftGraphandroiddeviceownerkioskmodehomescreenitem] $item
+
     [DscProperty()]
     [System.ComponentModel.Description('Position of the item on the grid. Valid values 0 to 9999999.')]
     [System.Nullable[System.UInt32]] $position
@@ -1535,9 +1547,11 @@ class MSFT_MicrosoftGraphandroiddeviceownerkioskmodemanagedfolder
     [DscProperty()]
     [System.ComponentModel.Description('The folder identifier.')]
     [System.String] $folderIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('The folder name.')]
     [System.String] $folderName
+
     [DscProperty()]
     [System.ComponentModel.Description('Item to be arranged.')]
     [MSFT_MicrosoftGraphandroiddeviceownerkioskmodefolderitem[]] $items
@@ -1548,12 +1562,15 @@ class MSFT_MicrosoftGraphandroiddeviceownersystemupdatefreezeperiod
     [DscProperty()]
     [System.ComponentModel.Description('The day of the end date of the freeze period. Valid values 1 to 31.')]
     [System.Nullable[System.UInt32]] $endDay
+
     [DscProperty()]
     [System.ComponentModel.Description('The month of the end date of the freeze period. Valid values 1 to 12.')]
     [System.Nullable[System.UInt32]] $endMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('The day of the start date of the freeze period. Valid values 1 to 31.')]
     [System.Nullable[System.UInt32]] $startDay
+
     [DscProperty()]
     [System.ComponentModel.Description('The month of the start date of the freeze period. Valid values 1 to 12.')]
     [System.Nullable[System.UInt32]] $startMonth
@@ -1563,22 +1580,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -1589,6 +1614,7 @@ class MSFT_MicrosoftGraphkeyvaluepair
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the message localizedMessages.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Value of the message localizedMessages.')]
     [System.String] $Value
@@ -1598,25 +1624,33 @@ class MSFT_MicrosoftGraphandroiddeviceownerkioskmodehomescreenitem
 {
     [DscProperty()]
     [System.ComponentModel.Description('Type of the item.')]
+    [ValidateSet('#microsoft.graph.androidDeviceOwnerKioskModeApp', '#microsoft.graph.androidDeviceOwnerKioskModeWeblink', '#microsoft.graph.androidDeviceOwnerKioskModeManagedFolder')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The folder identifier.')]
     [System.String] $folderIdentifier
+
     [DscProperty()]
     [System.ComponentModel.Description('The folder name.')]
     [System.String] $folderName
+
     [DscProperty()]
     [System.ComponentModel.Description('Item to be arranged.')]
     [MSFT_MicrosoftGraphandroiddeviceownerkioskmodefolderitem[]] $items
+
     [DscProperty()]
     [System.ComponentModel.Description('The class name of the item.')]
     [System.String] $className
+
     [DscProperty()]
     [System.ComponentModel.Description('The package of the item.')]
     [System.String] $package
+
     [DscProperty()]
     [System.ComponentModel.Description('The label of the item.')]
     [System.String] $label
+
     [DscProperty()]
     [System.ComponentModel.Description('The link of the item.')]
     [System.String] $link
@@ -1626,16 +1660,21 @@ class MSFT_MicrosoftGraphandroiddeviceownerkioskmodefolderitem
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the item.')]
+    [ValidateSet('#microsoft.graph.androidDeviceOwnerKioskModeApp', '#microsoft.graph.androidDeviceOwnerKioskModeWeblink')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The class name of the item.')]
     [System.String] $className
+
     [DscProperty()]
     [System.ComponentModel.Description('The package of the item.')]
     [System.String] $package
+
     [DscProperty()]
     [System.ComponentModel.Description('The label of the item.')]
     [System.String] $label
+
     [DscProperty()]
     [System.ComponentModel.Description('The link of the item.')]
     [System.String] $link

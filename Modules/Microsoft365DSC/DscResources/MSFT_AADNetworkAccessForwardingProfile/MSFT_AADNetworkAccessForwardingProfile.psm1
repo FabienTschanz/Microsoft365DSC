@@ -358,9 +358,11 @@ class MSFT_MicrosoftGraphNetworkaccessPolicyLink
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Policy Name. Required')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Policy Link Id')]
     [System.String] $PolicyLinkId
+
     [DscProperty()]
     [System.ComponentModel.Description('status')]
     [System.String] $state

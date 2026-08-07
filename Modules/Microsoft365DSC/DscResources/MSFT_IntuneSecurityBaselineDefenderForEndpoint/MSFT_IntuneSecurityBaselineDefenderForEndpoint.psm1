@@ -1006,381 +1006,609 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBasel
 {
     [DscProperty()]
     [System.ComponentModel.Description('Prevent installation of devices using drivers that match these device setup classes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DeviceInstall_Classes_Deny
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevented Classes - Depends on DeviceInstall_Classes_Deny')]
     [System.String[]] $DeviceInstall_Classes_Deny_List
+
     [DscProperty()]
     [System.ComponentModel.Description('Also apply to matching devices that are already installed. - Depends on DeviceInstall_Classes_Deny (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DeviceInstall_Classes_Deny_Retroactive
+
     [DscProperty()]
     [System.ComponentModel.Description('Choose drive encryption method and cipher strength (Windows 10 [Version 1511] and later) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EncryptionMethodWithXts_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption method for operating system drives: - Depends on EncryptionMethodWithXts_Name (3: AES-CBC 128-bit, 4: AES-CBC 256-bit, 6: XTS-AES 128-bit (default), 7: XTS-AES 256-bit)')]
+    [ValidateSet('3', '4', '6', '7')]
     [System.String] $EncryptionMethodWithXtsOsDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption method for fixed data drives: - Depends on EncryptionMethodWithXts_Name (3: AES-CBC 128-bit, 4: AES-CBC 256-bit, 6: XTS-AES 128-bit (default), 7: XTS-AES 256-bit)')]
+    [ValidateSet('3', '4', '6', '7')]
     [System.String] $EncryptionMethodWithXtsFdvDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption method for removable data drives: - Depends on EncryptionMethodWithXts_Name (3: AES-CBC 128-bit  (default), 4: AES-CBC 256-bit, 6: XTS-AES 128-bit, 7: XTS-AES 256-bit)')]
+    [ValidateSet('3', '4', '6', '7')]
     [System.String] $EncryptionMethodWithXtsRdvDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Choose how BitLocker-protected fixed drives can be recovered (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVRecoveryUsage_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Save BitLocker recovery information to AD DS for fixed data drives - Depends on FDVRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVActiveDirectoryBackup_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Omit recovery options from the BitLocker setup wizard - Depends on FDVRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVHideRecoveryPage_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure user storage of BitLocker recovery information: - Depends on FDVRecoveryUsage_Name (2: Allow 48-digit recovery password, 1: Require 48-digit recovery password, 0: Do not allow 48-digit recovery password)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $FDVRecoveryPasswordUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not enable BitLocker until recovery information is stored to AD DS for fixed data drives - Depends on FDVRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVRequireActiveDirectoryBackup_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow data recovery agent - Depends on FDVRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVAllowDRA_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure storage of BitLocker recovery information to AD DS: - Depends on FDVRecoveryUsage_Name (1: Backup recovery passwords and key packages, 2: Backup recovery passwords only)')]
+    [ValidateSet('1', '2')]
     [System.String] $FDVActiveDirectoryBackupDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description(' - Depends on FDVRecoveryUsage_Name (2: Allow 256-bit recovery key, 1: Require 256-bit recovery key, 0: Do not allow 256-bit recovery key)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $FDVRecoveryKeyUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Deny write access to fixed drives not protected by BitLocker (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVDenyWriteAccess_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Enforce drive encryption type on fixed data drives (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $FDVEncryptionType_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption type: (Device) - Depends on FDVEncryptionType_Name (0: Allow user to choose (default), 1: Full encryption, 2: Used Space Only encryption)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $FDVEncryptionTypeDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow devices compliant with InstantGo or HSTI to opt out of pre-boot PIN. (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnablePreBootPinExceptionOnDECapableDevice_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow enhanced PINs for startup (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnhancedPIN_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Choose how BitLocker-protected operating system drives can be recovered (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OSRecoveryUsage_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not enable BitLocker until recovery information is stored to AD DS for operating system drives - Depends on OSRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OSRequireActiveDirectoryBackup_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Save BitLocker recovery information to AD DS for operating system drives - Depends on OSRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OSActiveDirectoryBackup_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure user storage of BitLocker recovery information: - Depends on OSRecoveryUsage_Name (2: Allow 48-digit recovery password, 1: Require 48-digit recovery password, 0: Do not allow 48-digit recovery password)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $OSRecoveryPasswordUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Omit recovery options from the BitLocker setup wizard - Depends on OSRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OSHideRecoveryPage_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow data recovery agent - Depends on OSRecoveryUsage_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OSAllowDRA_Name
+
     [DscProperty()]
     [System.ComponentModel.Description(' - Depends on OSRecoveryUsage_Name (2: Allow 256-bit recovery key, 1: Require 256-bit recovery key, 0: Do not allow 256-bit recovery key)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $OSRecoveryKeyUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure storage of BitLocker recovery information to AD DS: - Depends on OSRecoveryUsage_Name (1: Store recovery passwords and key packages, 2: Store recovery passwords only)')]
+    [ValidateSet('1', '2')]
     [System.String] $OSActiveDirectoryBackupDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable use of BitLocker authentication requiring preboot keyboard input on slates (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnablePrebootInputProtectorsOnSlates_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Enforce drive encryption type on operating system drives (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OSEncryptionType_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption type: (Device) - Depends on OSEncryptionType_Name (0: Allow user to choose (default), 1: Full encryption, 2: Used Space Only encryption)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $OSEncryptionTypeDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Require additional authentication at startup (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $ConfigureAdvancedStartup_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure TPM startup key: - Depends on ConfigureAdvancedStartup_Name (2: Allow startup key with TPM, 1: Require startup key with TPM, 0: Do not allow startup key with TPM)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $ConfigureTPMStartupKeyUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure TPM startup key and PIN: - Depends on ConfigureAdvancedStartup_Name (2: Allow startup key and PIN with TPM, 1: Require startup key and PIN with TPM, 0: Do not allow startup key and PIN with TPM)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $ConfigureTPMPINKeyUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure TPM startup: - Depends on ConfigureAdvancedStartup_Name (2: Allow TPM, 1: Require TPM, 0: Do not allow TPM)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $ConfigureTPMUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow BitLocker without a compatible TPM (requires a password or a startup key on a USB flash drive) - Depends on ConfigureAdvancedStartup_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $ConfigureNonTPMStartupKeyUsage_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure TPM startup PIN: - Depends on ConfigureAdvancedStartup_Name (2: Allow startup PIN with TPM, 1: Require startup PIN with TPM, 0: Do not allow startup PIN with TPM)')]
+    [ValidateSet('2', '1', '0')]
     [System.String] $ConfigurePINUsageDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Control use of BitLocker on removable drives (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RDVConfigureBDE
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow users to apply BitLocker protection on removable data drives (Device) - Depends on RDVConfigureBDE (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RDVAllowBDE_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Enforce drive encryption type on removable data drives (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RDVEncryptionType_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption type: (Device) (0: Allow user to choose (default), 1: Full encryption, 2: Used Space Only encryption)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $RDVEncryptionTypeDropDown_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow users to suspend and decrypt BitLocker protection on removable data drives (Device) - Depends on RDVConfigureBDE (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RDVDisableBDE_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Deny write access to removable drives not protected by BitLocker (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RDVDenyWriteAccess_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not allow write access to devices configured in another organization - Depends on RDVDenyWriteAccess_Name (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RDVCrossOrg
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Windows Defender SmartScreen (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableSmartScreen
+
     [DscProperty()]
     [System.ComponentModel.Description('Pick one of the following settings: (Device) - Depends on EnableSmartScreen (block: Warn and prevent bypass, warn: Warn)')]
+    [ValidateSet('Block', 'Warn')]
     [System.String] $EnableSmartScreenDropdown
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing SmartScreen Filter warnings about files that are not commonly downloaded from the Internet (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableSafetyFilterOverrideForAppRepUnknown
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent managing SmartScreen Filter (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Disable_Managing_Safety_Filter_IE9
+
     [DscProperty()]
     [System.ComponentModel.Description('Select SmartScreen Filter mode - Depends on Disable_Managing_Safety_Filter_IE9 (0: Off, 1: On)')]
+    [ValidateSet('0', '1')]
     [System.String] $IE9SafetyFilterOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Warning For Other Disk Encryption (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowWarningForOtherDiskEncryption
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Standard User Encryption - Depends on AllowWarningForOtherDiskEncryption (0: This is the default, when the policy is not set. If current logged on user is a standard user, ''RequireDeviceEncryption'' policy will not try to enable encryption on any drive., 1: ''RequireDeviceEncryption'' policy will try to enable encryption on all fixed drives even if a current logged in user is standard user.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowStandardUserEncryption
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Recovery Password Rotation (0: Refresh off (default), 1: Refresh on for Azure AD-joined devices, 2: Refresh on for both Azure AD-joined and hybrid-joined devices)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $ConfigureRecoveryPasswordRotation
+
     [DscProperty()]
     [System.ComponentModel.Description('Require Device Encryption (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.String] $RequireDeviceEncryption
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Archive Scanning (0: Not allowed. Turns off scanning on archived files., 1: Allowed. Scans the archive files.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowArchiveScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Behavior Monitoring (0: Not allowed. Turns off behavior monitoring., 1: Allowed. Turns on real-time behavior monitoring.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowBehaviorMonitoring
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Cloud Protection (0: Not allowed. Turns off the Microsoft Active Protection Service., 1: Allowed. Turns on the Microsoft Active Protection Service.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowCloudProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Email Scanning (0: Not allowed. Turns off email scanning., 1: Allowed. Turns on email scanning.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowEmailScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Full Scan Removable Drive Scanning (0: Not allowed. Turns off scanning on removable drives., 1: Allowed. Scans removable drives.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowFullScanRemovableDriveScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow On Access Protection (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowOnAccessProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Realtime Monitoring (0: Not allowed. Turns off the real-time monitoring service., 1: Allowed. Turns on and runs the real-time monitoring service.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowRealtimeMonitoring
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Scanning Network Files (0: Not allowed. Turns off scanning of network files., 1: Allowed. Scans network files.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowScanningNetworkFiles
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow scanning of all downloaded files and attachments (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowIOAVProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Script Scanning (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowScriptScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow User UI Access (0: Not allowed. Prevents users from accessing UI., 1: Allowed. Lets users access UI.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowUserUIAccess
+
     [DscProperty()]
     [System.ComponentModel.Description('Block execution of potentially obfuscated scripts - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockExecutionOfPotentiallyObfuscatedScripts
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockExecutionOfPotentiallyObfuscatedScripts_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Win32 API calls from Office macros - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockWin32APICallsFromOfficeMacros
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockWin32APICallsFromOfficeMacros_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block executable files from running unless they meet a prevalence, age, or trusted list criterion - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockExecutableFilesRunningUnlessTheyMeetPrevalenceAgeTrustedListCriterion
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockExecutableFilesRunningUnlessTheyMeetPrevalenceAgeTrustedListCriterion_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Office communication application from creating child processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockOfficeCommunicationAppFromCreatingChildProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockOfficeCommunicationAppFromCreatingChildProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block all Office applications from creating child processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockAllOfficeApplicationsFromCreatingChildProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockAllOfficeApplicationsFromCreatingChildProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Adobe Reader from creating child processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockAdobeReaderFromCreatingChildProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockAdobeReaderFromCreatingChildProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block credential stealing from the Windows local security authority subsystem - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block JavaScript or VBScript from launching downloaded executable content - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockJavaScriptOrVBScriptFromLaunchingDownloadedExecutableContent
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockJavaScriptOrVBScriptFromLaunchingDownloadedExecutableContent_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Webshell creation for Servers - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockWebshellCreationForServers
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockWebshellCreationForServers_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block untrusted and unsigned processes that run from USB - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockUntrustedUnsignedProcessesThatRunFromUSB
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockUntrustedUnsignedProcessesThatRunFromUSB_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block persistence through WMI event subscription - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockPersistenceThroughWMIEventSubscription
+
     [DscProperty()]
     [System.ComponentModel.Description('[PREVIEW] Block use of copied or impersonated system tools - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockUseOfCopiedOrImpersonatedSystemTools
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockUseOfCopiedOrImpersonatedSystemTools_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block abuse of exploited vulnerable signed drivers (Device) - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockAbuseOfExploitedVulnerableSignedDrivers
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockAbuseOfExploitedVulnerableSignedDrivers_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block process creations originating from PSExec and WMI commands - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockProcessCreationsFromPSExecAndWMICommands
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockProcessCreationsFromPSExecAndWMICommands_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Office applications from creating executable content - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockOfficeApplicationsFromCreatingExecutableContent
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockOfficeApplicationsFromCreatingExecutableContent_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Office applications from injecting code into other processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockOfficeApplicationsFromInjectingCodeIntoOtherProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockOfficeApplicationsFromInjectingCodeIntoOtherProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('[PREVIEW] Block rebooting machine in Safe Mode - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockRebootingMachineInSafeMode
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockRebootingMachineInSafeMode_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Use advanced protection against ransomware - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $UseAdvancedProtectionAgainstRansomware
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $UseAdvancedProtectionAgainstRansomware_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block executable content from email client and webmail - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockExecutableContentFromEmailClientAndWebmail
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockExecutableContentFromEmailClientAndWebmail_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Check For Signatures Before Running Scan (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $CheckForSignaturesBeforeRunningScan
+
     [DscProperty()]
     [System.ComponentModel.Description('Cloud Block Level (0: NotConfigured, 2: High, 4: HighPlus, 6: ZeroTolerance)')]
+    [ValidateSet('0', '2', '4', '6')]
     [System.Nullable[System.Int32]] $CloudBlockLevel
+
     [DscProperty()]
     [System.ComponentModel.Description('Cloud Extended Timeout')]
     [System.Nullable[System.Int32]] $CloudExtendedTimeout
+
     [DscProperty()]
     [System.ComponentModel.Description('Disable Local Admin Merge (0: Enable Local Admin Merge, 1: Disable Local Admin Merge)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableLocalAdminMerge
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Network Protection (0: Disabled, 1: Enabled (block mode), 2: Enabled (audit mode))')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $EnableNetworkProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Hide Exclusions From Local Admins (1: If you enable this setting, local admins will no longer be able to see the exclusion list in Windows Security App or via PowerShell., 0: If you disable or do not configure this setting, local admins will be able to see exclusions in the Windows Security App and via PowerShell.)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $HideExclusionsFromLocalAdmins
+
     [DscProperty()]
     [System.ComponentModel.Description('Hide Exclusions From Local Users (1: If you enable this setting, local users will no longer be able to see the exclusion list in Windows Security App or via PowerShell., 0: If you disable or do not configure this setting, local users will be able to see exclusions in the Windows Security App and via PowerShell.)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $HideExclusionsFromLocalUsers
+
     [DscProperty()]
     [System.ComponentModel.Description('Oobe Enable Rtp And Sig Update (1: If you enable this setting, real-time protection and Security Intelligence Updates are enabled during OOBE., 0: If you either disable or do not configure this setting, real-time protection and Security Intelligence Updates during OOBE is not enabled.)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $OobeEnableRtpAndSigUpdate
+
     [DscProperty()]
     [System.ComponentModel.Description('PUA Protection (0: PUA Protection off. Windows Defender will not protect against potentially unwanted applications., 1: PUA Protection on. Detected items are blocked. They will show in history along with other threats., 2: Audit mode. Windows Defender will detect potentially unwanted applications, but take no action. You can review information about the applications Windows Defender would have taken action against by searching for events created by Windows Defender in the Event Viewer.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $PUAProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Real Time Scan Direction (0: Monitor all files (bi-directional)., 1: Monitor incoming files., 2: Monitor outgoing files.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $RealTimeScanDirection
+
     [DscProperty()]
     [System.ComponentModel.Description('Scan Parameter (1: Quick scan, 2: Full scan)')]
+    [ValidateSet('1', '2')]
     [System.Nullable[System.Int32]] $ScanParameter
+
     [DscProperty()]
     [System.ComponentModel.Description('Schedule Quick Scan Time')]
     [System.Nullable[System.Int32]] $ScheduleQuickScanTime
+
     [DscProperty()]
     [System.ComponentModel.Description('Schedule Scan Day (0: Every day, 1: Sunday, 2: Monday, 3: Tuesday, 4: Wednesday, 5: Thursday, 6: Friday, 7: Saturday, 8: No scheduled scan)')]
+    [ValidateSet('0', '1', '2', '3', '4', '5', '6', '7', '8')]
     [System.Nullable[System.Int32]] $ScheduleScanDay
+
     [DscProperty()]
     [System.ComponentModel.Description('Schedule Scan Time')]
     [System.Nullable[System.Int32]] $ScheduleScanTime
+
     [DscProperty()]
     [System.ComponentModel.Description('Signature Update Interval')]
     [System.Nullable[System.Int32]] $SignatureUpdateInterval
+
     [DscProperty()]
     [System.ComponentModel.Description('Submit Samples Consent (0: Always prompt., 1: Send safe samples automatically., 2: Never send., 3: Send all samples automatically.)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $SubmitSamplesConsent
+
     [DscProperty()]
     [System.ComponentModel.Description('Credential Guard (0: (Disabled) Turns off Credential Guard remotely if configured previously without UEFI Lock., 1: (Enabled with UEFI lock) Turns on Credential Guard with UEFI lock., 2: (Enabled without lock) Turns on Credential Guard without UEFI lock.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $LsaCfgFlags
+
     [DscProperty()]
     [System.ComponentModel.Description('Device Enumeration Policy (0: Block all (Most restrictive), 1: Only after log in/screen unlock, 2: Allow all (Least restrictive))')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $DeviceEnumerationPolicy
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Microsoft Defender SmartScreen (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $SmartScreenEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Microsoft Defender SmartScreen to block potentially unwanted apps (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $SmartScreenPuaEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Microsoft Defender SmartScreen DNS requests (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $SmartScreenDnsRequestsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable new SmartScreen library (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NewSmartScreenLibraryEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Force Microsoft Defender SmartScreen checks on downloads from trusted sources (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $SmartScreenForTrustedDownloadsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing Microsoft Defender SmartScreen prompts for sites (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $PreventSmartScreenPromptOverride
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing of Microsoft Defender SmartScreen warnings about downloads (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $PreventSmartScreenPromptOverrideForFiles
 }
 
@@ -1388,6 +1616,7 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselin
 {
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing SmartScreen Filter warnings about files that are not commonly downloaded from the Internet (User) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableSafetyFilterOverrideForAppRepUnknown
 }
 
@@ -1395,22 +1624,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

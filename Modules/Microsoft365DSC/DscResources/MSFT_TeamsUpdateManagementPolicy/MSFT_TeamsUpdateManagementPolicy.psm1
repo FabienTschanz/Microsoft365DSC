@@ -214,19 +214,6 @@ class TeamsUpdateManagementPolicy : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        if (-not [System.String]::IsNullOrEmpty($this.UpdateTimeOfDay))
-        {
-            Write-Verbose -Message "Converting UpdateTimeOfDay [$($this.UpdateTimeOfDay)] to the current culture format"
-            $dtUpdateTimeOfDay = [datetime]::Parse($this.UpdateTimeOfDay)
-            $this.UpdateTimeOfDay = $dtUpdateTimeOfDay.ToShortTimeString()
-            Write-Verbose -Message "Converted value [$($this.UpdateTimeOfDay)]"
-        }
-
         return ([M365DSCResourceBase] $this).Test()
     }
 

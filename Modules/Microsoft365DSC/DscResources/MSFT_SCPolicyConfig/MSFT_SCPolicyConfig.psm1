@@ -1309,9 +1309,11 @@ class MSFT_PolicyConfigBusinessJustificationList
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $justificationText
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $Enable
@@ -1322,12 +1324,15 @@ class MSFT_PolicyConfigDLPAppGroups
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Id
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [MSFT_PolicyConfigDLPApp[]] $Apps
@@ -1338,9 +1343,11 @@ class MSFT_PolicyConfigDLPNetworkShareGroups
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $groupName
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String[]] $networkPaths
@@ -1351,9 +1358,11 @@ class MSFT_PolicyConfigDLPPrinterGroups
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $groupName
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [MSFT_PolicyConfigPrinter[]] $printers
@@ -1364,6 +1373,7 @@ class MSFT_PolicyConfigDLPRemovableMediaGroups
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $groupName
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [MSFT_PolicyConfigRemovableMedia[]] $removableMedia
@@ -1374,12 +1384,15 @@ class MSFT_PolicyConfigEvidenceStoreSettings
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $FileEvidenceIsEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.UInt32]] $NumberOfDaysToRetain
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [MSFT_PolicyConfigStorageAccount[]] $StorageAccounts
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Store
@@ -1390,9 +1403,11 @@ class MSFT_PolicyConfigDLPSiteGroups
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Id
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [MSFT_PolicyConfigSiteGroupAddress[]] $addresses
@@ -1403,6 +1418,7 @@ class MSFT_PolicyConfigApp
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the application.')]
     [System.String] $Value
+
     [DscProperty()]
     [System.ComponentModel.Description('Name of the executable file.')]
     [System.String] $Executable
@@ -1413,15 +1429,19 @@ class MSFT_PolicyConfigQuarantineParameters
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $EnableQuarantineForCloudSyncApps
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $QuarantinePath
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $MacQuarantinePath
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $ShouldReplaceFile
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $FileReplacementText
@@ -1432,9 +1452,11 @@ class MSFT_PolicyConfigDLPApp
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $ExecutableName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $Quarantine
@@ -1445,30 +1467,39 @@ class MSFT_PolicyConfigPrinter
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $universalPrinter
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $usbPrinter
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $usbPrinterId
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $alias
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $usbPrinterVID
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [MSFT_PolicyConfigIPRange] $ipRange
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $corporatePrinter
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $printToLocal
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.Nullable[System.Boolean]] $printToFile
@@ -1479,24 +1510,31 @@ class MSFT_PolicyConfigRemovableMedia
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $deviceId
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $removableMediaVID
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $name
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $alias
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $removableMediaPID
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $instancePathId
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $serialNumberId
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $hardwareId
@@ -1507,6 +1545,7 @@ class MSFT_PolicyConfigStorageAccount
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $BlobUri
@@ -1516,13 +1555,17 @@ class MSFT_PolicyConfigSiteGroupAddress
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The match type to perform. If UrlMatch is selected, then the Url property must be configured. If IPv4 or IPv6RangeMatch are selected, then AddressLower and AddressUpper must be configured.')]
+    [ValidateSet('UrlMatch', 'IPv4RangeMatch', 'IPv6RangeMatch')]
     [System.String] $MatchType
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $Url
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $AddressLower
+
     [DscProperty()]
     [System.ComponentModel.Description('TBD')]
     [System.String] $AddressUpper
@@ -1533,6 +1576,7 @@ class MSFT_PolicyConfigIPRange
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $fromAddress
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('TBD')]
     [System.String] $toAddress

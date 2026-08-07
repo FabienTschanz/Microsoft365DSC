@@ -342,18 +342,23 @@ class MSFT_MicrosoftGraphNetworkAccessForwardingPolicyRule
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Policy Rule Name. Required')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Action value.')]
     [System.String] $ActionValue
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of Rule')]
     [System.String] $RuleType
+
     [DscProperty()]
     [System.ComponentModel.Description('List of Ports.')]
     [System.Int32[]] $Ports
+
     [DscProperty()]
     [System.ComponentModel.Description('Protocol Value')]
     [System.String] $Protocol
+
     [DscProperty()]
     [System.ComponentModel.Description('List of destinations.')]
     [System.String[]] $Destinations

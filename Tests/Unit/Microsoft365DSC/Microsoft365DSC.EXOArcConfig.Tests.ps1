@@ -57,7 +57,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance  = 'Yes'
-                    ArcTrustedSealers = "cohovineyard.com,tailspintoys.com"; # Drift
+                    ArcTrustedSealers = @("cohovineyard.com","tailspintoys.com"); # Drift
                     Credential        = $Credential
                 }
             }
@@ -76,7 +76,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     IsSingleInstance  = 'Yes'
-                    ArcTrustedSealers = "abc.com,cohovineyard.com,tailspintoys.com";
+                    ArcTrustedSealers = @("abc.com","cohovineyard.com","tailspintoys.com");
                     Credential        = $Credential
                 }
             }

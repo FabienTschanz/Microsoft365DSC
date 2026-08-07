@@ -577,9 +577,12 @@ class MSFT_MicrosoftGraphreportSuspiciousActivitySettings
     [DscProperty()]
     [System.ComponentModel.Description('Group IDs in scope for report suspicious activity.')]
     [MSFT_AADAuthenticationMethodPolicyIncludeTarget] $IncludeTarget
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the state of the reportSuspiciousActivitySettings object.')]
+    [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
     [System.String] $State
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the number the user enters on their phone to report the MFA prompt as suspicious.')]
     [System.Nullable[System.UInt32]] $VoiceReportingCode
@@ -590,11 +593,14 @@ class MSFT_MicrosoftGraphsystemCredentialPreferences
     [DscProperty()]
     [System.ComponentModel.Description('Users and groups excluded from the preferred authentication method experience of the system.')]
     [MSFT_AADAuthenticationMethodPolicyExcludeTarget[]] $ExcludeTargets
+
     [DscProperty()]
     [System.ComponentModel.Description('Users and groups included in the preferred authentication method experience of the system.')]
     [MSFT_AADAuthenticationMethodPolicyIncludeTarget[]] $IncludeTargets
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the feature is enabled or disabled. Possible values are: default, enabled, disabled, unknownFutureValue. The default value is used when the configuration hasn''t been explicitly set, and uses the default behavior of Azure Active Directory for the setting. The default value is disabled.')]
+    [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
     [System.String] $State
 }
 
@@ -603,14 +609,18 @@ class MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaign
     [DscProperty()]
     [System.ComponentModel.Description('Users and groups of users that are excluded from being prompted to set up the authentication method.')]
     [MSFT_MicrosoftGraphExcludeTarget[]] $ExcludeTargets
+
     [DscProperty()]
     [System.ComponentModel.Description('Users and groups of users that are prompted to set up the authentication method.')]
     [MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget[]] $IncludeTargets
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the number of days that the user sees a prompt again if they select ''Not now'' and snoozes the prompt. Minimum 0 days. Maximum: 14 days. If the value is ''0''  The user is prompted during every MFA attempt.')]
     [System.Nullable[System.UInt32]] $SnoozeDurationInDays
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable or disable the feature. Possible values are: default, enabled, disabled, unknownFutureValue. The default value is used when the configuration hasn''t been explicitly set and uses the default behavior of Azure AD for the setting. The default value is disabled.')]
+    [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
     [System.String] $State
 }
 
@@ -619,8 +629,10 @@ class MSFT_AADAuthenticationMethodPolicyIncludeTarget
     [DscProperty()]
     [System.ComponentModel.Description('The ID of the entity targeted.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The kind of entity targeted. Possible values are: user, group.')]
+    [ValidateSet('user', 'group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -629,8 +641,10 @@ class MSFT_AADAuthenticationMethodPolicyExcludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('user', 'group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -639,8 +653,10 @@ class MSFT_MicrosoftGraphExcludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD user or group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: user, group, unknownFutureValue.')]
+    [ValidateSet('user', 'group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -649,11 +665,14 @@ class MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD user or group.')]
     [System.String] $Id
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The authentication method that the user is prompted to register. The value must be microsoftAuthenticator.')]
     [System.String] $TargetedAuthenticationMethod
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: user, group, unknownFutureValue.')]
+    [ValidateSet('user', 'group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 

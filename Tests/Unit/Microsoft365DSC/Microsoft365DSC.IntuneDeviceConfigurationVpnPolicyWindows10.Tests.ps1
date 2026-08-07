@@ -557,8 +557,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     connectionName = "FakeStringValue"
                     connectionType = "pulseSecure"
                     cryptographySuite = ([MSFT_MicrosoftGraphcryptographySuite] @{
-                        cipherTransformConstants = "aes512" # Updated property
-                        encryptionMethod = "aes512" # Updated property
+                        cipherTransformConstants = "aes128" # Updated property
+                        encryptionMethod = "aes128" # Updated property
                         pfsGroup = "pfs1"
                         dhGroup = "group1"
                         integrityCheckMethod = "sha2_256"

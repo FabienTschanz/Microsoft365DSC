@@ -523,12 +523,15 @@ class MSFT_AADIdentityAPIConnectionCertificate
     [DscProperty()]
     [System.ComponentModel.Description('Pkcs12Value of the certificate as a secure string in Base64 encoding')]
     [System.Management.Automation.PSCredential] $Pkcs12Value
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Thumbprint of the certificate in Base64 encoding')]
     [System.String] $Thumbprint
+
     [DscProperty()]
     [System.ComponentModel.Description('Password of the certificate as a secure string')]
     [System.Management.Automation.PSCredential] $Password
+
     [DscProperty()]
     [System.ComponentModel.Description('Tells if the certificate is in use or not')]
     [System.Nullable[System.Boolean]] $IsActive

@@ -548,11 +548,14 @@ class MSFT_DeviceManagementApplicabilityRuleOsEdition
     [DscProperty()]
     [System.ComponentModel.Description('Name for object')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability rule OS edition type')]
     [System.String[]] $OsEditionTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability Rule type')]
+    [ValidateSet('include', 'exclude')]
     [System.String] $RuleType
 }
 
@@ -561,14 +564,18 @@ class MSFT_DeviceManagementApplicabilityRuleOsVersion
     [DscProperty()]
     [System.ComponentModel.Description('Name for object')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Min OS version for Applicability Rule')]
     [System.String] $MinOSVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Max OS version for Applicability Rule')]
     [System.String] $MaxOSVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Applicability Rule type')]
+    [ValidateSet('include', 'exclude')]
     [System.String] $RuleType
 }
 
@@ -576,22 +583,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

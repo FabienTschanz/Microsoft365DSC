@@ -62,15 +62,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         EnterpriseNetworkDomainNames           = @('FakeStringValue')
                         EnterpriseIPRanges                     = @(
                             @{
-                                CidrAddress   = 'FakeStringValue'
                                 UpperAddress  = 'FakeStringValue'
                                 LowerAddress  = 'FakeStringValue'
-                                '@odata.type' = '#microsoft.graph.iPv4CidrRange'
+                                '@odata.type' = '#microsoft.graph.iPv4Range'
                             }
                         )
                         NeutralDomainResources                 = @('FakeStringValue')
                     }
-                    '@odata.type'                 = '#microsoft.graph.windows10NetworkBoundaryConfiguration'
+                    '@odata.type'        = '#microsoft.graph.windows10NetworkBoundaryConfiguration'
                     description          = 'FakeStringValue'
                     displayName          = 'FakeStringValue'
                     id                   = 'FakeStringValue'
@@ -109,10 +108,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             EnterpriseNetworkDomainNames           = @('FakeStringValue')
                             EnterpriseIPRanges                     = @(
                             ([MSFT_MicrosoftGraphIpRange1] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                             )
                             NeutralDomainResources                 = @('FakeStringValue')
@@ -157,10 +155,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             EnterpriseNetworkDomainNames           = @('FakeStringValue')
                             EnterpriseIPRanges                     = @(
                             ([MSFT_MicrosoftGraphIpRange1] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                             )
                             NeutralDomainResources                 = @('FakeStringValue')
@@ -203,10 +200,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             EnterpriseNetworkDomainNames           = @('FakeStringValue')
                             EnterpriseIPRanges                     = @(
                             ([MSFT_MicrosoftGraphIpRange1] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                             )
                             NeutralDomainResources                 = @('FakeStringValue')
@@ -242,10 +238,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             EnterpriseNetworkDomainNames           = @('FakeStringValue')
                             EnterpriseIPRanges                     = @(
                             ([MSFT_MicrosoftGraphIpRange1] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                             )
                             NeutralDomainResources                 = @('FakeStringValue')

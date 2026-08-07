@@ -383,6 +383,7 @@ class MSFT_AADFilteringPolicyRuleDestination
     [DscProperty()]
     [System.ComponentModel.Description('Name of the destination.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('FQDN value for the destination.')]
     [System.String] $value

@@ -464,61 +464,86 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName
 {
     [DscProperty()]
     [System.ComponentModel.Description('Enabled - Depends on FirewallRuleName (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.String] $Enabled
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name - Depends on FirewallRuleName')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Interface Types - Depends on FirewallRuleName (RemoteAccess, Wireless, Lan, MobileBroadband, MBB, All)')]
+    [ValidateSet('RemoteAccess', 'Wireless', 'Lan', 'MobileBroadband', 'MBB', 'All')]
     [System.String[]] $InterfaceTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('File Path - Depends on FirewallRuleName')]
     [System.String] $FilePath
+
     [DscProperty()]
     [System.ComponentModel.Description('Remote Port Ranges - Depends on FirewallRuleName')]
     [System.String[]] $RemotePortRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge Traversal - Depends on FirewallRuleName (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.String] $EdgeTraversal
+
     [DscProperty()]
     [System.ComponentModel.Description('Local User Authorized List - Depends on FirewallRuleName')]
     [System.String[]] $LocalUserAuthorizedList
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Types - Depends on FirewallRuleName (1: FW_PROFILE_TYPE_DOMAIN:  This value represents the profile for networks that are connected to domains., 2: FW_PROFILE_TYPE_STANDARD:  This value represents the standard profile for networks. These networks are classified as private by the administrators in the server host. The classification happens the first time the host connects to the network. Usually these networks are behind Network Address Translation (NAT) devices, routers, and other edge devices, and they are in a private location, such as a home or an office. AND FW_PROFILE_TYPE_PRIVATE:  This value represents the profile for private networks, which is represented by the same value as that used for FW_PROFILE_TYPE_STANDARD., 4: FW_PROFILE_TYPE_PUBLIC:  This value represents the profile for public networks. These networks are classified as public by the administrators in the server host. The classification happens the first time the host connects to the network. Usually these networks are those at airports, coffee shops, and other public places where the peers in the network or the network administrator are not trusted., 2147483647: FW_PROFILE_TYPE_ALL:  This value represents all these network sets and any future network sets., -2147483648: FW_PROFILE_TYPE_CURRENT:  This value represents the current profiles to which the firewall and advanced security components determine the host is connected at the moment of the call. This value can be specified only in method calls, and it cannot be combined with other flags.)')]
+    [ValidateSet('1', '2', '4', '2147483647', '-2147483648')]
     [System.Int32[]] $Profiles
+
     [DscProperty()]
     [System.ComponentModel.Description('Local Port Ranges - Depends on FirewallRuleName')]
     [System.String[]] $LocalPortRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Description - Depends on FirewallRuleName')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('Policy App Id - Depends on FirewallRuleName')]
     [System.String] $PolicyAppId
+
     [DscProperty()]
     [System.ComponentModel.Description('Package Family Name - Depends on FirewallRuleName')]
     [System.String] $PackageFamilyName
+
     [DscProperty()]
     [System.ComponentModel.Description('Local Address Ranges - Depends on FirewallRuleName')]
     [System.String[]] $LocalAddressRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Direction - Depends on FirewallRuleName (IN: The rule applies to inbound traffic., OUT: The rule applies to outbound traffic.)')]
+    [ValidateSet('IN', 'OUT')]
     [System.String] $Direction
+
     [DscProperty()]
     [System.ComponentModel.Description('Service Name - Depends on FirewallRuleName')]
     [System.String] $ServiceName
+
     [DscProperty()]
     [System.ComponentModel.Description('Remote Address Ranges - Depends on FirewallRuleName')]
     [System.String[]] $RemoteAddressRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Action - Depends on FirewallRuleName (0: Block, 1: Allow)')]
+    [ValidateSet('0', '1')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('Reusable groups - Depends on FirewallRuleName')]
     [System.String[]] $RemoteAddressDynamicKeywords
+
     [DscProperty()]
     [System.ComponentModel.Description('Protocol - Depends on FirewallRuleName')]
     [System.Nullable[System.Int32]] $Protocol
+
     [DscProperty()]
     [System.ComponentModel.Description('ICMP Types And Codes - Depends on FirewallRuleName')]
     [System.String[]] $IcmpTypesAndCodes
@@ -528,22 +553,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

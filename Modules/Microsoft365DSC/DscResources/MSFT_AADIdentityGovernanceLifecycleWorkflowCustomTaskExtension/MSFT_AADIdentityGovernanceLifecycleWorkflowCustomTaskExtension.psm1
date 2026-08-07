@@ -496,6 +496,7 @@ class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionClientConfig
     [DscProperty()]
     [System.ComponentModel.Description('The max duration in milliseconds that Microsoft Entra ID waits for a response from the external app before it shuts down the connection. The valid range is between 200 and 2000 milliseconds. Default duration is 1000.')]
     [System.Nullable[System.UInt32]] $timeoutInMilliseconds
+
     [DscProperty()]
     [System.ComponentModel.Description('The max number of retries that Microsoft Entra ID makes to the external API. Values of 0 or 1 are supported. If null, the default for the service applies.')]
     [System.Nullable[System.UInt32]] $maximumRetries
@@ -506,12 +507,15 @@ class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConf
     [DscProperty()]
     [System.ComponentModel.Description('The name of the logic app.')]
     [System.String] $logicAppWorkflowName
+
     [DscProperty()]
     [System.ComponentModel.Description('The Azure resource group name for the logic app.')]
     [System.String] $resourceGroupName
+
     [DscProperty()]
     [System.ComponentModel.Description('Identifier of the Azure subscription for the logic app.')]
     [System.String] $subscriptionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Url of the logic app.')]
     [System.String] $url
@@ -522,6 +526,7 @@ class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConf
     [DscProperty()]
     [System.ComponentModel.Description('Callback time out in ISO 8601 time duration. Accepted time durations are between five minutes to three hours. For example, PT5M for five minutes and PT3H for three hours. Inherited from customExtensionCallbackConfiguration.')]
     [System.String] $timeoutDuration
+
     [DscProperty()]
     [System.ComponentModel.Description('List of apps names that are allowed to resume a task processing result.')]
     [System.String[]] $authorizedApps

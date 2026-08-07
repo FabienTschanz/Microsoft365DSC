@@ -363,14 +363,18 @@ class MSFT_TeamsEmergencyCallingExtendedNotification
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The emergency dial string.')]
     [System.String] $EmergencyDialString
+
     [DscProperty()]
     [System.ComponentModel.Description('The email recipients of the notifications.')]
     [System.String[]] $NotificationGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('The additional number to call when contacting an emergency number.')]
     [System.String] $NotificationDialOutNumber
+
     [DscProperty()]
     [System.ComponentModel.Description('The notification mode for the additional number. Possible values: ConferenceMuted - Join the emergency call muted. ConferenceUnMuted - Join the emergency call unmuted. NotificationOnly - Only receive a notification for an emergency call.')]
+    [ValidateSet('ConferenceMuted', 'ConferenceUnMuted', 'NotificationOnly')]
     [System.String] $NotificationMode
 }
 

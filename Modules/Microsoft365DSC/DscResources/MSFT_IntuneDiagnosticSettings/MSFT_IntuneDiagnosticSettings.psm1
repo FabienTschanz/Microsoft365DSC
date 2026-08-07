@@ -352,6 +352,7 @@ class MSFT_AzureDiagnosticSettingsCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the category.')]
     [System.String] $Category
+
     [DscProperty()]
     [System.ComponentModel.Description('Is the log category enabled or not.')]
     [System.Nullable[System.Boolean]] $enabled

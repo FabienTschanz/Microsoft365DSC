@@ -384,8 +384,10 @@ class MSFT_AADAuthenticationMethodPolicyQRCodeImageExcludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -394,8 +396,10 @@ class MSFT_AADAuthenticationMethodPolicyQRCodeImageIncludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 

@@ -518,61 +518,88 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogElevationRuleName
 {
     [DscProperty()]
     [System.ComponentModel.Description('Child process behavior (allowrunelevated: AllowRunElevated, allowrunelevatedrulerequired: AllowRunElevatedRuleRequired, deny: Deny)')]
+    [ValidateSet('allowrunelevated', 'allowrunelevatedrulerequired', 'deny')]
     [System.String] $ChildProcessBehavior
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('File name')]
     [System.String] $FileName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Rule name')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('File path')]
     [System.String] $FilePath
+
     [DscProperty()]
     [System.ComponentModel.Description('Product name')]
     [System.String] $ProductName
+
     [DscProperty()]
     [System.ComponentModel.Description('Applies to (allusers: Allusers)')]
+    [ValidateSet('allusers')]
     [System.String] $AppliesTo
+
     [DscProperty()]
     [System.ComponentModel.Description('Description')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum version')]
     [System.String] $FileVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('Internal name')]
     [System.String] $InternalName
+
     [DscProperty()]
     [System.ComponentModel.Description('File hash. Required, if no certificate is used.')]
     [System.String] $FileHash
+
     [DscProperty()]
     [System.ComponentModel.Description('File description')]
     [System.String] $FileDescription
+
     [DscProperty()]
     [System.ComponentModel.Description('Signature source (0: ReusableCertificate, 1: NewCertificate)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $SignatureSource
+
     [DscProperty()]
     [System.ComponentModel.Description('Certificate type (publisher: Publisher, issuingauthority: IssuingAuthority)')]
+    [ValidateSet('publisher', 'issuingauthority')]
     [System.String] $CertificateType
+
     [DscProperty()]
     [System.ComponentModel.Description('Certificate')]
     [System.String] $CertificatePayloadWithReusableSetting
+
     [DscProperty()]
     [System.ComponentModel.Description('File upload')]
     [System.String] $CertificateFileUpload
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Elevation type (self: Userconfirmed, automatic: Automatic, deny: Deny, supportarbitrated: Supportapproved, userconfirmeduser: UserConfirmedUser)')]
+    [ValidateSet('self', 'automatic', 'deny', 'supportarbitrated', 'userconfirmeduser')]
     [System.String] $Elevationtype
+
     [DscProperty()]
     [System.ComponentModel.Description('User Confirmed User Validation (2: Windows Authentication)')]
+    [ValidateSet('2')]
     [System.Int32[]] $UserConfirmedUserElevationTypeValidation
+
     [DscProperty()]
     [System.ComponentModel.Description('Validation (1: Business Justification, 2: Windows Authentication)')]
+    [ValidateSet('1', '2')]
     [System.Int32[]] $ElevationTypeValidation
+
     [DscProperty()]
     [System.ComponentModel.Description('Restrict Arguments (allow: Allow)')]
+    [ValidateSet('allow')]
     [System.String] $RestrictArguments
+
     [DscProperty()]
     [System.ComponentModel.Description('Argument List')]
     [System.String[]] $ArgumentList
@@ -582,22 +609,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

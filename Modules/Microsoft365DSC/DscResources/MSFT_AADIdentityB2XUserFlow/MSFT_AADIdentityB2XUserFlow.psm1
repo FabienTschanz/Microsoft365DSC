@@ -530,6 +530,7 @@ class MSFT_MicrosoftGraphuserFlowApiConnectorConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('The name of the connector used for post federation signup step.')]
     [System.String] $postFederationSignupConnectorName
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the connector used for post attribute collection step.')]
     [System.String] $postAttributeCollectionConnectorName
@@ -540,15 +541,20 @@ class MSFT_MicrosoftGraphuserFlowUserAttributeAssignment
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier of identityUserFlowAttributeAssignment.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the identityUserFlowAttribute within a user flow.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines whether the identityUserFlowAttribute is optional.')]
     [System.Nullable[System.Boolean]] $IsOptional
+
     [DscProperty()]
     [System.ComponentModel.Description('User Flow Attribute Input Type.')]
+    [ValidateSet('textBox', 'dateTimeDropdown', 'radioSingleSelect', 'dropdownSingleSelect', 'emailBox', 'checkboxMultiSelect')]
     [System.String] $UserInputType
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of user attribute values for this assignment.')]
     [MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues[]] $UserAttributeValues
@@ -559,9 +565,11 @@ class MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The display name of the property displayed to the end user in the user flow.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The value that is set when this item is selected.')]
     [System.String] $Value
+
     [DscProperty()]
     [System.ComponentModel.Description('Used to set the value as the default.')]
     [System.Nullable[System.Boolean]] $IsDefault

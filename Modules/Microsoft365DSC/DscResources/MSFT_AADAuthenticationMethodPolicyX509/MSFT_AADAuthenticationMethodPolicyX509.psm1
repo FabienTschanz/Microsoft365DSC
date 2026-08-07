@@ -497,8 +497,10 @@ class MSFT_MicrosoftGraphx509CertificateAuthenticationModeConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('Rules are configured in addition to the authentication mode to bind a specific x509CertificateRuleType to an x509CertificateAuthenticationMode. For example, bind the policyOID with identifier 1.32.132.343 to x509CertificateMultiFactor authentication mode.')]
     [MSFT_MicrosoftGraphX509CertificateRule[]] $Rules
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of strong authentication mode. The possible values are: x509CertificateSingleFactor, x509CertificateMultiFactor, unknownFutureValue.')]
+    [ValidateSet('x509CertificateSingleFactor', 'x509CertificateMultiFactor', 'unknownFutureValue')]
     [System.String] $X509CertificateAuthenticationDefaultMode
 }
 
@@ -507,9 +509,11 @@ class MSFT_MicrosoftGraphx509CertificateUserBinding
     [DscProperty()]
     [System.ComponentModel.Description('The priority of the binding. Azure AD uses the binding with the highest priority. This value must be a non-negative integer and unique in the collection of objects in the certificateUserBindings property of an x509CertificateAuthenticationMethodConfiguration object. Required')]
     [System.Nullable[System.UInt32]] $Priority
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Defines the Azure AD user property of the user object to use for the binding. The possible values are: userPrincipalName, onPremisesUserPrincipalName, email. Required.')]
     [System.String] $UserProperty
+
     [DscProperty()]
     [System.ComponentModel.Description('The field on the X.509 certificate to use for the binding. The possible values are: PrincipalName, RFC822Name.')]
     [System.String] $X509CertificateField
@@ -520,8 +524,10 @@ class MSFT_AADAuthenticationMethodPolicyX509ExcludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -530,11 +536,14 @@ class MSFT_AADAuthenticationMethodPolicyX509IncludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines if the user is enforced to register the authentication method.')]
     [System.Nullable[System.Boolean]] $isRegistrationRequired
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -543,11 +552,15 @@ class MSFT_MicrosoftGraphX509CertificateRule
     [DscProperty(Key)]
     [System.ComponentModel.Description('The identifier of the X.509 certificate. Required.')]
     [System.String] $Identifier
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of strong authentication mode. The possible values are: x509CertificateSingleFactor, x509CertificateMultiFactor, unknownFutureValue. Required.')]
+    [ValidateSet('x509CertificateSingleFactor', 'x509CertificateMultiFactor', 'unknownFutureValue')]
     [System.String] $X509CertificateAuthenticationMode
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the X.509 certificate mode configuration rule. The possible values are: issuerSubject, policyOID, unknownFutureValue. Required.')]
+    [ValidateSet('issuerSubject', 'policyOID', 'unknownFutureValue')]
     [System.String] $X509CertificateRuleType
 }
 

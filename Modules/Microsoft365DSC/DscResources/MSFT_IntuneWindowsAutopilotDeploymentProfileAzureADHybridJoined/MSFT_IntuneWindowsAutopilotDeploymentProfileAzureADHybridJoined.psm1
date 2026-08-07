@@ -553,21 +553,27 @@ class MSFT_MicrosoftGraphwindowsEnrollmentStatusScreenSettings
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block user to use device before profile and app installation complete')]
     [System.Nullable[System.Boolean]] $AllowDeviceUseBeforeProfileAndAppInstallComplete
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the user to continue using the device on installation failure')]
     [System.Nullable[System.Boolean]] $AllowDeviceUseOnInstallFailure
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow or block log collection on installation failure')]
     [System.Nullable[System.Boolean]] $AllowLogCollectionOnInstallFailure
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the user to retry the setup on installation failure')]
     [System.Nullable[System.Boolean]] $BlockDeviceSetupRetryByUser
+
     [DscProperty()]
     [System.ComponentModel.Description('Set custom error message to show upon installation failure')]
     [System.String] $CustomErrorMessage
+
     [DscProperty()]
     [System.ComponentModel.Description('Show or hide installation progress to user')]
     [System.Nullable[System.Boolean]] $HideInstallationProgress
+
     [DscProperty()]
     [System.ComponentModel.Description('Set installation progress timeout in minutes')]
     [System.Nullable[System.UInt32]] $InstallProgressTimeoutInMinutes
@@ -577,21 +583,28 @@ class MSFT_MicrosoftGraphoutOfBoxExperienceSettings
 {
     [DscProperty()]
     [System.ComponentModel.Description('AAD join authentication type. Possible values are: singleUser, shared.')]
+    [ValidateSet('singleUser', 'shared')]
     [System.String] $DeviceUsageType
+
     [DscProperty()]
     [System.ComponentModel.Description('If set to true, then the user can''t start over with different account, on company sign-in')]
     [System.Nullable[System.Boolean]] $HideEscapeLink
+
     [DscProperty()]
     [System.ComponentModel.Description('Show or hide EULA to user')]
     [System.Nullable[System.Boolean]] $HideEULA
+
     [DscProperty()]
     [System.ComponentModel.Description('Show or hide privacy settings to user')]
     [System.Nullable[System.Boolean]] $HidePrivacySettings
+
     [DscProperty()]
     [System.ComponentModel.Description('If set, then skip the keyboard selection page if Language and Region are set')]
     [System.Nullable[System.Boolean]] $SkipKeyboardSelectionPage
+
     [DscProperty()]
     [System.ComponentModel.Description('Type of user. Possible values are: administrator, standard.')]
+    [ValidateSet('administrator', 'standard')]
     [System.String] $UserType
 }
 
@@ -599,22 +612,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

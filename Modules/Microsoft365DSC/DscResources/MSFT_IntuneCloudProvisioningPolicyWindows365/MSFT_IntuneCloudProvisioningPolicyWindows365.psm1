@@ -656,6 +656,7 @@ class MSFT_MicrosoftGraphcloudPcProvisioningPolicyAutopatch
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier (ID) of a Windows Autopatch group. An Autopatch group is a logical container or unit that groups several Microsoft Entra groups and software update policies. Devices with the same Autopatch group ID share unified software update management. The default value is null that indicates that no Autopatch group is associated with the provisioning policy.')]
     [System.String] $AutopatchGroupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique display name of a Windows Autopatch group.')]
     [System.String] $AutopatchGroupDisplayName
@@ -666,9 +667,11 @@ class MSFT_MicrosoftGraphcloudPcAutopilotConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the number of minutes allowed for the Autopilot application to apply the device preparation profile (DPP) configurations to the device. If the Autopilot application doesn''t finish within the specified time (applicationTimeoutInMinutes), the application error is added to the statusDetail property of the cloudPC object. The supported value is an integer between 10 and 360. Required.')]
     [System.Nullable[System.UInt32]] $ApplicationTimeoutInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier (ID) of the Autopilot device preparation profile (DPP) that links a Windows Autopilot device preparation policy to ensure that devices are ready for users after provisioning. Required.')]
     [System.String] $DevicePreparationProfileId
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the access to the device is allowed when the application of Autopilot device preparation profile (DPP) configurations fails or times out. If true, the status of the device is failed and the device is unable to access otherwise, the status of the device is provisionedWithWarnings and the device is allowed to access. The default value is false. Required.')]
     [System.Nullable[System.Boolean]] $OnFailureDeviceAccessDenied
@@ -678,21 +681,30 @@ class MSFT_MicrosoftGraphcloudPcDomainJoinConfiguration
 {
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the method by which the provisioned Cloud PC joins Microsoft Entra ID. If you choose the hybridAzureADJoin type, only provide a value for the onPremisesConnectionId property and leave the regionName property empty. If you choose the azureADJoin type, provide a value for either the onPremisesConnectionId or the regionName property. Possible values are: azureADJoin, hybridAzureADJoin.')]
+    [ValidateSet('azureADJoin', 'hybridAzureADJoin')]
     [System.String] $DomainJoinType
+
     [DscProperty()]
     [System.ComponentModel.Description('The geographic location where the region is located. Read-only.')]
+    [ValidateSet('default', 'asia', 'australasia', 'canada', 'europe', 'india', 'africa', 'usCentral', 'usEast', 'usWest', 'southAmerica', 'middleEast', 'centralAmerica', 'usGovernment', 'mexico')]
     [System.String] $GeographicLocationType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Azure network connection ID that matches the virtual network IT admins want the provisioning policy to use when they create Cloud PCs. You can use this property in both domain join types: Azure AD joined or Hybrid Microsoft Entra joined. If you enter an onPremisesConnectionId, leave the regionName property empty.')]
     [System.String] $OnPremisesConnectionId
+
     [DscProperty()]
     [System.ComponentModel.Description('The logical geographic group this region belongs to. Multiple regions can belong to one region group. A customer can select a regionGroup when they provision a Cloud PC, and the Cloud PC is put in one of the regions in the group based on resource status. For example, the Europe region group contains the Northern Europe and Western Europe regions.')]
+    [ValidateSet('asia', 'australasia', 'australia', 'austria', 'automatic', 'belgium', 'brazil', 'canada', 'default', 'denmark', 'euap', 'europe', 'europeUnion', 'france', 'germany', 'hongKong', 'india', 'indonesia', 'ireland', 'israel', 'italy', 'japan', 'kenya', 'malaysia', 'mexico', 'middleEast', 'netherlands', 'newZealand', 'norway', 'poland', 'singapore', 'southAmerica', 'southKorea', 'spain', 'sweden', 'switzerland', 'taiwan', 'unitedKingdom', 'unknownFutureValue', 'usCentral', 'usEast', 'usGovernment', 'usGovernmentDOD', 'usWest')]
     [System.String] $RegionGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('The supported Azure region where the IT admin wants the provisioning policy to create Cloud PCs. The underlying virtual network is created and managed by the Windows 365 service. This can only be entered if the IT admin chooses Microsoft Entra joined as the domain join type. If you enter a regionName, leave the onPremisesConnectionId property empty. For an automatic selection, choose ''Automatic''.')]
     [System.String] $RegionName
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the method by which the provisioned Cloud PC joins Microsoft Entra ID. If you choose the hybridAzureADJoin type, only provide a value for the onPremisesConnectionId property and leave regionName as empty. If you choose the azureADJoin type, provide a value for either onPremisesConnectionId or regionName. The possible values are: azureADJoin, hybridAzureADJoin. The type property is deprecated and will stop returning data on January 31, 2024. Going forward, use the domainJoinType property.')]
+    [ValidateSet('azureADJoin', 'hybridAzureADJoin')]
     [System.String] $Type
 }
 
@@ -714,22 +726,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

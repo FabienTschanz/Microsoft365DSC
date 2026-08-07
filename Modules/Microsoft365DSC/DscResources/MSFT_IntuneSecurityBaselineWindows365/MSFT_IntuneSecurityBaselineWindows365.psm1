@@ -2309,1296 +2309,2108 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBasel
 {
     [DscProperty()]
     [System.ComponentModel.Description('Prevent enabling lock screen camera (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $CPL_Personalization_NoLockScreenCamera
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent enabling lock screen slide show (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $CPL_Personalization_NoLockScreenSlideshow
+
     [DscProperty()]
     [System.ComponentModel.Description('Apply UAC restrictions to local accounts on network logons (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_SecGuide_0201_LATFP
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure SMB v1 client driver (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_SecGuide_0002_SMBv1_ClientDriver
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure MrxSmb10 driver - Depends on Pol_SecGuide_0002_SMBv1_ClientDriver (4: Disable driver (recommended), 3: Manual start (default for Win7/2008/2008R2/2012), 2: Automatic start (default for Win8.1/2012R2/newer))')]
+    [ValidateSet('4', '3', '2')]
     [System.Nullable[System.Int32]] $Pol_SecGuide_SMB1ClientDriver
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure SMB v1 server (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_SecGuide_0001_SMBv1_Server
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Structured Exception Handling Overwrite Protection (SEHOP) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_SecGuide_0102_SEHOP
+
     [DscProperty()]
     [System.ComponentModel.Description('WDigest Authentication (disabling may require KB2871997) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_SecGuide_0202_WDigestAuthn
+
     [DscProperty()]
     [System.ComponentModel.Description('MSS: (DisableIPSourceRouting IPv6) IP source routing protection level (protects against packet spoofing) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_MSS_DisableIPSourceRoutingIPv6
+
     [DscProperty()]
     [System.ComponentModel.Description('DisableIPSourceRoutingIPv6 (Device) - Depends on Pol_MSS_DisableIPSourceRoutingIPv6 (0: No additional protection, source routed packets are allowed, 1: Medium, source routed packets ignored when IP forwarding is enabled, 2: Highest protection, source routing is completely disabled)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $DisableIPSourceRoutingIPv6
+
     [DscProperty()]
     [System.ComponentModel.Description('MSS: (DisableIPSourceRouting) IP source routing protection level (protects against packet spoofing) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_MSS_DisableIPSourceRouting
+
     [DscProperty()]
     [System.ComponentModel.Description('DisableIPSourceRouting (Device) - Depends on Pol_MSS_DisableIPSourceRouting (0: No additional protection, source routed packets are allowed, 1: Medium, source routed packets ignored when IP forwarding is enabled, 2: Highest protection, source routing is completely disabled)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $DisableIPSourceRouting
+
     [DscProperty()]
     [System.ComponentModel.Description('MSS: (EnableICMPRedirect) Allow ICMP redirects to override OSPF generated routes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_MSS_EnableICMPRedirect
+
     [DscProperty()]
     [System.ComponentModel.Description('MSS: (NoNameReleaseOnDemand) Allow the computer to ignore NetBIOS name release requests except from WINS servers (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Pol_MSS_NoNameReleaseOnDemand
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off multicast name resolution (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Turn_Off_Multicast
+
     [DscProperty()]
     [System.ComponentModel.Description('Prohibit use of Internet Connection Sharing on your DNS domain network (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NC_ShowSharedAccessUI
+
     [DscProperty()]
     [System.ComponentModel.Description('Hardened UNC Paths (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $hardeneduncpaths_Pol_HardenedPaths
+
     [DscProperty()]
     [System.ComponentModel.Description('Hardened UNC Paths: (Device) - Depends on hardeneduncpaths_Pol_HardenedPaths')]
     [MSFT_MicrosoftGraphIntuneSettingsCatalogpol_hardenedpaths[]] $pol_hardenedpaths
+
     [DscProperty()]
     [System.ComponentModel.Description('Prohibit connection to non-domain networks when connected to domain authenticated network (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $WCM_BlockNonDomain
+
     [DscProperty()]
     [System.ComponentModel.Description('Encryption Oracle Remediation (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowEncryptionOracle
+
     [DscProperty()]
     [System.ComponentModel.Description('Protection Level: (Device) - Depends on AllowEncryptionOracle (0: Force Updated Clients, 1: Mitigated, 2: Vulnerable)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $AllowEncryptionOracleDrop
+
     [DscProperty()]
     [System.ComponentModel.Description('Remote host allows delegation of non-exportable credentials (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowProtectedCreds
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent installation of devices using drivers that match these device setup classes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DeviceInstall_Classes_Deny
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevented Classes - Depends on DeviceInstall_Classes_Deny')]
     [System.String[]] $DeviceInstall_Classes_Deny_List
+
     [DscProperty()]
     [System.ComponentModel.Description('Also apply to matching devices that are already installed. - Depends on DeviceInstall_Classes_Deny (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DeviceInstall_Classes_Deny_Retroactive
+
     [DscProperty()]
     [System.ComponentModel.Description('Boot-Start Driver Initialization Policy (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $POL_DriverLoadPolicy_Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Choose the boot-start drivers that can be initialized: - Depends on POL_DriverLoadPolicy_Name (8: Good only, 1: Good and unknown, 3: Good, unknown and bad but critical, 7: All)')]
+    [ValidateSet('8', '1', '3', '7')]
     [System.Nullable[System.Int32]] $SelectDriverLoadPolicy
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure registry policy processing (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $CSE_Registry
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not apply during periodic background processing (Device) - Depends on CSE_Registry (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $CSE_NOBACKGROUND10
+
     [DscProperty()]
     [System.ComponentModel.Description('Process even if the Group Policy objects have not changed (Device) - Depends on CSE_Registry (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $CSE_NOCHANGES10
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off downloading of print drivers over HTTP (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableWebPnPDownload_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off Internet download for Web publishing and online ordering wizards (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $ShellPreventWPWDownload_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Solicited Remote Assistance (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RA_Solicit
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum ticket time (units): - Depends on RA_Solicit (0: Minutes, 1: Hours, 2: Days)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $RA_Solicit_ExpireUnits_List
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum ticket time (value): - Depends on RA_Solicit')]
     [System.Nullable[System.Int32]] $RA_Solicit_ExpireValue_Edt
+
     [DscProperty()]
     [System.ComponentModel.Description('Permit remote control of this computer: - Depends on RA_Solicit (1: Allow helpers to remotely control the computer, 0: Allow helpers to only view the computer)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $RA_Solicit_Control_List
+
     [DscProperty()]
     [System.ComponentModel.Description('Method for sending email invitations: - Depends on RA_Solicit (0: Simple MAPI, 1: Mailto)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RA_Solicit_Mailto_List
+
     [DscProperty()]
     [System.ComponentModel.Description('Restrict Unauthenticated RPC clients (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RpcRestrictRemoteClients
+
     [DscProperty()]
     [System.ComponentModel.Description('RPC Runtime Unauthenticated Client Restriction to Apply: - Depends on RpcRestrictRemoteClients (0: None, 1: Authenticated, 2: Authenticated without exceptions)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $RpcRestrictRemoteClientsList
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Microsoft accounts to be optional (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AppxRuntimeMicrosoftAccountsOptional
+
     [DscProperty()]
     [System.ComponentModel.Description('Disallow Autoplay for non-volume devices (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NoAutoplayfornonVolume
+
     [DscProperty()]
     [System.ComponentModel.Description('Set the default behavior for AutoRun (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NoAutorun
+
     [DscProperty()]
     [System.ComponentModel.Description('Default AutoRun Behavior - Depends on NoAutorun (1: Do not execute any autorun commands, 2: Automatically execute autorun commands)')]
+    [ValidateSet('1', '2')]
     [System.Nullable[System.Int32]] $NoAutorun_Dropdown
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off Autoplay (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Autorun
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off Autoplay on: - Depends on Autorun (181: CD-ROM and removable media drives, 255: All drives)')]
+    [ValidateSet('181', '255')]
     [System.Nullable[System.Int32]] $Autorun_Box
+
     [DscProperty()]
     [System.ComponentModel.Description('Enumerate administrator accounts on elevation (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnumerateAdministrators
+
     [DscProperty()]
     [System.ComponentModel.Description('Specify the maximum log file size (KB) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Channel_LogMaxSize_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum Log Size (KB) - Depends on Channel_LogMaxSize_1')]
     [System.Nullable[System.Int32]] $Channel_LogMaxSize_1_Channel_LogMaxSize
+
     [DscProperty()]
     [System.ComponentModel.Description('Specify the maximum log file size (KB) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Channel_LogMaxSize_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum Log Size (KB) - Depends on Channel_LogMaxSize_2')]
     [System.Nullable[System.Int32]] $Channel_LogMaxSize_2_Channel_LogMaxSize
+
     [DscProperty()]
     [System.ComponentModel.Description('Specify the maximum log file size (KB) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Channel_LogMaxSize_4
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum Log Size (KB) - Depends on Channel_LogMaxSize_4')]
     [System.Nullable[System.Int32]] $Channel_LogMaxSize_4_Channel_LogMaxSize
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Windows Defender SmartScreen (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableSmartScreen
+
     [DscProperty()]
     [System.ComponentModel.Description('Pick one of the following settings: (Device) - Depends on EnableSmartScreen (block: Warn and prevent bypass, warn: Warn)')]
+    [ValidateSet('block', 'warn')]
     [System.String] $EnableSmartScreenDropdown
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off Data Execution Prevention for Explorer (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NoDataExecutionPrevention
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off heap termination on corruption (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NoHeapTerminationOnCorruption
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow software to run or install even if the signature is invalid (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_InvalidSignatureBlock
+
     [DscProperty()]
     [System.ComponentModel.Description('Check for server certificate revocation (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_CertificateRevocation
+
     [DscProperty()]
     [System.ComponentModel.Description('Check for signatures on downloaded programs (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_DownloadSignatures
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not allow ActiveX controls to run in Protected Mode when Enhanced Protected Mode is enabled (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_DisableEPMCompat
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off encryption support (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_SetWinInetProtocols
+
     [DscProperty()]
     [System.ComponentModel.Description('Secure Protocol combinations - Depends on Advanced_SetWinInetProtocols (0: Use no secure protocols, 8: Only use SSL 2.0, 32: Only use SSL 3.0, 40: Use SSL 2.0 and SSL 3.0, 128: Only use TLS 1.0, 136: Use SSL 2.0 and TLS 1.0, 160: Use SSL 3.0 and TLS 1.0, 168: Use SSL 2.0, SSL 3.0, and TLS 1.0, 512: Only use TLS 1.1, 520: Use SSL 2.0 and TLS 1.1, 544: Use SSL 3.0 and TLS 1.1, 552: Use SSL 2.0, SSL 3.0, and TLS 1.1, 640: Use TLS 1.0 and TLS 1.1, 648: Use SSL 2.0, TLS 1.0, and TLS 1.1, 672: Use SSL 3.0, TLS 1.0, and TLS 1.1, 680: Use SSL 2.0, SSL 3.0, TLS 1.0, and TLS 1.1, 2048: Only use TLS 1.2, 2056: Use SSL 2.0 and TLS 1.2, 2080: Use SSL 3.0 and TLS 1.2, 2088: Use SSL 2.0, SSL 3.0, and TLS 1.2, 2176: Use TLS 1.0 and TLS 1.2, 2184: Use SSL 2.0, TLS 1.0, and TLS 1.2, 2208: Use SSL 3.0, TLS 1.0, and TLS 1.2, 2216: Use SSL 2.0, SSL 3.0, TLS 1.0, and TLS 1.2, 2560: Use TLS 1.1 and TLS 1.2, 2568: Use SSL 2.0, TLS 1.1, and TLS 1.2, 2592: Use SSL 3.0, TLS 1.1, and TLS 1.2, 2600: Use SSL 2.0, SSL 3.0, TLS 1.1, and TLS 1.2, 2688: Use TLS 1.0, TLS 1.1, and TLS 1.2, 2696: Use SSL 2.0, TLS 1.0, TLS 1.1, and TLS 1.2, 2720: Use SSL 3.0, TLS 1.0, TLS 1.1, and TLS 1.2, 2728: Use SSL 2.0, SSL 3.0, TLS 1.0, TLS 1.1, and TLS 1.2, 8192: Only use TLS 1.3, 10240: Use TLS 1.2 and TLS 1.3, 10752: Use TLS 1.1, TLS 1.2, and TLS 1.3, 10880: Use TLS 1.0, TLS 1.1, TLS 1.2, and TLS 1.3, 10912: Use SSL 3.0, TLS 1.0, TLS 1.1, TLS 1.2, and TLS 1.3)')]
+    [ValidateSet('0', '8', '32', '40', '128', '136', '160', '168', '512', '520', '544', '552', '640', '648', '672', '680', '2048', '2056', '2080', '2088', '2176', '2184', '2208', '2216', '2560', '2568', '2592', '2600', '2688', '2696', '2720', '2728', '8192', '10240', '10752', '10880', '10912')]
     [System.String] $Advanced_WinInetProtocolOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on 64-bit tab processes when running in Enhanced Protected Mode on 64-bit versions of Windows (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_EnableEnhancedProtectedMode64Bit
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Enhanced Protected Mode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_EnableEnhancedProtectedMode
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent ignoring certificate errors (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NoCertError
+
     [DscProperty()]
     [System.ComponentModel.Description('Access data sources across domains (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAccessDataSourcesAcrossDomains_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Access data sources across domains - Depends on IZ_PolicyAccessDataSourcesAcrossDomains_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAccessDataSourcesAcrossDomains_1_IZ_Partname1406
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow cut, copy or paste operations from the clipboard via script (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowPasteViaScript_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow paste operations via script - Depends on IZ_PolicyAllowPasteViaScript_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowPasteViaScript_1_IZ_Partname1407
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow drag and drop or copy and paste files (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDropOrPasteFiles_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow drag and drop or copy and paste files - Depends on IZ_PolicyDropOrPasteFiles_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDropOrPasteFiles_1_IZ_Partname1802
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow loading of XAML files (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_XAML_1
+
     [DscProperty()]
     [System.ComponentModel.Description('XAML Files - Depends on IZ_Policy_XAML_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_XAML_1_IZ_Partname2402
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow only approved domains to use ActiveX controls without prompt (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyOnlyAllowApprovedDomainsToUseActiveXWithoutPrompt_Both_Internet
+
     [DscProperty()]
     [System.ComponentModel.Description('Only allow approved domains to use ActiveX controls without prompt - Depends on IZ_PolicyOnlyAllowApprovedDomainsToUseActiveXWithoutPrompt_Both_Internet (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyOnlyAllowApprovedDomainsToUseActiveXWithoutPrompt_Both_Internet_IZ_Partname120b
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow only approved domains to use the TDC ActiveX control (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowTDCControl_Both_Internet
+
     [DscProperty()]
     [System.ComponentModel.Description('Only allow approved domains to use the TDC ActiveX control - Depends on IZ_PolicyAllowTDCControl_Both_Internet (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowTDCControl_Both_Internet_IZ_Partname120c
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow script-initiated windows without size or position constraints (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyWindowsRestrictionsURLaction_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow script-initiated windows without size or position constraints - Depends on IZ_PolicyWindowsRestrictionsURLaction_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyWindowsRestrictionsURLaction_1_IZ_Partname2102
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow scripting of Internet Explorer WebBrowser controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_WebBrowserControl_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer web browser control - Depends on IZ_Policy_WebBrowserControl_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_WebBrowserControl_1_IZ_Partname1206
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow scriptlets (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_AllowScriptlets_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Scriptlets - Depends on IZ_Policy_AllowScriptlets_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_AllowScriptlets_1_IZ_Partname1209
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow updates to status bar via script (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_ScriptStatusBar_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Status bar updates via script - Depends on IZ_Policy_ScriptStatusBar_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_ScriptStatusBar_1_IZ_Partname2103
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow VBScript to run in Internet Explorer (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowVBScript_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow VBScript to run in Internet Explorer - Depends on IZ_PolicyAllowVBScript_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowVBScript_1_IZ_Partname140C
+
     [DscProperty()]
     [System.ComponentModel.Description('Automatic prompting for file downloads (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyNotificationBarDownloadURLaction_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Automatic prompting for file downloads - Depends on IZ_PolicyNotificationBarDownloadURLaction_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyNotificationBarDownloadURLaction_1_IZ_Partname2200
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls - Depends on IZ_PolicyAntiMalwareCheckingOfActiveXControls_1 (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_1_IZ_Partname270C
+
     [DscProperty()]
     [System.ComponentModel.Description('Download signed ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadSignedActiveX_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Download signed ActiveX controls - Depends on IZ_PolicyDownloadSignedActiveX_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadSignedActiveX_1_IZ_Partname1001
+
     [DscProperty()]
     [System.ComponentModel.Description('Download unsigned ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadUnsignedActiveX_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Download unsigned ActiveX controls - Depends on IZ_PolicyDownloadUnsignedActiveX_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadUnsignedActiveX_1_IZ_Partname1004
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains across windows (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsAcrossWindows_Both_Internet
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains across windows - Depends on IZ_PolicyDragDropAcrossDomainsAcrossWindows_Both_Internet (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsAcrossWindows_Both_Internet_IZ_Partname2709
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains within a window (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsWithinWindow_Both_Internet
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains within a window - Depends on IZ_PolicyDragDropAcrossDomainsWithinWindow_Both_Internet (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsWithinWindow_Both_Internet_IZ_Partname2708
+
     [DscProperty()]
     [System.ComponentModel.Description('Include local path when user is uploading files to a server (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_LocalPathForUpload_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Include local directory path when uploading files to a server - Depends on IZ_Policy_LocalPathForUpload_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_LocalPathForUpload_1_IZ_Partname160A
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe - Depends on IZ_PolicyScriptActiveXNotMarkedSafe_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_1_IZ_Partname1201
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_1 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_1_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Launching applications and files in an IFRAME (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyLaunchAppsAndFilesInIFRAME_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Launching applications and files in an IFRAME - Depends on IZ_PolicyLaunchAppsAndFilesInIFRAME_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyLaunchAppsAndFilesInIFRAME_1_IZ_Partname1804
+
     [DscProperty()]
     [System.ComponentModel.Description('Logon options (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyLogon_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Logon options - Depends on IZ_PolicyLogon_1 (196608: Anonymous logon, 131072: Automatic logon only in Intranet zone, 0: Automatic logon with current username and password, 65536: Prompt for user name and password)')]
+    [ValidateSet('196608', '131072', '0', '65536')]
     [System.Nullable[System.Int32]] $IZ_PolicyLogon_1_IZ_Partname1A00
+
     [DscProperty()]
     [System.ComponentModel.Description('Navigate windows and frames across different domains (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyNavigateSubframesAcrossDomains_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Navigate windows and frames across different domains - Depends on IZ_PolicyNavigateSubframesAcrossDomains_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyNavigateSubframesAcrossDomains_1_IZ_Partname1607
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components not signed with Authenticode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyUnsignedFrameworkComponentsURLaction_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components not signed with Authenticode - Depends on IZ_PolicyUnsignedFrameworkComponentsURLaction_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyUnsignedFrameworkComponentsURLaction_1_IZ_Partname2004
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components signed with Authenticode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicySignedFrameworkComponentsURLaction_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components signed with Authenticode - Depends on IZ_PolicySignedFrameworkComponentsURLaction_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicySignedFrameworkComponentsURLaction_1_IZ_Partname2001
+
     [DscProperty()]
     [System.ComponentModel.Description('Show security warning for potentially unsafe files (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_UnsafeFiles_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Launching programs and unsafe files - Depends on IZ_Policy_UnsafeFiles_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_UnsafeFiles_1_IZ_Partname1806
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Cross-Site Scripting Filter (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyTurnOnXSSFilter_Both_Internet
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Cross-Site Scripting (XSS) Filter - Depends on IZ_PolicyTurnOnXSSFilter_Both_Internet (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyTurnOnXSSFilter_Both_Internet_IZ_Partname1409
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Protected Mode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_TurnOnProtectedMode_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Protected Mode - Depends on IZ_Policy_TurnOnProtectedMode_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_TurnOnProtectedMode_1_IZ_Partname2500
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on SmartScreen Filter scan (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Use SmartScreen Filter - Depends on IZ_Policy_Phishing_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_1_IZ_Partname2301
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Pop-up Blocker (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyBlockPopupWindows_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Pop-up Blocker - Depends on IZ_PolicyBlockPopupWindows_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyBlockPopupWindows_1_IZ_Partname1809
+
     [DscProperty()]
     [System.ComponentModel.Description('Userdata persistence (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyUserdataPersistence_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Userdata persistence - Depends on IZ_PolicyUserdataPersistence_1 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyUserdataPersistence_1_IZ_Partname1606
+
     [DscProperty()]
     [System.ComponentModel.Description('Web sites in less privileged Web content zones can navigate into this zone (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyZoneElevationURLaction_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Web sites in less privileged Web content zones can navigate into this zone - Depends on IZ_PolicyZoneElevationURLaction_1 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyZoneElevationURLaction_1_IZ_Partname2101
+
     [DscProperty()]
     [System.ComponentModel.Description('Intranet Sites: Include all network paths (UNCs) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_UNCAsIntranet
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_3
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls - Depends on IZ_PolicyAntiMalwareCheckingOfActiveXControls_3 (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_3_IZ_Partname270C
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_3
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe - Depends on IZ_PolicyScriptActiveXNotMarkedSafe_3 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_3_IZ_Partname1201
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_3
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_3 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_3_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_9
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls - Depends on IZ_PolicyAntiMalwareCheckingOfActiveXControls_9 (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_9_IZ_Partname270C
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_9
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_9 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_9_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on SmartScreen Filter scan (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Use SmartScreen Filter - Depends on IZ_Policy_Phishing_2 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_2_IZ_Partname2301
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_4
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_4 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_4_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_10
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_10 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_10_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_8
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_8 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_8_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on SmartScreen Filter scan (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_8
+
     [DscProperty()]
     [System.ComponentModel.Description('Use SmartScreen Filter - Depends on IZ_Policy_Phishing_8 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_8_IZ_Partname2301
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_6
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_6 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_6_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Access data sources across domains (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAccessDataSourcesAcrossDomains_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Access data sources across domains - Depends on IZ_PolicyAccessDataSourcesAcrossDomains_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAccessDataSourcesAcrossDomains_7_IZ_Partname1406
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow active scripting (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyActiveScripting_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow active scripting - Depends on IZ_PolicyActiveScripting_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Partname1400
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow binary and script behaviors (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyBinaryBehaviors_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Binary and Script Behaviors - Depends on IZ_PolicyBinaryBehaviors_7 (0: Enable, 65536: Administrator approved, 3: Disable)')]
+    [ValidateSet('0', '65536', '3')]
     [System.Nullable[System.Int32]] $IZ_Partname2000
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow cut, copy or paste operations from the clipboard via script (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowPasteViaScript_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow paste operations via script - Depends on IZ_PolicyAllowPasteViaScript_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowPasteViaScript_7_IZ_Partname1407
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow drag and drop or copy and paste files (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDropOrPasteFiles_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow drag and drop or copy and paste files - Depends on IZ_PolicyDropOrPasteFiles_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDropOrPasteFiles_7_IZ_Partname1802
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow file downloads (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyFileDownload_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow file downloads - Depends on IZ_PolicyFileDownload_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Partname1803
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow loading of XAML files (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_XAML_7
+
     [DscProperty()]
     [System.ComponentModel.Description('XAML Files - Depends on IZ_Policy_XAML_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_XAML_7_IZ_Partname2402
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow META REFRESH (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowMETAREFRESH_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow META REFRESH - Depends on IZ_PolicyAllowMETAREFRESH_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Partname1608
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow only approved domains to use ActiveX controls without prompt (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyOnlyAllowApprovedDomainsToUseActiveXWithoutPrompt_Both_Restricted
+
     [DscProperty()]
     [System.ComponentModel.Description('Only allow approved domains to use ActiveX controls without prompt - Depends on IZ_PolicyOnlyAllowApprovedDomainsToUseActiveXWithoutPrompt_Both_Restricted (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyOnlyAllowApprovedDomainsToUseActiveXWithoutPrompt_Both_Restricted_IZ_Partname120b
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow only approved domains to use the TDC ActiveX control (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowTDCControl_Both_Restricted
+
     [DscProperty()]
     [System.ComponentModel.Description('Only allow approved domains to use the TDC ActiveX control - Depends on IZ_PolicyAllowTDCControl_Both_Restricted (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowTDCControl_Both_Restricted_IZ_Partname120c
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow script-initiated windows without size or position constraints (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyWindowsRestrictionsURLaction_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow script-initiated windows without size or position constraints - Depends on IZ_PolicyWindowsRestrictionsURLaction_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyWindowsRestrictionsURLaction_7_IZ_Partname2102
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow scripting of Internet Explorer WebBrowser controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_WebBrowserControl_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer web browser control - Depends on IZ_Policy_WebBrowserControl_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_WebBrowserControl_7_IZ_Partname1206
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow scriptlets (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_AllowScriptlets_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Scriptlets - Depends on IZ_Policy_AllowScriptlets_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_AllowScriptlets_7_IZ_Partname1209
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow updates to status bar via script (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_ScriptStatusBar_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Status bar updates via script - Depends on IZ_Policy_ScriptStatusBar_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_ScriptStatusBar_7_IZ_Partname2103
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow VBScript to run in Internet Explorer (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowVBScript_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow VBScript to run in Internet Explorer - Depends on IZ_PolicyAllowVBScript_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAllowVBScript_7_IZ_Partname140C
+
     [DscProperty()]
     [System.ComponentModel.Description('Automatic prompting for file downloads (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyNotificationBarDownloadURLaction_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Automatic prompting for file downloads - Depends on IZ_PolicyNotificationBarDownloadURLaction_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyNotificationBarDownloadURLaction_7_IZ_Partname2200
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls - Depends on IZ_PolicyAntiMalwareCheckingOfActiveXControls_7 (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_7_IZ_Partname270C
+
     [DscProperty()]
     [System.ComponentModel.Description('Download signed ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadSignedActiveX_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Download signed ActiveX controls - Depends on IZ_PolicyDownloadSignedActiveX_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadSignedActiveX_7_IZ_Partname1001
+
     [DscProperty()]
     [System.ComponentModel.Description('Download unsigned ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadUnsignedActiveX_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Download unsigned ActiveX controls - Depends on IZ_PolicyDownloadUnsignedActiveX_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDownloadUnsignedActiveX_7_IZ_Partname1004
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains across windows (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsAcrossWindows_Both_Restricted
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains across windows - Depends on IZ_PolicyDragDropAcrossDomainsAcrossWindows_Both_Restricted (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsAcrossWindows_Both_Restricted_IZ_Partname2709
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains within a window (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsWithinWindow_Both_Restricted
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable dragging of content from different domains within a window - Depends on IZ_PolicyDragDropAcrossDomainsWithinWindow_Both_Restricted (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyDragDropAcrossDomainsWithinWindow_Both_Restricted_IZ_Partname2708
+
     [DscProperty()]
     [System.ComponentModel.Description('Include local path when user is uploading files to a server (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_LocalPathForUpload_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Include local directory path when uploading files to a server - Depends on IZ_Policy_LocalPathForUpload_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_LocalPathForUpload_7_IZ_Partname160A
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe - Depends on IZ_PolicyScriptActiveXNotMarkedSafe_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_7_IZ_Partname1201
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_7 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_7_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Launching applications and files in an IFRAME (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyLaunchAppsAndFilesInIFRAME_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Launching applications and files in an IFRAME - Depends on IZ_PolicyLaunchAppsAndFilesInIFRAME_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyLaunchAppsAndFilesInIFRAME_7_IZ_Partname1804
+
     [DscProperty()]
     [System.ComponentModel.Description('Logon options (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyLogon_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Logon options - Depends on IZ_PolicyLogon_7 (196608: Anonymous logon, 131072: Automatic logon only in Intranet zone, 0: Automatic logon with current username and password, 65536: Prompt for user name and password)')]
+    [ValidateSet('196608', '131072', '0', '65536')]
     [System.Nullable[System.Int32]] $IZ_PolicyLogon_7_IZ_Partname1A00
+
     [DscProperty()]
     [System.ComponentModel.Description('Navigate windows and frames across different domains (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyNavigateSubframesAcrossDomains_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Navigate windows and frames across different domains - Depends on IZ_PolicyNavigateSubframesAcrossDomains_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyNavigateSubframesAcrossDomains_7_IZ_Partname1607
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components not signed with Authenticode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyUnsignedFrameworkComponentsURLaction_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components not signed with Authenticode - Depends on IZ_PolicyUnsignedFrameworkComponentsURLaction_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyUnsignedFrameworkComponentsURLaction_7_IZ_Partname2004
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components signed with Authenticode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicySignedFrameworkComponentsURLaction_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Run .NET Framework-reliant components signed with Authenticode - Depends on IZ_PolicySignedFrameworkComponentsURLaction_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicySignedFrameworkComponentsURLaction_7_IZ_Partname2001
+
     [DscProperty()]
     [System.ComponentModel.Description('Run ActiveX controls and plugins (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyRunActiveXControls_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Run ActiveX controls and plugins - Depends on IZ_PolicyRunActiveXControls_7 (65536: Administrator approved, 0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('65536', '0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Partname1200
+
     [DscProperty()]
     [System.ComponentModel.Description('Script ActiveX controls marked safe for scripting (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXMarkedSafe_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Script ActiveX controls marked safe for scripting - Depends on IZ_PolicyScriptActiveXMarkedSafe_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Partname1405
+
     [DscProperty()]
     [System.ComponentModel.Description('Scripting of Java applets (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptingOfJavaApplets_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Scripting of Java applets - Depends on IZ_PolicyScriptingOfJavaApplets_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Partname1402
+
     [DscProperty()]
     [System.ComponentModel.Description('Show security warning for potentially unsafe files (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_UnsafeFiles_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Launching programs and unsafe files - Depends on IZ_Policy_UnsafeFiles_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_UnsafeFiles_7_IZ_Partname1806
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Cross-Site Scripting Filter (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyTurnOnXSSFilter_Both_Restricted
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Cross-Site Scripting (XSS) Filter - Depends on IZ_PolicyTurnOnXSSFilter_Both_Restricted (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyTurnOnXSSFilter_Both_Restricted_IZ_Partname1409
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on Protected Mode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_TurnOnProtectedMode_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Protected Mode - Depends on IZ_Policy_TurnOnProtectedMode_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_TurnOnProtectedMode_7_IZ_Partname2500
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on SmartScreen Filter scan (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Use SmartScreen Filter - Depends on IZ_Policy_Phishing_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_Policy_Phishing_7_IZ_Partname2301
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Pop-up Blocker (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyBlockPopupWindows_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Pop-up Blocker - Depends on IZ_PolicyBlockPopupWindows_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyBlockPopupWindows_7_IZ_Partname1809
+
     [DscProperty()]
     [System.ComponentModel.Description('Userdata persistence (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyUserdataPersistence_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Userdata persistence - Depends on IZ_PolicyUserdataPersistence_7 (0: Enable, 3: Disable)')]
+    [ValidateSet('0', '3')]
     [System.Nullable[System.Int32]] $IZ_PolicyUserdataPersistence_7_IZ_Partname1606
+
     [DscProperty()]
     [System.ComponentModel.Description('Web sites in less privileged Web content zones can navigate into this zone (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyZoneElevationURLaction_7
+
     [DscProperty()]
     [System.ComponentModel.Description('Web sites in less privileged Web content zones can navigate into this zone - Depends on IZ_PolicyZoneElevationURLaction_7 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.String] $IZ_PolicyZoneElevationURLaction_7_IZ_Partname2101
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_5
+
     [DscProperty()]
     [System.ComponentModel.Description('Don''t run antimalware programs against ActiveX controls - Depends on IZ_PolicyAntiMalwareCheckingOfActiveXControls_5 (3: Enable, 0: Disable)')]
+    [ValidateSet('3', '0')]
     [System.Nullable[System.Int32]] $IZ_PolicyAntiMalwareCheckingOfActiveXControls_5_IZ_Partname270C
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_5
+
     [DscProperty()]
     [System.ComponentModel.Description('Initialize and script ActiveX controls not marked as safe - Depends on IZ_PolicyScriptActiveXNotMarkedSafe_5 (0: Enable, 3: Disable, 1: Prompt)')]
+    [ValidateSet('0', '3', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyScriptActiveXNotMarkedSafe_5_IZ_Partname1201
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyJavaPermissions_5
+
     [DscProperty()]
     [System.ComponentModel.Description('Java permissions - Depends on IZ_PolicyJavaPermissions_5 (65536: High safety, 131072: Medium safety, 196608: Low safety, 8388608: Custom, 0: Disable Java)')]
+    [ValidateSet('65536', '131072', '196608', '8388608', '0')]
     [System.String] $IZ_PolicyJavaPermissions_5_IZ_Partname1C00
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on certificate address mismatch warning (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IZ_PolicyWarnCertMismatch
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing SmartScreen Filter warnings (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableSafetyFilterOverride
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing SmartScreen Filter warnings about files that are not commonly downloaded from the Internet (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableSafetyFilterOverrideForAppRepUnknown
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent managing SmartScreen Filter (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Disable_Managing_Safety_Filter_IE9
+
     [DscProperty()]
     [System.ComponentModel.Description('Select SmartScreen Filter mode - Depends on Disable_Managing_Safety_Filter_IE9 (0: Off, 1: On)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IE9SafetyFilterOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent per-user installation of ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisablePerUserActiveXInstall
+
     [DscProperty()]
     [System.ComponentModel.Description('Remove ''Run this time'' button for outdated ActiveX controls in Internet Explorer (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $VerMgmtDisableRunThisTime
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off blocking of outdated ActiveX controls for Internet Explorer (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $VerMgmtDisable
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow fallback to SSL 3.0 (Internet Explorer) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Advanced_EnableSSL3Fallback
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow insecure fallback for: - Depends on Advanced_EnableSSL3Fallback (0: No Sites, 1: Non-Protected Mode Sites, 3: All Sites)')]
+    [ValidateSet('0', '1', '3')]
     [System.Nullable[System.Int32]] $Advanced_EnableSSL3FallbackOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_5
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_6
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_3
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_10
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_9
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_11
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_12
+
     [DscProperty()]
     [System.ComponentModel.Description('Internet Explorer Processes (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $IESF_PolicyExplorerProcesses_8
+
     [DscProperty()]
     [System.ComponentModel.Description('Security Zones: Do not allow users to add/delete sites (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Security_zones_map_edit
+
     [DscProperty()]
     [System.ComponentModel.Description('Security Zones: Do not allow users to change policies (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Security_options_edit
+
     [DscProperty()]
     [System.ComponentModel.Description('Security Zones: Use only machine settings (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Security_HKLM_only
+
     [DscProperty()]
     [System.ComponentModel.Description('Specify use of ActiveX Installer Service for installation of ActiveX controls (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $OnlyUseAXISForActiveXInstall
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off Crash Detection (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AddonManagement_RestrictCrashDetection
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off the Security Settings Check feature (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Disable_Security_Settings_Check
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure the ''Block at First Sight'' feature (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableBlockAtFirstSeen
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on process scanning whenever real-time protection is enabled (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RealtimeProtection_DisableScanOnRealtimeEnable
+
     [DscProperty()]
     [System.ComponentModel.Description('Scan packed executables (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Scan_DisablePackedExeScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn off routine remediation (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableRoutinelyTakingAction
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not allow passwords to be saved (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $TS_CLIENT_DISABLE_PASSWORD_SAVING_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Do not allow drive redirection (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $TS_CLIENT_DRIVE_M
+
     [DscProperty()]
     [System.ComponentModel.Description('Always prompt for password upon connection (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $TS_PASSWORD
+
     [DscProperty()]
     [System.ComponentModel.Description('Require secure RPC communication (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $TS_RPC_ENCRYPTION
+
     [DscProperty()]
     [System.ComponentModel.Description('Set client connection encryption level (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $TS_ENCRYPTION_POLICY
+
     [DscProperty()]
     [System.ComponentModel.Description('Encryption Level - Depends on TS_ENCRYPTION_POLICY (1: Low Level, 2: Client Compatible, 3: High Level)')]
+    [ValidateSet('1', '2', '3')]
     [System.Nullable[System.Int32]] $TS_ENCRYPTION_LEVEL
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent downloading of enclosures (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Disable_Downloading_of_Enclosures
+
     [DscProperty()]
     [System.ComponentModel.Description('Sign-in and lock last interactive user automatically after a restart (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AutomaticRestartSignOn
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on PowerShell Script Block Logging (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableScriptBlockLogging
+
     [DscProperty()]
     [System.ComponentModel.Description('Log script block invocation start / stop events: - Depends on EnableScriptBlockLogging (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableScriptBlockInvocationLogging
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Basic authentication (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowBasic_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow unencrypted traffic (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowUnencrypted_2
+
     [DscProperty()]
     [System.ComponentModel.Description('Disallow Digest authentication (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisallowDigest
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Basic authentication (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowBasic_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow unencrypted traffic (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowUnencrypted_1
+
     [DscProperty()]
     [System.ComponentModel.Description('Disallow WinRM from storing RunAs credentials (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableRunAs
+
     [DscProperty()]
     [System.ComponentModel.Description('Account Logon Audit Credential Validation (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountLogon_AuditCredentialValidation
+
     [DscProperty()]
     [System.ComponentModel.Description('Account Logon Logoff Audit Account Lockout (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountLogonLogoff_AuditAccountLockout
+
     [DscProperty()]
     [System.ComponentModel.Description('Account Logon Logoff Audit Group Membership (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountLogonLogoff_AuditGroupMembership
+
     [DscProperty()]
     [System.ComponentModel.Description('Account Logon Logoff Audit Logon (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountLogonLogoff_AuditLogon
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit Authentication Policy Change (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $PolicyChange_AuditAuthenticationPolicyChange
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit Changes to Audit Policy (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $PolicyChange_AuditPolicyChange
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit File Share Access (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $ObjectAccess_AuditFileShare
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit Other Logon Logoff Events (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountLogonLogoff_AuditOtherLogonLogoffEvents
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit Security Group Management (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountManagement_AuditSecurityGroupManagement
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit Security System Extension (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $System_AuditSecuritySystemExtension
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit Special Logon (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountLogonLogoff_AuditSpecialLogon
+
     [DscProperty()]
     [System.ComponentModel.Description('Audit User Account Management (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $AccountManagement_AuditUserAccountManagement
+
     [DscProperty()]
     [System.ComponentModel.Description('Detailed Tracking Audit PNP Activity (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $DetailedTracking_AuditPNPActivity
+
     [DscProperty()]
     [System.ComponentModel.Description('Detailed Tracking Audit Process Creation (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $DetailedTracking_AuditProcessCreation
+
     [DscProperty()]
     [System.ComponentModel.Description('Object Access Audit Detailed File Share (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $ObjectAccess_AuditDetailedFileShare
+
     [DscProperty()]
     [System.ComponentModel.Description('Object Access Audit Other Object Access Events (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $ObjectAccess_AuditOtherObjectAccessEvents
+
     [DscProperty()]
     [System.ComponentModel.Description('Object Access Audit Removable Storage (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $ObjectAccess_AuditRemovableStorage
+
     [DscProperty()]
     [System.ComponentModel.Description('Policy Change Audit MPSSVC Rule Level Policy Change (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $PolicyChange_AuditMPSSVCRuleLevelPolicyChange
+
     [DscProperty()]
     [System.ComponentModel.Description('Policy Change Audit Other Policy Change Events (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $PolicyChange_AuditOtherPolicyChangeEvents
+
     [DscProperty()]
     [System.ComponentModel.Description('Privilege Use Audit Sensitive Privilege Use (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $PrivilegeUse_AuditSensitivePrivilegeUse
+
     [DscProperty()]
     [System.ComponentModel.Description('System Audit Other System Events (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $System_AuditOtherSystemEvents
+
     [DscProperty()]
     [System.ComponentModel.Description('System Audit Security State Change (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $System_AuditSecurityStateChange
+
     [DscProperty()]
     [System.ComponentModel.Description('System Audit System Integrity (0: Off/None, 1: Success, 2: Failure, 3: Success+Failure)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $System_AuditSystemIntegrity
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Direct Memory Access (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowDirectMemoryAccess
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Archive Scanning (0: Not allowed. Turns off scanning on archived files., 1: Allowed. Scans the archive files.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowArchiveScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Behavior Monitoring (0: Not allowed. Turns off behavior monitoring., 1: Allowed. Turns on real-time behavior monitoring.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowBehaviorMonitoring
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Cloud Protection (0: Not allowed. Turns off the Microsoft Active Protection Service., 1: Allowed. Turns on the Microsoft Active Protection Service.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowCloudProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Full Scan Removable Drive Scanning (0: Not allowed. Turns off scanning on removable drives., 1: Allowed. Scans removable drives.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowFullScanRemovableDriveScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow On Access Protection (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowOnAccessProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Realtime Monitoring (0: Not allowed. Turns off the real-time monitoring service., 1: Allowed. Turns on and runs the real-time monitoring service.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowRealtimeMonitoring
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow scanning of all downloaded files and attachments (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowIOAVProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Script Scanning (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowScriptScanning
+
     [DscProperty()]
     [System.ComponentModel.Description('Block execution of potentially obfuscated scripts - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockExecutionOfPotentiallyObfuscatedScripts
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockExecutionOfPotentiallyObfuscatedScripts_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Win32 API calls from Office macros - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockWin32APICallsFromOfficeMacros
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockWin32APICallsFromOfficeMacros_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block executable files from running unless they meet a prevalence, age, or trusted list criterion - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockExecutableFilesRunningUnlessTheyMeetPrevalenceAgeTrustedListCriterion
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockExecutableFilesRunningUnlessTheyMeetPrevalenceAgeTrustedListCriterion_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Office communication application from creating child processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockOfficeCommunicationAppFromCreatingChildProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockOfficeCommunicationAppFromCreatingChildProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block all Office applications from creating child processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockAllOfficeApplicationsFromCreatingChildProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockAllOfficeApplicationsFromCreatingChildProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Adobe Reader from creating child processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockAdobeReaderFromCreatingChildProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockAdobeReaderFromCreatingChildProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block credential stealing from the Windows local security authority subsystem - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockCredentialStealingFromWindowsLocalSecurityAuthoritySubsystem_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block JavaScript or VBScript from launching downloaded executable content - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockJavaScriptOrVBScriptFromLaunchingDownloadedExecutableContent
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockJavaScriptOrVBScriptFromLaunchingDownloadedExecutableContent_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Webshell creation for Servers - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockWebshellCreationForServers
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockWebshellCreationForServers_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block untrusted and unsigned processes that run from USB - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockUntrustedUnsignedProcessesThatRunFromUSB
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockUntrustedUnsignedProcessesThatRunFromUSB_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block persistence through WMI event subscription - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockPersistenceThroughWMIEventSubscription
+
     [DscProperty()]
     [System.ComponentModel.Description('[PREVIEW] Block use of copied or impersonated system tools - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockUseOfCopiedOrImpersonatedSystemTools
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockUseOfCopiedOrImpersonatedSystemTools_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block abuse of exploited vulnerable signed drivers (Device) - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockAbuseOfExploitedVulnerableSignedDrivers
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockAbuseOfExploitedVulnerableSignedDrivers_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block process creations originating from PSExec and WMI commands - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockProcessCreationsFromPSExecAndWMICommands
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockProcessCreationsFromPSExecAndWMICommands_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Office applications from creating executable content - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockOfficeApplicationsFromCreatingExecutableContent
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockOfficeApplicationsFromCreatingExecutableContent_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block Office applications from injecting code into other processes - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockOfficeApplicationsFromInjectingCodeIntoOtherProcesses
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockOfficeApplicationsFromInjectingCodeIntoOtherProcesses_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('[PREVIEW] Block rebooting machine in Safe Mode - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockRebootingMachineInSafeMode
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockRebootingMachineInSafeMode_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Use advanced protection against ransomware - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $UseAdvancedProtectionAgainstRansomware
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $UseAdvancedProtectionAgainstRansomware_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Block executable content from email client and webmail - Depends on AttackSurfaceReductionRules (off: Off, block: Block, audit: Audit, warn: Warn)')]
+    [ValidateSet('off', 'block', 'audit', 'warn')]
     [System.String] $BlockExecutableContentFromEmailClientAndWebmail
+
     [DscProperty()]
     [System.ComponentModel.Description('ASR Only Per Rule Exclusions')]
     [System.String[]] $BlockExecutableContentFromEmailClientAndWebmail_ASROnlyPerRuleExclusions
+
     [DscProperty()]
     [System.ComponentModel.Description('Cloud Block Level (0: NotConfigured, 2: High, 4: HighPlus, 6: ZeroTolerance)')]
+    [ValidateSet('0', '2', '4', '6')]
     [System.Nullable[System.Int32]] $CloudBlockLevel
+
     [DscProperty()]
     [System.ComponentModel.Description('Cloud Extended Timeout')]
     [System.Nullable[System.Int32]] $CloudExtendedTimeout
+
     [DscProperty()]
     [System.ComponentModel.Description('Disable Local Admin Merge (0: Enable Local Admin Merge, 1: Disable Local Admin Merge)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DisableLocalAdminMerge
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable File Hash Computation (0: Disable, 1: Enable)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableFileHashComputation
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Network Protection (0: Disabled, 1: Enabled (block mode), 2: Enabled (audit mode))')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $EnableNetworkProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Hide Exclusions From Local Admins (1: If you enable this setting, local admins will no longer be able to see the exclusion list in Windows Security App or via PowerShell., 0: If you disable or do not configure this setting, local admins will be able to see exclusions in the Windows Security App and via PowerShell.)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $HideExclusionsFromLocalAdmins
+
     [DscProperty()]
     [System.ComponentModel.Description('PUA Protection (0: PUA Protection off. Windows Defender will not protect against potentially unwanted applications., 1: PUA Protection on. Detected items are blocked. They will show in history along with other threats., 2: Audit mode. Windows Defender will detect potentially unwanted applications, but take no action. You can review information about the applications Windows Defender would have taken action against by searching for events created by Windows Defender in the Event Viewer.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $PUAProtection
+
     [DscProperty()]
     [System.ComponentModel.Description('Real Time Scan Direction (0: Monitor all files (bi-directional)., 1: Monitor incoming files., 2: Monitor outgoing files.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $RealTimeScanDirection
+
     [DscProperty()]
     [System.ComponentModel.Description('Submit Samples Consent (0: Always prompt., 1: Send safe samples automatically., 2: Never send., 3: Send all samples automatically.)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $SubmitSamplesConsent
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure System Guard Launch (0: Unmanaged Configurable by Administrative user, 1: Unmanaged Enables Secure Launch if supported by hardware, 2: Unmanaged Disables Secure Launch)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $ConfigureSystemGuardLaunch
+
     [DscProperty()]
     [System.ComponentModel.Description('Credential Guard (0: (Disabled) Turns off Credential Guard remotely if configured previously without UEFI Lock., 1: (Enabled with UEFI lock) Turns on Credential Guard with UEFI lock., 2: (Enabled without lock) Turns on Credential Guard without UEFI lock.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $LsaCfgFlags
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Virtualization Based Security (0: disable virtualization based security., 1: enable virtualization based security.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableVirtualizationBasedSecurity
+
     [DscProperty()]
     [System.ComponentModel.Description('Require Platform Security Features (1: Turns on VBS with Secure Boot., 3: Turns on VBS with Secure Boot and direct memory access (DMA). DMA requires hardware support.)')]
+    [ValidateSet('1', '3')]
     [System.Nullable[System.Int32]] $RequirePlatformSecurityFeatures
+
     [DscProperty()]
     [System.ComponentModel.Description('Device Password Enabled (0: Enabled, 1: Disabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $DevicePasswordEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Device Password Expiration - Depends on DevicePasswordEnabled')]
     [System.Nullable[System.Int32]] $DevicePasswordExpiration
+
     [DscProperty()]
     [System.ComponentModel.Description('Min Device Password Length - Depends on DevicePasswordEnabled')]
     [System.Nullable[System.Int32]] $MinDevicePasswordLength
+
     [DscProperty()]
     [System.ComponentModel.Description('Alphanumeric Device Password Required - Depends on DevicePasswordEnabled (0: Password or Alphanumeric PIN required., 1: Password or Numeric PIN required., 2: Password, Numeric PIN, or Alphanumeric PIN required.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $AlphanumericDevicePasswordRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Max Device Password Failed Attempts - Depends on DevicePasswordEnabled')]
     [System.Nullable[System.Int32]] $MaxDevicePasswordFailedAttempts
+
     [DscProperty()]
     [System.ComponentModel.Description('Min Device Password Complex Characters - Depends on DevicePasswordEnabled. (1: Digits only, 2: Digits and lowercase letters are required, 3: Digits lowercase letters and uppercase letters are required. Not supported in desktop Microsoft accounts and domain accounts, 4: Digits lowercase letters uppercase letters and special characters are required. Not supported in desktop)')]
+    [ValidateSet('1', '2', '3', '4')]
     [System.Nullable[System.Int32]] $MinDevicePasswordComplexCharacters
+
     [DscProperty()]
     [System.ComponentModel.Description('Max Inactivity Time Device Lock - Depends on DevicePasswordEnabled')]
     [System.Nullable[System.Int32]] $MaxInactivityTimeDeviceLock
+
     [DscProperty()]
     [System.ComponentModel.Description('Device Password History - Depends on DevicePasswordEnabled')]
     [System.Nullable[System.Int32]] $DevicePasswordHistory
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Simple Device Password - Depends on DevicePasswordEnabled (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowSimpleDevicePassword
+
     [DscProperty()]
     [System.ComponentModel.Description('Device Enumeration Policy (0: Block all (Most restrictive), 1: Only after log in/screen unlock, 2: Allow all (Least restrictive))')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $DeviceEnumerationPolicy
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Insecure Guest Logons (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableInsecureGuestLogons
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Lsa Protected Process (0: Disabled. Default value. LSA will not run as protected process., 1: Enabled with UEFI lock. LSA will run as protected process and this configuration is UEFI locked., 2: Enabled without UEFI lock. LSA will run as protected process and this configuration is not UEFI locked.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $ConfigureLsaProtectedProcess
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Game DVR (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowGameDVR
+
     [DscProperty()]
     [System.ComponentModel.Description('MSI Allow User Control Over Install (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $MSIAllowUserControlOverInstall
+
     [DscProperty()]
     [System.ComponentModel.Description('MSI Always Install With Elevated Privileges (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $MSIAlwaysInstallWithElevatedPrivileges
+
     [DscProperty()]
     [System.ComponentModel.Description('Default Adobe Flash setting (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $MicrosoftEdge_ContentSettings_DefaultPluginsSetting
+
     [DscProperty()]
     [System.ComponentModel.Description('Default Adobe Flash setting (Device) - Depends on MicrosoftEdge_ContentSettings_DefaultPluginsSetting (2: Block the Adobe Flash plugin, 3: Click to play)')]
+    [ValidateSet('2', '3')]
     [System.Nullable[System.Int32]] $DefaultPluginsSetting_DefaultPluginsSetting
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum TLS version enabled (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $edge_SSLVersionMin
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum SSL version enabled (Device) - Depends on edge_SSLVersionMin (tls1: TLS 1.0, tls1.1: TLS 1.1, tls1.2: TLS 1.2)')]
+    [ValidateSet('tls1', 'tls1.1', 'tls1.2')]
     [System.String] $SSLVersionMin_SSLVersionMin
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Microsoft Defender SmartScreen (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $SmartScreenEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent bypassing Microsoft Defender SmartScreen prompts for sites (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $PreventSmartScreenPromptOverride
+
     [DscProperty()]
     [System.ComponentModel.Description('Let Apps Activate With Voice Above Lock (0: User in control. Users can decide if Windows apps can be activated by voice while the screen is locked using Settings > Privacy options on the device., 1: Force allow. Windows apps can be activated by voice while the screen is locked, and users cannot change it., 2: Force deny. Windows apps cannot be activated by voice while the screen is locked, and users cannot change it.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $LetAppsActivateWithVoiceAboveLock
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Indexing Encrypted Stores Or Items (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowIndexingEncryptedStoresOrItems
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Smart Screen In Shell (0: Disabled., 1: Enabled.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $EnableSmartScreenInShell
+
     [DscProperty()]
     [System.ComponentModel.Description('Notify Malicious (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NotifyMalicious
+
     [DscProperty()]
     [System.ComponentModel.Description('Notify Password Reuse (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NotifyPasswordReuse
+
     [DscProperty()]
     [System.ComponentModel.Description('Notify Unsafe App (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NotifyUnsafeApp
+
     [DscProperty()]
     [System.ComponentModel.Description('Service Enabled (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $ServiceEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent Override For Files In Shell (0: Do not prevent override., 1: Prevent override.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $PreventOverrideForFilesInShell
+
     [DscProperty()]
     [System.ComponentModel.Description('Access From Network')]
     [System.String[]] $AccessFromNetwork
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Local Log On')]
     [System.String[]] $AllowLocalLogOn
+
     [DscProperty()]
     [System.ComponentModel.Description('Backup Files And Directories')]
     [System.String[]] $BackupFilesAndDirectories
+
     [DscProperty()]
     [System.ComponentModel.Description('Create Global Objects')]
     [System.String[]] $CreateGlobalObjects
+
     [DscProperty()]
     [System.ComponentModel.Description('Create Page File')]
     [System.String[]] $CreatePageFile
+
     [DscProperty()]
     [System.ComponentModel.Description('Debug Programs')]
     [System.String[]] $DebugPrograms
+
     [DscProperty()]
     [System.ComponentModel.Description('Deny Access From Network')]
     [System.String[]] $DenyAccessFromNetwork
+
     [DscProperty()]
     [System.ComponentModel.Description('Deny Remote Desktop Services Log On')]
     [System.String[]] $DenyRemoteDesktopServicesLogOn
+
     [DscProperty()]
     [System.ComponentModel.Description('Impersonate Client')]
     [System.String[]] $ImpersonateClient
+
     [DscProperty()]
     [System.ComponentModel.Description('Load Unload Device Drivers')]
     [System.String[]] $LoadUnloadDeviceDrivers
+
     [DscProperty()]
     [System.ComponentModel.Description('Manage Auditing And Security Log')]
     [System.String[]] $ManageAuditingAndSecurityLog
+
     [DscProperty()]
     [System.ComponentModel.Description('Manage Volume')]
     [System.String[]] $ManageVolume
+
     [DscProperty()]
     [System.ComponentModel.Description('Modify Firmware Environment')]
     [System.String[]] $ModifyFirmwareEnvironment
+
     [DscProperty()]
     [System.ComponentModel.Description('Profile Single Process')]
     [System.String[]] $ProfileSingleProcess
+
     [DscProperty()]
     [System.ComponentModel.Description('Remote Shutdown')]
     [System.String[]] $RemoteShutdown
+
     [DscProperty()]
     [System.ComponentModel.Description('Restore Files And Directories')]
     [System.String[]] $RestoreFilesAndDirectories
+
     [DscProperty()]
     [System.ComponentModel.Description('Take Ownership')]
     [System.String[]] $TakeOwnership
+
     [DscProperty()]
     [System.ComponentModel.Description('Hypervisor Enforced Code Integrity (0: (Disabled) Turns off Hypervisor-Protected Code Integrity remotely if configured previously without UEFI Lock., 1: (Enabled with UEFI lock) Turns on Hypervisor-Protected Code Integrity with UEFI lock., 2: (Enabled without lock) Turns on Hypervisor-Protected Code Integrity without UEFI lock.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $HypervisorEnforcedCodeIntegrity
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Windows Ink Workspace (0: access to ink workspace is disabled. The feature is turned off., 1: ink workspace is enabled (feature is turned on), but the user cannot access it above the lock screen., 2: ink workspace is enabled (feature is turned on), and the user is allowed to use it above the lock screen.)')]
+    [ValidateSet('0', '1', '2')]
     [System.Nullable[System.Int32]] $AllowWindowsInkWorkspace
+
     [DscProperty()]
     [System.ComponentModel.Description('Accounts Limit Local Account Use Of Blank Passwords To Console Logon Only (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $Accounts_LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
+
     [DscProperty()]
     [System.ComponentModel.Description('Interactive Logon Machine Inactivity Limit')]
     [System.Nullable[System.Int32]] $InteractiveLogon_MachineInactivityLimit
+
     [DscProperty()]
     [System.ComponentModel.Description('Interactive Logon Smart Card Removal Behavior (0: No Action, 1: Lock Workstation, 2: Force Logoff, 3: Disconnect if a Remote Desktop Services session)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $InteractiveLogon_SmartCardRemovalBehavior
+
     [DscProperty()]
     [System.ComponentModel.Description('Microsoft Network Client Digitally Sign Communications Always (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $MicrosoftNetworkClient_DigitallySignCommunicationsAlways
+
     [DscProperty()]
     [System.ComponentModel.Description('Microsoft Network Client Send Unencrypted Password To Third Party SMB Servers (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $MicrosoftNetworkClient_SendUnencryptedPasswordToThirdPartySMBServers
+
     [DscProperty()]
     [System.ComponentModel.Description('Microsoft Network Server Digitally Sign Communications Always (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $MicrosoftNetworkServer_DigitallySignCommunicationsAlways
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Access Do Not Allow Anonymous Enumeration Of SAM Accounts (1: Enabled, 0: Disabled)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $NetworkAccess_DoNotAllowAnonymousEnumerationOfSAMAccounts
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Access Do Not Allow Anonymous Enumeration Of Sam Accounts And Shares (1: Enabled, 0: Disabled)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $NetworkAccess_DoNotAllowAnonymousEnumerationOfSamAccountsAndShares
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Access Restrict Anonymous Access To Named Pipes And Shares (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $NetworkAccess_RestrictAnonymousAccessToNamedPipesAndShares
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Access Restrict Clients Allowed To Make Remote Calls To SAM')]
     [System.String] $NetworkAccess_RestrictClientsAllowedToMakeRemoteCallsToSAM
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Security Do Not Store LAN Manager Hash Value On Next Password Change (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $NetworkSecurity_DoNotStoreLANManagerHashValueOnNextPasswordChange
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Security LAN Manager Authentication Level (0: Send LM and NTLM responses, 1: Send LM and NTLM-use NTLMv2 session security if negotiated, 2: Send LM and NTLM responses only, 3: Send LM and NTLMv2 responses only, 4: Send LM and NTLMv2 responses only. Refuse LM, 5: Send LM and NTLMv2 responses only. Refuse LM and NTLM)')]
+    [ValidateSet('0', '1', '2', '3', '4', '5')]
     [System.Nullable[System.Int32]] $NetworkSecurity_LANManagerAuthenticationLevel
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Security Minimum Session Security For NTLMSSP Based Clients (0: None, 524288: Require NTLMv2 session security, 536870912: Require 128-bit encryption, 537395200: Require NTLM and 128-bit encryption)')]
+    [ValidateSet('0', '524288', '536870912', '537395200')]
     [System.String] $NetworkSecurity_MinimumSessionSecurityForNTLMSSPBasedClients
+
     [DscProperty()]
     [System.ComponentModel.Description('Network Security Minimum Session Security For NTLMSSP Based Servers (0: None, 524288: Require NTLMv2 session security, 536870912: Require 128-bit encryption, 537395200: Require NTLM and 128-bit encryption)')]
+    [ValidateSet('0', '524288', '536870912', '537395200')]
     [System.String] $NetworkSecurity_MinimumSessionSecurityForNTLMSSPBasedServers
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Behavior Of The Elevation Prompt For Administrators (0: Elevate without prompting, 1: Prompt for credentials on the secure desktop, 2: Prompt for consent on the secure desktop, 3: Prompt for credentials, 4: Prompt for consent, 5: Prompt for consent for non-Windows binaries)')]
+    [ValidateSet('0', '1', '2', '3', '4', '5')]
     [System.Nullable[System.Int32]] $UserAccountControl_BehaviorOfTheElevationPromptForAdministrators
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Behavior Of The Elevation Prompt For Standard Users (0: Automatically deny elevation requests, 1: Prompt for credentials on the secure desktop, 3: Prompt for credentials)')]
+    [ValidateSet('0', '1', '3')]
     [System.Nullable[System.Int32]] $UserAccountControl_BehaviorOfTheElevationPromptForStandardUsers
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Detect Application Installations And Prompt For Elevation (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $UserAccountControl_DetectApplicationInstallationsAndPromptForElevation
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Only Elevate UI Access Applications That Are Installed In Secure Locations (0: Disabled: Application runs with UIAccess integrity even if it does not reside in a secure location., 1: Enabled: Application runs with UIAccess integrity only if it resides in secure location.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $UserAccountControl_OnlyElevateUIAccessApplicationsThatAreInstalledInSecureLocations
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Run All Administrators In Admin Approval Mode (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $UserAccountControl_RunAllAdministratorsInAdminApprovalMode
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Use Admin Approval Mode (1: Enable, 0: Disable)')]
+    [ValidateSet('1', '0')]
     [System.Nullable[System.Int32]] $UserAccountControl_UseAdminApprovalMode
+
     [DscProperty()]
     [System.ComponentModel.Description('User Account Control Virtualize File And Registry Write Failures To Per User Locations (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $UserAccountControl_VirtualizeFileAndRegistryWriteFailuresToPerUserLocations
 }
 
@@ -3606,48 +4418,77 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselin
 {
     [DscProperty()]
     [System.ComponentModel.Description('Turn off toast notifications on the lock screen (User) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $NoLockScreenToastNotification
+
     [DscProperty()]
     [System.ComponentModel.Description('Turn on the auto-complete feature for user names and passwords on forms (User) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $RestrictFormSuggestPW
+
     [DscProperty()]
     [System.ComponentModel.Description('Prompt me to save passwords (User) - Depends on RestrictFormSuggestPW (0: False, 1: True)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $ChkBox_PasswordAsk
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Windows Spotlight (User) (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowWindowsSpotlight
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Windows Tips - Depends on AllowWindowsSpotlight (0: Disabled., 1: Enabled.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowWindowsTips
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Tailored Experiences With Diagnostic Data (User) - Depends on AllowWindowsSpotlight (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowTailoredExperiencesWithDiagnosticData
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Windows Spotlight On Action Center (User) - Depends on AllowWindowsSpotlight (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowWindowsSpotlightOnActionCenter
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Windows Consumer Features - Depends on AllowWindowsSpotlight (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowWindowsConsumerFeatures
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure Windows Spotlight On Lock Screen (User) - Depends on AllowWindowsSpotlight (0: Windows spotlight disabled., 1: Windows spotlight enabled., 2: Windows spotlight is always enabled, the user cannot disable it, 3: Windows spotlight is always enabled, the user cannot disable it. For special configurations only)')]
+    [ValidateSet('0', '1', '2', '3')]
     [System.Nullable[System.Int32]] $ConfigureWindowsSpotlightOnLockScreen
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Windows Spotlight Windows Welcome Experience (User) - Depends on AllowWindowsSpotlight (0: Not allowed., 1: Allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowWindowsSpotlightWindowsWelcomeExperience
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow Third Party Suggestions In Windows Spotlight (User) - Depends on AllowWindowsSpotlight (0: Third-party suggestions not allowed., 1: Third-party suggestions allowed.)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $AllowThirdPartySuggestionsInWindowsSpotlight
+
     [DscProperty()]
     [System.ComponentModel.Description('Default Adobe Flash setting (User) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $MicrosoftEdge_ContentSettings_DefaultPluginsSetting
+
     [DscProperty()]
     [System.ComponentModel.Description('Default Adobe Flash setting (User) - Depends on MicrosoftEdge_ContentSettings_DefaultPluginsSetting (2: Block the Adobe Flash plugin, 3: Click to play)')]
+    [ValidateSet('2', '3')]
     [System.Nullable[System.Int32]] $DefaultPluginsSetting_DefaultPluginsSetting
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum TLS version enabled (User) (0: Disabled, 1: Enabled)')]
+    [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $edge_SSLVersionMin
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum SSL version enabled (User) - Depends on edge_SSLVersionMin (tls1: TLS 1.0, tls1.1: TLS 1.1, tls1.2: TLS 1.2)')]
+    [ValidateSet('tls1', 'tls1.1', 'tls1.2')]
     [System.String] $SSLVersionMin_SSLVersionMin
 }
 
@@ -3655,22 +4496,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -3681,6 +4530,7 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogpol_hardenedpaths
     [DscProperty()]
     [System.ComponentModel.Description('Value')]
     [System.String] $value
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name')]
     [System.String] $key

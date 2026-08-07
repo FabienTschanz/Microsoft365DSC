@@ -104,6 +104,11 @@ class M365DSCResourceBase
     hidden static [Dictionary[Type, M365DSCResourceInfo]] $_initialized = `
         [Dictionary[Type, M365DSCResourceInfo]]::new()
 
+    # Per-complex-type property metadata (ValidateSet presence, nested complex types),
+    # built lazily for SanitizeComplexValue.
+    hidden static [Dictionary[Type, System.Object]] $_complexMetadata = `
+        [Dictionary[Type, System.Object]]::new()
+
     hidden [M365DSCResourceInfo] $_info
 
     # Resource-name to type map, populated by each generated Part<NN>.psm1 at import time.
@@ -180,6 +185,11 @@ class M365DSCResourceBase
 
         $this.ValidateProperty($propertyInfo, $Name, $Value)
 
+        if ([M365DSCResourceBase]::IsComplexClassType($propertyInfo.PropertyType))
+        {
+            $Value = [M365DSCResourceBase]::SanitizeComplexValue($Value, $propertyInfo.PropertyType)
+        }
+
         if ($null -eq $Value)
         {
             $this.SetNullValue($propertyInfo)
@@ -237,6 +247,140 @@ class M365DSCResourceBase
         $PropertyInfo.SetValue($this, $value)
     }
 
+    # True when the property targets an embedded complex class (or an array of one).
+    # Every embedded class is MSFT_-prefixed; resource classes, PSCredential and
+    # CimInstance are not.
+    hidden static [System.Boolean] IsComplexClassType([Type] $Type)
+    {
+        $element = if ($Type.IsArray) { $Type.GetElementType() } else { $Type }
+        return ($element.IsClass -and $element.Name -like 'MSFT_*')
+    }
+
+    hidden static [System.Object] GetComplexPropertyMetadata([Type] $Type)
+    {
+        $metadata = $null
+        if ([M365DSCResourceBase]::_complexMetadata.TryGetValue($Type, [ref] $metadata))
+        {
+            return $metadata
+        }
+
+        $table = [Dictionary[String, System.Object]]::new([StringComparer]::OrdinalIgnoreCase)
+        foreach ($property in $Type.GetProperties())
+        {
+            if (-not $property.CanWrite)
+            {
+                continue
+            }
+
+            $table[$property.Name] = [PSCustomObject] @{
+                HasValidateSet = @($property.GetCustomAttributes([ValidateSetAttribute], $true)).Count -gt 0
+                IsComplex      = [M365DSCResourceBase]::IsComplexClassType($property.PropertyType)
+                Type           = $property.PropertyType
+            }
+        }
+
+        [M365DSCResourceBase]::_complexMetadata[$Type] = $table
+        return $table
+    }
+
+    <#
+        Complex classes carry [ValidateSet] restored from the former MOF ValueMaps. Unlike the
+        resource's own properties, which _SetProperty routes around validation for null/empty
+        (SetNullValue), nested members are assigned by PowerShell's hashtable-to-class conversion
+        during the -as cast below, which enforces every attribute - and one $null or '' on a
+        ValidateSet member makes the WHOLE cast return $null. Graph frequently hands back $null/''
+        for enum-typed members, and the PS 5.1 dispatch path deserializes instances carrying every
+        property including unset ones. Dropping those keys before the cast keeps "unset" meaning
+        unset; a non-empty out-of-set value still fails the cast and is reported by
+        DescribeConversionFailure.
+    #>
+    hidden static [System.Object] SanitizeComplexValue([System.Object] $Value, [Type] $TargetType)
+    {
+        if ($null -eq $Value)
+        {
+            return $null
+        }
+
+        if ($TargetType.IsArray)
+        {
+            $element = $TargetType.GetElementType()
+
+            if ($Value -is [System.String])
+            {
+                # Would enumerate as chars; let the cast fail exactly as today.
+                return $Value
+            }
+
+            if ($Value -is [IDictionary] -or $Value -isnot [IEnumerable])
+            {
+                # Scalar-to-array coercion: sanitize the single element, PowerShell wraps it.
+                return [M365DSCResourceBase]::SanitizeComplexValue($Value, $element)
+            }
+
+            $result = [List[System.Object]]::new()
+            foreach ($item in $Value)
+            {
+                $result.Add([M365DSCResourceBase]::SanitizeComplexValue($item, $element))
+            }
+            return $result.ToArray()
+        }
+
+        if ($TargetType.IsInstanceOfType($Value))
+        {
+            return $Value
+        }
+
+        $entries = [Ordered] @{}
+        if ($Value -is [IDictionary])
+        {
+            foreach ($key in @($Value.Keys))
+            {
+                $entries[[System.String] $key] = $Value[$key]
+            }
+        }
+        elseif ($Value.PSObject.BaseObject -is [System.Management.Automation.PSCustomObject])
+        {
+            # Includes Deserialized.MSFT_* instances from the PS 5.1 -> 7 dispatch, which carry
+            # every property. Flattening to a hashtable means only the surviving keys are assigned.
+            foreach ($property in $Value.PSObject.Properties)
+            {
+                $entries[$property.Name] = $property.Value
+            }
+        }
+        else
+        {
+            # Unrecognized shape: pass through unchanged, worst case equals today's behavior.
+            return $Value
+        }
+
+        $metadata = [M365DSCResourceBase]::GetComplexPropertyMetadata($TargetType)
+        $clean = @{}
+        foreach ($key in $entries.Keys)
+        {
+            $item = $entries[$key]
+
+            $meta = $null
+            if ($metadata.TryGetValue($key, [ref] $meta))
+            {
+                if ($meta.HasValidateSet -and
+                    ($null -eq $item -or ($item -is [System.String] -and $item -eq '')))
+                {
+                    continue
+                }
+
+                if ($meta.IsComplex -and $null -ne $item)
+                {
+                    $item = [M365DSCResourceBase]::SanitizeComplexValue($item, $meta.Type)
+                }
+            }
+
+            # Unknown keys stay: they still fail the cast and get reported, semantics preserved.
+            $clean[$key] = $item
+        }
+
+        return $clean
+    }
+
     # Narrows a failed conversion down to the element and member that caused it.
     hidden [System.String] DescribeConversionFailure([System.Object] $Value, [Type] $Type)
     {
@@ -269,7 +413,30 @@ class M365DSCResourceBase
             foreach ($key in $item.Keys)
             {
                 $member = $elementType.GetProperty($key)
-                if ($null -ne $member -and $null -ne $item[$key] -and $null -eq ($item[$key] -as $member.PropertyType))
+                if ($null -eq $member)
+                {
+                    continue
+                }
+
+                # An out-of-set string converts to [string] just fine, so the -as probe below
+                # cannot name it. Check the ValidateSet explicitly.
+                $validateSet = @($member.GetCustomAttributes([System.Management.Automation.ValidateSetAttribute], $true)) |
+                    Select-Object -First 1
+                if ($null -ne $validateSet -and $null -ne $item[$key])
+                {
+                    foreach ($single in @($item[$key]))
+                    {
+                        if ($null -ne $single -and
+                            -not ($single -is [System.String] -and $single -eq '') -and
+                            $validateSet.ValidValues -notcontains $single)
+                        {
+                            return "$where member '$key' value '$single' is not in the valid set for " +
+                                "'$($elementType.Name).$key': $($validateSet.ValidValues -join ', ')."
+                        }
+                    }
+                }
+
+                if ($null -ne $item[$key] -and $null -eq ($item[$key] -as $member.PropertyType))
                 {
                     # Recursive conversion failure description
                     return "$where member '$key' of type '$($item[$key].GetType().FullName)' does not convert to '$($member.PropertyType.FullName)'." +

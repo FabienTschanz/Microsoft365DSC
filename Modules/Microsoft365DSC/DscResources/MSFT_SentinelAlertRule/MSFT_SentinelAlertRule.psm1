@@ -882,6 +882,7 @@ class MSFT_SentinelAlertRuleCustomDetails
     [DscProperty()]
     [System.ComponentModel.Description('Key of the custom detail.')]
     [System.String] $DetailKey
+
     [DscProperty()]
     [System.ComponentModel.Description('Associated value with the custom detail.')]
     [System.String] $DetailValue
@@ -892,6 +893,7 @@ class MSFT_SentinelAlertRuleEntityMapping
     [DscProperty()]
     [System.ComponentModel.Description('Type of entity.')]
     [System.String] $entityType
+
     [DscProperty()]
     [System.ComponentModel.Description('List of field mappings.')]
     [MSFT_SentinelAlertRuleEntityMappingFieldMapping[]] $fieldMappings
@@ -902,15 +904,19 @@ class MSFT_SentinelAlertRuleAlertDetailsOverride
     [DscProperty()]
     [System.ComponentModel.Description('The format containing columns name(s) to override the alert description')]
     [System.String] $alertDescriptionFormat
+
     [DscProperty()]
     [System.ComponentModel.Description('The format containing columns name(s) to override the alert name')]
     [System.String] $alertDisplayNameFormat
+
     [DscProperty()]
     [System.ComponentModel.Description('The column name to take the alert severity from')]
     [System.String] $alertSeverityColumnName
+
     [DscProperty()]
     [System.ComponentModel.Description('The column name to take the alert tactics from')]
     [System.String] $alertTacticsColumnName
+
     [DscProperty()]
     [System.ComponentModel.Description('List of additional dynamic properties to override')]
     [MSFT_SentinelAlertRuleAlertDetailsOverrideAlertDynamicProperty[]] $alertDynamicProperties
@@ -921,6 +927,7 @@ class MSFT_SentinelAlertRuleIncidentConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('Create incidents from alerts triggered by this analytics rule')]
     [System.Nullable[System.Boolean]] $createIncident
+
     [DscProperty()]
     [System.ComponentModel.Description('Set how the alerts that are triggered by this analytics rule, are grouped into incidents')]
     [MSFT_SentinelAlertRuleIncidentConfigurationGroupingConfiguration] $groupingConfiguration
@@ -931,6 +938,7 @@ class MSFT_SentinelAlertRuleEntityMappingFieldMapping
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name of the column')]
     [System.String] $columnName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Identifier of the associated field.')]
     [System.String] $identifier
@@ -941,6 +949,7 @@ class MSFT_SentinelAlertRuleAlertDetailsOverrideAlertDynamicProperty
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Dynamic property key.')]
     [System.String] $alertProperty
+
     [DscProperty()]
     [System.ComponentModel.Description('Dynamic property value.')]
     [System.String] $alertPropertyValue
@@ -951,21 +960,28 @@ class MSFT_SentinelAlertRuleIncidentConfigurationGroupingConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('Grouping enabled')]
     [System.Nullable[System.Boolean]] $enabled
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of alert details to group by (when matchingMethod is Selected)')]
+    [ValidateSet('DisplayName', 'Severity')]
     [System.String[]] $groupByAlertDetails
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of custom details keys to group by (when matchingMethod is Selected). Only keys defined in the current alert rule may be used.')]
     [System.String[]] $groupByCustomDetails
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of entity types to group by (when matchingMethod is Selected). Only entities defined in the current alert rule may be used.')]
     [System.String[]] $groupByEntities
+
     [DscProperty()]
     [System.ComponentModel.Description('Limit the group to alerts created within the lookback duration (in ISO 8601 duration format)')]
     [System.String] $lookbackDuration
+
     [DscProperty()]
     [System.ComponentModel.Description('Grouping matching method. When method is Selected at least one of groupByEntities, groupByAlertDetails, groupByCustomDetails must be provided and not empty.')]
     [System.String] $matchingMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('Re-open closed matching incidents')]
     [System.Nullable[System.Boolean]] $reopenClosedIncident

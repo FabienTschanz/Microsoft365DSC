@@ -466,7 +466,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         ([MSFT_MicrosoftGraphIntuneSettingsCatalogAccessGroup] @{
                             desc = @('administrators')
                             member = @('S-1-12-1-1167842105-1150511762-402702254-1917434032')
-                            action = 'add_restrict' # Drift
+                            action = 'AddRestrict' # Drift
                             userselectiontype = 'users'
                         })
                     )

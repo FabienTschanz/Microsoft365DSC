@@ -664,12 +664,17 @@ class MSFT_MicrosoftGraphcompanyPortalBlockedAction
 {
     [DscProperty()]
     [System.ComponentModel.Description('Device Action. Possible values are: unknown, remove, reset.')]
+    [ValidateSet('unknown', 'remove', 'reset')]
     [System.String] $Action
+
     [DscProperty()]
     [System.ComponentModel.Description('Device ownership type. Possible values are: unknown, company, personal.')]
+    [ValidateSet('unknown', 'company', 'personal')]
     [System.String] $OwnerType
+
     [DscProperty()]
     [System.ComponentModel.Description('Device OS/Platform. Possible values are: android, androidForWork, iOS, macOS, windowsPhone81, windows81AndLater, windows10AndLater, androidWorkProfile, unknown.')]
+    [ValidateSet('android', 'androidForWork', 'iOS', 'macOS', 'windowsPhone81', 'windows81AndLater', 'windows10AndLater', 'androidWorkProfile', 'unknown', 'androidAOSP', 'androidMobileApplicationManagement', 'iOSMobileApplicationManagement', 'unknownFutureValue', 'windowsMobileApplicationManagement')]
     [System.String] $Platform
 }
 
@@ -678,6 +683,7 @@ class MSFT_MicrosoftGraphmimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the content mime type.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('The Base64 encoded string content.')]
     [System.String] $Value
@@ -688,9 +694,11 @@ class MSFT_MicrosoftGraphrgbColor
     [DscProperty()]
     [System.ComponentModel.Description('Blue value')]
     [System.String] $B
+
     [DscProperty()]
     [System.ComponentModel.Description('Green value')]
     [System.String] $G
+
     [DscProperty()]
     [System.ComponentModel.Description('Red value')]
     [System.String] $R
@@ -700,22 +708,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

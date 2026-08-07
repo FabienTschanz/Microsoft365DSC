@@ -593,18 +593,23 @@ class MSFT_MicrosoftGraphaccesspackageresourceattribute
     [DscProperty()]
     [System.ComponentModel.Description('Information about how to set the attribute, currently a accessPackageUserDirectoryAttributeStore object type.')]
     [MSFT_MicrosoftGraphaccesspackageresourceattributedestination] $AttributeDestination
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of the attribute in the end system.')]
     [System.String] $AttributeName
+
     [DscProperty()]
     [System.ComponentModel.Description('Information about how to populate the attribute value when an accessPackageAssignmentRequest is being fulfilled, currently a accessPackageResourceAttributeQuestion object type.')]
     [MSFT_MicrosoftGraphaccesspackageresourceattributesource] $AttributeSource
+
     [DscProperty()]
     [System.ComponentModel.Description('Id of the access package resource attribute.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether or not an existing attribute value can be edited by the requester.')]
     [System.Nullable[System.Boolean]] $IsEditable
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies whether the attribute will remain in the end system after an assignment ends.')]
     [System.Nullable[System.Boolean]] $IsPersistedOnAssignmentRemoval
@@ -614,6 +619,7 @@ class MSFT_MicrosoftGraphaccesspackageresourceattributedestination
 {
     [DscProperty()]
     [System.ComponentModel.Description('Type of the access package resource attribute destination.')]
+    [ValidateSet('#microsoft.graph.accessPackageUserDirectoryAttributeStore')]
     [System.String] $odataType
 }
 
@@ -621,7 +627,9 @@ class MSFT_MicrosoftGraphaccesspackageresourceattributesource
 {
     [DscProperty()]
     [System.ComponentModel.Description('Type of the access package resource attribute source.')]
+    [ValidateSet('#microsoft.graph.accessPackageResourceAttributeQuestion')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The question asked in order to get the value of the attribute.')]
     [MSFT_MicrosoftGraphaccessPackageResourceAttributeQuestion] $Question
@@ -631,28 +639,37 @@ class MSFT_MicrosoftGraphaccessPackageResourceAttributeQuestion
 {
     [DscProperty()]
     [System.ComponentModel.Description('Type of the access package resource attribute question.')]
+    [ValidateSet('#microsoft.graph.accessPackageTextInputQuestion', '#microsoft.graph.accessPackageMultipleChoiceQuestion')]
     [System.String] $odataType
+
     [DscProperty()]
     [System.ComponentModel.Description('Id of the access package resource attribute question.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the requestor is required to supply an answer or not.')]
     [System.Nullable[System.Boolean]] $IsRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the answer will be in single or multiple line format.')]
     [System.Nullable[System.Boolean]] $IsSingleLine
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the regex pattern that the corresponding text answer must follow.')]
     [System.String] $RegexPattern
+
     [DscProperty()]
     [System.ComponentModel.Description('Relative position of this question when displaying a list of questions to the requestor.')]
     [System.Nullable[System.UInt32]] $Sequence
+
     [DscProperty()]
     [System.ComponentModel.Description('The text of the question to show to the requestor.')]
     [MSFT_MicrosoftGraphaccessPackageLocalizedContent] $QuestionText
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether requestor can select multiple choices as their answer.')]
     [System.Nullable[System.Boolean]] $AllowsMultipleSelection
+
     [DscProperty()]
     [System.ComponentModel.Description('List of answer choices.')]
     [MSFT_MicrosoftGraphaccessPackageAnswerChoice[]] $Choices
@@ -663,6 +680,7 @@ class MSFT_MicrosoftGraphaccessPackageLocalizedContent
     [DscProperty()]
     [System.ComponentModel.Description('The fallback string, which is used when a requested localization is not available. Required.')]
     [System.String] $DefaultText
+
     [DscProperty()]
     [System.ComponentModel.Description('Content represented in a format for a specific locale.')]
     [MSFT_MicrosoftGraphaccessPackageLocalizedText[]] $LocalizedTexts
@@ -673,6 +691,7 @@ class MSFT_MicrosoftGraphaccessPackageAnswerChoice
     [DscProperty()]
     [System.ComponentModel.Description('The actual value of the selected choice. This is typically a string value which is understandable by applications. Required.')]
     [System.String] $ActualValue
+
     [DscProperty()]
     [System.ComponentModel.Description('The localized display values shown to the requestor and approvers. Required.')]
     [MSFT_MicrosoftGraphaccessPackageLocalizedContent] $displayValue
@@ -683,6 +702,7 @@ class MSFT_MicrosoftGraphaccessPackageLocalizedText
     [DscProperty()]
     [System.ComponentModel.Description('The text in the specific language. Required.')]
     [System.String] $Text
+
     [DscProperty()]
     [System.ComponentModel.Description('The ISO code for the intended language. Required.')]
     [System.String] $LanguageCode

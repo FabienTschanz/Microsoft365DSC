@@ -544,30 +544,39 @@ class MSFT_AADPermissionGrantConditionSet
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for the condition set.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Set to true to only match on client applications that are from a Microsoft Partner Network verified publisher. Set to false to match on any client app.')]
     [System.Nullable[System.Boolean]] $CertifiedClientApplicationsOnly
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of appId values for the client applications to match with, or a list with the single value all to match any client application.')]
     [System.String[]] $ClientApplicationIds
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of Microsoft Partner Network (MPN) IDs for verified publishers of the client application, or a list with the single value all to match with client apps from any publisher.')]
     [System.String[]] $ClientApplicationPublisherIds
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of Entra ID tenant IDs in which the client application is registered, or a list with the single value all to match with client apps registered in any tenant.')]
     [System.String[]] $ClientApplicationTenantIds
+
     [DscProperty()]
     [System.ComponentModel.Description('Set to true to only match on client applications with a verified publisher. Set to false to match on any client app. Default is false.')]
     [System.Nullable[System.Boolean]] $ClientApplicationsFromVerifiedPublisherOnly
+
     [DscProperty()]
     [System.ComponentModel.Description('The permission classification for the permission being granted, or all to match with any permission classification (including permissions which are not classified). Default is all.')]
     [System.String] $PermissionClassification
+
     [DscProperty()]
     [System.ComponentModel.Description('The list of permission display names to match with (e.g. ''User.Read'', ''Mail.Send''), or a list with the single value all to match with any permission. Do not use permission GUIDs.')]
     [System.String[]] $Permissions
+
     [DscProperty()]
     [System.ComponentModel.Description('The permission type of the permission being granted. Possible values: application for application permissions, or delegated for delegated permissions.')]
     [System.String] $PermissionType
+
     [DscProperty()]
     [System.ComponentModel.Description('The appId of the resource application (e.g. ''00000003-0000-0000-c000-000000000000'' for Microsoft Graph) for which a permission is being granted, or ''any'' to match any resource application. Use the AppId GUID, not the display name.')]
     [System.String] $ResourceApplication

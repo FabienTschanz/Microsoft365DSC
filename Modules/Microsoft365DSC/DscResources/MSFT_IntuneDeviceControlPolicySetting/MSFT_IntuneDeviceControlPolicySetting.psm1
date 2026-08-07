@@ -580,15 +580,21 @@ class MSFT_ReusablePrinterDeviceControlPolicySetting
     [DscProperty()]
     [System.ComponentModel.Description('The Friendly Name of the device. Example is ''Generic Printer''.')]
     [System.String] $FriendlyNameId
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The identifier of the reusable policy setting.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The Primary ID of the device. Possible values are: 0: Printer Devices')]
+    [ValidateSet('0')]
     [System.Nullable[System.Int32]] $PrimaryId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Printer Connection Id. Possible values are: 0: USB, 1: Corporate, 2: Network, 3: Universal, 4: File, 5: Custom, 6: Local.')]
+    [ValidateSet('0', '1', '2', '3', '4', '5', '6')]
     [System.Nullable[System.Int32]] $PrinterConnectionId
+
     [DscProperty()]
     [System.ComponentModel.Description('The combination of Vendor and Product ID. Example is ''0000_1111.')]
     [System.String] $VID_PID
@@ -599,33 +605,44 @@ class MSFT_ReusableStorageDeviceControlPolicySetting
     [DscProperty()]
     [System.ComponentModel.Description('The Bus ID of the logical bus where the device is connected to. Examples are USB, SCSI.')]
     [System.String] $BusId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Device ID of the device.')]
     [System.String] $DeviceId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Friendly Name of the device. Example is ''Generic Flash Disk USB Device''.')]
     [System.String] $FriendlyNameId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Hardware ID of the device. Example is ''USBSTOR\\DiskGeneric_Flash_Disk___8.07''.')]
     [System.String] $HardwareId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Instance Path ID of the device. Uniquely identifies the device in the system. Example is ''USBSTOR\\DISK&VEN_GENERIC&PROD_FLASH_DISK&REV_8.07\\8735B611&0''.')]
     [System.String] $InstancePathId
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The identifier of the reusable policy setting.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The Product ID of the device. Example is ''55E0''.')]
     [System.String] $PID
+
     [DscProperty()]
     [System.ComponentModel.Description('The Primary ID of the device. Possible values are: RemovableMediaDevices, CdRomDevices, WpdDevices, and PrinterDevices')]
+    [ValidateSet('CdRomDevices', 'PrinterDevices', 'RemovableMediaDevices', 'WpdDevices')]
     [System.String] $PrimaryId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Serial Number ID of the device. Example is ''03003324080520232521'', which corresponds to ''USBSTOR\\DISK&VEN__USB&PROD__SANDISK_3.2GEN1&REV_1.00\\03003324080520232521&0''.')]
     [System.String] $SerialNumberId
+
     [DscProperty()]
     [System.ComponentModel.Description('The Vendor ID of the device. Example is ''0751''.')]
     [System.String] $VID
+
     [DscProperty()]
     [System.ComponentModel.Description('The combination of Vendor and Product ID. Example is ''0000_1111.')]
     [System.String] $VID_PID

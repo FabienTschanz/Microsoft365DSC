@@ -507,21 +507,27 @@ class MSFT_TeamsComplianceRecordingApplication
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('A name that uniquely identifies the application instance of the policy-based recording application.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines the other policy-based recording applications to pair with this application to achieve application resiliency. Can only have one paired application.')]
     [System.String[]] $ComplianceRecordingPairedApplications
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the policy-based recording application must be in the meeting before the user is allowed to join the meeting.')]
     [System.Nullable[System.Boolean]] $RequiredBeforeMeetingJoin
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the policy-based recording application must be in the call before the call is allowed to establish.')]
     [System.Nullable[System.Boolean]] $RequiredBeforeCallEstablishment
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the policy-based recording application must be in the meeting while the user is in the meeting.')]
     [System.Nullable[System.Boolean]] $RequiredDuringMeeting
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the policy-based recording application must be in the call while the call is active.')]
     [System.Nullable[System.Boolean]] $RequiredDuringCall
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines the number of invites to send out to the application instance of the policy-based recording application. Can be set to 1 or 2 only.')]
     [System.String] $ConcurrentInvitationCount

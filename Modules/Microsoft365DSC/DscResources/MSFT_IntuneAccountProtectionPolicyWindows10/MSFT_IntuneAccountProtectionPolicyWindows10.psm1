@@ -587,42 +587,63 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtec
 {
     [DscProperty()]
     [System.ComponentModel.Description('Credential Guard (0: (Disabled) Turns off Credential Guard remotely if configured previously without UEFI Lock., 1: (Enabled with UEFI lock) Turns on Credential Guard with UEFI lock., 2: (Enabled without lock) Turns on Credential Guard without UEFI lock.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $LsaCfgFlags
+
     [DscProperty()]
     [System.ComponentModel.Description('Facial Features Use Enhanced Anti Spoofing (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $FacialFeaturesUseEnhancedAntiSpoofing
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable Pin Recovery (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $EnablePinRecovery
+
     [DscProperty()]
     [System.ComponentModel.Description('Expiration')]
     [System.Nullable[System.Int32]] $Expiration
+
     [DscProperty()]
     [System.ComponentModel.Description('PIN History')]
     [System.Nullable[System.Int32]] $History
+
     [DscProperty()]
     [System.ComponentModel.Description('Lowercase Letters (0: Allows the use of lowercase letters in PIN., 1: Requires the use of at least one lowercase letters in PIN., 2: Does not allow the use of lowercase letters in PIN.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $LowercaseLetters
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum PIN Length')]
     [System.Nullable[System.Int32]] $MaximumPINLength
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum PIN Length')]
     [System.Nullable[System.Int32]] $MinimumPINLength
+
     [DscProperty()]
     [System.ComponentModel.Description('Special Characters (0: Allows the use of special characters in PIN., 1: Requires the use of at least one special characters in PIN., 2: Does not allow the use of special characters in PIN.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $SpecialCharacters
+
     [DscProperty()]
     [System.ComponentModel.Description('Uppercase Letters (0: Allows the use of uppercase letters in PIN., 1: Requires the use of at least one uppercase letters in PIN., 2: Does not allow the use of uppercase letters in PIN.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $UppercaseLetters
+
     [DscProperty()]
     [System.ComponentModel.Description('Require Security Device (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $RequireSecurityDevice
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Certificate For On Prem Auth (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $UseCertificateForOnPremAuth
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Windows Hello For Business (Device) (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $UsePassportForWork
 }
 
@@ -630,33 +651,48 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtecti
 {
     [DscProperty()]
     [System.ComponentModel.Description('Enable Pin Recovery (User) (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $EnablePinRecovery
+
     [DscProperty()]
     [System.ComponentModel.Description('Expiration (User)')]
     [System.Nullable[System.Int32]] $Expiration
+
     [DscProperty()]
     [System.ComponentModel.Description('PIN History (User)')]
     [System.Nullable[System.Int32]] $History
+
     [DscProperty()]
     [System.ComponentModel.Description('Lowercase Letters (User) (0: Allows the use of lowercase letters in PIN., 1: Requires the use of at least one lowercase letters in PIN., 2: Does not allow the use of lowercase letters in PIN.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $LowercaseLetters
+
     [DscProperty()]
     [System.ComponentModel.Description('Maximum PIN Length (User)')]
     [System.Nullable[System.Int32]] $MaximumPINLength
+
     [DscProperty()]
     [System.ComponentModel.Description('Minimum PIN Length (User)')]
     [System.Nullable[System.Int32]] $MinimumPINLength
+
     [DscProperty()]
     [System.ComponentModel.Description('Special Characters (User) (0: Allows the use of special characters in PIN., 1: Requires the use of at least one special characters in PIN., 2: Does not allow the use of special characters in PIN.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $SpecialCharacters
+
     [DscProperty()]
     [System.ComponentModel.Description('Uppercase Letters (User) (0: Allows the use of uppercase letters in PIN., 1: Requires the use of at least one uppercase letters in PIN., 2: Does not allow the use of uppercase letters in PIN.)')]
+    [ValidateSet('0', '1', '2')]
     [System.String] $UppercaseLetters
+
     [DscProperty()]
     [System.ComponentModel.Description('Require Security Device (User) (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $RequireSecurityDevice
+
     [DscProperty()]
     [System.ComponentModel.Description('Use Windows Hello For Business (User) (false: Disabled, true: Enabled)')]
+    [ValidateSet('false', 'true')]
     [System.String] $UsePassportForWork
 }
 
@@ -664,22 +700,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

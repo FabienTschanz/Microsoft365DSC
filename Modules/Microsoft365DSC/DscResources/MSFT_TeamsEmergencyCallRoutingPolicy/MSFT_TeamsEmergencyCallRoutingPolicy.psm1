@@ -346,9 +346,11 @@ class MSFT_TeamsEmergencyNumber
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Specifies the emergency phone number.')]
     [System.String] $EmergencyDialString
+
     [DscProperty()]
     [System.ComponentModel.Description('For each Teams emergency number, you can specify zero or more emergency dial masks. A dial mask is a number that you want to translate into the value of the emergency dial number value when it is dialed.')]
     [System.String] $EmergencyDialMask
+
     [DscProperty()]
     [System.ComponentModel.Description('Specify the online public switched telephone network (PSTN) usage')]
     [System.String] $OnlinePSTNUsage

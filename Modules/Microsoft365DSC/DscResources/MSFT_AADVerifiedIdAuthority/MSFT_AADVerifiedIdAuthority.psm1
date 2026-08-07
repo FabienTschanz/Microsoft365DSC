@@ -323,12 +323,15 @@ class MSFT_AADVerifiedIdAuthorityKeyVaultMetadata
     [DscProperty()]
     [System.ComponentModel.Description('Subscription ID of the Key Vault.')]
     [System.String] $SubscriptionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Resource group of the Key Vault.')]
     [System.String] $ResourceGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('Resource name of the Key Vault.')]
     [System.String] $ResourceName
+
     [DscProperty()]
     [System.ComponentModel.Description('Resource URL of the Key Vault.')]
     [System.String] $ResourceUrl

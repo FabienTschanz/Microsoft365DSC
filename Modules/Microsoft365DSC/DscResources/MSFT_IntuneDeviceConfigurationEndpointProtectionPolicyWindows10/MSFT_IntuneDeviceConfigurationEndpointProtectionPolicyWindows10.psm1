@@ -3878,10 +3878,13 @@ class MSFT_MicrosoftGraphbitLockerFixedDrivePolicy
 {
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption method for fixed drives. Possible values are: aesCbc128, aesCbc256, xtsAes128, xtsAes256.')]
+    [ValidateSet('aesCbc128', 'aesCbc256', 'xtsAes128', 'xtsAes256')]
     [System.String] $EncryptionMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('This policy setting allows you to control how BitLocker-protected fixed data drives are recovered in the absence of the required credentials. This policy setting is applied when you turn on BitLocker.')]
     [MSFT_MicrosoftGraphBitLockerRecoveryOptions] $RecoveryOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('This policy setting determines whether BitLocker protection is required for fixed data drives to be writable on a computer.')]
     [System.Nullable[System.Boolean]] $RequireEncryptionForWriteAccess
@@ -3892,9 +3895,12 @@ class MSFT_MicrosoftGraphbitLockerRemovableDrivePolicy
     [DscProperty()]
     [System.ComponentModel.Description('This policy setting determines whether BitLocker protection is required for removable data drives to be writable on a computer.')]
     [System.Nullable[System.Boolean]] $BlockCrossOrganizationWriteAccess
+
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption method for removable  drives. Possible values are: aesCbc128, aesCbc256, xtsAes128, xtsAes256.')]
+    [ValidateSet('aesCbc128', 'aesCbc256', 'xtsAes128', 'xtsAes256')]
     [System.String] $EncryptionMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether to block write access to devices configured in another organization.  If requireEncryptionForWriteAccess is false, this value does not affect.')]
     [System.Nullable[System.Boolean]] $RequireEncryptionForWriteAccess
@@ -3904,39 +3910,55 @@ class MSFT_MicrosoftGraphbitLockerSystemDrivePolicy
 {
     [DscProperty()]
     [System.ComponentModel.Description('Select the encryption method for operating system drives. Possible values are: aesCbc128, aesCbc256, xtsAes128, xtsAes256.')]
+    [ValidateSet('aesCbc128', 'aesCbc256', 'xtsAes128', 'xtsAes256')]
     [System.String] $EncryptionMethod
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the minimum length of startup pin. Valid values 4 to 20')]
     [System.Nullable[System.UInt32]] $MinimumPinLength
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable pre-boot recovery message and Url. If requireStartupAuthentication is false, this value does not affect.')]
     [System.Nullable[System.Boolean]] $PrebootRecoveryEnableMessageAndUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines a custom recovery message.')]
     [System.String] $PrebootRecoveryMessage
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines a custom recovery URL.')]
     [System.String] $PrebootRecoveryUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Allows to recover BitLocker encrypted operating system drives in the absence of the required startup key information. This policy setting is applied when you turn on BitLocker.')]
     [MSFT_MicrosoftGraphBitLockerRecoveryOptions] $RecoveryOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether to allow BitLocker without a compatible TPM (requires a password or a startup key on a USB flash drive).')]
     [System.Nullable[System.Boolean]] $StartupAuthenticationBlockWithoutTpmChip
+
     [DscProperty()]
     [System.ComponentModel.Description('Require additional authentication at startup.')]
     [System.Nullable[System.Boolean]] $StartupAuthenticationRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if TPM startup key is allowed/required/disallowed. Possible values are: blocked, required, allowed, notConfigured.')]
+    [ValidateSet('blocked', 'required', 'allowed', 'notConfigured')]
     [System.String] $StartupAuthenticationTpmKeyUsage
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if TPM startup pin key and key are allowed/required/disallowed. Possible values are: blocked, required, allowed, notConfigured.')]
+    [ValidateSet('blocked', 'required', 'allowed', 'notConfigured')]
     [System.String] $StartupAuthenticationTpmPinAndKeyUsage
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if TPM startup pin is allowed/required/disallowed. Possible values are: blocked, required, allowed, notConfigured.')]
+    [ValidateSet('blocked', 'required', 'allowed', 'notConfigured')]
     [System.String] $StartupAuthenticationTpmPinUsage
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates if TPM startup is allowed/required/disallowed. Possible values are: blocked, required, allowed, notConfigured.')]
+    [ValidateSet('blocked', 'required', 'allowed', 'notConfigured')]
     [System.String] $StartupAuthenticationTpmUsage
 }
 
@@ -3944,15 +3966,22 @@ class MSFT_MicrosoftGraphdefenderDetectedMalwareActions
 {
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for high severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $HighSeverity
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for low severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $LowSeverity
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for moderate severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $ModerateSeverity
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates a Defender action to take for severe severity Malware threat detected. Possible values are: deviceDefault, clean, quarantine, remove, allow, userDefined, block.')]
+    [ValidateSet('deviceDefault', 'clean', 'quarantine', 'remove', 'allow', 'userDefined', 'block')]
     [System.String] $SevereSeverity
 }
 
@@ -3961,69 +3990,92 @@ class MSFT_MicrosoftGraphwindowsFirewallNetworkProfile
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to merge authorized application rules from group policy with those from local store instead of ignoring the local store rules. When AuthorizedApplicationRulesFromGroupPolicyNotMerged and AuthorizedApplicationRulesFromGroupPolicyMerged are both true, AuthorizedApplicationRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $AuthorizedApplicationRulesFromGroupPolicyMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to prevent merging authorized application rules from group policy with those from local store instead of ignoring the local store rules. When AuthorizedApplicationRulesFromGroupPolicyNotMerged and AuthorizedApplicationRulesFromGroupPolicyMerged are both true, AuthorizedApplicationRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $AuthorizedApplicationRulesFromGroupPolicyNotMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to merge connection security rules from group policy with those from local store instead of ignoring the local store rules. When ConnectionSecurityRulesFromGroupPolicyNotMerged and ConnectionSecurityRulesFromGroupPolicyMerged are both true, ConnectionSecurityRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $ConnectionSecurityRulesFromGroupPolicyMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to prevent merging connection security rules from group policy with those from local store instead of ignoring the local store rules. When ConnectionSecurityRulesFromGroupPolicyNotMerged and ConnectionSecurityRulesFromGroupPolicyMerged are both true, ConnectionSecurityRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $ConnectionSecurityRulesFromGroupPolicyNotMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the host device to allow or block the firewall and advanced security enforcement for the network profile. Possible values are: notConfigured, blocked, allowed.')]
+    [ValidateSet('notConfigured', 'blocked', 'allowed')]
     [System.String] $FirewallEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to merge global port rules from group policy with those from local store instead of ignoring the local store rules. When GlobalPortRulesFromGroupPolicyNotMerged and GlobalPortRulesFromGroupPolicyMerged are both true, GlobalPortRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $GlobalPortRulesFromGroupPolicyMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to prevent merging global port rules from group policy with those from local store instead of ignoring the local store rules. When GlobalPortRulesFromGroupPolicyNotMerged and GlobalPortRulesFromGroupPolicyMerged are both true, GlobalPortRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $GlobalPortRulesFromGroupPolicyNotMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to block all incoming connections by default. When InboundConnectionsRequired and InboundConnectionsBlocked are both true, InboundConnectionsBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $InboundConnectionsBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to allow all incoming connections by default. When InboundConnectionsRequired and InboundConnectionsBlocked are both true, InboundConnectionsBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $InboundConnectionsRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevents the firewall from displaying notifications when an application is blocked from listening on a port. When InboundNotificationsRequired and InboundNotificationsBlocked are both true, InboundNotificationsBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $InboundNotificationsBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Allows the firewall to display notifications when an application is blocked from listening on a port. When InboundNotificationsRequired and InboundNotificationsBlocked are both true, InboundNotificationsBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $InboundNotificationsRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to block all incoming traffic regardless of other policy settings. When IncomingTrafficRequired and IncomingTrafficBlocked are both true, IncomingTrafficBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $IncomingTrafficBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to allow incoming traffic pursuant to other policy settings. When IncomingTrafficRequired and IncomingTrafficBlocked are both true, IncomingTrafficBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $IncomingTrafficRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to block all outgoing connections by default. When OutboundConnectionsRequired and OutboundConnectionsBlocked are both true, OutboundConnectionsBlocked takes priority. This setting will get applied to Windows releases version 1809 and above.')]
     [System.Nullable[System.Boolean]] $OutboundConnectionsBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to allow all outgoing connections by default. When OutboundConnectionsRequired and OutboundConnectionsBlocked are both true, OutboundConnectionsBlocked takes priority. This setting will get applied to Windows releases version 1809 and above.')]
     [System.Nullable[System.Boolean]] $OutboundConnectionsRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to merge Firewall Rule policies from group policy with those from local store instead of ignoring the local store rules. When PolicyRulesFromGroupPolicyNotMerged and PolicyRulesFromGroupPolicyMerged are both true, PolicyRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $PolicyRulesFromGroupPolicyMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to prevent merging Firewall Rule policies from group policy with those from local store instead of ignoring the local store rules. When PolicyRulesFromGroupPolicyNotMerged and PolicyRulesFromGroupPolicyMerged are both true, PolicyRulesFromGroupPolicyMerged takes priority.')]
     [System.Nullable[System.Boolean]] $PolicyRulesFromGroupPolicyNotMerged
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to allow the host computer to respond to unsolicited network traffic of that traffic is secured by IPSec even when stealthModeBlocked is set to true. When SecuredPacketExemptionBlocked and SecuredPacketExemptionAllowed are both true, SecuredPacketExemptionAllowed takes priority.')]
     [System.Nullable[System.Boolean]] $SecuredPacketExemptionAllowed
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to block the host computer to respond to unsolicited network traffic of that traffic is secured by IPSec even when stealthModeBlocked is set to true. When SecuredPacketExemptionBlocked and SecuredPacketExemptionAllowed are both true, SecuredPacketExemptionAllowed takes priority.')]
     [System.Nullable[System.Boolean]] $SecuredPacketExemptionBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Prevent the server from operating in stealth mode. When StealthModeRequired and StealthModeBlocked are both true, StealthModeBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $StealthModeBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the server to operate in stealth mode. When StealthModeRequired and StealthModeBlocked are both true, StealthModeBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $StealthModeRequired
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to block unicast responses to multicast broadcast traffic. When UnicastResponsesToMulticastBroadcastsRequired and UnicastResponsesToMulticastBroadcastsBlocked are both true, UnicastResponsesToMulticastBroadcastsBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $UnicastResponsesToMulticastBroadcastsBlocked
+
     [DscProperty()]
     [System.ComponentModel.Description('Configures the firewall to allow unicast responses to multicast broadcast traffic. When UnicastResponsesToMulticastBroadcastsRequired and UnicastResponsesToMulticastBroadcastsBlocked are both true, UnicastResponsesToMulticastBroadcastsBlocked takes priority.')]
     [System.Nullable[System.Boolean]] $UnicastResponsesToMulticastBroadcastsRequired
@@ -4033,51 +4085,70 @@ class MSFT_MicrosoftGraphwindowsFirewallRule
 {
     [DscProperty()]
     [System.ComponentModel.Description('The action the rule enforces. If not specified, the default is Allowed. Possible values are: notConfigured, blocked, allowed.')]
+    [ValidateSet('notConfigured', 'blocked', 'allowed')]
     [System.String] $Action
+
     [DscProperty()]
     [System.ComponentModel.Description('The description of the rule.')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the rule. Does not need to be unique.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether edge traversal is enabled or disabled for this rule. The EdgeTraversal setting indicates that specific inbound traffic is allowed to tunnel through NATs and other edge devices using the Teredo tunneling technology. In order for this setting to work correctly, the application or service with the inbound firewall rule needs to support IPv6. The primary application of this setting allows listeners on the host to be globally addressable through a Teredo IPv6 address. New rules have the EdgeTraversal property disabled by default. Possible values are: notConfigured, blocked, allowed.')]
+    [ValidateSet('notConfigured', 'blocked', 'allowed')]
     [System.String] $EdgeTraversal
+
     [DscProperty()]
     [System.ComponentModel.Description('The full file path of an app that''s affected by the firewall rule.')]
     [System.String] $FilePath
+
     [DscProperty()]
     [System.ComponentModel.Description('The interface types of the rule. Possible values are: notConfigured, remoteAccess, wireless, lan.')]
+    [ValidateSet('notConfigured', 'remoteAccess', 'wireless', 'lan')]
     [System.String[]] $InterfaceTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('List of local addresses covered by the rule. Default is any address. Valid tokens include:'''' indicates any local address. If present, this must be the only token included.A subnet can be specified using either the subnet mask or network prefix notation. If neither a subnet mask nor a network prefix is specified, the subnet mask defaults to 255.255.255.255.A valid IPv6 address.An IPv4 address range in the format of ''start address - end address'' with no spaces included.An IPv6 address range in the format of ''start address - end address'' with no spaces included.')]
     [System.String[]] $LocalAddressRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('List of local port ranges. For example, ''100-120'', ''200'', ''300-320''. If not specified, the default is All.')]
     [System.String[]] $LocalPortRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the list of authorized local users for the app container. This is a string in Security Descriptor Definition Language (SDDL) format.')]
     [System.String] $LocalUserAuthorizations
+
     [DscProperty()]
     [System.ComponentModel.Description('The package family name of a Microsoft Store application that''s affected by the firewall rule.')]
     [System.String] $PackageFamilyName
+
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the profiles to which the rule belongs. If not specified, the default is All. Possible values are: notConfigured, domain, private, public.')]
     [System.String] $ProfileTypes
+
     [DscProperty()]
     [System.ComponentModel.Description('0-255 number representing the IP protocol (TCP = 6, UDP = 17). If not specified, the default is All. Valid values 0 to 255')]
     [System.Nullable[System.UInt32]] $Protocol
+
     [DscProperty()]
     [System.ComponentModel.Description('List of tokens specifying the remote addresses covered by the rule. Tokens are case insensitive. Default is any address. Valid tokens include:'''' indicates any remote address. If present, this must be the only token included.''Defaultgateway''''DHCP''''DNS''''WINS''''Intranet'' (supported on Windows versions 1809+)''RmtIntranet'' (supported on Windows versions 1809+)''Internet'' (supported on Windows versions 1809+)''Ply2Renders'' (supported on Windows versions 1809+)''LocalSubnet'' indicates any local address on the local subnet.A subnet can be specified using either the subnet mask or network prefix notation. If neither a subnet mask nor a network prefix is specified, the subnet mask defaults to 255.255.255.255.A valid IPv6 address.An IPv4 address range in the format of ''start address - end address'' with no spaces included.An IPv6 address range in the format of ''start address - end address'' with no spaces included.')]
     [System.String[]] $RemoteAddressRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('List of remote port ranges. For example, ''100-120'', ''200'', ''300-320''. If not specified, the default is All.')]
     [System.String[]] $RemotePortRanges
+
     [DscProperty()]
     [System.ComponentModel.Description('The name used in cases when a service, not an application, is sending or receiving traffic.')]
     [System.String] $ServiceName
+
     [DscProperty()]
     [System.ComponentModel.Description('The traffic direction that the rule is enabled for. If not specified, the default is Out. Possible values are: notConfigured, out, in.')]
+    [ValidateSet('notConfigured', 'out', 'in')]
     [System.String] $TrafficDirection
 }
 
@@ -4086,8 +4157,10 @@ class MSFT_MicrosoftGraphdeviceManagementUserRightsSetting
     [DscProperty()]
     [System.ComponentModel.Description('Representing a collection of local users or groups which will be set on device if the state of this setting is Allowed. This collection can contain a maximum of 500 elements.')]
     [MSFT_MicrosoftGraphDeviceManagementUserRightsLocalUserOrGroup[]] $LocalUsersOrGroups
+
     [DscProperty()]
     [System.ComponentModel.Description('Representing the current state of this user rights setting. Possible values are: notConfigured, blocked, allowed.')]
+    [ValidateSet('notConfigured', 'blocked', 'allowed')]
     [System.String] $State
 }
 
@@ -4095,22 +4168,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -4121,23 +4202,32 @@ class MSFT_MicrosoftGraphBitLockerRecoveryOptions
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether to block certificate-based data recovery agent.')]
     [System.Nullable[System.Boolean]] $BlockDataRecoveryAgent
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether or not to enable BitLocker until recovery information is stored in AD DS.')]
     [System.Nullable[System.Boolean]] $EnableBitLockerAfterRecoveryInformationToStore
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether or not to allow BitLocker recovery information to store in AD DS.')]
     [System.Nullable[System.Boolean]] $EnableRecoveryInformationSaveToStore
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether or not to allow showing recovery options in BitLocker Setup Wizard for fixed or system disk.')]
     [System.Nullable[System.Boolean]] $HideRecoveryOptions
+
     [DscProperty()]
     [System.ComponentModel.Description('Configure what pieces of BitLocker recovery information are stored to AD DS. Possible values are: passwordAndKey, passwordOnly.')]
+    [ValidateSet('passwordAndKey', 'passwordOnly')]
     [System.String] $RecoveryInformationToStore
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether users are allowed or required to generate a 256-bit recovery key for fixed or system disk. Possible values are: blocked, required, allowed, notConfigured.')]
+    [ValidateSet('blocked', 'required', 'allowed', 'notConfigured')]
     [System.String] $RecoveryKeyUsage
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether users are allowed or required to generate a 48-digit recovery password for fixed or system disk. Possible values are: blocked, required, allowed, notConfigured.')]
+    [ValidateSet('blocked', 'required', 'allowed', 'notConfigured')]
     [System.String] $RecoveryPasswordUsage
 }
 
@@ -4146,9 +4236,11 @@ class MSFT_MicrosoftGraphDeviceManagementUserRightsLocalUserOrGroup
     [DscProperty()]
     [System.ComponentModel.Description('Admins description of this local user or group.')]
     [System.String] $Description
+
     [DscProperty()]
     [System.ComponentModel.Description('The name of this local user or group.')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The security identifier of this local user or group (e.g. S-1-5-32-544).')]
     [System.String] $SecurityIdentifier

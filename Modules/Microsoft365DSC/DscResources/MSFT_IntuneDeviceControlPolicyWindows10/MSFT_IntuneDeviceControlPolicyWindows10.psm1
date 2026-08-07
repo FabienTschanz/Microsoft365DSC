@@ -682,12 +682,15 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogPolicyRule
     [DscProperty()]
     [System.ComponentModel.Description('Entry')]
     [MSFT_MicrosoftGraphIntuneSettingsCatalogPolicyRuleEntry[]] $Entry
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('Excluded ID')]
     [System.String[]] $ExcludedIdList_GroupId
+
     [DscProperty()]
     [System.ComponentModel.Description('Included ID')]
     [System.String[]] $IncludedIdList_GroupId
@@ -697,22 +700,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -722,16 +733,23 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogPolicyRuleEntry
 {
     [DscProperty()]
     [System.ComponentModel.Description('Type (allow: Allow, deny: Deny, auditallowed: AuditAllowed, auditdenied: AuditDenied)')]
+    [ValidateSet('allow', 'deny', 'auditallowed', 'auditdenied')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('Options (0: None, 1: ShowNotification, 2: SendEvent, 3: SendNotificationAndEvent, 4: Disable)')]
+    [ValidateSet('0', '1', '2', '3', '4')]
     [System.String] $Options
+
     [DscProperty()]
     [System.ComponentModel.Description('Sid')]
     [System.String] $Sid
+
     [DscProperty()]
     [System.ComponentModel.Description('Access mask (1: WDD_READ_ACCESS, 2: WDD_WRITE_ACCESS, 4: WDD_EXECUTE_ACCESS, 8: WDD_FS_READ_ACCESS, 16: WDD_FS_WRITE_ACCESS, 32: WDD_FS_EXECUTE_ACCESS, 64: WDD_PRINT_ACCESS)')]
+    [ValidateSet('1', '2', '4', '8', '16', '32', '64')]
     [System.Int32[]] $AccessMask
+
     [DscProperty()]
     [System.ComponentModel.Description('Computer Sid')]
     [System.String] $ComputerSid

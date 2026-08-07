@@ -91,7 +91,7 @@ class EXOArcConfig : M365DSCResourceBase
 
             $result = @{
                 IsSingleInstance      = 'Yes'
-                ArcTrustedSealers     = $ArcConfigSettings.ArcTrustedSealers
+                ArcTrustedSealers     = $ArcConfigSettings.ArcTrustedSealers -split ','
                 Credential            = $this.Credential
                 ApplicationId         = $this.ApplicationId
                 CertificateThumbprint = $this.CertificateThumbprint
@@ -144,25 +144,7 @@ class EXOArcConfig : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $desiredValues = $this.GetBoundParameters()
-        if ($desiredValues.ContainsKey('ArcTrustedSealers'))
-        {
-            $desiredValues.ArcTrustedSealers = $desiredValues.ArcTrustedSealers -join ','
-        }
-
-        $result = Test-M365DSCTargetResource -DesiredValues $desiredValues `
-            -ResourceName $this.GetResourceName() `
-            -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()

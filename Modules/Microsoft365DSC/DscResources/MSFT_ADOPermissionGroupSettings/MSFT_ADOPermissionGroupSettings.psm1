@@ -377,12 +377,15 @@ class MSFT_ADOPermission
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Id of the associate security namespace.')]
     [System.String] $NamespaceId
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Display name of the permission scope.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Bit mask for the permission')]
     [System.Nullable[System.UInt32]] $Bit
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Token value')]
     [System.String] $Token

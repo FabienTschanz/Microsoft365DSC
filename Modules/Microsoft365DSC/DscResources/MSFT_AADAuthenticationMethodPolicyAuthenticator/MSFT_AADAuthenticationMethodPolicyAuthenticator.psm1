@@ -710,9 +710,11 @@ class MSFT_MicrosoftGraphMicrosoftAuthenticatorFeatureSettings
     [DscProperty()]
     [System.ComponentModel.Description('Determines whether users will be able to approve push notifications on other Microsoft applications such as Outlook Mobile.')]
     [MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration] $CompanionAppAllowedState
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines whether the user''s Authenticator app will show them the client app they are signing into.')]
     [MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration] $DisplayAppInformationRequiredState
+
     [DscProperty()]
     [System.ComponentModel.Description('Determines whether the user''s Authenticator app will show them the geographic location of where the authentication request originated from.')]
     [MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration] $DisplayLocationInformationRequiredState
@@ -723,8 +725,10 @@ class MSFT_AADAuthenticationMethodPolicyAuthenticatorExcludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -733,8 +737,10 @@ class MSFT_AADAuthenticationMethodPolicyAuthenticatorIncludeTarget
     [DscProperty(Key)]
     [System.ComponentModel.Description('The object identifier of an Azure AD group.')]
     [System.String] $Id
+
     [DscProperty(Key)]
     [System.ComponentModel.Description('The type of the authentication method target. Possible values are: group and unknownFutureValue.')]
+    [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 
@@ -743,11 +749,14 @@ class MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('A single entity that''s excluded from using this feature.')]
     [MSFT_AADAuthenticationMethodPolicyAuthenticatorFeatureTarget] $ExcludeTarget
+
     [DscProperty()]
     [System.ComponentModel.Description('A single entity that''s allowed to use this feature.')]
     [MSFT_AADAuthenticationMethodPolicyAuthenticatorFeatureTarget] $IncludeTarget
+
     [DscProperty()]
     [System.ComponentModel.Description('Enable or disable the feature. Possible values are: default, enabled, disabled, unknownFutureValue. The default value is used when the configuration hasn''t been explicitly set and uses the default behavior of Azure AD for the setting. The default value is disabled.')]
+    [ValidateSet('default', 'enabled', 'disabled', 'unknownFutureValue')]
     [System.String] $State
 }
 
@@ -756,8 +765,10 @@ class MSFT_AADAuthenticationMethodPolicyAuthenticatorFeatureTarget
     [DscProperty()]
     [System.ComponentModel.Description('The ID of the entity that''s targeted in the include or exclude rule or all_users to target all users.')]
     [System.String] $Id
+
     [DscProperty()]
     [System.ComponentModel.Description('The kind of entity that''s targeted. The possible values are: group, administrativeUnit, role, unknownFutureValue.')]
+    [ValidateSet('group', 'administrativeUnit', 'role', 'unknownFutureValue')]
     [System.String] $TargetType
 }
 

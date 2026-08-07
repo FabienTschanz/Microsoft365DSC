@@ -374,9 +374,11 @@ class MSFT_PPDLPPolicyConnectorConfigurationsAction
     [DscProperty()]
     [System.ComponentModel.Description('Unique id of the connector.')]
     [System.String] $connectorId
+
     [DscProperty()]
     [System.ComponentModel.Description('Default action behavior for to connector.')]
     [System.String] $defaultConnectorActionRuleBehavior
+
     [DscProperty()]
     [System.ComponentModel.Description('List of associated actions.')]
     [MSFT_PPDLPPolicyConnectorConfigurationsActionRules[]] $actionRules
@@ -387,6 +389,7 @@ class MSFT_PPDLPPolicyConnectorConfigurationsActionRules
     [DscProperty()]
     [System.ComponentModel.Description('Id of the action.')]
     [System.String] $actionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Associated behavior.')]
     [System.String] $behavior

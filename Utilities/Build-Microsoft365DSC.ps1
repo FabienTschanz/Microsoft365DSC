@@ -121,6 +121,54 @@ function Write-BuildLog
     Write-Host "[build] $Message" -ForegroundColor $color
 }
 
+function New-M365DSCProbeStage
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ModuleRoot,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Version
+    )
+
+    $root = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ('M365DSCProbe_' + [Guid]::NewGuid().ToString('N'))
+    $moduleFolder = Join-Path -Path $root -ChildPath 'Microsoft365DSC'
+    $link = Join-Path -Path $moduleFolder -ChildPath $Version
+
+    $null = New-Item -Path $moduleFolder -ItemType Directory -Force
+
+    try
+    {
+        $onWindows = $PSVersionTable.PSEdition -eq 'Desktop' -or $global:IsWindows
+        $linkType = if ($onWindows) { 'Junction' } else { 'SymbolicLink' }
+
+        try
+        {
+            $null = New-Item -Path $link -ItemType $linkType -Value $ModuleRoot -ErrorAction Stop
+            return @{ Root = $root; Link = $link; IsLink = $true }
+        }
+        catch
+        {
+            Write-BuildLog "Could not create a $linkType at '$link' ($($_.Exception.Message)). Falling back to a copy." -Level Warning
+        }
+
+        $null = New-Item -Path $link -ItemType Directory -Force
+        Copy-Item -Path (Join-Path -Path $ModuleRoot -ChildPath '*') -Destination $link -Recurse -Force
+
+        return @{ Root = $root; Link = $link; IsLink = $false }
+    }
+    catch
+    {
+        Remove-Item -Path $root -Recurse -Force -ErrorAction SilentlyContinue
+        throw
+    }
+}
+
 # Parses one source file and returns its top-level class definitions.
 function Get-M365DSCClassDefinition
 {
@@ -606,26 +654,99 @@ if (-not $SkipValidation)
 {
     Write-BuildLog 'Validating...'
 
-    $expected = $resourceEntries.Count
+    $expectedNames = @($resourceEntries.Name | Sort-Object)
+    $expected = $expectedNames.Count
+
+    $version = ([Version] $manifestData.ModuleVersion).ToString()
+    $stage = New-M365DSCProbeStage -ModuleRoot $script:ModuleRoot -Version $version
+    $stageRoot = $stage.Root.Replace("'", "''")
+
     $probe = @"
 `$ErrorActionPreference = 'Stop'
-Import-Module '$script:ManifestPath' -Force -WarningAction SilentlyContinue
-`$found = @(Get-DscResource -Module 'Microsoft365DSC' -ErrorAction SilentlyContinue |
-    Where-Object { `$_.ImplementationDetail -eq 'ClassBased' -or `$_.Name -in @('$($resourceEntries.Name -join "','")') })
-'{0}' -f `$found.Count
+
+`$parser = @(Get-Module -ListAvailable -Name 'DSCParser' | Sort-Object Version -Descending)[0]
+if (`$null -eq `$parser)
+{
+    throw 'DSCParser is not installed; Get-DscResourceV2 is unavailable.'
+}
+
+`$entries = @(`$env:PSModulePath -split [System.IO.Path]::PathSeparator |
+    Where-Object { `$_ -and -not (Test-Path -Path (Join-Path -Path `$_ -ChildPath 'Microsoft365DSC')) })
+`$env:PSModulePath = (@('$stageRoot') + `$entries) -join [System.IO.Path]::PathSeparator
+
+Import-Module -Name `$parser.Path -Force -WarningAction SilentlyContinue
+
+`$found = @(Get-DscResourceV2 -Module 'Microsoft365DSC' -ErrorAction SilentlyContinue |
+    Where-Object { `$_.ImplementationDetail -eq 'ClassBased' -or `$_.Name -in @('$($expectedNames -join "','")') })
+foreach (`$resource in `$found)
+{
+    'RESOURCE:{0}' -f `$resource.Name
+}
 "@
 
-    $result = & pwsh -NoProfile -NonInteractive -Command $probe
-    $count = 0
-    [void] [int]::TryParse(($result | Select-Object -Last 1), [ref] $count)
-
-    if ($count -ne $expected)
+    try
     {
-        Write-BuildLog "Discovery returned $count class-based resources, expected $expected." -Level Error
-        throw 'Validation failed.'
-    }
+        $result = & pwsh -NoProfile -NonInteractive -Command $probe
 
-    Write-BuildLog "Discovery: $count / $expected class-based resources" -Level Success
+        $foundNames = @($result |
+                Where-Object { $_ -is [System.String] -and $_.StartsWith('RESOURCE:') } |
+                ForEach-Object { $_.Substring('RESOURCE:'.Length).Trim() } |
+                Sort-Object -Unique)
+        $count = $foundNames.Count
+
+        if ($count -ne $expected)
+        {
+            Write-BuildLog "Discovery returned $count class-based resources, expected $expected." -Level Error
+
+            $foundSet = [System.Collections.Generic.HashSet[String]]::new(
+                [String[]] $foundNames, [StringComparer]::OrdinalIgnoreCase)
+            $expectedSet = [System.Collections.Generic.HashSet[String]]::new(
+                [String[]] $expectedNames, [StringComparer]::OrdinalIgnoreCase)
+
+            $missing = @($expectedNames | Where-Object { -not $foundSet.Contains($_) })
+            $unexpected = @($foundNames | Where-Object { -not $expectedSet.Contains($_) })
+
+            if ($missing.Count -gt 0)
+            {
+                Write-BuildLog "Built but not discovered ($($missing.Count)):" -Level Error
+                foreach ($name in $missing)
+                {
+                    Write-BuildLog "  - $name" -Level Detail
+                }
+            }
+
+            if ($unexpected.Count -gt 0)
+            {
+                Write-BuildLog "Discovered but not built ($($unexpected.Count)):" -Level Warning
+                foreach ($name in $unexpected)
+                {
+                    Write-BuildLog "  + $name" -Level Detail
+                }
+            }
+
+            if ($missing.Count -eq 0 -and $unexpected.Count -eq 0)
+            {
+                Write-BuildLog 'No name difference found. Raw probe output:' -Level Error
+                foreach ($line in $result)
+                {
+                    Write-BuildLog "  $line" -Level Detail
+                }
+            }
+
+            throw 'Validation failed.'
+        }
+
+        Write-BuildLog "Discovery: $count / $expected class-based resources" -Level Success
+    }
+    finally
+    {
+        if ($stage.IsLink -and (Test-Path -Path $stage.Link))
+        {
+            [System.IO.Directory]::Delete($stage.Link, $false)
+        }
+
+        Remove-Item -Path $stage.Root -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
 
 #endregion

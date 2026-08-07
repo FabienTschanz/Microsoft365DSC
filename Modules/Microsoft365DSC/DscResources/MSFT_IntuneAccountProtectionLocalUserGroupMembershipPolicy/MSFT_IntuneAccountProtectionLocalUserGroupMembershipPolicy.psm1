@@ -516,22 +516,30 @@ class MSFT_IntuneAccountProtectionLocalUserGroupMembershipPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -541,15 +549,21 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogAccessGroup
 {
     [DscProperty()]
     [System.ComponentModel.Description('The action to use for adding / removing members. Possible values: Add (AddUpdate), Remove (RemoveUpdate), Replace (AddRestrict). Add and Remove do not update unspecified members, whereas Replace will replace all members with the ones specified.')]
+    [ValidateSet('AddUpdate', 'RemoveUpdate', 'AddRestrict')]
     [System.String] $action
+
     [DscProperty()]
     [System.ComponentModel.Description('The local groups to add / remove the members to / from. List of the following values: `administrators`, `users`, `guests`, `powerusers`, `remotedesktopusers`, `remotemanagementusers`')]
+    [ValidateSet('administrators', 'users', 'guests', 'powerusers', 'remotedesktopusers', 'remotemanagementusers')]
     [System.String[]] $desc
+
     [DscProperty()]
     [System.ComponentModel.Description('The members to add / remove to / from the group. For AzureAD Users, use the format `AzureAD\\<UserPrincipalName>`. For groups, use the security identifier (SID).')]
     [System.String[]] $member
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the selection. Either users / groups from AzureAD, or by manual identifier.')]
+    [ValidateSet('users', 'manual')]
     [System.String] $userselectiontype
 }
 

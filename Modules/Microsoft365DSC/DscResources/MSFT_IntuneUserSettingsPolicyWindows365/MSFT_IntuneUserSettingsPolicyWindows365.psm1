@@ -552,12 +552,16 @@ class MSFT_MicrosoftGraphcloudPcCrossRegionDisasterRecoverySetting
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the network settings of the Cloud PC during a cross-region disaster recovery operation.')]
     [MSFT_MicrosoftGraphCloudPcDisasterRecoveryNetworkSetting] $DisasterRecoveryNetworkSetting
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of disaster recovery to perform when a disaster occurs on the user''s Cloud PC. The possible values are: notConfigured, crossRegion, premium, unknownFutureValue. The default value is notConfigured.')]
+    [ValidateSet('notConfigured', 'crossRegion', 'premium', 'unknownFutureValue')]
     [System.String] $DisasterRecoveryType
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether Windows 365 maintain the cross-region disaster recovery function generated restore points. If true, the Windows 365 stored restore points false indicates that Windows 365 doesn''t generate or keep the restore point from the original Cloud PC. If a disaster occurs, the new Cloud PC can only be provisioned using the initial image. This limitation can result in the loss of some user data on the original Cloud PC. The default value is false.')]
     [System.Nullable[System.Boolean]] $MaintainCrossRegionRestorePointEnabled
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether the client allows the end user to initiate a disaster recovery activation. True indicates that the client includes the option for the end user to activate Backup Cloud PC. When false, the end user doesn''t have the option to activate disaster recovery. The default value is false. Currently, only premium disaster recovery is supported.')]
     [System.Nullable[System.Boolean]] $UserInitiatedDisasterRecoveryAllowed
@@ -574,7 +578,9 @@ class MSFT_MicrosoftGraphcloudPcRestorePointSetting
 {
     [DscProperty()]
     [System.ComponentModel.Description('The time interval in hours to take snapshots (restore points) of a Cloud PC automatically. Possible values are: default, fourHours, sixHours, twelveHours, sixteenHours, twentyFourHours. The default value is default that indicates that the time interval for automatic capturing of restore point snapshots is set to 12 hours.')]
+    [ValidateSet('default', 'fourHours', 'sixHours', 'twelveHours', 'sixteenHours', 'twentyFourHours')]
     [System.String] $FrequencyType
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, the user has the ability to use snapshots to restore Cloud PCs. If false, non-admin users can''t use snapshots to restore the Cloud PC.')]
     [System.Nullable[System.Boolean]] $UserRestoreEnabled
@@ -584,22 +590,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -610,14 +624,19 @@ class MSFT_MicrosoftGraphCloudPcDisasterRecoveryNetworkSetting
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the display name of the virtual network that the new Cloud PC joins.  Only applicable for the ''#microsoft.graph.cloudPcDisasterRecoveryAzureConnectionSetting'' odata type.')]
     [System.String] $OnPremisesConnectionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the logic geographic group this region belongs to. Multiple regions can belong to one region group. When a region group is configured for disaster recovery, the new Cloud PC is assigned to one of the regions within the group based on resource availability. For example, the europeUnion region group contains the North Europe and West Europe regions.  Only applicable for the ''#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting'' odata type. Possible values are: default, australia, canada, usCentral, usEast, usWest, france, germany, europeUnion, unitedKingdom, japan, asia, india, southAmerica, euap, usGovernment, usGovernmentDOD, unknownFutureValue, norway, switzerland, southKorea, middleEast, mexico, australasia, europe. Use the Prefer: include-unknown-enum-members request header to get the following values in this evolvable enum: norway, switzerland, southKorea, middleEast, mexico, australasia, europe.')]
+    [ValidateSet('default', 'australia', 'canada', 'usCentral', 'usEast', 'usWest', 'france', 'germany', 'europeUnion', 'unitedKingdom', 'japan', 'asia', 'india', 'southAmerica', 'euap', 'usGovernment', 'usGovernmentDOD', 'unknownFutureValue', 'norway', 'switzerland', 'southKorea', 'middleEast', 'mexico', 'australasia', 'europe')]
     [System.String] $RegionGroup
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the Azure region that the new Cloud PC is assigned to. The Windows 365 service creates and manages the underlying virtual network. Only applicable for the ''#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting'' odata type.')]
     [System.String] $RegionName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.cloudPcDisasterRecoveryAzureConnectionSetting', '#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting')]
     [System.String] $odataType
 }
 

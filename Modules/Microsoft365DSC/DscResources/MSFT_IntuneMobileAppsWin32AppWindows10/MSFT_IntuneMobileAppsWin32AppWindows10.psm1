@@ -835,6 +835,7 @@ class MSFT_DeviceManagementMimeContent
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of content mime.')]
     [System.String] $Type
+
     [DscProperty()]
     [System.ComponentModel.Description('The Base64 encoded string content.')]
     [System.String] $Value
@@ -845,6 +846,7 @@ class MSFT_DeviceManagementMobileAppCategory
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The name of the app category.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier for an entity. Read-only.')]
     [System.String] $Id
@@ -854,63 +856,90 @@ class MSFT_MicrosoftGraphWin32LobAppRule
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The provider rule type. Possible values are: FileSystem, PowerShellScript, Registry')]
+    [ValidateSet('FileSystem', 'PowerShellScript', 'ProductCode', 'Registry')]
     [System.String] $OdataType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of rule. Possible values are: Detection, Requirement')]
+    [ValidateSet('Detection', 'Requirement')]
     [System.String] $RuleType
+
     [DscProperty()]
     [System.ComponentModel.Description('The operator of the rule. Not applicable for the ''ProductCode'' odata type. Possible values are: notConfigured, equal, notEqual, greaterThan, greaterThanOrEqual, lessThan, lessThanOrEqual.')]
+    [ValidateSet('notConfigured', 'equal', 'notEqual', 'greaterThan', 'greaterThanOrEqual', 'lessThan', 'lessThanOrEqual')]
     [System.String] $Operator
+
     [DscProperty()]
     [System.ComponentModel.Description('The value to compare. Not applicable for the ''ProductCode'' odata type.')]
     [System.String] $ComparisonValue
+
     [DscProperty()]
     [System.ComponentModel.Description('A value indicating whether to checking 32-bit on 64-bit system. Only applicable for the ''FileSystem'' and ''Registry'' odata type.')]
     [System.Nullable[System.Boolean]] $Check32BitOn64System
+
     [DscProperty()]
     [System.ComponentModel.Description('The file or folder path to detect Win32 Line of Business (LoB) app. Only applicable for the ''FileSystem'' odata type.')]
     [System.String] $Path
+
     [DscProperty()]
     [System.ComponentModel.Description('The file or folder name to detect Win32 Line of Business (LoB) app. Only applicable for the ''FileSystem'' odata type.')]
     [System.String] $FileOrFolderName
+
     [DscProperty()]
     [System.ComponentModel.Description('The file system comparison operator type. Only applicable for the ''FileSystem'' odata type. Possible values are: notConfigured, exists, modifiedDate, createdDate, version, sizeInMB, doesNotExist, sizeInBytes, appVersion.')]
+    [ValidateSet('notConfigured', 'exists', 'modifiedDate', 'createdDate', 'version', 'sizeInMB', 'doesNotExist', 'sizeInBytes', 'appVersion')]
     [System.String] $FileSystemOperationType
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name for the rule. Do not specify this value if the rule is used for detection.')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('A value indicating whether signature check is enforced. Only Applicable for the ''PowerShellScript'' odata type.')]
     [System.Nullable[System.Boolean]] $EnforceSignatureCheck
+
     [DscProperty()]
     [System.ComponentModel.Description('A value indicating whether this script should run as 32-bit. Only Applicable for the ''PowerShellScript'' odata type.')]
     [System.Nullable[System.Boolean]] $RunAs32Bit
+
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of execution context the script runs in. Only Applicable for the ''PowerShellScript'' odata type. Possible values are: system, user.')]
+    [ValidateSet('system', 'user')]
     [System.String] $RunAsAccount
+
     [DscProperty()]
     [System.ComponentModel.Description('The PowerShell script. Only Applicable for the ''PowerShellScript'' odata type.')]
     [System.String] $Script
+
     [DscProperty()]
     [System.ComponentModel.Description('The comparison operator type for script output. Only Applicable for the ''PowerShellScript'' odata type. Possible values are: notConfigured, string, dateTime, integer, float, version, boolean.')]
+    [ValidateSet('notConfigured', 'string', 'dateTime', 'integer', 'float', 'version', 'boolean')]
     [System.String] $PowerShellScriptOperationType
+
     [DscProperty()]
     [System.ComponentModel.Description('The product code of Win32 Line of Business (LoB) app.')]
     [System.String] $ProductCode
+
     [DscProperty()]
     [System.ComponentModel.Description('The operator for detection. Only applicable for the ''ProductCode'' odata typ. Possible values are: notConfigured, equal, notEqual, greaterThan, greaterThanOrEqual, lessThan, lessThanOrEqual.')]
+    [ValidateSet('notConfigured', 'equal', 'notEqual', 'greaterThan', 'greaterThanOrEqual', 'lessThan', 'lessThanOrEqual')]
     [System.String] $ProductVersionOperator
+
     [DscProperty()]
     [System.ComponentModel.Description('The product version of Win32 Line of Business (LoB) app.')]
     [System.String] $ProductVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('The registry key path to detect Win32 Line of Business (LoB) app.')]
     [System.String] $KeyPath
+
     [DscProperty()]
     [System.ComponentModel.Description('The registry value name.')]
     [System.String] $ValueName
+
     [DscProperty()]
     [System.ComponentModel.Description('The registry data comparison operator type. Only applicable for the ''Registry'' odata type. Possible values are: notConfigured, exists, doesNotExist, string, integer, version.')]
+    [ValidateSet('notConfigured', 'exists', 'doesNotExist', 'string', 'integer', 'version')]
     [System.String] $RegistryOperationType
 }
 
@@ -918,12 +947,16 @@ class MSFT_MicrosoftGraphWin32LobAppInstallExperience
 {
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the type of execution context the app runs in. Possible values are: system, user.')]
+    [ValidateSet('system', 'user')]
     [System.String] $RunAsAccount
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes the system will wait for install program to finish. Default value is 60 minutes.')]
     [System.Nullable[System.Int32]] $MaxRunTimeInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('Device restart behavior. Possible values are: basedOnReturnCode, allow, suppress, force.')]
+    [ValidateSet('basedOnReturnCode', 'allow', 'suppress', 'force')]
     [System.String] $DeviceRestartBehavior
 }
 
@@ -932,8 +965,10 @@ class MSFT_MicrosoftGraphWin32LobAppReturnCode
     [DscProperty()]
     [System.ComponentModel.Description('Return code.')]
     [System.Nullable[System.Int32]] $ReturnCode
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of return code. Possible values are: failed, success, softReboot, hardReboot, retry.')]
+    [ValidateSet('failed', 'success', 'softReboot', 'hardReboot', 'retry')]
     [System.String] $Type
 }
 
@@ -942,21 +977,28 @@ class MSFT_MicrosoftGraphWin32LobAppMsiInformation
     [DscProperty()]
     [System.ComponentModel.Description('The MSI product code.')]
     [System.String] $ProductCode
+
     [DscProperty()]
     [System.ComponentModel.Description('The MSI product version.')]
     [System.String] $ProductVersion
+
     [DscProperty()]
     [System.ComponentModel.Description('The MSI upgrade code.')]
     [System.String] $UpgradeCode
+
     [DscProperty()]
     [System.ComponentModel.Description('Whether the MSI app requires the machine to reboot to complete installation.')]
     [System.Nullable[System.Boolean]] $RequiresReboot
+
     [DscProperty()]
     [System.ComponentModel.Description('The MSI package type. Possible values are: perMachine, perUser, dualPurpose.')]
+    [ValidateSet('perMachine', 'perUser', 'dualPurpose')]
     [System.String] $PackageType
+
     [DscProperty()]
     [System.ComponentModel.Description('The MSI product name.')]
     [System.String] $ProductName
+
     [DscProperty()]
     [System.ComponentModel.Description('The MSI publisher')]
     [System.String] $Publisher
@@ -966,24 +1008,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 
@@ -998,6 +1049,7 @@ class MSFT_DeviceManagementMobileAppAssignmentSettings
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The odata type of the assignment type.')]
+    [ValidateSet('#microsoft.graph.androidManagedStoreAppAssignmentSettings', '#microsoft.graph.iosStoreAppAssignmentSettings', '#microsoft.graph.iosLobAppAssignmentSettings', '#microsoft.graph.macOsLobAppAssignmentSettings', '#microsoft.graph.win32LobAppAssignmentSettings', '#microsoft.graph.winGetAppAssignmentSettings', '#microsoft.graph.windowsUniversalAppXAppAssignmentSettings')]
     [System.String] $odataType
 }
 
@@ -1006,15 +1058,21 @@ class MSFT_DeviceManagementWin32MobileAppAssignmentSettings : MSFT_DeviceManagem
     [DscProperty()]
     [System.ComponentModel.Description('The auto-update settings to apply for this app assignment.')]
     [MSFT_DeviceManagementWin32MobileAppAssignmentSettingsAutoUpdateSettings] $autoUpdateSettings
+
     [DscProperty()]
     [System.ComponentModel.Description('The delivery optimization priority for this app assignment. This setting is not supported in National Cloud environments. Possible values are: notConfigured, foreground.')]
+    [ValidateSet('foreground', 'notConfigured')]
     [System.String] $deliveryOptimizationPriority
+
     [DscProperty()]
     [System.ComponentModel.Description('The install time settings to apply for this app assignment.')]
     [MSFT_DeviceManagementWin32MobileAppAssignmentSettingsInstallTimeSettings] $installTimeSettings
+
     [DscProperty()]
     [System.ComponentModel.Description('The notification status for this app assignment. Possible values are: showAll, showReboot, hideAll.')]
+    [ValidateSet('showAll', 'showReboot', 'hideAll')]
     [System.String] $notifications
+
     [DscProperty()]
     [System.ComponentModel.Description('The reboot settings to apply for this app assignment.')]
     [MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings] $restartSettings
@@ -1024,6 +1082,7 @@ class MSFT_DeviceManagementWin32MobileAppAssignmentSettingsAutoUpdateSettings
 {
     [DscProperty()]
     [System.ComponentModel.Description('The auto-update superseded apps setting for the app assignment. Possible values are notConfigured and enabled. Default value is notConfigured.')]
+    [ValidateSet('enabled', 'notConfigured')]
     [System.String] $autoUpdateSupersededAppsState
 }
 
@@ -1032,9 +1091,11 @@ class MSFT_DeviceManagementWin32MobileAppAssignmentSettingsInstallTimeSettings
     [DscProperty()]
     [System.ComponentModel.Description('Whether the local device time or UTC time should be used when determining the available and deadline times.')]
     [System.Nullable[System.Boolean]] $useLocalTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The time at which the app should be available for installation.')]
     [System.String] $startDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The time at which the app should be installed.')]
     [System.String] $deadlineDateTime
@@ -1045,9 +1106,11 @@ class MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes to wait before restarting the device after an app installation.')]
     [System.Nullable[System.Int32]] $countdownDisplayBeforeRestartInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes before the restart time to display the countdown dialog for pending restarts.')]
     [System.Nullable[System.Int32]] $gracePeriodInMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('The number of minutes to snooze the restart notification dialog when the snooze button is selected.')]
     [System.Nullable[System.Int32]] $restartNotificationSnoozeDurationInMinutes

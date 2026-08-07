@@ -403,24 +403,33 @@ class MSFT_DeviceManagementMobileAppAssignment
 {
     [DscProperty()]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.mobileAppAssignment')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are: none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('Possible values for the install intent chosen by the admin.')]
+    [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
 
@@ -435,6 +444,7 @@ class MSFT_DeviceManagementMobileAppAssignmentSettings
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The odata type of the assignment type.')]
+    [ValidateSet('#microsoft.graph.androidManagedStoreAppAssignmentSettings', '#microsoft.graph.iosStoreAppAssignmentSettings', '#microsoft.graph.iosLobAppAssignmentSettings', '#microsoft.graph.macOsLobAppAssignmentSettings', '#microsoft.graph.win32LobAppAssignmentSettings', '#microsoft.graph.winGetAppAssignmentSettings', '#microsoft.graph.windowsUniversalAppXAppAssignmentSettings')]
     [System.String] $odataType
 }
 
@@ -443,8 +453,10 @@ class MSFT_DeviceManagementSystemMobileAppAssignmentSettings : MSFT_DeviceManage
     [DscProperty()]
     [System.ComponentModel.Description('The track IDs to enable for this app assignment.')]
     [System.String[]] $androidManagedStoreAppTrackIds
+
     [DscProperty()]
     [System.ComponentModel.Description('The prioritization of automatic updates for this app assignment. The possible values are: default, postponed, priority, unknownFutureValue.')]
+    [ValidateSet('default', 'postponed', 'priority')]
     [System.String] $autoUpdateMode
 }
 

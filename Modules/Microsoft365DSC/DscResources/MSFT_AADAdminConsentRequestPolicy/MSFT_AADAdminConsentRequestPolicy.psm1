@@ -366,9 +366,11 @@ class MSFT_AADAdminConsentRequestPolicyReviewer
     [DscProperty()]
     [System.ComponentModel.Description('Type of reviewwer. Can be User, Group or Role')]
     [System.String] $ReviewerType
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Identifier for the reviewer instance.')]
     [System.String] $ReviewerId
+
     [DscProperty()]
     [System.ComponentModel.Description('Associated query.')]
     [System.String] $QueryRoot

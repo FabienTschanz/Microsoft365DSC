@@ -469,9 +469,11 @@ class MSFT_ReusableFirewallPolicySetting
     [DscProperty()]
     [System.ComponentModel.Description('The addresses to resolve. Required, if AutoResolve is set to ''False''.')]
     [System.String[]] $Addresses
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('If the Firewall service should automatically resolve the IP addresses.')]
     [System.Nullable[System.Boolean]] $AutoResolve
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The identifier of the reusable firewall policy setting.')]
     [System.String] $Keyword

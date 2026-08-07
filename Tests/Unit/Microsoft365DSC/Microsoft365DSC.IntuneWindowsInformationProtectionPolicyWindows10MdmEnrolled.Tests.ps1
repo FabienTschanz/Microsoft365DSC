@@ -71,10 +71,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             DisplayName = 'FakeStringValue'
                             Ranges      = @(
                                 @{
-                                    cidrAddress   = 'FakeStringValue'
                                     upperAddress  = 'FakeStringValue'
                                     lowerAddress  = 'FakeStringValue'
-                                    '@odata.type' = '#microsoft.graph.iPv4CidrRange'
+                                    '@odata.type' = '#microsoft.graph.iPv4Range'
                                 }
                             )
                         }
@@ -187,10 +186,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         ([MSFT_MicrosoftGraphwindowsInformationProtectionIPRangeCollection] @{
                             DisplayName = 'FakeStringValue'
                             Ranges      = @([MSFT_MicrosoftGraphIpRange] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                         })
                     )
@@ -309,10 +307,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         ([MSFT_MicrosoftGraphwindowsInformationProtectionIPRangeCollection] @{
                             DisplayName = 'FakeStringValue'
                             Ranges      = @([MSFT_MicrosoftGraphIpRange] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                         })
                     )
@@ -429,10 +426,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         ([MSFT_MicrosoftGraphwindowsInformationProtectionIPRangeCollection] @{
                             DisplayName = 'FakeStringValue'
                             Ranges      = @([MSFT_MicrosoftGraphIpRange] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                         })
                     )
@@ -541,10 +537,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         ([MSFT_MicrosoftGraphwindowsInformationProtectionIPRangeCollection] @{
                             DisplayName = 'FakeStringValue'
                             Ranges      = @([MSFT_MicrosoftGraphIpRange] @{
-                                    CidrAddress  = 'FakeStringValue'
                                     UpperAddress = 'FakeStringValue'
                                     LowerAddress = 'FakeStringValue'
-                                    odataType    = '#microsoft.graph.iPv4CidrRange'
+                                    odataType    = '#microsoft.graph.iPv4Range'
                                 })
                         })
                     )

@@ -645,22 +645,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -671,15 +679,20 @@ class MSFT_ScheduledActionConfigurations
     [DscProperty()]
     [System.ComponentModel.Description('The unique identifier of the action configuration.')]
     [System.String] $id
+
     [DscProperty()]
     [System.ComponentModel.Description('Number of hours to wait till the action will be enforced. Valid values 0 to 8760.')]
     [System.Nullable[System.UInt32]] $gracePeriodHours
+
     [DscProperty()]
     [System.ComponentModel.Description('The action to take.')]
+    [ValidateSet('notification', 'block', 'retire', 'remoteLock', 'pushNotification')]
     [System.String] $actionType
+
     [DscProperty()]
     [System.ComponentModel.Description('The notification Message template to use.')]
     [System.String] $notificationTemplateId
+
     [DscProperty()]
     [System.ComponentModel.Description('A list of group IDs to specify who to CC this notification message to.')]
     [System.String[]] $notificationMessageCCList

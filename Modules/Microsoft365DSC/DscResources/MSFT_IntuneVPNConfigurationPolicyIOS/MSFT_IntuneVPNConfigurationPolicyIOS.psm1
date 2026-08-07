@@ -704,9 +704,11 @@ class MSFT_MicrosoftvpnProxyServer
     [DscProperty()]
     [System.ComponentModel.Description('Proxy''s automatic configuration script url.')]
     [System.String] $automaticConfigurationScriptUrl
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Address.')]
     [System.String] $address
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Port. Valid values 0 to 65535.')]
     [System.Nullable[System.UInt32]] $port
@@ -717,9 +719,11 @@ class MSFT_MicrosoftGraphvpnServer
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Address (IP address, FQDN or URL)')]
     [System.String] $address
+
     [DscProperty()]
     [System.ComponentModel.Description('Description.')]
     [System.String] $description
+
     [DscProperty()]
     [System.ComponentModel.Description('Default server.')]
     [System.Nullable[System.Boolean]] $isDefaultServer
@@ -730,6 +734,7 @@ class MSFT_customData
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Key for the custom data entry.')]
     [System.String] $key
+
     [DscProperty()]
     [System.ComponentModel.Description('Value for the custom data entry.')]
     [System.String] $value
@@ -740,6 +745,7 @@ class MSFT_customKeyValueData
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Name for the custom data entry.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('Value for the custom data entry.')]
     [System.String] $value
@@ -750,27 +756,38 @@ class MSFT_DeviceManagementConfigurationPolicyVpnOnDemandRule
     [DscProperty()]
     [System.ComponentModel.Description('Network Service Set Identifiers (SSIDs).')]
     [System.String[]] $ssids
+
     [DscProperty()]
     [System.ComponentModel.Description('DNS Search Domains.')]
     [System.String[]] $dnsSearchDomains
+
     [DscProperty()]
     [System.ComponentModel.Description('A URL to probe. If this URL is successfully fetched, returning a 200 HTTP status code, without redirection, this rule matches.')]
     [System.String] $probeUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Action. Possible values are: connect, evaluateConnection, ignore, disconnect.')]
+    [ValidateSet('connect', 'evaluateConnection', 'ignore', 'disconnect')]
     [System.String] $action
+
     [DscProperty()]
     [System.ComponentModel.Description('Domain Action, Only applicable when Action is evaluate connection. Possible values are: connectIfNeeded, neverConnect.')]
+    [ValidateSet('connectIfNeeded', 'neverConnect')]
     [System.String] $domainAction
+
     [DscProperty()]
     [System.ComponentModel.Description('Domains, Only applicable when Action is evaluate connection.')]
     [System.String[]] $domains
+
     [DscProperty()]
     [System.ComponentModel.Description('Probe Required URL. Only applicable when Action is evaluate connection and DomainAction is connectIfNeeded.')]
     [System.String] $probeRequiredUrl
+
     [DscProperty()]
     [System.ComponentModel.Description('Network interface to trigger VPN. Possible values are: notConfigured, ethernet, wiFi, cellular.')]
+    [ValidateSet('notConfigured', 'ethernet', 'wiFi', 'cellular')]
     [System.String] $interfaceTypeMatch
+
     [DscProperty()]
     [System.ComponentModel.Description('DNS Search Server Address.')]
     [System.String[]] $dnsServerAddressMatch
@@ -781,12 +798,15 @@ class MSFT_targetedMobileApps
     [DscProperty()]
     [System.ComponentModel.Description('The application name.')]
     [System.String] $name
+
     [DscProperty()]
     [System.ComponentModel.Description('The publisher of the application.')]
     [System.String] $publisher
+
     [DscProperty()]
     [System.ComponentModel.Description('The Store URL of the application.')]
     [System.String] $appStoreUrl
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The application or bundle identifier of the application.')]
     [System.String] $appId
@@ -796,22 +816,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId

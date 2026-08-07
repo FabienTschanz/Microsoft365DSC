@@ -437,15 +437,19 @@ class MSFT_AADCustomAuthenticationExtensionEndPointConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('Defines the type of the endpoint configuration')]
     [System.String] $EndpointType
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the workflow name for the logic app')]
     [System.String] $LogicAppWorkflowName
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the resource group name for the logic app')]
     [System.String] $ResourceGroupName
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the subscription id for the logic app')]
     [System.String] $SubscriptionId
+
     [DscProperty()]
     [System.ComponentModel.Description('Defines the target url for the http endpoint')]
     [System.String] $TargetUrl

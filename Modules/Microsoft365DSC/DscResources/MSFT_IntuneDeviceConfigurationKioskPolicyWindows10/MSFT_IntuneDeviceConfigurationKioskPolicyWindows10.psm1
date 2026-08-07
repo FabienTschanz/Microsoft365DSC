@@ -671,9 +671,11 @@ class MSFT_MicrosoftGraphwindowsKioskProfile
     [DscProperty()]
     [System.ComponentModel.Description('The App configuration that will be used for this kiosk configuration.')]
     [MSFT_MicrosoftGraphWindowsKioskAppConfiguration] $AppConfiguration
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('This is a friendly name used to identify a group of applications, the layout of these apps on the start menu and the users to whom this kiosk configuration is assigned.')]
     [System.String] $ProfileName
+
     [DscProperty()]
     [System.ComponentModel.Description('The user accounts that will be locked to this kiosk configuration. This collection can contain a maximum of 100 elements.')]
     [MSFT_MicrosoftGraphWindowsKioskUser[]] $UserAccountsConfiguration
@@ -684,15 +686,21 @@ class MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule
     [DscProperty()]
     [System.ComponentModel.Description('Day of month. Valid values 1 to 31')]
     [System.Nullable[System.UInt32]] $DayofMonth
+
     [DscProperty()]
     [System.ComponentModel.Description('Day of week. Possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday.')]
+    [ValidateSet('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday')]
     [System.String] $DayofWeek
+
     [DscProperty()]
     [System.ComponentModel.Description('Recurrence schedule. Possible values are: none, daily, weekly, monthly.')]
+    [ValidateSet('none', 'daily', 'weekly', 'monthly')]
     [System.String] $Recurrence
+
     [DscProperty()]
     [System.ComponentModel.Description('If true, runs the task immediately if StartDateTime is in the past, else, runs at the next recurrence.')]
     [System.Nullable[System.Boolean]] $RunImmediatelyIfAfterStartDateTime
+
     [DscProperty()]
     [System.ComponentModel.Description('The start time for the force restart.')]
     [System.String] $StartDateTime
@@ -702,22 +710,30 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the target assignment.')]
+    [ValidateSet('#microsoft.graph.cloudPcManagementGroupAssignmentTarget', '#microsoft.graph.groupAssignmentTarget', '#microsoft.graph.allLicensedUsersAssignmentTarget', '#microsoft.graph.allDevicesAssignmentTarget', '#microsoft.graph.exclusionGroupAssignmentTarget', '#microsoft.graph.configurationManagerCollectionAssignmentTarget')]
     [System.String] $dataType
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of filter of the target assignment i.e. Exclude or Include. Possible values are:none, include, exclude.')]
+    [ValidateSet('none', 'include', 'exclude')]
     [System.String] $deviceAndAppManagementAssignmentFilterType
+
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterId
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the filter for the target assignment.')]
     [System.String] $deviceAndAppManagementAssignmentFilterDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Id that is the target of the assignment.')]
     [System.String] $groupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The group Display Name that is the target of the assignment.')]
     [System.String] $groupDisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
@@ -728,26 +744,34 @@ class MSFT_MicrosoftGraphWindowsKioskAppConfiguration
     [DscProperty()]
     [System.ComponentModel.Description('This setting allows access to Downloads folder in file explorer.')]
     [System.Nullable[System.Boolean]] $AllowAccessToDownloadsFolder
+
     [DscProperty()]
     [System.ComponentModel.Description('These are the only Windows Store Apps that will be available to launch from the Start menu. This collection can contain a maximum of 128 elements.')]
     [MSFT_MicrosoftGraphWindowsKioskAppBase[]] $Apps
+
     [DscProperty()]
     [System.ComponentModel.Description('This setting indicates that desktop apps are allowed. Default to true.')]
     [System.Nullable[System.Boolean]] $DisallowDesktopApps
+
     [DscProperty()]
     [System.ComponentModel.Description('This setting allows the admin to specify whether the Task Bar is shown or not.')]
     [System.Nullable[System.Boolean]] $ShowTaskBar
+
     [DscProperty()]
     [System.ComponentModel.Description('Allows admins to override the default Start layout and prevents the user from changing it.The layout is modified by specifying an XML file based on a layout modification schema. XML needs to be in Binary format.')]
     [System.String] $StartMenuLayoutXml
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the only Application User Model ID (AUMID) that will be available to launch use while in Kiosk Mode')]
     [MSFT_MicrosoftGraphWindowsKioskUWPApp] $UwpApp
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the win32 app that will be available to launch use while in Kiosk Mode')]
     [MSFT_MicrosoftGraphWindowsKioskWin32App] $Win32App
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windowsKioskMultipleApps', '#microsoft.graph.windowsKioskSingleUWPApp', '#microsoft.graph.windowsKioskSingleWin32App')]
     [System.String] $odataType
 }
 
@@ -756,23 +780,30 @@ class MSFT_MicrosoftGraphWindowsKioskUser
     [DscProperty()]
     [System.ComponentModel.Description('The name of the AD group that will be locked to this kiosk configuration')]
     [System.String] $GroupName
+
     [DscProperty()]
     [System.ComponentModel.Description('The display name of the AzureAD group that will be locked to this kiosk configuration')]
     [System.String] $DisplayName
+
     [DscProperty()]
     [System.ComponentModel.Description('The ID of the AzureAD group that will be locked to this kiosk configuration')]
     [System.String] $GroupId
+
     [DscProperty()]
     [System.ComponentModel.Description('The ID of the AzureAD user that will be locked to this kiosk configuration')]
     [System.String] $UserId
+
     [DscProperty()]
     [System.ComponentModel.Description('The user accounts that will be locked to this kiosk configuration')]
     [System.String] $UserPrincipalName
+
     [DscProperty()]
     [System.ComponentModel.Description('The local user that will be locked to this kiosk configuration')]
     [System.String] $UserName
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windowsKioskActiveDirectoryGroup', '#microsoft.graph.windowsKioskAutologon', '#microsoft.graph.windowsKioskAzureADGroup', '#microsoft.graph.windowsKioskAzureADUser', '#microsoft.graph.windowsKioskLocalGroup', '#microsoft.graph.windowsKioskLocalUser', '#microsoft.graph.windowsKioskVisitor')]
     [System.String] $odataType
 }
 
@@ -780,51 +811,70 @@ class MSFT_MicrosoftGraphWindowsKioskAppBase
 {
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The app type. Possible values are: unknown, store, desktop, aumId.')]
+    [ValidateSet('unknown', 'store', 'desktop', 'aumId')]
     [System.String] $AppType
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the app to be auto-launched in multi-app kiosk mode')]
     [System.Nullable[System.Boolean]] $AutoLaunch
+
     [DscProperty()]
     [System.ComponentModel.Description('Represents the friendly name of an app')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The app tile size for the start layout. Possible values are: hidden, small, medium, wide, large.')]
+    [ValidateSet('hidden', 'small', 'medium', 'wide', 'large')]
     [System.String] $StartLayoutTileSize
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the DesktopApplicationID of the app')]
     [System.String] $DesktopApplicationId
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the DesktopApplicationLinkPath of the app')]
     [System.String] $DesktopApplicationLinkPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the path of a desktop app')]
     [System.String] $Path
+
     [DscProperty()]
     [System.ComponentModel.Description('This references an Intune App that will be target to the same assignments as Kiosk configuration')]
     [System.String] $AppId
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the only Application User Model ID (AUMID) that will be available to launch use while in Kiosk Mode')]
     [System.String] $AppUserModelId
+
     [DscProperty()]
     [System.ComponentModel.Description('This references an contained App from an Intune App')]
     [System.String] $ContainedAppId
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the classicapppath to be used by v4 Win32 app while in Kiosk Mode')]
     [System.String] $ClassicAppPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk (url) for Edge kiosk mode')]
     [System.String] $EdgeKiosk
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk idle timeout in minutes for Edge kiosk mode. Valid values 0 to 1440')]
     [System.Nullable[System.UInt32]] $EdgeKioskIdleTimeoutMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk type for Edge kiosk mode. Possible values are: publicBrowsing, fullScreen.')]
+    [ValidateSet('publicBrowsing', 'fullScreen')]
     [System.String] $EdgeKioskType
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge first run flag for Edge kiosk mode')]
     [System.Nullable[System.Boolean]] $EdgeNoFirstRun
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windowsKioskDesktopApp', '#microsoft.graph.windowsKioskUWPApp', '#microsoft.graph.windowsKioskWin32App')]
     [System.String] $odataType
 }
 
@@ -833,50 +883,69 @@ class MSFT_MicrosoftGraphWindowsKioskUWPApp
     [DscProperty()]
     [System.ComponentModel.Description('This references an Intune App that will be target to the same assignments as Kiosk configuration')]
     [System.String] $AppId
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the only Application User Model ID (AUMID) that will be available to launch use while in Kiosk Mode')]
     [System.String] $AppUserModelId
+
     [DscProperty()]
     [System.ComponentModel.Description('This references an contained App from an Intune App')]
     [System.String] $ContainedAppId
+
     [DscProperty()]
     [System.ComponentModel.Description('The app type. Possible values are: unknown, store, desktop, aumId.')]
+    [ValidateSet('unknown', 'store', 'desktop', 'aumId')]
     [System.String] $AppType
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the app to be auto-launched in multi-app kiosk mode')]
     [System.Nullable[System.Boolean]] $AutoLaunch
+
     [DscProperty()]
     [System.ComponentModel.Description('Represents the friendly name of an app')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The app tile size for the start layout. Possible values are: hidden, small, medium, wide, large.')]
+    [ValidateSet('hidden', 'small', 'medium', 'wide', 'large')]
     [System.String] $StartLayoutTileSize
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the DesktopApplicationID of the app')]
     [System.String] $DesktopApplicationId
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the DesktopApplicationLinkPath of the app')]
     [System.String] $DesktopApplicationLinkPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the path of a desktop app')]
     [System.String] $Path
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the classicapppath to be used by v4 Win32 app while in Kiosk Mode')]
     [System.String] $ClassicAppPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk (url) for Edge kiosk mode')]
     [System.String] $EdgeKiosk
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk idle timeout in minutes for Edge kiosk mode. Valid values 0 to 1440')]
     [System.Nullable[System.UInt32]] $EdgeKioskIdleTimeoutMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk type for Edge kiosk mode. Possible values are: publicBrowsing, fullScreen.')]
+    [ValidateSet('publicBrowsing', 'fullScreen')]
     [System.String] $EdgeKioskType
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge first run flag for Edge kiosk mode')]
     [System.Nullable[System.Boolean]] $EdgeNoFirstRun
+
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windowsKioskDesktopApp', '#microsoft.graph.windowsKioskUWPApp', '#microsoft.graph.windowsKioskWin32App')]
     [System.String] $odataType
 }
 
@@ -885,50 +954,69 @@ class MSFT_MicrosoftGraphWindowsKioskWin32App
     [DscProperty()]
     [System.ComponentModel.Description('This is the classicapppath to be used by v4 Win32 app while in Kiosk Mode')]
     [System.String] $ClassicAppPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk (url) for Edge kiosk mode')]
     [System.String] $EdgeKiosk
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk idle timeout in minutes for Edge kiosk mode. Valid values 0 to 1440')]
     [System.Nullable[System.UInt32]] $EdgeKioskIdleTimeoutMinutes
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge kiosk type for Edge kiosk mode. Possible values are: publicBrowsing, fullScreen.')]
+    [ValidateSet('publicBrowsing', 'fullScreen')]
     [System.String] $EdgeKioskType
+
     [DscProperty()]
     [System.ComponentModel.Description('Edge first run flag for Edge kiosk mode')]
     [System.Nullable[System.Boolean]] $EdgeNoFirstRun
+
     [DscProperty()]
     [System.ComponentModel.Description('The app type. Possible values are: unknown, store, desktop, aumId.')]
+    [ValidateSet('unknown', 'store', 'desktop', 'aumId')]
     [System.String] $AppType
+
     [DscProperty()]
     [System.ComponentModel.Description('Allow the app to be auto-launched in multi-app kiosk mode')]
     [System.Nullable[System.Boolean]] $AutoLaunch
+
     [DscProperty()]
     [System.ComponentModel.Description('Represents the friendly name of an app')]
     [System.String] $Name
+
     [DscProperty()]
     [System.ComponentModel.Description('The app tile size for the start layout. Possible values are: hidden, small, medium, wide, large.')]
+    [ValidateSet('hidden', 'small', 'medium', 'wide', 'large')]
     [System.String] $StartLayoutTileSize
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the DesktopApplicationID of the app')]
     [System.String] $DesktopApplicationId
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the DesktopApplicationLinkPath of the app')]
     [System.String] $DesktopApplicationLinkPath
+
     [DscProperty()]
     [System.ComponentModel.Description('Define the path of a desktop app')]
     [System.String] $Path
+
     [DscProperty()]
     [System.ComponentModel.Description('This references an Intune App that will be target to the same assignments as Kiosk configuration')]
     [System.String] $AppId
+
     [DscProperty()]
     [System.ComponentModel.Description('This is the only Application User Model ID (AUMID) that will be available to launch use while in Kiosk Mode')]
     [System.String] $AppUserModelId
+
     [DscProperty()]
     [System.ComponentModel.Description('This references an contained App from an Intune App')]
     [System.String] $ContainedAppId
+
     [DscProperty()]
     [System.ComponentModel.Description('The type of the entity.')]
+    [ValidateSet('#microsoft.graph.windowsKioskDesktopApp', '#microsoft.graph.windowsKioskUWPApp', '#microsoft.graph.windowsKioskWin32App')]
     [System.String] $odataType
 }
 

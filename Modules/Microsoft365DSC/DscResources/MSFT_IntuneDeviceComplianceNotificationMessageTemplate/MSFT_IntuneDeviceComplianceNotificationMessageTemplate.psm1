@@ -432,12 +432,16 @@ class MSFT_DeviceManagementNotificationMessageTemplate
     [DscProperty()]
     [System.ComponentModel.Description('If this is the default message template.')]
     [System.Nullable[System.Boolean]] $IsDefault
+
     [DscProperty()]
     [System.ComponentModel.Description('The locale of the message template.')]
+    [ValidateSet('ar-sa', 'bg-bg', 'cs-cz', 'da-dk', 'de-de', 'el-gr', 'en-gb', 'en-us', 'es-es', 'es-mx', 'et-ee', 'fi-fi', 'fr-ca', 'fr-fr', 'he-il', 'hr-hr', 'hu-hu', 'it-it', 'ja-jp', 'ko-kr', 'lt-lt', 'lv-lv', 'nb-no', 'nl-nl', 'pl-pl', 'pt-br', 'pt-pt', 'ro-ro', 'sk-sk', 'sl-si', 'ru-ru', 'sr-Latn-rs', 'sv-se', 'th-th', 'tr-tr', 'uk-ua', 'zh-cn', 'zh-tw')]
     [System.String] $Locale
+
     [DscProperty()]
     [System.ComponentModel.Description('The body of the message template')]
     [System.String] $MessageTemplate
+
     [DscProperty()]
     [System.ComponentModel.Description('The subject of the message template.')]
     [System.String] $Subject
