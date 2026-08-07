@@ -280,6 +280,7 @@ function Export-M365DSCConfiguration
     # Initialize the relation assembly and reset its state for this export session
     Initialize-M365DSCDllLoader -ErrorAction Stop
     [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
+    [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
 
     # Clear performance caches for fresh export
     $Script:M365DSCMandatoryKeyCache = @{}
@@ -524,6 +525,7 @@ function Export-M365DSCConfiguration
     # Release the export-scoped state held on the relation assembly
     [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
     [Microsoft365DSC.Relations.ExportRelationSession]::Reset()
+    [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
     $Global:M365DSCExportInProgress = $false
 
     $data = [System.Collections.Generic.Dictionary[[System.String], [System.Object]]]::new()

@@ -203,7 +203,7 @@ class EXOSharedMailbox : M365DSCResourceBase
         #region Validation
         foreach ($secondaryAlias in $this.EmailAddresses)
         {
-            if ($secondaryAlias.ToLower() -eq $this.PrimarySMTPAddress?.ToLower())
+            if (-not [System.String]::IsNullOrEmpty($this.PrimarySMTPAddress) -and $secondaryAlias.ToLower() -eq $this.PrimarySMTPAddress.ToLower())
             {
                 throw 'You cannot have the EmailAddresses list contain the PrimarySMTPAddress'
             }

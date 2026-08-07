@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Microsoft365DSC.Intune
@@ -63,7 +64,7 @@ namespace Microsoft365DSC.Intune
     /// Maps Microsoft Graph DeviceManagementConfigurationSettingDefinition objects (passed as PSObject or Hashtable)
     /// to the internal <see cref="SettingDefinitionInfo"/> representation.
     /// </summary>
-    public static class SettingDefinitionMapper
+    internal static class SettingDefinitionMapper
     {
         private static BindingFlags _publicIgnoreCaseInstanceFlags = BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.Instance;
 
@@ -361,6 +362,17 @@ namespace Microsoft365DSC.Intune
         /// Resolves a unique, human-readable setting name for a given setting definition.
         /// Accepts raw Graph SDK objects and maps them internally.
         /// </summary>
+        /// <summary>
+        /// Lower-cases the first character, which is how a Graph type name is turned into the
+        /// corresponding property name.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The value with its first character lower-cased.</returns>
+        internal static string ToCamelCase(string value)
+        {
+            return string.IsNullOrEmpty(value) ? value : char.ToLowerInvariant(value[0]) + value.Substring(1);
+        }
+
         public static string GetSettingName(object settingDefinitionAsGraph, List<object> allSettingDefinitionsAsGraph)
         {
             var settingDefinition = SettingDefinitionMapper.FromGraphObject(settingDefinitionAsGraph);
@@ -380,7 +392,7 @@ namespace Microsoft365DSC.Intune
             settingName = settingName.Replace(' ', '_');
             settingName = settingName.Replace("/", "_");
 
-            var settingsWithSameName = allSettingDefinitions.Where(s => s.Name.Equals(settingName, StringComparison.OrdinalIgnoreCase)).ToList();
+            var settingsWithSameName = DefinitionLookups.For(allSettingDefinitions).ByName(settingName);
 
             // Edge case where the same setting is defined twice with identical name and id
             // Example is RDVAllowBDE_Name from the IntuneDiskEncryptionWindows10 resource
@@ -479,30 +491,88 @@ namespace Microsoft365DSC.Intune
         /// Finds the parent setting by looking up the first unique parentSettingId
         /// from either dependentOn or options.dependentOn.
         /// </summary>
-        public static SettingDefinitionInfo GetParentSettingDefinition(
+        private static SettingDefinitionInfo GetParentSettingDefinition(
             SettingDefinitionInfo settingDefinition,
             List<SettingDefinitionInfo> allSettingDefinitions)
         {
             if (settingDefinition.DependentOnParentSettingIds.Count > 0)
             {
-                string parentId = settingDefinition.DependentOnParentSettingIds.First();
-                return allSettingDefinitions.FirstOrDefault(s => s.Id == parentId);
+                return DefinitionLookups.For(allSettingDefinitions).ById(settingDefinition.DependentOnParentSettingIds.First());
             }
 
             if (settingDefinition.OptionsDependentOnParentSettingIds.Count > 0)
             {
-                string parentId = settingDefinition.OptionsDependentOnParentSettingIds.First();
-                return allSettingDefinitions.FirstOrDefault(s => s.Id == parentId);
+                return DefinitionLookups.For(allSettingDefinitions).ById(settingDefinition.OptionsDependentOnParentSettingIds.First());
             }
 
             return null;
         }
 
         /// <summary>
+        /// Name and Id indexes over a definition list. A settings catalog policy resolves every one
+        /// of its setting names against the same list, so without an index each resolution is a full
+        /// scan and naming a policy is quadratic in the number of definitions.
+        /// </summary>
+        private sealed class DefinitionLookups
+        {
+            private static readonly ConditionalWeakTable<List<SettingDefinitionInfo>, DefinitionLookups> _cache = new();
+            private static readonly List<SettingDefinitionInfo> _empty = [];
+
+            private readonly Dictionary<string, List<SettingDefinitionInfo>> _byName = new(StringComparer.OrdinalIgnoreCase);
+            private readonly Dictionary<string, SettingDefinitionInfo> _byId = new(StringComparer.Ordinal);
+            private readonly int _sourceCount;
+
+            private DefinitionLookups(List<SettingDefinitionInfo> definitions)
+            {
+                _sourceCount = definitions.Count;
+                foreach (var definition in definitions)
+                {
+                    if (definition.Name is not null)
+                    {
+                        if (!_byName.TryGetValue(definition.Name, out var sameName))
+                        {
+                            sameName = [];
+                            _byName[definition.Name] = sameName;
+                        }
+                        sameName.Add(definition);
+                    }
+
+                    if (definition.Id is not null && !_byId.ContainsKey(definition.Id))
+                    {
+                        _byId[definition.Id] = definition;
+                    }
+                }
+            }
+
+            public static DefinitionLookups For(List<SettingDefinitionInfo> definitions)
+            {
+                if (_cache.TryGetValue(definitions, out var lookups) && lookups._sourceCount == definitions.Count)
+                {
+                    return lookups;
+                }
+
+                lookups = new DefinitionLookups(definitions);
+                _cache.Remove(definitions);
+                _cache.Add(definitions, lookups);
+                return lookups;
+            }
+
+            public List<SettingDefinitionInfo> ByName(string name)
+            {
+                return _byName.TryGetValue(name, out var matches) ? [.. matches] : _empty;
+            }
+
+            public SettingDefinitionInfo? ById(string id)
+            {
+                return _byId.TryGetValue(id, out var definition) ? definition : null;
+            }
+        }
+
+        /// <summary>
         /// Port of Get-UniqueSettingDefinitionNameFromMultipleMatches.
         /// Iteratively traverses up the OffsetUri to find a unique prefix for the setting name.
         /// </summary>
-        public static (bool Success, string SettingName) GetUniqueNameFromMultipleMatches(
+        private static (bool Success, string SettingName) GetUniqueNameFromMultipleMatches(
             SettingDefinitionInfo settingDefinition,
             string settingName,
             List<SettingDefinitionInfo> settingsWithSameName)
@@ -560,7 +630,7 @@ namespace Microsoft365DSC.Intune
         /// which creates new arrays at each step, we use a List and track the effective length via an
         /// integer index. The algorithm is otherwise identical.
         /// </summary>
-        public static string GetSettingDefinitionNameFromOffsetUri(string offsetUri, string settingName, int skip = 0)
+        private static string GetSettingDefinitionNameFromOffsetUri(string offsetUri, string settingName, int skip = 0)
         {
             // If the last part of the OffsetUri is the same as the setting name or it contains invalid characters, we traverse up until we reach the first element
             // Invalid characters are { and } which are used in the OffsetUri to indicate a variable

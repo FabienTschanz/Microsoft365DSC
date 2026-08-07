@@ -13,8 +13,6 @@ namespace Microsoft365DSC.Compare
     /// </summary>
     public static class ComplexObjectComparer
     {
-        private static HashSet<string> excludedSet = new(StringComparer.OrdinalIgnoreCase);
-
         /// <summary>
         /// Compares two complex M365DSC objects to detect configuration drift.
         /// </summary>
@@ -29,11 +27,7 @@ namespace Microsoft365DSC.Compare
             HashSet<string>? excludedSet)
         {
             var drifts = new List<Dictionary<string, object>>();
-            if (excludedSet is not null)
-            {
-                ComplexObjectComparer.excludedSet = excludedSet;
-            }
-            bool result = CompareWithDrifts(source, target, propertyName, drifts);
+            bool result = CompareWithDrifts(source, target, propertyName, drifts, excludedSet ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase));
             return new Tuple<List<Dictionary<string, object>>, bool>(drifts, result);
         }
 
@@ -44,12 +38,14 @@ namespace Microsoft365DSC.Compare
         /// <param name="target">Target (current) object</param>
         /// <param name="propertyName">Property name for drift reporting</param>
         /// <param name="drifts">List to collect detected drifts</param>
+        /// <param name="excludedSet">Property names to skip during comparison</param>
         /// <returns>True if objects are identical (no drift), false otherwise</returns>
-        public static bool CompareWithDrifts(
+        private static bool CompareWithDrifts(
             object source,
             object target,
             string propertyName,
-            List<Dictionary<string, object>> drifts)
+            List<Dictionary<string, object>> drifts,
+            HashSet<string> excludedSet)
         {
             var workStack = new Stack<ComparisonFrame>();
             workStack.Push(new ComparisonFrame
@@ -95,7 +91,7 @@ namespace Microsoft365DSC.Compare
                 // Check if left is a complex array
                 if (IsComplexArrayCandidate(left) || IsComplexArrayCandidate(right))
                 {
-                    _ = CompareComplexArray(left, right, propName, drifts, workStack, ref result);
+                    _ = CompareComplexArray(left, right, propName, drifts, workStack, excludedSet, ref result);
                     continue;
                 }
 
@@ -121,7 +117,7 @@ namespace Microsoft365DSC.Compare
                 }
 
                 // Handle single complex objects or simple values
-                _ = CompareSingleObject(left, right, propName, drifts, workStack, ref result);
+                _ = CompareSingleObject(left, right, propName, drifts, workStack, excludedSet, ref result);
             }
 
             return result;
@@ -136,6 +132,7 @@ namespace Microsoft365DSC.Compare
             string propName,
             List<Dictionary<string, object>> drifts,
             Stack<ComparisonFrame> workStack,
+            HashSet<string> excludedSet,
             ref bool result)
         {
             Array leftArray = ToArray(left);
@@ -191,7 +188,7 @@ namespace Microsoft365DSC.Compare
                     var tgtItem = rightArray.GetValue(j);
                     var tempDrifts = new List<Dictionary<string, object>>();
 
-                    if (CompareWithDrifts(srcItem, tgtItem, $"{propName}[{i}]", tempDrifts))
+                    if (CompareWithDrifts(srcItem, tgtItem, $"{propName}[{i}]", tempDrifts, excludedSet))
                     {
                         consumed[j] = true;
                         found = true;
@@ -243,6 +240,7 @@ namespace Microsoft365DSC.Compare
             string propName,
             List<Dictionary<string, object>> drifts,
             Stack<ComparisonFrame> workStack,
+            HashSet<string> excludedSet,
             ref bool result)
         {
             // Get keys from source object

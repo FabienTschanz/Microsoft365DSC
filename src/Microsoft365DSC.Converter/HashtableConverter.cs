@@ -7,6 +7,10 @@ namespace Microsoft365DSC.Converter
 {
     public class HashtableConverter
     {
+        private static readonly HashSet<string> ParametersToObfuscate = new(
+            ["ApplicationSecret", "CertificateThumbprint", "CertificatePath", "CertificatePassword", "Credential", "Password"],
+            StringComparer.Ordinal);
+
         /// <summary>
         /// Converts the specified hashtable to its string representation.
         /// </summary>
@@ -15,7 +19,6 @@ namespace Microsoft365DSC.Converter
         public static string ToString(Hashtable hashtable)
         {
             List<string> propertyStrings = [];
-            List<string> parametersToObfuscate = ["ApplicationSecret", "CertificateThumbprint", "CertificatePath", "CertificatePassword", "Credential", "Password"];
             foreach (DictionaryEntry entry in hashtable)
             {
                 string propertyString;
@@ -39,7 +42,7 @@ namespace Microsoft365DSC.Converter
                     }
                     else
                     {
-                        if (parametersToObfuscate.Contains(entry.Key.ToString()))
+                        if (ParametersToObfuscate.Contains(entry.Key.ToString()))
                         {
                             propertyString = $"{entry.Key}=***";
                         }

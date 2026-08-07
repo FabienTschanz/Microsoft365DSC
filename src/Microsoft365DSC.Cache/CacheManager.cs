@@ -67,15 +67,58 @@ namespace Microsoft365DSC.Cache
         }
 
         /// <summary>
-        /// Clears the cached schema, allowing it to be reloaded on next access.
-        /// Primarily useful for testing.
+        /// Clears the cached schema so the next caller reloads it.
         /// </summary>
+        /// <remarks>
+        /// The cache is process-wide and <see cref="LoadSchema"/> overwrites unconditionally, so a
+        /// test that loads a fixture schema must clear it again or every later test in the same
+        /// process resolves against the fixture.
+        /// </remarks>
         public static void ClearSchema()
         {
             lock (SchemaLock)
             {
                 _schema = null;
             }
+        }
+
+        /// <summary>
+        /// Finds a CIM class in the cached schema by its ClassName.
+        /// </summary>
+        /// <param name="className">The class name to look for, including the MSFT_ prefix.</param>
+        /// <returns>The matching schema entry, or <c>null</c> when the schema is not loaded or holds no such class.</returns>
+        public static object? FilterLoadedCimClassesByName(string className)
+        {
+            // One read of the field, so the schema cannot be replaced between the load check and the scan.
+            List<object> schema;
+            lock (SchemaLock)
+            {
+                if (_schema is null)
+                {
+                    return null;
+                }
+                schema = _schema;
+            }
+
+            foreach (object obj in schema)
+            {
+                if (obj is PSObject psObject)
+                {
+                    if (psObject.Properties["ClassName"]?.Value?.ToString() == className)
+                    {
+                        return psObject;
+                    }
+                }
+                else if (obj is IDictionary hashtable)
+                {
+                    if (hashtable["ClassName"]?.ToString() == className)
+                    {
+                        return hashtable;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private static object ConvertObjectToHashtable(object entry)

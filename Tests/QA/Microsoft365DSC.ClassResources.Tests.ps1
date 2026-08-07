@@ -75,8 +75,22 @@ Describe 'Class-based resource sources' {
 }
 
 Describe 'DSC marshalling' {
-    It 'round-trips properties through Invoke-DscResource' -Skip:($classResourceFiles.Count -eq 0) {
-        $resource = $classResourceFiles[0].ResourceName -replace '^MSFT_', ''
+
+    # $classResourceFiles belongs to discovery, so an It body cannot read it. -ForEach is what
+    # carries the data across, and it fails discovery on an empty collection, hence the guard.
+    if ($classResourceFiles.Count -eq 0)
+    {
+        It 'has no class-based resources yet' {
+            Set-ItResult -Skipped -Because 'no resource under DscResources declares [DscResource()] yet'
+        }
+
+        return
+    }
+
+    It "round-trips '<ResourceName>' properties through Invoke-DscResource" -ForEach @(
+        $classResourceFiles | Select-Object -First 1) {
+
+        $resource = $ResourceName -replace '^MSFT_', ''
 
         $key = @(( Get-DscResource -Name $resource -ErrorAction SilentlyContinue ).Properties |
                 Where-Object IsMandatory | Select-Object -First 1)[0]

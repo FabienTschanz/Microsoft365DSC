@@ -329,7 +329,7 @@ namespace Microsoft365DSC.Intune
                     string childSettingValueType = ODataTypePrefix + childSettingValueName;
                     if (childSettingValueName.Length > 0)
                     {
-                        childSettingValueName = char.ToLowerInvariant(childSettingValueName[0]) + childSettingValueName.Substring(1);
+                        childSettingValueName = SettingsCatalogHelper.ToCamelCase(childSettingValueName);
                     }
 
                     // Find matching child template from parent's children
@@ -455,7 +455,7 @@ namespace Microsoft365DSC.Intune
                 string childSettingValueType = ODataTypePrefix + childSettingValueName;
                 if (childSettingValueName.Length > 0)
                 {
-                    childSettingValueName = char.ToLowerInvariant(childSettingValueName[0]) + childSettingValueName.Substring(1);
+                    childSettingValueName = SettingsCatalogHelper.ToCamelCase(childSettingValueName);
                 }
 
                 // Find child template from parent's choiceSettingValueTemplate.children
@@ -894,7 +894,7 @@ namespace Microsoft365DSC.Intune
                         continue;
 
                     string camelName = property.Name.Length > 0
-                        ? char.ToLowerInvariant(property.Name[0]) + property.Name.Substring(1)
+                        ? SettingsCatalogHelper.ToCamelCase(property.Name)
                         : property.Name;
                     result[camelName] = property.Value;
                 }

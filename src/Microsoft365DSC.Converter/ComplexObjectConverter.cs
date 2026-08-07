@@ -1,4 +1,5 @@
 using Microsoft.Management.Infrastructure;
+using Microsoft365DSC.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,13 +30,12 @@ namespace Microsoft365DSC.Converter
             if (complexObject is null)
                 return null;
 
-            if (complexObject is PSObject psObject && psObject.BaseObject is not null)
-                complexObject = psObject.BaseObject;
+            complexObject = MemberAccessor.Unwrap(complexObject)!;
 
-            if (complexObject is PSObject psObject2)
+            if (complexObject is PSObject psObject)
             {
                 var result = new Hashtable(StringComparer.OrdinalIgnoreCase);
-                foreach (PSPropertyInfo prop in psObject2.Properties)
+                foreach (PSPropertyInfo prop in psObject.Properties)
                 {
                     // Skip computed properties; only take NoteProperty and Property
                     if (prop.MemberType != PSMemberTypes.NoteProperty &&
@@ -44,7 +44,7 @@ namespace Microsoft365DSC.Converter
 
                     try
                     {
-                        result[prop.Name] = ToHashtable(prop.Value);
+                        result[prop.Name] = GetValueFromObject(prop.Value);
                     }
                     catch
                     {
@@ -229,14 +229,26 @@ namespace Microsoft365DSC.Converter
         /// </summary>
         /// <param name="value">The object to get the value from.</param>
         /// <returns>The extracted value.</returns>
+        /// <summary>
+        /// Inspects the builder's trailing characters directly. Calling ToString() here would copy
+        /// the whole accumulated buffer once per array element.
+        /// </summary>
+        private static bool EndsWithNewLine(StringBuilder builder)
+        {
+            return builder.Length >= 2 && builder[builder.Length - 2] == '\r' && builder[builder.Length - 1] == '\n';
+        }
+
         private static object? GetValueFromObject(object? value)
         {
-            if (value is PSObject psObject)
-                value = psObject.BaseObject;
+            value = MemberAccessor.Unwrap(value);
 
             if (value is null)
             {
                 return null;
+            }
+            else if (value is PSObject)
+            {
+                return ToHashtable(value);
             }
             else if (value is Array array)
             {
@@ -281,7 +293,8 @@ namespace Microsoft365DSC.Converter
                         .Where(property => !property.Name.Equals("EntityItem")).ToArray();
                     var additionalProperties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
                         .Where(property => property.Name.Contains("AdditionalProperties")).ToArray();
-                    _propertyCache[type.FullName!] = properties.Concat(additionalProperties).ToArray();
+                    properties = properties.Concat(additionalProperties).ToArray();
+                    _propertyCache[type.FullName!] = properties;
                 }
             }
 
@@ -300,18 +313,6 @@ namespace Microsoft365DSC.Converter
             }
 
             return graphResult;
-        }
-
-
-        /// <summary>
-        /// Clears the property reflection cache (primarily for testing purposes).
-        /// </summary>
-        public static void ClearCache()
-        {
-            lock (_cacheLock)
-            {
-                _propertyCache.Clear();
-            }
         }
 
         /// <summary>
@@ -343,6 +344,15 @@ namespace Microsoft365DSC.Converter
             }
 
             complexTypeMapping ??= [];
+
+            Dictionary<string, ComplexTypeMapping> mappingByName = new(complexTypeMapping.Count, StringComparer.OrdinalIgnoreCase);
+            foreach (ComplexTypeMapping mapping in complexTypeMapping)
+            {
+                if (!mappingByName.ContainsKey(mapping.Name))
+                {
+                    mappingByName[mapping.Name] = mapping;
+                }
+            }
 
             var indent = new string(' ', (int)indentLevel * 4);
 
@@ -461,8 +471,8 @@ namespace Microsoft365DSC.Converter
                     var valueTypeName = valueType.FullName ?? valueType.Name;
 
                     // Check if value is a complex type (Graph model or CIM instance)
-                    if (valueTypeName.StartsWith("Microsoft.Graph.PowerShell.Models.", StringComparison.Ordinal) ||
-                        complexTypeMapping.Any(ctm => ctm.Name.Equals(key, StringComparison.OrdinalIgnoreCase)))
+                    bool hasMapping = mappingByName.TryGetValue(key, out ComplexTypeMapping mappedType);
+                    if (valueTypeName.StartsWith("Microsoft.Graph.PowerShell.Models.", StringComparison.Ordinal) || hasMapping)
                     {
                         // Handle complex nested types recursively
                         var itemValue = value;
@@ -470,12 +480,12 @@ namespace Microsoft365DSC.Converter
 
                         bool isNestedArray = value is Array;
 
-                        if (complexTypeMapping.Any(ctm => ctm.Name.Equals(key, StringComparison.OrdinalIgnoreCase)))
+                        if (hasMapping)
                         {
-                            hashPropertyType = complexTypeMapping.First(ctm => ctm.Name.Equals(key, StringComparison.OrdinalIgnoreCase)).CimInstanceName;
+                            hashPropertyType = mappedType.CimInstanceName;
                         }
 
-                        if (isNestedArray && complexTypeMapping.Any(ctm => ctm.Name.Equals(key, StringComparison.OrdinalIgnoreCase)))
+                        if (isNestedArray && hasMapping)
                         {
                             if (itemValue is Array)
                             {
@@ -510,7 +520,7 @@ namespace Microsoft365DSC.Converter
                                     nestedPropertyString = nestedPropertyString.Substring(2);
                                 }
                                 _ = currentPropertyBuilder.Append(nestedPropertyString);
-                                if (!currentPropertyBuilder.ToString().EndsWith("\r\n"))
+                                if (!EndsWithNewLine(currentPropertyBuilder))
                                 {
                                     _ = currentPropertyBuilder.AppendLine();
                                 }

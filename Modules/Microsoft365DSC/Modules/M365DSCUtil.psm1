@@ -632,7 +632,7 @@ function Test-M365DSCTargetResource
         $schemaContent = [System.IO.File]::ReadAllText($schemaPath) | ConvertFrom-Json
         [Microsoft365DSC.Cache.CacheManager]::LoadSchema($schemaContent)
     }
-    $resourceDefinition = [Microsoft365DSC.Utilities.Utilities]::FilterLoadedCimClassesByName("MSFT_$ResourceName")
+    $resourceDefinition = [Microsoft365DSC.Cache.CacheManager]::FilterLoadedCimClassesByName("MSFT_$ResourceName")
     $resourceKeys = $resourceDefinition.Parameters | Where-Object -Property Option -EQ 'Key'
 
     $keyStrings = @()

@@ -1,3 +1,4 @@
+using Microsoft365DSC.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -88,9 +89,6 @@ namespace Microsoft365DSC.Relations
                 }
             }
         }
-
-        /// <summary>A snapshot of the dependencies discovered so far.</summary>
-        public IReadOnlyList<DependencyRecord> Dependencies => _collector.GetRecordsSnapshot();
 
         /// <summary>Diagnostics gathered while resolving, surfaced as verbose output.</summary>
         public IReadOnlyList<string> Warnings
@@ -193,7 +191,7 @@ namespace Microsoft365DSC.Relations
                 instances = _instances.ToArray();
             }
 
-            return DependsOnInjector.Inject(content, _collector.GetRecordsSnapshot(), instances, _index, stubOptions);
+            return DependsOnInjector.Inject(content, _collector.GetRecordsSnapshot(), instances, stubOptions);
         }
     }
 }

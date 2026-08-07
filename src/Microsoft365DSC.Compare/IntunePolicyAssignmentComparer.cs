@@ -37,6 +37,15 @@ namespace Microsoft365DSC.Compare
                 return false;
             }
 
+            // Every lookup below scans the whole target array, so convert it once instead of
+            // re-converting each element on every probe.
+            Hashtable?[] targetHashtables = new Hashtable?[target.Length];
+            for (int t = 0; t < target.Length; t++)
+            {
+                object? targetItem = target.GetValue(t);
+                targetHashtables[t] = targetItem is null ? null : ComplexObjectConverter.ToHashtable(targetItem);
+            }
+
             // Compare each assignment in source array
             for (int i = 0; i < source.Length; i++)
             {
@@ -65,19 +74,19 @@ namespace Microsoft365DSC.Compare
                     if (dataType.Equals("#microsoft.graph.allDevicesAssignmentTarget", StringComparison.OrdinalIgnoreCase)
                         || dataType.Equals("#microsoft.graph.allLicensedUsersAssignmentTarget", StringComparison.OrdinalIgnoreCase))
                     {
-                        assignmentTarget = FindAssignmentTarget(target, "dataType", dataType);
+                        assignmentTarget = FindAssignmentTarget(targetHashtables,"dataType", dataType);
                     }
 
                     // Find matching assignment target by dataType and groupId
                     if (assignmentTarget is null && assignmentGroupId is not null)
                     {
-                        assignmentTarget = FindAssignmentTarget(target, "groupId", assignmentGroupId);
+                        assignmentTarget = FindAssignmentTarget(targetHashtables,"groupId", assignmentGroupId);
                         testResult = assignmentTarget is not null;
                     }
 
                     if (assignmentTarget is null && assignmentCollectionId is not null)
                     {
-                        assignmentTarget = FindAssignmentTarget(target, "collectionId", assignmentCollectionId);
+                        assignmentTarget = FindAssignmentTarget(targetHashtables,"collectionId", assignmentCollectionId);
                         testResult = assignmentTarget is not null;
                     }
 
@@ -85,7 +94,7 @@ namespace Microsoft365DSC.Compare
                     if (!testResult || (testResult && assignmentTarget is null))
                     {
                         var assignmentGroupDisplayName = GetPropertyValue<string>(assignment, "groupDisplayName");
-                        assignmentTarget = FindAssignmentTarget(target, "groupDisplayName", assignmentGroupDisplayName);
+                        assignmentTarget = FindAssignmentTarget(targetHashtables,"groupDisplayName", assignmentGroupDisplayName);
                         testResult = assignmentTarget is not null;
 
                         if (!testResult)
@@ -93,7 +102,7 @@ namespace Microsoft365DSC.Compare
                             drifts.Add(new Dictionary<string, object>
                             {
                                 { "PropertyName", $"Assignments[{i}].groupDisplayName" },
-                                { "CurrentValue", GetPropertyValue<string>(ComplexObjectConverter.ToHashtable(target.GetValue(i)), "groupDisplayName") ?? string.Empty },
+                                { "CurrentValue", GetPropertyValue<string>(targetHashtables[i], "groupDisplayName") ?? string.Empty },
                                 { "DesiredValue", assignmentGroupDisplayName }
                             });
                         }
@@ -131,12 +140,12 @@ namespace Microsoft365DSC.Compare
                 {
                     // For non-AssignmentTarget types, just check if dataType exists in target
                     bool found = false;
-                    foreach (var targetItem in target)
+                    foreach (var targetItem in targetHashtables)
                     {
                         if (targetItem is null)
                             continue;
 
-                        assignmentTarget = ComplexObjectConverter.ToHashtable(targetItem);
+                        assignmentTarget = targetItem;
                         var targetDataType = GetPropertyValue<string>(assignmentTarget, "dataType");
 
                         if (string.Equals(dataType, targetDataType, StringComparison.OrdinalIgnoreCase))
@@ -242,13 +251,12 @@ namespace Microsoft365DSC.Compare
         /// <summary>
         /// Finds an assignment target in the array by property value
         /// </summary>
-        private static Hashtable? FindAssignmentTarget(Array targetArray, string key, string value)
+        private static Hashtable? FindAssignmentTarget(Hashtable?[] targetHashtables, string key, string value)
         {
-            foreach (var item in targetArray)
+            foreach (var hashtable in targetHashtables)
             {
-                if (item is null) continue;
+                if (hashtable is null) continue;
 
-                var hashtable = ComplexObjectConverter.ToHashtable(item);
                 var itemValue = GetPropertyValue<string>(hashtable, key);
 
                 if (string.Equals(value, itemValue, StringComparison.OrdinalIgnoreCase))

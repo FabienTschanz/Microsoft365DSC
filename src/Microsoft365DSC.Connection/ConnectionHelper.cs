@@ -90,82 +90,104 @@ namespace Microsoft365DSC.Connection
         }
 
         /// <summary>
+        /// One authentication method a resource may support, and what it takes to qualify.
+        /// </summary>
+        private sealed class AuthenticationCandidate
+        {
+            public AuthenticationCandidate(
+                string method,
+                string authMethod,
+                string[] requiredProperties,
+                string[]? excludedResourcePrefixes = null)
+            {
+                Method = method;
+                AuthMethod = authMethod;
+                RequiredProperties = requiredProperties;
+                ExcludedResourcePrefixes = excludedResourcePrefixes;
+            }
+
+            /// <summary>The method name as supplied by the caller.</summary>
+            public string Method { get; }
+
+            /// <summary>The name reported back for this method.</summary>
+            public string AuthMethod { get; }
+
+            /// <summary>Properties the resource must declare for this method to apply.</summary>
+            public string[] RequiredProperties { get; }
+
+            /// <summary>Resource name prefixes this method never applies to.</summary>
+            public string[]? ExcludedResourcePrefixes { get; }
+        }
+
+        /// <summary>
+        /// The authentication methods in descending order of security. The first candidate whose
+        /// method was requested and whose properties the resource declares wins.
+        /// </summary>
+        private static readonly AuthenticationCandidate[] AuthenticationPriority =
+        [
+            new("CertificateThumbprint", "CertificateThumbprint", ["ApplicationId", "CertificateThumbprint", "TenantId"]),
+            new("CertificatePath", "CertificatePath", ["ApplicationId", "CertificatePath", "TenantId"]),
+            new("ApplicationWithSecret", "ApplicationSecret", ["ApplicationId", "ApplicationSecret", "TenantId"]),
+            new("CredentialsWithTenantId", "CredentialsWithTenantId", ["Credential", "TenantId"], ["SPO", "OD", "PP"]),
+            new("CredentialsWithApplicationId", "CredentialsWithApplicationId", ["Credential"]),
+            new("Credentials", "Credentials", ["Credential"]),
+            new("ManagedIdentity", "ManagedIdentity", ["ManagedIdentity"]),
+            new("AccessTokens", "AccessTokens", ["AccessTokens"])
+        ];
+
+        /// <summary>
         /// Determines the most secure authentication method for a resource based on
         /// the authentication methods requested and the DSC properties the resource declares.
-        /// The priority order matches the original PowerShell elseif chain.
         /// </summary>
         private static string? DetermineMostSecureAuthMethod(
             HashSet<string> authMethods,
             HashSet<string> parameters,
             string resourceName)
         {
-            // CertificateThumbprint
-            if (authMethods.Contains("CertificateThumbprint") &&
-                parameters.Contains("ApplicationId") &&
-                parameters.Contains("CertificateThumbprint") &&
-                parameters.Contains("TenantId"))
+            foreach (AuthenticationCandidate candidate in AuthenticationPriority)
             {
-                return "CertificateThumbprint";
-            }
+                if (!authMethods.Contains(candidate.Method) ||
+                    IsExcluded(resourceName, candidate.ExcludedResourcePrefixes) ||
+                    !DeclaresAll(parameters, candidate.RequiredProperties))
+                {
+                    continue;
+                }
 
-            // CertificatePath
-            if (authMethods.Contains("CertificatePath") &&
-                parameters.Contains("ApplicationId") &&
-                parameters.Contains("CertificatePath") &&
-                parameters.Contains("TenantId"))
-            {
-                return "CertificatePath";
-            }
-
-            // ApplicationWithSecret -> AuthMethod = "ApplicationSecret"
-            if (authMethods.Contains("ApplicationWithSecret") &&
-                parameters.Contains("ApplicationId") &&
-                parameters.Contains("ApplicationSecret") &&
-                parameters.Contains("TenantId"))
-            {
-                return "ApplicationSecret";
-            }
-
-            // CredentialsWithTenantId (excludes SPO, OD, PP prefixed resources)
-            if (authMethods.Contains("CredentialsWithTenantId") &&
-                parameters.Contains("Credential") &&
-                parameters.Contains("TenantId") &&
-                !resourceName.StartsWith("SPO", StringComparison.OrdinalIgnoreCase) &&
-                !resourceName.StartsWith("OD", StringComparison.OrdinalIgnoreCase) &&
-                !resourceName.StartsWith("PP", StringComparison.OrdinalIgnoreCase))
-            {
-                return "CredentialsWithTenantId";
-            }
-
-            // CredentialsWithApplicationId
-            if (authMethods.Contains("CredentialsWithApplicationId") &&
-                parameters.Contains("Credential"))
-            {
-                return "CredentialsWithApplicationId";
-            }
-
-            // Credentials
-            if (authMethods.Contains("Credentials") &&
-                parameters.Contains("Credential"))
-            {
-                return "Credentials";
-            }
-
-            // ManagedIdentity
-            if (authMethods.Contains("ManagedIdentity") &&
-                parameters.Contains("ManagedIdentity"))
-            {
-                return "ManagedIdentity";
-            }
-
-            // AccessTokens
-            if (authMethods.Contains("AccessTokens") &&
-                parameters.Contains("AccessTokens"))
-            {
-                return "AccessTokens";
+                return candidate.AuthMethod;
             }
 
             return null;
+        }
+
+        private static bool IsExcluded(string resourceName, string[]? excludedPrefixes)
+        {
+            if (excludedPrefixes is null)
+            {
+                return false;
+            }
+
+            foreach (string prefix in excludedPrefixes)
+            {
+                if (resourceName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool DeclaresAll(HashSet<string> parameters, string[] requiredProperties)
+        {
+            foreach (string required in requiredProperties)
+            {
+                if (!parameters.Contains(required))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static string StripPrefix(string value, string prefix)

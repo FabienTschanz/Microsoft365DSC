@@ -51,9 +51,9 @@ namespace Microsoft365DSC.Compare
         {
             if (desiredValues is null)
                 throw new ArgumentNullException(nameof(desiredValues));
-            if (desiredValues is null)
+            if (currentValues is null)
                 throw new ArgumentNullException(nameof(currentValues));
-            if (desiredValues is null)
+            if (schema is null)
                 throw new ArgumentNullException(nameof(schema));
             if (string.IsNullOrEmpty(resourceName))
                 throw new ArgumentNullException(nameof(resourceName));
@@ -475,8 +475,8 @@ namespace Microsoft365DSC.Compare
                     bool allMatch = true;
                     foreach (string pk in primaryKeyNames)
                     {
-                        string? desiredVal = GetHashtableStringValue(desiredHash, pk);
-                        string? currentVal = GetHashtableStringValue(currentHash, pk);
+                        string? desiredVal = GetStringValue(desiredHash, pk);
+                        string? currentVal = GetStringValue(currentHash, pk);
 
                         if (desiredVal is null && currentVal is null)
                             continue;
@@ -639,16 +639,6 @@ namespace Microsoft365DSC.Compare
             {
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Gets a string value from a hashtable by key with null safety.
-        /// </summary>
-        private static string? GetHashtableStringValue(Hashtable hash, string key)
-        {
-            if (hash is null || !hash.ContainsKey(key))
-                return null;
-            return hash[key]?.ToString();
         }
 
         /// <summary>

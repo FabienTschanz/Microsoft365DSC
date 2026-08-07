@@ -1,3 +1,4 @@
+using Microsoft365DSC.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Management.Automation;

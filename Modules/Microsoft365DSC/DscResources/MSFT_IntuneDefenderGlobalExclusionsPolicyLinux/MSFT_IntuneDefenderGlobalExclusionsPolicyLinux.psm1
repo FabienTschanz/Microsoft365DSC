@@ -244,7 +244,7 @@ class IntuneDefenderGlobalExclusionsPolicyLinux : M365DSCResourceBase
             {
                 $convertedExclusion.Add('Exclusions_item_isDirectory', $exclusion.Exclusions_item_isDirectory)
             }
-            $convertedExclusions += [MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions] $convertedExclusion
+            $convertedExclusions += [MSFT_MicrosoftGraphIntuneSettingsCatalogExclusionsV2] $convertedExclusion
         }
         $BoundParameters.Remove('Exclusions') | Out-Null
         $BoundParameters.Add('Exclusions', $convertedExclusions)

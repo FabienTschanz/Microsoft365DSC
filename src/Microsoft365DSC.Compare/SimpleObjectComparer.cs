@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Reflection;
 
 namespace Microsoft365DSC.Compare
 {
@@ -75,11 +74,14 @@ namespace Microsoft365DSC.Compare
                 }
             }
 
-            List<string> propertiesToExclude = ["Verbose", "Credential", "ApplicationId", "CertificateThumbprint", "CertificatePath", "CertificatePassword", "TenantId", "ApplicationSecret", "ManagedIdentity", "AccessTokens"];
+            // Ordinal, matching the case-sensitive List.Contains this replaced.
+            HashSet<string> propertiesToExclude = new(Utilities.Utilities.AuthenticationPropertyNames, StringComparer.Ordinal)
+            {
+                "Verbose"
+            };
             if (excludedProperties is not null)
             {
-                propertiesToExclude.AddRange(excludedProperties);
-                propertiesToExclude = propertiesToExclude.Distinct().ToList();
+                propertiesToExclude.UnionWith(excludedProperties);
             }
 
             foreach (string key in keyList)

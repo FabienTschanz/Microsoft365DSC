@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Management.Automation;
 
-namespace Microsoft365DSC.Relations
+namespace Microsoft365DSC.Utilities
 {
     /// <summary>
-    /// Reads named members off the loosely-typed values that flow through an export.
+    /// Reads named members off the loosely-typed values that flow between PowerShell and C#.
     ///
     /// A single property can arrive as a <see cref="Hashtable"/>, a <see cref="PSObject"/>
     /// wrapping a PSCustomObject, a CimInstance, or a plain CLR object. Rather than
@@ -13,7 +13,7 @@ namespace Microsoft365DSC.Relations
     /// CimInstance is handled without referencing Microsoft.Management.Infrastructure,
     /// because PowerShell's own object adapter surfaces its properties through PSObject.
     /// </summary>
-    internal static class MemberAccessor
+    public static class MemberAccessor
     {
         /// <summary>
         /// Unwraps a <see cref="PSObject"/> to the object it wraps, leaving anything else alone.
@@ -25,7 +25,7 @@ namespace Microsoft365DSC.Relations
         /// wrapper rather than on the base object, so unwrapping one would discard everything
         /// it carries and make every member lookup fail.
         /// </remarks>
-        internal static object? Unwrap(object? value)
+        public static object? Unwrap(object? value)
         {
             if (value is PSObject psObject && psObject.BaseObject is not PSCustomObject)
             {
@@ -45,7 +45,7 @@ namespace Microsoft365DSC.Relations
         /// True when the member exists. A member that exists but is null still returns true,
         /// so callers can tell "absent" apart from "present but empty".
         /// </returns>
-        internal static bool TryGetMember(object? source, string name, out object? value)
+        public static bool TryGetMember(object? source, string name, out object? value)
         {
             value = null;
             object? target = Unwrap(source);
@@ -118,7 +118,7 @@ namespace Microsoft365DSC.Relations
         /// <param name="source">The object to read from.</param>
         /// <param name="name">The member name.</param>
         /// <returns>The member value as a string, or null.</returns>
-        internal static string? GetMemberAsString(object? source, string name)
+        public static string? GetMemberAsString(object? source, string name)
         {
             if (!TryGetMember(source, name, out object? value) || value is null)
             {

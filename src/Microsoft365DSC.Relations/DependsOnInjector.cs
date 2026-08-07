@@ -60,11 +60,8 @@ namespace Microsoft365DSC.Relations
         /// Authentication properties, which the stub emits from the connection mode rather
         /// than from the resource's mandatory properties.
         /// </summary>
-        private static readonly HashSet<string> AllAuthenticationProperties = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "ApplicationId", "ApplicationSecret", "TenantId", "CertificateThumbprint",
-            "CertificatePath", "CertificatePassword", "Credential", "ManagedIdentity", "AccessTokens"
-        };
+        private static readonly HashSet<string> AllAuthenticationProperties =
+            new(Utilities.Utilities.AuthenticationPropertyNames, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Rewrites exported content with DependsOn declarations and dependency stubs.
@@ -72,14 +69,12 @@ namespace Microsoft365DSC.Relations
         /// <param name="content">The concatenated resource blocks.</param>
         /// <param name="dependencies">The dependencies discovered during export.</param>
         /// <param name="instances">The instances that were actually exported.</param>
-        /// <param name="index">The relation index, used to know which key properties matter.</param>
         /// <param name="stubOptions">Inputs for rendering stub blocks.</param>
         /// <returns>The rewritten content.</returns>
         public static string Inject(
             string content,
             IReadOnlyList<DependencyRecord> dependencies,
             IReadOnlyCollection<ExportedInstance> instances,
-            RelationIndex index,
             StubBlockOptions stubOptions)
         {
             if (string.IsNullOrEmpty(content) || dependencies is null || dependencies.Count == 0)
