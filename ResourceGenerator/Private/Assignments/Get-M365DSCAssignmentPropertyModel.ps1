@@ -35,8 +35,6 @@ function Get-M365DSCAssignmentPropertyModel
             GraphName                  = $definition.Name
             RawType                    = 'Edm.String'
             ClrType                    = 'System.String'
-            MofType                    = 'String'
-            MofEmbeddedInstance        = $null
             CimClassName               = $null
             FakeKind                   = 'String'
             IsArray                    = $false
@@ -59,8 +57,6 @@ function Get-M365DSCAssignmentPropertyModel
         GraphName                  = 'assignments'
         RawType                    = 'Complex'
         ClrType                    = 'MSFT_DeviceManagementConfigurationPolicyAssignments[]'
-        MofType                    = 'String'
-        MofEmbeddedInstance        = 'MSFT_DeviceManagementConfigurationPolicyAssignments'
         CimClassName               = 'MSFT_DeviceManagementConfigurationPolicyAssignments'
         FakeKind                   = 'Complex'
         IsArray                    = $true

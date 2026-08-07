@@ -3,8 +3,8 @@
     Projects a parsed settings catalog setting tree into property models.
 
 .DESCRIPTION
-    Replaces the old generator's direct MOF/parameter text generation: every setting becomes an
-    ordinary property model, so the class, MOF, fake values, unit test and example emitters need
+    Replaces the old generator's direct parameter text generation: every setting becomes an
+    ordinary property model, so the class, fake values, unit test and example emitters need
     no settings-catalog-specific code for the property surface. Property names keep the casing
     produced by Get-SettingsCatalogSettingName with an upper-cased first letter (the class
     property), while GraphName keeps the raw setting name (the key used by
@@ -67,8 +67,6 @@ function ConvertTo-M365DSCSettingsCatalogPropertyModel
 
         $model = New-M365DSCSettingsCatalogBaseModel -Name $name -GraphName $TemplateSetting.Name -Description $description
         $model.ClrType = $TemplateSetting.InstanceName
-        $model.MofType = 'String'
-        $model.MofEmbeddedInstance = $TemplateSetting.InstanceName
         $model.CimClassName = $TemplateSetting.InstanceName
         $model.IsComplex = $true
         $model.FakeKind = 'Complex'
@@ -93,14 +91,12 @@ function ConvertTo-M365DSCSettingsCatalogPropertyModel
     {
         $model.RawType = 'Edm.Int32'
         $model.ClrType = 'System.Int32'
-        $model.MofType = 'SInt32'
         $model.FakeKind = 'Int'
     }
     elseif ($TemplateSetting.Type -eq 'Boolean')
     {
         $model.RawType = 'Edm.Boolean'
         $model.ClrType = 'System.Boolean'
-        $model.MofType = 'Boolean'
         $model.FakeKind = 'Boolean'
     }
 
@@ -111,14 +107,13 @@ function ConvertTo-M365DSCSettingsCatalogPropertyModel
 
         if ($isInteger)
         {
-            # The MOF keeps SInt32 with a quoted ValueMap; the class needs an unquoted set.
+            # Integer choice settings stay SInt32; the class needs an unquoted ValidateSet.
             $model.FakeKind = 'IntEnum'
             $model.ValidationAttribute = "[ValidateSet($($TemplateSetting.Options.Id -join ', '))]"
         }
         else
         {
             $model.ClrType = 'System.String'
-            $model.MofType = 'String'
             $model.FakeKind = 'Enum'
         }
     }
@@ -184,8 +179,6 @@ function New-M365DSCSettingsWrapperPropertyModel
     $model = New-M365DSCSettingsCatalogBaseModel -Name $Name -GraphName $Name `
         -Description "The $scope scoped settings of this policy."
     $model.ClrType = $cimClassName
-    $model.MofType = 'String'
-    $model.MofEmbeddedInstance = $cimClassName
     $model.CimClassName = $cimClassName
     $model.IsComplex = $true
     $model.FakeKind = 'Complex'
@@ -226,8 +219,6 @@ function New-M365DSCSettingsCatalogBaseModel
         GraphName                  = $GraphName
         RawType                    = 'Edm.String'
         ClrType                    = 'System.String'
-        MofType                    = 'String'
-        MofEmbeddedInstance        = $null
         CimClassName               = $null
         FakeKind                   = 'String'
         IsArray                    = $false

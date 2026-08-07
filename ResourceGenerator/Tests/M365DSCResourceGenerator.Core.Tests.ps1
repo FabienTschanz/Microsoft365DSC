@@ -68,17 +68,16 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
     }
 
     Describe 'Resolve-M365DSCTypeInfo' {
-        It 'maps <_.Type> to CLR <_.Clr> and MOF <_.Mof>' -ForEach @(
-            @{ Type = 'Edm.String'; Clr = 'System.String'; Mof = 'String' }
-            @{ Type = 'Edm.Boolean'; Clr = 'System.Boolean'; Mof = 'Boolean' }
-            @{ Type = 'System.Int32'; Clr = 'System.Int32'; Mof = 'SInt32' }
-            @{ Type = 'Edm.DateTimeOffset'; Clr = 'System.String'; Mof = 'String' }
-            @{ Type = 'Edm.Guid'; Clr = 'System.String'; Mof = 'String' }
-            @{ Type = 'System.Management.Automation.SwitchParameter'; Clr = 'System.Boolean'; Mof = 'Boolean' }
+        It 'maps <_.Type> to CLR <_.Clr>' -ForEach @(
+            @{ Type = 'Edm.String'; Clr = 'System.String' }
+            @{ Type = 'Edm.Boolean'; Clr = 'System.Boolean' }
+            @{ Type = 'System.Int32'; Clr = 'System.Int32' }
+            @{ Type = 'Edm.DateTimeOffset'; Clr = 'System.String' }
+            @{ Type = 'Edm.Guid'; Clr = 'System.String' }
+            @{ Type = 'System.Management.Automation.SwitchParameter'; Clr = 'System.Boolean' }
         ) {
             $result = Resolve-M365DSCTypeInfo -Type $Type
             $result.Clr | Should -Be $Clr
-            $result.Mof | Should -Be $Mof
             $result.IsFallback | Should -BeFalse
         }
 
@@ -88,9 +87,10 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             $result.IsFallback | Should -BeTrue
         }
 
-        It 'maps PSCredential to an MSFT_Credential embedded instance' {
+        It 'maps PSCredential to the PSCredential CLR type' {
             $result = Resolve-M365DSCTypeInfo -Type 'System.Management.Automation.PSCredential'
-            $result.MofEmbeddedInstance | Should -Be 'MSFT_Credential'
+            $result.Clr | Should -Be 'System.Management.Automation.PSCredential'
+            $result.FakeKind | Should -Be 'Credential'
         }
     }
 
@@ -135,7 +135,7 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             $model = New-M365DSCPropertyModel -Name 'Settings' -CimClassName 'MSFT_TestSetting' -Members $members
 
             $model.IsComplex | Should -BeTrue
-            $model.MofEmbeddedInstance | Should -Be 'MSFT_TestSetting'
+            $model.CimClassName | Should -Be 'MSFT_TestSetting'
             $model.FakeValue | Should -BeOfType [System.Collections.Hashtable]
             # Exactly one leaf drifts.
             $driftedLeaves = @($model.DriftValue.Keys | Where-Object { $model.DriftValue[$_] -ne $model.FakeValue[$_] })

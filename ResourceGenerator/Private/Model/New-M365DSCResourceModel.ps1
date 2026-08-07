@@ -4,8 +4,8 @@
 
 .DESCRIPTION
     Combines the acquired cmdlet information, the property models, the Ensure property and the
-    workload's auth property set into one object. Every emitter (class module, MOF schema, unit
-    test, example, settings, readme) is a projection of the object returned here.
+    workload's auth property set into one object. Every emitter (class module, unit test,
+    example, settings, readme) is a projection of the object returned here.
 
 .PARAMETER ResourceName
     Specifies the resource name, e.g. 'AADPermissionGrantPolicy'.

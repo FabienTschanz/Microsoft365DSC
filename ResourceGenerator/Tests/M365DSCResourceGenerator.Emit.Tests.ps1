@@ -1,5 +1,5 @@
 <#
-    Offline unit tests for the emitters: class module, MOF schema, unit test, examples and
+    Offline unit tests for the emitters: class module, unit test, examples and
     settings, all generated from a hand-built resource model fixture and validated with the
     PowerShell parser. No network or Graph modules required.
 #>
@@ -59,7 +59,6 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             -CmdletInfo $cmdletInfo -Properties $properties
 
         $script:classContent = New-M365DSCClassModuleFile -ResourceModel $script:model
-        $script:mofContent = New-M365DSCMofSchemaFile -ResourceModel $script:model
         $script:testContent = New-M365DSCUnitTestFile -ResourceModel $script:model
     }
 
@@ -120,31 +119,6 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
         It 'exports with -All and NoEscape for the complex property' {
             $script:classContent | Should -Match 'Get-MgBetaTestPolicy -All'
             $script:classContent | Should -Match "-NoEscape @\('Rules'\)"
-        }
-    }
-
-    Describe 'New-M365DSCMofSchemaFile' {
-        It 'declares the embedded class before the resource class' {
-            $mofLines = $script:mofContent -split "`r?`n"
-            $embeddedIndex = [array]::IndexOf($mofLines, ($mofLines | Where-Object { $_ -like 'class MSFT_MicrosoftGraphTestRule*' } | Select-Object -First 1))
-            $resourceIndex = [array]::IndexOf($mofLines, ($mofLines | Where-Object { $_ -like 'class MSFT_AADTestPolicy*' } | Select-Object -First 1))
-            $embeddedIndex | Should -BeGreaterOrEqual 0
-            $embeddedIndex | Should -BeLessThan $resourceIndex
-        }
-
-        It 'renders key, enum, array and embedded-instance qualifiers' {
-            $script:mofContent | Should -Match '\[Key, Description\("The unique identifier\."\)\] String Id;'
-            $script:mofContent | Should -Match 'ValueMap\{"low","medium","high"\}'
-            $script:mofContent | Should -Match 'String Tags\[\];'
-            $script:mofContent | Should -Match 'EmbeddedInstance\("MSFT_MicrosoftGraphTestRule"\)\] String Rules\[\];'
-            $script:mofContent | Should -Match 'EmbeddedInstance\("MSFT_Credential"\)\] String Credential;'
-        }
-
-        It 'mirrors every class property in the MOF' {
-            foreach ($property in $script:model.Properties)
-            {
-                $script:mofContent | Should -Match "\b$($property.Name)(\[\])?;" -Because "property $($property.Name) must exist in the MOF"
-            }
         }
     }
 

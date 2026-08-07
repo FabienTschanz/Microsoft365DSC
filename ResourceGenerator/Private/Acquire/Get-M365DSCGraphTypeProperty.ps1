@@ -274,7 +274,7 @@ function Get-M365DSCGraphPropertyDescription
     }
 
     $description = $description.Replace('"', "'")
-    # Keep letters, digits and basic punctuation only - MOF descriptions choke on the rest.
+    # Keep letters, digits and basic punctuation only - Description attributes choke on the rest.
     return ($description -replace '[^\p{L}\p{Nd}/(/}/_ -.,=:)'']', '')
 }
 

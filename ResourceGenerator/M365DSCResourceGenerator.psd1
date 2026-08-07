@@ -5,7 +5,7 @@
     Author            = 'Microsoft Corporation'
     CompanyName       = 'Microsoft Corporation'
     Copyright         = '(c) Microsoft Corporation. All rights reserved.'
-    Description       = 'Generates class-based Microsoft365DSC resources (module, MOF schema, unit test, example, settings and readme files) from a cmdlet.'
+    Description       = 'Generates class-based Microsoft365DSC resources (module, unit test, example, settings and readme files) from a cmdlet.'
     PowerShellVersion = '5.1'
     FunctionsToExport = @('New-M365DSCResource')
     CmdletsToExport   = @()

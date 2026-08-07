@@ -1,8 +1,8 @@
 <#
     Authentication parameters expressed as ordinary property models. Because they travel through
-    the same PropertyModel pipeline as schema properties, the class emitter, the MOF emitter and
-    the test emitter need no auth-specific code paths - which is what allows a single resource
-    template to serve every workload.
+    the same PropertyModel pipeline as schema properties, the class emitter and the test emitter
+    need no auth-specific code paths - which is what allows a single resource template to serve
+    every workload.
 #>
 
 $script:M365DSCWorkloadAuthParameters = @{

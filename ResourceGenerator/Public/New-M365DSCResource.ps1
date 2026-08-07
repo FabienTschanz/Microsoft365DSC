@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Point the generator at a cmdlet noun and it produces every artifact of a resource: the
-    MSFT_<Name>.psm1 class module, the MOF schema, settings.json, readme.md, a unit test that
+    MSFT_<Name>.psm1 class module, settings.json, readme.md, a unit test that
     asserts the resource's real property values (including a genuine drift context), the three
     example configurations and the unit test stubs.
 
@@ -256,8 +256,6 @@ function New-M365DSCResource
             New-M365DSCClassModuleFile -ResourceModel $resourceModel `
                 -DestinationPath (Join-Path -Path $stagingResourceFolder -ChildPath "MSFT_$ResourceName.psm1")
         }
-        New-M365DSCMofSchemaFile -ResourceModel $resourceModel `
-            -DestinationPath (Join-Path -Path $stagingResourceFolder -ChildPath "MSFT_$ResourceName.schema.mof")
         New-M365DSCSettingsFile -ResourceModel $resourceModel `
             -DestinationPath (Join-Path -Path $stagingResourceFolder -ChildPath 'settings.json')
         New-M365DSCReadmeFile -ResourceModel $resourceModel `

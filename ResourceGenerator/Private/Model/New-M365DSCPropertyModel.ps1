@@ -1,45 +1,45 @@
 <#
     The ONE place where raw types (Graph CSDL Edm.* types and .NET types discovered through
-    Get-Command) map to everything the generator emits: the CLR type on the class property, the
-    MOF schema type, and the kind of fake value the unit tests and examples use.
+    Get-Command) map to everything the generator emits: the CLR type on the class property and
+    the kind of fake value the unit tests and examples use.
 
     Value-type class properties are emitted as System.Nullable[T]. The base class treats
     "specified" as "not $null" (see M365DSCResourceBase.GetBoundParameters), so a plain [Boolean]
     would make an omitted property indistinguishable from one explicitly set to $false.
 #>
 $script:M365DSCTypeTable = @{
-    'edm.string'                                    = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'String' }
-    'system.string'                                 = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'String' }
-    'edm.boolean'                                   = @{ Clr = 'System.Boolean'; Mof = 'Boolean'; FakeKind = 'Boolean' }
-    'system.boolean'                                = @{ Clr = 'System.Boolean'; Mof = 'Boolean'; FakeKind = 'Boolean' }
-    'system.management.automation.switchparameter'  = @{ Clr = 'System.Boolean'; Mof = 'Boolean'; FakeKind = 'Boolean' }
-    'edm.int32'                                     = @{ Clr = 'System.Int32'; Mof = 'SInt32'; FakeKind = 'Int' }
-    'system.int32'                                  = @{ Clr = 'System.Int32'; Mof = 'SInt32'; FakeKind = 'Int' }
-    'system.uint32'                                 = @{ Clr = 'System.UInt32'; Mof = 'UInt32'; FakeKind = 'Int' }
-    'edm.int64'                                     = @{ Clr = 'System.Int64'; Mof = 'SInt64'; FakeKind = 'Int' }
-    'system.int64'                                  = @{ Clr = 'System.Int64'; Mof = 'SInt64'; FakeKind = 'Int' }
-    'system.uint64'                                 = @{ Clr = 'System.UInt64'; Mof = 'UInt64'; FakeKind = 'Int' }
-    'edm.byte'                                      = @{ Clr = 'System.Byte'; Mof = 'UInt8'; FakeKind = 'Int' }
-    'edm.single'                                    = @{ Clr = 'System.Single'; Mof = 'Real32'; FakeKind = 'Real' }
-    'system.single'                                 = @{ Clr = 'System.Single'; Mof = 'Real32'; FakeKind = 'Real' }
-    'edm.double'                                    = @{ Clr = 'System.Double'; Mof = 'Real64'; FakeKind = 'Real' }
-    'system.double'                                 = @{ Clr = 'System.Double'; Mof = 'Real64'; FakeKind = 'Real' }
-    'edm.decimal'                                   = @{ Clr = 'System.Double'; Mof = 'Real64'; FakeKind = 'Real' }
-    'system.decimal'                                = @{ Clr = 'System.Double'; Mof = 'Real64'; FakeKind = 'Real' }
+    'edm.string'                                    = @{ Clr = 'System.String'; FakeKind = 'String' }
+    'system.string'                                 = @{ Clr = 'System.String'; FakeKind = 'String' }
+    'edm.boolean'                                   = @{ Clr = 'System.Boolean'; FakeKind = 'Boolean' }
+    'system.boolean'                                = @{ Clr = 'System.Boolean'; FakeKind = 'Boolean' }
+    'system.management.automation.switchparameter'  = @{ Clr = 'System.Boolean'; FakeKind = 'Boolean' }
+    'edm.int32'                                     = @{ Clr = 'System.Int32'; FakeKind = 'Int' }
+    'system.int32'                                  = @{ Clr = 'System.Int32'; FakeKind = 'Int' }
+    'system.uint32'                                 = @{ Clr = 'System.UInt32'; FakeKind = 'Int' }
+    'edm.int64'                                     = @{ Clr = 'System.Int64'; FakeKind = 'Int' }
+    'system.int64'                                  = @{ Clr = 'System.Int64'; FakeKind = 'Int' }
+    'system.uint64'                                 = @{ Clr = 'System.UInt64'; FakeKind = 'Int' }
+    'edm.byte'                                      = @{ Clr = 'System.Byte'; FakeKind = 'Int' }
+    'edm.single'                                    = @{ Clr = 'System.Single'; FakeKind = 'Real' }
+    'system.single'                                 = @{ Clr = 'System.Single'; FakeKind = 'Real' }
+    'edm.double'                                    = @{ Clr = 'System.Double'; FakeKind = 'Real' }
+    'system.double'                                 = @{ Clr = 'System.Double'; FakeKind = 'Real' }
+    'edm.decimal'                                   = @{ Clr = 'System.Double'; FakeKind = 'Real' }
+    'system.decimal'                                = @{ Clr = 'System.Double'; FakeKind = 'Real' }
     # Date, time and GUID values travel as strings, matching the shipped resources.
-    'edm.datetimeoffset'                            = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'DateTime' }
-    'edm.date'                                      = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'DateTime' }
-    'system.datetime'                               = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'DateTime' }
-    'system.datetimeoffset'                         = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'DateTime' }
-    'edm.timeofday'                                 = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'Time' }
-    'edm.duration'                                  = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'Time' }
-    'system.timespan'                               = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'Time' }
-    'edm.guid'                                      = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'Guid' }
-    'system.guid'                                   = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'Guid' }
-    'edm.binary'                                    = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'String' }
-    'edm.stream'                                    = @{ Clr = 'System.String'; Mof = 'String'; FakeKind = 'String' }
-    'system.management.automation.pscredential'     = @{ Clr = 'System.Management.Automation.PSCredential'; Mof = 'String'; FakeKind = 'Credential'; MofEmbeddedInstance = 'MSFT_Credential' }
-    'system.security.securestring'                  = @{ Clr = 'System.Management.Automation.PSCredential'; Mof = 'String'; FakeKind = 'Credential'; MofEmbeddedInstance = 'MSFT_Credential' }
+    'edm.datetimeoffset'                            = @{ Clr = 'System.String'; FakeKind = 'DateTime' }
+    'edm.date'                                      = @{ Clr = 'System.String'; FakeKind = 'DateTime' }
+    'system.datetime'                               = @{ Clr = 'System.String'; FakeKind = 'DateTime' }
+    'system.datetimeoffset'                         = @{ Clr = 'System.String'; FakeKind = 'DateTime' }
+    'edm.timeofday'                                 = @{ Clr = 'System.String'; FakeKind = 'Time' }
+    'edm.duration'                                  = @{ Clr = 'System.String'; FakeKind = 'Time' }
+    'system.timespan'                               = @{ Clr = 'System.String'; FakeKind = 'Time' }
+    'edm.guid'                                      = @{ Clr = 'System.String'; FakeKind = 'Guid' }
+    'system.guid'                                   = @{ Clr = 'System.String'; FakeKind = 'Guid' }
+    'edm.binary'                                    = @{ Clr = 'System.String'; FakeKind = 'String' }
+    'edm.stream'                                    = @{ Clr = 'System.String'; FakeKind = 'String' }
+    'system.management.automation.pscredential'     = @{ Clr = 'System.Management.Automation.PSCredential'; FakeKind = 'Credential' }
+    'system.security.securestring'                  = @{ Clr = 'System.Management.Automation.PSCredential'; FakeKind = 'Credential' }
 }
 
 # CLR value types that must be wrapped in System.Nullable[T] on the class.
@@ -50,7 +50,7 @@ $script:M365DSCNullableClrTypes = @(
 
 <#
 .SYNOPSIS
-    Resolves a raw property type into its CLR / MOF / fake-value projection.
+    Resolves a raw property type into its CLR / fake-value projection.
 
 .DESCRIPTION
     Unknown types resolve to String so that generation always produces a valid resource; the
@@ -74,7 +74,6 @@ function Resolve-M365DSCTypeInfo
     {
         return @{
             Clr        = 'System.String'
-            Mof        = 'String'
             FakeKind   = 'String'
             IsFallback = $true
         }
@@ -94,9 +93,9 @@ function Resolve-M365DSCTypeInfo
     Creates the intermediate representation of one resource property.
 
 .DESCRIPTION
-    Every emitted artifact - class property block, MOF schema, hashtable mapping, fake values for
-    unit tests and examples - is a projection of the objects this function returns. Complex types
-    carry their member models in Members and reference their CIM class through CimClassName.
+    Every emitted artifact - class property block, hashtable mapping, fake values for unit tests
+    and examples - is a projection of the objects this function returns. Complex types carry
+    their member models in Members and reference their CIM class through CimClassName.
 
 .PARAMETER Name
     Specifies the DSC property name (PascalCase).
@@ -108,7 +107,7 @@ function Resolve-M365DSCTypeInfo
     Specifies the Graph API (camelCase) name. Defaults to the camelCase form of Name.
 
 .PARAMETER Description
-    Specifies the property description used in both the class attribute and the MOF.
+    Specifies the property description used in the class Description attribute.
 
 .PARAMETER EnumValues
     Specifies the allowed values. Turns the property into a ValidateSet/ValueMap string property.
@@ -193,15 +192,11 @@ function New-M365DSCPropertyModel
     if ($isComplex)
     {
         $clrType = $CimClassName
-        $mofType = 'String'
-        $embeddedInstance = $CimClassName
         $fakeKind = 'Complex'
     }
     elseif ($isEnum)
     {
         $clrType = 'System.String'
-        $mofType = 'String'
-        $embeddedInstance = $null
         $fakeKind = 'Enum'
     }
     else
@@ -213,8 +208,6 @@ function New-M365DSCPropertyModel
         }
 
         $clrType = $typeInfo.Clr
-        $mofType = $typeInfo.Mof
-        $embeddedInstance = $typeInfo.MofEmbeddedInstance
         $fakeKind = $typeInfo.FakeKind
     }
 
@@ -232,8 +225,6 @@ function New-M365DSCPropertyModel
         GraphName                  = $GraphName
         RawType                    = $Type
         ClrType                    = $clrType
-        MofType                    = $mofType
-        MofEmbeddedInstance        = $embeddedInstance
         CimClassName               = $CimClassName
         FakeKind                   = $fakeKind
         IsArray                    = $IsArray

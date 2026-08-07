@@ -1,15 +1,15 @@
 <#
 .SYNOPSIS
-    Lists every CIM class name already declared by the shipped resources' MOF schemas.
+    Lists every embedded class name already declared by the shipped resources' class modules.
 
 .DESCRIPTION
-    Used to avoid CIM class name collisions: two resources declaring the same embedded class name
-    with different members break MOF compilation, so a colliding generated class gets a numeric
-    suffix. Classes belonging to the resource being (re)generated are excluded, since regenerating
-    a resource legitimately redefines its own classes.
+    Used to avoid class name collisions: two resources declaring the same embedded class name
+    with different members conflict when both modules are loaded, so a colliding generated class
+    gets a numeric suffix. Classes belonging to the resource being (re)generated are excluded,
+    since regenerating a resource legitimately redefines its own classes.
 
 .PARAMETER ResourceName
-    Specifies the resource whose own MOF should be ignored.
+    Specifies the resource whose own class module should be ignored.
 #>
 function Get-M365DSCExistingCimClassName
 {
@@ -29,12 +29,12 @@ function Get-M365DSCExistingCimClassName
     }
 
     $cimClasses = @()
-    $mofFiles = Get-ChildItem -Path $dscResourcesPath -Filter '*.mof' -Recurse -File |
+    $moduleFiles = Get-ChildItem -Path $dscResourcesPath -Filter '*.psm1' -Recurse -File |
         Where-Object -FilterScript { $_.Directory.Name -ne "MSFT_$ResourceName" }
 
-    foreach ($mofFile in $mofFiles)
+    foreach ($moduleFile in $moduleFiles)
     {
-        $content = Get-Content -Path $mofFile.FullName -Raw
+        $content = Get-Content -Path $moduleFile.FullName -Raw
         foreach ($match in [regex]::Matches($content, '(?m)^\s*class\s+(?<name>MSFT_\w+)'))
         {
             $cimClasses += $match.Groups['name'].Value
