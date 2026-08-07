@@ -149,7 +149,7 @@ class SPOHubSite : M365DSCResourceBase
                 }
             }
 
-            if (-not [System.String]::IsNullOrEmpty($this.LogoUrl) -and -not $this.LogoUrl.StartsWith('http'))
+            if (-not [System.String]::IsNullOrEmpty($this.LogoUrl) -and $this.LogoUrl.StartsWith('http'))
             {
                 $configuredLogo = $hubSite.LogoUrl
             }
