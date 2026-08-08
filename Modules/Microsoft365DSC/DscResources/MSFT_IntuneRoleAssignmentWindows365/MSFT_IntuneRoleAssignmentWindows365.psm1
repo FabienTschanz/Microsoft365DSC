@@ -385,6 +385,7 @@ class IntuneRoleAssignmentWindows365 : M365DSCResourceBase
             [array]$getValue = Get-MgBetaRoleManagementCloudPcRoleAssignment `
                 -Filter $this.Filter `
                 -All `
+                -Top 50 `
                 -ErrorAction Stop
             #endregion
 

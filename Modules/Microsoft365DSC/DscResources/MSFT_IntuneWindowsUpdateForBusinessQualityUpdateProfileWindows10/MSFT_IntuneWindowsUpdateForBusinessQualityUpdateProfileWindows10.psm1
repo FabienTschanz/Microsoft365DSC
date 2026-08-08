@@ -115,6 +115,7 @@ class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResou
                     {
                         $getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile `
                             -All `
+                            -Top 200 `
                             -ErrorAction SilentlyContinue | Where-Object -FilterScript {
                             $_.DisplayName -eq $this.DisplayName
                         }
@@ -305,7 +306,7 @@ class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResou
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
                 $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementWindowsQualityUpdateProfile -All -Top 200 -ErrorAction Stop
             $getValue = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $getValue
             #endregion
 

@@ -126,6 +126,7 @@ class IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 : M365DSCResou
                     {
                         $getValue = Get-MgBetaDeviceManagementWindowsFeatureUpdateProfile `
                             -All `
+                            -Top 200 `
                             -ErrorAction SilentlyContinue | Where-Object `
                             -FilterScript {
                             $_.DisplayName -eq $this.DisplayName
@@ -584,7 +585,7 @@ class IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 : M365DSCResou
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
                 $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$getValue = Get-MgBetaDeviceManagementWindowsFeatureUpdateProfile -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementWindowsFeatureUpdateProfile -All -Top 200 -ErrorAction Stop
             $getValue = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $getValue
             #endregion
 
@@ -687,7 +688,7 @@ class IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 : M365DSCResou
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }

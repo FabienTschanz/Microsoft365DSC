@@ -257,6 +257,7 @@ class IntuneRoleDefinitionWindows365 : M365DSCResourceBase
             [array]$getValue = Get-MgBetaRoleManagementCloudPcRoleDefinition `
                 -Filter $this.Filter `
                 -All `
+                -Top 50 `
                 -ErrorAction Stop
             #endregion
 

@@ -361,6 +361,7 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
             [array]$getValue = Get-MgBetaDeviceManagementVirtualEndpointOnPremiseConnection `
                 -Filter $this.Filter `
                 -All `
+                -Top 50 `
                 -ErrorAction Stop
             #endregion
 

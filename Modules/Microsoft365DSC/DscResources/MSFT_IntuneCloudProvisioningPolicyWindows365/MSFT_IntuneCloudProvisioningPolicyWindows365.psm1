@@ -458,6 +458,7 @@ class IntuneCloudProvisioningPolicyWindows365 : M365DSCResourceBase
                 -Filter $this.Filter `
                 -ExpandProperty 'assignments' `
                 -All `
+                -Top 0 `
                 -ErrorAction Stop
             #endregion
 
