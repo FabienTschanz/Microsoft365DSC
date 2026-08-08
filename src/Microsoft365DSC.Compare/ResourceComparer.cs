@@ -83,35 +83,28 @@ namespace Microsoft365DSC.Compare
             // Determine which keys to compare: start from desired, remove keys/credentials/excluded, add included
             var keysToCompare = BuildKeysToCompare(valuesToCheck, parameterDefs, excludedSet, includedSet);
 
-            // Handle Ensure early: if both sides agree on Absent, skip everything
-            bool skipEvaluation = false;
-            string? desiredEnsure = GetStringValue(desiredValues, "Ensure");
+            // A resource that omits Ensure is treated as Present. Current state is not defaulted:
+            // when it carries no Ensure at all, none of the branches below apply.
+            string desiredEnsure = GetStringValue(desiredValues, "Ensure") ?? "Present";
             string? currentEnsure = GetStringValue(currentValues, "Ensure");
 
-            if (string.Equals(desiredEnsure ?? "Present", "Present", StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(currentEnsure, "Absent", StringComparison.OrdinalIgnoreCase))
-            {
-                result.AddDrift("Ensure", "Absent", "Present");
-                result.TestResult = false;
-                excludedSet.Add("Ensure");
-                keysToCompare.Remove("Ensure");
-            }
-            else if (string.Equals(desiredEnsure ?? "Present", "Absent", StringComparison.OrdinalIgnoreCase) &&
-                     string.Equals(currentEnsure, "Present", StringComparison.OrdinalIgnoreCase))
-            {
-                result.AddDrift("Ensure", "Present", "Absent");
-                result.TestResult = false;
-                excludedSet.Add("Ensure");
-                keysToCompare.Remove("Ensure");
-            }
-            else if (string.Equals(desiredEnsure ?? "Present", "Absent", StringComparison.OrdinalIgnoreCase) &&
-                     string.Equals(currentEnsure, "Absent", StringComparison.OrdinalIgnoreCase))
-            {
-                skipEvaluation = true;
-            }
+            bool desiredPresent = string.Equals(desiredEnsure, "Present", StringComparison.OrdinalIgnoreCase);
+            bool desiredAbsent = string.Equals(desiredEnsure, "Absent", StringComparison.OrdinalIgnoreCase);
+            bool currentPresent = string.Equals(currentEnsure, "Present", StringComparison.OrdinalIgnoreCase);
+            bool currentAbsent = string.Equals(currentEnsure, "Absent", StringComparison.OrdinalIgnoreCase);
 
-            if (skipEvaluation)
+            if (desiredPresent && currentAbsent)
+            {
+                RecordEnsureDrift(result, excludedSet, keysToCompare, currentValue: "Absent", desiredValue: "Present");
+            }
+            else if (desiredAbsent && currentPresent)
+            {
+                RecordEnsureDrift(result, excludedSet, keysToCompare, currentValue: "Present", desiredValue: "Absent");
+            }
+            else if (desiredAbsent && currentAbsent)
+            {
                 return result;
+            }
 
             // Separate keys into complex (MSFT_* CIM types) and simple
             List<string> complexKeys = [];
@@ -304,6 +297,23 @@ namespace Microsoft365DSC.Compare
         }
 
         #region Schema helpers
+
+        /// <summary>
+        /// Records the Ensure drift and takes Ensure out of the remaining comparison, so the
+        /// property is not reported a second time by the generic key loop.
+        /// </summary>
+        private static void RecordEnsureDrift(
+            CompareResult result,
+            HashSet<string> excludedSet,
+            HashSet<string> keysToCompare,
+            string currentValue,
+            string desiredValue)
+        {
+            result.AddDrift("Ensure", currentValue, desiredValue);
+            result.TestResult = false;
+            _ = excludedSet.Add("Ensure");
+            _ = keysToCompare.Remove("Ensure");
+        }
 
         /// <summary>
         /// Finds a schema entry by ClassName from the schema collection.
@@ -584,9 +594,7 @@ namespace Microsoft365DSC.Compare
             if (obj is null)
                 return null;
 
-            if (obj is Hashtable hash)
-                return hash.ContainsKey(propertyName) ? hash[propertyName]?.ToString() : null;
-
+            // Hashtable is an IDictionary, so it is covered here too.
             if (obj is IDictionary dict)
                 return dict.Contains(propertyName) ? dict[propertyName]?.ToString() : null;
 
@@ -617,9 +625,7 @@ namespace Microsoft365DSC.Compare
             if (obj is null)
                 return null;
 
-            if (obj is Hashtable hash)
-                return hash.ContainsKey(propertyName) ? hash[propertyName] : null;
-
+            // Hashtable is an IDictionary, so it is covered here too.
             if (obj is IDictionary dict)
                 return dict.Contains(propertyName) ? dict[propertyName] : null;
 

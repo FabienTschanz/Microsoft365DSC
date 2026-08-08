@@ -146,7 +146,7 @@ function Convert-M365DscHashtableToString
     )
 
     Initialize-M365DSCDllLoader -ErrorAction Stop
-    return [Microsoft365DSC.Converter.HashtableConverter]::ToString($Hashtable)
+    return [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString($Hashtable)
 }
 
 <#

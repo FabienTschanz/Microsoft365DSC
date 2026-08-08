@@ -357,18 +357,12 @@ namespace Microsoft365DSC.Compare
             if (obj is null)
                 return false;
 
-            Type type = obj.GetType();
-            return type == typeof(byte) ||
-                   type == typeof(sbyte) ||
-                   type == typeof(short) ||
-                   type == typeof(ushort) ||
-                   type == typeof(int) ||
-                   type == typeof(uint) ||
-                   type == typeof(long) ||
-                   type == typeof(ulong) ||
-                   type == typeof(float) ||
-                   type == typeof(double) ||
-                   type == typeof(decimal);
+            return Type.GetTypeCode(obj.GetType())
+                is TypeCode.Byte or TypeCode.SByte
+                or TypeCode.Int16 or TypeCode.UInt16
+                or TypeCode.Int32 or TypeCode.UInt32
+                or TypeCode.Int64 or TypeCode.UInt64
+                or TypeCode.Single or TypeCode.Double or TypeCode.Decimal;
         }
 
         /// <summary>
@@ -462,13 +456,6 @@ namespace Microsoft365DSC.Compare
         /// </summary>
         private static IEnumerable<string> GetObjectKeys(object obj)
         {
-            if (obj is Hashtable hashtable)
-            {
-                return hashtable.Keys.Cast<object>()
-                    .Select(k => k.ToString())
-                    .Where(k => k != "PSComputerName");
-            }
-
             if (obj is PSObject psObj)
             {
                 return psObj.Properties
@@ -476,6 +463,7 @@ namespace Microsoft365DSC.Compare
                     .Select(p => p.Name);
             }
 
+            // Hashtable is an IDictionary, so it is covered here too.
             if (obj is IDictionary dict)
             {
                 return dict.Keys.Cast<object>()
@@ -498,9 +486,6 @@ namespace Microsoft365DSC.Compare
         /// </summary>
         private static bool HasKey(object obj, string key)
         {
-            if (obj is Hashtable hashtable)
-                return hashtable.ContainsKey(key);
-
             if (obj is PSObject psObj)
                 return psObj.Properties[key] is not null;
 
@@ -517,9 +502,6 @@ namespace Microsoft365DSC.Compare
         {
             if (obj is CimInstance cimInstance)
                 return cimInstance.CimInstanceProperties[key]?.Value;
-
-            if (obj is Hashtable hashtable)
-                return hashtable[key];
 
             if (obj is PSObject psObj)
                 return psObj.Properties[key]?.Value;

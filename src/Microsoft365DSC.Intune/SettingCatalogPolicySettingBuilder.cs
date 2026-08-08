@@ -747,26 +747,32 @@ namespace Microsoft365DSC.Intune
 
         private static bool IsGroupSettingCollection(string settingType)
         {
-            return string.Equals(settingType, GroupSettingCollectionInstanceType, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(settingType, SettingGroupCollectionDefinitionType, StringComparison.OrdinalIgnoreCase);
+            return IsAnyOf(settingType, GroupSettingCollectionInstanceType, SettingGroupCollectionDefinitionType);
         }
 
         private static bool IsChoiceSetting(string settingType)
         {
-            return string.Equals(settingType, ChoiceSettingInstanceType, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(settingType, ChoiceSettingDefinitionType, StringComparison.OrdinalIgnoreCase);
+            return IsAnyOf(settingType, ChoiceSettingInstanceType, ChoiceSettingDefinitionType);
         }
 
         private static bool IsChoiceSettingCollection(string settingType)
         {
-            return string.Equals(settingType, ChoiceSettingCollectionInstanceType, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(settingType, ChoiceSettingCollectionDefinitionType, StringComparison.OrdinalIgnoreCase);
+            return IsAnyOf(settingType, ChoiceSettingCollectionInstanceType, ChoiceSettingCollectionDefinitionType);
         }
 
         private static bool IsSimpleSettingCollection(string settingType)
         {
-            return string.Equals(settingType, SimpleSettingCollectionInstanceType, StringComparison.OrdinalIgnoreCase) ||
-                   string.Equals(settingType, SimpleSettingCollectionDefinitionType, StringComparison.OrdinalIgnoreCase);
+            return IsAnyOf(settingType, SimpleSettingCollectionInstanceType, SimpleSettingCollectionDefinitionType);
+        }
+
+        /// <summary>
+        /// A setting type arrives either as the instance OData type or as the matching definition
+        /// type, so every check above accepts both spellings.
+        /// </summary>
+        private static bool IsAnyOf(string settingType, string instanceType, string definitionType)
+        {
+            return string.Equals(settingType, instanceType, StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(settingType, definitionType, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion

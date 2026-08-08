@@ -5,7 +5,7 @@ namespace Microsoft365DSC.Converter
 {
     internal static class CimInstanceConverter
     {
-        public static string ToString(CimInstance cimInstance)
+        public static string ConvertToString(CimInstance cimInstance)
         {
             StringBuilder sb = new();
             _ = sb.Append("{");

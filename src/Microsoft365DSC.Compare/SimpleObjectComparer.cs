@@ -97,10 +97,15 @@ namespace Microsoft365DSC.Compare
                     continue;
                 }
 
-                if (!currentValues.ContainsKey(key) ||
+                // An array is always re-examined even when its string rendering matches, because
+                // element order and membership are compared separately further down.
+                bool valuesDiffer =
+                    !currentValues.ContainsKey(key) ||
                     !(currentValues[key]?.ToString().Equals(desiredValuesHashtable[key]?.ToString(), StringComparison.OrdinalIgnoreCase) ?? false) ||
-                        (desiredValuesHashtable.ContainsKey(key) &&
-                            desiredValuesHashtable[key] is not null && desiredValuesHashtable[key] is Array))
+                    (desiredValuesHashtable.ContainsKey(key) &&
+                        desiredValuesHashtable[key] is not null && desiredValuesHashtable[key] is Array);
+
+                if (valuesDiffer)
                 {
                     if (desiredValuesHashtable.ContainsKey(key))
                     {

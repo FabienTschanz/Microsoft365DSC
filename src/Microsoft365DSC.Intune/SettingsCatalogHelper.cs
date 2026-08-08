@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -405,63 +405,40 @@ namespace Microsoft365DSC.Intune
                 }
             }
 
-            if (settingsWithSameName.Count > 1)
+            if (settingsWithSameName.Count <= 1)
             {
-                // Get the parent setting of the current setting
-                var parentSetting = GetParentSettingDefinition(settingDefinition, allSettingDefinitions);
+                return settingName;
+            }
 
-                if (parentSetting is not null)
+            // Get the parent setting of the current setting
+            var parentSetting = GetParentSettingDefinition(settingDefinition, allSettingDefinitions);
+
+            if (parentSetting is not null)
+            {
+                // Check if parent+name combination is unique
+                List<SettingDefinitionInfo> combinationMatchesWithParent = [];
+                foreach (var s in settingsWithSameName)
                 {
-                    // Check if parent+name combination is unique
-                    List<SettingDefinitionInfo> combinationMatchesWithParent = [];
-                    foreach (var s in settingsWithSameName)
+                    var innerParent = GetParentSettingDefinition(s, allSettingDefinitions);
+                    if (innerParent is not null)
                     {
-                        var innerParent = GetParentSettingDefinition(s, allSettingDefinitions);
-                        if (innerParent is not null)
+                        if ($"{innerParent.Name}_{s.Name}".Equals($"{parentSetting.Name}_{settingName}", StringComparison.OrdinalIgnoreCase))
                         {
-                            if ($"{innerParent.Name}_{s.Name}".Equals($"{parentSetting.Name}_{settingName}", StringComparison.OrdinalIgnoreCase))
-                            {
-                                combinationMatchesWithParent.Add(s);
-                            }
-                        }
-                    }
-
-                    // If the combination of parent setting and setting name is unique, add the parent setting name to the setting name
-                    if (combinationMatchesWithParent.Count == 1)
-                    {
-                        // Unique with parent prefix
-                        settingName = parentSetting.Name + "_" + settingName;
-                    }
-                    // If the combination of parent setting and setting name is still not unique, do it with the OffsetUri of the current setting
-                    else
-                    {
-                        // Try disambiguating via OffsetUri traversal
-                        var result = GetUniqueNameFromMultipleMatches(settingDefinition, settingName, settingsWithSameName);
-                        if (result.Success)
-                        {
-                            settingName = result.SettingName;
-                        }
-                        else
-                        {
-                            // Fallback: derive from parent setting Id
-                            // Alternative way if no unique setting name can be found
-                            string[] parentIdParts = parentSetting.Id.Split('_');
-                            string parentSettingIdProperty = parentIdParts[parentIdParts.Length - 1];
-                            string parentSettingIdWithoutProperty = parentSetting.Id
-                                .Substring(0, parentSetting.Id.Length - parentSettingIdProperty.Length - 1);
-
-                            // We can't use the entire setting here because the child setting id does not have to come after the parent setting id
-                            settingName = settingDefinition.Id
-                                .Replace(parentSettingIdWithoutProperty + "_", "")
-                                .Replace(parentSettingIdProperty + "_", "");
+                            combinationMatchesWithParent.Add(s);
                         }
                     }
                 }
 
-                // When there is no parent, we can't use the parent setting name to make the setting name unique
-                // Instead, we traverse up the OffsetUri.
-                if (parentSetting is null)
+                // If the combination of parent setting and setting name is unique, add the parent setting name to the setting name
+                if (combinationMatchesWithParent.Count == 1)
                 {
+                    // Unique with parent prefix
+                    settingName = parentSetting.Name + "_" + settingName;
+                }
+                // If the combination of parent setting and setting name is still not unique, do it with the OffsetUri of the current setting
+                else
+                {
+                    // Try disambiguating via OffsetUri traversal
                     var result = GetUniqueNameFromMultipleMatches(settingDefinition, settingName, settingsWithSameName);
                     if (result.Success)
                     {
@@ -469,19 +446,44 @@ namespace Microsoft365DSC.Intune
                     }
                     else
                     {
-                        // Can happen if both settings have the same name and the same OffsetUri, e.g. "enforcementLevel" in the IntuneAntivirusPolicyLinux resource
-                        // Potential risk of overwriting settings with the same name but different OffsetUri
-                        string settingIdWithoutName = Regex.Replace(settingDefinition.Id, "_" + settingName, "", RegexOptions.IgnoreCase);
-                        string[] parts = settingIdWithoutName.Split('_');
-                        string lastPart = parts[parts.Length - 1];
-                        settingName = lastPart + "_" + settingName;
+                        // Fallback: derive from parent setting Id
+                        // Alternative way if no unique setting name can be found
+                        string[] parentIdParts = parentSetting.Id.Split('_');
+                        string parentSettingIdProperty = parentIdParts[parentIdParts.Length - 1];
+                        string parentSettingIdWithoutProperty = parentSetting.Id
+                            .Substring(0, parentSetting.Id.Length - parentSettingIdProperty.Length - 1);
+
+                        // We can't use the entire setting here because the child setting id does not have to come after the parent setting id
+                        settingName = settingDefinition.Id
+                            .Replace(parentSettingIdWithoutProperty + "_", "")
+                            .Replace(parentSettingIdProperty + "_", "");
                     }
                 }
-
-                // Apply name simplification rules
-                // Simplify names from the OffsetUri. This is done to make the names more readable, especially in case of long and complex OffsetUris.
-                settingName = ApplyNameSimplification(settingName);
             }
+
+            // When there is no parent, we can't use the parent setting name to make the setting name unique
+            // Instead, we traverse up the OffsetUri.
+            if (parentSetting is null)
+            {
+                var result = GetUniqueNameFromMultipleMatches(settingDefinition, settingName, settingsWithSameName);
+                if (result.Success)
+                {
+                    settingName = result.SettingName;
+                }
+                else
+                {
+                    // Can happen if both settings have the same name and the same OffsetUri, e.g. "enforcementLevel" in the IntuneAntivirusPolicyLinux resource
+                    // Potential risk of overwriting settings with the same name but different OffsetUri
+                    string settingIdWithoutName = Regex.Replace(settingDefinition.Id, "_" + settingName, "", RegexOptions.IgnoreCase);
+                    string[] parts = settingIdWithoutName.Split('_');
+                    string lastPart = parts[parts.Length - 1];
+                    settingName = lastPart + "_" + settingName;
+                }
+            }
+
+            // Apply name simplification rules
+            // Simplify names from the OffsetUri. This is done to make the names more readable, especially in case of long and complex OffsetUris.
+            settingName = ApplyNameSimplification(settingName);
 
             return settingName;
         }

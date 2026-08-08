@@ -266,21 +266,21 @@ Describe 'ObjectNormalizer.Normalize' {
 
 Describe 'HashtableConverter.ToString' {
     It 'Renders one sorted key=value line per entry' {
-        $lines = [Microsoft365DSC.Converter.HashtableConverter]::ToString(@{ B = 2; A = 1 }) -split "`r?`n"
+        $lines = [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString(@{ B = 2; A = 1 }) -split "`r?`n"
         $lines | Should -Be @('A=1', 'B=2')
     }
 
     It 'Obfuscates credential-bearing properties' {
-        $lines = [Microsoft365DSC.Converter.HashtableConverter]::ToString(@{ ApplicationSecret = 'hunter2'; Name = 'x' }) -split "`r?`n"
+        $lines = [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString(@{ ApplicationSecret = 'hunter2'; Name = 'x' }) -split "`r?`n"
         $lines | Should -Be @('ApplicationSecret=***', 'Name=x')
     }
 
     It 'Renders a nested hashtable in braces' {
-        [Microsoft365DSC.Converter.HashtableConverter]::ToString(@{ Outer = @{ Inner = 1 } }) | Should -Be 'Outer={Inner=1}'
+        [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString(@{ Outer = @{ Inner = 1 } }) | Should -Be 'Outer={Inner=1}'
     }
 
     It 'Renders an array in parentheses' {
-        [Microsoft365DSC.Converter.HashtableConverter]::ToString(@{ Tags = @('a', 'b') }) | Should -Be 'Tags=(a,b)'
+        [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString(@{ Tags = @('a', 'b') }) | Should -Be 'Tags=(a,b)'
     }
 }
 
@@ -298,14 +298,14 @@ Describe 'CimInstance rendering through HashtableConverter' {
         $container = [System.Collections.Hashtable]::new()
         $container.Add('Item', $Script:CimInstance)
 
-        [Microsoft365DSC.Converter.HashtableConverter]::ToString($container) | Should -Match '^Item=\{(Key=k1, Value=v1|Value=v1, Key=k1)\}$'
+        [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString($container) | Should -Match '^Item=\{(Key=k1, Value=v1|Value=v1, Key=k1)\}$'
     }
 
     It 'Renders a PSObject-wrapped CIM instance as its class name' -Tag 'CurrentBehaviour' {
         # No branch in HashtableConverter unwraps PSObject, so a CimInstance stored through a
         # PowerShell hashtable literal falls through to entry.Value.ToString(). Phase 3b routes the
         # value through the shared unwrap helper, after which this matches the test above.
-        [Microsoft365DSC.Converter.HashtableConverter]::ToString(@{ Item = $Script:CimInstance }) | Should -Be 'Item=MSFT_TestItem'
+        [Microsoft365DSC.Converter.HashtableConverter]::ConvertToString(@{ Item = $Script:CimInstance }) | Should -Be 'Item=MSFT_TestItem'
     }
 }
 
