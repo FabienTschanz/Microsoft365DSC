@@ -686,7 +686,7 @@ class MSFT_MicrosoftGraphcloudPcDomainJoinConfiguration
 
     [DscProperty()]
     [System.ComponentModel.Description('The geographic location where the region is located. Read-only.')]
-    [ValidateSet('default', 'asia', 'australasia', 'canada', 'europe', 'india', 'africa', 'usCentral', 'usEast', 'usWest', 'southAmerica', 'middleEast', 'centralAmerica', 'usGovernment', 'mexico')]
+    [ValidateSet('default', 'asia', 'australasia', "australiaNewZealand", 'canada', 'europe', 'india', 'africa', 'usCentral', 'usEast', 'usWest', 'southAmerica', 'middleEast', 'centralAmerica', 'usGovernment', 'mexico')]
     [System.String] $GeographicLocationType
 
     [DscProperty()]
