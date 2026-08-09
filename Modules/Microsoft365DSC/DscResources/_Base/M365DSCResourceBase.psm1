@@ -638,10 +638,10 @@ class M365DSCResourceBase
                 -ResourceName $this.GetResourceName())
     }
 
-    # Overridden by resources that custom-define Get-CompareParameters.
+    # Overridden by resources that need custom comparison parameters.
     [Hashtable] GetCompareParameters()
     {
-        return $this.GetBoundParameters()
+        return @{}
     }
 
     # Every schema property of the derived type. Replaces

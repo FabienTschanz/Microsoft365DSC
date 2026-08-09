@@ -227,6 +227,51 @@ function Get-M365DSCResourceMandatoryKey
 
 <#
 .SYNOPSIS
+    Returns the custom comparison parameters declared by a class-based resource.
+
+.DESCRIPTION
+    The class-based replacement for importing MSFT_<Resource>.psm1 and invoking its
+    Get-CompareParameters function. Used by the delta report so that reporting compares the same
+    way Test() does.
+
+    Instantiates the resource with no properties set, so overrides that read instance state get
+    their defaults. Unknown names return an empty hashtable rather than throwing: the report walks
+    whatever resource names a blueprint contains, including deprecated ones.
+
+.PARAMETER ResourceName
+    Specifies the resource name, e.g. 'AADGroup'.
+
+.EXAMPLE
+    Get-M365DSCResourceCompareParameters -ResourceName 'AADApplication'
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.Collections.Hashtable
+#>
+function Get-M365DSCResourceCompareParameters
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ResourceName
+    )
+
+    $type = [M365DSCResourceBase]::Resolve($ResourceName)
+    if ($null -eq $type)
+    {
+        return @{}
+    }
+
+    return $type::new().GetCompareParameters()
+}
+
+<#
+.SYNOPSIS
     Invokes a method on a class-based Microsoft365DSC resource.
 
 .DESCRIPTION

@@ -502,13 +502,11 @@ class IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy : M365DSCR
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
-    # GetBoundParameters().
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return $this.GetSettingsCatalogCompareParameters()

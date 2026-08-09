@@ -16,10 +16,10 @@
 
     Why this shape?
 
-      - PowerShell type creation is superlinear in the number of classes in ONE parse unit. All
-        ~1000 classes together costs ~41 s to import on both editions, against a 4.50 s baseline
-        for the module as it ships today. Each NestedModules entry is its own parse unit, so
-        bucketing collapses that back to ~7 s. Parsing itself is never the cost; type creation is.
+      - PowerShell type creation is superlinear in the number of classes in ONE parse unit, and
+        each NestedModules entry is its own parse unit. Parsing itself is never the cost, it only
+        totals to about ~10% of the import time. Everything else is creating the typed classes.
+        Having several different parse units improves import time, but only up to ~16 parts.
 
       - Class types do not cross module boundaries, so each part must open with
         `using module .\_Shared.psm1` to see the base class and the complex types.
@@ -36,8 +36,16 @@
     Root of the Microsoft365DSC repository. Defaults to the parent of this script's folder.
 
 .PARAMETER BucketCount
-    Number of Part<NN>.psm1 files to spread the resource classes across. 16 measured best
-    (6.95 s import); 4 and 8 are close, 32 regresses.
+    Number of Part<NN>.psm1 files to spread the resource classes across. Import time flattens out
+    from 8 upwards and 16 sits inside the noise band of 12 to 32; below 8 it climbs steeply, and
+    48 starts to regress. Re-measure with Utilities/Measure-M365DSCLoadPerformance.ps1 before
+    changing it.
+
+.PARAMETER KeepDescriptions
+    Emit the [System.ComponentModel.Description()] attributes into the generated files. They are
+    stripped by default: nothing reads them at runtime, SchemaDefinition.json takes them from the
+    sources, and they are 53% of _Shared.psm1 - bytes that DscClassCache re-parses on every
+    Get-DscResourceV2 call.
 
 .PARAMETER SkipSchema
     Skip regenerating SchemaDefinition.json.
@@ -72,6 +80,10 @@ param
 
     [Parameter()]
     [Switch]
+    $KeepDescriptions,
+
+    [Parameter()]
+    [Switch]
     $SkipSchema,
 
     [Parameter()]
@@ -80,6 +92,8 @@ param
 )
 
 $ErrorActionPreference = 'Stop'
+
+Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCBuildHelpers.psm1') -Force
 
 $script:ModuleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
 $script:SourceRoot = Join-Path -Path $script:ModuleRoot -ChildPath 'DscResources'
@@ -91,6 +105,14 @@ $script:ManifestPath = Join-Path -Path $script:ModuleRoot -ChildPath 'Microsoft3
 # hand-maintained ones around them.
 $script:BeginMarker = '# BEGIN GENERATED CLASS MODULES - Utilities/Build-Microsoft365DSC.ps1'
 $script:EndMarker = '# END GENERATED CLASS MODULES'
+
+# Every spelling the sources use for the documentation attribute that is stripped from the output.
+$script:DescriptionAttributeNames = @(
+    'System.ComponentModel.Description',
+    'System.ComponentModel.DescriptionAttribute',
+    'Description',
+    'DescriptionAttribute'
+)
 
 #region Helpers
 
@@ -119,54 +141,6 @@ function Write-BuildLog
     }
 
     Write-Host "[build] $Message" -ForegroundColor $color
-}
-
-function New-M365DSCProbeStage
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ModuleRoot,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Version
-    )
-
-    $root = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath ('M365DSCProbe_' + [Guid]::NewGuid().ToString('N'))
-    $moduleFolder = Join-Path -Path $root -ChildPath 'Microsoft365DSC'
-    $link = Join-Path -Path $moduleFolder -ChildPath $Version
-
-    $null = New-Item -Path $moduleFolder -ItemType Directory -Force
-
-    try
-    {
-        $onWindows = $PSVersionTable.PSEdition -eq 'Desktop' -or $global:IsWindows
-        $linkType = if ($onWindows) { 'Junction' } else { 'SymbolicLink' }
-
-        try
-        {
-            $null = New-Item -Path $link -ItemType $linkType -Value $ModuleRoot -ErrorAction Stop
-            return @{ Root = $root; Link = $link; IsLink = $true }
-        }
-        catch
-        {
-            Write-BuildLog "Could not create a $linkType at '$link' ($($_.Exception.Message)). Falling back to a copy." -Level Warning
-        }
-
-        $null = New-Item -Path $link -ItemType Directory -Force
-        Copy-Item -Path (Join-Path -Path $ModuleRoot -ChildPath '*') -Destination $link -Recurse -Force
-
-        return @{ Root = $root; Link = $link; IsLink = $false }
-    }
-    catch
-    {
-        Remove-Item -Path $root -Recurse -Force -ErrorAction SilentlyContinue
-        throw
-    }
 }
 
 # Parses one source file and returns its top-level class definitions.
@@ -283,6 +257,157 @@ function Get-NormalizedText
     return (($Text -replace '\s+', ' ').Trim())
 }
 
+<#
+.SYNOPSIS
+    Returns the class text as it should be emitted.
+
+.DESCRIPTION
+    [System.ComponentModel.Description()] carries the documentation for every property. Nothing
+    reads it at runtime - SchemaDefinition.json is generated from the sources, which keep it - but
+    it is 53% of _Shared.psm1 and every byte is parsed again by DscClassCache on each
+    Get-DscResourceV2, and turned into a CustomAttributeBuilder on each import. So it is dropped
+    here unless -KeepDescriptions was passed.
+#>
+function Get-M365DSCEmittedText
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.Language.Ast]
+        $Ast
+    )
+
+    $text = $Ast.Extent.Text
+
+    if ($KeepDescriptions)
+    {
+        return $text
+    }
+
+    $origin = $Ast.Extent.StartOffset
+
+    $attributes = @($Ast.FindAll(
+            {
+                $args[0] -is [System.Management.Automation.Language.AttributeAst] -and
+                $args[0].TypeName.FullName -in $script:DescriptionAttributeNames
+            },
+            $true) | Sort-Object { $_.Extent.StartOffset } -Descending)
+
+    foreach ($attribute in $attributes)
+    {
+        $start = $attribute.Extent.StartOffset - $origin
+        $end = $attribute.Extent.EndOffset - $origin
+
+        # Swallow the indentation in front of the attribute, and - when that leaves the line empty -
+        # the line break behind it, so no blank line is left where the attribute was.
+        while ($start -gt 0 -and ($text[$start - 1] -eq ' ' -or $text[$start - 1] -eq "`t"))
+        {
+            $start--
+        }
+
+        if ($start -eq 0 -or $text[$start - 1] -eq "`n")
+        {
+            if ($end -lt $text.Length -and $text[$end] -eq "`r") { $end++ }
+            if ($end -lt $text.Length -and $text[$end] -eq "`n") { $end++ }
+        }
+
+        $text = $text.Remove($start, $end - $start)
+    }
+
+    return $text
+}
+
+<#
+.SYNOPSIS
+    Returns a complex type with any inheritance from another complex type flattened away: the base
+    members are copied in and the ": Base" clause is dropped.
+
+.DESCRIPTION
+    DscClassCache cannot generate MOF for a derived complex type once the module is imported. With
+    the module absent it resolves the property type by name from the AST and treats it as an
+    embedded instance, which works; with the module imported it gets the real PowerShell class type
+    and throws "The '<property>' property with type '<type>' of DSC resource class '<class>' is not
+    supported". That breaks every in-process caller of ConvertTo-DSCObject, New-M365DSCDeltaReport
+    among them, and compiling any configuration in a session that has the module loaded.
+#>
+function Get-M365DSCFlattenedComplexText
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.Language.TypeDefinitionAst]
+        $TypeDefinition,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.IDictionary[System.String, System.Object]]
+        $ComplexTypeAst
+    )
+
+    $baseName = if ($TypeDefinition.BaseTypes.Count -gt 0) { $TypeDefinition.BaseTypes[0].TypeName.Name } else { $null }
+
+    if ([System.String]::IsNullOrEmpty($baseName) -or -not $ComplexTypeAst.ContainsKey($baseName))
+    {
+        return (Get-M365DSCEmittedText -Ast $TypeDefinition)
+    }
+
+    # Names already declared lower in the chain win, so an override is not emitted twice.
+    $seen = [System.Collections.Generic.HashSet[String]]::new([StringComparer]::OrdinalIgnoreCase)
+    $members = [System.Collections.Generic.List[String]]::new()
+
+    foreach ($member in $TypeDefinition.Members)
+    {
+        $null = $seen.Add($member.Name)
+        $members.Add((Get-M365DSCEmittedText -Ast $member))
+    }
+
+    $current = $baseName
+    while (-not [System.String]::IsNullOrEmpty($current) -and $ComplexTypeAst.ContainsKey($current))
+    {
+        $baseAst = $ComplexTypeAst[$current]
+
+        $inherited = [System.Collections.Generic.List[String]]::new()
+        foreach ($member in $baseAst.Members)
+        {
+            if (-not $seen.Add($member.Name))
+            {
+                continue
+            }
+
+            $inherited.Add((Get-M365DSCEmittedText -Ast $member))
+        }
+
+        # Base members first, so the flattened class reads the way the inheritance did.
+        $members.InsertRange(0, $inherited)
+
+        $current = if ($baseAst.BaseTypes.Count -gt 0) { $baseAst.BaseTypes[0].TypeName.Name } else { $null }
+    }
+
+    $builder = [System.Text.StringBuilder]::new()
+    [void] $builder.AppendLine("class $($TypeDefinition.Name)")
+    [void] $builder.AppendLine('{')
+
+    for ($index = 0; $index -lt $members.Count; $index++)
+    {
+        if ($index -gt 0)
+        {
+            [void] $builder.AppendLine()
+        }
+
+        foreach ($line in ($members[$index] -split '\r?\n'))
+        {
+            [void] $builder.AppendLine('    ' + $line.TrimStart())
+        }
+    }
+
+    [void] $builder.Append('}')
+
+    return $builder.ToString()
+}
+
 #endregion
 
 #region Collect
@@ -338,7 +463,7 @@ foreach ($file in $sourceFiles)
             Name       = $resourceClass.Name
             SourceFile = $file.FullName
             SourceDir  = $file.DirectoryName
-            Text       = $resourceClass.Extent.Text
+            Text       = Get-M365DSCEmittedText -Ast $resourceClass
             Helpers    = @($definition.HelperFunctions | ForEach-Object { $_.Extent.Text })
         })
 
@@ -359,7 +484,7 @@ foreach ($file in $sourceFiles)
 
         $complexByName[$complexType.Name] = [PSCustomObject] @{
             Name       = $complexType.Name
-            Text       = $complexType.Extent.Text
+            Ast        = $complexType
             Normalized = $normalized
             Source     = $file.Name
         }
@@ -416,50 +541,21 @@ $shared = [System.Text.StringBuilder]::new()
 [void] $shared.AppendLine('#region Complex types')
 [void] $shared.AppendLine('')
 
-<#
-    Name order is not enough once complex types inherit from one another: a base class must be
-    defined before the class deriving from it, in the same file. Property references still need no
-    ordering - PowerShell resolves those across the whole file - so inheritance is the only edge
-    sorted on here, name order breaking ties so the output stays stable.
-#>
-$complexBase = @{}
+$complexTypeAst = [System.Collections.Generic.Dictionary[String, Object]]::new([StringComparer]::OrdinalIgnoreCase)
 foreach ($complexType in $complexByName.Values)
 {
-    $match = [regex]::Match($complexType.Text, '(?m)^\s*class\s+[A-Za-z0-9_]+\s*:\s*(?<Base>[A-Za-z0-9_]+)')
-    if ($match.Success)
-    {
-        $complexBase[$complexType.Name] = $match.Groups['Base'].Value
-    }
+    $complexTypeAst[$complexType.Name] = $complexType.Ast
 }
 
-$orderedComplex = [System.Collections.Generic.List[Object]]::new()
-$placedComplex = [System.Collections.Generic.HashSet[String]]::new([StringComparer]::OrdinalIgnoreCase)
-
-$placeComplex = {
-    param([String] $Name)
-
-    if (-not $complexByName.ContainsKey($Name) -or -not $placedComplex.Add($Name))
-    {
-        return
-    }
-
-    $base = $complexBase[$Name]
-    if (-not [String]::IsNullOrEmpty($base))
-    {
-        & $placeComplex $base
-    }
-
-    $orderedComplex.Add($complexByName[$Name])
-}
-
+$flattened = 0
 foreach ($complexType in ($complexByName.Values | Sort-Object Name))
 {
-    & $placeComplex $complexType.Name
-}
+    if ($complexType.Ast.BaseTypes.Count -gt 0 -and $complexTypeAst.ContainsKey($complexType.Ast.BaseTypes[0].TypeName.Name))
+    {
+        $flattened++
+    }
 
-foreach ($complexType in $orderedComplex)
-{
-    [void] $shared.AppendLine($complexType.Text)
+    [void] $shared.AppendLine((Get-M365DSCFlattenedComplexText -TypeDefinition $complexType.Ast -ComplexTypeAst $complexTypeAst))
     [void] $shared.AppendLine('')
 }
 
@@ -468,6 +564,7 @@ foreach ($complexType in $orderedComplex)
 $sharedPath = Join-Path -Path $script:ClassRoot -ChildPath '_Shared.psm1'
 Set-Content -Path $sharedPath -Value $shared.ToString() -Encoding UTF8
 Write-BuildLog "Wrote $($sharedPath.Substring($RepoRoot.Length + 1)) ($([math]::Round((Get-Item $sharedPath).Length / 1KB)) KB)" -Level Detail
+Write-BuildLog "Flattened $flattened derived complex type(s)" -Level Detail
 
 # --- Part<NN>.psm1 ----------------------------------------------------------------------------
 $sortedResources = @($resourceEntries | Sort-Object Name)
@@ -740,12 +837,7 @@ foreach (`$resource in `$found)
     }
     finally
     {
-        if ($stage.IsLink -and (Test-Path -Path $stage.Link))
-        {
-            [System.IO.Directory]::Delete($stage.Link, $false)
-        }
-
-        Remove-Item -Path $stage.Root -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-M365DSCProbeStage -Stage $stage
     }
 }
 

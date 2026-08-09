@@ -326,8 +326,6 @@ class AzureRoleDefinition : M365DSCResourceBase
         }
     }
 
-    # Was Get-CompareParameters. M365DSCResourceBase declares this; the default returns
-    # GetBoundParameters().
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{

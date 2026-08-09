@@ -696,7 +696,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
-        Context -Name 'Get-CompareParameters returns correct structure' -Fixture {
+        Context -Name 'GetCompareParameters returns correct structure' -Fixture {
             It 'Should return a hashtable with IncludedProperties' {
                 $result = (New-M365DSCResourceInstance -ResourceName 'EXOSharedMailbox').GetCompareParameters()
                 $result | Should -BeOfType [System.Collections.Hashtable]

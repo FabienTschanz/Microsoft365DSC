@@ -74,18 +74,91 @@ foreach ($directory in (Get-ChildItem -Path $sourceRoot -Directory -Filter 'MSFT
 }
 
 $descriptionJson = $descriptions | ConvertTo-Json -Depth 5 -Compress
+$propertyDescriptions = @{}
+$propertyBase = @{}
+foreach ($sourceFile in (Get-ChildItem -Path $sourceRoot -Directory -Filter 'MSFT_*' |
+            ForEach-Object { Join-Path -Path $_.FullName -ChildPath "$($_.Name).psm1" } |
+            Where-Object { Test-Path -Path $_ }))
+{
+    $ast = [System.Management.Automation.Language.Parser]::ParseFile($sourceFile, [ref] $null, [ref] $null)
+
+    foreach ($typeDefinition in $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] }, $false))
+    {
+        if (-not $propertyDescriptions.ContainsKey($typeDefinition.Name))
+        {
+            $propertyDescriptions[$typeDefinition.Name] = @{}
+        }
+
+        $map = $propertyDescriptions[$typeDefinition.Name]
+
+        if ($typeDefinition.BaseTypes.Count -gt 0 -and -not $propertyBase.ContainsKey($typeDefinition.Name))
+        {
+            $propertyBase[$typeDefinition.Name] = $typeDefinition.BaseTypes[0].TypeName.Name
+        }
+
+        foreach ($member in $typeDefinition.Members)
+        {
+            if ($member -isnot [System.Management.Automation.Language.PropertyMemberAst] -or $map.ContainsKey($member.Name))
+            {
+                continue
+            }
+
+            foreach ($attribute in $member.Attributes)
+            {
+                if ($attribute.TypeName.FullName -notin @('System.ComponentModel.Description',
+                        'System.ComponentModel.DescriptionAttribute', 'Description', 'DescriptionAttribute'))
+                {
+                    continue
+                }
+
+                $argument = @($attribute.PositionalArguments)[0]
+                if ($argument -is [System.Management.Automation.Language.StringConstantExpressionAst])
+                {
+                    $map[$member.Name] = $argument.Value
+                }
+            }
+        }
+    }
+}
+
+#Fold each base class's descriptions into the classes deriving from it.
+foreach ($className in @($propertyBase.Keys))
+{
+    $chain = [System.Collections.Generic.List[String]]::new()
+    $current = $propertyBase[$className]
+    while (-not [String]::IsNullOrEmpty($current) -and $propertyDescriptions.ContainsKey($current) -and -not $chain.Contains($current))
+    {
+        $chain.Add($current)
+        $current = $propertyBase[$current]
+    }
+
+    $map = $propertyDescriptions[$className]
+    foreach ($baseName in $chain)
+    {
+        foreach ($entry in $propertyDescriptions[$baseName].GetEnumerator())
+        {
+            if (-not $map.ContainsKey($entry.Key))
+            {
+                $map[$entry.Key] = $entry.Value
+            }
+        }
+    }
+}
+
+$propertyDescriptionJson = $propertyDescriptions | ConvertTo-Json -Depth 5 -Compress
 
 $reflect = @'
-param([string] $ManifestPath, [string] $DescriptionPath)
+param([string] $ManifestPath, [string] $DescriptionPath, [string] $PropertyDescriptionPath)
 
 $ErrorActionPreference = 'Stop'
 Import-Module $ManifestPath -Force -WarningAction SilentlyContinue
 $descriptions = (Get-Content -Path $DescriptionPath -Raw) | ConvertFrom-Json
+$propertyDescriptions = (Get-Content -Path $PropertyDescriptionPath -Raw) | ConvertFrom-Json -AsHashtable
 
 $module = Get-Module -Name 'Microsoft365DSC'
 
 $payload = & $module {
-    param($descriptions)
+    param($descriptions, $propertyDescriptions)
 
     function ConvertTo-CimType
     {
@@ -125,7 +198,7 @@ $payload = & $module {
 
     function Get-ParameterInfo
     {
-        param([Type] $Type, [string[]] $ExcludeNames)
+        param([Type] $Type, [string[]] $ExcludeNames, [hashtable] $DescriptionMap = @{})
 
         $result = [System.Collections.Generic.List[Object]]::new()
 
@@ -139,6 +212,12 @@ $payload = & $module {
             $description = ''
             $validValues = $null
 
+            $declaring = $property.DeclaringType.Name
+            if ($DescriptionMap.ContainsKey($declaring) -and $DescriptionMap[$declaring].ContainsKey($property.Name))
+            {
+                $description = $DescriptionMap[$declaring][$property.Name]
+            }
+
             foreach ($attribute in $property.GetCustomAttributes($true))
             {
                 if ($attribute -is [System.Management.Automation.DscPropertyAttribute])
@@ -149,6 +228,7 @@ $payload = & $module {
                 }
                 elseif ($attribute -is [System.ComponentModel.DescriptionAttribute])
                 {
+                    # Only present when the module was built with -KeepDescriptions.
                     $description = $attribute.Description
                 }
                 elseif ($attribute -is [System.Management.Automation.ValidateSetAttribute])
@@ -191,7 +271,8 @@ $payload = & $module {
 
         $classInfo.Add([ordered] @{
                 ClassName   = $prefixed
-                Parameters  = @(Get-ParameterInfo -Type $type -ExcludeNames $baseMembers)
+                Parameters  = @(Get-ParameterInfo -Type $type -ExcludeNames $baseMembers `
+                        -DescriptionMap $propertyDescriptions)
                 Description = $(if ($descriptions.PSObject.Properties.Name -contains $prefixed) { $descriptions.$prefixed } else { '' })
             })
     }
@@ -210,13 +291,14 @@ $payload = & $module {
 
         $classInfo.Add([ordered] @{
                 ClassName   = $type.Name
-                Parameters  = @(Get-ParameterInfo -Type $type -ExcludeNames @())
+                Parameters  = @(Get-ParameterInfo -Type $type -ExcludeNames @() `
+                        -DescriptionMap $propertyDescriptions)
                 Description = ''
             })
     }
 
     return $classInfo
-} $descriptions
+} $descriptions $propertyDescriptions
 
 # -InputObject with an explicit array cast: piping a one-element collection would unroll it and
 # emit a bare JSON object, and every consumer of SchemaDefinition.json expects a top-level array.
@@ -228,24 +310,17 @@ Set-Content -Path $scriptFile -Value $reflect -Encoding UTF8
 
 try
 {
-    <#
-        Start-Process with an explicit redirect rather than `& pwsh ...`. Capturing a native
-        command's output makes PowerShell set StandardOutputEncoding on the child, which throws
-        "StandardOutputEncoding is only supported when standard output is redirected" in any host
-        that does not own a console - CI agents and automation harnesses included. Redirecting to a
-        file works everywhere.
-
-        The descriptions go through a file, not an argument. They are the readme text for 535
-        resources - well past the command-line length limit, which surfaces as
-        "The filename or extension is too long".
-    #>
     $descriptionFile = "$scriptFile.desc.json"
     Set-Content -Path $descriptionFile -Value $descriptionJson -Encoding UTF8
+
+    $propertyDescriptionFile = "$scriptFile.propdesc.json"
+    Set-Content -Path $propertyDescriptionFile -Value $propertyDescriptionJson -Encoding UTF8
 
     $outputFile = "$scriptFile.out"
     $process = Start-Process -FilePath 'pwsh' -PassThru -Wait -NoNewWindow -RedirectStandardOutput $outputFile `
         -ArgumentList @('-NoProfile', '-NonInteractive', '-File', $scriptFile,
-                        '-ManifestPath', $manifestPath, '-DescriptionPath', $descriptionFile)
+                        '-ManifestPath', $manifestPath, '-DescriptionPath', $descriptionFile,
+                        '-PropertyDescriptionPath', $propertyDescriptionFile)
 
     $json = if (Test-Path -Path $outputFile) { Get-Content -Path $outputFile } else { $null }
 
@@ -270,5 +345,6 @@ try
 }
 finally
 {
-    Remove-Item -Path $scriptFile -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $scriptFile, "$scriptFile.desc.json", "$scriptFile.propdesc.json", "$scriptFile.out" `
+        -Force -ErrorAction SilentlyContinue
 }

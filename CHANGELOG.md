@@ -147,11 +147,12 @@
   * Fixed hashtable-valued properties never resolving in a relation, because they were
     walked as a sequence instead of read as an object.
   * Fixed relation resolution aborting the whole export when a property had an unexpected
-    type; the relation is now skipped and reported as verbose output.
+    type. The relation is now skipped and reported as verbose output.
   * Fixed an issue where relations were always resolved instead of only when
     `Export-M365DSCConfiguration` is called with `-IncludeDependencies`.
   * Fixed the relation templates failing to parse on Windows PowerShell, which prevented
     the module from being imported on that edition.
+  * Updated `Get-CompareParameters` to class method and replaced all usages with class method calls.
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
   * Updated all DSC resources from script-based to class-based.
 

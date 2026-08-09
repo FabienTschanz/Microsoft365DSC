@@ -26,7 +26,7 @@
         },
         @{
             ModuleName      = 'DSCParser'
-            RequiredVersion = '3.0.0.5'
+            RequiredVersion = '3.1.0.0'
         },
         @{
             ModuleName      = 'ExchangeOnlineManagement'
@@ -34,7 +34,7 @@
         },
         @{
             ModuleName      = 'M365DSC.mgx'
-            RequiredVersion = '2.0.0'
+            RequiredVersion = '2.0.1'
             PowerShellCore  = $true
         },
         @{

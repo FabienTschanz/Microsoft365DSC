@@ -47,7 +47,6 @@ nav:
           - 'Confirm-M365DSCModuleDependency': 'user-guide/cmdlets/Confirm-M365DSCModuleDependency.md'
           - 'Export-M365DSCConfiguration': 'user-guide/cmdlets/Export-M365DSCConfiguration.md'
           - 'Export-M365DSCDiagnosticData': 'user-guide/cmdlets/Export-M365DSCDiagnosticData.md'
-          - 'Compare-M365DSCConfigurations': 'user-guide/cmdlets/Compare-M365DSCConfigurations.md'
           - 'Get-M365DSCAllResources': 'user-guide/cmdlets/Get-M365DSCAllResources.md'
           - 'Get-M365DSCCompiledPermissionList': 'user-guide/cmdlets/Get-M365DSCCompiledPermissionList.md'
           - 'Get-M365DSCConfigurationConflict': 'user-guide/cmdlets/Get-M365DSCConfigurationConflict.md'

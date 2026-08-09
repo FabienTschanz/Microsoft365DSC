@@ -621,17 +621,7 @@ function Test-M365DSCTargetResource
     }
 
     # Retrieve the primary keys of the given resource and remove them from the list of values to check.
-    $currentPath = $PSScriptRoot
-    if (-not [Microsoft365DSC.Cache.CacheManager]::IsSchemaLoaded)
-    {
-        $schemaPath = Join-Path -Path $currentPath -ChildPath '../SchemaDefinition.json'
-        if (-not (Test-Path -Path $schemaPath))
-        {
-            throw "SchemaDefinition.json not found at expected path: $schemaPath. Ensure that the schema was properly included during module build and that the module is not being run from a non-standard location."
-        }
-        $schemaContent = [System.IO.File]::ReadAllText($schemaPath) | ConvertFrom-Json
-        [Microsoft365DSC.Cache.CacheManager]::LoadSchema($schemaContent)
-    }
+    Initialize-M365DSCSchemaCache
     $resourceDefinition = [Microsoft365DSC.Cache.CacheManager]::FilterLoadedCimClassesByName("MSFT_$ResourceName")
     $resourceKeys = $resourceDefinition.Parameters | Where-Object -Property Option -EQ 'Key'
 
@@ -745,13 +735,217 @@ function Initialize-M365DSCAllResourcesDictionary
     if ($null -eq $Script:AllM365DSCResources -and -not $Global:IsTestEnvironment)
     {
         $Script:AllM365DSCResources = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::InvariantCultureIgnoreCase)
-        $resources = Get-DscResourceV2 -Module 'Microsoft365DSC' | Where-Object ImplementationDetail -EQ 'ClassBased'
 
-        foreach ($resource in $resources)
+        foreach ($resource in (Get-M365DSCResourceSchema))
         {
             $Script:AllM365DSCResources.Add($resource.Name, $resource)
         }
     }
+}
+
+<#
+.SYNOPSIS
+    Loads SchemaDefinition.json into the process-wide schema cache.
+
+.DESCRIPTION
+    No-op once the cache holds a schema. The cache lives in Microsoft365DSC.Cache.CacheManager, so
+    it is shared with every other caller in the process.
+
+.FUNCTIONALITY
+    Internal
+#>
+function Initialize-M365DSCSchemaCache
+{
+    [CmdletBinding()]
+    param()
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+
+    if ([Microsoft365DSC.Cache.CacheManager]::IsSchemaLoaded)
+    {
+        return
+    }
+
+    $schemaPath = Join-Path -Path $PSScriptRoot -ChildPath '../SchemaDefinition.json'
+    if (-not (Test-Path -Path $schemaPath))
+    {
+        throw "SchemaDefinition.json not found at expected path: $schemaPath. Ensure that the schema was properly included during module build and that the module is not being run from a non-standard location."
+    }
+
+    $schemaContent = [System.IO.File]::ReadAllText($schemaPath) | ConvertFrom-Json
+    [Microsoft365DSC.Cache.CacheManager]::LoadSchema($schemaContent)
+}
+
+<#
+.SYNOPSIS
+    Converts a MOF type name into the PowerShell type name DSC discovery reports.
+
+.DESCRIPTION
+    SchemaDefinition.json stores MOF types ('String', 'SInt32', 'MSFT_Credential'), while
+    Get-DscResourceV2 reports PowerShell type names in brackets ('[string]', '[int]'). Callers
+    consume the latter, so schema-sourced metadata is translated here.
+
+.PARAMETER CimType
+    Specifies the MOF type name, with a trailing '[]' for arrays.
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.String
+#>
+function ConvertFrom-M365DSCCimType
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [System.String]
+        $CimType
+    )
+
+    $isArray = $CimType.EndsWith('[]')
+    $bare = if ($isArray) { $CimType.Substring(0, $CimType.Length - 2) } else { $CimType }
+
+    $mapped = switch ($bare)
+    {
+        'String' { 'string' }
+        'Boolean' { 'bool' }
+        'DateTime' { 'datetime' }
+        'SInt16' { 'int16' }
+        'SInt32' { 'Int32' }
+        'SInt64' { 'long' }
+        'UInt16' { 'uint16' }
+        'UInt32' { 'uint32' }
+        'UInt64' { 'uint64' }
+        'Real64' { 'double' }
+        'MSFT_Credential' { 'PSCredential' }
+        default { $bare }
+    }
+
+    if ($isArray)
+    {
+        return "[$mapped[]]"
+    }
+
+    return "[$mapped]"
+}
+
+<#
+.SYNOPSIS
+    Returns resource metadata from SchemaDefinition.json.
+
+.DESCRIPTION
+    Drop-in replacement for the Name/Properties part of Get-DscResourceV2 -Module 'Microsoft365DSC'.
+    Discovery has to run the PowerShell parser over every generated class file and generate MOF for
+    each class in them, which costs seconds per call; the same information ships with the module in
+    SchemaDefinition.json and is already cached in process.
+
+    Which classes are resources comes from the manifest's DscResourcesToExport: complex types carry
+    the same MSFT_ prefix in the schema, so the name alone cannot tell them apart.
+
+.PARAMETER ResourceName
+    Limits the result to one resource, without the MSFT_ prefix. Returns nothing when unknown.
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.Object[]
+#>
+function Get-M365DSCResourceSchema
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $ResourceName
+    )
+
+    Initialize-M365DSCSchemaCache
+
+    if ($null -eq $Script:M365DSCManifestPath)
+    {
+        $Script:M365DSCManifestPath = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Microsoft365DSC.psd1')).Path
+    }
+
+    if ($PSBoundParameters.ContainsKey('ResourceName'))
+    {
+        $names = @($ResourceName)
+    }
+    else
+    {
+        if ($null -eq $Script:M365DSCExportedResourceNames)
+        {
+            $Script:M365DSCExportedResourceNames = @((Import-PowerShellDataFile -Path $Script:M365DSCManifestPath).DscResourcesToExport)
+        }
+
+        $names = $Script:M365DSCExportedResourceNames
+    }
+
+    $result = [System.Collections.Generic.List[Object]]::new()
+
+    foreach ($name in $names)
+    {
+        $definition = [Microsoft365DSC.Cache.CacheManager]::FilterLoadedCimClassesByName("MSFT_$name")
+        if ($null -eq $definition)
+        {
+            continue
+        }
+
+        $properties = @($definition['Parameters'] | ForEach-Object {
+                [PSCustomObject] @{
+                    Name         = $_['Name']
+                    PropertyType = ConvertFrom-M365DSCCimType -CimType ([System.String] $_['CIMType'])
+                    IsMandatory  = $_['Option'] -in @('Key', 'Required')
+                    Values       = [System.String[]] @($_['Values'])
+                    Option       = $_['Option']
+                    Description  = $_['Description']
+                }
+            })
+
+        # DSC injects these two into every resource keyword, so discovery reports them and the
+        # schema does not. Configurations do use DependsOn, and callers that validate property
+        # names against this list would reject it.
+        $properties += @(
+            [PSCustomObject] @{
+                Name         = 'DependsOn'
+                PropertyType = '[string[]]'
+                IsMandatory  = $false
+                Values       = [System.String[]] @()
+                Option       = 'Write'
+                Description  = ''
+            },
+            [PSCustomObject] @{
+                Name         = 'PsDscRunAsCredential'
+                PropertyType = '[PSCredential]'
+                IsMandatory  = $false
+                Values       = [System.String[]] @()
+                Option       = 'Write'
+                Description  = ''
+            })
+
+        # Typed return to mimic Get-DscResourceV2 returns without calling it
+        $result.Add([PSCustomObject] @{
+                Name                 = $name
+                ResourceType         = "MSFT_$name"
+                FriendlyName         = $null
+                CompanyName          = 'Microsoft Corporation'
+                Module               = $null
+                Path                 = $Script:M365DSCManifestPath
+                ParentPath           = Split-Path -Path $Script:M365DSCManifestPath -Parent
+                ImplementedAs        = 'PowerShell'
+                ImplementationDetail = 'ClassBased'
+                Properties           = $properties
+                Description          = $definition['Description']
+            })
+    }
+
+    return $result.ToArray()
 }
 
 <#
@@ -1756,7 +1950,7 @@ function New-M365DSCResourceExample
         $ResourceName
     )
 
-    $resource = Get-DscResourceV2 -Name $ResourceName
+    $resource = Get-DscResourceV2 -Name $ResourceName -Module 'Microsoft365DSC'
     $params = Get-DSCFakeParameters -ModulePath $resource.Path
     $params.Credential = '$Credscredential'
 
@@ -2003,10 +2197,9 @@ function Get-M365DSCConfigurationConflict
     $parsedContent = ConvertTo-DSCObject -Content $ConfigurationContent
 
     $resourcesPrimaryIdentities = @()
-    $resourcesInModule = Get-DscResourceV2 -Module 'Microsoft365DSC'
     foreach ($component in $parsedContent)
     {
-        $resourceDefinition = $resourcesInModule | Where-Object -Property Name -EQ $component.ResourceName
+        $resourceDefinition = $Script:AllM365DSCResources[$component.ResourceName]
         [Array]$mandatoryProperties = $resourceDefinition.Properties | Where-Object -Property IsMandatory -EQ $true
         $primaryKeyValues = ''
         foreach ($mandatoryKey in $mandatoryProperties.Name)
@@ -2453,80 +2646,12 @@ function Invoke-M365DSCGraphBatchRequest
 
 <#
 .SYNOPSIS
-    Returns comparison metadata for a resource.
-
-.DESCRIPTION
-    Loads and caches comparison metadata from ComparisonMetadata.json and returns metadata for the requested resource.
-
-.PARAMETER ResourceName
-    Specifies the resource name to retrieve metadata for.
-
-.EXAMPLE
-    PS> Get-M365DSCResourceComparisonMetadata -ResourceName 'AADRoleAssignmentScheduleRequest'
-
-.FUNCTIONALITY
-    Internal
-
-.OUTPUTS
-    System.Collections.Hashtable
-#>
-function Get-M365DSCResourceComparisonMetadata
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResourceName
-    )
-
-    if ($null -eq $Script:M365DSCComparisonMetadata)
-    {
-        $metadataPath = Join-Path -Path $PSScriptRoot -ChildPath '../ComparisonMetadata.json'
-        if (Test-Path -Path $metadataPath)
-        {
-            try
-            {
-                $metadataContent = [System.IO.File]::ReadAllText($metadataPath) | ConvertFrom-Json
-                $Script:M365DSCComparisonMetadata = @{}
-                foreach ($resource in $metadataContent.Resources.PSObject.Properties)
-                {
-                    $Script:M365DSCComparisonMetadata[$resource.Name] = @{
-                        HasCustomComparison = $resource.Value.HasCustomComparison
-                        Description         = $resource.Value.Description
-                    }
-                }
-            }
-            catch
-            {
-                Write-Warning -Message "Failed to load comparison metadata from $metadataPath : $_"
-                $Script:M365DSCComparisonMetadata = @{}
-            }
-        }
-        else
-        {
-            Write-Verbose -Message "Comparison metadata file not found at $metadataPath"
-            $Script:M365DSCComparisonMetadata = @{}
-        }
-    }
-
-    if ($Script:M365DSCComparisonMetadata.ContainsKey($ResourceName))
-    {
-        return $Script:M365DSCComparisonMetadata[$ResourceName]
-    }
-
-    return @{
-        HasCustomComparison = $false
-    }
-}
-
-<#
-.SYNOPSIS
     Retrieves custom comparison parameters for a resource.
 
 .DESCRIPTION
-    Loads the resource module when needed, invokes Get-CompareParameters when available, and caches returned compare parameters.
+    Returns the resource's GetCompareParameters() override so that reporting compares the same way
+    Test() does. Resources without an override return an empty hashtable. Results are cached per
+    resource.
 
 .PARAMETER ResourceName
     Specifies the resource name to retrieve compare parameters for.
@@ -2551,74 +2676,28 @@ function Get-M365DSCResourceComparisonParameters
         $ResourceName
     )
 
+    if ($null -eq $Script:CompareParametersCache)
+    {
+        $Script:CompareParametersCache = @{}
+    }
+
+    if ($Script:CompareParametersCache.ContainsKey($ResourceName))
+    {
+        return $Script:CompareParametersCache[$ResourceName]
+    }
+
     $compareParameters = @{}
 
     try
     {
-        # Check if this resource has custom comparison logic
-        $metadata = Get-M365DSCResourceComparisonMetadata -ResourceName $ResourceName
-
-        if (-not $metadata.HasCustomComparison)
-        {
-            Write-Verbose -Message "Resource $ResourceName does not have custom comparison logic."
-            return $compareParameters
-        }
-
-        # Import the resource module if not already loaded
-        $moduleName = "MSFT_$ResourceName"
-        $module = Get-Module -Name $moduleName
-        $moduleConfig = Get-M365DSCModuleConfiguration
-
-        if ($null -eq $module)
-        {
-            $resourceModulePath = Join-Path -Path $PSScriptRoot -ChildPath "../DscResources/$moduleName/$moduleName.psm1"
-            if (Test-Path -Path $resourceModulePath)
-            {
-                $previousValue = $moduleConfig.skipModuleDependencyValidation
-                if (-not $metadata.RequiresModuleCheck)
-                {
-                    Set-M365DSCModuleConfiguration -Key 'skipModuleDependencyValidation' -Value $true
-                }
-                Import-Module -Name $resourceModulePath -Force -Global -Function Get-CompareParameters -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking
-                Set-M365DSCModuleConfiguration -Key 'skipModuleDependencyValidation' -Value $previousValue
-                Write-Verbose -Message "Imported module $moduleName from $resourceModulePath"
-            }
-            else
-            {
-                Write-Warning -Message "Resource module not found at $resourceModulePath"
-                return $compareParameters
-            }
-        }
-
-        if ($null -eq $Script:CompareParametersCache)
-        {
-            $Script:CompareParametersCache = @{}
-        }
-
-        if ($Script:CompareParametersCache.ContainsKey($ResourceName))
-        {
-            return $Script:CompareParametersCache[$ResourceName]
-        }
-
-        # Check if the Get-CompareParameters function exists
-        $getCompareParamsCommand = Get-Command -Name "$moduleName\Get-CompareParameters" -ErrorAction SilentlyContinue
-
-        if ($null -eq $getCompareParamsCommand)
-        {
-            Write-Warning -Message "Resource $ResourceName is marked as having custom comparison, but Get-CompareParameters function not found."
-            return $compareParameters
-        }
-
-        # Invoke the Get-CompareParameters function
-        $compareParameters = & "$moduleName\Get-CompareParameters"
-
-        # Cache the retrieved parameters
-        $Script:CompareParametersCache[$ResourceName] = $compareParameters
+        $compareParameters = Get-M365DSCResourceCompareParameters -ResourceName $ResourceName
     }
     catch
     {
         Write-Warning -Message "Failed to retrieve comparison parameters for $ResourceName : $_"
     }
+
+    $Script:CompareParametersCache[$ResourceName] = $compareParameters
 
     return $compareParameters
 }
@@ -3163,13 +3242,14 @@ Export-ModuleMember -Function @(
     'Get-M365DSCGroupDisplayNameById',
     'Get-M365DSCGroupIdByDisplayName',
     'Get-M365DSCResourceDifferences',
-    'Get-M365DSCResourceComparisonMetadata',
+    'Get-M365DSCResourceSchema',
     'Get-M365DSCResourceComparisonParameters',
     'Get-M365DSCUserIdByPrincipalName',
     'Get-M365DSCUserPrincipalNameById',
     'Get-M365DSCWorkloadForResource',
     'Get-TeamByName',
     'Initialize-M365DSCAllResourcesDictionary',
+    'Initialize-M365DSCSchemaCache',
     'Initialize-PowerShellCoreSession',
     'Initialize-WindowsPowerShellSession',
     'Install-M365DSCDevBranch',

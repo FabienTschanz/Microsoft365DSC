@@ -41,6 +41,10 @@ jobs:
         shell: pwsh
         run: |
           & ./Utilities/Build-DllFiles.ps1 -Configuration Release
+      - name: Trim Build-Only Sources
+        shell: pwsh
+        run: |
+          & ./Utilities/Remove-M365DSCBuildOnlySource.ps1 -Confirm:$false
       - name: Publish
         shell: powershell
         env:
