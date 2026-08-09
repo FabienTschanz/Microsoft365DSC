@@ -121,8 +121,11 @@
 * M365DSCModuleMgmt
   * Added automatic dependency update for both Windows PowerShell and PowerShell 7.
 * DEPENDENCIES
-  * Added `Mgx` with version 1.0.2.
+  * Added `Mgx` with version 2.0.3.
+  * Updated `DSCParser` to version 3.1.0.0.
+  * Updated `MSCloudLoginAssistant` to version 1.2.0.
   * Updated `PnP.PowerShell` to version 3.3.0.
+  * Updated `ReverseDSC` to version 2.0.35.
 * MISC
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.

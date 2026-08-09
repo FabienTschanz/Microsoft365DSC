@@ -277,9 +277,64 @@ $payload = & $module {
             })
     }
 
-    # --- complex types: everything else declared in _Shared.psm1's parse unit ---
+    <#
+        --- complex types ---
+
+        PowerShell emits one dynamic assembly per module, so the complex types are spread over the
+        Classes/_Types<NN>.psm1 assemblies and none of them is [M365DSCResourceBase]'s. Reach them
+        by following property types out of the resource classes and on through the complex types
+        they embed, collecting assemblies until nothing new turns up. Then enumerate those whole,
+        so a type that only some other complex type embeds is still picked up.
+    #>
     $infrastructure = @('M365DSCResourceBase', 'M365DSCResourceInfo')
-    foreach ($type in ([M365DSCResourceBase].Assembly.GetTypes() | Sort-Object Name))
+
+    $seed = [System.Collections.Generic.List[Type]]::new()
+    foreach ($name in [M365DSCResourceBase]::GetRegisteredNames())
+    {
+        $seed.Add([M365DSCResourceBase]::Resolve($name))
+    }
+
+    $assemblies = [System.Collections.Generic.HashSet[System.Reflection.Assembly]]::new()
+    $pending = [System.Collections.Generic.Queue[Type]]::new()
+    $visited = [System.Collections.Generic.HashSet[Type]]::new()
+
+    foreach ($type in $seed)
+    {
+        $pending.Enqueue($type)
+    }
+
+    while ($pending.Count -gt 0)
+    {
+        $current = $pending.Dequeue()
+        if (-not $visited.Add($current))
+        {
+            continue
+        }
+
+        foreach ($property in $current.GetProperties())
+        {
+            $candidate = if ($property.PropertyType.IsArray) { $property.PropertyType.GetElementType() } else { $property.PropertyType }
+
+            if (-not $candidate.IsClass -or $candidate.Name -notlike 'MSFT_*')
+            {
+                continue
+            }
+
+            if ($assemblies.Add($candidate.Assembly))
+            {
+                foreach ($sibling in $candidate.Assembly.GetTypes())
+                {
+                    $pending.Enqueue($sibling)
+                }
+            }
+
+            $pending.Enqueue($candidate)
+        }
+    }
+
+    $complexTypes = @($assemblies | ForEach-Object { $_.GetTypes() } | Sort-Object Name)
+
+    foreach ($type in $complexTypes)
     {
         if ($type.Name -in $infrastructure) { continue }
         if ($type.IsEnum) { continue }

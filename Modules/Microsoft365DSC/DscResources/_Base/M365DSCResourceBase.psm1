@@ -7,11 +7,11 @@ using namespace System.Reflection
 <#
     Shared foundation for all Microsoft365DSC class-based resources.
 
-    This file is SOURCE ONLY. It is emitted verbatim, ahead of every resource class, into the
-    generated root module (Modules/Microsoft365DSC/Microsoft365DSC.psm1) by
-    Utilities/Build-Microsoft365DSC.ps1. It is never imported on its own: PowerShell classes do
-    not cross module boundaries, and DSC only parses RootModule plus one level of NestedModules
-    when looking for [DscResource()] classes.
+    This file is SOURCE ONLY. Utilities/Build-Microsoft365DSC.ps1 emits it verbatim into
+    Modules/Microsoft365DSC/Classes/_Shared.psm1, which every generated Part<NN>.psm1 opens with
+    `using module`. It is never imported on its own: PowerShell classes do not cross module
+    boundaries, and DSC only parses RootModule plus one level of NestedModules when looking for
+    [DscResource()] classes.
 
     IMPORTANT - this file must never gain top-level executable code.
 

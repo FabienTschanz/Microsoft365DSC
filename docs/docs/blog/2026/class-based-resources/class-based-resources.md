@@ -221,7 +221,8 @@ flowchart LR
     end
     BUILD["Build-Microsoft365DSC.ps1<br/>(AST extraction, dedup, ordering)"]
     subgraph Shipped["Generated (shipped in the module)"]
-        S["Classes/_Shared.psm1<br/>base class + all complex types"]
+        S["Classes/_Shared.psm1<br/>base class + factory"]
+        T["Classes/_Types00..NN.psm1<br/>complex types, one bucket per component group"]
         P0["Classes/Part00.psm1"]
         P1["Classes/Part01.psm1"]
         PN["... one part per workload ..."]
@@ -232,6 +233,7 @@ flowchart LR
     R3 --> BUILD
     B --> BUILD
     BUILD --> S
+    BUILD --> T
     BUILD --> P0
     BUILD --> P1
     BUILD --> PN
@@ -239,6 +241,9 @@ flowchart LR
     P0 -. "using module" .-> S
     P1 -. "using module" .-> S
     PN -. "using module" .-> S
+    P0 -. "using module" .-> T
+    P1 -. "using module" .-> T
+    PN -. "using module" .-> T
 ```
 
 The per-resource source files stay in git, so diffs, history and pull requests remain per-resource, exactly as before. Only the shipped part files are generated. If you contribute a resource, you still edit one file in one folder - the build system does the rest.

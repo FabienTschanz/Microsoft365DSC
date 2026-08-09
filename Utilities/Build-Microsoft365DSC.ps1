@@ -8,7 +8,8 @@
     Reads the per-resource source files under Modules/Microsoft365DSC/DscResources/MSFT_*/ and emits
     the class files the shipped module actually loads:
 
-        Modules/Microsoft365DSC/Classes/_Shared.psm1     base class, factory, every complex type
+        Modules/Microsoft365DSC/Classes/_Shared.psm1     base class and factory
+        Modules/Microsoft365DSC/Classes/_Types<NN>.psm1  the complex types, bucketed
         Modules/Microsoft365DSC/Classes/Part<NN>.psm1    the [DscResource()] classes, bucketed
 
     then wires both into Microsoft365DSC.psd1 and regenerates SchemaDefinition.json from class
@@ -21,8 +22,14 @@
         totals to about ~10% of the import time. Everything else is creating the typed classes.
         Having several different parse units improves import time, but only up to ~16 parts.
 
-      - Class types do not cross module boundaries, so each part must open with
-        `using module .\_Shared.psm1` to see the base class and the complex types.
+      - Class types do not cross module boundaries, and `using module` does not re-export what the
+        module it names imported in turn. So each part opens with `using module .\_Shared.psm1` for
+        the base class plus one `using module .\_Types<NN>.psm1` per complex-type bucket it
+        references.
+
+      - The complex-type buckets never reference each other. DscClassCache resolves an embedded
+        type only inside one parse unit, so a bucket holds whole connected components of the
+        reference graph - see Get-M365DSCConnectedComponent.
 
       - Because the parts are separate modules, no single scope can resolve every resource class
         with `$Name -as [System.Type]`. Each part therefore ends with
@@ -40,6 +47,12 @@
     from 8 upwards and 16 sits inside the noise band of 12 to 32; below 8 it climbs steeply, and
     48 starts to regress. Re-measure with Utilities/Measure-M365DSCLoadPerformance.ps1 before
     changing it.
+
+.PARAMETER TypeBucketCount
+    Number of _Types<NN>.psm1 files to spread the complex types across. All of them in one parse
+    unit costs about 25-30% of import time. Having eight buckets brings that to ~15% and the per-bucket
+    times are flat, so the superlinearity is per parse unit and not per session. Re-measure with
+    Utilities/Measure-M365DSCLoadPerformance.ps1 before changing it.
 
 .PARAMETER KeepDescriptions
     Emit the [System.ComponentModel.Description()] attributes into the generated files. They are
@@ -77,6 +90,11 @@ param
     [ValidateRange(1, 64)]
     [System.Int32]
     $BucketCount = 16,
+
+    [Parameter()]
+    [ValidateRange(1, 64)]
+    [System.Int32]
+    $TypeBucketCount = 8,
 
     [Parameter()]
     [Switch]
@@ -408,6 +426,165 @@ function Get-M365DSCFlattenedComplexText
     return $builder.ToString()
 }
 
+<#
+.SYNOPSIS
+    Returns every type name a type reference mentions, with array and generic wrappers unwrapped.
+#>
+function Get-M365DSCReferencedName
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.Language.ITypeName]
+        $TypeName
+    )
+
+    if ($TypeName -is [System.Management.Automation.Language.ArrayTypeName])
+    {
+        return (Get-M365DSCReferencedName -TypeName $TypeName.ElementType)
+    }
+
+    if ($TypeName -is [System.Management.Automation.Language.GenericTypeName])
+    {
+        $names = [System.Collections.Generic.List[String]]::new()
+        $names.Add($TypeName.TypeName.Name)
+        foreach ($argument in $TypeName.GenericArguments)
+        {
+            $names.AddRange([System.String[]] (Get-M365DSCReferencedName -TypeName $argument))
+        }
+        return $names.ToArray()
+    }
+
+    return @($TypeName.Name)
+}
+
+<#
+.SYNOPSIS
+    Returns the complex types a block of generated code refers to.
+
+.DESCRIPTION
+    Drives both the dependency order of the _Types<NN>.psm1 buckets and the `using module` lines a
+    bucket or a part needs. Reads the emitted text rather than the source AST, because inheritance
+    is flattened on the way out and that moves property types between classes.
+#>
+function Get-M365DSCComplexReference
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [System.String]
+        $Text,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.IDictionary[System.String, System.Object]]
+        $ComplexType,
+
+        [Parameter()]
+        [System.String]
+        $Exclude
+    )
+
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($Text, [ref] $null, [ref] $null)
+
+    $references = $ast.FindAll(
+        {
+            $args[0] -is [System.Management.Automation.Language.TypeConstraintAst] -or
+            $args[0] -is [System.Management.Automation.Language.TypeExpressionAst]
+        },
+        $true)
+
+    $found = [System.Collections.Generic.HashSet[String]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($reference in $references)
+    {
+        foreach ($name in (Get-M365DSCReferencedName -TypeName $reference.TypeName))
+        {
+            if ($name -eq $Exclude -or -not $ComplexType.ContainsKey($name))
+            {
+                continue
+            }
+
+            $null = $found.Add($ComplexType[$name].Name)
+        }
+    }
+
+    return [System.String[]] $found
+}
+
+<#
+.SYNOPSIS
+    Returns name -> connected component id over the undirected reference graph.
+
+.DESCRIPTION
+    DscClassCache resolves an embedded complex type only against the classes in the same parse
+    unit. `using module` does not widen what it looks at, and the fallback is the loaded CLR type,
+    which it rejects with "The '<property>' property with type '<type>' of DSC resource class
+    '<class>' is not supported" - the same wall Get-M365DSCFlattenedComplexText works around for
+    inheritance. So two complex types that reference each other, in either direction, have to be
+    emitted into one _Types<NN>.psm1 and no bucket may reference another.
+#>
+function Get-M365DSCConnectedComponent
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Generic.Dictionary[System.String, System.Int32]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Generic.IDictionary[System.String, System.Object]]
+        $Dependency
+    )
+
+    $adjacency = [System.Collections.Generic.Dictionary[String, System.Collections.Generic.HashSet[String]]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($name in $Dependency.Keys)
+    {
+        $adjacency[$name] = [System.Collections.Generic.HashSet[String]]::new([StringComparer]::OrdinalIgnoreCase)
+    }
+
+    foreach ($name in $Dependency.Keys)
+    {
+        foreach ($other in @($Dependency[$name]))
+        {
+            $null = $adjacency[$name].Add($other)
+            $null = $adjacency[$other].Add($name)
+        }
+    }
+
+    $component = [System.Collections.Generic.Dictionary[String, System.Int32]]::new([StringComparer]::OrdinalIgnoreCase)
+    $next = 0
+
+    foreach ($root in ($Dependency.Keys | Sort-Object))
+    {
+        if ($component.ContainsKey($root))
+        {
+            continue
+        }
+
+        $component[$root] = $next
+        $stack = [System.Collections.Generic.Stack[String]]::new()
+        $stack.Push($root)
+
+        while ($stack.Count -gt 0)
+        {
+            foreach ($neighbour in $adjacency[$stack.Pop()])
+            {
+                if (-not $component.ContainsKey($neighbour))
+                {
+                    $component[$neighbour] = $next
+                    $stack.Push($neighbour)
+                }
+            }
+        }
+
+        $next++
+    }
+
+    return $component
+}
+
 #endregion
 
 #region Collect
@@ -525,22 +702,24 @@ else
     $null = New-Item -Path $script:ClassRoot -ItemType Directory -Force
 }
 
+$generatedFiles = [System.Collections.Generic.List[String]]::new()
+
 # --- _Shared.psm1 -----------------------------------------------------------------------------
-# Order matters inside one parse unit: the base class first, then the factory that references it,
-# then the complex types. Complex types are emitted in name order rather than dependency order -
-# PowerShell resolves class property types across a whole file, so forward references between them
-# are fine, which the full-scale spike confirmed at ~470 types.
+# Order matters inside one parse unit: the base class first, then the factory that references it.
 $shared = [System.Text.StringBuilder]::new()
 [void] $shared.AppendLine('# GENERATED FILE - do not edit.')
-[void] $shared.AppendLine('# Produced by Utilities/Build-Microsoft365DSC.ps1 from DscResources/_Base and DscResources/MSFT_*.')
+[void] $shared.AppendLine('# Produced by Utilities/Build-Microsoft365DSC.ps1 from DscResources/_Base.')
 [void] $shared.AppendLine('')
 [void] $shared.AppendLine((Get-Content -Path (Join-Path $script:BaseRoot 'M365DSCResourceBase.psm1') -Raw))
 [void] $shared.AppendLine('')
 [void] $shared.AppendLine((Get-Content -Path (Join-Path $script:BaseRoot 'M365DSCResourceFactory.psm1') -Raw))
-[void] $shared.AppendLine('')
-[void] $shared.AppendLine('#region Complex types')
-[void] $shared.AppendLine('')
 
+$sharedPath = Join-Path -Path $script:ClassRoot -ChildPath '_Shared.psm1'
+Set-Content -Path $sharedPath -Value $shared.ToString() -Encoding UTF8
+$generatedFiles.Add('Classes/_Shared.psm1')
+Write-BuildLog "Wrote $($sharedPath.Substring($RepoRoot.Length + 1)) ($([math]::Round((Get-Item $sharedPath).Length / 1KB)) KB)" -Level Detail
+
+# --- _Types<NN>.psm1 --------------------------------------------------------------------------
 $complexTypeAst = [System.Collections.Generic.Dictionary[String, Object]]::new([StringComparer]::OrdinalIgnoreCase)
 foreach ($complexType in $complexByName.Values)
 {
@@ -548,6 +727,7 @@ foreach ($complexType in $complexByName.Values)
 }
 
 $flattened = 0
+$complexText = [System.Collections.Generic.Dictionary[String, String]]::new([StringComparer]::OrdinalIgnoreCase)
 foreach ($complexType in ($complexByName.Values | Sort-Object Name))
 {
     if ($complexType.Ast.BaseTypes.Count -gt 0 -and $complexTypeAst.ContainsKey($complexType.Ast.BaseTypes[0].TypeName.Name))
@@ -555,24 +735,109 @@ foreach ($complexType in ($complexByName.Values | Sort-Object Name))
         $flattened++
     }
 
-    [void] $shared.AppendLine((Get-M365DSCFlattenedComplexText -TypeDefinition $complexType.Ast -ComplexTypeAst $complexTypeAst))
-    [void] $shared.AppendLine('')
+    $complexText[$complexType.Name] = Get-M365DSCFlattenedComplexText -TypeDefinition $complexType.Ast `
+        -ComplexTypeAst $complexTypeAst
 }
 
-[void] $shared.AppendLine('#endregion')
+$complexDependency = [System.Collections.Generic.Dictionary[String, Object]]::new([StringComparer]::OrdinalIgnoreCase)
+foreach ($name in $complexText.Keys)
+{
+    $complexDependency[$name] = @(Get-M365DSCComplexReference -Text $complexText[$name] `
+            -ComplexType $complexByName `
+            -Exclude $name)
+}
 
-$sharedPath = Join-Path -Path $script:ClassRoot -ChildPath '_Shared.psm1'
-Set-Content -Path $sharedPath -Value $shared.ToString() -Encoding UTF8
-Write-BuildLog "Wrote $($sharedPath.Substring($RepoRoot.Length + 1)) ($([math]::Round((Get-Item $sharedPath).Length / 1KB)) KB)" -Level Detail
+# Whole components per bucket, so no bucket ever has to reference another.
+$complexComponent = Get-M365DSCConnectedComponent -Dependency $complexDependency
+
+$componentMembers = @{}
+foreach ($name in ($complexText.Keys | Sort-Object))
+{
+    $id = $complexComponent[$name]
+    if (-not $componentMembers.ContainsKey($id))
+    {
+        $componentMembers[$id] = [System.Collections.Generic.List[String]]::new()
+    }
+
+    $componentMembers[$id].Add($name)
+}
+
+$orderedComponents = @($componentMembers.Keys | Sort-Object @{ Expression = { $componentMembers[$_][0] } })
+
+$effectiveTypeBuckets = [System.Math]::Min($TypeBucketCount, $componentMembers.Count)
+$perTypeBucket = [System.Math]::Ceiling($complexText.Count / $effectiveTypeBuckets)
+
+$typeBuckets = [System.Collections.Generic.List[Object]]::new()
+$typeBucketByName = [System.Collections.Generic.Dictionary[String, Int32]]::new([StringComparer]::OrdinalIgnoreCase)
+$pending = [System.Collections.Generic.List[String]]::new()
+
+foreach ($id in $orderedComponents)
+{
+    $members = $componentMembers[$id]
+
+    if ($pending.Count -gt 0 -and ($pending.Count + $members.Count) -gt $perTypeBucket)
+    {
+        $typeBuckets.Add($pending.ToArray())
+        $pending = [System.Collections.Generic.List[String]]::new()
+    }
+
+    $pending.AddRange($members)
+}
+
+if ($pending.Count -gt 0)
+{
+    $typeBuckets.Add($pending.ToArray())
+}
+
+for ($bucket = 0; $bucket -lt $typeBuckets.Count; $bucket++)
+{
+    foreach ($name in $typeBuckets[$bucket])
+    {
+        $typeBucketByName[$name] = $bucket
+    }
+}
+
+for ($bucket = 0; $bucket -lt $typeBuckets.Count; $bucket++)
+{
+    $slice = $typeBuckets[$bucket]
+
+    foreach ($name in $slice)
+    {
+        foreach ($dependency in $complexDependency[$name])
+        {
+            $other = $typeBucketByName[$dependency]
+            if ($other -ne $bucket)
+            {
+                throw ("Complex type '{0}' is in bucket {1} but references '{2}' in bucket {3}. " -f
+                    $name, $bucket, $dependency, $other) +
+                    'A bucket must hold whole components; DscClassCache cannot resolve across them.'
+            }
+        }
+    }
+
+    $types = [System.Text.StringBuilder]::new()
+    [void] $types.AppendLine('# GENERATED FILE - do not edit.')
+    [void] $types.AppendLine('# Produced by Utilities/Build-Microsoft365DSC.ps1 from DscResources/MSFT_*.')
+    [void] $types.AppendLine('')
+
+    foreach ($name in $slice)
+    {
+        [void] $types.AppendLine($complexText[$name])
+        [void] $types.AppendLine('')
+    }
+
+    $fileName = '_Types{0:D2}.psm1' -f $bucket
+    Set-Content -Path (Join-Path $script:ClassRoot $fileName) -Value $types.ToString() -Encoding UTF8
+    $generatedFiles.Add("Classes/$fileName")
+}
+
+Write-BuildLog "Wrote $($typeBuckets.Count) complex type file(s), $perTypeBucket type(s) each at most"
 Write-BuildLog "Flattened $flattened derived complex type(s)" -Level Detail
 
 # --- Part<NN>.psm1 ----------------------------------------------------------------------------
 $sortedResources = @($resourceEntries | Sort-Object Name)
 $effectiveBuckets = [System.Math]::Min($BucketCount, $sortedResources.Count)
 $perBucket = [System.Math]::Ceiling($sortedResources.Count / $effectiveBuckets)
-
-$generatedFiles = [System.Collections.Generic.List[String]]::new()
-$generatedFiles.Add('Classes/_Shared.psm1')
 
 for ($bucket = 0; $bucket -lt $effectiveBuckets; $bucket++)
 {
@@ -582,13 +847,24 @@ for ($bucket = 0; $bucket -lt $effectiveBuckets; $bucket++)
         continue
     }
 
+    $sliceText = (@($slice | ForEach-Object { $_.Text; $_.Helpers }) -join "`n")
+    $required = [System.Collections.Generic.SortedSet[Int32]]::new()
+    foreach ($name in (Get-M365DSCComplexReference -Text $sliceText -ComplexType $complexByName))
+    {
+        $null = $required.Add($typeBucketByName[$name])
+    }
+
     $part = [System.Text.StringBuilder]::new()
     [void] $part.AppendLine('# GENERATED FILE - do not edit.')
     [void] $part.AppendLine('# Produced by Utilities/Build-Microsoft365DSC.ps1.')
     [void] $part.AppendLine('')
     # Classes do not cross module boundaries; this is what makes M365DSCResourceBase and the
-    # complex types visible here.
+    # complex types these resources declare visible here.
     [void] $part.AppendLine('using module .\_Shared.psm1')
+    foreach ($other in $required)
+    {
+        [void] $part.AppendLine(('using module .\_Types{0:D2}.psm1' -f $other))
+    }
     [void] $part.AppendLine('')
 
     foreach ($resource in $slice)
@@ -620,19 +896,19 @@ for ($bucket = 0; $bucket -lt $effectiveBuckets; $bucket++)
     <#
         Source resource files open with `using module ..\_Base\M365DSCResourceBase.psm1` so that
         they parse cleanly in an editor. That line must not survive into the generated part, which
-        pulls the base class from _Shared.psm1 instead.
+        pulls the base class from _Shared.psm1 and the complex types from _Types<NN>.psm1 instead.
     #>
-    if ($part.ToString() -match '(?m)^\s*using module (?!\.\\_Shared\.psm1)')
+    if ($part.ToString() -match '(?m)^\s*using module (?!\.\\(?:_Shared|_Types\d{2})\.psm1)')
     {
-        throw ("Generated $fileName carries a using statement other than _Shared.psm1. " +
-            'Class-text extraction must exclude file-level using statements.')
+        throw ("Generated $fileName carries a using statement other than _Shared.psm1 or " +
+            '_Types<NN>.psm1. Class-text extraction must exclude file-level using statements.')
     }
 
     Set-Content -Path (Join-Path $script:ClassRoot $fileName) -Value $part.ToString() -Encoding UTF8
     $generatedFiles.Add("Classes/$fileName")
 }
 
-Write-BuildLog "Wrote $($generatedFiles.Count - 1) part file(s), $perBucket resource(s) each at most"
+Write-BuildLog "Wrote $($generatedFiles.Count - $typeBuckets.Count - 1) part file(s), $perBucket resource(s) each at most"
 
 #endregion
 

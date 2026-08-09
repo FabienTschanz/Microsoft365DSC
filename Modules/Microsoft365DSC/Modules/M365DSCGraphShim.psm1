@@ -55,7 +55,7 @@ function Invoke-M365DSCGraphShimRequest
     {
         if ($Body -isnot [string])
         {
-            $Body = $Body | ConvertTo-Json -Depth 99
+            $Body = $Body | ConvertTo-Json -Depth 99 -Compress
         }
         $invokeParams['Body'] = $Body
         $invokeParams['ContentType'] = 'application/json'
@@ -196,7 +196,7 @@ function Invoke-M365DSCGraphShimRequestV75
     {
         if ($Body -isnot [string])
         {
-            $Body = $Body | ConvertTo-Json -Depth 99
+            $Body = $Body | ConvertTo-Json -Depth 99 -Compress
         }
         $invokeParams['Body'] = $Body
     }
@@ -543,7 +543,7 @@ $script:GraphShimExcludeFromBody = @(
     'Filter', 'Property', 'ExpandProperty', 'Top', 'Skip',
     'Search', 'Sort', 'CountVariable', 'ConsistencyLevel',
     'All', 'PageSize', 'BodyParameter', 'AdditionalProperties',
-    'Confirm', 'WhatIf'
+    'Confirm', 'WhatIf', 'ErrorAction'
 )
 
 <#

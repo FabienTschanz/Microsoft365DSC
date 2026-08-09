@@ -242,7 +242,7 @@ function Invoke-M365DSCGraphShimRequest
     {
         if ($Body -isnot [string])
         {
-            $Body = $Body | ConvertTo-Json -Depth 99
+            $Body = $Body | ConvertTo-Json -Depth 99 -Compress
         }
         $invokeParams['Body'] = $Body
         $invokeParams['ContentType'] = 'application/json'
@@ -383,7 +383,7 @@ function Invoke-M365DSCGraphShimRequestV75
     {
         if ($Body -isnot [string])
         {
-            $Body = $Body | ConvertTo-Json -Depth 99
+            $Body = $Body | ConvertTo-Json -Depth 99 -Compress
         }
         $invokeParams['Body'] = $Body
     }

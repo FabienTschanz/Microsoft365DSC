@@ -79,7 +79,7 @@ $script:TestRoot = Join-Path -Path $RepoRoot -ChildPath 'Tests/Unit/Microsoft365
 $script:ResourceRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/DscResources'
 $script:SchemaPath = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/SchemaDefinition.json'
 $script:SchemaLookup = $null
-$script:SharedClassPath = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/Classes/_Shared.psm1'
+$script:ClassRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/Classes'
 $script:ClassMembers = $null
 
 <#
@@ -87,7 +87,7 @@ $script:ClassMembers = $null
     Returns class name -> the set of members it accepts, inherited members included.
 
 .DESCRIPTION
-    Read from the built Classes/_Shared.psm1 rather than SchemaDefinition.json: that is what the
+    Read from the built Classes/_Types<NN>.psm1 rather than SchemaDefinition.json: that is what the
     cast has to satisfy, and it is the only source carrying the inheritance chain. Used to strip
     members the test passes that the class does not declare.
 #>
@@ -100,21 +100,25 @@ function Get-ClassMemberLookup
 
     $script:ClassMembers = @{}
 
-    if (-not (Test-Path -Path $script:SharedClassPath))
+    if (-not (Test-Path -Path $script:ClassRoot))
     {
         return $script:ClassMembers
     }
 
-    $ast = [Parser]::ParseFile($script:SharedClassPath, [ref] $null, [ref] $null)
     $own = @{}
     $base = @{}
 
-    foreach ($type in $ast.FindAll({ $args[0] -is [TypeDefinitionAst] -and $args[0].IsClass }, $false))
+    foreach ($file in (Get-ChildItem -Path $script:ClassRoot -Filter '_Types*.psm1'))
     {
-        $own[$type.Name] = @($type.Members | Where-Object { $_ -is [PropertyMemberAst] } | ForEach-Object { $_.Name })
-        if ($type.BaseTypes.Count -gt 0)
+        $ast = [Parser]::ParseFile($file.FullName, [ref] $null, [ref] $null)
+
+        foreach ($type in $ast.FindAll({ $args[0] -is [TypeDefinitionAst] -and $args[0].IsClass }, $false))
         {
-            $base[$type.Name] = $type.BaseTypes[0].TypeName.Name
+            $own[$type.Name] = @($type.Members | Where-Object { $_ -is [PropertyMemberAst] } | ForEach-Object { $_.Name })
+            if ($type.BaseTypes.Count -gt 0)
+            {
+                $base[$type.Name] = $type.BaseTypes[0].TypeName.Name
+            }
         }
     }
 
