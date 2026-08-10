@@ -304,15 +304,12 @@ class IntuneRoleDefinition : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.deviceAndAppManagementRoleDefinition')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementRoleDefinition -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementRoleDefinition -Filter $mergedFilter -All -ErrorAction Stop
 
             if (-not $getValue)
             {

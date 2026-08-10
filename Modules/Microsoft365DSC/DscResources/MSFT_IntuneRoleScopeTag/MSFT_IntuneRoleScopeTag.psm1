@@ -123,8 +123,8 @@ class IntuneRoleScopeTag : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Role Scope Tag with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Role Scope Tag with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             $results = @{
                 #region resource generator code
@@ -144,7 +144,7 @@ class IntuneRoleScopeTag : M365DSCResourceBase
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementRoleScopeTagAssignment -RoleScopeTagId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementRoleScopeTagAssignment -RoleScopeTagId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

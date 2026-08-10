@@ -139,8 +139,8 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.id
-            Write-Verbose -Message "An Intune Windows Update For Business Hotpatch Profile for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.id
+            Write-Verbose -Message "An Intune Windows Update For Business Hotpatch Profile for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             $results = @{
                 #region resource generator code
@@ -161,7 +161,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
                 #endregion
             }
 
-            $assignmentsValues = (Invoke-MgGraphRequest -Uri "$($this.ResourceCache['BaseUrl'])/$($this.Id)/assignments").value
+            $assignmentsValues = (Invoke-MgGraphRequest -Uri "$($this.ResourceCache['BaseUrl'])/$($resolvedId)/assignments").value
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -275,11 +275,12 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
         try
         {
             #region resource generator code
+            $filterQuery = ''
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "?`$filter=$($this.Filter)"
+                $filterQuery = "?`$filter=$($this.Filter)"
             }
-            [array]$getValue = (Invoke-MgGraphRequest -Method GET -Uri "/beta/deviceManagement/windowsQualityUpdatePolicies$($this.Filter)" -ErrorAction Stop).value
+            [array]$getValue = (Invoke-MgGraphRequest -Method GET -Uri "/beta/deviceManagement/windowsQualityUpdatePolicies$filterQuery" -ErrorAction Stop).value
             #endregion
 
             $i = 1

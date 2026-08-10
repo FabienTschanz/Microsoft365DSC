@@ -176,8 +176,8 @@ class IntuneDeviceRemediation : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Device Remediation with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Remediation with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Remediation with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexDetectionScriptParameters = @()
@@ -262,7 +262,7 @@ class IntuneDeviceRemediation : M365DSCResourceBase
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceHealthScriptAssignment -DeviceHealthScriptId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceHealthScriptAssignment -DeviceHealthScriptId $resolvedId
             $assignmentResult = @()
             foreach ($assignment in $assignmentsValues)
             {

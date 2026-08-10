@@ -142,8 +142,8 @@ class IntuneEpmCertificatePolicySetting : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Epm Certificate Policy Setting with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Epm Certificate Policy Setting with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             $results = @{
                 #region resource generator code
@@ -286,15 +286,12 @@ class IntuneEpmCertificatePolicySetting : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "settingDefinitionId eq 'device_vendor_msft_policy_privilegemanagement_reusablesettings_certificatefile'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($this.Filter)" `
+            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($mergedFilter)" `
                 -Method GET `
                 -SkipHttpErrorCheck `
                 -ErrorAction Stop).value

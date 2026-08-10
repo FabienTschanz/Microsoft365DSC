@@ -110,11 +110,11 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
             }
             #endregion
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Identity B2 X User Flow with Id {$($this.Id)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Identity B2 X User Flow with Id {$($resolvedId)} was found"
 
             #region Get ApiConnectorConfiguration
-            $connectorConfiguration = Get-MgBetaIdentityB2XUserFlowApiConnectorConfiguration -B2XIdentityUserFlowId $this.Id `
+            $connectorConfiguration = Get-MgBetaIdentityB2XUserFlowApiConnectorConfiguration -B2XIdentityUserFlowId $resolvedId `
                 -ExpandProperty 'postFederationSignup,postAttributeCollection'
 
             $complexApiConnectorConfiguration = @{
@@ -124,7 +124,7 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
             #endregion
 
             #region Get IdentityProviders
-            $getIdentityProviders = (Get-MgBetaIdentityB2XUserFlowIdentityProvider -B2XIdentityUserFlowId $this.Id).id
+            $getIdentityProviders = (Get-MgBetaIdentityB2XUserFlowIdentityProvider -B2XIdentityUserFlowId $resolvedId).id
             if ($getIdentityProviders.Count -eq 0)
             {
                 $getIdentityProviders = @()
@@ -132,7 +132,7 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
             #endregion
 
             $complexUserAttributeAssignments = @()
-            $getUserAttributeAssignments = Get-MgBetaIdentityB2XUserFlowUserAttributeAssignment -B2XIdentityUserFlowId $this.Id -ExpandProperty UserAttribute
+            $getUserAttributeAssignments = Get-MgBetaIdentityB2XUserFlowUserAttributeAssignment -B2XIdentityUserFlowId $resolvedId -ExpandProperty UserAttribute
             foreach ($getUserAttributeAssignment in $getUserAttributeAssignments)
             {
                 $getuserAttributeValues = @()

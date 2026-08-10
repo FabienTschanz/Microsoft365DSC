@@ -218,24 +218,24 @@ class IntuneCustomizationBrandingProfile : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Customization Branding Profile with Id {$($this.Id)} and ProfileName {$($this.ProfileName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Customization Branding Profile with Id {$($resolvedId)} and ProfileName {$($this.ProfileName)} was found"
 
             $batchRequests = @(
                 @{
                     id = 'themeColorLogo'
                     method = 'GET'
-                    url = "/deviceManagement/intuneBrandingProfiles/$($this.Id)/themeColorLogo"
+                    url = "/deviceManagement/intuneBrandingProfiles/$($resolvedId)/themeColorLogo"
                 }
                 @{
                     id = 'lightBackgroundLogo'
                     method = 'GET'
-                    url = "/deviceManagement/intuneBrandingProfiles/$($this.Id)/lightBackgroundLogo"
+                    url = "/deviceManagement/intuneBrandingProfiles/$($resolvedId)/lightBackgroundLogo"
                 }
                 @{
                     id = 'landingPageCustomizedImage'
                     method = 'GET'
-                    url = "/deviceManagement/intuneBrandingProfiles/$($this.Id)/landingPageCustomizedImage"
+                    url = "/deviceManagement/intuneBrandingProfiles/$($resolvedId)/landingPageCustomizedImage"
                 }
             )
             $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
@@ -352,7 +352,7 @@ class IntuneCustomizationBrandingProfile : M365DSCResourceBase
                 ManagedIdentity                           = $this.ManagedIdentity.IsPresent
                 #endregion
             }
-            $assignmentsValues = Get-MgBetaDeviceManagementIntuneBrandingProfileAssignment -IntuneBrandingProfileId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementIntuneBrandingProfileAssignment -IntuneBrandingProfileId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

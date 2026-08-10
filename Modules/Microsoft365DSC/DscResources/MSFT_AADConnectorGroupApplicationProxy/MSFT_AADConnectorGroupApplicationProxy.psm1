@@ -116,8 +116,8 @@ class AADConnectorGroupApplicationProxy : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Connector Group Application Proxy with Id {$($this.Id)} and Name {$($this.Name)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Connector Group Application Proxy with Id {$($resolvedId)} and Name {$($this.Name)} was found"
 
             $enumRegion = $null
             if ($null -ne $getValue.Region)

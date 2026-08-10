@@ -109,7 +109,7 @@ class AADNetworkAccessForwardingProfile : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
             #endregion
             if ($null -eq $getValue)
@@ -118,7 +118,7 @@ class AADNetworkAccessForwardingProfile : M365DSCResourceBase
                 return $this.AsResult($nullResult)
             }
 
-            Write-Verbose -Message "An Azure AD Network Access Forwarding Profile with  {$($this.Id)} and  {$($this.Name)} was found"
+            Write-Verbose -Message "An Azure AD Network Access Forwarding Profile with  {$($resolvedId)} and  {$($this.Name)} was found"
 
             $forwardingProfilePolicies = Get-MgBetaNetworkAccessForwardingProfilePolicy -ForwardingProfileId $getValue.Id -ErrorAction SilentlyContinue
 

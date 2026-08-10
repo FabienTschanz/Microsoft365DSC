@@ -134,14 +134,14 @@ class IntuneEpmElevationRulesPolicyWindows10 : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
                 $settings = $getValue.settings
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Endpoint Privilege Management Elevation Rules Policy for Windows10 with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Endpoint Privilege Management Elevation Rules Policy for Windows10 with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Id `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -218,7 +218,7 @@ class IntuneEpmElevationRulesPolicyWindows10 : M365DSCResourceBase
             }
             $results += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -381,17 +381,14 @@ class IntuneEpmElevationRulesPolicyWindows10 : M365DSCResourceBase
             #region resource generator code
             $policyTemplateID = 'cff02aad-51b1-498d-83ad-81161a393f56_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
-            if (-not [String]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
             #endregion
 
             $i = 1

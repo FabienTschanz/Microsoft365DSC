@@ -213,17 +213,14 @@ class AADSocialIdentityProvider : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.socialIdentityProvider')"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
             [array]$getValue = Get-MgBetaIdentityProvider `
                 -All `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -Top 0 `
                 -ErrorAction Stop
 

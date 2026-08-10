@@ -337,15 +337,12 @@ class IntuneAndroidManagedStoreAppConfiguration : M365DSCResourceBase
 
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.androidManagedStoreAppConfiguration')"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceAppManagementMobileAppConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceAppManagementMobileAppConfiguration -Filter $mergedFilter -All -ErrorAction Stop
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

@@ -295,7 +295,7 @@ class IntuneDeviceConfigurationPolicyAndroidWorkProfile : M365DSCResourceBase
             {
                 $policy = $this.ExportedInstance
             }
-            $this.Id = $policy.Id
+            $resolvedId = $policy.Id
 
             Write-Verbose -Message "An Intune Device Configuration Policy Android for Work Profile with {$($this.DisplayName)} was found"
             $results = @{
@@ -464,15 +464,12 @@ class IntuneDeviceConfigurationPolicyAndroidWorkProfile : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.androidWorkProfileGeneralDeviceConfiguration')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$policies = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$policies = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             if ($policies.Length -eq 0)

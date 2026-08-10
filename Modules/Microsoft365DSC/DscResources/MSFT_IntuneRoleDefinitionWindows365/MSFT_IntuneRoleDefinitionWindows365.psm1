@@ -129,8 +129,8 @@ class IntuneRoleDefinitionWindows365 : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Role Definition Windows365 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Role Definition Windows365 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             #region resource generator code
             $complexRolePermissions = @()

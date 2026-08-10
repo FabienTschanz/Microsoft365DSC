@@ -221,17 +221,14 @@ class AADAuthenticationStrengthPolicy : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "policyType ne 'builtIn'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
             [array]$getValue = Get-MgBetaPolicyAuthenticationStrengthPolicy `
                 -All `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -Top 0 `
                 -ErrorAction Stop
             #endregion

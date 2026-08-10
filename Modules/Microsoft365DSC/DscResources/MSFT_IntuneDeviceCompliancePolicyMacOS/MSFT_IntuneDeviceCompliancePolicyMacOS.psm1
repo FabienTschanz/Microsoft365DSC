@@ -464,19 +464,16 @@ class IntuneDeviceCompliancePolicyMacOS : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.macOSCompliancePolicy')"
+            $mergedFilter = $baseFilter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $strippedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = "($baseFilter) and ($strippedFilter)"
             }
             [array]$configDeviceMacOsPolicies = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
                 -ExpandProperty 'scheduledActionsForRule($expand=scheduledActionConfigurations)' `
-                -ErrorAction Stop -All -Filter $this.Filter
+                -ErrorAction Stop -All -Filter $mergedFilter
             $configDeviceMacOsPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configDeviceMacOsPolicies
 
             $i = 1

@@ -147,8 +147,8 @@ class IntuneDeviceConfigurationDomainJoinPolicyWindows10 : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Configuration Domain Join Policy for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Configuration Domain Join Policy for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             $results = @{
                 #region resource generator code
@@ -173,7 +173,7 @@ class IntuneDeviceConfigurationDomainJoinPolicyWindows10 : M365DSCResourceBase
                 #endregion
             }
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $this.Id
+            $graphAssignments = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `
@@ -287,15 +287,12 @@ class IntuneDeviceConfigurationDomainJoinPolicyWindows10 : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.windowsDomainJoinConfiguration')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

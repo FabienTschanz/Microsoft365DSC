@@ -150,9 +150,9 @@ class IntuneWifiConfigurationPolicyAndroidOpenSourceProject : M365DSCResourceBas
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
-            Write-Verbose -Message "Found an Intune Wifi Configuration Policy Android Open Source Project with id {$($this.Id)}"
+            Write-Verbose -Message "Found an Intune Wifi Configuration Policy Android Open Source Project with id {$($resolvedId)}"
             $results = @{
                 #region resource generator code
                 Id                             = $getValue.Id
@@ -178,7 +178,7 @@ class IntuneWifiConfigurationPolicyAndroidOpenSourceProject : M365DSCResourceBas
                 AccessTokens                   = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -293,15 +293,12 @@ class IntuneWifiConfigurationPolicyAndroidOpenSourceProject : M365DSCResourceBas
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.aospDeviceOwnerWiFiConfiguration') and not isof('microsoft.graph.aospDeviceOwnerEnterpriseWiFiConfiguration')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

@@ -169,15 +169,15 @@ class IntuneDiskEncryptionFileVaultPolicyMacOS : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
                 $settings = $getValue.settings
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
             $this.ResourceCache['currentCreationSource'] = $getValue.CreationSource
-            Write-Verbose -Message "An Intune Disk Encryption File Vault Policy for macOS with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            Write-Verbose -Message "An Intune Disk Encryption File Vault Policy for macOS with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Id `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -205,7 +205,7 @@ class IntuneDiskEncryptionFileVaultPolicyMacOS : M365DSCResourceBase
             }
             $results += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -343,17 +343,14 @@ class IntuneDiskEncryptionFileVaultPolicyMacOS : M365DSCResourceBase
             #region resource generator code
             $policyTemplateID = 'e688156f-6564-4c03-b34f-83b90fe6bb82_1'
             $baseFilter = "templateReference/TemplateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
             #endregion
 
             $i = 1

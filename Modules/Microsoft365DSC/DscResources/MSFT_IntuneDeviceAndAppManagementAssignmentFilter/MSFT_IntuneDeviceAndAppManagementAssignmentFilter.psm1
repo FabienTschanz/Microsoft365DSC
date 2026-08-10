@@ -245,13 +245,14 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
 
         try
         {
+            $mergedFilter = $this.Filter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 Write-Warning -Message 'Microsoft Graph filter is only supported for the platform on this resource. Other filters are only supported using startswith, endswith and contains and done by best-effort.'
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$assignmentFilters = Get-MgBetaDeviceManagementAssignmentFilter -All -Filter $this.Filter -ErrorAction Stop
+            [array]$assignmentFilters = Get-MgBetaDeviceManagementAssignmentFilter -All -Filter $mergedFilter -ErrorAction Stop
             $assignmentFilters = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $assignmentFilters
 
             if ($policies.Length -eq 0)

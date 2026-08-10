@@ -167,8 +167,8 @@ class IntuneWindowsAutopilotDeploymentProfileAzureADJoined : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Windows Autopilot Deployment Profile Azure AD Joined with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Windows Autopilot Deployment Profile Azure AD Joined with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexEnrollmentStatusScreenSettings = [ordered]@{}
@@ -239,7 +239,7 @@ class IntuneWindowsAutopilotDeploymentProfileAzureADJoined : M365DSCResourceBase
             }
 
             $rawAssignments = @()
-            $rawAssignments = Get-MgBetaDeviceManagementWindowsAutopilotDeploymentProfileAssignment -WindowsAutopilotDeploymentProfileId $this.Id -All
+            $rawAssignments = Get-MgBetaDeviceManagementWindowsAutopilotDeploymentProfileAssignment -WindowsAutopilotDeploymentProfileId $resolvedId -All
             $assignmentResult = @()
             if ($null -ne $rawAssignments -and $rawAssignments.Count -gt 0)
             {
@@ -424,15 +424,12 @@ class IntuneWindowsAutopilotDeploymentProfileAzureADJoined : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.azureADWindowsAutopilotDeploymentProfile')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementWindowsAutopilotDeploymentProfile -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementWindowsAutopilotDeploymentProfile -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

@@ -144,9 +144,9 @@ class IntuneDeviceConfigurationPlatformScriptWindows : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Device Configuration Platform Script Windows with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
-            Write-Verbose -Message "An Intune Device Configuration Platform Script Windows with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            Write-Verbose -Message "An Intune Device Configuration Platform Script Windows with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $enumRunAsAccount = $null
@@ -180,7 +180,7 @@ class IntuneDeviceConfigurationPlatformScriptWindows : M365DSCResourceBase
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementScriptAssignment -DeviceManagementScriptId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementScriptAssignment -DeviceManagementScriptId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

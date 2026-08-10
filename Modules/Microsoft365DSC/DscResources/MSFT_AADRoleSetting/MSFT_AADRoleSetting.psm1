@@ -474,8 +474,6 @@ class AADRoleSetting : M365DSCResourceBase
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
-        #$PSBoundParameters.Remove('AuthenticationContextName') | Out-Null
-
         #region Telemetry
         $this.AddTelemetry('Set')
         #endregion

@@ -144,8 +144,8 @@ class IntunePolicySets : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Policy Sets with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Policy Sets with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Policy Sets with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             $results = @{
                 #region resource generator code

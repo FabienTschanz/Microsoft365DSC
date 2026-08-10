@@ -138,8 +138,8 @@ class IntuneTermsAndConditions : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Terms And Conditions with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Terms And Conditions with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             $results = @{
                 #region resource generator code
@@ -161,7 +161,7 @@ class IntuneTermsAndConditions : M365DSCResourceBase
                 ManagedIdentity       = $this.ManagedIdentity.IsPresent
                 #endregion
             }
-            $assignmentsValues = Get-MgBetaDeviceManagementTermAndConditionAssignment -TermsAndConditionsId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementTermAndConditionAssignment -TermsAndConditionsId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

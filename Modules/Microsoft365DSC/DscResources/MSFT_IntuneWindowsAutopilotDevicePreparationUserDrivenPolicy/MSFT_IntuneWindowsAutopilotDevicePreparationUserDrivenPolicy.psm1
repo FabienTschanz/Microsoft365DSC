@@ -184,14 +184,14 @@ class IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy : M365DSCResourceB
                 $getValue = $this.ExportedInstance
                 $settings = $getValue.settings
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Windows Autopilot Device Preparation User Driven Policy with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Windows Autopilot Device Preparation User Driven Policy with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Id `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -247,7 +247,7 @@ class IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy : M365DSCResourceB
             }
             $results += $policySettings
 
-            $target = Get-MgBetaDeviceManagementConfigurationPolicyEnrollmentTimeDeviceMembershipTarget -DeviceManagementConfigurationPolicyId $this.Id
+            $target = Get-MgBetaDeviceManagementConfigurationPolicyEnrollmentTimeDeviceMembershipTarget -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = ""
             if ($target.enrollmentTimeDeviceMembershipTargetValidationStatuses.Count -gt 0)
             {
@@ -257,7 +257,7 @@ class IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy : M365DSCResourceB
             }
             $results.Add('AssignmentTarget', $assignmentResult)
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -481,17 +481,14 @@ class IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy : M365DSCResourceB
             #region resource generator code
             $policyTemplateID = '80d33118-b7b4-40d8-b15f-81be745e053f_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
             #endregion
 
             $i = 1

@@ -224,19 +224,19 @@ class IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy : M365DSCR
                 Write-Verbose -Message "No Account Protection LAPS Policy with Name {$($this.DisplayName)} was found"
                 return $this.AsResult($nullResult)
             }
-            $this.Identity = $policy.Id
-            Write-Verbose "Found Account Protection LAPS Policy with Id {$($this.Identity)} and Name {$($policy.Name)}"
+            $resolvedId = $policy.Id
+            Write-Verbose "Found Account Protection LAPS Policy with Id {$($resolvedId)} and Name {$($policy.Name)}"
 
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -ErrorAction Stop
             }
 
             $returnHashtable = @{}
-            $returnHashtable.Add('Identity', $this.Identity)
+            $returnHashtable.Add('Identity', $resolvedId)
             $returnHashtable.Add('DisplayName', $policy.Name)
             $returnHashtable.Add('Description', $policy.Description)
             $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
@@ -409,17 +409,14 @@ class IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy : M365DSCR
         {
             $policyTemplateID = 'adc46e5a-f4aa-4ff6-aeff-4f27bc525796_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
 
             if ($policies.Length -eq 0)
             {

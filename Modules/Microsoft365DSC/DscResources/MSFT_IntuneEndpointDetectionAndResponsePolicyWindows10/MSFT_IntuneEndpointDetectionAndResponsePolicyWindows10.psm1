@@ -148,14 +148,14 @@ class IntuneEndpointDetectionAndResponsePolicyWindows10 : M365DSCResourceBase
                 $policy = $this.ExportedInstance
                 $settings = $policy.settings
             }
-            $this.Identity = $policy.Id
-            Write-Verbose -Message "An Intune Endpoint Detection And Response Policy for Windows10 with Id {$($this.Identity)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $policy.Id
+            Write-Verbose -Message "An Intune Endpoint Detection And Response Policy for Windows10 with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -191,7 +191,7 @@ class IntuneEndpointDetectionAndResponsePolicyWindows10 : M365DSCResourceBase
             }
             $results += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Identity
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -366,17 +366,14 @@ class IntuneEndpointDetectionAndResponsePolicyWindows10 : M365DSCResourceBase
         {
             $policyTemplateID = '0385b795-0f2f-44ac-8602-9f65bf6adede_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
 
             if ($policies.Length -eq 0)
             {

@@ -135,8 +135,8 @@ class IntuneDeviceComplianceNotificationMessageTemplate : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Compliance Notification Message Template with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Compliance Notification Message Template with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             #region resource generator code
             $enumBrandingOptions = $null
@@ -316,17 +316,14 @@ class IntuneDeviceComplianceNotificationMessageTemplate : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "displayName ne 'EnrollmentNotificationInternalMEO'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceManagementNotificationMessageTemplate `
                 -ExpandProperty 'localizedNotificationMessages' `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop
             #endregion

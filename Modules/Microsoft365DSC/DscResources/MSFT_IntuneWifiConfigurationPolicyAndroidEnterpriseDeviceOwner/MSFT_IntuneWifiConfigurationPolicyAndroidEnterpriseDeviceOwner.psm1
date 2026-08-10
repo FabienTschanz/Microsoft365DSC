@@ -169,9 +169,9 @@ class IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner : M365DSCResourc
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
-            Write-Verbose -Message "Found something with id {$($this.Id)}"
+            Write-Verbose -Message "Found something with id {$($resolvedId)}"
             $results = @{
                 #region resource generator code
                 Id                             = $getValue.Id
@@ -202,7 +202,7 @@ class IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner : M365DSCResourc
                 AccessTokens                   = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -317,15 +317,12 @@ class IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner : M365DSCResourc
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.androidDeviceOwnerEnterpriseWiFiConfiguration')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

@@ -419,12 +419,13 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
 
         try
         {
+            $mergedFilter = $this.Filter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$configPolicies = Get-MgBetaDeviceAppManagementTargetedManagedAppConfiguration -All -ExpandProperty 'Apps' -Filter $this.Filter -ErrorAction Stop
+            [array]$configPolicies = Get-MgBetaDeviceAppManagementTargetedManagedAppConfiguration -All -ExpandProperty 'Apps' -Filter $mergedFilter -ErrorAction Stop
             $configPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configPolicies
 
             $i = 1

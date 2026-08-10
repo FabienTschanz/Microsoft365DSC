@@ -127,7 +127,7 @@ class AADAuthenticationMethodPolicyTemporary : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
             Write-Verbose -Message "An Azure AD Authentication Method Policy Temporary with Id {$($currentExcludeTargets.id))} was found."
 
             #region resource generator code

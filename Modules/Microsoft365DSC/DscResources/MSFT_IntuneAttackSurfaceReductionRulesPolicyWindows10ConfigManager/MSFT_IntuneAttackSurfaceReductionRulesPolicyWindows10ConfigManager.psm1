@@ -228,22 +228,22 @@ class IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager : M365DSCRes
                 $settings = $policy.settings
             }
 
-            $this.Identity = $policy.Id
+            $resolvedId = $policy.Id
 
-            Write-Verbose -Message "Found Intune Attack Surface Reduction Rules Policy for Windows10 Config Manager with Id {$($this.Identity)} and Name {$($policy.Name)}"
+            Write-Verbose -Message "Found Intune Attack Surface Reduction Rules Policy for Windows10 Config Manager with Id {$($resolvedId)} and Name {$($policy.Name)}"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
             }
 
             $returnHashtable = @{}
-            $returnHashtable.Add('Identity', $this.Identity)
+            $returnHashtable.Add('Identity', $resolvedId)
             $returnHashtable.Add('DisplayName', $policy.Name)
             $returnHashtable.Add('Description', $policy.Description)
             $returnHashtable.Add('RoleScopeTagIds', $policy.RoleScopeTagIds)
@@ -251,7 +251,7 @@ class IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager : M365DSCRes
             $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Identity
+            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `
@@ -410,17 +410,14 @@ class IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager : M365DSCRes
         {
             $policyTemplateID = '5dd36540-eb22-4e7e-b19c-2a07772ba627_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
 
             if ($policies.Length -eq 0)
             {

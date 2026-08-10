@@ -135,9 +135,9 @@ class IntuneDeviceComplianceScriptWindows10 : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Device Compliance Script for Windows10 with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
-            Write-Verbose -Message "An Intune Device Compliance Script for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            Write-Verbose -Message "An Intune Device Compliance Script for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $enumRunAsAccount = $null

@@ -225,9 +225,6 @@ class SCSecurityFilter : M365DSCResourceBase
 
                 Write-M365DSCHost -Message "    |---[$i/$($this.filters.Count)] $($filter.FilterName)" -DeferWrite
 
-                # $GetParams = ([Hashtable]$PSBoundParameters).Clone()
-                # $GetParams.Add("FilterName", $filter.FilterName)
-                # $Results = Get-TargetResource @GetParams
                 $Results = Get-SCSecurityFilterM365DSCSCMapSecurityFilter -Filter $filter -Credential $this.Credential -ApplicationId $this.ApplicationId `
                     -TenantId $this.TenantId -CertificateThumbprint $this.CertificateThumbprint -CertificatePath $this.CertificatePath -CertificatePassword $this.CertificatePassword
                 $rawResults = $Results.Clone()

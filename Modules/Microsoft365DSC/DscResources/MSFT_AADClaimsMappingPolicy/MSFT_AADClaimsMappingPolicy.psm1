@@ -122,8 +122,8 @@ class AADClaimsMappingPolicy : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Claims Mapping Policy with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Claims Mapping Policy with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             $complexDefinition = @()
             foreach ($getDefinitionJson in $getValue.Definition)

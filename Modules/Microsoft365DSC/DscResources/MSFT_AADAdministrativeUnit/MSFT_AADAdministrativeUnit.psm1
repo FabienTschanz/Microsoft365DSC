@@ -148,8 +148,8 @@ class AADAdministrativeUnit : M365DSCResourceBase
                 throw "Multiple Azure AD Administrative Units with DisplayName {$($this.DisplayName)} were found. Please specify the Id of the desired Administrative Unit."
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Administrative Unit with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Administrative Unit with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
             $results = @{
                 #region resource generator code
                 Description                  = $getValue.Description

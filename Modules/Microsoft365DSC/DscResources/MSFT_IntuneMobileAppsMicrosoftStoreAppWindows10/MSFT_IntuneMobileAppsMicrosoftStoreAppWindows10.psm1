@@ -172,8 +172,8 @@ class IntuneMobileAppsMicrosoftStoreAppWindows10 : M365DSCResourceBase
             {
                 $getValue = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.ExportedInstance.Id -ExpandProperty 'categories'
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Mobile Apps Microsoft Store App for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Mobile Apps Microsoft Store App for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             #region resource generator code
             $complexCategories = @()
@@ -227,7 +227,7 @@ class IntuneMobileAppsMicrosoftStoreAppWindows10 : M365DSCResourceBase
                 ManagedIdentity       = $this.ManagedIdentity.IsPresent
                 #endregion
             }
-            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppAssignment -MobileAppId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppAssignment -MobileAppId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -372,16 +372,13 @@ class IntuneMobileAppsMicrosoftStoreAppWindows10 : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.winGetApp')"
-            if (-not [String]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceAppManagementMobileApp `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop
             #endregion

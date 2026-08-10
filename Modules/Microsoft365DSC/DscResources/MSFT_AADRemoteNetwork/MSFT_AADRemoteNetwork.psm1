@@ -125,8 +125,8 @@ class AADRemoteNetwork : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Azure AD Remote Network with Name {$($this.Name)}."
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Remote Network with Id {$($this.Id)} and Name {$($this.Name)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Remote Network with Id {$($resolvedId)} and Name {$($this.Name)} was found"
 
             #region resource generator code
             $forwardingProfilesList = @()

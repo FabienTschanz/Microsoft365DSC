@@ -149,8 +149,8 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Firewall Policy Setting with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Firewall Policy Setting with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             $groupObject = $getValue.settingInstance.groupSettingCollectionValue[0]
             $groupSettingsObject = $groupObject.children | Where-Object { $_.settingDefinitionId -like '*descriptoridlist' -or $_.settingDefinitionId -like '*printerdevicesidlist' }
@@ -443,15 +443,12 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "settingDefinitionId eq 'device_vendor_msft_defender_configuration_devicecontrol_policygroups_{groupid}_groupdata'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($this.Filter)" `
+            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($mergedFilter)" `
                 -Method GET `
                 -SkipHttpErrorCheck `
                 -ErrorAction Stop).value

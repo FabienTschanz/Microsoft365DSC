@@ -182,9 +182,9 @@ class IntuneVPNConfigurationPolicyAndroidDeviceOwner : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
-            Write-Verbose -Message "An Intune VPN Policy for Android Device Owner with id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            Write-Verbose -Message "An Intune VPN Policy for Android Device Owner with id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             $complexServers = @()
             foreach ($currentservers in $getValue.servers)
@@ -424,15 +424,12 @@ class IntuneVPNConfigurationPolicyAndroidDeviceOwner : M365DSCResourceBase
 
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.androidDeviceOwnerVpnConfiguration')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

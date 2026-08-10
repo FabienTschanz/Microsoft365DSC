@@ -137,8 +137,8 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Windows Update For Business Driver Update Profile for Windows 10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Windows Update For Business Driver Update Profile for Windows 10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             $enumApprovalType = $null
             if ($null -ne $getValue.approvalType)
@@ -153,7 +153,7 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
                 RoleScopeTagIds          = $getValue.roleScopeTagIds
                 Description              = $getValue.description
                 DisplayName              = $getValue.displayName
-                Id                       = $this.Id
+                Id                       = $resolvedId
                 Ensure                   = 'Present'
                 Credential               = $this.Credential
                 ApplicationId            = $this.ApplicationId
@@ -167,7 +167,7 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
                 #endregion
             }
 
-            $uri = "/beta/deviceManagement/windowsDriverUpdateProfiles/$($this.Id)/assignments"
+            $uri = "/beta/deviceManagement/windowsDriverUpdateProfiles/$($resolvedId)/assignments"
             $assignmentsValues = (Invoke-MgGraphRequest -Method GET -Uri $uri).value
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)

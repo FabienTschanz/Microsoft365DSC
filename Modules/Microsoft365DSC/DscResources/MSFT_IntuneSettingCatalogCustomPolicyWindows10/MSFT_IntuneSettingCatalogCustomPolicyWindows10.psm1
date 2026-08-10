@@ -146,8 +146,8 @@ class IntuneSettingCatalogCustomPolicyWindows10 : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Setting Catalog Custom Policy for Windows10 with Name {$($this.Name)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Setting Catalog Custom Policy for Windows10 with Id {$($this.Id)} and Name {$($this.Name)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Setting Catalog Custom Policy for Windows10 with Id {$($resolvedId)} and Name {$($this.Name)} was found."
 
             $complexSettings = @()
             foreach ($currentSettings in $getValue.settings)
@@ -211,7 +211,7 @@ class IntuneSettingCatalogCustomPolicyWindows10 : M365DSCResourceBase
                 AccessTokens          = $this.AccessTokens
                 #endregion
             }
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -330,16 +330,13 @@ class IntuneSettingCatalogCustomPolicyWindows10 : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "platforms eq 'windows10' and technologies eq 'mdm' and templateReference/templateFamily eq 'none'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop
             #endregion

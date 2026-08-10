@@ -455,10 +455,10 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
             }
             else
             {
-                $this.Id = $policy.Id
+                $resolvedId = $policy.Id
             }
 
-            $policyApps = Get-MgBetaDeviceAppManagementAndroidManagedAppProtectionApp -AndroidManagedAppProtectionId $this.Id
+            $policyApps = Get-MgBetaDeviceAppManagementAndroidManagedAppProtectionApp -AndroidManagedAppProtectionId $resolvedId
 
             $appsArray = @()
             if ($policy.AppGroupType -eq 'selectedPublicApps')
@@ -737,12 +737,13 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
 
         try
         {
+            $mergedFilter = $this.Filter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$policies = Get-MgBetaDeviceAppManagementAndroidManagedAppProtection -All -Filter $this.Filter -ErrorAction Stop
+            [array]$policies = Get-MgBetaDeviceAppManagementAndroidManagedAppProtection -All -Filter $mergedFilter -ErrorAction Stop
             $policies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $policies
 
             $i = 1

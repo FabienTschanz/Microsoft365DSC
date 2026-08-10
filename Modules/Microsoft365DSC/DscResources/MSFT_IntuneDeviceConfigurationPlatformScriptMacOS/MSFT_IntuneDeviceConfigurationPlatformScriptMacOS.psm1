@@ -152,8 +152,8 @@ class IntuneDeviceConfigurationPlatformScriptMacOS : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Device Configuration Platform Script MacOS with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Configuration Platform Script MacOS with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Configuration Platform Script MacOS with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $enumRunAsAccount = $null

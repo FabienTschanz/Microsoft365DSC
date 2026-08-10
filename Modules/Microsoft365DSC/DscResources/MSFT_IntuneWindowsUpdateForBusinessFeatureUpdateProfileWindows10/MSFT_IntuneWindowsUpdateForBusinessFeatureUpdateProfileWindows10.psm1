@@ -144,8 +144,8 @@ class IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 : M365DSCResou
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Windows Update For Business Feature Update Profile for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Windows Update For Business Feature Update Profile for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexRolloutSettings = [ordered]@{}
@@ -187,7 +187,7 @@ class IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 : M365DSCResou
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementWindowsFeatureUpdateProfileAssignment -WindowsFeatureUpdateProfileId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementWindowsFeatureUpdateProfileAssignment -WindowsFeatureUpdateProfileId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -583,7 +583,6 @@ class IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 : M365DSCResou
             {
                 Write-Warning -Message 'Microsoft Graph filter is not supported on this resource. Only best-effort filtering using startswith, endswith and contains is supported.'
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
             [array]$getValue = Get-MgBetaDeviceManagementWindowsFeatureUpdateProfile -All -Top 200 -ErrorAction Stop
             $getValue = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $getValue

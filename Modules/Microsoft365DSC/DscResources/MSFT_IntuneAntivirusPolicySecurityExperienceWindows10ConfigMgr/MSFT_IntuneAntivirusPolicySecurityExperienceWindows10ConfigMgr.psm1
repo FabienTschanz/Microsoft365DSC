@@ -214,14 +214,14 @@ class IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr : M365DSCResourc
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Antivirus Policy Security Experience for Windows10 Config Mgr with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Antivirus Policy Security Experience for Windows10 Config Mgr with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Id `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -255,7 +255,7 @@ class IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr : M365DSCResourc
             }
             $results += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -465,16 +465,13 @@ class IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr : M365DSCResourc
         {
             #region resource generator code
             $baseFilter = "creationSource eq 'WindowsSecurity' and technologies eq 'configManager'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceManagementConfigurationPolicy `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop
             #endregion

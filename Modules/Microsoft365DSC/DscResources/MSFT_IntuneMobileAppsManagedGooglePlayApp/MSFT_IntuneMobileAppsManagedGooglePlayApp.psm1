@@ -131,8 +131,8 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
             {
                 $getValue = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.ExportedInstance.Id
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Mobile Apps Managed Google Play App with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Mobile Apps Managed Google Play App with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             $results = @{
                 #region resource generator code
@@ -151,7 +151,7 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
                 ManagedIdentity       = $this.ManagedIdentity.IsPresent
                 #endregion
             }
-            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppAssignment -MobileAppId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppAssignment -MobileAppId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -277,16 +277,13 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.androidManagedStoreApp')"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceAppManagementMobileApp `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop | Where-Object -FilterScript {
                     $_.isSystemApp -eq $false

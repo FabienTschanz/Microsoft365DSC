@@ -322,28 +322,28 @@ class IntuneSettingCatalogASRRulesPolicyWindows10 : M365DSCResourceBase
                 $policy = $this.ExportedInstance
                 $settings = $policy.settings
             }
-            $this.Identity = $policy.Id
-            Write-Verbose -Message "Found Endpoint Protection Attack Surface Reduction Rules Policy with Id {$($this.Identity)} and Name {$($this.DisplayName))}."
+            $resolvedId = $policy.Id
+            Write-Verbose -Message "Found Endpoint Protection Attack Surface Reduction Rules Policy with Id {$($resolvedId)} and Name {$($this.DisplayName))}."
 
             #Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
             }
 
             $returnHashtable = @{}
-            $returnHashtable.Add('Identity', $this.Identity)
+            $returnHashtable.Add('Identity', $resolvedId)
             $returnHashtable.Add('DisplayName', $policy.name)
             $returnHashtable.Add('Description', $policy.description)
             $returnHashtable.Add('RoleScopeTagIds', $policy.roleScopeTagIds)
 
             $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Identity
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -499,17 +499,14 @@ class IntuneSettingCatalogASRRulesPolicyWindows10 : M365DSCResourceBase
         {
             $policyTemplateId = 'e8c053d6-9f95-42b1-a7f1-ebfd71c67a4b_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
 
             if ($policies.Length -eq 0)
             {

@@ -739,12 +739,13 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
 
         try
         {
+            $mergedFilter = $this.Filter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$policies = Get-MgBetaDeviceAppManagementiOSManagedAppProtection -All -Filter $this.Filter -ErrorAction Stop
+            [array]$policies = Get-MgBetaDeviceAppManagementiOSManagedAppProtection -All -Filter $mergedFilter -ErrorAction Stop
             $policies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $policies
 
             $i = 1

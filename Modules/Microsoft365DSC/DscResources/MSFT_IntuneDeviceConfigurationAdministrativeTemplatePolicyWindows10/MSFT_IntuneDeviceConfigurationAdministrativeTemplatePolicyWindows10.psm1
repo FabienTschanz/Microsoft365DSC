@@ -140,12 +140,12 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Configuration Administrative Template Policy for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Configuration Administrative Template Policy for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region
             $settings = Get-MgBetaDeviceManagementGroupPolicyConfigurationDefinitionValue `
-                -GroupPolicyConfigurationId $this.Id
+                -GroupPolicyConfigurationId $resolvedId
 
             $complexDefinitionValues = @()
             foreach ($setting in $settings)
@@ -158,7 +158,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 }
                 $definitionValue.Add('Enabled', $setting.Enabled)
                 $definition = Get-MgBetaDeviceManagementGroupPolicyConfigurationDefinitionValueDefinition `
-                    -GroupPolicyConfigurationId $this.Id `
+                    -GroupPolicyConfigurationId $resolvedId `
                     -GroupPolicyDefinitionValueId $setting.Id
 
                 $enumClassType = $null
@@ -184,7 +184,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 $definitionValue.Add('Definition', $complexDefinition)
 
                 $presentationValues = Get-MgBetaDeviceManagementGroupPolicyConfigurationDefinitionValuePresentationValue `
-                    -GroupPolicyConfigurationId $this.Id `
+                    -GroupPolicyConfigurationId $resolvedId `
                     -GroupPolicyDefinitionValueId $setting.Id `
                     -ExpandProperty 'presentation'
 
@@ -263,7 +263,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 #endregion
             }
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementGroupPolicyConfigurationAssignment -GroupPolicyConfigurationId $this.Id
+            $graphAssignments = Get-MgBetaDeviceManagementGroupPolicyConfigurationAssignment -GroupPolicyConfigurationId $resolvedId
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `

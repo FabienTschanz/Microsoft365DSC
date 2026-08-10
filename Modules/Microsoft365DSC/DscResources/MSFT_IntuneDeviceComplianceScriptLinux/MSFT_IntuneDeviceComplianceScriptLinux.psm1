@@ -139,8 +139,8 @@ class IntuneDeviceComplianceScriptLinux : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.id
-            Write-Verbose -Message "An Intune Device Compliance Script for Linux with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.id
+            Write-Verbose -Message "An Intune Device Compliance Script for Linux with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found"
 
             $results = @{
                 #region resource generator code
@@ -267,15 +267,12 @@ class IntuneDeviceComplianceScriptLinux : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "settingDefinitionId eq 'linux_customcompliance_discoveryscript_reusablesetting'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($this.Filter)" `
+            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($mergedFilter)" `
                 -Method GET `
                 -SkipHttpErrorCheck `
                 -ErrorAction Stop).value

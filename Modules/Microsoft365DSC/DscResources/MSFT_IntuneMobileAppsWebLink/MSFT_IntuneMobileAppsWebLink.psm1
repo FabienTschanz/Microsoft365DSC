@@ -451,16 +451,13 @@ class IntuneMobileAppsWebLink : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.iosiPadOSWebClip') or isof('microsoft.graph.macOSWebClip') or isof('microsoft.graph.windowsWebApp') or isof('microsoft.graph.webApp')"
-            if (-not [String]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceAppManagementMobileApp `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ExpandProperty 'categories' `
                 -ErrorAction Stop

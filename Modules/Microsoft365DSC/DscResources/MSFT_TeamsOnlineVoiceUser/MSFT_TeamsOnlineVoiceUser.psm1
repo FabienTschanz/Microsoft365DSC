@@ -199,15 +199,12 @@ class TeamsOnlineVoiceUser : M365DSCResourceBase
         {
             $i = 1
             $baseFilter = "(FeatureTypes -contains 'PhoneSystem') -and (AccountEnabled -eq '$True')"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) -and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) -and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$users = Get-CsOnlineUser -Filter $this.Filter `
+            [array]$users = Get-CsOnlineUser -Filter $mergedFilter `
                 -AccountType User `
                 -ErrorAction Stop
             $dscContent = [System.Text.StringBuilder]::new()

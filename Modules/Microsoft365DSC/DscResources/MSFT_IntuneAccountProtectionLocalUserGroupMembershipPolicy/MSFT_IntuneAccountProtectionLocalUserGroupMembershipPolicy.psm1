@@ -139,7 +139,7 @@ class IntuneAccountProtectionLocalUserGroupMembershipPolicy : M365DSCResourceBas
             }
 
             # Retrieve policy specific settings
-            $this.Identity = $policy.Id
+            $resolvedId = $policy.Id
 
             $returnHashtable = @{}
             $returnHashtable.Add('Identity', $policy.Id)
@@ -150,7 +150,7 @@ class IntuneAccountProtectionLocalUserGroupMembershipPolicy : M365DSCResourceBas
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -ErrorAction Stop
             }
@@ -380,17 +380,14 @@ class IntuneAccountProtectionLocalUserGroupMembershipPolicy : M365DSCResourceBas
             # Local user group membership template, family endpointSecurityAccountProtection
             $policyTemplateID = '22968f54-45fa-486c-848e-f8224aa69772_1'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$policies = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
 
             if ($policies.Length -eq 0)
             {

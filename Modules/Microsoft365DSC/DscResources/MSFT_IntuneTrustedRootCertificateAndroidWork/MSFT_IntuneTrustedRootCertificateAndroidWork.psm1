@@ -128,7 +128,7 @@ class IntuneTrustedRootCertificateAndroidWork : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
             Write-Verbose -Message "An Intune Trusted Root Certificate Policy for Android Work with id {$($this.id)} and DisplayName {$($this.DisplayName)} was found"
 
@@ -266,15 +266,12 @@ class IntuneTrustedRootCertificateAndroidWork : M365DSCResourceBase
 
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.androidWorkProfileTrustedRootCertificate')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

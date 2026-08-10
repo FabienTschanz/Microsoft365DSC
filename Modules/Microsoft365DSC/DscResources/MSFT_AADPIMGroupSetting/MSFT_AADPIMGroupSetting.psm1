@@ -264,8 +264,8 @@ class AADPIMGroupSetting : M365DSCResourceBase
             if ([System.String]::IsNullOrEmpty($GroupId))
             {
                 Write-Verbose 'GroupID was NULL, looking up group'
-                $this.Filter = "DisplayName eq '" + $($this.DisplayName -replace "'", "''") + "'"
-                $GroupId = (Get-MgGroup -Filter $this.Filter).Id
+                $groupFilter = "DisplayName eq '" + $($this.DisplayName -replace "'", "''") + "'"
+                $GroupId = (Get-MgGroup -Filter $groupFilter).Id
             }
             if ($this.Id -notmatch '^Group_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}_(owner|member)$')
             {
@@ -504,8 +504,6 @@ class AADPIMGroupSetting : M365DSCResourceBase
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
-        #$PSBoundParameters.Remove('AuthenticationContextName') | Out-Null
-
         #region Telemetry
         $this.AddTelemetry('Set')
         #endregion
@@ -513,8 +511,8 @@ class AADPIMGroupSetting : M365DSCResourceBase
 
         if ([System.String]::IsNullOrEmpty($GroupId))
         {
-            $this.Filter = "DisplayName eq '" + $this.DisplayName + "'"
-            $GroupId = (Get-MgGroup -Filter $this.Filter).Id
+            $groupFilter = "DisplayName eq '" + $this.DisplayName + "'"
+            $GroupId = (Get-MgGroup -Filter $groupFilter).Id
         }
 
         if ($this.Id -notmatch '^Group_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}_(owner|member)$')
@@ -839,8 +837,8 @@ class AADPIMGroupSetting : M365DSCResourceBase
                         foreach ($item in $this.ActivateApprover)
                         {
                             #is not a guid try with user
-                            $this.Filter = "UserPrincipalName eq '" + $item + "'"
-                            $user = Get-MgUser -Filter $this.Filter
+                            $userFilter = "UserPrincipalName eq '" + $item + "'"
+                            $user = Get-MgUser -Filter $userFilter
                             if ($null -ne $user)
                             {
                                 $ActivateApprovers = @{}
@@ -853,8 +851,8 @@ class AADPIMGroupSetting : M365DSCResourceBase
                             {
                                 Write-Verbose -Message "User '$item' not found, trying with group"
 
-                                $this.Filter = "displayName eq '" + $item + "'"
-                                $group = Get-MgGroup -Filter $this.Filter
+                                $groupByNameFilter = "displayName eq '" + $item + "'"
+                                $group = Get-MgGroup -Filter $groupByNameFilter
                                 if ($null -ne $group)
                                 {
                                     $ActivateApprovers = @{}
@@ -1047,17 +1045,18 @@ class AADPIMGroupSetting : M365DSCResourceBase
         $this.AddTelemetry('Export')
         #endregion
 
-        if ($this.filter -notlike '*DynamicMembership*')
+        $mergedFilter = $this.Filter
+        if ($this.Filter -notlike '*DynamicMembership*')
         {
-            if (-not [string]::IsNullOrEmpty($this.filter))
+            if (-not [string]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "$($this.Filter) and"
+                $mergedFilter = "$($this.Filter) and"
             }
-            $this.Filter = "$($this.Filter) NOT(groupTypes/any(x:x eq 'DynamicMembership'))"
+            $mergedFilter = "$mergedFilter NOT(groupTypes/any(x:x eq 'DynamicMembership'))"
         }
 
         $ExportParameters = @{
-            Filter           = $this.Filter
+            Filter           = $mergedFilter
             All              = [switch]$true
             Property         = 'displayname,Id'
             CountVariable    = 'CountVar'

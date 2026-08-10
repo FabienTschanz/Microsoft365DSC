@@ -212,8 +212,8 @@ class IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled : M365DSCReso
                 Write-Verbose -Message "Could not find an Intune Windows Information Protection Policy for Windows10 Mdm Enrolled with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Windows Information Protection Policy for Windows10 Mdm Enrolled with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Windows Information Protection Policy for Windows10 Mdm Enrolled with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexDataRecoveryCertificate = [ordered]@{}
@@ -555,12 +555,13 @@ class IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled : M365DSCReso
         try
         {
             #region resource generator code
+            $mergedFilter = $this.Filter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
             }
-            [array]$getValue = Get-MgBetaDeviceAppManagementMdmWindowsInformationProtectionPolicy -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceAppManagementMdmWindowsInformationProtectionPolicy -Filter $mergedFilter -All -ErrorAction Stop
             $getValue = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $getValue
             #endregion
 

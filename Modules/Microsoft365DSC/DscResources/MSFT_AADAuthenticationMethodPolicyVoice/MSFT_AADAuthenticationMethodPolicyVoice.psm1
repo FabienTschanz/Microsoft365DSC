@@ -109,8 +109,8 @@ class AADAuthenticationMethodPolicyVoice : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Authentication Method Policy Voice with Id {$($this.Id)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Authentication Method Policy Voice with Id {$($resolvedId)} was found."
 
             #region resource generator code
             Write-Verbose -Message 'Processing ExcludeTargets'

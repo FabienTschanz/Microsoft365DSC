@@ -171,9 +171,9 @@ class IntuneWifiConfigurationPolicyIOS : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
+            $resolvedId = $getValue.Id
 
-            Write-Verbose -Message "Found an Intune Wifi Configuration Policy for iOS with id {$($this.Id)}"
+            Write-Verbose -Message "Found an Intune Wifi Configuration Policy for iOS with id {$($resolvedId)}"
             $results = @{
                 #region resource generator code
                 Id                             = $getValue.Id
@@ -203,7 +203,7 @@ class IntuneWifiConfigurationPolicyIOS : M365DSCResourceBase
                 AccessTokens                   = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -353,15 +353,12 @@ class IntuneWifiConfigurationPolicyIOS : M365DSCResourceBase
 
             #region resource generator code
             $baseFilter = "isof('microsoft.graph.iosWiFiConfiguration') and not isof('microsoft.graph.iosEnterpriseWiFiConfiguration')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
             #endregion
 
             $i = 1

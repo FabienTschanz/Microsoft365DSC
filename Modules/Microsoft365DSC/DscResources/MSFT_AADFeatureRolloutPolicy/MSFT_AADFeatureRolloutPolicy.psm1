@@ -140,8 +140,8 @@ class AADFeatureRolloutPolicy : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Azure AD Policy Feature Rollout Policy with DisplayName {$($this.DisplayName)}."
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Policy Feature Rollout Policy with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Azure AD Policy Feature Rollout Policy with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found"
 
             #region resource generator code
             $enumFeature = $null

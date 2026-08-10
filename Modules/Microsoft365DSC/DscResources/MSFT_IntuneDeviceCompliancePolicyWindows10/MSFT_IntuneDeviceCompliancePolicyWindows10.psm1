@@ -545,18 +545,15 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.windows10CompliancePolicy')"
+            $mergedFilter = $baseFilter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $baseFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $strippedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = "($baseFilter) and ($strippedFilter)"
             }
             [array]$configDeviceWindowsPolicies = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
-                -ErrorAction Stop -All -Filter $this.Filter
+                -ErrorAction Stop -All -Filter $mergedFilter
             $configDeviceWindowsPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configDeviceWindowsPolicies
 
             $i = 1

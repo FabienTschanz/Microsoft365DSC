@@ -114,8 +114,8 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
                 $getValue = $null
                 if ([System.String]::IsNullOrEmpty($this.GroupId))
                 {
-                    $this.Filter = "DisplayName eq '" + $this.GroupDisplayName + "'"
-                    $this.ResourceCache['CurrentGroup'] = Get-MgGroup -Filter $this.Filter
+                    $groupFilter = "DisplayName eq '" + $this.GroupDisplayName + "'"
+                    $this.ResourceCache['CurrentGroup'] = Get-MgGroup -Filter $groupFilter
 
                     if ([string]::IsNullOrEmpty($this.ResourceCache['CurrentGroup']))
                     {
@@ -596,17 +596,18 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
         #endregion
 
         # Filter out dynamic groups
-        if ($this.filter -notlike '*DynamicMembership*')
+        $mergedFilter = $this.Filter
+        if ($this.Filter -notlike '*DynamicMembership*')
         {
-            if (-not [string]::IsNullOrEmpty($this.filter))
+            if (-not [string]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "$($this.Filter) and"
+                $mergedFilter = "$($this.Filter) and"
             }
-            $this.Filter = "$($this.Filter) NOT(groupTypes/any(x:x eq 'DynamicMembership')) and not(mailEnabled eq true and securityEnabled eq true)"
+            $mergedFilter = "$mergedFilter NOT(groupTypes/any(x:x eq 'DynamicMembership')) and not(mailEnabled eq true and securityEnabled eq true)"
         }
 
         $ExportParameters = @{
-            Filter           = $this.Filter
+            Filter           = $mergedFilter
             All              = [switch]$true
             Property         = 'displayname,Id'
             CountVariable    = 'CountVar'

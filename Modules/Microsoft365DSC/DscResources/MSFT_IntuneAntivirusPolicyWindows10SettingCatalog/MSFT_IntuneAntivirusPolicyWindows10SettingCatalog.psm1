@@ -508,14 +508,14 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
             {
                 $policy = $this.ExportedInstance
             }
-            $this.Identity = $policy.Id
-            Write-Verbose -Message "An Intune Antivirus Policy for Windows10 Setting Catalog with Id {$($this.Identity)} and Name {$($this.DisplayName)} was found."
+            $resolvedId = $policy.Id
+            Write-Verbose -Message "An Intune Antivirus Policy for Windows10 Setting Catalog with Id {$($resolvedId)} and Name {$($this.DisplayName)} was found."
 
             #Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array]$settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Identity `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -525,7 +525,7 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
             $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings
 
             $returnHashtable = @{}
-            $returnHashtable.Add('Identity', $this.Identity)
+            $returnHashtable.Add('Identity', $resolvedId)
             $returnHashtable.Add('DisplayName', $policy.name)
             $returnHashtable.Add('Description', $policy.description)
             $returnHashtable.Add('RoleScopeTagIds', $policy.roleScopeTagIds)
@@ -559,7 +559,7 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
             $returnHashtable += $policySettings
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Identity
+            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `
@@ -749,16 +749,13 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
             }
             $baseFilter = $baseFilter -join ' or '
             $baseFilter = "($baseFilter) and templateReference/templateFamily eq '$templateFamily'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$policies = Get-MgBetaDeviceManagementConfigurationPolicy `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop
 

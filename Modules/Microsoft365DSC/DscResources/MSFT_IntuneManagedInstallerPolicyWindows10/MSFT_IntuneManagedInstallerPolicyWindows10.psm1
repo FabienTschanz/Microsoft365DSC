@@ -135,8 +135,8 @@ class IntuneManagedInstallerPolicyWindows10 : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Intune Managed Installer Policy for Windows10 with DisplayName {$($this.DisplayName)}"
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Managed Installer Policy for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "An Intune Managed Installer Policy for Windows10 with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 
             $results = @{
                 #region resource generator code
@@ -158,7 +158,7 @@ class IntuneManagedInstallerPolicyWindows10 : M365DSCResourceBase
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceHealthScriptAssignment -DeviceHealthScriptId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceHealthScriptAssignment -DeviceHealthScriptId $resolvedId
             $assignmentResult = @()
             foreach ($assignment in $assignmentsValues)
             {
@@ -341,16 +341,13 @@ class IntuneManagedInstallerPolicyWindows10 : M365DSCResourceBase
         {
             #region resource generator code
             $baseFilter = "deviceHealthScriptType eq 'managedInstallerScript'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array]$getValue = Get-MgBetaDeviceManagementDeviceHealthScript `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -All `
                 -ErrorAction Stop
             #endregion

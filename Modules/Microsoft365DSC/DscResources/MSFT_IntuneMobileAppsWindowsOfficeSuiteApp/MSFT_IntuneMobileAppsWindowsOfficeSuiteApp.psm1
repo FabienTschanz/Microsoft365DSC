@@ -187,7 +187,6 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
                     $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $instance.Id `
                         -ExpandProperty 'categories' `
                         -ErrorAction SilentlyContinue
-                    $this.Id = $instance.Id
                 }
             }
 
@@ -197,7 +196,7 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
                 return $this.AsResult($nullResult)
             }
 
-            Write-Verbose "An Intune Windows Office Suite App with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            Write-Verbose "An Intune Windows Office Suite App with Id {$($instance.Id)} and DisplayName {$($this.DisplayName)} was found."
 
             #region complex types
             $complexCategories = @()
@@ -461,17 +460,14 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.officeSuiteApp')"
-            if (-not [String]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array] $getValue = Get-MgBetaDeviceAppManagementMobileApp `
                 -All `
-                -Filter $this.Filter `
+                -Filter $mergedFilter `
                 -ErrorAction Stop
 
             $i = 1

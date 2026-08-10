@@ -401,15 +401,12 @@ class IntuneRoleAssignment : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.deviceAndAppManagementRoleAssignment')"
-            if (-not [string]::IsNullOrEmpty($this.Filter))
+            $mergedFilter = $baseFilter
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
+                $mergedFilter = "($baseFilter) and ($($this.Filter))"
             }
-            else
-            {
-                $this.Filter = $baseFilter
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementRoleAssignment -Filter $this.Filter -All -ErrorAction Stop
+            [array]$getValue = Get-MgBetaDeviceManagementRoleAssignment -Filter $mergedFilter -All -ErrorAction Stop
 
             if (-not $getValue)
             {

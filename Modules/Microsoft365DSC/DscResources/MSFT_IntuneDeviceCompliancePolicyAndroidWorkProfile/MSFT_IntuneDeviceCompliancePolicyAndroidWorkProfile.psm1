@@ -263,7 +263,7 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
             {
                 $devicePolicy = $this.ExportedInstance
             }
-            $this.Id = $devicePolicy.Id
+            $resolvedId = $devicePolicy.Id
 
             Write-Verbose -Message "Found Intune Android Work Profile Device Compliance Policy with displayName {$($this.DisplayName)}"
 
@@ -508,19 +508,16 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
         try
         {
             $baseFilter = "isof('microsoft.graph.androidWorkProfileCompliancePolicy')"
+            $mergedFilter = $baseFilter
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $this.Filter = "($baseFilter) and ($($this.Filter))"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $strippedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
+                $mergedFilter = "($baseFilter) and ($strippedFilter)"
             }
             [array]$configDeviceAndroidPolicies = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
                 -ExpandProperty 'scheduledActionsForRule($expand=scheduledActionConfigurations)' `
-                -ErrorAction Stop -All -Filter $this.Filter
+                -ErrorAction Stop -All -Filter $mergedFilter
             $configDeviceAndroidPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configDeviceAndroidPolicies
 
             $i = 1
