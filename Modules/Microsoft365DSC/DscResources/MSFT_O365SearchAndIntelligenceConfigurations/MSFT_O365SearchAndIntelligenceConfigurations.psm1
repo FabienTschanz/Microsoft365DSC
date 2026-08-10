@@ -90,12 +90,13 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
             $this.AddTelemetry('Get')
             #endregion
 
+            $tenantIdValue = $this.TenantId
             if ($ConnectionMode -eq 'Credentials')
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
 
-            $ItemInsights = Get-MgBetaOrganizationSettingItemInsight -OrganizationId $this.TenantId
+            $ItemInsights = Get-MgBetaOrganizationSettingItemInsight -OrganizationId $tenantIdValue
             $itemInsightsDisabledForGroupValue = $null
             if (-not [System.String]::IsNullOrEmpty($ItemInsights.DisabledForGroup))
             {
@@ -105,7 +106,7 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
 
             try
             {
-                $PersonInsights = Get-MgBetaOrganizationSettingPersonInsight -OrganizationId $this.TenantId `
+                $PersonInsights = Get-MgBetaOrganizationSettingPersonInsight -OrganizationId $tenantIdValue `
                     -ErrorAction Stop
                 $PersonInsightsDisabledForGroupValue = $null
                 if (-not [System.String]::IsNullOrEmpty($PersonInsights.DisabledForGroup))
@@ -138,7 +139,7 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
                 PersonInsightsDisabledForGroup         = $PersonInsightsDisabledForGroupValue
                 Credential                             = $this.Credential
                 ApplicationId                          = $this.ApplicationId
-                TenantId                               = $this.TenantId
+                TenantId                               = $tenantIdValue
                 CertificateThumbprint                  = $this.CertificateThumbprint
                 CertificatePath                        = $this.CertificatePath
                 CertificatePassword                    = $this.CertificatePassword
@@ -172,12 +173,12 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
         #endregion
 
         $ConnectionMode = $this.Connect('ExchangeOnline')
-
         $ConnectionMode = $this.Connect('MicrosoftGraph')
 
+        $organizationId = $this.TenantId
         if ($ConnectionMode -eq 'Credentials')
         {
-            $this.TenantId = $this.Credential.UserName.Split('@')[1]
+            $organizationId = $this.Credential.UserName.Split('@')[1]
         }
 
         #region Item Insights
@@ -199,7 +200,7 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
             $ItemInsightsUpdateParams.Add('DisabledForGroup', $disabledForGroupValue)
         }
         Write-Verbose -Message 'Updating settings for Item Insights'
-        Update-MgBetaOrganizationSettingItemInsight -OrganizationId $this.TenantId -BodyParameter $ItemInsightsUpdateParams | Out-Null
+        Update-MgBetaOrganizationSettingItemInsight -OrganizationId $organizationId -BodyParameter $ItemInsightsUpdateParams | Out-Null
         #endregion
 
         #region Person Insights
@@ -222,7 +223,7 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
         }
 
         Write-Verbose -Message 'Updating settings for Person Insights'
-        Update-MgBetaOrganizationSettingPersonInsight -OrganizationId $this.TenantId -BodyParameter $PersonInsightsUpdateParams | Out-Null
+        Update-MgBetaOrganizationSettingPersonInsight -OrganizationId $organizationId -BodyParameter $PersonInsightsUpdateParams | Out-Null
         #endregion
 
         if ($null -ne $this.MeetingInsightsIsEnabledInOrganization)
@@ -316,4 +317,3 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
         return $result
     }
 }
-

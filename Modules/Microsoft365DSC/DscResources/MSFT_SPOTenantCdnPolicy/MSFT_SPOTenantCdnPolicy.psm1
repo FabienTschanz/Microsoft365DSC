@@ -81,23 +81,23 @@ class SPOTenantCdnPolicy : M365DSCResourceBase
 
             $Policies = Get-PnPTenantCdnPolicies -CdnType $this.CDNType -ErrorAction Stop
 
-            $this.ExcludeRestrictedSiteClassifications = @()
-            $this.IncludeFileExtensions = @()
+            $excludeRestrictedSiteClassificationsValue = @()
+            $includeFileExtensionsValue = @()
             $Policies.GetEnumerator() | ForEach-Object {
                 if ($_.Key -eq 'ExcludeRestrictedSiteClassifications' -and $_.Value.Length -gt 0)
                 {
-                    $this.ExcludeRestrictedSiteClassifications = $_.Value.Split(',')
+                    $excludeRestrictedSiteClassificationsValue = $_.Value.Split(',')
                 }
                 if ($_.Key -eq 'IncludeFileExtensions' -and $_.Value.Length -gt 0)
                 {
-                    $this.IncludeFileExtensions = $_.Value.Split(',')
+                    $includeFileExtensionsValue = $_.Value.Split(',')
                 }
             }
 
             return $this.AsResult(@{
                 CDNType                              = $this.CDNType
-                ExcludeRestrictedSiteClassifications = $this.ExcludeRestrictedSiteClassifications
-                IncludeFileExtensions                = $this.IncludeFileExtensions
+                ExcludeRestrictedSiteClassifications = $excludeRestrictedSiteClassificationsValue
+                IncludeFileExtensions                = $includeFileExtensionsValue
                 Credential                           = $this.Credential
                 ApplicationId                        = $this.ApplicationId
                 TenantId                             = $this.TenantId
@@ -141,10 +141,10 @@ class SPOTenantCdnPolicy : M365DSCResourceBase
         {
             Write-Verbose 'Found difference in IncludeFileExtensions'
 
-            [String]$this.IncludeFileExtensions = [String[]]$this.IncludeFileExtensions -join ','
+            $includeFileExtensionsPolicyValue = [String[]]$this.IncludeFileExtensions -join ','
             Set-PnPTenantCdnPolicy -CdnType $this.CDNType `
                 -PolicyType 'IncludeFileExtensions' `
-                -PolicyValue $this.IncludeFileExtensions
+                -PolicyValue $includeFileExtensionsPolicyValue
         }
 
         if ($null -ne (Compare-Object -ReferenceObject $curPolicies.ExcludeRestrictedSiteClassifications `
@@ -152,10 +152,10 @@ class SPOTenantCdnPolicy : M365DSCResourceBase
         {
             Write-Verbose 'Found difference in ExcludeRestrictedSiteClassifications'
 
-            [String]$this.ExcludeRestrictedSiteClassifications = [String[]]$this.ExcludeRestrictedSiteClassifications -join ','
+            $excludeRestrictedSiteClassificationsPolicyValue = [String[]]$this.ExcludeRestrictedSiteClassifications -join ','
             Set-PnPTenantCdnPolicy -CdnType $this.CDNType `
                 -PolicyType 'ExcludeRestrictedSiteClassifications' `
-                -PolicyValue $this.ExcludeRestrictedSiteClassifications
+                -PolicyValue $excludeRestrictedSiteClassificationsPolicyValue
         }
     }
 

@@ -36,7 +36,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Get-CsTeamsAudioConferencingPolicy -MockWith {
                 return @{
                     AllowTollFreeDialin       = $True
-                    MeetingInvitePhoneNumbers = 'FakeStringValue'
+                    MeetingInvitePhoneNumbers = @('FakeStringValue')
                     Identity                  = 'FakeStringValue'
 
                 }
@@ -67,7 +67,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowTollFreeDialin       = $True
-                    MeetingInvitePhoneNumbers = 'FakeStringValue'
+                    MeetingInvitePhoneNumbers = @('FakeStringValue')
                     Identity                  = 'FakeStringValue'
                     Ensure                    = 'Present'
                     Credential                = $Credential
@@ -93,7 +93,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowTollFreeDialin       = $True
-                    MeetingInvitePhoneNumbers = 'FakeStringValue'
+                    MeetingInvitePhoneNumbers = @('FakeStringValue')
                     Identity                  = 'FakeStringValue'
                     Ensure                    = 'Absent'
                     Credential                = $Credential
@@ -118,7 +118,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowTollFreeDialin       = $True
-                    MeetingInvitePhoneNumbers = 'FakeStringValue'
+                    MeetingInvitePhoneNumbers = @('FakeStringValue')
                     Identity                  = 'FakeStringValue'
                     Ensure                    = 'Present'
                     Credential                = $Credential
@@ -134,7 +134,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     AllowTollFreeDialin       = $False # Drift
-                    MeetingInvitePhoneNumbers = 'FakeStringValue'
+                    MeetingInvitePhoneNumbers = @('FakeStringValue')
                     Identity                  = 'FakeStringValue'
                     Ensure                    = 'Present'
                     Credential                = $Credential

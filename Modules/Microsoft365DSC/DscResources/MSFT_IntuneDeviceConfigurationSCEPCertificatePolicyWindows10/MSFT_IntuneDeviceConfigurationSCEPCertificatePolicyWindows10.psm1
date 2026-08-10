@@ -202,8 +202,8 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Configuration Scep Certificate Policy for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $policyId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Configuration Scep Certificate Policy for Windows10 with Id {$policyId} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexCustomSubjectAlternativeNames = @()
@@ -285,8 +285,8 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
             #endregion
 
             $RootCertificate = Get-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificate -DeviceConfigurationPolicyId $getValue.Id
-            $this.RootCertificateId = $RootCertificate.Id
-            $this.RootCertificateDisplayName = $RootCertificate.DisplayName
+            $rootCertificateIdValue = $RootCertificate.Id
+            $rootCertificateDisplayNameValue = $RootCertificate.DisplayName
 
             $results = @{
                 #region resource generator code
@@ -305,8 +305,8 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
                 RenewalThresholdPercentage         = $getValue.renewalThresholdPercentage
                 SubjectAlternativeNameType         = $enumSubjectAlternativeNameType
                 SubjectNameFormat                  = $enumSubjectNameFormat
-                RootCertificateId                  = $this.RootCertificateId
-                RootCertificateDisplayName         = $this.RootCertificateDisplayName
+                RootCertificateId                  = $rootCertificateIdValue
+                RootCertificateDisplayName         = $rootCertificateDisplayNameValue
                 Description                        = $getValue.Description
                 DisplayName                        = $getValue.DisplayName
                 Id                                 = $getValue.Id
@@ -324,7 +324,7 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $policyId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -373,33 +373,34 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
             $CreateParameters.Remove('Id') | Out-Null
             $CreateParameters['keyUsage'] = $CreateParameters['keyUsage'] -join ','
 
+            $rootCertificateIdValue = $this.RootCertificateId
             $RootCertificate = Get-MgBetaDeviceManagementDeviceConfiguration `
-                -DeviceConfigurationId $this.RootCertificateId `
+                -DeviceConfigurationId $rootCertificateIdValue `
                 -ErrorAction SilentlyContinue
 
             if ($null -eq $RootCertificate)
             {
-                Write-Verbose -Message "Could not find trusted root certificate with Id {$($this.RootCertificateId)}, searching by display name {$($this.RootCertificateDisplayName)}"
+                Write-Verbose -Message "Could not find trusted root certificate with Id {$rootCertificateIdValue}, searching by display name {$($this.RootCertificateDisplayName)}"
 
                 $RootCertificate = Get-MgBetaDeviceManagementDeviceConfiguration `
                     -Filter "DisplayName eq '$($this.RootCertificateDisplayName -replace "'", "''")' and isof('microsoft.graph.windows81TrustedRootCertificate')" `
                     -ErrorAction SilentlyContinue
-                $this.RootCertificateId = $RootCertificate.Id
 
                 if ($null -eq $RootCertificate)
                 {
-                    throw "Could not find trusted root certificate with Id {$($this.RootCertificateId)} or display name {$($this.RootCertificateDisplayName)}"
+                    throw "Could not find trusted root certificate with Id {$rootCertificateIdValue} or display name {$($this.RootCertificateDisplayName)}"
                 }
+                $rootCertificateIdValue = $RootCertificate.Id
 
                 Write-Verbose -Message "Found trusted root certificate with Id {$($RootCertificate.Id)} and DisplayName {$($RootCertificate.DisplayName)}"
             }
             else
             {
-                Write-Verbose -Message "Found trusted root certificate with Id {$($this.RootCertificateId)}"
+                Write-Verbose -Message "Found trusted root certificate with Id {$rootCertificateIdValue}"
             }
 
             #region resource generator code
-            $CreateParameters.Add('rootCertificate@odata.bind', "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$($this.RootCertificateId)')")
+            $CreateParameters.Add('rootCertificate@odata.bind', "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$rootCertificateIdValue')")
             $CreateParameters.Add('@odata.type', '#microsoft.graph.windows81SCEPCertificateProfile')
             $policy = New-MgBetaDeviceManagementDeviceConfiguration -BodyParameter $CreateParameters
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
@@ -437,8 +438,9 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
                 -Repository 'deviceManagement/deviceConfigurations'
             #endregion
 
+            $rootCertificateIdValue = $this.RootCertificateId
             $RootCertificate = Get-MgBetaDeviceManagementDeviceConfiguration `
-                -DeviceConfigurationId $this.RootCertificateId `
+                -DeviceConfigurationId $rootCertificateIdValue `
                 -ErrorAction SilentlyContinue | `
                     Where-Object -FilterScript {
                     $_.'@odata.type' -eq '#microsoft.graph.windows81TrustedRootCertificate'
@@ -446,7 +448,7 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
 
             if ($null -eq $RootCertificate)
             {
-                Write-Verbose -Message "Could not find trusted root certificate with Id {$($this.RootCertificateId)}, searching by display name {$($this.RootCertificateDisplayName)}"
+                Write-Verbose -Message "Could not find trusted root certificate with Id {$rootCertificateIdValue}, searching by display name {$($this.RootCertificateDisplayName)}"
 
                 $RootCertificate = Get-MgBetaDeviceManagementDeviceConfiguration `
                     -Filter "DisplayName eq '$($this.RootCertificateDisplayName -replace "'", "''")'" `
@@ -454,23 +456,23 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
                         Where-Object -FilterScript {
                         $_.'@odata.type' -eq '#microsoft.graph.windows81TrustedRootCertificate'
                     }
-                $this.RootCertificateId = $RootCertificate.Id
 
                 if ($null -eq $RootCertificate)
                 {
-                    throw "Could not find trusted root certificate with Id {$($this.RootCertificateId)} or display name {$($this.RootCertificateDisplayName)}"
+                    throw "Could not find trusted root certificate with Id {$rootCertificateIdValue} or display name {$($this.RootCertificateDisplayName)}"
                 }
+                $rootCertificateIdValue = $RootCertificate.Id
 
                 Write-Verbose -Message "Found trusted root certificate with Id {$($RootCertificate.Id)} and DisplayName {$($RootCertificate.DisplayName)}"
             }
             else
             {
-                Write-Verbose -Message "Found trusted root certificate with Id {$($this.RootCertificateId)}"
+                Write-Verbose -Message "Found trusted root certificate with Id {$rootCertificateIdValue}"
             }
 
             Update-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificateId `
                 -DeviceConfigurationPolicyId $currentInstance.id `
-                -RootCertificateId $this.RootCertificateId
+                -RootCertificateId $rootCertificateIdValue
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {

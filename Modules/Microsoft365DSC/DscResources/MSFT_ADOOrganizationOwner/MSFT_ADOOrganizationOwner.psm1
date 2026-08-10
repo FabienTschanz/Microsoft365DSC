@@ -129,7 +129,7 @@ class ADOOrganizationOwner : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating owner for organization {$($this.OrganizationName)} to {$($ownerInfo.id)}"
             $body = "[{`"from`":`"`",`"op`":2,`"path`":`"/Owner`",`"value`":`"$($ownerInfo.id)`"}]"
-            $uri = 'https://vssps.dev.azure.com/O365DSC-Dev/_apis/Organization/Collections/Me?api-version=7.1-preview.1'
+            $uri = "https://vssps.dev.azure.com/$($this.OrganizationName)/_apis/Organization/Collections/Me?api-version=7.1-preview.1"
             Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri -Method PATCH -Body $body
         }
         else
@@ -153,6 +153,9 @@ class ADOOrganizationOwner : M365DSCResourceBase
         try
         {
             $ConnectionMode = $this.Connect('AzureDevOPS')
+
+            #Ensure the proper dependencies are installed in the current environment.
+            Confirm-M365DSCDependencies
 
             #region Telemetry
             $this.AddTelemetry('Export')

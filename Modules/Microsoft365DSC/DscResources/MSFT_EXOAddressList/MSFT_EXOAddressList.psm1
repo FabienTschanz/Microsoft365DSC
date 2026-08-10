@@ -177,13 +177,10 @@ class EXOAddressList : M365DSCResourceBase
                 $AddressList = $this.ExportedInstance
             }
 
-            if ($null -eq $AddressList.IncludedRecipients)
+            $includedRecipientsValue = @()
+            if ($null -ne $AddressList.IncludedRecipients)
             {
-                $this.IncludedRecipients = @()
-            }
-            else
-            {
-                $this.IncludedRecipients = $AddressList.IncludedRecipients
+                $includedRecipientsValue = $AddressList.IncludedRecipients
             }
 
             Write-Verbose -Message "Found AddressList $($this.Name)"
@@ -209,7 +206,7 @@ class EXOAddressList : M365DSCResourceBase
                 ConditionalDepartment        = $AddressList.ConditionalDepartment
                 ConditionalStateOrProvince   = $AddressList.ConditionalStateOrProvince
                 DisplayName                  = $AddressList.DisplayName
-                IncludedRecipients           = $this.IncludedRecipients
+                IncludedRecipients           = $includedRecipientsValue
                 RecipientFilter              = $AddressList.RecipientFilter
                 Ensure                       = 'Present'
                 Credential                   = $this.Credential

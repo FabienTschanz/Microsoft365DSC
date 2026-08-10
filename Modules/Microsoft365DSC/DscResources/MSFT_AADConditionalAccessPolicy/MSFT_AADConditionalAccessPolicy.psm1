@@ -357,7 +357,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
 
             Write-Verbose -Message 'Get-TargetResource: Process IncludeUsers'
             #translate IncludeUser GUIDs to UPN, except id value is GuestsOrExternalUsers, None or All
-            $this.IncludeUsers = @()
+            $includeUsersValue = @()
             if ($Policy.Conditions.Users.IncludeUsers)
             {
                 foreach ($IncludeUserGUID in $Policy.Conditions.Users.IncludeUsers)
@@ -376,19 +376,19 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         }
                         if ($IncludeUser)
                         {
-                            $this.IncludeUsers += $IncludeUser
+                            $includeUsersValue += $IncludeUser
                         }
                     }
                     else
                     {
-                        $this.IncludeUsers += $IncludeUserGUID
+                        $includeUsersValue += $IncludeUserGUID
                     }
                 }
             }
 
             Write-Verbose -Message 'Get-TargetResource: Process ExcludeUsers'
             #translate ExcludeUser GUIDs to UPN, except id value is GuestsOrExternalUsers, None or All
-            $this.ExcludeUsers = @()
+            $excludeUsersValue = @()
             if ($Policy.Conditions.Users.ExcludeUsers)
             {
                 foreach ($ExcludedUser in $Policy.Conditions.Users.ExcludeUsers)
@@ -407,19 +407,19 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         }
                         if ($ExcludeUser)
                         {
-                            $this.ExcludeUsers += $ExcludeUser
+                            $excludeUsersValue += $ExcludeUser
                         }
                     }
                     else
                     {
-                        $this.ExcludeUsers += $ExcludedUser
+                        $excludeUsersValue += $ExcludedUser
                     }
                 }
             }
 
             Write-Verbose -Message 'Get-TargetResource: Process IncludeGroups'
             #translate IncludeGroup GUIDs to DisplayName
-            $this.IncludeGroups = @()
+            $includeGroupsValue = @()
             if ($Policy.Conditions.Users.IncludeGroups)
             {
                 foreach ($IncludeGroupGUID in $Policy.Conditions.Users.IncludeGroups)
@@ -436,14 +436,14 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     }
                     if ($IncludeGroup)
                     {
-                        $this.IncludeGroups += $IncludeGroup
+                        $includeGroupsValue += $IncludeGroup
                     }
                 }
             }
 
             Write-Verbose -Message 'Get-TargetResource: Process ExcludeGroups'
             #translate ExcludeGroup GUIDs to DisplayName
-            $this.ExcludeGroups = @()
+            $excludeGroupsValue = @()
             if ($Policy.Conditions.Users.ExcludeGroups)
             {
                 foreach ($ExcludeGroupGUID in $Policy.Conditions.Users.ExcludeGroups)
@@ -460,13 +460,13 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     }
                     if ($ExcludeGroup)
                     {
-                        $this.ExcludeGroups += $ExcludeGroup
+                        $excludeGroupsValue += $ExcludeGroup
                     }
                 }
             }
 
-            $this.IncludeRoles = @()
-            $this.ExcludeRoles = @()
+            $includeRolesValue = @()
+            $excludeRolesValue = @()
             #translate role template guids to role name
             if ($Policy.Conditions.Users.IncludeRoles -or $Policy.Conditions.Users.ExcludeRoles)
             {
@@ -489,7 +489,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         }
                         else
                         {
-                            $this.IncludeRoles += $rolelookup[$IncludeRoleGUID]
+                            $includeRolesValue += $rolelookup[$IncludeRoleGUID]
                         }
                     }
                 }
@@ -505,14 +505,14 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         }
                         else
                         {
-                            $this.ExcludeRoles += $rolelookup[$ExcludeRoleGUID]
+                            $excludeRolesValue += $rolelookup[$ExcludeRoleGUID]
                         }
                     }
                 }
             }
 
-            $this.IncludeLocations = @()
-            $this.ExcludeLocations = @()
+            $includeLocationsValue = @()
+            $excludeLocationsValue = @()
             #translate Location template guids to Location name
             if ($Policy.Conditions.Locations)
             {
@@ -531,11 +531,11 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     {
                         if ($IncludeLocationGUID -in 'All', 'AllTrusted')
                         {
-                            $this.IncludeLocations += $IncludeLocationGUID
+                            $includeLocationsValue += $IncludeLocationGUID
                         }
                         elseif ($IncludeLocationGUID -eq '00000000-0000-0000-0000-000000000000')
                         {
-                            $this.IncludeLocations += 'Multifactor authentication trusted IPs'
+                            $includeLocationsValue += 'Multifactor authentication trusted IPs'
                         }
                         elseif ($null -eq $Locationlookup[$IncludeLocationGUID])
                         {
@@ -543,7 +543,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         }
                         else
                         {
-                            $this.IncludeLocations += $Locationlookup[$IncludeLocationGUID]
+                            $includeLocationsValue += $Locationlookup[$IncludeLocationGUID]
                         }
                     }
                 }
@@ -555,11 +555,11 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     {
                         if ($ExcludeLocationGUID -in 'All', 'AllTrusted')
                         {
-                            $this.ExcludeLocations += $ExcludeLocationGUID
+                            $excludeLocationsValue += $ExcludeLocationGUID
                         }
                         elseif ($ExcludeLocationGUID -eq '00000000-0000-0000-0000-000000000000')
                         {
-                            $this.ExcludeLocations += 'Multifactor authentication trusted IPs'
+                            $excludeLocationsValue += 'Multifactor authentication trusted IPs'
                         }
                         elseif ($null -eq $Locationlookup[$ExcludeLocationGUID])
                         {
@@ -567,15 +567,15 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         }
                         else
                         {
-                            $this.ExcludeLocations += $Locationlookup[$ExcludeLocationGUID]
+                            $excludeLocationsValue += $Locationlookup[$ExcludeLocationGUID]
                         }
                     }
                 }
             }
-            $this.CloudAppSecurityType = $null
+            $cloudAppSecurityTypeValue = $null
             if ($Policy.SessionControls.CloudAppSecurity.IsEnabled)
             {
-                $this.CloudAppSecurityType = [System.String]$Policy.SessionControls.CloudAppSecurity.CloudAppSecurityType
+                $cloudAppSecurityTypeValue = [System.String]$Policy.SessionControls.CloudAppSecurity.CloudAppSecurityType
             }
             $ContinuousAccessEvaluationModeValue = $null
             if ($Policy.SessionControls.ContinuousAccessEvaluation.Mode)
@@ -584,26 +584,28 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             }
             if ($Policy.SessionControls.SignInFrequency.IsEnabled)
             {
-                $this.SignInFrequencyType = [System.String]$Policy.SessionControls.SignInFrequency.Type
+                $signInFrequencyTypeValue = [System.String]$Policy.SessionControls.SignInFrequency.Type
                 $SignInFrequencyIntervalValue = [System.String]$Policy.SessionControls.SignInFrequency.FrequencyInterval
             }
             else
             {
-                $this.SignInFrequencyType = $null
+                $signInFrequencyTypeValue = $null
                 $SignInFrequencyIntervalValue = $null
             }
-            $this.PersistentBrowserMode = $null
+            $persistentBrowserModeValue = $null
             if ($Policy.SessionControls.PersistentBrowser.IsEnabled)
             {
-                $this.PersistentBrowserMode = [System.String]$Policy.SessionControls.PersistentBrowser.Mode
+                $persistentBrowserModeValue = [System.String]$Policy.SessionControls.PersistentBrowser.Mode
             }
+            $includeGuestOrExternalUserTypesValue = $null
             if ($Policy.Conditions.Users.IncludeGuestsOrExternalUsers.GuestOrExternalUserTypes)
             {
-                [Array]$this.IncludeGuestOrExternalUserTypes = ($Policy.Conditions.Users.IncludeGuestsOrExternalUsers.GuestOrExternalUserTypes).Split(',')
+                [Array]$includeGuestOrExternalUserTypesValue = ($Policy.Conditions.Users.IncludeGuestsOrExternalUsers.GuestOrExternalUserTypes).Split(',')
             }
+            $excludeGuestOrExternalUserTypesValue = $null
             if ($Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.GuestOrExternalUserTypes)
             {
-                [Array]$this.ExcludeGuestOrExternalUserTypes = ($Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.GuestOrExternalUserTypes).Split(',')
+                [Array]$excludeGuestOrExternalUserTypesValue = ($Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.GuestOrExternalUserTypes).Split(',')
             }
 
             $termOfUseName = $null
@@ -724,17 +726,17 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 #no translation of GUIDs, return empty string array if undefined
                 IncludeUserActions                       = [System.String[]]($Policy.Conditions.Applications.IncludeUserActions)
                 #no translation needed, return empty string array if undefined
-                IncludeUsers                             = $this.IncludeUsers
-                ExcludeUsers                             = $this.ExcludeUsers
-                IncludeGroups                            = $this.IncludeGroups
-                ExcludeGroups                            = $this.ExcludeGroups
-                IncludeRoles                             = $this.IncludeRoles
-                ExcludeRoles                             = $this.ExcludeRoles
-                IncludeGuestOrExternalUserTypes          = [System.String[]]$this.IncludeGuestOrExternalUserTypes
+                IncludeUsers                             = $includeUsersValue
+                ExcludeUsers                             = $excludeUsersValue
+                IncludeGroups                            = $includeGroupsValue
+                ExcludeGroups                            = $excludeGroupsValue
+                IncludeRoles                             = $includeRolesValue
+                ExcludeRoles                             = $excludeRolesValue
+                IncludeGuestOrExternalUserTypes          = [System.String[]]$includeGuestOrExternalUserTypesValue
                 IncludeExternalTenantsMembershipKind     = [System.String]$Policy.Conditions.Users.IncludeGuestsOrExternalUsers.ExternalTenants.MembershipKind
                 IncludeExternalTenantsMembers            = Get-M365DSCArrayFromProperty -PropertyValue $Policy.Conditions.Users.IncludeGuestsOrExternalUsers.ExternalTenants.members -ElementType ([System.String])
 
-                ExcludeGuestOrExternalUserTypes          = [System.String[]]$this.ExcludeGuestOrExternalUserTypes
+                ExcludeGuestOrExternalUserTypes          = [System.String[]]$excludeGuestOrExternalUserTypesValue
                 ExcludeExternalTenantsMembershipKind     = [System.String]$Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.ExternalTenants.MembershipKind
                 ExcludeExternalTenantsMembers            = Get-M365DSCArrayFromProperty -PropertyValue $Policy.Conditions.Users.ExcludeGuestsOrExternalUsers.ExternalTenants.members -ElementType ([System.String])
 
@@ -747,8 +749,8 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 #no translation needed, return empty string array if undefined
                 ExcludePlatforms                         = Get-M365DSCArrayFromProperty -PropertyValue $Policy.Conditions.Platforms.ExcludePlatforms -ElementType ([System.String])
                 #no translation needed, return empty string array if undefined
-                IncludeLocations                         = $this.IncludeLocations
-                ExcludeLocations                         = $this.ExcludeLocations
+                IncludeLocations                         = $includeLocationsValue
+                ExcludeLocations                         = $excludeLocationsValue
 
                 #no translation needed, return empty string array if undefined
                 DeviceFilterMode                         = [System.String]$Policy.Conditions.Devices.DeviceFilter.Mode
@@ -770,7 +772,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 #make false if undefined, true if true
                 CloudAppSecurityIsEnabled                = $false -or $Policy.SessionControls.CloudAppSecurity.IsEnabled
                 #make false if undefined, true if true
-                CloudAppSecurityType                     = [System.String]$Policy.SessionControls.CloudAppSecurity.CloudAppSecurityType
+                CloudAppSecurityType                     = [System.String]$cloudAppSecurityTypeValue
                 ContinuousAccessEvaluationMode           = $ContinuousAccessEvaluationModeValue
                 SecureSignInSessionIsEnabled             = $false -or $Policy.SessionControls.SecureSignInSession.IsEnabled
                 #no translation needed, return empty string array if undefined
@@ -778,14 +780,14 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 #make false if undefined, true if true
                 SignInFrequencyValue                     = $Policy.SessionControls.SignInFrequency.Value
                 #no translation or conversion needed, $null returned if undefined
-                SignInFrequencyType                      = [System.String]$Policy.SessionControls.SignInFrequency.Type
+                SignInFrequencyType                      = [System.String]$signInFrequencyTypeValue
                 SignInFrequencyInterval                  = $SignInFrequencyIntervalValue
                 #no translation needed
                 PersistentBrowserIsEnabled               = $false -or $Policy.SessionControls.PersistentBrowser.IsEnabled
                 #no translation needed
                 DisableResilienceDefaultsIsEnabled       = $DisableResilienceDefaultsIsEnabledValue
                 #make false if undefined, true if true
-                PersistentBrowserMode                    = [System.String]$Policy.SessionControls.PersistentBrowser.Mode
+                PersistentBrowserMode                    = [System.String]$persistentBrowserModeValue
                 #no translation needed
                 AuthenticationStrength                   = $AuthenticationStrengthValue
                 AuthenticationContexts                   = $AuthenticationContextsValues
@@ -1205,12 +1207,12 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                         $excludeGuestOrExternalUserTypesValue = $this.ExcludeGuestOrExternalUserTypes -join ','
                         $excludeGuestsOrExternalUsers.Add('guestOrExternalUserTypes', $excludeGuestOrExternalUserTypesValue)
                         $externalTenants = @{}
-                        # Assume default value of 'All' if ExcludeExternalTenantsMembershipKind is null or empty
-                        if ([System.String]::IsNullOrEmpty($this.ExcludeExternalTenantsMembershipKind))
+                        $excludeMembershipKind = $this.ExcludeExternalTenantsMembershipKind
+                        if ([System.String]::IsNullOrEmpty($excludeMembershipKind))
                         {
-                            $this.ExcludeExternalTenantsMembershipKind = 'All'
+                            $excludeMembershipKind = 'All'
                         }
-                        if ($this.ExcludeExternalTenantsMembershipKind -eq 'All')
+                        if ($excludeMembershipKind -eq 'All')
                         {
                             $externalTenants.Add('@odata.type', '#microsoft.graph.conditionalAccessAllExternalTenants')
                             if ($this.GetBoundParameters().ContainsKey('ExcludeExternalTenantsMembers') -and $this.ExcludeExternalTenantsMembers.Count -gt 0)
@@ -1218,11 +1220,11 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                                 throw "Set(): ExcludeExternalTenantsMembers is defined, but ExcludeExternalTenantsMembershipKind is 'All'. Please set ExcludeExternalTenantsMembershipKind to 'enumerated' to use ExcludeExternalTenantsMembers."
                             }
                         }
-                        elseif ($this.ExcludeExternalTenantsMembershipKind -eq 'enumerated')
+                        elseif ($excludeMembershipKind -eq 'enumerated')
                         {
                             $externalTenants.Add('@odata.type', '#microsoft.graph.conditionalAccessEnumeratedExternalTenants')
                         }
-                        $externalTenants.Add('membershipKind', $this.ExcludeExternalTenantsMembershipKind)
+                        $externalTenants.Add('membershipKind', $excludeMembershipKind)
                         if ($this.ExcludeExternalTenantsMembers)
                         {
                             $externalTenants.Add('members', $this.ExcludeExternalTenantsMembers)

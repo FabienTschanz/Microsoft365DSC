@@ -84,6 +84,7 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
     {
         # Declared up front: assigned conditionally below, which class methods reject.
         $DisplayName = $null
+        $resolvedPolicyId = $null
         if ($this.RequiresPowerShellCore())
         {
             $remote = [AADRoleManagementPolicyRule]::new()
@@ -133,23 +134,24 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
                     return $this.AsResult($nullResult)
                 }
 
-                $this.policyId = $assignment.PolicyId
+                $resolvedPolicyId = $assignment.PolicyId
                 $getValue = Get-MgBetaPolicyRoleManagementPolicyRule `
-                    -UnifiedRoleManagementPolicyId $this.policyId `
+                    -UnifiedRoleManagementPolicyId $resolvedPolicyId `
                     -UnifiedRoleManagementPolicyRuleId $this.id -ErrorAction SilentlyContinue
 
                 if ($null -eq $getValue)
                 {
-                    Write-Verbose -Message "Could not find an Azure AD Role Management Policy Rule with Id {$($this.id)} and PolicyId {$($this.policyId)}."
+                    Write-Verbose -Message "Could not find an Azure AD Role Management Policy Rule with Id {$($this.id)} and PolicyId {$resolvedPolicyId}."
                     return $this.AsResult($nullResult)
                 }
             }
             else
             {
                 $getValue = $this.ExportedInstance
+                $resolvedPolicyId = $this.ResourceCache['ResolvedPolicyId']
             }
 
-            Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$($this.id)} and PolicyId {$($this.policyId)} was found"
+            Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$($this.id)} and PolicyId {$resolvedPolicyId} was found"
 
             $complexRule = [ordered]@{
                 id       = $getValue.id
@@ -243,7 +245,7 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
 
             $results = @{
                 Id                        = $this.Id
-                PolicyId                  = $this.PolicyId
+                PolicyId                  = $resolvedPolicyId
                 RoleDisplayName           = $this.RoleDisplayName
                 RuleType                  = $complexRule.RuleType
                 ExpirationRule            = $complexRule.ExpirationRule
@@ -366,9 +368,10 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
             foreach ($role in $roles)
             {
                 $assignment = $this.ResourceCache['allPolicyAssignments'] | Where-Object { $_.RoleDefinitionId -eq $role.Id }
-                $this.policyId = $assignment.PolicyId
+                $exportPolicyId = $assignment.PolicyId
+                $this.ResourceCache['ResolvedPolicyId'] = $exportPolicyId
                 $rules = Get-MgBetaPolicyRoleManagementPolicyRule `
-                    -UnifiedRoleManagementPolicyId $this.policyId
+                    -UnifiedRoleManagementPolicyId $exportPolicyId
 
                 Write-M365DSCHost -Message "    |---[$j/$($roles.Count)] $($role.displayName)"
                 $i = 1

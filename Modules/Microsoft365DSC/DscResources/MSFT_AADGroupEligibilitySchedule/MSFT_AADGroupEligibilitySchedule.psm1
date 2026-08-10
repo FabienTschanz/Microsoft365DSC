@@ -112,9 +112,10 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
                 $nullResult.Ensure = 'Absent'
 
                 $getValue = $null
+                $currentGroupId = $this.GroupId
                 if ([System.String]::IsNullOrEmpty($this.GroupId))
                 {
-                    $groupFilter = "DisplayName eq '" + $this.GroupDisplayName + "'"
+                    $groupFilter = "DisplayName eq '$($this.GroupDisplayName -replace "'", "''")'"
                     $this.ResourceCache['CurrentGroup'] = Get-MgGroup -Filter $groupFilter
 
                     if ([string]::IsNullOrEmpty($this.ResourceCache['CurrentGroup']))
@@ -123,7 +124,7 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
                         return $this.AsResult($nullResult)
                     }
 
-                    $this.GroupId = $this.ResourceCache['CurrentGroup'].Id
+                    $currentGroupId = $this.ResourceCache['CurrentGroup'].Id
                 }
 
                 $getValue = Get-MgBetaIdentityGovernancePrivilegedAccessGroupEligibilitySchedule `
@@ -134,7 +135,7 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
                     Write-Verbose -Message "Could not find an Azure AD Group Eligibility Schedule with Id {$($this.Id)}. Attempting to find an Azure AD Group Eligibility Schedule for group {$($this.GroupDisplayName)} and principal {$($this.Principal)}."
                     $schedules = Get-MgBetaIdentityGovernancePrivilegedAccessGroupEligibilitySchedule `
                         -All `
-                        -Filter "GroupId eq '$($this.GroupId)'" `
+                        -Filter "GroupId eq '$($currentGroupId)'" `
                         -ErrorAction SilentlyContinue
 
                     switch ($this.PrincipalType)
@@ -151,7 +152,6 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
                         }
                     }
                     $getValue = $($schedules | Where-Object { $_.accessid -eq $this.AccessId -and $_.principalId -eq $PrincipalInstance.id })
-                    $this.id = $getValue.id
                 }
 
                 if ($null -eq $getValue)
@@ -164,9 +164,7 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-
-            Write-Verbose -Message "An Azure AD Group Eligibility Schedule with Id {$($this.Id)} and DisplayName {$($this.GroupDisplayName)} was found"
+            Write-Verbose -Message "An Azure AD Group Eligibility Schedule with Id {$($getValue.Id)} and DisplayName {$($this.GroupDisplayName)} was found"
 
             #region resource generator code
             $complexScheduleInfo = [ordered]@{}
@@ -676,10 +674,10 @@ class AADGroupEligibilitySchedule : M365DSCResourceBase
                     # Find the Principal Type
                     Write-Verbose "Looking up ObjectId $($config.PrincipalId)"
                     $PrincipalInfo = Get-MgBetaDirectoryObjectById -Ids $config.PrincipalId -ErrorAction SilentlyContinue
-                    $this.principalType = $PrincipalInfo['@odata.type'].Split('.')[2]
+                    $principalTypeValue = $PrincipalInfo['@odata.type'].Split('.')[2]
 
-                    Write-Verbose "Got PrincipalType $($this.PrincipalType) back for ObjectID"
-                    $PrincipalValue = if ($this.principalType -eq 'user' )
+                    Write-Verbose "Got PrincipalType $principalTypeValue back for ObjectID"
+                    $PrincipalValue = if ($principalTypeValue -eq 'user' )
                     {
                         $PrincipalInfo['userPrincipalName']
                     }

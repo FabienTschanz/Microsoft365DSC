@@ -97,11 +97,11 @@ class EXORecipientPermission : M365DSCResourceBase
 
             Write-Verbose -Message "Found Recipient Permission for Identity {$($this.Identity)}, Trustee {$($this.Trustee)} and AccessRights {$($this.AccessRights)}"
 
-            [Array]$this.trustee = $recipientPermission.Trustee
+            [Array]$trusteeValues = $recipientPermission.Trustee
 
             $result = @{
                 Identity              = $this.Identity
-                Trustee               = $this.trustee[0]
+                Trustee               = $trusteeValues[0]
                 AccessRights          = $recipientPermission.AccessRights
                 Ensure                = 'Present'
                 Credential            = $this.Credential

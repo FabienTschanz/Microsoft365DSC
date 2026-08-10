@@ -97,19 +97,20 @@ class DefenderSubscriptionPlan : M365DSCResourceBase
                 $this.AddTelemetry('Get')
                 #endregion
 
-                if ([System.String]::IsNullOrEmpty($this.subscriptionId))
+                $resolvedSubscriptionId = $this.SubscriptionId
+                if ([System.String]::IsNullOrEmpty($resolvedSubscriptionId))
                 {
                     $subscription = Get-AzSubscription -SubscriptionName $this.SubscriptionName
 
                     if ($null -ne $subscription)
                     {
-                        $this.subscriptionId = $subscription.Id
+                        $resolvedSubscriptionId = $subscription.Id
                     }
                 }
 
-                if ($null -ne $this.subscriptionId)
+                if (-not [System.String]::IsNullOrEmpty($resolvedSubscriptionId))
                 {
-                    Set-AzContext -Subscription $this.subscriptionId -ErrorAction Stop
+                    Set-AzContext -Subscription $resolvedSubscriptionId -ErrorAction Stop
                     $instance = Get-AzSecurityPricing -Name $this.PlanName -ErrorAction Stop
                     $azContext = Get-AzContext
                     Add-Member -InputObject $instance -NotePropertyName 'SubscriptionName' -NotePropertyValue $azContext.Subscription.Name

@@ -204,11 +204,11 @@ class SCSecurityFilter : M365DSCResourceBase
 
         try
         {
-            [array]$this.filters = Get-ComplianceSecurityFilter -ErrorAction Stop -WarningAction Ignore -Confirm:$false
+            [array]$securityFilters = Get-ComplianceSecurityFilter -ErrorAction Stop -WarningAction Ignore -Confirm:$false
 
             $dscContent = [System.Text.StringBuilder]::new()
             $i = 1
-            if ($this.filters.Length -eq 0)
+            if ($securityFilters.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }
@@ -216,14 +216,14 @@ class SCSecurityFilter : M365DSCResourceBase
             {
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
-            foreach ($filter in $this.filters)
+            foreach ($filter in $securityFilters)
             {
                 if ($null -ne $Global:M365DSCExportResourceInstancesCount)
                 {
                     $Global:M365DSCExportResourceInstancesCount++
                 }
 
-                Write-M365DSCHost -Message "    |---[$i/$($this.filters.Count)] $($filter.FilterName)" -DeferWrite
+                Write-M365DSCHost -Message "    |---[$i/$($securityFilters.Count)] $($filter.FilterName)" -DeferWrite
 
                 $Results = Get-SCSecurityFilterM365DSCSCMapSecurityFilter -Filter $filter -Credential $this.Credential -ApplicationId $this.ApplicationId `
                     -TenantId $this.TenantId -CertificateThumbprint $this.CertificateThumbprint -CertificatePath $this.CertificatePath -CertificatePassword $this.CertificatePassword

@@ -403,7 +403,11 @@ class PlannerTask : M365DSCResourceBase
         }
         elseif ($this.Ensure -eq 'Present' -and $currentValues.Ensure -eq 'Present')
         {
-            $this.taskId = $setParams.TaskId
+            $taskIdValue = $currentValues.TaskId
+            if ([System.String]::IsNullOrEmpty($taskIdValue))
+            {
+                $taskIdValue = $setParams.TaskId
+            }
             $setParams.Remove('TaskId') | Out-Null
             $details = $setParams.Details
             $setParams.Remove('Details') | Out-Null
@@ -421,7 +425,7 @@ class PlannerTask : M365DSCResourceBase
 
             Write-Verbose -Message "Planner Task {$($this.Title)} already exists, but is not in the `
             Desired State. Updating it."
-            $currentTask = Get-MgPlannerTask -PlannerTaskId $this.taskId
+            $currentTask = Get-MgPlannerTask -PlannerTaskId $taskIdValue
             $Headers = @{}
             $etag = $currentTask.'@odata.etag'
 
@@ -430,19 +434,19 @@ class PlannerTask : M365DSCResourceBase
             Write-Verbose -Message "Updating Task with:`r`n$JSONDetails"
             # Need to continue to rely on Invoke-MgGraphRequest
             Invoke-MgGraphRequest -Method PATCH `
-                -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/planner/tasks/$($this.taskId)" `
+                -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/planner/tasks/$($taskIdValue)" `
                 -Headers $Headers `
                 -Body $JSONDetails
 
             # Update Details
             $Headers = @{}
-            $currentTaskDetails = Get-MgPlannerTaskDetail -PlannerTaskId $this.taskId
+            $currentTaskDetails = Get-MgPlannerTaskDetail -PlannerTaskId $taskIdValue
             $Headers.Add('If-Match', $currentTaskDetails.'@odata.etag')
             $details.Remove('id') | Out-Null
             $JSONDetails = (ConvertTo-Json $details)
             Write-Verbose -Message "Updating Task's details with:`r`n$JSONDetails"
             Invoke-MgGraphRequest -Method PATCH `
-                -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/planner/tasks/$($this.taskId)/details" `
+                -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/planner/tasks/$($taskIdValue)/details" `
                 -Headers $Headers `
                 -Body $JSONDetails
 

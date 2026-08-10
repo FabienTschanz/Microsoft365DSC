@@ -279,11 +279,11 @@ class SentinelSetting : M365DSCResourceBase
                 }
                 $displayedKey = $config.Name
                 Write-M365DSCHost -Message "    |---[$i/$($this.ResourceCache['exportedInstances'].Count)] $displayedKey" -DeferWrite
-                $this.SubscriptionId = $config.ResourceId.Split('/')[2]
+                $subscriptionIdValue = $config.ResourceId.Split('/')[2]
                 $params = @{
                     ResourceGroupName     = $config.ResourceGroupName
                     WorkspaceName         = $config.Name
-                    SubscriptionId        = $this.SubscriptionId
+                    SubscriptionId        = $subscriptionIdValue
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId
                     TenantId              = $this.TenantId

@@ -205,8 +205,8 @@ class IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 : M365DSCResourc
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Device Configuration Shared Multi Device Policy for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $policyId = $getValue.Id
+            Write-Verbose -Message "An Intune Device Configuration Shared Multi Device Policy for Windows10 with Id {$policyId} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexAccountManagerPolicy = [ordered]@{}
@@ -227,8 +227,8 @@ class IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 : M365DSCResourc
             $enumAllowedAccounts = @()
             if ($null -ne $getValue.allowedAccounts)
             {
-                $this.allowedAccounts = $getValue.allowedAccounts.ToString().Split(',')
-                foreach ($allowedAccount in $this.allowedAccounts)
+                $allowedAccountsList = $getValue.allowedAccounts.ToString().Split(',')
+                foreach ($allowedAccount in $allowedAccountsList)
                 {
                     $enumAllowedAccounts += $allowedAccount
                 }
@@ -316,7 +316,7 @@ class IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 : M365DSCResourc
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $policyId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

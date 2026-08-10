@@ -176,14 +176,15 @@ class IntuneMobileThreatDefenseConnector : M365DSCResourceBase
                 }
             }
 
-            if ([string]::IsNullOrEmpty($this.DisplayName))
+            $displayNameValue = $this.DisplayName
+            if ([string]::IsNullOrEmpty($displayNameValue))
             {
-                $this.DisplayName = (Get-IntuneMobileThreatDefenseConnectorMobileThreatDefenseConnectorIdOrDisplayName -Id $instance.Id).DisplayName
+                $displayNameValue = (Get-IntuneMobileThreatDefenseConnectorMobileThreatDefenseConnectorIdOrDisplayName -Id $instance.Id).DisplayName
             }
 
             $results = @{
                 Id                                                  = $instance.Id
-                DisplayName                                         = $this.DisplayName
+                DisplayName                                         = $displayNameValue
                 AllowPartnerToCollectIosApplicationMetadata         = $instance.AllowPartnerToCollectIosApplicationMetadata
                 AllowPartnerToCollectIOSPersonalApplicationMetadata = $instance.AllowPartnerToCollectIosPersonalApplicationMetadata
                 AndroidDeviceBlockedOnMissingPartnerData            = $instance.AndroidDeviceBlockedOnMissingPartnerData

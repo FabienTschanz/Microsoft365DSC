@@ -223,12 +223,12 @@ class SPOApp : M365DSCResourceBase
                 {
                     Write-M365DSCHost -Message "    |---[$i/$($filesToDownload.Count)] $($file.Name)" -DeferWrite
 
-                    $this.identity = $file.Name.ToLower().Replace('.app', '').Replace('.sppkg', '')
-                    $app = Get-PnPApp -Identity $this.identity -ErrorAction SilentlyContinue
+                    $identityValue = $file.Name.ToLower().Replace('.app', '').Replace('.sppkg', '')
+                    $app = Get-PnPApp -Identity $identityValue -ErrorAction SilentlyContinue
 
                     if ($null -eq $app)
                     {
-                        $this.identity = $file.Title
+                        $identityValue = $file.Title
                         $app = Get-PnPApp -Identity $file.Title -ErrorAction SilentlyContinue
                     }
                     if ($null -ne $app)
@@ -239,7 +239,7 @@ class SPOApp : M365DSCResourceBase
                         }
 
                         $Params = @{
-                            Identity              = $this.identity
+                            Identity              = $identityValue
                             Path                  = ("`$PSScriptRoot\" + $file.Name)
                             ApplicationId         = $this.ApplicationId
                             TenantId              = $this.TenantId

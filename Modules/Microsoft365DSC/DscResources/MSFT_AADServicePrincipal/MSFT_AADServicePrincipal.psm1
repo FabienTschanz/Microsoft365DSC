@@ -521,7 +521,6 @@ class AADServicePrincipal : M365DSCResourceBase
                 }
                 $resolvedAppId = $matchedApplications[0].AppId
                 $oldAppId = $this.AppId
-                $this.AppId = $resolvedAppId
                 $currentParameters.ServicePrincipalNames = Get-M365DSCArrayFromProperty -PropertyValue $matchedApplications[0].IdentifierUris -ElementType ([System.String])
                 $currentParameters.ServicePrincipalNames += $resolvedAppId
                 Write-Verbose -Message "Translated DisplayName to AppId {$resolvedAppId}"
@@ -609,7 +608,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 {
                     $servicePrincipalDetails = Get-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppId'
                 }
-                $identifiersToExclude = @($this.AppId, $oldAppId, $servicePrincipalDetails.AppId) | Where-Object -FilterScript { -not [System.String]::IsNullOrEmpty($_) } | Select-Object -Unique
+                $identifiersToExclude = @($this.AppId, $resolvedAppId, $oldAppId, $servicePrincipalDetails.AppId) | Where-Object -FilterScript { -not [System.String]::IsNullOrEmpty($_) } | Select-Object -Unique
                 $IdentifierUris = @($this.ServicePrincipalNames | Where-Object -FilterScript { $_ -notin $identifiersToExclude })
                 $currentParameters.Remove('ServicePrincipalNames')
             }

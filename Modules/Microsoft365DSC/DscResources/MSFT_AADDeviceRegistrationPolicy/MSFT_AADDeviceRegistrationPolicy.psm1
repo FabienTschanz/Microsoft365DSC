@@ -116,23 +116,23 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
 
             $getValue = Get-MgBetaPolicyDeviceRegistrationPolicy -ErrorAction Stop
 
-            $this.AzureADAllowedToJoin = 'None'
-            $this.AzureADAllowedToJoinUsers = @()
-            $this.AzureADAllowedToJoinGroups = @()
+            $azureADAllowedToJoinValue = 'None'
+            $azureADAllowedToJoinUsersValue = @()
+            $azureADAllowedToJoinGroupsValue = @()
             if ($getValue.AzureADJoin.AllowedToJoin.'@odata.type' -eq '#microsoft.graph.allDeviceRegistrationMembership')
             {
-                $this.AzureADAllowedToJoin = 'All'
+                $azureADAllowedToJoinValue = 'All'
             }
             elseif ($getValue.AzureADJoin.AllowedToJoin.'@odata.type' -eq '#microsoft.graph.enumeratedDeviceRegistrationMembership')
             {
-                $this.AzureADAllowedToJoin = 'Selected'
+                $azureADAllowedToJoinValue = 'Selected'
 
                 foreach ($userId in $getValue.AzureAdJoin.AllowedToJoin.users)
                 {
                     try
                     {
                         $userInfo = Get-MgUser -UserId $userId -ErrorAction Stop
-                        $this.AzureADAllowedToJoinUsers += $userInfo.UserPrincipalName
+                        $azureADAllowedToJoinUsersValue += $userInfo.UserPrincipalName
                     }
                     catch
                     {
@@ -147,7 +147,7 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
                     try
                     {
                         $groupInfo = Get-MgGroup -GroupId $groupId -ErrorAction Stop
-                        $this.AzureADAllowedToJoinGroups += $groupInfo.DisplayName
+                        $azureADAllowedToJoinGroupsValue += $groupInfo.DisplayName
                     }
                     catch
                     {
@@ -158,23 +158,23 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
                 }
             }
 
-            $this.AzureAdJoinLocalAdminsRegisteringUsers = @()
-            $this.AzureAdJoinLocalAdminsRegisteringGroups = @()
-            $this.AzureAdJoinLocalAdminsRegisteringMode = 'All'
+            $localAdminsRegisteringUsersValue = @()
+            $localAdminsRegisteringGroupsValue = @()
+            $localAdminsRegisteringModeValue = 'All'
 
             if ($getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.'@odata.type' -eq '#microsoft.graph.noDeviceRegistrationMembership')
             {
-                $this.AzureAdJoinLocalAdminsRegisteringMode = 'None'
+                $localAdminsRegisteringModeValue = 'None'
             }
             elseif ($getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.'@odata.type' -eq '#microsoft.graph.enumeratedDeviceRegistrationMembership')
             {
-                $this.AzureAdJoinLocalAdminsRegisteringMode = 'Selected'
+                $localAdminsRegisteringModeValue = 'Selected'
                 foreach ($userId in $getValue.AzureAdJoin.LocalAdmins.RegisteringUsers.users)
                 {
                     try
                     {
                         $userInfo = Get-MgUser -UserId $userId -ErrorAction Stop
-                        $this.AzureAdJoinLocalAdminsRegisteringUsers += $userInfo.UserPrincipalName
+                        $localAdminsRegisteringUsersValue += $userInfo.UserPrincipalName
                     }
                     catch
                     {
@@ -189,7 +189,7 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
                     try
                     {
                         $groupInfo = Get-MgGroup -GroupId $groupId -ErrorAction Stop
-                        $this.AzureAdJoinLocalAdminsRegisteringGroups += $groupInfo.DisplayName
+                        $localAdminsRegisteringGroupsValue += $groupInfo.DisplayName
                     }
                     catch
                     {
@@ -200,29 +200,29 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
                 }
             }
 
-            $this.MultiFactorAuthConfiguration = $false
+            $multiFactorAuthConfigurationValue = $false
             if ($getValue.MultiFactorAuthConfiguration -eq 'required')
             {
-                $this.MultiFactorAuthConfiguration = $true
+                $multiFactorAuthConfigurationValue = $true
             }
-            $this.LocalAdminsEnableGlobalAdmins = $true
+            $localAdminsEnableGlobalAdminsValue = $true
             if (-not $getValue.AzureAdJoin.LocalAdmins.EnableGlobalAdmins)
             {
-                $this.LocalAdminsEnableGlobalAdmins = $false
+                $localAdminsEnableGlobalAdminsValue = $false
             }
             $results = @{
                 IsSingleInstance                        = 'Yes'
                 AzureADJoinIsAdminConfigurable          = [Boolean]$getValue.AzureAdJoin.IsAdminConfigurable
-                AzureADAllowedToJoin                    = $this.AzureADAllowedToJoin
-                AzureADAllowedToJoinGroups              = $this.AzureADAllowedToJoinGroups
-                AzureADAllowedToJoinUsers               = $this.AzureADAllowedToJoinUsers
+                AzureADAllowedToJoin                    = $azureADAllowedToJoinValue
+                AzureADAllowedToJoinGroups              = $azureADAllowedToJoinGroupsValue
+                AzureADAllowedToJoinUsers               = $azureADAllowedToJoinUsersValue
                 UserDeviceQuota                         = $getValue.UserDeviceQuota
-                MultiFactorAuthConfiguration            = $this.MultiFactorAuthConfiguration
-                LocalAdminsEnableGlobalAdmins           = $this.LocalAdminsEnableGlobalAdmins
+                MultiFactorAuthConfiguration            = $multiFactorAuthConfigurationValue
+                LocalAdminsEnableGlobalAdmins           = $localAdminsEnableGlobalAdminsValue
                 LocalAdminPasswordIsEnabled             = [Boolean]$getValue.LocalAdminPassword.IsEnabled
-                AzureAdJoinLocalAdminsRegisteringMode   = $this.AzureAdJoinLocalAdminsRegisteringMode
-                AzureAdJoinLocalAdminsRegisteringGroups = $this.AzureAdJoinLocalAdminsRegisteringGroups
-                AzureAdJoinLocalAdminsRegisteringUsers  = $this.AzureAdJoinLocalAdminsRegisteringUsers
+                AzureAdJoinLocalAdminsRegisteringMode   = $localAdminsRegisteringModeValue
+                AzureAdJoinLocalAdminsRegisteringGroups = $localAdminsRegisteringGroupsValue
+                AzureAdJoinLocalAdminsRegisteringUsers  = $localAdminsRegisteringUsersValue
                 Credential                              = $this.Credential
                 ApplicationId                           = $this.ApplicationId
                 TenantId                                = $this.TenantId

@@ -233,6 +233,10 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
     {
         # Declared up front: assigned conditionally below, which class methods reject.
         $HeaderMatchesPatternsValue = $null
+        $anyOfRecipientAddressContainsWordsValue = $null
+        $anyOfRecipientAddressMatchesPatternsValue = $null
+        $contentExtensionMatchesWordsValue = $null
+        $exceptIfContentExtensionMatchesWordsValue = $null
         if ($this.RequiresPowerShellCore())
         {
             $remote = [SCAutoSensitivityLabelRule]::new()
@@ -271,22 +275,22 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
 
             if ($null -ne $PolicyRule.AnyOfRecipientAddressContainsWords -and $PolicyRule.AnyOfRecipientAddressContainsWords.Count -gt 0)
             {
-                $this.AnyOfRecipientAddressContainsWords = $PolicyRule.AnyOfRecipientAddressContainsWords.Replace(' ', '').Split(',')
+                $anyOfRecipientAddressContainsWordsValue = $PolicyRule.AnyOfRecipientAddressContainsWords.Replace(' ', '').Split(',')
             }
 
             if ($null -ne $PolicyRule.AnyOfRecipientAddressMatchesPatterns -and $PolicyRule.AnyOfRecipientAddressMatchesPatterns -gt 0)
             {
-                $this.AnyOfRecipientAddressMatchesPatterns = $PolicyRule.AnyOfRecipientAddressMatchesPatterns.Replace(' ', '').Split(',')
+                $anyOfRecipientAddressMatchesPatternsValue = $PolicyRule.AnyOfRecipientAddressMatchesPatterns.Replace(' ', '').Split(',')
             }
 
             if ($null -ne $PolicyRule.ContentExtensionMatchesWords -and $PolicyRule.ContentExtensionMatchesWords.Count -gt 0)
             {
-                $this.ContentExtensionMatchesWords = $PolicyRule.ContentExtensionMatchesWords.Replace(' ', '').Split(',')
+                $contentExtensionMatchesWordsValue = $PolicyRule.ContentExtensionMatchesWords.Replace(' ', '').Split(',')
             }
 
             if ($null -ne $PolicyRule.ExceptIfContentExtensionMatchesWords -and $PolicyRule.ExceptIfContentExtensionMatchesWords.Count -gt 0)
             {
-                $this.ExceptIfContentExtensionMatchesWords = $PolicyRule.ExceptIfContentExtensionMatchesWords.Replace(' ', '').Split(',')
+                $exceptIfContentExtensionMatchesWordsValue = $PolicyRule.ExceptIfContentExtensionMatchesWords.Replace(' ', '').Split(',')
             }
             if ($null -ne $this.HeaderMatchesPatterns -and $null -ne $this.HeaderMatchesPatterns.Name)
             {
@@ -316,11 +320,11 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 Policy                                       = $PolicyRule.ParentPolicyName
                 Workload                                     = $this.Workload
                 AccessScope                                  = $PolicyRule.AccessScope
-                AnyOfRecipientAddressContainsWords           = $this.AnyOfRecipientAddressContainsWords
-                AnyOfRecipientAddressMatchesPatterns         = $this.AnyOfRecipientAddressMatchesPatterns
+                AnyOfRecipientAddressContainsWords           = $anyOfRecipientAddressContainsWordsValue
+                AnyOfRecipientAddressMatchesPatterns         = $anyOfRecipientAddressMatchesPatternsValue
                 Comment                                      = $PolicyRule.Comment
                 ContentContainsSensitiveInformation          = ConvertTo-SCAutoSensitivityLabelRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ContentContainsSensitiveInformation
-                ContentExtensionMatchesWords                 = $this.ContentExtensionMatchesWords
+                ContentExtensionMatchesWords                 = $contentExtensionMatchesWordsValue
                 Disabled                                     = $PolicyRule.Disabled
                 DocumentIsPasswordProtected                  = $PolicyRule.DocumentIsPasswordProtected
                 DocumentIsUnsupported                        = $PolicyRule.DocumentIsUnsupported
@@ -328,7 +332,7 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 ExceptIfAnyOfRecipientAddressContainsWords   = $PolicyRule.ExceptIfAnyOfRecipientAddressContainsWords
                 ExceptIfAnyOfRecipientAddressMatchesPatterns = $PolicyRule.ExceptIfAnyOfRecipientAddressMatchesPatterns
                 ExceptIfContentContainsSensitiveInformation  = ConvertTo-SCAutoSensitivityLabelRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ExceptIfContentContainsSensitiveInformation
-                ExceptIfContentExtensionMatchesWords         = $this.ExceptIfContentExtensionMatchesWords
+                ExceptIfContentExtensionMatchesWords         = $exceptIfContentExtensionMatchesWordsValue
                 ExceptIfDocumentIsPasswordProtected          = $PolicyRule.ExceptIfDocumentIsPasswordProtected
                 ExceptIfDocumentIsUnsupported                = $PolicyRule.ExceptIfDocumentIsUnsupported
                 ExceptIfFrom                                 = $PolicyRule.ExceptIfFrom

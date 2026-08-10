@@ -271,9 +271,10 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
             'ExternalTenantId' = 'tenantId'
         }
 
+        $ExternalSponsorsValues = @()
+        $InternalSponsorsValues = @()
         if ($this.Ensure -eq 'Present')
         {
-            $ExternalSponsorsValues = @()
             foreach ($sponsor in $this.ExternalSponsors)
             {
                 if (-not [System.Guid]::TryParse($sponsor, [ref][System.Guid]::Empty))
@@ -308,9 +309,6 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
                     $ExternalSponsorsValues += $sponsor
                 }
             }
-            $this.ExternalSponsors = $ExternalSponsorsValues
-
-            $InternalSponsorsValues = @()
             foreach ($sponsor in $this.InternalSponsors)
             {
                 if (-not [System.Guid]::TryParse($sponsor, [ref][System.Guid]::Empty))
@@ -345,7 +343,6 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
                     $InternalSponsorsValues += $sponsor
                 }
             }
-            $this.InternalSponsors = $InternalSponsorsValues
         }
 
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
@@ -365,7 +362,7 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
             $DomainName = (Invoke-MgGraphRequest -Method 'GET' -Uri $url).defaultDomainName
             $newConnectedOrganization = New-MgBetaEntitlementManagementConnectedOrganization -Description $CreateParameters.Description -DisplayName $CreateParameters.DisplayName -State $CreateParameters.State -DomainName $DomainName
 
-            foreach ($sponsor in $this.ExternalSponsors)
+            foreach ($sponsor in $ExternalSponsorsValues)
             {
                 $directoryObject = Get-MgBetaDirectoryObject -DirectoryObjectId $sponsor
                 $directoryObjectType = $directoryObject.'@odata.type'
@@ -379,7 +376,7 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
                     -BodyParameter $directoryObjectRef
             }
 
-            foreach ($sponsor in $this.InternalSponsors)
+            foreach ($sponsor in $InternalSponsorsValues)
             {
                 $directoryObject = Get-MgBetaDirectoryObject -DirectoryObjectId $sponsor
                 $directoryObjectType = ($directoryObject.'@odata.type').Split('.') | Select-Object -Last 1
@@ -421,7 +418,7 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
                 }
                 $currentInstance.ExternalSponsors = $currentExternalSponsors
             }
-            $sponsorsDifferences = Compare-Object -ReferenceObject @($this.ExternalSponsors | Select-Object) -DifferenceObject @($currentInstance.ExternalSponsors | Select-Object)
+            $sponsorsDifferences = Compare-Object -ReferenceObject @($ExternalSponsorsValues | Select-Object) -DifferenceObject @($currentInstance.ExternalSponsors | Select-Object)
             $sponsorsToAdd = ($sponsorsDifferences | Where-Object -FilterScript { $_.SideIndicator -eq '<=' }).InputObject
             $sponsorsToRemove = ($sponsorsDifferences | Where-Object -FilterScript { $_.SideIndicator -eq '=>' }).InputObject
             foreach ($sponsor in $sponsorsToAdd)
@@ -459,7 +456,7 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
                 }
                 $currentInstance.InternalSponsors = $currentInternalSponsors
             }
-            $sponsorsDifferences = Compare-Object -ReferenceObject @($this.InternalSponsors | Select-Object) -DifferenceObject @($currentInstance.InternalSponsors | Select-Object)
+            $sponsorsDifferences = Compare-Object -ReferenceObject @($InternalSponsorsValues | Select-Object) -DifferenceObject @($currentInstance.InternalSponsors | Select-Object)
             $sponsorsToAdd = ($sponsorsDifferences | Where-Object -FilterScript { $_.SideIndicator -eq '<=' }).InputObject
             $sponsorsToRemove = ($sponsorsDifferences | Where-Object -FilterScript { $_.SideIndicator -eq '=>' }).InputObject
             foreach ($sponsor in $sponsorsToAdd)

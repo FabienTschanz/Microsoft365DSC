@@ -15,7 +15,7 @@ class TeamsAudioConferencingPolicy : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Determines the list of audio-conferencing Toll- and Toll-free telephone numbers that will be included in meetings invites created by users of this policy.')]
-    [System.String] $MeetingInvitePhoneNumbers
+    [System.String[]] $MeetingInvitePhoneNumbers
 
     [DscProperty()]
     [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
@@ -105,7 +105,7 @@ class TeamsAudioConferencingPolicy : M365DSCResourceBase
             $results = @{
                 Identity                  = $instance.Identity
                 AllowTollFreeDialin       = $instance.AllowTollFreeDialin
-                MeetingInvitePhoneNumbers = $instance.MeetingInvitePhoneNumbers -join ','
+                MeetingInvitePhoneNumbers = [System.String[]]$instance.MeetingInvitePhoneNumbers
                 Ensure                    = 'Present'
                 Credential                = $this.Credential
                 ApplicationId             = $this.ApplicationId
@@ -144,11 +144,6 @@ class TeamsAudioConferencingPolicy : M365DSCResourceBase
         #endregion
 
         $currentInstance = $this.Get().ToHashtable()
-
-        if (![String]::IsNullOrEmpty($this.MeetingInvitePhoneNumbers))
-        {
-            [String[]]$this.MeetingInvitePhoneNumbers = $this.MeetingInvitePhoneNumbers.Split(',')
-        }
 
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {

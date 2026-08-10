@@ -117,8 +117,8 @@ class IntuneRoleDefinition : M365DSCResourceBase
                 if ($null -eq $getValue)
                 {
                     Write-Verbose -Message "No Intune Role Definition with Id {$($this.Id)} was found"
-                    $this.Filter = "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
-                    $getValue = Get-MgBetaDeviceManagementRoleDefinition -All -Filter $this.Filter -ErrorAction SilentlyContinue
+                    $displayNameFilter = "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
+                    $getValue = Get-MgBetaDeviceManagementRoleDefinition -All -Filter $displayNameFilter -ErrorAction SilentlyContinue
                     if ($null -ne $getValue)
                     {
                         Write-Verbose -Message "Found an Intune Role Definition with displayname {$($this.DisplayName)}"

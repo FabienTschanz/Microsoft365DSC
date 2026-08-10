@@ -96,18 +96,18 @@ class EXOAvailabilityConfig : M365DSCResourceBase
 
             Write-Verbose -Message "Found Availability Config"
 
-            $this.OrgWideAccount = $availabilityConfig.OrgWideAccount
-            if ($null -ne $availabilityConfig -and -not [System.String]::IsNullOrEmpty($this.OrgWideAccount) -and [System.Guid]::TryParse($this.OrgWideAccount, [ref][System.Guid]::Empty))
+            $orgWideAccountValue = $availabilityConfig.OrgWideAccount
+            if ($null -ne $availabilityConfig -and -not [System.String]::IsNullOrEmpty($orgWideAccountValue) -and [System.Guid]::TryParse($orgWideAccountValue, [ref][System.Guid]::Empty))
             {
-                $user = Get-User -Identity $this.OrgWideAccount -ErrorAction SilentlyContinue
+                $user = Get-User -Identity $orgWideAccountValue -ErrorAction SilentlyContinue
                 if ($null -ne $user)
                 {
-                    $this.OrgWideAccount = $user.UserPrincipalName
+                    $orgWideAccountValue = $user.UserPrincipalName
                 }
             }
 
             $result = @{
-                OrgWideAccount        = $this.OrgWideAccount
+                OrgWideAccount        = $orgWideAccountValue
                 AllowedTenantIds      = [System.String[]]$availabilityConfig.AllowedTenantIds
                 IsSingleInstance      = 'Yes'
                 Ensure                = 'Present'

@@ -124,9 +124,10 @@ class SentinelWatchlist : M365DSCResourceBase
             $nullResult = $this.GetBoundParameters()
             $nullResult.Ensure = 'Absent'
 
-            if ([System.String]::IsNullOrEmpty($this.TenantId) -and $null -ne $this.Credential)
+            $tenantIdValue = $this.TenantId
+            if ([System.String]::IsNullOrEmpty($tenantIdValue) -and $null -ne $this.Credential)
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
 
             Write-Verbose -Message "Retrieving watchlist {$($this.Name)}"
@@ -145,9 +146,9 @@ class SentinelWatchlist : M365DSCResourceBase
             else
             {
                 $watchLists = Get-SentinelWatchlistM365DSCSentinelWatchlist -SubscriptionId $this.SubscriptionId `
-                    -ResourceGroupName $this.GetResourceName() `
-                    -WorkspaceName $this.workspaceName `
-                    -TenantId $this.TenantId
+                    -ResourceGroupName $this.ResourceGroupName `
+                    -WorkspaceName $this.WorkspaceName `
+                    -TenantId $tenantIdValue
 
                 if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
@@ -183,7 +184,7 @@ class SentinelWatchlist : M365DSCResourceBase
                 Ensure                = 'Present'
                 Credential            = $this.Credential
                 ApplicationId         = $this.ApplicationId
-                TenantId              = $this.TenantId
+                TenantId              = $tenantIdValue
                 CertificateThumbprint = $this.CertificateThumbprint
                 CertificatePath       = $this.CertificatePath
                 CertificatePassword   = $this.CertificatePassword
@@ -217,9 +218,10 @@ class SentinelWatchlist : M365DSCResourceBase
         $this.AddTelemetry('Set')
         #endregion
 
-        if ([System.String]::IsNullOrEmpty($this.TenantId) -and $null -ne $this.Credential)
+        $tenantIdValue = $this.TenantId
+        if ([System.String]::IsNullOrEmpty($tenantIdValue) -and $null -ne $this.Credential)
         {
-            $this.TenantId = $this.Credential.UserName.Split('@')[1]
+            $tenantIdValue = $this.Credential.UserName.Split('@')[1]
         }
 
         $body = @{
@@ -251,7 +253,7 @@ class SentinelWatchlist : M365DSCResourceBase
                 -WorkspaceName $this.WorkspaceName `
                 -WatchListAlias $this.Alias `
                 -Body $body `
-                -TenantId $this.TenantId
+                -TenantId $tenantIdValue
         }
         # REMOVE
         elseif ($this.Ensure -eq 'Absent')
@@ -261,7 +263,7 @@ class SentinelWatchlist : M365DSCResourceBase
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
                 -WatchListAlias $this.Alias `
-                -TenantId $this.TenantId
+                -TenantId $tenantIdValue
         }
     }
 
@@ -308,21 +310,22 @@ class SentinelWatchlist : M365DSCResourceBase
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
 
-            if ([System.String]::IsNullOrEmpty($this.TenantId) -and $null -ne $this.Credential)
+            $tenantIdValue = $this.TenantId
+            if ([System.String]::IsNullOrEmpty($tenantIdValue) -and $null -ne $this.Credential)
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
             foreach ($workspace in $workspaces)
             {
                 Write-M365DSCHost -Message "    |---[$i/$($workspaces.Length)] $($workspace.Name)" -DeferWrite
-                $this.subscriptionId = $workspace.ResourceId.Split('/')[2]
-                $this.resourceGroupName = $workspace.ResourceGroupName
-                $this.workspaceName = $workspace.Name
+                $subscriptionIdValue = $workspace.ResourceId.Split('/')[2]
+                $resourceGroupNameValue = $workspace.ResourceGroupName
+                $workspaceNameValue = $workspace.Name
 
-                $currentWatchLists = Get-SentinelWatchlistM365DSCSentinelWatchlist -SubscriptionId $this.subscriptionId `
-                    -ResourceGroupName $this.resourceGroupName `
-                    -WorkspaceName $this.workspaceName `
-                    -TenantId $this.TenantId
+                $currentWatchLists = Get-SentinelWatchlistM365DSCSentinelWatchlist -SubscriptionId $subscriptionIdValue `
+                    -ResourceGroupName $resourceGroupNameValue `
+                    -WorkspaceName $workspaceNameValue `
+                    -TenantId $tenantIdValue
 
                 $j = 1
                 if ($currentWatchLists.Length -eq 0)
@@ -345,14 +348,14 @@ class SentinelWatchlist : M365DSCResourceBase
                     $displayedKey = $watchList.Name
                     Write-M365DSCHost -Message "        |---[$j/$($currentWatchLists.Length)] $displayedKey" -DeferWrite
                     $params = @{
-                        SubscriptionId        = $this.subscriptionId
-                        ResourceGroupName     = $this.resourceGroupName
-                        WorkspaceName         = $this.workspaceName
+                        SubscriptionId        = $subscriptionIdValue
+                        ResourceGroupName     = $resourceGroupNameValue
+                        WorkspaceName         = $workspaceNameValue
                         Name                  = $watchList.Name
                         Id                    = $watchlist.properties.watchlistId
                         Credential            = $this.Credential
                         ApplicationId         = $this.ApplicationId
-                        TenantId              = $this.TenantId
+                        TenantId              = $tenantIdValue
                         CertificateThumbprint = $this.CertificateThumbprint
                         ManagedIdentity       = $this.ManagedIdentity.IsPresent
                         AccessTokens          = $this.AccessTokens

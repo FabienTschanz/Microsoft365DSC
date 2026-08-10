@@ -308,15 +308,15 @@ class PPPowerAppsEnvironment : M365DSCResourceBase
                     }
 
                     Write-M365DSCHost -Message "    |---[$i/$($environments.value.Count)] $($environment.properties.displayName)" -DeferWrite
-                    $this.environmentType = $environment.properties.environmentType
-                    if ($this.environmentType -eq 'Notspecified')
+                    $environmentTypeValue = $environment.properties.environmentType
+                    if ($environmentTypeValue -eq 'Notspecified')
                     {
-                        $this.environmentType = 'Teams'
+                        $environmentTypeValue = 'Teams'
                     }
                     $Params = @{
                         DisplayName           = $environment.properties.displayName
                         Location              = $environment.location
-                        EnvironmentSku        = $this.environmentType
+                        EnvironmentSku        = $environmentTypeValue
                         Credential            = $this.Credential
                         ApplicationId         = $this.ApplicationId
                         TenantId              = $this.TenantId

@@ -487,10 +487,10 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
                 $displayedKey = $config.Id
                 Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
                 # Find the Principal Type
-                $this.principalType = 'User'
+                $principalTypeValue = 'User'
                 $userInfo = Get-MgBetaDirectoryObjectById -Ids $config.PrincipalId -ErrorAction SilentlyContinue
-                $this.principalType = $userInfo['@odata.type'].Split('.')[2]
-                $PrincipalValue = if ($this.principalType -eq 'user' )
+                $principalTypeValue = $userInfo['@odata.type'].Split('.')[2]
+                $PrincipalValue = if ($principalTypeValue -eq 'user' )
                 {
                     $userInfo['userPrincipalName']
                 }
@@ -499,32 +499,36 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
                     $userInfo['displayName']
                 }
 
-                if ($null -ne $PrincipalValue)
+                if ($null -eq $PrincipalValue)
                 {
-                    $currentRoleDefinition = $this.ResourceCache['RoleDefinitions'][$config.RoleDefinitionId]
-                    if ($null -eq $currentRoleDefinition)
-                    {
-                        $currentRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $config.RoleDefinitionId `
-                            -ErrorAction SilentlyContinue
-                        $this.ResourceCache['RoleDefinitions'].Add($config.RoleDefinitionId, $currentRoleDefinition)
-                    }
-                    $params = @{
-                        Id                    = $config.Id
-                        Principal             = $PrincipalValue
-                        PrincipalType         = $this.principalType
-                        DirectoryScopeId      = $config.DirectoryScopeId
-                        RoleDefinition        = $currentRoleDefinition.DisplayName
-                        Ensure                = 'Present'
-                        Credential            = $this.Credential
-                        ApplicationId         = $this.ApplicationId
-                        TenantId              = $this.TenantId
-                        ApplicationSecret     = $this.ApplicationSecret
-                        CertificateThumbprint = $this.CertificateThumbprint
-                        CertificatePath       = $this.CertificatePath
-                        CertificatePassword   = $this.CertificatePassword
-                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
-                        AccessTokens          = $this.AccessTokens
-                    }
+                    $i++
+                    Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
+                    continue
+                }
+
+                $currentRoleDefinition = $this.ResourceCache['RoleDefinitions'][$config.RoleDefinitionId]
+                if ($null -eq $currentRoleDefinition)
+                {
+                    $currentRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $config.RoleDefinitionId `
+                        -ErrorAction SilentlyContinue
+                    $this.ResourceCache['RoleDefinitions'].Add($config.RoleDefinitionId, $currentRoleDefinition)
+                }
+                $params = @{
+                    Id                    = $config.Id
+                    Principal             = $PrincipalValue
+                    PrincipalType         = $principalTypeValue
+                    DirectoryScopeId      = $config.DirectoryScopeId
+                    RoleDefinition        = $currentRoleDefinition.DisplayName
+                    Ensure                = 'Present'
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    ApplicationSecret     = $this.ApplicationSecret
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
                 }
 
                 $this.ExportedInstance = $config

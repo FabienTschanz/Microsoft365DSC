@@ -153,10 +153,10 @@ class O365Group : M365DSCResourceBase
                     }
                 }
 
-                $this.description = ''
+                $currentDescription = ''
                 if ($null -ne $ADGroup.Description)
                 {
-                    $this.description = $ADGroup.Description.ToString()
+                    $currentDescription = $ADGroup.Description.ToString()
                 }
 
                 $returnValue = @{
@@ -164,7 +164,7 @@ class O365Group : M365DSCResourceBase
                     MailNickName          = $ADGroup.MailNickName
                     Members               = $newMemberList
                     ManagedBy             = $ownersUPN
-                    Description           = $this.description
+                    Description           = $currentDescription
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId
                     ApplicationSecret     = $this.ApplicationSecret

@@ -551,7 +551,7 @@ class AzureRoleAssignmentScheduleRequest : M365DSCResourceBase
                 Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
 
                 # Find the Principal Type
-                $this.principalType = $request.PrincipalType
+                $requestPrincipalType = $request.PrincipalType
                 $principalInfo = $null
                 $PrincipalValue = $null
                 if ($this.ResourceCache['PrincipalByIdCache'].ContainsKey($request.PrincipalId))
@@ -560,11 +560,11 @@ class AzureRoleAssignmentScheduleRequest : M365DSCResourceBase
                 }
                 else
                 {
-                    if ($this.principalType -eq 'User')
+                    if ($requestPrincipalType -eq 'User')
                     {
                         $principalInfo = Get-AzADUser -ObjectId $request.PrincipalId -ErrorAction SilentlyContinue
                     }
-                    elseif ($this.principalType -eq 'Group')
+                    elseif ($requestPrincipalType -eq 'Group')
                     {
                         $principalInfo = Get-AzADGroup -ObjectId $request.PrincipalId -ErrorAction SilentlyContinue
                     }
@@ -577,7 +577,7 @@ class AzureRoleAssignmentScheduleRequest : M365DSCResourceBase
                         $this.ResourceCache['PrincipalByIdCache'][$request.PrincipalId] = $principalInfo
                     }
                 }
-                if ($this.principalType -eq 'User')
+                if ($requestPrincipalType -eq 'User')
                 {
                     $PrincipalValue = $principalInfo.UserPrincipalName
                 }
@@ -599,7 +599,7 @@ class AzureRoleAssignmentScheduleRequest : M365DSCResourceBase
                     $params = @{
                         Id                    = $request.Name
                         Principal             = $PrincipalValue
-                        PrincipalType         = $this.principalType
+                        PrincipalType         = $requestPrincipalType
                         DirectoryScopeId      = $request.Scope
                         RoleDefinition        = $currentRoleDefinition.Name
                         Ensure                = 'Present'

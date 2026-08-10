@@ -238,12 +238,11 @@ class AzureVerifiedIdFaceCheck : M365DSCResourceBase
                     $displayedKey = $authority.name
                     Write-M365DSCHost -Message "        |---[$i/$($authorities.value.Length)] $displayedKey" -DeferWrite
 
-                    $this.SubscriptionId = $resourceGroup.ResourceId.Split('/')
-                    $this.SubscriptionId = $this.SubscriptionId[2]
+                    $resourceIdParts = $resourceGroup.ResourceId.Split('/')
 
                     $params = @{
                         VerifiedIdAuthorityId = $authority.id
-                        SubscriptionId        = $this.SubscriptionId
+                        SubscriptionId        = $resourceIdParts[2]
                         ResourceGroupName     = $resourceGroup.ResourceGroupName
                         Credential            = $this.Credential
                         ApplicationId         = $this.ApplicationId

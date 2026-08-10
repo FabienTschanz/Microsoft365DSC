@@ -111,12 +111,8 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
                 $nullResult = $this.GetBoundParameters()
 
                 #get groupId
-                if ($this.GroupDisplayName.Contains("'"))
-                {
-                    $this.GroupDisplayName = $this.GroupDisplayName -replace "'", "''"
-                }
-                $this.filter = "DisplayName eq '$($this.GroupDisplayName)'"
-                [array]$Group = Get-MgGroup -Filter $this.filter -ErrorAction Stop
+                $groupFilter = "DisplayName eq '$($this.GroupDisplayName -replace "'", "''")'"
+                [array]$Group = Get-MgGroup -Filter $groupFilter -ErrorAction Stop
                 if ($Group.Count -gt 1)
                 {
                     throw "Duplicate AzureAD Groups named $($this.GroupDisplayName) exist in tenant"
@@ -147,13 +143,13 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
+            $ruleId = $getValue.Id
 
-            Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$($this.Id)} and PolicyId {$policyId} was found"
+            Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$ruleId} and PolicyId {$policyId} was found"
             $rule = Get-AADGroupEligibilityScheduleSettingsM365DSCRoleManagementPolicyRuleObject -Rule $getValue
 
             $results = @{
-                Id                        = $this.Id
+                Id                        = $ruleId
                 GroupDisplayName          = $this.groupDisplayName
                 RuleType                  = $rule.ruleType
                 PIMGroupRole              = $this.PIMGroupRole
@@ -237,8 +233,8 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
             $body.Add($key, $ruleHashmap.$key)
         }
 
-        $this.filter = "DisplayName eq '$($this.GroupDisplayName -replace "'", "''")'"
-        [array]$Group = Get-MgGroup -Filter $this.filter -ErrorAction Stop
+        $groupFilter = "DisplayName eq '$($this.GroupDisplayName -replace "'", "''")'"
+        [array]$Group = Get-MgGroup -Filter $groupFilter -ErrorAction Stop
         if ($Group.Count -gt 1)
         {
             throw "Duplicate AzureAD Groups named $($this.GroupDisplayName) exist in tenant"

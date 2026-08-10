@@ -417,12 +417,13 @@ class AADEntitlementManagementAccessPackage : M365DSCResourceBase
             {
                 $currentIncompatibleAccessPackages = @()
             }
-            if ($null -eq $this.IncompatibleAccessPackages)
+            $desiredIncompatibleAccessPackages = $this.IncompatibleAccessPackages
+            if ($null -eq $desiredIncompatibleAccessPackages)
             {
-                $this.IncompatibleAccessPackages = @()
+                $desiredIncompatibleAccessPackages = @()
             }
             [Array]$compareResult = Compare-Object `
-                -ReferenceObject $this.IncompatibleAccessPackages `
+                -ReferenceObject $desiredIncompatibleAccessPackages `
                 -DifferenceObject $currentIncompatibleAccessPackages `
 
             [Array]$toBeAdded = $compareResult | Where-Object -FilterScript { $_.SideIndicator -eq '<=' }
@@ -454,12 +455,13 @@ class AADEntitlementManagementAccessPackage : M365DSCResourceBase
             {
                 $currentIncompatibleGroups = @()
             }
-            if ($null -eq $this.IncompatibleGroups)
+            $desiredIncompatibleGroups = $this.IncompatibleGroups
+            if ($null -eq $desiredIncompatibleGroups)
             {
-                $this.IncompatibleGroups = @()
+                $desiredIncompatibleGroups = @()
             }
             [Array]$compareResult = Compare-Object `
-                -ReferenceObject $this.IncompatibleGroups `
+                -ReferenceObject $desiredIncompatibleGroups `
                 -DifferenceObject $currentIncompatibleGroups `
 
             [Array]$toBeAdded = $compareResult | Where-Object -FilterScript { $_.SideIndicator -eq '<=' }

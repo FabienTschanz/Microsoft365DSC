@@ -469,19 +469,20 @@ class AADEntitlementManagementAccessPackageAssignmentPolicy : M365DSCResourceBas
         # Check to see if the AccessPackageId is in GUID form. If not, resolve it by name.
         if (-not [System.String]::IsNullOrEmpty($this.AccessPackageId))
         {
-            $isGUID = [System.Guid]::TryParse($this.AccessPackageId, [ref][System.Guid]::Empty)
+            $resolvedAccessPackageId = $this.AccessPackageId
+            $isGUID = [System.Guid]::TryParse($resolvedAccessPackageId, [ref][System.Guid]::Empty)
             if (-not $isGUID)
             {
                 # Retrieve by name
-                Write-Verbose -Message "Retrieving Entitlement Management Access Package by Name {$($this.AccessPackageId)}"
-                $package = Get-MgBetaEntitlementManagementAccessPackage -Filter "DisplayName eq '$($this.AccessPackageId -replace "'", "''")'"
+                Write-Verbose -Message "Retrieving Entitlement Management Access Package by Name {$($resolvedAccessPackageId)}"
+                $package = Get-MgBetaEntitlementManagementAccessPackage -Filter "DisplayName eq '$($resolvedAccessPackageId -replace "'", "''")'"
                 if ($null -eq $package)
                 {
-                    throw "Could not retrieve the Access Package using identifier {$($this.AccessPackageId)}"
+                    throw "Could not retrieve the Access Package using identifier {$($resolvedAccessPackageId)}"
                 }
-                $this.AccessPackageId = $package.Id
+                $resolvedAccessPackageId = $package.Id
             }
-            $commonParameters.AccessPackageId = $this.AccessPackageId
+            $commonParameters.AccessPackageId = $resolvedAccessPackageId
         }
 
         if ($null -ne $commonParameters.AccessReviewSettings -and $null -ne $commonParameters.AccessReviewSettings.StartDateTime)

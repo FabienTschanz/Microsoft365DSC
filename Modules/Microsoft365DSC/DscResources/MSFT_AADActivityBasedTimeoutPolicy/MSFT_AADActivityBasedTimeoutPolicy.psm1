@@ -106,20 +106,19 @@ class AADActivityBasedTimeoutPolicy : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Activity Based Timeout Policy with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            Write-Verbose -Message "An Azure AD Activity Based Timeout Policy with Id {$($getValue.Id)} and DisplayName {$($this.DisplayName)} was found."
 
             #Azure portal timeout
             $timeout = $getValue.Definition | ConvertFrom-Json
-            $this.AzurePortalTimeOut = ($timeout.ActivityBasedTimeoutPolicy.ApplicationPolicies | Where-Object { $_.ApplicationId -match 'c44b4083-3bb0-49c1-b47d-974e53cbdf3c' }).WebSessionIdleTimeout
-            $this.DefaultTimeOut = ($timeout.ActivityBasedTimeoutPolicy.ApplicationPolicies | Where-Object { $_.ApplicationId -match 'default' }).WebSessionIdleTimeout
+            $azurePortalTimeOutValue = ($timeout.ActivityBasedTimeoutPolicy.ApplicationPolicies | Where-Object { $_.ApplicationId -match 'c44b4083-3bb0-49c1-b47d-974e53cbdf3c' }).WebSessionIdleTimeout
+            $defaultTimeOutValue = ($timeout.ActivityBasedTimeoutPolicy.ApplicationPolicies | Where-Object { $_.ApplicationId -match 'default' }).WebSessionIdleTimeout
 
             $results = @{
                 #region resource generator code
                 DisplayName           = $getValue.displayName
                 Id                    = $getValue.Id
-                AzurePortalTimeOut    = $this.AzurePortalTimeOut
-                DefaultTimeOut        = $this.DefaultTimeOut
+                AzurePortalTimeOut    = $azurePortalTimeOutValue
+                DefaultTimeOut        = $defaultTimeOutValue
                 Ensure                = 'Present'
                 Credential            = $this.Credential
                 ApplicationId         = $this.ApplicationId

@@ -143,18 +143,19 @@ class IntuneRoleAssignment : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune Role Assignment with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            Write-Verbose -Message "An Intune Role Assignment with Id {$($getValue.Id)} and DisplayName {$($this.DisplayName)} was found"
 
             # Get Roledefinition first, loop through all roledefinitions and find the assignment that matches the Id
+            $currentRoleDefinitionId = $null
+            $currentRoleDefinitionDisplayName = $null
             $tempRoleDefinitions = Get-MgDeviceManagementRoleDefinition
             foreach ($tempRoleDefinition in $tempRoleDefinitions)
             {
                 $item = Get-MgDeviceManagementRoleDefinitionRoleAssignment -RoleDefinitionId $tempRoleDefinition.Id | Where-Object { $_.Id -eq $getValue.Id }
                 if ($null -ne $item)
                 {
-                    $this.RoleDefinition = $tempRoleDefinition.Id
-                    $this.RoleDefinitionDisplayName = $tempRoleDefinition.DisplayName
+                    $currentRoleDefinitionId = $tempRoleDefinition.Id
+                    $currentRoleDefinitionDisplayName = $tempRoleDefinition.DisplayName
                     break
                 }
             }
@@ -197,8 +198,8 @@ class IntuneRoleAssignment : M365DSCResourceBase
                 ScopeType                  = $scopeTypeValue
                 Members                    = $getValue.Members
                 MembersDisplayNames        = $membersDisplayNamesValue
-                RoleDefinition             = $this.RoleDefinition
-                RoleDefinitionDisplayName  = $this.RoleDefinitionDisplayName
+                RoleDefinition             = $currentRoleDefinitionId
+                RoleDefinitionDisplayName  = $currentRoleDefinitionDisplayName
                 Ensure                     = 'Present'
                 Credential                 = $this.Credential
                 ApplicationId              = $this.ApplicationId
@@ -240,18 +241,18 @@ class IntuneRoleAssignment : M365DSCResourceBase
 
         $currentInstance = $this.Get().ToHashtable()
 
-        if ($this.RoleDefinition -notmatch '^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$' -or $this.RoleDefinition -eq '00000000-0000-0000-0000-000000000000')
+        $roleDefinitionValue = $this.RoleDefinition
+        if ($roleDefinitionValue -notmatch '^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$' -or $roleDefinitionValue -eq '00000000-0000-0000-0000-000000000000')
         {
-            $this.RoleDefinition = $null
-            $this.filter = "DisplayName eq '$($this.RoleDefinitionDisplayName -replace "'", "''")'"
-            $roleDefinitionId = Get-MgDeviceManagementRoleDefinition -All -Filter $this.filter -ErrorAction SilentlyContinue
+            $roleDefinitionFilter = "DisplayName eq '$($this.RoleDefinitionDisplayName -replace "'", "''")'"
+            $roleDefinitionId = Get-MgDeviceManagementRoleDefinition -All -Filter $roleDefinitionFilter -ErrorAction SilentlyContinue
             if ($null -ne $roleDefinitionId)
             {
-                $this.RoleDefinition = $roleDefinitionId.Id
+                $roleDefinitionValue = $roleDefinitionId.Id
             }
             else
             {
-                Write-Verbose -Message "No role definition with DisplayName {$($this.RoleDefinitionDisplayName)} was found"
+                throw "No role definition with DisplayName {$($this.RoleDefinitionDisplayName)} was found"
             }
         }
 
@@ -260,8 +261,8 @@ class IntuneRoleAssignment : M365DSCResourceBase
         {
             foreach ($membersDisplayName in $this.MembersDisplayNames)
             {
-                $this.filter = "displayName eq '$($membersDisplayName -replace "'", "''")'"
-                $memberId = Get-MgGroup -Filter $this.filter -ErrorAction SilentlyContinue
+                $memberFilter = "displayName eq '$($membersDisplayName -replace "'", "''")'"
+                $memberId = Get-MgGroup -Filter $memberFilter -ErrorAction SilentlyContinue
                 if ($null -ne $memberId)
                 {
                     if ($membersValue -notcontains $memberId.Id)
@@ -285,8 +286,8 @@ class IntuneRoleAssignment : M365DSCResourceBase
         {
             foreach ($resourceScopesDisplayName in $this.ResourceScopesDisplayNames)
             {
-                $this.filter = "DisplayName eq '$($resourceScopesDisplayName -replace "'", "''")'"
-                $resourceScopeId = Get-MgGroup -Filter $this.filter -ErrorAction SilentlyContinue
+                $resourceScopeFilter = "DisplayName eq '$($resourceScopesDisplayName -replace "'", "''")'"
+                $resourceScopeId = Get-MgGroup -Filter $resourceScopeFilter -ErrorAction SilentlyContinue
                 if ($null -ne $resourceScopeId)
                 {
                     if ($resourceScopesValue -notcontains $resourceScopeId.Id)
@@ -325,7 +326,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
                 scopeType                   = $scopeTypeValue
                 members                     = $membersValue
                 '@odata.type'               = '#microsoft.graph.deviceAndAppManagementRoleAssignment'
-                'roleDefinition@odata.bind' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/roleDefinitions('$($this.RoleDefinition)')"
+                'roleDefinition@odata.bind' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/roleDefinitions('$roleDefinitionValue')"
             }
 
             if ($null -ne $resourceScopesValue)
@@ -345,7 +346,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
                 scopeType                   = $scopeTypeValue
                 members                     = $membersValue
                 '@odata.type'               = '#microsoft.graph.deviceAndAppManagementRoleAssignment'
-                'roleDefinition@odata.bind' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/roleDefinitions('$($this.RoleDefinition)')"
+                'roleDefinition@odata.bind' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/roleDefinitions('$roleDefinitionValue')"
             }
 
             if ($null -ne $resourceScopesValue)

@@ -148,10 +148,10 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
                     throw "Multiple Azure AD applications with the display name $($this.ApplicationDisplayName) exist in the tenant."
                 }
 
-                $this.ApplicationObjectId = $application.Id
-                $this.ApplicationDisplayName = $application.DisplayName
-                $nullReturn.ApplicationObjectId = $this.ApplicationObjectId
-                $nullReturn.ApplicationDisplayName = $this.ApplicationDisplayName
+                $applicationObjectIdValue = $application.Id
+                $applicationDisplayNameValue = $application.DisplayName
+                $nullReturn.ApplicationObjectId = $applicationObjectIdValue
+                $nullReturn.ApplicationDisplayName = $applicationDisplayNameValue
 
                 $federatedIdentityCredential = $null
                 try
@@ -159,7 +159,7 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
                     if (-not [System.String]::IsNullOrEmpty($this.Id))
                     {
                         $federatedIdentityCredential = Get-MgApplicationFederatedIdentityCredential `
-                            -ApplicationId $this.ApplicationObjectId `
+                            -ApplicationId $applicationObjectIdValue `
                             -FederatedIdentityCredentialId $this.Id `
                             -ErrorAction Stop
                     }
@@ -174,7 +174,7 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
                     try
                     {
                         [array]$federatedIdentityCredential = Get-MgApplicationFederatedIdentityCredential `
-                            -ApplicationId $this.ApplicationObjectId `
+                            -ApplicationId $applicationObjectIdValue `
                             -Filter "name eq '$($this.Name -replace "'", "''")'" `
                             -ErrorAction Stop
                     }
@@ -191,19 +191,19 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
 
                 if ($federatedIdentityCredential.Count -gt 1)
                 {
-                    throw "Multiple federated identity credentials with the name $($this.Name) exist for application $($this.ApplicationDisplayName)."
+                    throw "Multiple federated identity credentials with the name $($this.Name) exist for application $($applicationDisplayNameValue)."
                 }
             }
             else
             {
                 $federatedIdentityCredential = $this.ExportedInstance
-                $this.ApplicationObjectId = $this.ExportedInstance.ApplicationObjectId
-                $this.ApplicationDisplayName = $this.ExportedInstance.ApplicationDisplayName
+                $applicationObjectIdValue = $this.ExportedInstance.ApplicationObjectId
+                $applicationDisplayNameValue = $this.ExportedInstance.ApplicationDisplayName
             }
 
             $result = @{
-                ApplicationDisplayName = $this.ApplicationDisplayName
-                ApplicationObjectId    = $this.ApplicationObjectId
+                ApplicationDisplayName = $applicationDisplayNameValue
+                ApplicationObjectId    = $applicationObjectIdValue
                 Name                   = $federatedIdentityCredential.Name
                 Id                     = $federatedIdentityCredential.Id
                 Issuer                 = $federatedIdentityCredential.Issuer

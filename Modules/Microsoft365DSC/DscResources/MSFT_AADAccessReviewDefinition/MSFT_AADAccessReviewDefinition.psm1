@@ -574,11 +574,11 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                 {
                     $reviewerType = 'groups'
                 }
-                $this.filter = "displayName eq '$($currentRecipient.DisplayName -replace "'", "''")'"
+                $filterValue = "displayName eq '$($currentRecipient.DisplayName -replace "'", "''")'"
                 $batchRequests += @{
                     id     = $currentRecipient.DisplayName
                     method = 'GET'
-                    url    = "/$($reviewerType)?`$filter=$($this.filter)"
+                    url    = "/$($reviewerType)?`$filter=$($filterValue)"
                 }
             }
             if ($batchRequests.Count -gt 0)
@@ -633,11 +633,11 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                 {
                     $reviewerType = 'groups'
                 }
-                $this.filter = "displayName eq '$($currentFallbackReviewer.DisplayName -replace "'", "''")'"
+                $filterValue = "displayName eq '$($currentFallbackReviewer.DisplayName -replace "'", "''")'"
                 $batchRequests += @{
                     id     = $currentFallbackReviewer.DisplayName
                     method = 'GET'
-                    url    = "/$($reviewerType)?`$filter=$($this.filter)"
+                    url    = "/$($reviewerType)?`$filter=$($filterValue)"
                 }
             }
             if ($batchRequests.Count -gt 0)
@@ -702,11 +702,11 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                 }
                 if (-not [System.String]::IsNullOrEmpty($currentReviewer.DisplayName))
                 {
-                    $this.filter = "displayName eq '$($currentReviewer.DisplayName -replace "'", "''")'"
+                    $filterValue = "displayName eq '$($currentReviewer.DisplayName -replace "'", "''")'"
                     $batchRequests += @{
                         id     = $currentReviewer.DisplayName
                         method = 'GET'
-                        url    = "/$($reviewerType)?`$filter=$($this.filter)"
+                        url    = "/$($reviewerType)?`$filter=$($filterValue)"
                     }
                 }
             }

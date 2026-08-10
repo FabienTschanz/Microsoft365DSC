@@ -1092,13 +1092,13 @@ class AADApplication : M365DSCResourceBase
                     {
                         if ($diff.InputObject.Contains('@'))
                         {
-                            $this.ObjectId = $(Get-MgUser -UserId $diff.InputObject -ErrorAction Stop).Id
+                            $ownerObjectId = $(Get-MgUser -UserId $diff.InputObject -ErrorAction Stop).Id
                         }
                         else
                         {
-                            $this.ObjectId = $diff.InputObject
+                            $ownerObjectId = $diff.InputObject
                         }
-                        Remove-MgApplicationOwnerDirectoryObjectByRef -ApplicationId $currentAADApp.ObjectId -DirectoryObjectId $this.ObjectId -ErrorAction Stop
+                        Remove-MgApplicationOwnerDirectoryObjectByRef -ApplicationId $currentAADApp.ObjectId -DirectoryObjectId $ownerObjectId -ErrorAction Stop
                     }
                     catch
                     {

@@ -213,10 +213,10 @@ class IntuneMobileAppsWebLink : M365DSCResourceBase
                     if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
                     {
                         $baseFilter = "isof('microsoft.graph.iosiPadOSWebClip') or isof('microsoft.graph.macOSWebClip') or isof('microsoft.graph.windowsWebApp') or isof('microsoft.graph.webApp')"
-                        $this.filter = "DisplayName eq '$($this.DisplayName -replace "'", "''")' and ($baseFilter)"
+                        $displayNameFilter = "DisplayName eq '$($this.DisplayName -replace "'", "''")' and ($baseFilter)"
                         $getValue = Get-MgBetaDeviceAppManagementMobileApp `
                             -All `
-                            -Filter $this.filter `
+                            -Filter $displayNameFilter `
                             -ExpandProperty 'categories' `
                             -ErrorAction SilentlyContinue
                     }
@@ -228,17 +228,17 @@ class IntuneMobileAppsWebLink : M365DSCResourceBase
                     return $this.AsResult($nullResult)
                 }
 
-                $this.Id = $getValue.Id
+                $resolvedId = $getValue.Id
             }
             else
             {
-                $this.Id = $this.ExportedInstance.Id
+                $resolvedId = $this.ExportedInstance.Id
             }
 
-            $getValue = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.Id `
+            $getValue = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $resolvedId `
                 -ExpandProperty 'categories'
 
-            Write-Verbose -Message "An Intune Mobile Apps Web Link with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            Write-Verbose -Message "An Intune Mobile Apps Web Link with Id {$resolvedId} and DisplayName {$($this.DisplayName)} was found"
 
             #region resource generator code
             $complexCategories = @()
@@ -291,7 +291,7 @@ class IntuneMobileAppsWebLink : M365DSCResourceBase
                 ManagedIdentity                   = $this.ManagedIdentity.IsPresent
                 #endregion
             }
-            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppAssignment -MobileAppId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppAssignment -MobileAppId $resolvedId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

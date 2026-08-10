@@ -848,8 +848,8 @@ class AzureRoleEligibilityScheduleSettings : M365DSCResourceBase
                         {
                             foreach ($item in $this.ActivateApprover)
                             {
-                                $this.Filter = "UserPrincipalName eq '$($item -replace "'", "''")'"
-                                $user = Get-MgUser -Filter $this.Filter -ErrorAction SilentlyContinue
+                                $userFilter = "UserPrincipalName eq '$($item -replace "'", "''")'"
+                                $user = Get-MgUser -Filter $userFilter -ErrorAction SilentlyContinue
                                 if ($null -ne $user)
                                 {
                                     $primaryApprovers += @{
@@ -861,8 +861,8 @@ class AzureRoleEligibilityScheduleSettings : M365DSCResourceBase
                                 else
                                 {
                                     Write-Verbose -Message "User '$item' not found, trying with group"
-                                    $this.Filter = "displayName eq '$($item -replace "'", "''")'"
-                                    $group = Get-MgGroup -Filter $this.Filter -ErrorAction SilentlyContinue
+                                    $groupFilter = "displayName eq '$($item -replace "'", "''")'"
+                                    $group = Get-MgGroup -Filter $groupFilter -ErrorAction SilentlyContinue
                                     if ($null -ne $group)
                                     {
                                         $primaryApprovers += @{

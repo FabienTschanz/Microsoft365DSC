@@ -87,6 +87,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
         $IncludeCreds = $null
         # Declared up front: assigned conditionally below, which class methods reject.
         $ActionName = $null
+        $enableDedupeValue = $null
         if ($this.RequiresPowerShellCore())
         {
             $remote = [SCComplianceSearchAction]::new()
@@ -130,7 +131,11 @@ class SCComplianceSearchAction : M365DSCResourceBase
             {
                 $Scenario = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Scenario'
                 $FileTypeExclusion = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'File type exclusions for unindexed'
-                $this.EnableDedupe = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Enable dedupe'
+                $rawEnableDedupe = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Enable dedupe'
+                if (-not [System.String]::IsNullOrEmpty($rawEnableDedupe))
+                {
+                    $enableDedupeValue = [System.Convert]::ToBoolean($rawEnableDedupe)
+                }
                 $IncludeCreds = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'SAS token'
                 $IncludeSP = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Include SharePoint versions'
                 $ScopeValue = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Scope'
@@ -145,7 +150,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
                     Action                              = $ActionName
                     SearchName                          = $currentAction.SearchName
                     FileTypeExclusionsForUnindexedItems = $FileTypeExclusion
-                    EnableDedupe                        = $this.EnableDedupe
+                    EnableDedupe                        = $enableDedupeValue
                     IncludeSharePointDocumentVersions   = $IncludeSP
                     RetryOnError                        = $currentAction.Retry
                     ActionScope                         = $ScopeValue

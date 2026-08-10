@@ -173,13 +173,10 @@ class EXOGlobalAddressList : M365DSCResourceBase
                 $GlobalAddressList = $this.ExportedInstance
             }
 
-            if ($null -eq $GlobalAddressList.IncludedRecipients)
+            $includedRecipientsValue = ''
+            if ($null -ne $GlobalAddressList.IncludedRecipients)
             {
-                $this.IncludedRecipients = ''.ToString()
-            }
-            else
-            {
-                $this.IncludedRecipients = $GlobalAddressList.IncludedRecipients
+                $includedRecipientsValue = $GlobalAddressList.IncludedRecipients
             }
 
             $result = @{
@@ -202,7 +199,7 @@ class EXOGlobalAddressList : M365DSCResourceBase
                 ConditionalCustomAttribute9  = $GlobalAddressList.ConditionalCustomAttribute9
                 ConditionalDepartment        = $GlobalAddressList.ConditionalDepartment
                 ConditionalStateOrProvince   = $GlobalAddressList.ConditionalStateOrProvince
-                IncludedRecipients           = $this.IncludedRecipients
+                IncludedRecipients           = $includedRecipientsValue
                 RecipientFilter              = $GlobalAddressList.RecipientFilter
                 Ensure                       = 'Present'
                 Credential                   = $this.Credential

@@ -221,10 +221,10 @@ class SCCaseHoldRule : M365DSCResourceBase
                 Write-M365DSCHost -Message "    |---[$i/$($Rules.Count)] $($Rule.Name)" -DeferWrite
                 try
                 {
-                    $this.policy = Get-CaseHoldPolicy -Identity $Rule.Policy -ErrorAction Stop
+                    $policyObject = Get-CaseHoldPolicy -Identity $Rule.Policy -ErrorAction Stop
 
                     $this.ExportedInstance = $Rule
-                    $Results = $this.GetForExport(@{ Name = $Rule.Name; Policy = $this.policy.Name })
+                    $Results = $this.GetForExport(@{ Name = $Rule.Name; Policy = $policyObject.Name })
                     $rawResults = $Results.Clone()
                     $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                         -ConnectionMode $ConnectionMode `

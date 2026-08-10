@@ -144,18 +144,19 @@ class O365CopilotSettingsPeopleEnhancedPersonalization : M365DSCResourceBase
         #endregion
 
         # Check if $disabledForGroup is a guid or display name and convert to guid if needed
-        if (-not [string]::IsNullOrEmpty($this.disabledForGroup))
+        $disabledForGroupId = $this.disabledForGroup
+        if (-not [string]::IsNullOrEmpty($disabledForGroupId))
         {
-            if (-not ([System.Guid]::TryParse($this.disabledForGroup, [ref][System.Guid]::Empty)))
+            if (-not ([System.Guid]::TryParse($disabledForGroupId, [ref][System.Guid]::Empty)))
             {
-                $group = Get-MgGroup -Filter "displayName eq '$($this.disabledForGroup)'" -Property Id -Top 1
+                $group = Get-MgGroup -Filter "displayName eq '$disabledForGroupId'" -Property Id -Top 1
                 if ($null -ne $group)
                 {
-                    $this.disabledForGroup = $group.Id
+                    $disabledForGroupId = $group.Id
                 }
                 else
                 {
-                    throw "Group with display name '$($this.disabledForGroup)' not found."
+                    throw "Group with display name '$disabledForGroupId' not found."
                 }
             }
         }
@@ -163,13 +164,13 @@ class O365CopilotSettingsPeopleEnhancedPersonalization : M365DSCResourceBase
         Write-Verbose -Message "Updating the isEnabledInOrganization setting to {$($this.isEnabledInOrganization.ToString())}"
         $settings = @{
             isEnabledInOrganization = $this.isEnabledInOrganization
-            disabledForGroup        = if ([string]::IsNullOrEmpty($this.disabledForGroup))
+            disabledForGroup        = if ([string]::IsNullOrEmpty($disabledForGroupId))
             {
                 $null
             }
             else
             {
-                $this.disabledForGroup
+                $disabledForGroupId
             }
         }
         $body = ConvertTo-Json $settings

@@ -140,9 +140,10 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             $nullResult = $this.GetBoundParameters()
             $nullResult.Ensure = 'Absent'
 
-            if ([System.String]::IsNullOrEmpty($this.TenantId) -and -not $null -eq $this.Credential)
+            $tenantIdValue = $this.TenantId
+            if ([System.String]::IsNullOrEmpty($tenantIdValue) -and -not $null -eq $this.Credential)
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
 
             if (-not [System.String]::IsNullOrEmpty($this.Id))
@@ -151,7 +152,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                 $instance = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
                     -ResourceGroupName $this.ResourceGroupName `
                     -WorkspaceName $this.WorkspaceName `
-                    -TenantId $this.TenantId `
+                    -TenantId $tenantIdValue `
                     -Id $this.Id
             }
             if ($null -eq $instance)
@@ -160,7 +161,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                 $instances = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
                     -ResourceGroupName $this.ResourceGroupName `
                     -WorkspaceName $this.WorkspaceName `
-                    -TenantId $this.TenantId
+                    -TenantId $tenantIdValue
                 $instance = $instances | Where-Object -FilterScript { $_.properties.displayName -eq $this.DisplayName }
             }
             if ($null -eq $instance)
@@ -189,7 +190,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                 Ensure                 = 'Present'
                 Credential             = $this.Credential
                 ApplicationId          = $this.ApplicationId
-                TenantId               = $this.TenantId
+                TenantId               = $tenantIdValue
                 CertificateThumbprint  = $this.CertificateThumbprint
                 CertificatePath        = $this.CertificatePath
                 CertificatePassword    = $this.CertificatePassword
@@ -256,9 +257,10 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             $instanceParameters.properties.Add('KillChainPhases', $values)
         }
 
-        if ([System.String]::IsNullOrEmpty($this.TenantId) -and -not $null -eq $this.Credential)
+        $tenantIdValue = $this.TenantId
+        if ([System.String]::IsNullOrEmpty($tenantIdValue) -and -not $null -eq $this.Credential)
         {
-            $this.TenantId = $this.Credential.UserName.Split('@')[1]
+            $tenantIdValue = $this.Credential.UserName.Split('@')[1]
         }
 
         # CREATE
@@ -268,7 +270,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             New-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
-                -TenantId $this.TenantId `
+                -TenantId $tenantIdValue `
                 -Body $instanceParameters
         }
         # UPDATE
@@ -278,7 +280,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             Set-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
-                -TenantId $this.TenantId `
+                -TenantId $tenantIdValue `
                 -Body $instanceParameters `
                 -Id $currentInstance.Id
         }
@@ -289,7 +291,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             Remove-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
-                -TenantId $this.TenantId `
+                -TenantId $tenantIdValue `
                 -Id $currentInstance.Id
         }
     }
@@ -335,9 +337,10 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
 
-            if ([System.String]::IsNullOrEmpty($this.TenantId) -and $null -ne $this.Credential)
+            $tenantIdValue = $this.TenantId
+            if ([System.String]::IsNullOrEmpty($tenantIdValue) -and $null -ne $this.Credential)
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
             foreach ($workspace in $workspaces)
             {
@@ -347,14 +350,14 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                 }
 
                 Write-M365DSCHost -Message "    |---[$i/$($workspaces.Length)] $($workspace.Name)" -DeferWrite
-                $this.subscriptionId = $workspace.ResourceId.Split('/')[2]
-                $this.resourceGroupName = $workspace.ResourceGroupName
-                $this.workspaceName = $workspace.Name
+                $subscriptionIdValue = $workspace.ResourceId.Split('/')[2]
+                $resourceGroupNameValue = $workspace.ResourceGroupName
+                $workspaceNameValue = $workspace.Name
 
-                $indicators = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.subscriptionId `
-                    -ResourceGroupName $this.resourceGroupName `
-                    -WorkspaceName $this.workspaceName `
-                    -TenantId $this.TenantId
+                $indicators = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $subscriptionIdValue `
+                    -ResourceGroupName $resourceGroupNameValue `
+                    -WorkspaceName $workspaceNameValue `
+                    -TenantId $tenantIdValue
 
                 $j = 1
                 if ($indicators.Length -eq 0)
@@ -373,12 +376,12 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                     $params = @{
                         DisplayName           = $indicator.properties.displayName
                         Id                    = $indicator.name
-                        SubscriptionId        = $this.subscriptionId
-                        ResourceGroupName     = $this.resourceGroupName
-                        WorkspaceName         = $this.workspaceName
+                        SubscriptionId        = $subscriptionIdValue
+                        ResourceGroupName     = $resourceGroupNameValue
+                        WorkspaceName         = $workspaceNameValue
                         Credential            = $this.Credential
                         ApplicationId         = $this.ApplicationId
-                        TenantId              = $this.TenantId
+                        TenantId              = $tenantIdValue
                         CertificateThumbprint = $this.CertificateThumbprint
                         CertificatePath       = $this.CertificatePath
                         CertificatePassword   = $this.CertificatePassword

@@ -170,7 +170,7 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
 
         $uri = "https://vssps.dev.azure.com/$($this.OrganizationName)/_apis/identities?subjectDescriptors=$($currentInstance.Descriptor)&api-version=7.2-preview.1"
         $info = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-        $this.descriptor = $info.value.descriptor
+        $identityDescriptor = $info.value.descriptor
 
         # Get all Namespaces from the Allow and Deny
         $namespacesToUpdate = @()
@@ -210,7 +210,7 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
                 token                = $namespace.token
                 accessControlEntries = @(
                     @{
-                        descriptor   = $this.descriptor
+                        descriptor   = $identityDescriptor
                         allow        = $allowPermissionValue
                         deny         = $denyPermissionValue
                         extendedInfo = @{}

@@ -161,8 +161,8 @@ class IntuneAppConfigurationDevicePolicy : M365DSCResourceBase
             {
                 $getValue = $this.ExportedInstance
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Intune App Configuration Device Policy with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found."
+            $policyId = $getValue.Id
+            Write-Verbose -Message "An Intune App Configuration Device Policy with Id {$policyId} and DisplayName {$($this.DisplayName)} was found."
 
             #region resource generator code
             $complexPermissionActions = @()
@@ -231,17 +231,17 @@ class IntuneAppConfigurationDevicePolicy : M365DSCResourceBase
                 }
             }
 
-            $this.payloadJson = $null
+            $payloadJsonValue = $null
             if (-not [System.String]::IsNullOrEmpty($getValue.payloadJson))
             {
-                $this.payloadJson = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($getValue.payloadJson))
+                $payloadJsonValue = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($getValue.payloadJson))
             }
 
             $results = @{
                 #region resource generator code
                 ConnectedAppsEnabled  = $getValue.connectedAppsEnabled
                 PackageId             = $getValue.packageId
-                PayloadJson           = $this.payloadJson
+                PayloadJson           = $payloadJsonValue
                 PermissionActions     = $complexPermissionActions
                 ProfileApplicability  = $enumProfileApplicability
                 EncodedSettingXml     = $getValue.encodedSettingXml
@@ -267,7 +267,7 @@ class IntuneAppConfigurationDevicePolicy : M365DSCResourceBase
                 $results.Remove('EncodedSettingXml') | Out-Null
                 $results.Remove('Settings') | Out-Null
             }
-            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppConfigurationAssignment -ManagedDeviceMobileAppConfigurationId $this.Id
+            $assignmentsValues = Get-MgBetaDeviceAppManagementMobileAppConfigurationAssignment -ManagedDeviceMobileAppConfigurationId $policyId
 
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)

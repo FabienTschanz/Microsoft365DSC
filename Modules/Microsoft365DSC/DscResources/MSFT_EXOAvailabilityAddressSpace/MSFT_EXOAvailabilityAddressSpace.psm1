@@ -115,13 +115,10 @@ class EXOAvailabilityAddressSpace : M365DSCResourceBase
                 $AvailabilityAddressSpace = $this.ExportedInstance
             }
 
-            if ($null -eq $AvailabilityAddressSpace.TargetAutodiscoverEpr -or $AvailabilityAddressSpace.TargetAutodiscoverEpr -eq '' )
+            $targetAutodiscoverEprValue = ''
+            if ($null -ne $AvailabilityAddressSpace.TargetAutodiscoverEpr -and $AvailabilityAddressSpace.TargetAutodiscoverEpr -ne '')
             {
-                $this.TargetAutodiscoverEpr = ''
-            }
-            else
-            {
-                $this.TargetAutodiscoverEpr = $AvailabilityAddressSpace.TargetAutodiscoverEpr.ToString()
+                $targetAutodiscoverEprValue = $AvailabilityAddressSpace.TargetAutodiscoverEpr.ToString()
             }
 
             Write-Verbose -Message "Found AvailabilityAddressSpace $($this.Identity)"
@@ -132,7 +129,7 @@ class EXOAvailabilityAddressSpace : M365DSCResourceBase
                 TargetServiceEpr      = $AvailabilityAddressSpace.TargetServiceEpr
                 TargetTenantId        = $AvailabilityAddressSpace.TargetTenantId
                 ForestName            = $AvailabilityAddressSpace.ForestName
-                TargetAutodiscoverEpr = $this.TargetAutodiscoverEpr
+                TargetAutodiscoverEpr = $targetAutodiscoverEprValue
                 Credential            = $this.Credential
                 Ensure                = 'Present'
                 ApplicationId         = $this.ApplicationId

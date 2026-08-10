@@ -310,16 +310,16 @@ class EXOHostedContentFilterPolicy : M365DSCResourceBase
                 $BlockedSendersValues = @()
             }
 
-            [System.String[]]$this.AllowedSenderDomains = $HostedContentFilterPolicy.AllowedSenderDomains
-            [System.String[]]$this.BlockedSenderDomains = $HostedContentFilterPolicy.BlockedSenderDomains
+            [System.String[]]$AllowedSenderDomainsValues = $HostedContentFilterPolicy.AllowedSenderDomains
+            [System.String[]]$BlockedSenderDomainsValues = $HostedContentFilterPolicy.BlockedSenderDomains
             # Check if the values are null and assign them an empty string array if they are
-            if ($null -eq $this.AllowedSenderDomains)
+            if ($null -eq $AllowedSenderDomainsValues)
             {
-                $this.AllowedSenderDomains = @()
+                $AllowedSenderDomainsValues = @()
             }
-            if ($null -eq $this.BlockedSenderDomains)
+            if ($null -eq $BlockedSenderDomainsValues)
             {
-                $this.BlockedSenderDomains = @()
+                $BlockedSenderDomainsValues = @()
             }
 
             Write-Verbose -Message "Found HostedContentFilterPolicy $($this.Identity)"
@@ -329,9 +329,9 @@ class EXOHostedContentFilterPolicy : M365DSCResourceBase
                 Identity                             = $this.Identity
                 AddXHeaderValue                      = $HostedContentFilterPolicy.AddXHeaderValue
                 AdminDisplayName                     = $HostedContentFilterPolicy.AdminDisplayName
-                AllowedSenderDomains                 = $this.AllowedSenderDomains
+                AllowedSenderDomains                 = $AllowedSenderDomainsValues
                 AllowedSenders                       = $AllowedSendersValues
-                BlockedSenderDomains                 = $this.BlockedSenderDomains
+                BlockedSenderDomains                 = $BlockedSenderDomainsValues
                 BlockedSenders                       = $BlockedSendersValues
                 BulkQuarantineTag                    = $HostedContentFilterPolicy.BulkQuarantineTag
                 BulkSpamAction                       = $HostedContentFilterPolicy.BulkSpamAction

@@ -256,13 +256,15 @@ class ODSettings : M365DSCResourceBase
             $CurrentParameters.Remove('BlockMacSync') | Out-Null
         }
         # set the TenantRestrictionEnabled and DomainGuids values to avoid invalid configurations
+        $tenantRestrictionEnabledValue = $this.TenantRestrictionEnabled
+        $domainGuidsValue = $this.DomainGuids
         if ($this.TenantRestrictionEnabled -eq $true)
         {
             if (!($CurrentParameters.ContainsKey('DomainGuids') -and ($CurrentParameters.DomainGuids.Count -gt 0) -and ($CurrentParameters.DomainGuids[0] -ne '') ))
             {
                 Write-Verbose -Message 'Invalid configuration specified: TenantRestrictionEnabled is True but No DomainGuids Specified, this option will not be enabled'
-                $this.TenantRestrictionEnabled = $false
-                $this.DomainGuids = @()
+                $tenantRestrictionEnabledValue = $false
+                $domainGuidsValue = @()
 
             }
             $CurrentParameters.Remove('TenantRestrictionEnabled') | Out-Null
@@ -274,14 +276,14 @@ class ODSettings : M365DSCResourceBase
                 if ($CurrentParameters.ContainsKey('DomainGuids') -and ($CurrentParameters.DomainGuids.Count -gt 0) -and ($CurrentParameters.DomainGuids[0] -ne '') )
                 {
                     Write-Verbose -Message 'DomainGuids have been Specified but TenantRestrictionEnabled is set to False, DomainGuids value will be ignored'
-                    $this.TenantRestrictionEnabled = $false
-                    $this.DomainGuids = @()
+                    $tenantRestrictionEnabledValue = $false
+                    $domainGuidsValue = @()
 
                 }
                 else
                 {
-                    $this.TenantRestrictionEnabled = $false
-                    $this.DomainGuids = @()
+                    $tenantRestrictionEnabledValue = $false
+                    $domainGuidsValue = @()
                 }
                 $CurrentParameters.Remove('TenantRestrictionEnabled') | Out-Null
             }
@@ -290,14 +292,14 @@ class ODSettings : M365DSCResourceBase
                 if ($CurrentParameters.ContainsKey('DomainGuids') -and ($CurrentParameters.DomainGuids.Count -gt 0) -and ($CurrentParameters.DomainGuids[0] -ne '') )
                 {
                     Write-Verbose -Message 'TenantRestrictionEnabled value not specified but a valid DomainGuids value is present - TenantRestrictionEnabled will be set to true'
-                    $this.TenantRestrictionEnabled = $true
-                    $this.DomainGuids = $CurrentParameters.DomainGuids
+                    $tenantRestrictionEnabledValue = $true
+                    $domainGuidsValue = $CurrentParameters.DomainGuids
                 }
                 else
                 {
                     Write-Verbose -Message 'TenantRestrictionEnabled value not specified - No valid DomainGuids value is present - TenantRestrictionEnabled will be set to False'
-                    $this.TenantRestrictionEnabled = $false
-                    $this.DomainGuids = @()
+                    $tenantRestrictionEnabledValue = $false
+                    $domainGuidsValue = @()
                 }
             }
         }
@@ -307,8 +309,8 @@ class ODSettings : M365DSCResourceBase
             $CurrentParameters.Remove('DomainGuids') | Out-Null
         }
 
-        $Options.Add('DomainGuids', [System.Guid[]]$this.DomainGuids)
-        $Options.Add('Enable', $this.TenantRestrictionEnabled)
+        $Options.Add('DomainGuids', [System.Guid[]]$domainGuidsValue)
+        $Options.Add('Enable', $tenantRestrictionEnabledValue)
 
         if ($CurrentParameters.ContainsKey('DisableReportProblemDialog'))
         {

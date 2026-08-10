@@ -120,6 +120,8 @@
     with `MySiteSharingCapability` in the `SPOSharingSettings` resource.
 * SPOUserProfileProperty
   * Updated fetching of user profile properties.
+* TeamsAudioConferencingPolicy
+  * [BREAKING CHANGE] Changed type of `MeetingInvitePhoneNumbers` from ``String`` to ``String[]``.
 * TeamsCallQueue
   * Added GUID resolution to `AuthorizedUsers` and `Users`.
 * TeamsUpdateManagementPolicy

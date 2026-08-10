@@ -2691,14 +2691,14 @@ class IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 : M365DSCResour
         #endregion
 
         $currentInstance = $this.Get().ToHashtable()
-        $this.GetBoundParameters() = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating an Intune Device Configuration Endpoint Protection Policy for Windows10 with DisplayName {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
+            $BoundParameters.Remove('Assignments') | Out-Null
 
-            $CreateParameters = ([Hashtable]$this.GetBoundParameters()).Clone()
+            $CreateParameters = ([Hashtable]$BoundParameters).Clone()
             $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
             $createParameters.Remove('Id') | Out-Null
 
@@ -2731,9 +2731,9 @@ class IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 : M365DSCResour
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Intune Device Configuration Endpoint Protection Policy for Windows10 with Id {$($currentInstance.Id)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
+            $BoundParameters.Remove('Assignments') | Out-Null
 
-            $UpdateParameters = ([Hashtable]$this.GetBoundParameters()).Clone()
+            $UpdateParameters = ([Hashtable]$BoundParameters).Clone()
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
             $UpdateParameters.Remove('Id') | Out-Null
 

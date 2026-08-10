@@ -185,11 +185,12 @@ class EXODataClassification : M365DSCResourceBase
                 $DataClassificationParams.Locale = New-Object system.globalization.cultureinfo($this.Locale)
             }
             $DataClassificationParams.Remove('IsDefault') | Out-Null
-            if ($null -eq $this.IsDefault)
+            $isDefaultValue = $false
+            if ($null -ne $this.IsDefault)
             {
-                $this.IsDefault = $false
+                $isDefaultValue = $this.IsDefault
             }
-            Set-DataClassification @DataClassificationParams -IsDefault:$this.IsDefault -Confirm:$false
+            Set-DataClassification @DataClassificationParams -IsDefault:$isDefaultValue -Confirm:$false
             Write-Verbose -Message 'Data classification policy updated successfully.'
         }
         elseif ($this.Ensure -eq 'Absent' -and $null -ne $DataClassification)

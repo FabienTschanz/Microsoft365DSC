@@ -459,22 +459,22 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
                 $AllowedDataIngestionLocationsValue = [String[]]($policy.AllowedDataIngestionLocations)
             }
 
-            $this.exemptedUniversalLinks = @()
+            $exemptedUniversalLinksValue = @()
             if ($null -ne $policy.exemptedUniversalLinks)
             {
-                $this.exemptedUniversalLinks = [String[]]($policy.exemptedUniversalLinks)
+                $exemptedUniversalLinksValue = [String[]]($policy.exemptedUniversalLinks)
             }
 
-            $this.managedUniversalLinks = @()
+            $managedUniversalLinksValue = @()
             if ($null -ne $policy.managedUniversalLinks)
             {
-                $this.managedUniversalLinks = [String[]]($policy.managedUniversalLinks)
+                $managedUniversalLinksValue = [String[]]($policy.managedUniversalLinks)
             }
 
-            $this.AllowedDataStorageLocations = @()
+            $allowedDataStorageLocationsValue = @()
             if ($null -ne $policy.AllowedDataStorageLocations)
             {
-                $this.AllowedDataStorageLocations = [String[]]($policy.AllowedDataStorageLocations)
+                $allowedDataStorageLocationsValue = [String[]]($policy.AllowedDataStorageLocations)
             }
 
             $gracePeriodToBlockAppsDuringOffClockHoursString = $null
@@ -496,9 +496,9 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
                 BlockDataIngestionIntoOrganizationDocuments    = $policy.blockDataIngestionIntoOrganizationDocuments
                 CustomDialerAppProtocol                        = $policy.customDialerAppProtocol
                 DialerRestrictionLevel                         = $policy.dialerRestrictionLevel
-                ExemptedUniversalLinks                         = $this.exemptedUniversalLinks
+                ExemptedUniversalLinks                         = $exemptedUniversalLinksValue
                 GracePeriodToBlockAppsDuringOffClockHours      = $gracePeriodToBlockAppsDuringOffClockHoursString
-                ManagedUniversalLinks                          = $this.managedUniversalLinks
+                ManagedUniversalLinks                          = $managedUniversalLinksValue
                 MaximumAllowedDeviceThreatLevel                = $policy.maximumAllowedDeviceThreatLevel
                 MaximumRequiredOsVersion                       = $policy.maximumRequiredOsVersion
                 MaximumWarningOsVersion                        = $policy.maximumWarningOsVersion
@@ -533,7 +533,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
                 SimplePinBlocked                               = $policy.SimplePinBlocked
                 MinimumPinLength                               = $policy.MinimumPinLength
                 PinCharacterSet                                = $policy.PinCharacterSet
-                AllowedDataStorageLocations                    = $this.AllowedDataStorageLocations
+                AllowedDataStorageLocations                    = $allowedDataStorageLocationsValue
                 ContactSyncBlocked                             = $policy.ContactSyncBlocked
                 PeriodBeforePinReset                           = $policy.PeriodBeforePinReset
                 FaceIdBlocked                                  = $policy.FaceIdBlocked
@@ -596,7 +596,6 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
         #endregion
 
         $currentPolicy = $this.Get().ToHashtable()
-        $this.Identity = $currentPolicy.Identity
         $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
         if ($this.Ensure -eq 'Present' -and $currentPolicy.Ensure -eq 'Absent')
@@ -687,7 +686,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentPolicy.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing iOS App Protection Policy {$($this.DisplayName)}"
-            Remove-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $this.Identity
+            Remove-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $currentPolicy.Identity
         }
     }
 

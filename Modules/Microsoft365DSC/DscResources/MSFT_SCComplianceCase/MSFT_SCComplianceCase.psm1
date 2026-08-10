@@ -96,15 +96,15 @@ class SCComplianceCase : M365DSCResourceBase
             }
 
             Write-Verbose "Found existing SCComplianceCase $($this.Name)"
-            $this.Status = $Case.Status
-            if ('Closing' -eq $this.Status)
+            $currentStatus = $Case.Status
+            if ('Closing' -eq $currentStatus)
             {
-                $this.Status = 'Closed'
+                $currentStatus = 'Closed'
             }
             $result = @{
                 Name                  = $Case.Name
                 Description           = $Case.Description
-                Status                = $this.Status
+                Status                = $currentStatus
                 Ensure                = 'Present'
                 Credential            = $this.Credential
                 ApplicationId         = $this.ApplicationId

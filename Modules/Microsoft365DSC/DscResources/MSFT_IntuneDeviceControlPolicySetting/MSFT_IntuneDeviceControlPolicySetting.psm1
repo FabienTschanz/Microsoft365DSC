@@ -464,11 +464,11 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
                 }
                 Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
                 $matchObject = $config.settingInstance.groupSettingCollectionValue[0].children | Where-Object { $_.settingDefinitionId -eq 'device_vendor_msft_defender_configuration_devicecontrol_policygroups_{groupid}_groupdata_matchtype' }
-                $this.matchType = $matchObject.choiceSettingValue.value.Split('_')[-1].Replace('matcha', 'A')
+                $matchTypeValue = $matchObject.choiceSettingValue.value.Split('_')[-1].Replace('matcha', 'A')
                 $params = @{
                     Id                    = $config.Id
                     DisplayName           = $config.DisplayName
-                    MatchType             = $this.matchType
+                    MatchType             = $matchTypeValue
                     Ensure                = 'Present'
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId

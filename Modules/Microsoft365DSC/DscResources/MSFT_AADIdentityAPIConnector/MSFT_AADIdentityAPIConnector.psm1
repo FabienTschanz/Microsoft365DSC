@@ -128,14 +128,14 @@ class AADIdentityAPIConnector : M365DSCResourceBase
                 Write-Verbose -Message "Could not find an Azure AD Identity API Connector with DisplayName {$($this.DisplayName)}."
                 return $this.AsResult($nullResult)
             }
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "An Azure AD Identity API Connector with Id {$($this.Id)} and DisplayName {$($this.DisplayName)} was found"
+            Write-Verbose -Message "An Azure AD Identity API Connector with Id {$($getValue.Id)} and DisplayName {$($this.DisplayName)} was found"
 
             #region resource generator code
+            $currentPassword = $this.Password
             if ($null -ne $getValue.AuthenticationConfiguration.password)
             {
                 $securePassword = ConvertTo-SecureString $getValue.AuthenticationConfiguration.password -AsPlainText -Force
-                $this.Password = New-Object System.Management.Automation.PSCredential ('Password', $securePassword)
+                $currentPassword = New-Object System.Management.Automation.PSCredential ('Password', $securePassword)
             }
 
             $complexCertificates = @()
@@ -160,7 +160,7 @@ class AADIdentityAPIConnector : M365DSCResourceBase
                 TargetUrl             = $getValue.TargetUrl
                 Id                    = $getValue.Id
                 Username              = $getValue.AuthenticationConfiguration.username
-                Password              = $this.Password
+                Password              = $currentPassword
                 Certificates          = $complexCertificates
                 Ensure                = 'Present'
                 Credential            = $this.Credential

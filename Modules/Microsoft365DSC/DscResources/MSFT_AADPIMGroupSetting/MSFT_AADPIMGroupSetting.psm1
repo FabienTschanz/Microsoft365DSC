@@ -307,7 +307,7 @@ class AADPIMGroupSetting : M365DSCResourceBase
             $ActivationReqMFAValue = (($role | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' }).enabledRules) -contains 'MultiFactorAuthentication'
             $AuthenticationContextValue = ($role | Where-Object { $_.Id -eq 'AuthenticationContext_EndUser_Assignment' })
             $ApprovaltoActivateValue = (($role | Where-Object { $_.Id -eq 'Approval_EndUser_Assignment' }).setting.isApprovalRequired)
-            $ActivateApproversValue = (($role | Where-Object { $_.Id -eq 'Approval_EndUser_Assignment' }).setting.approvalStages.primaryApprovers.id)
+            [array]$ActivateApproversValue = (($role | Where-Object { $_.Id -eq 'Approval_EndUser_Assignment' }).setting.approvalStages.primaryApprovers)
         }
         else
         {
@@ -326,20 +326,20 @@ class AADPIMGroupSetting : M365DSCResourceBase
             $AuthenticationContextNameValue = (Get-MgBetaIdentityConditionalAccessAuthenticationContextClassReference -AuthenticationContextClassReferenceId $AuthenticationContextIdValue).DisplayName
         }
 
-        [string[]]$this.ActivateApprover = @()
+        [string[]]$activateApproverValue = @()
         foreach ($Item in $ActivateApproversValue.id)
         {
             try
             {
                 $user = Get-MgUser -UserId $Item -ErrorAction Stop
-                $this.ActivateApprover += $user.UserPrincipalName
+                $activateApproverValue += $user.UserPrincipalName
             }
             catch
             {
                 try
                 {
                     $group = Get-MgGroup -GroupId $Item -ErrorAction stop
-                    $this.ActivateApprover += $group.DisplayName
+                    $activateApproverValue += $group.DisplayName
                 }
                 catch
                 {
@@ -431,7 +431,7 @@ class AADPIMGroupSetting : M365DSCResourceBase
                 ActivationReqTicket                                       = $ActivationReqTicketValue
                 ActivationReqMFA                                          = $ActivationReqMFAValue
                 ApprovaltoActivate                                        = $ApprovaltoActivateValue
-                ActivateApprover                                          = [System.String[]]$this.ActivateApprover
+                ActivateApprover                                          = [System.String[]]$activateApproverValue
                 PermanentEligibleAssignmentisExpirationRequired           = $PermanentEligibleAssignmentisExpirationRequiredValue
                 ExpireEligibleAssignment                                  = $ExpireEligibleAssignmentValue
                 PermanentActiveAssignmentisExpirationRequired             = $PermanentActiveAssignmentisExpirationRequiredValue

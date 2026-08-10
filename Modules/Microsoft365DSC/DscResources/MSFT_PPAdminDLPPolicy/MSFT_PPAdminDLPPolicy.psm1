@@ -234,7 +234,7 @@ class PPAdminDLPPolicy : M365DSCResourceBase
 
         # CREATE
         $needToUpdateNewInstance = $false
-        $this.policyName = $currentInstance.PolicyName
+        $policyNameValue = $currentInstance.PolicyName
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating new Data Policy {$($this.DisplayName)}"
@@ -243,15 +243,15 @@ class PPAdminDLPPolicy : M365DSCResourceBase
 
             Write-Verbose -Message "Creating new policy with body:`r`n$(ConvertTo-Json $newPolicy -Depth 20)"
             $policy = Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'POST' -Body $policyObject
-            $this.policyName = $policy.name
+            $policyNameValue = $policy.name
         }
         if ($setParameters.ContainsKey('PolicyName'))
         {
-            $setParameters.PolicyName = $this.policyName
+            $setParameters.PolicyName = $policyNameValue
         }
         else
         {
-            $setParameters.Add('PolicyName', $this.policyName)
+            $setParameters.Add('PolicyName', $policyNameValue)
         }
 
         # UPDATE
@@ -266,7 +266,7 @@ class PPAdminDLPPolicy : M365DSCResourceBase
             }
             Write-Verbose -Message "Updating Data Policy {$($this.DisplayName)} with values:`r`n$(Convert-M365DscHashtableToString -Hashtable $setParameters)"
             $uri = 'https://' + (Get-MSCloudLoginConnectionProfile -Workload 'PowerPlatformREST').BapEndpoint + `
-                "/providers/Microsoft.BusinessAppPlatform/scopes/admin/apiPolicies/$($this.policyName)?api-version=2016-11-01"
+                "/providers/Microsoft.BusinessAppPlatform/scopes/admin/apiPolicies/$($policyNameValue)?api-version=2016-11-01"
 
             $policy = Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'PUT' -Body $policyObject
         }
@@ -275,7 +275,7 @@ class PPAdminDLPPolicy : M365DSCResourceBase
         {
             Write-Verbose -Message "Removing Data Policy {$($this.DisplayName)}"
             $uri = 'https://' + (Get-MSCloudLoginConnectionProfile -Workload 'PowerPlatformREST').BapEndpoint + `
-                "/providers/Microsoft.BusinessAppPlatform/scopes/admin/apiPolicies/$($this.policyName)?api-version=2016-11-01"
+                "/providers/Microsoft.BusinessAppPlatform/scopes/admin/apiPolicies/$($policyNameValue)?api-version=2016-11-01"
 
             $policy = Invoke-M365DSCPowerPlatformRESTWebRequest -Uri $uri -Method 'DELETE'
         }

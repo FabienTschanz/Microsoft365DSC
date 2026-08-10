@@ -192,9 +192,10 @@ class SentinelAlertRule : M365DSCResourceBase
             $nullResult = $this.GetBoundParameters()
             $nullResult.Ensure = 'Absent'
 
-            if ([System.String]::IsNullOrEmpty($this.TenantId) -and -not $null -eq $this.Credential)
+            $tenantIdValue = $this.TenantId
+            if ([System.String]::IsNullOrEmpty($tenantIdValue) -and -not $null -eq $this.Credential)
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
 
             if (-not [System.String]::IsNullOrEmpty($this.Id))
@@ -202,7 +203,7 @@ class SentinelAlertRule : M365DSCResourceBase
                 $instance = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
                     -ResourceGroupName $this.ResourceGroupName `
                     -WorkspaceName $this.WorkspaceName `
-                    -TenantId $this.TenantId `
+                    -TenantId $tenantIdValue `
                     -Id $this.Id
             }
             if ($null -eq $instance)
@@ -210,7 +211,7 @@ class SentinelAlertRule : M365DSCResourceBase
                 $instances = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
                     -ResourceGroupName $this.ResourceGroupName `
                     -WorkspaceName $this.WorkspaceName `
-                    -TenantId $this.TenantId
+                    -TenantId $tenantIdValue
                 $instance = $instances | Where-Object -FilterScript { $_.properties.displayName -eq $this.DisplayName }
             }
             if ($null -eq $instance)
@@ -335,7 +336,7 @@ class SentinelAlertRule : M365DSCResourceBase
                 Ensure                    = 'Present'
                 Credential                = $this.Credential
                 ApplicationId             = $this.ApplicationId
-                TenantId                  = $this.TenantId
+                TenantId                  = $tenantIdValue
                 CertificateThumbprint     = $this.CertificateThumbprint
                 CertificatePath           = $this.CertificatePath
                 CertificatePassword       = $this.CertificatePassword
@@ -373,9 +374,10 @@ class SentinelAlertRule : M365DSCResourceBase
 
         $currentInstance = $this.Get().ToHashtable()
 
-        if ([System.String]::IsNullOrEmpty($this.TenantId) -and -not $null -eq $this.Credential)
+        $tenantIdValue = $this.TenantId
+        if ([System.String]::IsNullOrEmpty($tenantIdValue) -and -not $null -eq $this.Credential)
         {
-            $this.TenantId = $this.Credential.UserName.Split('@')[1]
+            $tenantIdValue = $this.Credential.UserName.Split('@')[1]
         }
 
         $instance = @{}
@@ -573,7 +575,7 @@ class SentinelAlertRule : M365DSCResourceBase
             New-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
-                -TenantId $this.TenantId `
+                -TenantId $tenantIdValue `
                 -Body $instance
         }
         # UPDATE
@@ -583,7 +585,7 @@ class SentinelAlertRule : M365DSCResourceBase
             New-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
-                -TenantId $this.TenantId `
+                -TenantId $tenantIdValue `
                 -Body $instance `
                 -Id $currentInstance.Id
         }
@@ -594,7 +596,7 @@ class SentinelAlertRule : M365DSCResourceBase
             Remove-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
                 -ResourceGroupName $this.ResourceGroupName `
                 -WorkspaceName $this.WorkspaceName `
-                -TenantId $this.TenantId `
+                -TenantId $tenantIdValue `
                 -Id $currentInstance.Id
         }
     }
@@ -640,9 +642,10 @@ class SentinelAlertRule : M365DSCResourceBase
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
             }
 
-            if ([System.String]::IsNullOrEmpty($this.TenantId) -and $null -ne $this.Credential)
+            $tenantIdValue = $this.TenantId
+            if ([System.String]::IsNullOrEmpty($tenantIdValue) -and $null -ne $this.Credential)
             {
-                $this.TenantId = $this.Credential.UserName.Split('@')[1]
+                $tenantIdValue = $this.Credential.UserName.Split('@')[1]
             }
             foreach ($workspace in $workspaces)
             {
@@ -652,14 +655,14 @@ class SentinelAlertRule : M365DSCResourceBase
                 }
 
                 Write-M365DSCHost -Message "    |---[$i/$($workspaces.Length)] $($workspace.Name)" -DeferWrite
-                $this.subscriptionId = $workspace.ResourceId.Split('/')[2]
-                $this.resourceGroupName = $workspace.ResourceGroupName
-                $this.workspaceName = $workspace.Name
+                $subscriptionIdValue = $workspace.ResourceId.Split('/')[2]
+                $resourceGroupNameValue = $workspace.ResourceGroupName
+                $workspaceNameValue = $workspace.Name
 
-                $rules = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.subscriptionId `
-                    -ResourceGroupName $this.resourceGroupName `
-                    -WorkspaceName $this.workspaceName `
-                    -TenantId $this.TenantId
+                $rules = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $subscriptionIdValue `
+                    -ResourceGroupName $resourceGroupNameValue `
+                    -WorkspaceName $workspaceNameValue `
+                    -TenantId $tenantIdValue
 
                 $j = 1
                 if ($rules.Length -eq 0)
@@ -678,12 +681,12 @@ class SentinelAlertRule : M365DSCResourceBase
                     $params = @{
                         DisplayName           = $rule.properties.displayName
                         Id                    = $rule.name
-                        SubscriptionId        = $this.subscriptionId
-                        ResourceGroupName     = $this.resourceGroupName
-                        WorkspaceName         = $this.workspaceName
+                        SubscriptionId        = $subscriptionIdValue
+                        ResourceGroupName     = $resourceGroupNameValue
+                        WorkspaceName         = $workspaceNameValue
                         Credential            = $this.Credential
                         ApplicationId         = $this.ApplicationId
-                        TenantId              = $this.TenantId
+                        TenantId              = $tenantIdValue
                         CertificateThumbprint = $this.CertificateThumbprint
                         CertificatePath       = $this.CertificatePath
                         CertificatePassword   = $this.CertificatePassword

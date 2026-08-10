@@ -253,11 +253,12 @@ class EXORemoteDomain : M365DSCResourceBase
         {
             Write-Verbose -Message "Remote Domain '$($this.Name)' does not exist but it should. Create and configure it."
             # Create remote domain
-            if ([System.String]::IsNullOrEmpty($this.Name))
+            $remoteDomainName = $this.Name
+            if ([System.String]::IsNullOrEmpty($remoteDomainName))
             {
-                $this.Name = $this.Identity
+                $remoteDomainName = $this.Identity
             }
-            New-RemoteDomain -Name $this.Name -DomainName $this.DomainName
+            New-RemoteDomain -Name $remoteDomainName -DomainName $this.DomainName
 
             $tries = 1
             $remoteDomain = $null
@@ -265,7 +266,7 @@ class EXORemoteDomain : M365DSCResourceBase
             {
                 Write-Verbose -Message 'Waiting for 10 seconds'
                 Start-Sleep -Seconds 10
-                $remoteDomain = Get-RemoteDomain -Identity $this.Name -ErrorAction SilentlyContinue
+                $remoteDomain = Get-RemoteDomain -Identity $remoteDomainName -ErrorAction SilentlyContinue
                 $tries++
             } until ($null -eq $remoteDomain -or $tries -le 12)
 
