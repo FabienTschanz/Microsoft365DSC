@@ -73,14 +73,14 @@ class <ResourceName> : M365DSCResourceBase
                 $settings = $getValue.settings
             }
 
-            $this.Id = $getValue.Id
-            Write-Verbose -Message "A <ResourceDescription> with Id {$($this.Id)} and Name {$($this.DisplayName)} was found"
+            $resolvedId = $getValue.Id
+            Write-Verbose -Message "A <ResourceDescription> with Id {$resolvedId} and Name {$($this.DisplayName)} was found"
 
             # Retrieve policy specific settings
             if ($null -eq $settings)
             {
                 [array] $settings = Get-MgBetaDeviceManagementConfigurationPolicySetting `
-                    -DeviceManagementConfigurationPolicyId $this.Id `
+                    -DeviceManagementConfigurationPolicyId $resolvedId `
                     -ExpandProperty 'settingDefinitions' `
                     -All `
                     -ErrorAction Stop
@@ -101,7 +101,7 @@ class <ResourceName> : M365DSCResourceBase
             }
             $result += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $this.Id -ErrorAction SilentlyContinue
+            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId -ErrorAction SilentlyContinue
             $assignmentResult = @()
             if ($null -ne $assignmentsValues -and $assignmentsValues.Count -gt 0)
             {
@@ -221,6 +221,12 @@ class <ResourceName> : M365DSCResourceBase
         return ([M365DSCResourceBase] $this).Test()
     }
 
+    # Settings-catalog properties compare through the shared base shim; base Test() splats this.
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return $this.GetSettingsCatalogCompareParameters()
+    }
+
     [string] Export()
     {
         if ($this.RequiresPowerShellCore())
@@ -241,17 +247,14 @@ class <ResourceName> : M365DSCResourceBase
         {
             $policyTemplateID = '<TemplateReferenceId>'
             $baseFilter = "templateReference/templateId eq '$policyTemplateID'"
+            $mergedFilter = $baseFilter
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $this.Filter = "($($this.Filter)) and ($baseFilter)"
-            }
-            else
-            {
-                $this.Filter = $baseFilter
+                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
             }
             [array] $exportedInstances = Get-M365DSCExportCachedConfigurationPolicies `
                 -TemplateId $policyTemplateID `
-                -Filter $this.Filter
+                -Filter $mergedFilter
 
             $dscContent = [System.Text.StringBuilder]::new()
             $i = 1

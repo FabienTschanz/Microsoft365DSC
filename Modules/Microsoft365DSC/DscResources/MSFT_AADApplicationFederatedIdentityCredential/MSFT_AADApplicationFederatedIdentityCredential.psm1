@@ -83,6 +83,13 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
 
     [AADApplicationFederatedIdentityCredential] Get()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [AADApplicationFederatedIdentityCredential]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
         Write-Verbose -Message "Getting federated identity credential {$($this.Name)} for application {$($this.ApplicationDisplayName)}"
 
         try
@@ -227,6 +234,12 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
 
     [void] Set()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
         Write-Verbose -Message "Setting federated identity credential {$($this.Name)} for application {$($this.ApplicationDisplayName)}"
 
         Confirm-M365DSCDependencies
@@ -293,6 +306,11 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
 
     [string] Export()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
         $ConnectionMode = $this.Connect('MicrosoftGraph')
 
         Confirm-M365DSCDependencies

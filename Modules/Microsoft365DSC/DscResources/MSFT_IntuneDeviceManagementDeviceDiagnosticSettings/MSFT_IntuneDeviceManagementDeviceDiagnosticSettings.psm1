@@ -63,6 +63,13 @@ class IntuneDeviceManagementDeviceDiagnosticSettings : M365DSCResourceBase
 
     [IntuneDeviceManagementDeviceDiagnosticSettings] Get()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [IntuneDeviceManagementDeviceDiagnosticSettings]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
         Write-Verbose -Message 'Getting configuration of the Intune Device Management Device Diagnostic Settings'
 
         try
@@ -107,6 +114,12 @@ class IntuneDeviceManagementDeviceDiagnosticSettings : M365DSCResourceBase
 
     [void] Set()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
         Write-Verbose -Message 'Updating the Intune Device Management Device Diagnostic Settings'
 
         $null = $this.Connect('MicrosoftGraph')
@@ -130,6 +143,11 @@ class IntuneDeviceManagementDeviceDiagnosticSettings : M365DSCResourceBase
 
     [string] Export()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
         $ConnectionMode = $this.Connect('MicrosoftGraph')
 
         #Ensure the proper dependencies are installed in the current environment.

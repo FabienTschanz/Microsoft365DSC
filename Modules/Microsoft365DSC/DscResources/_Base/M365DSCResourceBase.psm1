@@ -613,6 +613,20 @@ class M365DSCResourceBase
     }
 
 
+    # Emits the standard deprecation warning for every listed parameter the user actually bound.
+    # TODO: callers remove their parameters (and this call) at the next breaking change release.
+    hidden [void] WarnDeprecated([System.String[]] $ParameterNames)
+    {
+        $bound = $this.GetBoundParameters()
+        foreach ($name in $ParameterNames)
+        {
+            if ($bound.ContainsKey($name))
+            {
+                Write-Warning -Message "The parameter '$name' is deprecated. It will be removed in the next breaking change release."
+            }
+        }
+    }
+
     # Serialises a nullable boolean into a JSON literal
     [System.String] BoolToJson([System.Object] $Value)
     {
@@ -628,17 +642,26 @@ class M365DSCResourceBase
 
     #region Default DSC method implementations
 
-    # Default Test() for every resource
+    # Default Test() for every resource. Splats GetCompareParameters() so a resource that only
+    # needs custom comparison parameters overrides that method and keeps this Test() untouched.
+    # Argument order is load-bearing: -DesiredValues must be evaluated BEFORE -CurrentValues so the
+    # desired snapshot is taken before Get() runs.
     [bool] Test()
     {
         $this.AddTelemetry('Test')
 
+        $compareParameters = $this.GetCompareParameters()
         return (Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-                -CurrentValues $this.Get().ToHashtable() `
-                -ResourceName $this.GetResourceName())
+                -ResourceName $this.GetResourceName() `
+                @compareParameters `
+                -CurrentValues $this.Get().ToHashtable())
     }
 
-    # Overridden by resources that need custom comparison parameters.
+    # Overridden by resources that need custom comparison parameters
+    # (ExcludedProperties / IncludedProperties / PostProcessing / PostProcessingArgs).
+    # CONSTRAINT: reporting calls this on a BARE instance ($type::new().GetCompareParameters()),
+    # so the override must not depend on bound property state - branch on $DesiredValues inside
+    # the PostProcessing scriptblock instead of on $this out here.
     [Hashtable] GetCompareParameters()
     {
         return @{}

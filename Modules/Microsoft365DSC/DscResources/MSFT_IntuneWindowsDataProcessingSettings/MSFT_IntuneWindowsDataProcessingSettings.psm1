@@ -59,6 +59,13 @@ class IntuneWindowsDataProcessingSettings : M365DSCResourceBase
 
     [IntuneWindowsDataProcessingSettings] Get()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            $remote = [IntuneWindowsDataProcessingSettings]::new()
+            $remote.FromHashtable($this.InvokeInPowerShellCore('Get'))
+            return $remote
+        }
+
         Write-Verbose -Message 'Getting configuration of the Intune Windows Data Processing Settings'
 
         try
@@ -101,6 +108,12 @@ class IntuneWindowsDataProcessingSettings : M365DSCResourceBase
 
     [void] Set()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            $null = $this.InvokeInPowerShellCore('Set')
+            return
+        }
+
         Write-Verbose -Message 'Updating the Intune Windows Data Processing Settings'
 
         $null = $this.Connect('MicrosoftGraph')
@@ -124,6 +137,11 @@ class IntuneWindowsDataProcessingSettings : M365DSCResourceBase
 
     [string] Export()
     {
+        if ($this.RequiresPowerShellCore())
+        {
+            return [string] $this.InvokeInPowerShellCore('Export')
+        }
+
         $ConnectionMode = $this.Connect('MicrosoftGraph')
 
         #Ensure the proper dependencies are installed in the current environment.

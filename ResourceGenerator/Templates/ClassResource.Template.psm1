@@ -125,28 +125,7 @@ class <ResourceName> : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        Write-Verbose -Message "Testing configuration of <ResourceDescription> {$($this.<PrimaryKey>)}"
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-
-        Write-Verbose -Message "Test-TargetResource returned $result"
-
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
