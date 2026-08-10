@@ -161,6 +161,8 @@ class EXODataClassification : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of Data classification policy for $($this.Identity)"
 
+        $null = $this.Connect('ExchangeOnline')
+
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 

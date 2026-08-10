@@ -329,6 +329,8 @@ class EXOMailboxCalendarConfiguration : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of Mailbox Calendar Configuration with Identity $($this.Identity)"
 
+        $null = $this.Connect('ExchangeOnline')
+
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 

@@ -120,6 +120,8 @@ class AADIdentityProtectionPolicySettings : M365DSCResourceBase
             return
         }
 
+        $null = $this.Connect('MicrosoftGraph')
+
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 

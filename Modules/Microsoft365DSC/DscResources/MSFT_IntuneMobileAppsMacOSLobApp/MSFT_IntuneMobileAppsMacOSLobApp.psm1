@@ -148,49 +148,58 @@ class IntuneMobileAppsMacOSLobApp : M365DSCResourceBase
 
         try
         {
-            $null = $this.Connect('MicrosoftGraph')
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $this.AddTelemetry('Get')
-            #endregion
-
-            $nullResult = $this.GetBoundParameters()
-            $nullResult.Ensure = 'Absent'
-
-            if (-not [System.String]::IsNullOrEmpty($this.Id))
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
             {
-                $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.Id -ExpandProperty 'categories' -ErrorAction SilentlyContinue
+                $null = $this.Connect('MicrosoftGraph')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
+                {
+                    $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.Id -ExpandProperty 'categories' -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find an Intune MacOS Lob App with Id {$($this.Id)}."
+
+                    if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
+                    {
+                        $instance = Get-MgBetaDeviceAppManagementMobileApp `
+                            -All `
+                            -Filter "(isof('microsoft.graph.macOSLobApp') and DisplayName eq '$($this.DisplayName -replace "'", "''")')" `
+                            -ErrorAction SilentlyContinue
+                    }
+
+                    if ($null -ne $instance)
+                    {
+                        $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $instance.Id `
+                            -ExpandProperty 'categories' `
+                            -ErrorAction SilentlyContinue
+                    }
+                }
+
+                if ($null -eq $instance)
+                {
+                    Write-Verbose -Message "Could not find an Intune MacOS Lob App with DisplayName {$($this.DisplayName)} was found."
+                    return $this.AsResult($nullResult)
+                }
             }
-
-            if ($null -eq $instance)
+            else
             {
-                Write-Verbose -Message "Could not find an Intune MacOS Lob App with Id {$($this.Id)}."
-
-                if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
-                {
-                    $instance = Get-MgBetaDeviceAppManagementMobileApp `
-                        -All `
-                        -Filter "(isof('microsoft.graph.macOSLobApp') and DisplayName eq '$($this.DisplayName -replace "'", "''")')" `
-                        -ErrorAction SilentlyContinue
-                }
-
-                if ($null -ne $instance)
-                {
-                    $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $instance.Id `
-                        -ExpandProperty 'categories' `
-                        -ErrorAction SilentlyContinue
-                }
+                $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.ExportedInstance.Id `
+                    -ExpandProperty 'categories' `
+                    -ErrorAction SilentlyContinue
             }
             $resolvedId = $instance.Id
-
-            if ($null -eq $instance)
-            {
-                Write-Verbose -Message "Could not find an Intune MacOS Lob App with DisplayName {$($this.DisplayName)} was found."
-                return $this.AsResult($nullResult)
-            }
 
             Write-Verbose "An Intune MacOS Lob App with Id {$($resolvedId)} and DisplayName {$($this.DisplayName)} was found."
 

@@ -206,6 +206,7 @@ class TeamsNotificationAndFeedsPolicy : M365DSCResourceBase
                     AccessTokens          = $this.AccessTokens
                 }
 
+                $this.ExportedInstance = $config
                 $Results = $this.GetForExport($Params)
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                     -ConnectionMode $ConnectionMode `

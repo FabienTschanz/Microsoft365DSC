@@ -474,6 +474,8 @@ class AADRoleSetting : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of Role settings: $($this.DisplayName)"
 
+        $null = $this.Connect('MicrosoftGraph')
+
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
         #region Telemetry

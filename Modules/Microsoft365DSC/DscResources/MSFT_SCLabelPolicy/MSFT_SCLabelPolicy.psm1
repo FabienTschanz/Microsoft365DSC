@@ -182,7 +182,7 @@ class SCLabelPolicy : M365DSCResourceBase
             if ($null -ne $policy.Settings)
             {
                 Write-Verbose -Message 'Converting Settings'
-                $advancedSettingsValue = Convert-SCLabelPolicyStringToAdvancedSettings -AdvancedSettings $policy.Settings
+                $advancedSettingsValue = $this.ConvertStringToAdvancedSettings($policy.Settings)
             }
 
             Write-Verbose "Found existing Sensitivity Label policy $($this.Name)"
@@ -302,7 +302,7 @@ class SCLabelPolicy : M365DSCResourceBase
 
             if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))
             {
-                $advanced = Convert-SCLabelPolicyCIMToAdvancedSettings -AdvancedSettings $this.AdvancedSettings
+                $advanced = $this.ConvertCIMToAdvancedSettings($this.AdvancedSettings)
                 $CreationParams['AdvancedSettings'] = $advanced
             }
 
@@ -339,7 +339,7 @@ class SCLabelPolicy : M365DSCResourceBase
 
                 if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))
                 {
-                    $advanced = Convert-SCLabelPolicyCIMToAdvancedSettings -AdvancedSettings $this.AdvancedSettings
+                    $advanced = $this.ConvertCIMToAdvancedSettings($this.AdvancedSettings)
                     $SetParams['AdvancedSettings'] = $advanced
                 }
 
@@ -369,7 +369,7 @@ class SCLabelPolicy : M365DSCResourceBase
 
             if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))
             {
-                $advanced = Convert-SCLabelPolicyCIMToAdvancedSettings -AdvancedSettings $this.AdvancedSettings
+                $advanced = $this.ConvertCIMToAdvancedSettings($this.AdvancedSettings)
                 $SetParams['AdvancedSettings'] = $advanced
             }
 
@@ -603,6 +603,105 @@ class SCLabelPolicy : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] ConvertCIMToAdvancedSettings([System.Object] $AdvancedSettings)
+    {
+        $entry = [PSCustomObject]@{}
+        foreach ($obj in $AdvancedSettings)
+        {
+            $settingsValues = ''
+            if ($obj.Key -like '*defaultlabel*')
+            {
+                if ($obj.Value -ne 'None')
+                {
+                    $label = Get-Label | Where-Object -FilterScript { $_.DisplayName -eq $obj.Value }
+                    if ($null -eq $label)
+                    {
+                        Write-Error -Message "Label {$($obj.value)} doesn't exist. Please define the Sensitivy label first before trying to assign it to a policy."
+                    }
+                    else
+                    {
+                        $settingsValues = $label.ImmutableId.ToString()
+                    }
+                }
+                else
+                {
+                    $settingsValues = 'None'
+                }
+            }
+            else
+            {
+                foreach ($objVal in $obj.Value)
+                {
+                    $settingsValues += $objVal
+                    $settingsValues += ','
+                }
+            }
+            $entry | Add-Member -MemberType NoteProperty -Name $obj.Key -Value $settingsValues.TrimEnd(',') -Force
+        }
+
+        return $entry
+    }
+
+    hidden [System.Object[]] ConvertStringToAdvancedSettings([System.String[]] $AdvancedSettings)
+    {
+        $settings = @()
+        $labelLookup = $null
+        foreach ($setting in $AdvancedSettings)
+        {
+            Write-Verbose -Message "SETTING: $setting"
+            $settingString = $setting.Replace('[', '').Replace(']', '')
+            $settingKey = $settingString.Split(',')[0]
+
+            if ($settingKey -ne 'displayname')
+            {
+                $startPos = $settingString.IndexOf(',', 0) + 1
+                $valueString = $settingString.Substring($startPos, $settingString.Length - $startPos).Trim()
+                # Declared up front: assigned conditionally below, which class methods reject.
+                $values = $null
+                if ($valueString -like '*,*')
+                {
+                    $values = $valueString -split ','
+                }
+                else
+                {
+                    $values = $valueString
+                }
+
+                if ($settingKey -like '*defaultlabel*')
+                {
+                    if ($values -ne 'None')
+                    {
+                        if ($null -eq $labelLookup)
+                        {
+                            $labelLookup = @{}
+                            foreach ($lbl in (Get-Label -ErrorAction SilentlyContinue))
+                            {
+                                if ($null -ne $lbl.ImmutableId)
+                                {
+                                    $labelLookup[$lbl.ImmutableId.ToString()] = $lbl.DisplayName
+                                }
+                            }
+                        }
+
+                        $resolved = $labelLookup[$values.ToString()]
+                        if (-not [System.String]::IsNullOrEmpty($resolved))
+                        {
+                            $values = $resolved
+                        }
+                    }
+                }
+
+                $entry = [ordered]@{
+                    Key   = $settingKey
+                    Value = $values
+                }
+                $settings += $entry
+            }
+        }
+
+        return $settings
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCLabelPolicy] AsResult([System.Object] $Values)
     {
@@ -630,55 +729,6 @@ class MSFT_SCLabelSetting
     [DscProperty()]
     [System.ComponentModel.Description('Advanced settings value.')]
     [System.String[]] $Value
-}
-
-# Was Convert-CIMToAdvancedSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCLabelPolicyCIMToAdvancedSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        $AdvancedSettings
-    )
-
-    $entry = [PSCustomObject]@{}
-    foreach ($obj in $AdvancedSettings)
-    {
-        $settingsValues = ''
-        if ($obj.Key -like '*defaultlabel*')
-        {
-            if ($obj.Value -ne 'None')
-            {
-                $label = Get-Label | Where-Object -FilterScript { $_.DisplayName -eq $obj.Value }
-                if ($null -eq $label)
-                {
-                    Write-Error -Message "Label {$($obj.value)} doesn't exist. Please define the Sensitivy label first before trying to assign it to a policy."
-                }
-                else
-                {
-                    $settingsValues = $label.ImmutableId.ToString()
-                }
-            }
-            else
-            {
-                $settingsValues = 'None'
-            }
-        }
-        else
-        {
-            foreach ($objVal in $obj.Value)
-            {
-                $settingsValues += $objVal
-                $settingsValues += ','
-            }
-        }
-        $entry | Add-Member -MemberType NoteProperty -Name $obj.Key -Value $settingsValues.TrimEnd(',') -Force
-    }
-
-    return $entry
 }
 
 # Was New-PolicyData. Renamed because helper names recur across resources and the
@@ -733,75 +783,6 @@ function New-SCLabelPolicyPolicyData
     }
 
     return $desiredData
-}
-
-# Was Convert-StringToAdvancedSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCLabelPolicyStringToAdvancedSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $AdvancedSettings
-    )
-
-    $settings = @()
-    $labelLookup = $null
-    foreach ($setting in $AdvancedSettings)
-    {
-        Write-Verbose -Message "SETTING: $setting"
-        $settingString = $setting.Replace('[', '').Replace(']', '')
-        $settingKey = $settingString.Split(',')[0]
-
-        if ($settingKey -ne 'displayname')
-        {
-            $startPos = $settingString.IndexOf(',', 0) + 1
-            $valueString = $settingString.Substring($startPos, $settingString.Length - $startPos).Trim()
-            if ($valueString -like '*,*')
-            {
-                $values = $valueString -split ','
-            }
-            else
-            {
-                $values = $valueString
-            }
-
-            if ($settingKey -like '*defaultlabel*')
-            {
-                if ($values -ne 'None')
-                {
-                    if ($null -eq $labelLookup)
-                    {
-                        $labelLookup = @{}
-                        foreach ($lbl in (Get-Label -ErrorAction SilentlyContinue))
-                        {
-                            if ($null -ne $lbl.ImmutableId)
-                            {
-                                $labelLookup[$lbl.ImmutableId.ToString()] = $lbl.DisplayName
-                            }
-                        }
-                    }
-
-                    $resolved = $labelLookup[$values.ToString()]
-                    if (-not [System.String]::IsNullOrEmpty($resolved))
-                    {
-                        $values = $resolved
-                    }
-                }
-            }
-
-            $entry = [ordered]@{
-                Key   = $settingKey
-                Value = $values
-            }
-            $settings += $entry
-        }
-    }
-
-    return $settings
 }
 
 # Was Test-AdvancedSettings. Renamed because helper names recur across resources and the

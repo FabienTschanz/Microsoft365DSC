@@ -63,16 +63,23 @@ class AADAccessReviewPolicy : M365DSCResourceBase
 
         try
         {
-            $null = $this.Connect('MicrosoftGraph')
+            if (-not $this.ExportedInstance)
+            {
+                $null = $this.Connect('MicrosoftGraph')
 
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
 
-            #region Telemetry
-            $this.AddTelemetry('Get')
-            #endregion
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
 
-            $instance = Get-MgBetaPolicyAccessReviewPolicy -ErrorAction Stop
+                $instance = Get-MgBetaPolicyAccessReviewPolicy -ErrorAction Stop
+            }
+            else
+            {
+                $instance = $this.ExportedInstance
+            }
 
             $results = @{
                 IsSingleInstance              = 'Yes'

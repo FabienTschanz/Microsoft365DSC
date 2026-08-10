@@ -359,7 +359,7 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Name -ne $this.Name)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
             {
                 $null = $this.Connect('ExchangeOnline')
 
@@ -720,6 +720,7 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
                     AccessTokens          = $this.AccessTokens
                 }
 
+                $this.ExportedInstance = $config
                 $Results = $this.GetForExport($Params)
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                     -ConnectionMode $ConnectionMode `

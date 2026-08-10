@@ -815,7 +815,7 @@ function Get-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
         Write-Verbose -Message 'Not able to retrieve O365OrgSettings Dynamics Customer Voice Settings. Please ensure correct permissions have been granted.'
         New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Dynamics Customer Voice Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
 
@@ -842,7 +842,7 @@ function Get-O365OrgSettingsM365DSCOrgSettingsToDo
         Write-Verbose -Message 'Not able to retrieve ToDo settings. Please ensure correct permissions have been granted.'
         New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings To Do Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
 
@@ -871,7 +871,7 @@ function Update-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
     {
         New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Apps and Services Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
     }
@@ -896,7 +896,7 @@ function Get-O365OrgSettingsM365DSCOrgSettingsForms
         Write-Verbose -Message 'Not able to retrieve O365OrgSettings Forms Settings. Please ensure correct permissions have been granted.'
         New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Forms Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
 
@@ -926,7 +926,7 @@ function Update-O365OrgSettingsM365DSCOrgSettingsForms
     {
         New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Forms Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
     }
@@ -951,7 +951,7 @@ function Get-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
         Write-Verbose -Message 'Not able to retrieve Office 365 Report Settings. Please ensure correct permissions have been granted.'
         New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Admin Center Report Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
 
@@ -1041,7 +1041,7 @@ function Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
         Write-Verbose -Message 'Not able to retrieve Office 365 Apps Installation Options. Please ensure correct permissions have been granted.'
         New-M365DSCLogEntry -Message 'Error retrieving Office 365 Apps Installation Options' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
 
@@ -1107,7 +1107,7 @@ function Update-O365OrgSettingsM365DSCOrgSettingsToDo
         Write-Verbose -Message "Error: $($_.Exception.Message)"
         New-M365DSCLogEntry -Message 'Error updating O365OrgSettings To Do Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
     }
@@ -1132,7 +1132,7 @@ function Get-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
         Write-Verbose -Message 'Not able to retrieve O365OrgSettings Apps and Services Settings. Please ensure correct permissions have been granted.'
         New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Apps and Services Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
 
@@ -1168,7 +1168,7 @@ function Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
             Write-Verbose -Message 'Not able to retrieve Office 365 Planner Settings. Please ensure correct permissions have been granted.'
             New-M365DSCLogEntry -Message 'Error retrieving Office 365 Planner Settings' `
                 -Exception $_ `
-                -Source $($MyInvocation.MyCommand.Source) `
+                -Source 'O365OrgSettings' `
                 -TenantId $TenantId `
                 -Credential $Credential
         }
@@ -1197,7 +1197,7 @@ function Update-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
     {
         New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Dynamics Customer Voice Settings' `
             -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'O365OrgSettings' `
             -TenantId $TenantId `
             -Credential $Credential
     }

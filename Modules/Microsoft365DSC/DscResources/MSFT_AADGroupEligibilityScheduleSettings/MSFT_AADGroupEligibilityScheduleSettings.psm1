@@ -146,7 +146,7 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
             $ruleId = $getValue.Id
 
             Write-Verbose -Message "An Azure AD Role Management Policy Rule with Id {$ruleId} and PolicyId {$policyId} was found"
-            $rule = Get-AADGroupEligibilityScheduleSettingsM365DSCRoleManagementPolicyRuleObject -Rule $getValue
+            $rule = $this.GetRoleManagementPolicyRuleObject($getValue)
 
             $results = @{
                 Id                        = $ruleId
@@ -503,6 +503,108 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] GetRoleManagementPolicyRuleObject([System.Object] $Rule)
+    {
+        if ($null -eq $Rule)
+        {
+            return $null
+        }
+
+        $values = [ordered]@{
+            id       = $Rule.id
+            ruleType = $Rule.'@odata.type'
+        }
+
+        if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyExpirationRule')
+        {
+            $expirationRuleValue = [ordered]@{
+                isExpirationRequired = $Rule.isExpirationRequired
+                maximumDuration      = $Rule.maximumDuration
+            }
+
+            $values.Add('expirationRule', $expirationRuleValue)
+        }
+
+        if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyNotificationRule')
+        {
+            $notificationRuleValue = [ordered]@{
+                notificationType           = $Rule.notificationType
+                recipientType              = $Rule.recipientType
+                notificationLevel          = $Rule.notificationLevel
+                isDefaultRecipientsEnabled = $Rule.isDefaultRecipientsEnabled
+                notificationRecipients     = [array]$Rule.notificationRecipients
+            }
+            $values.Add('notificationRule', $notificationRuleValue)
+        }
+
+        if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyEnablementRule')
+        {
+            $enablementRuleValue = @{
+                enabledRules = [array]$Rule.enabledRules
+            }
+            $values.Add('enablementRule', $enablementRuleValue)
+        }
+
+        if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyApprovalRule')
+        {
+            $approvalStages = @()
+            foreach ($stage in $Rule.setting.approvalStages)
+            {
+                $primaryApprovers = @()
+                foreach ($approver in $stage.primaryApprovers)
+                {
+                    $primaryApprover = @{
+                        odataType = $approver.'@odata.type'
+                    }
+                    $primaryApprovers += $primaryApprover
+                }
+
+                $escalationApprovers = @()
+                foreach ($approver in $stage.escalationApprovers)
+                {
+                    $escalationApprover = @{
+                        odataType = $approver.'@odata.type'
+                    }
+                    $escalationApprovers += $escalationApprover
+                }
+
+                $approvalStage = [ordered]@{
+                    approvalStageTimeOutInDays      = $stage.approvalStageTimeOutInDays
+                    escalationTimeInMinutes         = $stage.escalationTimeInMinutes
+                    isApproverJustificationRequired = $stage.isApproverJustificationRequired
+                    isEscalationEnabled             = $stage.isEscalationEnabled
+                    escalationApprovers             = [array]$escalationApprovers
+                    primaryApprovers                = [array]$primaryApprovers
+                }
+
+                $approvalStages += $approvalStage
+            }
+
+            $setting = [ordered]@{
+                approvalMode                     = $Rule.setting.approvalMode
+                isApprovalRequired               = $Rule.setting.isApprovalRequired
+                isApprovalRequiredForExtension   = $Rule.setting.isApprovalRequiredForExtension
+                isRequestorJustificationRequired = $Rule.setting.isRequestorJustificationRequired
+                approvalStages                   = [array]$approvalStages
+            }
+            $approvalRuleValue = @{
+                setting = $setting
+            }
+            $values.Add('ApprovalRule', $approvalRuleValue)
+        }
+
+        if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyAuthenticationContextRule')
+        {
+            $authenticationContextRuleValue = [ordered]@{
+                isEnabled  = $Rule.isEnabled
+                claimValue = $Rule.claimValue
+            }
+            $values.Add('authenticationContextRule', $authenticationContextRuleValue)
+        }
+
+        return $values
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADGroupEligibilityScheduleSettings] AsResult([System.Object] $Values)
     {
@@ -635,188 +737,4 @@ class MSFT_AADRoleManagementPolicySubjectSet
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The type of the subject set.')]
     [System.String] $odataType
-}
-
-# Was Get-M365DSCRoleManagementPolicyRuleObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADGroupEligibilityScheduleSettingsM365DSCRoleManagementPolicyRuleObject
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param(
-        [Parameter()]
-        $Rule
-    )
-
-    if ($null -eq $Rule)
-    {
-        return $null
-    }
-
-    if ($this.ResourceCache['ExportMode'])
-    {
-        $values = [ordered]@{
-            id       = $Rule.id
-            ruleType = $Rule.'@odata.type'
-        }
-    }
-    else
-    {
-        $values = [ordered]@{
-            id       = $Rule.id
-            ruleType = $Rule.'@odata.type'
-        }
-    }
-
-    if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyExpirationRule')
-    {
-        if ($this.ResourceCache['ExportMode'])
-        {
-            $expirationRule = [ordered]@{
-                isExpirationRequired = $Rule.isExpirationRequired
-                maximumDuration      = $Rule.maximumDuration
-            }
-        }
-        else
-        {
-            $expirationRule = [ordered]@{
-                isExpirationRequired = $Rule.isExpirationRequired
-                maximumDuration      = $Rule.maximumDuration
-            }
-        }
-
-        $values.Add('expirationRule', $expirationRule)
-    }
-
-    if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyNotificationRule')
-    {
-        if ($this.ResourceCache['ExportMode'])
-        {
-            $notificationRule = [ordered]@{
-                notificationType           = $Rule.notificationType
-                recipientType              = $Rule.recipientType
-                notificationLevel          = $Rule.notificationLevel
-                isDefaultRecipientsEnabled = $Rule.isDefaultRecipientsEnabled
-                notificationRecipients     = [array]$Rule.notificationRecipients
-            }
-        }
-        else
-        {
-            $notificationRule = [ordered]@{
-                notificationType           = $Rule.notificationType
-                recipientType              = $Rule.recipientType
-                notificationLevel          = $Rule.notificationLevel
-                isDefaultRecipientsEnabled = $Rule.isDefaultRecipientsEnabled
-                notificationRecipients     = [array]$Rule.notificationRecipients
-            }
-        }
-        $values.Add('notificationRule', $notificationRule)
-    }
-
-    if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyEnablementRule')
-    {
-        if ($this.ResourceCache['ExportMode'])
-        {
-            $enablementRule = @{
-                enabledRules = [array]$Rule.enabledRules
-            }
-        }
-        else
-        {
-            $enablementRule = @{
-                enabledRules = [array]$Rule.enabledRules
-            }
-        }
-        $values.Add('enablementRule', $enablementRule)
-    }
-
-    if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyApprovalRule')
-    {
-        $approvalStages = @()
-        if ($this.ResourceCache['ExportMode'])
-        {
-            $foreachApprovalStages = $Rule.setting.approvalStages
-        }
-        else
-        {
-            $foreachApprovalStages = $Rule.setting.approvalStages
-        }
-        foreach ($stage in $foreachApprovalStages)
-        {
-            $primaryApprovers = @()
-            foreach ($approver in $stage.primaryApprovers)
-            {
-                $primaryApprover = @{
-                    odataType = $approver.'@odata.type'
-                }
-                $primaryApprovers += $primaryApprover
-            }
-
-            $escalationApprovers = @()
-            foreach ($approver in $stage.escalationApprovers)
-            {
-                $escalationApprover = @{
-                    odataType = $approver.'@odata.type'
-                }
-                $escalationApprovers += $escalationApprover
-            }
-
-            $approvalStage = [ordered]@{
-                approvalStageTimeOutInDays      = $stage.approvalStageTimeOutInDays
-                escalationTimeInMinutes         = $stage.escalationTimeInMinutes
-                isApproverJustificationRequired = $stage.isApproverJustificationRequired
-                isEscalationEnabled             = $stage.isEscalationEnabled
-                escalationApprovers             = [array]$escalationApprovers
-                primaryApprovers                = [array]$primaryApprovers
-            }
-
-            $approvalStages += $approvalStage
-        }
-
-        if ($this.ResourceCache['ExportMode'])
-        {
-            $setting = [ordered]@{
-                approvalMode                     = $Rule.setting.approvalMode
-                isApprovalRequired               = $Rule.setting.isApprovalRequired
-                isApprovalRequiredForExtension   = $Rule.setting.isApprovalRequiredForExtension
-                isRequestorJustificationRequired = $Rule.setting.isRequestorJustificationRequired
-                approvalStages                   = [array]$approvalStages
-            }
-        }
-        else
-        {
-            $setting = [ordered]@{
-                approvalMode                     = $Rule.setting.approvalMode
-                isApprovalRequired               = $Rule.setting.isApprovalRequired
-                isApprovalRequiredForExtension   = $Rule.setting.isApprovalRequiredForExtension
-                isRequestorJustificationRequired = $Rule.setting.isRequestorJustificationRequired
-                approvalStages                   = [array]$approvalStages
-            }
-        }
-        $approvalRule = @{
-            setting = $setting
-        }
-        $values.Add('ApprovalRule', $approvalRule)
-    }
-
-    if ($values.ruleType -eq '#microsoft.graph.unifiedRoleManagementPolicyAuthenticationContextRule')
-    {
-        if ($this.ResourceCache['ExportMode'])
-        {
-            $authenticationContextRule = [ordered]@{
-                isEnabled  = $Rule.isEnabled
-                claimValue = $Rule.claimValue
-            }
-        }
-        else
-        {
-            $authenticationContextRule = [ordered]@{
-                isEnabled  = $Rule.isEnabled
-                claimValue = $Rule.claimValue
-            }
-        }
-        $values.Add('authenticationContextRule', $authenticationContextRule)
-    }
-
-    return $values
 }

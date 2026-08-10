@@ -154,46 +154,55 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
 
         try
         {
-            $null = $this.Connect('MicrosoftGraph')
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $this.AddTelemetry('Get')
-            #endregion
-
-            $nullResult = $this.GetBoundParameters()
-            $nullResult.Ensure = 'Absent'
-
-            $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.Id `
-                -ExpandProperty 'categories' `
-                -ErrorAction SilentlyContinue
-
-            if ($null -eq $instance)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
             {
-                Write-Verbose -Message "Could not find an Intune Windows Office Suite App with Id {$($this.Id)}."
+                $null = $this.Connect('MicrosoftGraph')
 
-                if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullResult = $this.GetBoundParameters()
+                $nullResult.Ensure = 'Absent'
+
+                $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.Id `
+                    -ExpandProperty 'categories' `
+                    -ErrorAction SilentlyContinue
+
+                if ($null -eq $instance)
                 {
-                    $instance = Get-MgBetaDeviceAppManagementMobileApp `
-                        -All `
-                        -Filter "(isof('microsoft.graph.officeSuiteApp') and DisplayName eq '$($this.DisplayName -replace "'", "''")')" `
-                        -ErrorAction SilentlyContinue
+                    Write-Verbose -Message "Could not find an Intune Windows Office Suite App with Id {$($this.Id)}."
+
+                    if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
+                    {
+                        $instance = Get-MgBetaDeviceAppManagementMobileApp `
+                            -All `
+                            -Filter "(isof('microsoft.graph.officeSuiteApp') and DisplayName eq '$($this.DisplayName -replace "'", "''")')" `
+                            -ErrorAction SilentlyContinue
+                    }
+
+                    if ($null -ne $instance)
+                    {
+                        $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $instance.Id `
+                            -ExpandProperty 'categories' `
+                            -ErrorAction SilentlyContinue
+                    }
                 }
 
-                if ($null -ne $instance)
+                if ($null -eq $instance)
                 {
-                    $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $instance.Id `
-                        -ExpandProperty 'categories' `
-                        -ErrorAction SilentlyContinue
+                    Write-Verbose -Message "Could not find an Intune Windows Office Suite App with DisplayName {$($this.DisplayName)} was found."
+                    return $this.AsResult($nullResult)
                 }
             }
-
-            if ($null -eq $instance)
+            else
             {
-                Write-Verbose -Message "Could not find an Intune Windows Office Suite App with DisplayName {$($this.DisplayName)} was found."
-                return $this.AsResult($nullResult)
+                $instance = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $this.ExportedInstance.Id `
+                    -ExpandProperty 'categories' `
+                    -ErrorAction SilentlyContinue
             }
 
             Write-Verbose "An Intune Windows Office Suite App with Id {$($instance.Id)} and DisplayName {$($this.DisplayName)} was found."

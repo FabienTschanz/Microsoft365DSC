@@ -108,6 +108,7 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
                 CertificatePath       = $this.CertificatePath
                 CertificatePassword   = $this.CertificatePassword
                 ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                AccessTokens          = $this.AccessTokens
                 #endregion
             }
 
@@ -128,6 +129,8 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
             $null = $this.InvokeInPowerShellCore('Set')
             return
         }
+
+        $null = $this.Connect('MicrosoftGraph')
 
         Write-Verbose -Message 'Setting configuration of the Intune Windows Backup For Organization Configuration'
 
@@ -202,9 +205,8 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
                     $displayedKey = $config.name
                 }
                 Write-M365DSCHost -Message "    |---[$i/$($getValue.Count)] $displayedKey" -DeferWrite
-                $Results = @{
+                $Params = @{
                     IsSingleInstance      = 'Yes'
-                    State                 = $config.state.ToString()
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId
                     TenantId              = $this.TenantId
@@ -215,6 +217,7 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
                     ManagedIdentity       = $this.ManagedIdentity.IsPresent
                     AccessTokens          = $this.AccessTokens
                 }
+                $Results = $this.GetForExport($Params)
 
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                     -ConnectionMode $ConnectionMode `

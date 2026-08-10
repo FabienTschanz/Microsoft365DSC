@@ -210,11 +210,9 @@ class EXOMailboxIRMAccess : M365DSCResourceBase
 
                     Write-M365DSCHost -Message "        |---[$j/$($irmAccesses.Count)] $($irmAccess.User)" -DeferWrite
                     Write-M365DSCHost -Message "`r`n" -DeferWrite
-                    $dscIRMAccess = @{
+                    $Params = @{
                         Identity              = $mailbox.UserPrincipalName
                         User                  = $irmAccess.User
-                        AccessLevel           = $irmAccess.AccessLevel
-                        Ensure                = 'Present'
                         Credential            = $this.Credential
                         ApplicationId         = $this.ApplicationId
                         TenantId              = $this.TenantId
@@ -225,11 +223,11 @@ class EXOMailboxIRMAccess : M365DSCResourceBase
                         AccessTokens          = $this.AccessTokens
                     }
                     $this.ExportedInstance = $irmAccess
-                    $Result = $dscIRMAccess
+                    $Results = $this.GetForExport($Params)
                     $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                         -ConnectionMode $ConnectionMode `
                         -ModulePath $this.GetModulePath() `
-                        -Results $Result `
+                        -Results $Results `
                         -Credential $this.Credential
                     [void]$dscContent.Append($currentDSCBlock)
 

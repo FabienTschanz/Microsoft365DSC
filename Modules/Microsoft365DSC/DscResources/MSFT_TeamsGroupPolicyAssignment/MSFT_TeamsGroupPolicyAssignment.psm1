@@ -277,13 +277,10 @@ class TeamsGroupPolicyAssignment : M365DSCResourceBase
                 }
 
                 Write-M365DSCHost -Message "    |---[$j/$($instances.Length)] GroupPolicyAssignment {$($Group.DisplayName)-$($item.PolicyType)}" -DeferWrite
-                $results = @{
+                $Params = @{
                     GroupDisplayName      = $Group.DisplayName
                     GroupId               = $item.GroupId
                     PolicyType            = $item.PolicyType
-                    PolicyName            = $item.PolicyName
-                    Priority              = $item.Priority
-                    Ensure                = 'Present'
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId
                     TenantId              = $this.TenantId
@@ -293,8 +290,8 @@ class TeamsGroupPolicyAssignment : M365DSCResourceBase
                     ManagedIdentity       = $this.ManagedIdentity.IsPresent
                     AccessTokens          = $this.AccessTokens
                 }
+                $Results = $this.GetForExport($Params)
                 $rawResults = $Results.Clone()
-                #$results = Get-TargetResource @results
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $this.GetModulePath() `

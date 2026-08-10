@@ -81,32 +81,37 @@ class SCSecurityFilter : M365DSCResourceBase
 
         try
         {
-            $null = $this.Connect('SecurityComplianceCenter')
-
-            #Ensure the proper dependencies are installed in the current environment.
-            Confirm-M365DSCDependencies
-
-            #region Telemetry
-            $this.AddTelemetry('Get')
-            #endregion
-
-            $nullReturn = $this.GetBoundParameters()
-            $nullReturn.Ensure = 'Absent'
-
-            $secFilter = Get-ComplianceSecurityFilter -FilterName $this.FilterName -ErrorAction SilentlyContinue -WarningAction Ignore -Confirm:$false
-
-            if ($null -eq $secFilter)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.FilterName -ne $this.FilterName)
             {
-                Write-Verbose -Message "Security Filter $($this.FilterName) does not exist."
-                return $this.AsResult($nullReturn)
+                $null = $this.Connect('SecurityComplianceCenter')
+
+                #Ensure the proper dependencies are installed in the current environment.
+                Confirm-M365DSCDependencies
+
+                #region Telemetry
+                $this.AddTelemetry('Get')
+                #endregion
+
+                $nullReturn = $this.GetBoundParameters()
+                $nullReturn.Ensure = 'Absent'
+
+                $secFilter = Get-ComplianceSecurityFilter -FilterName $this.FilterName -ErrorAction SilentlyContinue -WarningAction Ignore -Confirm:$false
+
+                if ($null -eq $secFilter)
+                {
+                    Write-Verbose -Message "Security Filter $($this.FilterName) does not exist."
+                    return $this.AsResult($nullReturn)
+                }
             }
             else
             {
-                Write-Verbose "Found existing Security Filter $($this.FilterName)"
-                $result = $this.MapSecurityFilter($secFilter)
-
-                return $this.AsResult($result)
+                $secFilter = $this.ExportedInstance
             }
+
+            Write-Verbose "Found existing Security Filter $($this.FilterName)"
+            $result = $this.MapSecurityFilter($secFilter)
+
+            return $this.AsResult($result)
         }
         catch
         {
@@ -225,7 +230,19 @@ class SCSecurityFilter : M365DSCResourceBase
 
                 Write-M365DSCHost -Message "    |---[$i/$($securityFilters.Count)] $($filter.FilterName)" -DeferWrite
 
-                $Results = $this.MapSecurityFilter($filter)
+                $Params = @{
+                    FilterName            = $filter.FilterName
+                    Credential            = $this.Credential
+                    ApplicationId         = $this.ApplicationId
+                    TenantId              = $this.TenantId
+                    CertificateThumbprint = $this.CertificateThumbprint
+                    CertificatePath       = $this.CertificatePath
+                    CertificatePassword   = $this.CertificatePassword
+                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                    AccessTokens          = $this.AccessTokens
+                }
+                $this.ExportedInstance = $filter
+                $Results = $this.GetForExport($Params)
                 $rawResults = $Results.Clone()
 
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `

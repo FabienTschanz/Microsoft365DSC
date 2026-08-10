@@ -74,8 +74,6 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
     [AADAuthenticationMethodPolicyQRCodeImage] Get()
     {
         # Declared up front: assigned conditionally below, which class methods reject.
-        $response = $null
-        # Declared up front: assigned conditionally below, which class methods reject.
         $nullResult = $null
         if ($this.RequiresPowerShellCore())
         {
@@ -103,8 +101,7 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
                 $nullResult.Ensure = 'Absent'
 
                 $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
-                $response = Invoke-MgGraphRequest -Uri $uri -Method GET
-                $instance = $response
+                $instance = Invoke-MgGraphRequest -Uri $uri -Method GET
             }
             else
             {
@@ -176,12 +173,12 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
             }
 
             $results = @{
-                Id                           = $response.Id
-                State                        = $response.State
+                Id                           = $instance.Id
+                State                        = $instance.State
                 ExcludeTargets               = $complexExcludeTargets
                 IncludeTargets               = $complexIncludeTargets
-                StandardQRCodeLifetimeInDays = $response.StandardQRCodeLifetimeInDays
-                PinLength                    = $response.PinLength
+                StandardQRCodeLifetimeInDays = $instance.StandardQRCodeLifetimeInDays
+                PinLength                    = $instance.PinLength
                 Ensure                       = 'Present'
                 Credential                   = $this.Credential
                 ApplicationId                = $this.ApplicationId

@@ -845,6 +845,7 @@ class EXOOrganizationConfig : M365DSCResourceBase
                 AccessTokens          = $this.AccessTokens
             }
 
+            $this.ExportedInstance = $organizationConfig
             $Results = $this.GetForExport($Params)
             if ($Results -is [System.Collections.Hashtable] -and $Results.Count -gt 1)
             {

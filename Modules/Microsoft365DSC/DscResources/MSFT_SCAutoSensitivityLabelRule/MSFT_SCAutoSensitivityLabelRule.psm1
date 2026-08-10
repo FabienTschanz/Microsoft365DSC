@@ -323,7 +323,7 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 AnyOfRecipientAddressContainsWords           = $anyOfRecipientAddressContainsWordsValue
                 AnyOfRecipientAddressMatchesPatterns         = $anyOfRecipientAddressMatchesPatternsValue
                 Comment                                      = $PolicyRule.Comment
-                ContentContainsSensitiveInformation          = ConvertTo-SCAutoSensitivityLabelRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ContentContainsSensitiveInformation
+                ContentContainsSensitiveInformation          = $this.ConvertToContainsSensitiveInformation($PolicyRule.ContentContainsSensitiveInformation)
                 ContentExtensionMatchesWords                 = $contentExtensionMatchesWordsValue
                 Disabled                                     = $PolicyRule.Disabled
                 DocumentIsPasswordProtected                  = $PolicyRule.DocumentIsPasswordProtected
@@ -331,7 +331,7 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 ExceptIfAccessScope                          = $PolicyRule.ExceptIfAccessScope
                 ExceptIfAnyOfRecipientAddressContainsWords   = $PolicyRule.ExceptIfAnyOfRecipientAddressContainsWords
                 ExceptIfAnyOfRecipientAddressMatchesPatterns = $PolicyRule.ExceptIfAnyOfRecipientAddressMatchesPatterns
-                ExceptIfContentContainsSensitiveInformation  = ConvertTo-SCAutoSensitivityLabelRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ExceptIfContentContainsSensitiveInformation
+                ExceptIfContentContainsSensitiveInformation  = $this.ConvertToContainsSensitiveInformation($PolicyRule.ExceptIfContentContainsSensitiveInformation)
                 ExceptIfContentExtensionMatchesWords         = $exceptIfContentExtensionMatchesWordsValue
                 ExceptIfDocumentIsPasswordProtected          = $PolicyRule.ExceptIfDocumentIsPasswordProtected
                 ExceptIfDocumentIsUnsupported                = $PolicyRule.ExceptIfDocumentIsUnsupported
@@ -757,6 +757,78 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
         return ''
     }
 
+    hidden [System.Collections.Hashtable] ConvertToContainsSensitiveInformation([System.Object] $SensitiveInformation)
+    {
+        if ($null -eq $SensitiveInformation)
+        {
+            return $null
+        }
+
+        if ($null -ne $SensitiveInformation.groups)
+        {
+            $shapedGroups = @()
+            foreach ($group in $SensitiveInformation.groups)
+            {
+                $shapedGroup = @{}
+                foreach ($key in $group.Keys)
+                {
+                    $shapedGroup[$key] = $group[$key]
+                }
+
+                $shapedTypes = @()
+                foreach ($sensitiveType in $group.sensitivetypes)
+                {
+                    $shapedType = @{}
+                    foreach ($key in $sensitiveType.Keys)
+                    {
+                        if ($key -in @('confidencelevel', 'rulePackId'))
+                        {
+                            continue
+                        }
+                        $shapedType[$key] = $sensitiveType[$key]
+                    }
+                    $shapedTypes += $shapedType
+                }
+
+                $shapedGroup.Remove('sensitivetypes') | Out-Null
+                if ($shapedTypes.Count -gt 0)
+                {
+                    $shapedGroup.SensitiveInformation = [array]$shapedTypes
+                }
+                $shapedGroups += $shapedGroup
+            }
+
+            return @{
+                Groups   = [array]$shapedGroups
+                Operator = $SensitiveInformation.operator
+            }
+        }
+
+        $shapedInformation = @()
+        foreach ($item in $SensitiveInformation)
+        {
+            $shapedItem = @{}
+            foreach ($key in $item.Keys)
+            {
+                if ($key -in @('confidencelevel', 'rulePackId'))
+                {
+                    continue
+                }
+                $shapedItem[$key] = $item[$key]
+            }
+            $shapedInformation += $shapedItem
+        }
+
+        if ($shapedInformation.Count -eq 0)
+        {
+            return $null
+        }
+
+        return @{
+            SensitiveInformation = [array]$shapedInformation
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCAutoSensitivityLabelRule] AsResult([System.Object] $Values)
     {
@@ -891,7 +963,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
             "DLP Compliance Rule {$Name} has invalid value for property operator. " + `
             "Current value is {$($targetValues.$operator)} and is expected to be {$($sourceValues.$operator)}."
         Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-            -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+            -EventID 1 -Source 'SCAutoSensitivityLabelRule'
         return $false
     }
 
@@ -908,7 +980,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
                     "Group {$($group.name)} has invalid value for property operator. " + `
                     "Current value is {$($matchingExistingRule.$operator)} and is expected to be {$($group.$operator)}."
                 Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                    -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                    -EventID 1 -Source 'SCAutoSensitivityLabelRule'
                 return $false
             }
         }
@@ -918,7 +990,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
             $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
                 "An action on {$($sit.name)} Sensitive Information Type is missing."
             Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
             return $false
         }
 
@@ -941,86 +1013,6 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
                 return $false
             }
         }
-    }
-}
-
-function ConvertTo-SCAutoSensitivityLabelRuleContainsSensitiveInformation
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        $SensitiveInformation
-    )
-
-    if ($null -eq $SensitiveInformation)
-    {
-        return $null
-    }
-
-    if ($null -ne $SensitiveInformation.groups)
-    {
-        $shapedGroups = @()
-        foreach ($group in $SensitiveInformation.groups)
-        {
-            $shapedGroup = @{}
-            foreach ($key in $group.Keys)
-            {
-                $shapedGroup[$key] = $group[$key]
-            }
-
-            $shapedTypes = @()
-            foreach ($sensitiveType in $group.sensitivetypes)
-            {
-                $shapedType = @{}
-                foreach ($key in $sensitiveType.Keys)
-                {
-                    if ($key -in @('confidencelevel', 'rulePackId'))
-                    {
-                        continue
-                    }
-                    $shapedType[$key] = $sensitiveType[$key]
-                }
-                $shapedTypes += $shapedType
-            }
-
-            $shapedGroup.Remove('sensitivetypes') | Out-Null
-            if ($shapedTypes.Count -gt 0)
-            {
-                $shapedGroup.SensitiveInformation = [array]$shapedTypes
-            }
-            $shapedGroups += $shapedGroup
-        }
-
-        return @{
-            Groups   = [array]$shapedGroups
-            Operator = $SensitiveInformation.operator
-        }
-    }
-
-    $shapedInformation = @()
-    foreach ($item in $SensitiveInformation)
-    {
-        $shapedItem = @{}
-        foreach ($key in $item.Keys)
-        {
-            if ($key -in @('confidencelevel', 'rulePackId'))
-            {
-                continue
-            }
-            $shapedItem[$key] = $item[$key]
-        }
-        $shapedInformation += $shapedItem
-    }
-
-    if ($shapedInformation.Count -eq 0)
-    {
-        return $null
-    }
-
-    return @{
-        SensitiveInformation = [array]$shapedInformation
     }
 }
 
@@ -1116,7 +1108,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationLabels
                         "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
                         "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
                     Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                        -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                        -EventID 1 -Source 'SCAutoSensitivityLabelRule'
                     return $false
                 }
             }
@@ -1127,7 +1119,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationLabels
             $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
                 "An action on {$($sit.name)} Sensitive Information label is missing."
             Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
             return $false
         }
     }
@@ -1271,7 +1263,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation
                         "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
                         "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
                     Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                        -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                        -EventID 1 -Source 'SCAutoSensitivityLabelRule'
                     return $false
                 }
             }
@@ -1282,7 +1274,7 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation
             $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
                 "An action on {$($sit.name)} Sensitive Information Type is missing."
             Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
             return $false
         }
     }

@@ -204,8 +204,6 @@ class SCDLPSensitiveInformationType : M365DSCResourceBase
 
     [string] Export()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $rules = $null
         if ($this.RequiresPowerShellCore())
         {
             return [string] $this.InvokeInPowerShellCore('Export')
@@ -230,7 +228,7 @@ class SCDLPSensitiveInformationType : M365DSCResourceBase
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
-            if ($rules.Length -eq 0)
+            if ($SITs.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
             }

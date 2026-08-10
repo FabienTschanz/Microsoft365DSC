@@ -115,6 +115,8 @@ class AADExternalIdentityPolicy : M365DSCResourceBase
 
         Write-Verbose -Message 'Setting configuration for External Identity Policy'
 
+        $null = $this.Connect('MicrosoftGraph')
+
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 

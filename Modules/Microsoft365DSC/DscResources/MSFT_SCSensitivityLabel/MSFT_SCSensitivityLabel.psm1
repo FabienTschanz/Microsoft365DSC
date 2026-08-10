@@ -416,11 +416,11 @@ class SCSensitivityLabel : M365DSCResourceBase
             }
             if ($null -ne $label.LocaleSettings)
             {
-                $localeSettingsValue = Convert-SCSensitivityLabelJSONToLocaleSettings -JSONLocalSettings $label.LocaleSettings
+                $localeSettingsValue = $this.ConvertJSONToLocaleSettings($label.LocaleSettings)
             }
             if ($null -ne $label.Settings)
             {
-                [array]$advancedSettingsValue = Convert-SCSensitivityLabelStringToAdvancedSettings -AdvancedSettings $label.Settings
+                [array]$advancedSettingsValue = $this.ConvertStringToAdvancedSettings($label.Settings)
             }
             Write-Verbose "Found existing Sensitivity Label $($this.Name)"
 
@@ -521,7 +521,7 @@ class SCSensitivityLabel : M365DSCResourceBase
             $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'rightsdefinitions' }
             if ($null -ne $entry)
             {
-                $EncryptionRightsDefinitionsValue = Convert-SCSensitivityLabelEncryptionRightDefinition -RightsDefinition $entry.Value
+                $EncryptionRightsDefinitionsValue = $this.ConvertEncryptionRightDefinition($entry.Value)
             }
 
             $entry = $encryption | Where-Object -FilterScript { $_.Key -eq 'donotforward' }
@@ -939,7 +939,7 @@ class SCSensitivityLabel : M365DSCResourceBase
 
             if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))
             {
-                $advanced = Convert-SCSensitivityLabelCIMToAdvancedSettings $this.AdvancedSettings
+                $advanced = $this.ConvertCIMToAdvancedSettings($this.AdvancedSettings)
                 $CreationParams['AdvancedSettings'] = $advanced
                 $isLabelGroup = $null -ne ($this.AdvancedSettings | Where-Object -FilterScript { $_.Key -eq 'islabelgroup' -and $_.Value -eq $true })
                 if ($isLabelGroup)
@@ -951,7 +951,7 @@ class SCSensitivityLabel : M365DSCResourceBase
 
             if ($this.GetBoundParameters().ContainsKey('LocaleSettings'))
             {
-                $locale = Convert-SCSensitivityLabelCIMToLocaleSettings $this.LocaleSettings
+                $locale = $this.ConvertCIMToLocaleSettings($this.LocaleSettings)
                 $CreationParams['LocaleSettings'] = $locale
             }
 
@@ -996,7 +996,7 @@ class SCSensitivityLabel : M365DSCResourceBase
 
             if ($this.GetBoundParameters().ContainsKey('AdvancedSettings'))
             {
-                $advanced = Convert-SCSensitivityLabelCIMToAdvancedSettings $this.AdvancedSettings
+                $advanced = $this.ConvertCIMToAdvancedSettings($this.AdvancedSettings)
                 $SetParams['AdvancedSettings'] = $advanced
                 $isLabelGroup = $null -ne ($this.AdvancedSettings | Where-Object -FilterScript { $_.Key -eq 'islabelgroup' -and $_.Value -eq $true })
                 if ($isLabelGroup)
@@ -1007,7 +1007,7 @@ class SCSensitivityLabel : M365DSCResourceBase
 
             if ($this.GetBoundParameters().ContainsKey('LocaleSettings'))
             {
-                $locale = Convert-SCSensitivityLabelCIMToLocaleSettings $this.LocaleSettings
+                $locale = $this.ConvertCIMToLocaleSettings($this.LocaleSettings)
                 $SetParams['LocaleSettings'] = $locale
             }
 
@@ -1284,6 +1284,119 @@ class SCSensitivityLabel : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] ConvertCIMToAdvancedSettings([System.Object] $AdvancedSettings)
+    {
+        $entry = [PSCustomObject]@{}
+        foreach ($obj in $AdvancedSettings)
+        {
+            $settingsValues = ''
+            foreach ($objVal in $obj.Value)
+            {
+                $settingsValues += $objVal
+                $settingsValues += ','
+            }
+            $entry | Add-Member -MemberType NoteProperty -Name $obj.Key -Value $settingsValues.Substring(0, ($settingsValues.Length - 1)) -Force
+        }
+
+        return $entry
+    }
+
+    hidden [System.Collections.ArrayList] ConvertCIMToLocaleSettings([System.Object] $LocaleSettings)
+    {
+        $entry = [System.Collections.ArrayList]@()
+        foreach ($localset in $LocaleSettings)
+        {
+            $localeEntries = [ordered]@{
+                localeKey = $localset.LocaleKey
+            }
+            $settings = @()
+            foreach ($setting in $localset.LabelSettings)
+            {
+                $settingEntry = [ordered]@{
+                    Key   = $setting.Key
+                    Value = $setting.Value
+                }
+                $settings += $settingEntry
+            }
+            $localeEntries.Add('Settings', $settings)
+            [void]$entry.Add(($localeEntries | ConvertTo-Json))
+        }
+
+        return $entry
+    }
+
+    hidden [System.Object[]] ConvertJSONToLocaleSettings([System.Object] $JSONLocalSettings)
+    {
+        $parsedSettings = $JSONLocalSettings | ConvertFrom-Json
+
+        $entries = @()
+        foreach ($localeSetting in $parsedSettings)
+        {
+            $result = [ordered]@{
+                LocaleKey = $localeSetting.LocaleKey
+            }
+            $settings = @()
+            foreach ($setting in $localeSetting.Settings)
+            {
+                $entry = [ordered]@{
+                    Key   = $setting.Key
+                    Value = $setting.Value -replace "`r"
+                }
+                $settings += $entry
+            }
+            $result.Add('LabelSettings', $settings)
+            $entries += $result
+        }
+
+        return $entries
+    }
+
+    hidden [System.String] ConvertEncryptionRightDefinition([System.String] $RightsDefinition)
+    {
+        $StringContent = ''
+        $EncryptionRights = $RightsDefinition | ConvertFrom-Json
+        foreach ($right in $EncryptionRights)
+        {
+            $StringContent += "$($right.Identity):$($right.Rights);"
+        }
+        if ($StringContent.EndsWith(';'))
+        {
+            $StringContent = $StringContent.Substring(0, ($StringContent.Length - 1))
+        }
+
+        return $StringContent
+    }
+
+    hidden [System.Object[]] ConvertStringToAdvancedSettings([System.String[]] $AdvancedSettings)
+    {
+        $settings = @()
+        foreach ($setting in $AdvancedSettings)
+        {
+            $settingString = $setting.Replace('[', '').Replace(']', '')
+            $settingKey = $settingString.Split(',')[0]
+
+            if ($settingKey -notin @('displayname', 'contenttype', 'tooltip', 'parentid'))
+            {
+                $startPos = $settingString.IndexOf(',', 0) + 1
+                $valueString = $settingString.Substring($startPos, $settingString.Length - $startPos).Trim()
+                $values = $valueString.Split(',')
+
+                $entry = [ordered]@{
+                    Key   = $settingKey
+                    Value = $values.Trim()
+                }
+
+                # Only export the entry if it has a value
+                if ([String]::IsNullOrEmpty($entry.Value) -eq $false)
+                {
+                    $settings += $entry
+                }
+            }
+        }
+
+        return $settings
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCSensitivityLabel] AsResult([System.Object] $Values)
     {
@@ -1400,69 +1513,6 @@ class MSFT_SCSLTrainableClassifiers
     [System.String] $id
 }
 
-# Was Convert-CIMToAdvancedSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCSensitivityLabelCIMToAdvancedSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        $AdvancedSettings
-    )
-
-    $entry = [PSCustomObject]@{}
-    foreach ($obj in $AdvancedSettings)
-    {
-        $settingsValues = ''
-        foreach ($objVal in $obj.Value)
-        {
-            $settingsValues += $objVal
-            $settingsValues += ','
-        }
-        $entry | Add-Member -MemberType NoteProperty -Name $obj.Key -Value $settingsValues.Substring(0, ($settingsValues.Length - 1)) -Force
-    }
-
-    return $entry
-}
-
-# Was Convert-CIMToLocaleSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCSensitivityLabelCIMToLocaleSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.ArrayList])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        $LocaleSettings
-    )
-
-    $entry = [System.Collections.ArrayList]@()
-    foreach ($localset in $LocaleSettings)
-    {
-        $localeEntries = [ordered]@{
-            localeKey = $localset.LocaleKey
-        }
-        $settings = @()
-        foreach ($setting in $localset.LabelSettings)
-        {
-            $settingEntry = [ordered]@{
-                Key   = $setting.Key
-                Value = $setting.Value
-            }
-            $settings += $settingEntry
-        }
-        $localeEntries.Add('Settings', $settings)
-        [void]$entry.Add(($localeEntries | ConvertTo-Json))
-        $localeEntries = [ordered]@{}
-        $settings = @()
-    }
-
-    return $entry
-}
-
 # Was Test-LocaleSettings. Renamed because helper names recur across resources and the
 # generated part file holds several of them.
 function Test-SCSensitivityLabelLocaleSettings
@@ -1521,7 +1571,7 @@ function Test-SCSensitivityLabelLocaleSettings
     if ($foundSettings -eq $false)
     {
         New-M365DSCLogEntry -Message "LocaleSettings for label $Name do not match: $($driftedSetting -join ', ')" `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'SCSensitivityLabel' `
             -TenantId $TenantId `
             -Credential $Credential
     }
@@ -1529,109 +1579,6 @@ function Test-SCSensitivityLabelLocaleSettings
     Write-Verbose -Message "Test LocaleSettings returns $foundSettings"
 
     return $foundSettings
-}
-
-# Was Convert-JSONToLocaleSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCSensitivityLabelJSONToLocaleSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        $JSONLocalSettings
-    )
-
-    $localeSettings = $JSONLocalSettings | ConvertFrom-Json
-
-    $entries = @()
-    $settings = @()
-    foreach ($localeSetting in $localeSettings)
-    {
-        $result = [ordered]@{
-            LocaleKey = $localeSetting.LocaleKey
-        }
-        foreach ($setting in $localeSetting.Settings)
-        {
-            $entry = [ordered]@{
-                Key   = $setting.Key
-                Value = $setting.Value -replace "`r"
-            }
-            $settings += $entry
-        }
-        $result.Add('LabelSettings', $settings)
-        $settings = @()
-        $entries += $result
-        $result = [ordered]@{}
-    }
-    return $entries
-}
-
-# Was Convert-EncryptionRightDefinition. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCSensitivityLabelEncryptionRightDefinition
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $RightsDefinition
-    )
-
-    $EncryptionRights = $RightsDefinition | ConvertFrom-Json
-    foreach ($right in $EncryptionRights)
-    {
-        $StringContent += "$($right.Identity):$($right.Rights);"
-    }
-    if ($StringContent.EndsWith(';'))
-    {
-        $StringContent = $StringContent.Substring(0, ($StringContent.Length - 1))
-    }
-    return $StringContent
-
-}
-
-# Was Convert-StringToAdvancedSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SCSensitivityLabelStringToAdvancedSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String[]]
-        $AdvancedSettings
-    )
-
-    $settings = @()
-    foreach ($setting in $AdvancedSettings)
-    {
-        $settingString = $setting.Replace('[', '').Replace(']', '')
-        $settingKey = $settingString.Split(',')[0]
-
-        if ($settingKey -notin @('displayname', 'contenttype', 'tooltip', 'parentid'))
-        {
-            $startPos = $settingString.IndexOf(',', 0) + 1
-            $valueString = $settingString.Substring($startPos, $settingString.Length - $startPos).Trim()
-            $values = $valueString.Split(',')
-
-            $entry = [ordered]@{
-                Key   = $settingKey
-                Value = $values.Trim()
-            }
-
-            # Only export the entry if it has a value
-            if ([String]::IsNullOrEmpty($entry.Value) -eq $false)
-            {
-                $settings += $entry
-            }
-        }
-    }
-    return $settings
 }
 
 # Was Test-AutoLabelingSettings. Renamed because helper names recur across resources and the
@@ -1769,7 +1716,7 @@ function Test-SCSensitivityLabelAutoLabelingSettings
     if ($foundSettings -eq $false)
     {
         New-M365DSCLogEntry -Message "AutoLabelingSettings for label $Name do not match: `r`n- $($driftedSetting -join '`r`n- ')" `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'SCSensitivityLabel' `
             -TenantId $TenantId `
             -Credential $Credential
     }
@@ -1853,7 +1800,7 @@ function Test-SCSensitivityLabelAdvancedSettings
     if ($foundSettings -eq $false)
     {
         New-M365DSCLogEntry -Message "AdvancedSettings for label $Name do not match: $($driftedSetting -join ', ')" `
-            -Source $($MyInvocation.MyCommand.Source) `
+            -Source 'SCSensitivityLabel' `
             -TenantId $TenantId `
             -Credential $Credential
     }

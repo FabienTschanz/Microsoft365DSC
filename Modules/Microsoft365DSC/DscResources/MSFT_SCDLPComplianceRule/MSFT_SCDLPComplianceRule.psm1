@@ -420,7 +420,7 @@ class SCDLPComplianceRule : M365DSCResourceBase
 
             if ($null -ne $PolicyRule.AdvancedRule -and $PolicyRule.AdvancedRule.Count -gt 0)
             {
-                $newAdvancedRule = Format-SCDLPComplianceRuleAdvancedRuleWithoutConditionId -AdvancedRule $PolicyRule.AdvancedRule
+                $newAdvancedRule = $this.FormatAdvancedRuleWithoutConditionId($PolicyRule.AdvancedRule)
             }
             else
             {
@@ -446,9 +446,9 @@ class SCDLPComplianceRule : M365DSCResourceBase
                 BlockAccessScope                             = $PolicyRule.BlockAccessScope
                 Comment                                      = $PolicyRule.Comment
                 AdvancedRule                                 = $newAdvancedRule
-                ContentContainsSensitiveInformation          = ConvertTo-SCDLPComplianceRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ContentContainsSensitiveInformation
+                ContentContainsSensitiveInformation          = $this.ConvertToContainsSensitiveInformation($PolicyRule.ContentContainsSensitiveInformation)
                 EndpointDlpRestrictions                      = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $PolicyRule.EndpointDlpRestrictions
-                ExceptIfContentContainsSensitiveInformation  = ConvertTo-SCDLPComplianceRuleContainsSensitiveInformation -SensitiveInformation $PolicyRule.ExceptIfContentContainsSensitiveInformation
+                ExceptIfContentContainsSensitiveInformation  = $this.ConvertToContainsSensitiveInformation($PolicyRule.ExceptIfContentContainsSensitiveInformation)
                 ContentPropertyContainsWords                 = $PolicyRule.ContentPropertyContainsWords
                 Disabled                                     = $PolicyRule.Disabled
                 Quarantine                                   = $PolicyRule.Quarantine
@@ -557,18 +557,19 @@ class SCDLPComplianceRule : M365DSCResourceBase
         #endregion
 
         $CurrentRule = $this.Get().ToHashtable()
+        $BoundParameters = $this.GetBoundParameters()
 
-        if ($null -ne $this.GetBoundParameters().AdvancedRule)
+        if ($null -ne $BoundParameters.AdvancedRule)
         {
-            $newAdvancedRule = $this.GetBoundParameters().AdvancedRule | ConvertFrom-Json | ConvertFrom-Json
-            $newAdvancedRule.Condition = Add-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $newAdvancedRule.Condition -Cache $this.ResourceCache
-            $this.GetBoundParameters().AdvancedRule = $newAdvancedRule | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
+            $newAdvancedRule = $BoundParameters.AdvancedRule | ConvertFrom-Json | ConvertFrom-Json
+            $newAdvancedRule.Condition = $this.AddAdvancedRuleConditionId($newAdvancedRule.Condition, $this.ResourceCache)
+            $BoundParameters.AdvancedRule = $newAdvancedRule | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
         }
 
         if ($this.Ensure -eq 'Present' -and $CurrentRule.Ensure -eq 'Absent')
         {
             Write-Verbose "Rule {$($CurrentRule.Name)} doesn't exists but need to. Creating Rule."
-            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $BoundParameters
             if ($null -ne $CreationParams.ContentContainsSensitiveInformation)
             {
                 $value = @()
@@ -631,7 +632,7 @@ class SCDLPComplianceRule : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Present' -and $CurrentRule.Ensure -eq 'Present')
         {
             Write-Verbose "Rule {$($CurrentRule.Name)} already exists and needs to get updated. Updating Rule."
-            $UpdateParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $UpdateParams = Remove-M365DSCAuthenticationParameter -BoundParameters $BoundParameters
 
             if ($null -ne $UpdateParams.ContentContainsSensitiveInformation)
             {
@@ -951,6 +952,160 @@ class SCDLPComplianceRule : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] AddAdvancedRuleConditionId([System.Object] $Condition, [System.Collections.Hashtable] $Cache)
+    {
+        for ($i = 0; $i -lt $Condition.SubConditions.Count; $i++)
+        {
+            $Condition.SubConditions[$i] = $this.AddAdvancedRuleConditionId($Condition.SubConditions[$i], $Cache)
+        }
+
+        if ([System.String]::IsNullOrEmpty($Condition.ConditionName))
+        {
+            return $Condition
+        }
+
+        $index = $Condition.ConditionName.IndexOf('ContentContainsSensitiveInformation')
+        if ($index -ne -1)
+        {
+            if ($null -ne $Condition.Value.Groups.Sensitivetypes)
+            {
+                if ($null -eq $Cache['SensitiveInformationTypes'])
+                {
+                    $Cache['SensitiveInformationTypes'] = Get-DlpSensitiveInformationType
+                }
+
+                $sensitiveTypesValue = $Condition.Value.Groups.Sensitivetypes
+                foreach ($stype in $sensitiveTypesValue)
+                {
+                    # Do not attempt to resolve trainable classifiers that have a classifier type set, e.g. MLModel
+                    # See https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7156
+                    if ($null -eq $stype.Id -and [System.String]::IsNullOrEmpty($stype.Classifiertype))
+                    {
+                        $stype.Id = $Cache['SensitiveInformationTypes'] | Where-Object -FilterScript { $_.Name -eq $stype.Name } | Select-Object -ExpandProperty Id
+                    }
+                }
+            }
+        }
+
+        return $Condition
+    }
+
+    hidden [System.String] FormatAdvancedRuleWithoutConditionId([System.String] $AdvancedRule)
+    {
+        $ruleObject = $AdvancedRule | ConvertFrom-Json
+
+        $ruleObject.Condition = $this.RemoveAdvancedRuleConditionId($ruleObject.Condition)
+        $newAdvancedRule = $ruleObject | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
+        return $newAdvancedRule | ConvertTo-Json -Compress
+    }
+
+    hidden [System.Object] RemoveAdvancedRuleConditionId([System.Object] $Condition)
+    {
+        for ($i = 0; $i -lt $Condition.SubConditions.Count; $i++)
+        {
+            $Condition.SubConditions[$i] = $this.RemoveAdvancedRuleConditionId($Condition.SubConditions[$i])
+        }
+
+        if ([System.String]::IsNullOrEmpty($Condition.ConditionName))
+        {
+            return $Condition
+        }
+
+        $index = $Condition.ConditionName.IndexOf('ContentContainsSensitiveInformation')
+        if ($index -ne -1)
+        {
+            if ($null -eq $Condition.Value.Groups)
+            {
+                $Condition.Value = $Condition.Value | Select-Object * -ExcludeProperty Id
+            }
+            elseif ($null -ne $Condition.Value.Groups.Sensitivetypes)
+            {
+                $sensitiveTypesValue = $Condition.Value.Groups.Sensitivetypes
+                foreach ($stype in $sensitiveTypesValue)
+                {
+                    if ($null -ne $stype.Id)
+                    {
+                        $stype.Id = $null
+                    }
+                }
+            }
+        }
+
+        return $Condition
+    }
+
+    hidden [System.Collections.Hashtable] ConvertToContainsSensitiveInformation([System.Object] $SensitiveInformation)
+    {
+        if ($null -eq $SensitiveInformation)
+        {
+            return $null
+        }
+
+        if ($null -ne $SensitiveInformation.groups)
+        {
+            $shapedGroups = @()
+            foreach ($group in $SensitiveInformation.groups)
+            {
+                $shapedGroup = @{}
+                foreach ($key in $group.Keys)
+                {
+                    $shapedGroup[$key] = $group[$key]
+                }
+
+                $shapedTypes = @()
+                foreach ($sensitiveType in $group.sensitivetypes)
+                {
+                    $shapedType = @{}
+                    foreach ($key in $sensitiveType.Keys)
+                    {
+                        if ($key -in @('confidencelevel', 'rulePackId'))
+                        {
+                            continue
+                        }
+                        $shapedType[$key] = $sensitiveType[$key]
+                    }
+                    $shapedTypes += $shapedType
+                }
+
+                $null = $shapedGroup.Remove('sensitivetypes')
+                if ($shapedTypes.Count -gt 0)
+                {
+                    $shapedGroup.SensitiveInformation = [array]$shapedTypes
+                }
+                $shapedGroups += $shapedGroup
+            }
+
+            return @{
+                Groups   = [array]$shapedGroups
+                Operator = $SensitiveInformation.operator
+            }
+        }
+
+        $shapedInformation = @()
+        foreach ($item in $SensitiveInformation)
+        {
+            $shapedItem = @{}
+            foreach ($key in $item.Keys)
+            {
+                if ($key -in @('confidencelevel', 'rulePackId'))
+                {
+                    continue
+                }
+                $shapedItem[$key] = $item[$key]
+            }
+            $shapedInformation += $shapedItem
+        }
+
+        if ($shapedInformation.Count -eq 0)
+        {
+            return $null
+        }
+
+        return @{
+            SensitiveInformation = [array]$shapedInformation
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCDLPComplianceRule] AsResult([System.Object] $Values)
     {
@@ -1103,7 +1258,7 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformation
                         "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
                         "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
                     Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                        -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                        -EventID 1 -Source 'SCDLPComplianceRule'
                     return $false
                 }
             }
@@ -1114,7 +1269,7 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformation
             $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
                 "An action on {$($sit.name)} Sensitive Information Type is missing."
             Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source 'SCDLPComplianceRule'
             return $false
         }
     }
@@ -1281,7 +1436,7 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationGroups
             "DLP Compliance Rule {$Name} has invalid value for property operator. " + `
             "Current value is {$($targetValues.$operator)} and is expected to be {$($sourceValues.$operator)}."
         Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-            -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+            -EventID 1 -Source 'SCDLPComplianceRule'
         return $false
     }
 
@@ -1298,7 +1453,7 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationGroups
                     "Group {$($group.name)} has invalid value for property operator. " + `
                     "Current value is {$($matchingExistingRule.$operator)} and is expected to be {$($group.$operator)}."
                 Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                    -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                    -EventID 1 -Source 'SCDLPComplianceRule'
                 return $false
             }
         }
@@ -1308,7 +1463,7 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationGroups
             $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
                 "An action on {$($sit.name)} Sensitive Information Type is missing."
             Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source 'SCDLPComplianceRule'
             return $false
         }
 
@@ -1332,116 +1487,6 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationGroups
             }
         }
     }
-}
-
-# Was Add-AdvancedRuleConditionId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Add-SCDLPComplianceRuleAdvancedRuleConditionId
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        [PSCustomObject]
-        $Condition,
-
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache
-    )
-
-    for ($i = 0; $i -lt $Condition.SubConditions.Count; $i++)
-    {
-        $Condition.SubConditions[$i] = Add-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $Condition.SubConditions[$i] -Cache $Cache
-    }
-
-    if ([System.String]::IsNullOrEmpty($Condition.ConditionName))
-    {
-        return $Condition
-    }
-
-    $index = $Condition.ConditionName.IndexOf('ContentContainsSensitiveInformation')
-    if ($index -ne -1)
-    {
-        if ($null -ne $Condition.Value.Groups.Sensitivetypes)
-        {
-            if ($null -eq $Cache['SensitiveInformationTypes'])
-            {
-                $Cache['SensitiveInformationTypes'] = Get-DlpSensitiveInformationType
-            }
-
-            $sensitiveTypesValue = $Condition.Value.Groups.Sensitivetypes
-            foreach ($stype in $sensitiveTypesValue)
-            {
-                # Do not attempt to resolve trainable classifiers that have a classifier type set, e.g. MLModel
-                # See https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7156
-                if ($null -eq $stype.Id -and [System.String]::IsNullOrEmpty($stype.Classifiertype))
-                {
-                    $stype.Id = $Cache['SensitiveInformationTypes'] | Where-Object -FilterScript { $_.Name -eq $stype.Name } | Select-Object -ExpandProperty Id
-                }
-            }
-        }
-    }
-
-    return $Condition
-}
-
-# Was Format-AdvancedRuleWithoutConditionId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Format-SCDLPComplianceRuleAdvancedRuleWithoutConditionId
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AdvancedRule
-    )
-
-    $ruleObject = $AdvancedRule | ConvertFrom-Json
-
-    $ruleObject.Condition = Remove-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $ruleObject.Condition
-    $newAdvancedRule = $ruleObject | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
-    return $newAdvancedRule | ConvertTo-Json -Compress
-}
-
-# Was Remove-AdvancedRuleConditionId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Remove-SCDLPComplianceRuleAdvancedRuleConditionId
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        [PSCustomObject]
-        $Condition
-    )
-
-    for ($i = 0; $i -lt $Condition.SubConditions.Count; $i++)
-    {
-        $Condition.SubConditions[$i] = Remove-SCDLPComplianceRuleAdvancedRuleConditionId -Condition $Condition.SubConditions[$i]
-    }
-
-    if ([System.String]::IsNullOrEmpty($Condition.ConditionName))
-    {
-        return $Condition
-    }
-
-    $index = $Condition.ConditionName.IndexOf('ContentContainsSensitiveInformation')
-    if ($index -ne -1)
-    {
-        if ($null -eq $Condition.Value.Groups)
-        {
-            $Condition.Value = $Condition.Value | Select-Object * -ExcludeProperty Id
-        }
-        elseif ($null -ne $Condition.Value.Groups.Sensitivetypes)
-        {
-            $sensitiveTypesValue = $Condition.Value.Groups.Sensitivetypes
-            foreach ($stype in $sensitiveTypesValue)
-            {
-                if ($null -ne $stype.Id)
-                {
-                    $stype.Id = $null
-                }
-            }
-        }
-    }
-
-    return $Condition
 }
 
 # Was Format-Json. Renamed because helper names recur across resources and the
@@ -1544,7 +1589,7 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationLabels
                         "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
                         "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
                     Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                        -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                        -EventID 1 -Source 'SCDLPComplianceRule'
                     return $false
                 }
             }
@@ -1555,89 +1600,9 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationLabels
             $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
                 "An action on {$($sit.name)} Sensitive Information label is missing."
             Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source $($MyInvocation.MyCommand.Source)
+                -EventID 1 -Source 'SCDLPComplianceRule'
             return $false
         }
-    }
-}
-
-function ConvertTo-SCDLPComplianceRuleContainsSensitiveInformation
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        $SensitiveInformation
-    )
-
-    if ($null -eq $SensitiveInformation)
-    {
-        return $null
-    }
-
-    if ($null -ne $SensitiveInformation.groups)
-    {
-        $shapedGroups = @()
-        foreach ($group in $SensitiveInformation.groups)
-        {
-            $shapedGroup = @{}
-            foreach ($key in $group.Keys)
-            {
-                $shapedGroup[$key] = $group[$key]
-            }
-
-            $shapedTypes = @()
-            foreach ($sensitiveType in $group.sensitivetypes)
-            {
-                $shapedType = @{}
-                foreach ($key in $sensitiveType.Keys)
-                {
-                    if ($key -in @('confidencelevel', 'rulePackId'))
-                    {
-                        continue
-                    }
-                    $shapedType[$key] = $sensitiveType[$key]
-                }
-                $shapedTypes += $shapedType
-            }
-
-            $shapedGroup.Remove('sensitivetypes') | Out-Null
-            if ($shapedTypes.Count -gt 0)
-            {
-                $shapedGroup.SensitiveInformation = [array]$shapedTypes
-            }
-            $shapedGroups += $shapedGroup
-        }
-
-        return @{
-            Groups   = [array]$shapedGroups
-            Operator = $SensitiveInformation.operator
-        }
-    }
-
-    $shapedInformation = @()
-    foreach ($item in $SensitiveInformation)
-    {
-        $shapedItem = @{}
-        foreach ($key in $item.Keys)
-        {
-            if ($key -in @('confidencelevel', 'rulePackId'))
-            {
-                continue
-            }
-            $shapedItem[$key] = $item[$key]
-        }
-        $shapedInformation += $shapedItem
-    }
-
-    if ($shapedInformation.Count -eq 0)
-    {
-        return $null
-    }
-
-    return @{
-        SensitiveInformation = [array]$shapedInformation
     }
 }
 

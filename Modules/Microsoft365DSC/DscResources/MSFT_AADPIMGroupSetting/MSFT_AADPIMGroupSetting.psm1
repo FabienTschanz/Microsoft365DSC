@@ -502,6 +502,8 @@ class AADPIMGroupSetting : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of the Azure AD PIM Group for group DisplayName {$($this.DisplayName)} and RoleDefinitionId {$($this.RoleDefinitionId)}"
 
+        $null = $this.Connect('MicrosoftGraph')
+
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
         #region Telemetry
