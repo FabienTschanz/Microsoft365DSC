@@ -40,8 +40,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return "Credentials"
             }
 
-            Mock -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -MockWith {
+            Mock -CommandName Invoke-WebRequest -MockWith {
                 param ($Uri)
+                $payload = & {
+                    param ($Uri)
                 switch ($Uri) {
                     "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities" {
                         return @{
@@ -125,9 +127,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         }
                     }
                 }
-            }
-
-            Mock -CommandName Invoke-WebRequest -MockWith {
+                } $Uri
+                return @{
+                    Content = ($payload | ConvertTo-Json -Depth 30)
+                }
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
@@ -197,8 +200,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure = 'Present'
                 }
 
-                Mock -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -MockWith {
+                Mock -CommandName Invoke-WebRequest -MockWith {
                     param ($Uri)
+                    $payload = & {
+                        param ($Uri)
                     switch ($Uri) {
                         "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities" {
                             return @{
@@ -227,6 +232,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             }
                         }
                     }
+                    } $Uri
+                    return @{
+                        Content = ($payload | ConvertTo-Json -Depth 30)
+                    }
                 }
             }
 
@@ -238,7 +247,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the id from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Exactly 4
+                Should -Invoke -CommandName Invoke-WebRequest -Exactly 4
             }
         }
 
@@ -311,7 +320,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Exactly 2
+                Should -Invoke -CommandName Invoke-WebRequest -Exactly 2
             }
         }
         Context -Name "The AADVerifiedIdAuthorityContract Exists and Values are already in the desired state" -Fixture {
@@ -447,7 +456,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthorityContract' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Exactly 3
+                Should -Invoke -CommandName Invoke-WebRequest -Exactly 3
             }
         }
 

@@ -153,7 +153,7 @@ class AADAuthorizationPolicy : M365DSCResourceBase
                 DefaultUserRoleAllowedToReadBitlockerKeysForOwnedDevice = $Policy.DefaultUserRolePermissions.AllowedToReadBitlockerKeysForOwnedDevice
                 DefaultUserRoleAllowedToCreateTenants                   = $Policy.DefaultUserRolePermissions.AllowedToCreateTenants
                 PermissionGrantPolicyIdsAssignedToDefaultUserRole       = $Policy.PermissionGrantPolicyIdsAssignedToDefaultUserRole
-                GuestUserRole                                           = Get-AADAuthorizationPolicyGuestUserRoleNameFromId -GuestUserRoleId $Policy.GuestUserRoleId
+                GuestUserRole                                           = $this.GetGuestUserRoleNameFromId($Policy.GuestUserRoleId)
                 Ensure                                                  = 'Present'
                 Credential                                              = $this.Credential
                 ApplicationSecret                                       = $this.ApplicationSecret
@@ -227,7 +227,7 @@ class AADAuthorizationPolicy : M365DSCResourceBase
                     if ($param -eq 'GuestUserRole')
                     {
                         # translate displayvalue to corresponding GUID
-                        $guestUserRoleId = Get-AADAuthorizationPolicyGuestUserRoleIdFromName -GuestUserRole $desiredParam
+                        $guestUserRoleId = $this.GetGuestUserRoleIdFromName($desiredParam)
                         $UpdateParameters.Add('GuestUserRoleId', $guestUserRoleId)
                     }
                     else
@@ -329,6 +329,43 @@ class AADAuthorizationPolicy : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetGuestUserRoleIdTable()
+    {
+        return @{
+            'User'            = 'a0b1b346-4d3e-4e8b-98f8-753987be4970'
+            'Guest'           = '10dae51f-b6af-4016-8d66-8c2a99b929b3'
+            'RestrictedGuest' = '2af84b1e-32c8-42b7-82bc-daa82404023b'
+        }
+    }
+
+    hidden [System.String] GetGuestUserRoleIdFromName([System.String] $GuestUserRole)
+    {
+        $guestUserRoleIdTable = $this.GetGuestUserRoleIdTable()
+        return $guestUserRoleIdTable.$GuestUserRole
+    }
+
+    hidden [System.String] GetGuestUserRoleNameFromId([System.String] $GuestUserRoleId)
+    {
+        $guestUserRoleIdTable = $this.GetGuestUserRoleIdTable()
+        if (-not $guestUserRoleIdTable.ContainsValue($GuestUserRoleId))
+        {
+            throw "Unexpected value of GuestuserRoleId '$GuestUserRoleId', should be one of $($guestUserRoleIdTable.Values -join ',')"
+        }
+
+        $roleName = $null
+        foreach ($key in $guestUserRoleIdTable.Keys)
+        {
+            if ($guestUserRoleIdTable.$key -eq $GuestUserRoleId)
+            {
+                $roleName = $key
+                Write-Verbose "`tRoleName matching GuestUserRoleId is $roleName"
+                break
+            }
+        }
+        Write-Verbose "return $roleName"
+        return $roleName
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthorizationPolicy] AsResult([System.Object] $Values)
     {
@@ -345,66 +382,5 @@ class AADAuthorizationPolicy : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Get-GuestUserRoleIdTable. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADAuthorizationPolicyGuestUserRoleIdTable
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    @{
-        'User'            = 'a0b1b346-4d3e-4e8b-98f8-753987be4970'
-        'Guest'           = '10dae51f-b6af-4016-8d66-8c2a99b929b3'
-        'RestrictedGuest' = '2af84b1e-32c8-42b7-82bc-daa82404023b'
-    }
-}
-
-# Was Get-GuestUserRoleIdFromName. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADAuthorizationPolicyGuestUserRoleIdFromName
-{
-    [CmdletBinding()]
-    [OutputType([System.string])]
-    param(
-        [parameter()]
-        [ValidateSet('User', 'Guest', 'RestrictedGuest')]
-        [String]
-        $GuestUserRole
-    )
-
-    $guestUserRoleIdTable = Get-AADAuthorizationPolicyGuestUserRoleIdTable
-    return $guestUserRoleIdTable.$GuestUserRole
-}
-
-# Was Get-GuestUserRoleNameFromId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADAuthorizationPolicyGuestUserRoleNameFromId
-{
-    [CmdletBinding()]
-    [OutputType([System.string])]
-    param(
-        [parameter()]
-        [String]
-        $GuestUserRoleId
-    )
-
-    $guestUserRoleIdTable = Get-AADAuthorizationPolicyGuestUserRoleIdTable
-    if (-not $guestUserRoleIdTable.ContainsValue($GuestUserRoleId))
-    {
-        throw "Unexpected value of GuestuserRoleId '$GuestUserRoleId', should be one of $($guestUserRoleIdTable.Values -join ',')"
-    }
-    foreach ($roleName in $guestUserRoleIdTable.Keys)
-    {
-        if ($guestUserRoleIdTable.$roleName -eq $GuestUserRoleId)
-        {
-            Write-Verbose "`tRoleName matching GuestUserRoleId is $roleName"
-            break
-        }
-    }
-    Write-Verbose "return $rolename"
-    return $roleName
 }
 

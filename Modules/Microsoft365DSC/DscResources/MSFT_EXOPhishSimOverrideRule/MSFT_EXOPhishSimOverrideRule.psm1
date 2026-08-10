@@ -167,8 +167,8 @@ class EXOPhishSimOverrideRule : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             # Modify Domains and SenderIpRanges parameters as Set cmdlet for this resource has different parameter names
-            EXOPhishSimOverrideRuleModifyPropertiesForSetCmdlet -setParameters $setParameters -currentInstance $currentInstance -propertyName 'Domains'
-            EXOPhishSimOverrideRuleModifyPropertiesForSetCmdlet -setParameters $setParameters -currentInstance $currentInstance -propertyName 'SenderIpRanges'
+            $this.ModifyPropertiesForSetCmdlet($setParameters, $currentInstance, 'Domains')
+            $this.ModifyPropertiesForSetCmdlet($setParameters, $currentInstance, 'SenderIpRanges')
 
             Set-EXOPhishSimOverrideRule @SetParameters
         }
@@ -252,6 +252,30 @@ class EXOPhishSimOverrideRule : M365DSCResourceBase
         }
     }
 
+    hidden [void] ModifyPropertiesForSetCmdlet([System.Collections.Hashtable] $setParameters, [System.Collections.Hashtable] $currentInstance, [System.String] $propertyName)
+    {
+        # Get the arrays
+        $setArray = $setParameters[$propertyName]
+        $currentArray = $currentInstance[$propertyName]
+
+        # Compare arrays
+        $addArray = $setArray | Where-Object { $_ -notin $currentArray }
+        $removeArray = $currentArray | Where-Object { $_ -notin $setArray }
+
+        # Modify $setParameters
+        if ($addArray.Count -gt 0)
+        {
+            $setParameters.Add("Add$propertyName", $addArray)
+        }
+        if ($removeArray.Count -gt 0)
+        {
+            $setParameters.Add("Remove$propertyName", $removeArray)
+        }
+
+        # Remove the original property
+        $setParameters.Remove($propertyName)
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOPhishSimOverrideRule] AsResult([System.Object] $Values)
     {
@@ -268,38 +292,5 @@ class EXOPhishSimOverrideRule : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was ModifyPropertiesForSetCmdlet. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function EXOPhishSimOverrideRuleModifyPropertiesForSetCmdlet
-{
-    param
-    (
-        [Hashtable]$setParameters,
-        [Hashtable]$currentInstance,
-        [string]$propertyName
-    )
-
-    # Get the arrays
-    $setArray = $setParameters[$propertyName]
-    $currentArray = $currentInstance[$propertyName]
-
-    # Compare arrays
-    $addArray = $setArray | Where-Object { $_ -notin $currentArray }
-    $removeArray = $currentArray | Where-Object { $_ -notin $setArray }
-
-    # Modify $setParameters
-    if ($addArray.Count -gt 0)
-    {
-        $setParameters.Add("Add$propertyName", $addArray)
-    }
-    if ($removeArray.Count -gt 0)
-    {
-        $setParameters.Add("Remove$propertyName", $removeArray)
-    }
-
-    # Remove the original property
-    $setParameters.Remove($propertyName)
 }
 

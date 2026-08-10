@@ -118,8 +118,8 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
                 -ExpandProperty 'postFederationSignup,postAttributeCollection'
 
             $complexApiConnectorConfiguration = @{
-                postFederationSignupConnectorName    = Get-AADIdentityB2XUserFlowConnectorName($connectorConfiguration.PostFederationSignup.DisplayName)
-                postAttributeCollectionConnectorName = Get-AADIdentityB2XUserFlowConnectorName($connectorConfiguration.PostAttributeCollection.DisplayName)
+                postFederationSignupConnectorName    = $this.GetConnectorName($connectorConfiguration.PostFederationSignup.DisplayName)
+                postAttributeCollectionConnectorName = $this.GetConnectorName($connectorConfiguration.PostAttributeCollection.DisplayName)
             }
             #endregion
 
@@ -507,6 +507,18 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
         }
     }
 
+    hidden [System.String] GetConnectorName([System.Object] $ConnectorName)
+    {
+        if ($null -ne $ConnectorName)
+        {
+            return $ConnectorName
+        }
+        else
+        {
+            return ''
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADIdentityB2XUserFlow] AsResult([System.Object] $Values)
     {
@@ -573,19 +585,5 @@ class MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues
     [DscProperty()]
     [System.ComponentModel.Description('Used to set the value as the default.')]
     [System.Nullable[System.Boolean]] $IsDefault
-}
-
-# Was Get-ConnectorName. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADIdentityB2XUserFlowConnectorName($connectorName)
-{
-    if ($null -ne $connectorName)
-    {
-        return $connectorName
-    }
-    else
-    {
-        return ''
-    }
 }
 

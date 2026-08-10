@@ -284,7 +284,7 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
             }
             #endregion
 
-            $RootCertificate = Get-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificate -DeviceConfigurationPolicyId $getValue.Id
+            $RootCertificate = $this.GetDeviceConfigurationPolicyRootCertificate($getValue.Id)
             $rootCertificateIdValue = $RootCertificate.Id
             $rootCertificateDisplayNameValue = $RootCertificate.DisplayName
 
@@ -470,9 +470,7 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
                 Write-Verbose -Message "Found trusted root certificate with Id {$rootCertificateIdValue}"
             }
 
-            Update-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificateId `
-                -DeviceConfigurationPolicyId $currentInstance.id `
-                -RootCertificateId $rootCertificateIdValue
+            $this.UpdateDeviceConfigurationPolicyRootCertificateId($currentInstance.id, $rootCertificateIdValue)
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
@@ -647,6 +645,24 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
         }
     }
 
+    hidden [void] UpdateDeviceConfigurationPolicyRootCertificateId([System.String] $DeviceConfigurationPolicyId, [System.String] $RootCertificateId)
+    {
+        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate/`$ref"
+        $ref = @{
+            '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$RootCertificateId')"
+        }
+
+        $null = Invoke-MgGraphRequest -Method PUT -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop
+    }
+
+    hidden [System.Object] GetDeviceConfigurationPolicyRootCertificate([System.String] $DeviceConfigurationPolicyId)
+    {
+        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate"
+        $result = Invoke-MgGraphRequest -Method Get -Uri $Uri -ErrorAction Stop
+
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationSCEPCertificatePolicyWindows10] AsResult([System.Object] $Values)
     {
@@ -720,47 +736,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-
-# Was Update-DeviceConfigurationPolicyRootCertificateId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Update-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificateId
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceConfigurationPolicyId,
-
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $RootCertificateId
-    )
-
-    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate/`$ref"
-    $ref = @{
-        '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$RootCertificateId')"
-    }
-
-    Invoke-MgGraphRequest -Method PUT -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop
-}
-
-# Was Get-DeviceConfigurationPolicyRootCertificate. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificate
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceConfigurationPolicyId
-    )
-    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate"
-    $result = Invoke-MgGraphRequest -Method Get -Uri $Uri -ErrorAction Stop
-
-    return $result
-}
-

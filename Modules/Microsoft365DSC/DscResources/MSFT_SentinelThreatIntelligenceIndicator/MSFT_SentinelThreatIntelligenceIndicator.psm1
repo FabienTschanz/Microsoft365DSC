@@ -149,19 +149,12 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             if (-not [System.String]::IsNullOrEmpty($this.Id))
             {
                 Write-Verbose -Message "Retrieving indicator by id {$($this.Id)}"
-                $instance = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
-                    -ResourceGroupName $this.ResourceGroupName `
-                    -WorkspaceName $this.WorkspaceName `
-                    -TenantId $tenantIdValue `
-                    -Id $this.Id
+                $instance = $this.GetIndicator($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $this.Id)
             }
             if ($null -eq $instance)
             {
                 Write-Verbose -Message "Retrieving indicator by DisplayName {$($this.DisplayName)}"
-                $instances = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
-                    -ResourceGroupName $this.ResourceGroupName `
-                    -WorkspaceName $this.WorkspaceName `
-                    -TenantId $tenantIdValue
+                $instances = $this.GetIndicator($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $null)
                 $instance = $instances | Where-Object -FilterScript { $_.properties.displayName -eq $this.DisplayName }
             }
             if ($null -eq $instance)
@@ -267,32 +260,19 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating a new indicator {$($this.DisplayName)}"
-            New-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
-                -ResourceGroupName $this.ResourceGroupName `
-                -WorkspaceName $this.WorkspaceName `
-                -TenantId $tenantIdValue `
-                -Body $instanceParameters
+            $this.NewIndicator($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $instanceParameters)
         }
         # UPDATE
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating indicator {$($this.DisplayName)}"
-            Set-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
-                -ResourceGroupName $this.ResourceGroupName `
-                -WorkspaceName $this.WorkspaceName `
-                -TenantId $tenantIdValue `
-                -Body $instanceParameters `
-                -Id $currentInstance.Id
+            $this.SetIndicator($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $currentInstance.Id, $instanceParameters)
         }
         # REMOVE
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing indicator {$($this.DisplayName)}"
-            Remove-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $this.SubscriptionId `
-                -ResourceGroupName $this.ResourceGroupName `
-                -WorkspaceName $this.WorkspaceName `
-                -TenantId $tenantIdValue `
-                -Id $currentInstance.Id
+            $this.RemoveIndicator($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $currentInstance.Id)
         }
     }
 
@@ -354,10 +334,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
                 $resourceGroupNameValue = $workspace.ResourceGroupName
                 $workspaceNameValue = $workspace.Name
 
-                $indicators = Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator -SubscriptionId $subscriptionIdValue `
-                    -ResourceGroupName $resourceGroupNameValue `
-                    -WorkspaceName $workspaceNameValue `
-                    -TenantId $tenantIdValue
+                $indicators = $this.GetIndicator($subscriptionIdValue, $resourceGroupNameValue, $workspaceNameValue, $tenantIdValue, $null)
 
                 $j = 1
                 if ($indicators.Length -eq 0)
@@ -413,6 +390,103 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] GetIndicator([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.String] $Id)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+            if (-not [System.String]::IsNullOrEmpty($Id))
+            {
+                $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
+                $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
+                $result = ConvertFrom-Json $response.Content
+                return $result
+            }
+            else
+            {
+                $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators?api-version=2024-03-01"
+                $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
+                $result = ConvertFrom-Json $response.Content
+                return $result.value
+            }
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
+    hidden [void] RemoveIndicator([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.String] $Id)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+
+            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
+            $null = Invoke-AzRestMethod -Uri $uri -Method 'DELETE'
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
+    hidden [void] NewIndicator([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.Collections.Hashtable] $Body)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+
+            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/createIndicator?api-version=2024-03-01"
+            $payload = ConvertTo-Json $Body -Depth 10 -Compress
+            $null = Invoke-AzRestMethod -Uri $uri -Method 'POST' -Payload $payload
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
+    hidden [void] SetIndicator([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.String] $Id, [System.Collections.Hashtable] $Body)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+
+            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
+            $payload = ConvertTo-Json $Body -Depth 10 -Compress
+            $null = Invoke-AzRestMethod -Uri $uri -Method 'PUT' -Payload $payload
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SentinelThreatIntelligenceIndicator] AsResult([System.Object] $Values)
     {
@@ -430,206 +504,3 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
         return $result
     }
 }
-
-# Was Get-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
-{
-    [CmdletBinding()]
-    [OutputType([Array])]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $Id
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-        if (-not [System.String]::IsNullOrEmpty($Id))
-        {
-            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
-            $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
-            $result = ConvertFrom-Json $response.Content
-            return $result
-        }
-        else
-        {
-            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators?api-version=2024-03-01"
-            $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
-            $result = ConvertFrom-Json $response.Content
-            return $result.value
-        }
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-
-# Was Remove-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Remove-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-
-        $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
-        $null = Invoke-AzRestMethod -Uri $uri -Method 'DELETE'
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-
-# Was New-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function New-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Body
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-
-        $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/createIndicator?api-version=2024-03-01"
-        $payload = ConvertTo-Json $Body -Depth 10 -Compress
-        $null = Invoke-AzRestMethod -Uri $uri -Method 'POST' -Payload $payload
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-
-# Was Set-M365DSCSentinelThreatIntelligenceIndicator. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Set-SentinelThreatIntelligenceIndicatorM365DSCSentinelThreatIntelligenceIndicator
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id,
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Body
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-
-        $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$($Id)?api-version=2024-03-01"
-        $payload = ConvertTo-Json $Body -Depth 10 -Compress
-        $null = Invoke-AzRestMethod -Uri $uri -Method 'PUT' -Payload $payload
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-

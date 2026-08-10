@@ -43,12 +43,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName New-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-
-            }
-
-            Mock -CommandName Remove-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-
+            Mock -CommandName Get-M365DSCAPIEndpoint -MockWith {
+                return @{
+                    AzureManagement = 'https://management.azure.com'
+                }
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
@@ -101,8 +99,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential            = $Credential;
                 }
 
-                Mock -CommandName Get-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-                    return $null
+                Mock -CommandName Invoke-AzRestMethod -MockWith {
+                    return @{
+                        StatusCode = 200
+                        Content    = '{}'
+                    }
                 }
             }
             It 'Should return Values from the Get method' {
@@ -114,7 +115,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should create a new instance from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'SentinelAlertRule' -Property $testParams).Set()
-                Should -Invoke -CommandName New-SentinelAlertRuleM365DSCSentinelAlertRule -Exactly 1
+                Should -Invoke -CommandName Invoke-AzRestMethod -ParameterFilter { $Method -eq 'PUT' } -Exactly 1
             }
         }
 
@@ -161,8 +162,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential            = $Credential;
                 }
 
-                Mock -CommandName Get-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-                    return @{
+                Mock -CommandName Invoke-AzRestMethod -MockWith {
+                    $rule = @{
                         Kind = 'NRT'
                         name = '12345-12345-12345-12345-12345'
                         properties = @{
@@ -199,6 +200,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             }
                         }
                     }
+                    if ($Uri -like '*/alertrules/*')
+                    {
+                        return @{
+                            StatusCode = 200
+                            Content    = (ConvertTo-Json $rule -Depth 10)
+                        }
+                    }
+                    return @{
+                        StatusCode = 200
+                        Content    = (ConvertTo-Json @{ value = @($rule) } -Depth 10)
+                    }
                 }
             }
             It 'Should return Values from the Get method' {
@@ -210,7 +222,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should remove the instance from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'SentinelAlertRule' -Property $testParams).Set()
-                Should -Invoke -CommandName Remove-SentinelAlertRuleM365DSCSentinelAlertRule -Exactly 1
+                Should -Invoke -CommandName Invoke-AzRestMethod -ParameterFilter { $Method -eq 'DELETE' } -Exactly 1
             }
         }
 
@@ -257,8 +269,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential            = $Credential;
                 }
 
-                Mock -CommandName Get-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-                    return @{
+                Mock -CommandName Invoke-AzRestMethod -MockWith {
+                    $rule = @{
                         Kind = 'NRT'
                         name = '12345-12345-12345-12345-12345'
                         properties = @{
@@ -293,6 +305,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 createIncident = $True
                             }
                         }
+                    }
+                    if ($Uri -like '*/alertrules/*')
+                    {
+                        return @{
+                            StatusCode = 200
+                            Content    = (ConvertTo-Json $rule -Depth 10)
+                        }
+                    }
+                    return @{
+                        StatusCode = 200
+                        Content    = (ConvertTo-Json @{ value = @($rule) } -Depth 10)
                     }
                 }
             }
@@ -345,8 +368,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential            = $Credential;
                 }
 
-                Mock -CommandName Get-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-                    return @{
+                Mock -CommandName Invoke-AzRestMethod -MockWith {
+                    $rule = @{
                         Kind = 'NRT'
                         name = '12345-12345-12345-12345-12345'
                         properties = @{
@@ -383,6 +406,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             }
                         }
                     }
+                    if ($Uri -like '*/alertrules/*')
+                    {
+                        return @{
+                            StatusCode = 200
+                            Content    = (ConvertTo-Json $rule -Depth 10)
+                        }
+                    }
+                    return @{
+                        StatusCode = 200
+                        Content    = (ConvertTo-Json @{ value = @($rule) } -Depth 10)
+                    }
                 }
             }
 
@@ -396,7 +430,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'SentinelAlertRule' -Property $testParams).Set()
-                Should -Invoke -CommandName New-SentinelAlertRuleM365DSCSentinelAlertRule -Exactly 1
+                Should -Invoke -CommandName Invoke-AzRestMethod -ParameterFilter { $Method -eq 'PUT' } -Exactly 1
             }
         }
 
@@ -408,8 +442,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential  = $Credential;
                 }
 
-                Mock -CommandName Get-SentinelAlertRuleM365DSCSentinelAlertRule -MockWith {
-                    return @{
+                Mock -CommandName Invoke-AzRestMethod -MockWith {
+                    $rule = @{
                         Kind = 'NRT'
                         name = '12345-12345-12345-12345-12345'
                         properties = @{
@@ -445,6 +479,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 createIncident = $True
                             }
                         }
+                    }
+                    if ($Uri -like '*/alertrules/*')
+                    {
+                        return @{
+                            StatusCode = 200
+                            Content    = (ConvertTo-Json $rule -Depth 10)
+                        }
+                    }
+                    return @{
+                        StatusCode = 200
+                        Content    = (ConvertTo-Json @{ value = @($rule) } -Depth 10)
                     }
                 }
             }

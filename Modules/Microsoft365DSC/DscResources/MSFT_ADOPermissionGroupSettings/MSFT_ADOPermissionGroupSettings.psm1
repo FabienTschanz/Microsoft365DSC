@@ -124,7 +124,7 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
                 $this.ResourceCache['CurrentOrganization'] = $this.OrganizationName
             }
 
-            $groupPermissions = Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission -GroupName $instance.principalName -OrganizationName $this.OrganizationName -Cache $this.ResourceCache
+            $groupPermissions = $this.GetGroupPermission($instance.principalName, $this.OrganizationName, $this.ResourceCache)
 
             $results = @{
                 OrganizationName      = $this.OrganizationName
@@ -354,6 +354,137 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetGroupPermission([System.String] $GroupName, [System.String] $OrganizationName, [System.Collections.Hashtable] $Cache)
+    {
+        $results = @{
+            Allow = @()
+            Deny  = @()
+        }
+
+        try
+        {
+            $mygroup = $Cache['AllGroups'] | Where-Object -FilterScript { $_.principalName -eq $GroupName }
+
+            $uri = "https://vssps.dev.azure.com/$($OrganizationName)/_apis/identities?subjectDescriptors=$($mygroup.descriptor)&api-version=7.2-preview.1"
+            $info = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
+            $identityDescriptor = $info.value.descriptor
+
+            if ($null -eq $Cache['AllSecurityNamespaces'] -or $Cache['CurrentOrganization'] -ne $OrganizationName)
+            {
+                $uri = "https://dev.azure.com/$($OrganizationName)/_apis/securitynamespaces?api-version=7.1-preview.1"
+                $response = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
+                $Cache['AllSecurityNamespaces'] = $response.Value
+                $Cache['CurrentOrganization'] = $OrganizationName
+            }
+
+            if ($null -eq $Cache['AllAccessControlLists'] -or $Cache['CurrentOrganization'] -ne $OrganizationName)
+            {
+                $Cache['AllAccessControlLists'] = [System.Collections.Generic.Dictionary[System.String, System.Object[]]]::new(100)
+                foreach ($namespace in $Cache['AllSecurityNamespaces'])
+                {
+                    $uri = "https://dev.azure.com/$($OrganizationName)/_apis/accesscontrollists/$($namespace.namespaceId)?api-version=7.2-preview.1"
+                    $response = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
+                    if ($response.value.Count -gt 0)
+                    {
+                        $Cache['AllAccessControlLists'].Add($namespace.namespaceId, @($response.value))
+                    }
+                }
+            }
+
+            foreach ($namespace in $Cache['AllSecurityNamespaces'])
+            {
+                foreach ($entry in $Cache['AllAccessControlLists'][$namespace.namespaceId])
+                {
+                    $token = $entry.token
+                    foreach ($ace in $entry.acesDictionary)
+                    {
+                        if ($ace.$identityDescriptor)
+                        {
+                            $allow = $ace.$identityDescriptor.Allow
+                            $allowBinary = [Convert]::ToString($allow, 2)
+
+                            $deny = $ace.$identityDescriptor.Deny
+                            $denyBinary = [Convert]::ToString($deny, 2)
+
+                            # Breakdown the allow bits
+                            $position = -1
+                            $bitMaskPositionsFound = @()
+                            do
+                            {
+                                $position = $allowBinary.IndexOf('1', $position + 1)
+                                if ($position -ge 0)
+                                {
+                                    $zerosToAdd = $allowBinary.Length - $position - 1
+                                    $value = '1'
+                                    for ($i = 1; $i -le $zerosToAdd; $i++)
+                                    {
+                                        $value += '0'
+                                    }
+
+                                    $bitMaskPositionsFound += $value
+                                }
+                            } while ($position -ge 0 -and ($position + 1) -le $allowBinary.Length)
+
+                            foreach ($bitmask in $bitMaskPositionsFound)
+                            {
+                                $associatedAction = $namespace.actions | Where-Object -FilterScript { [Convert]::ToString($_.bit, 2) -eq $bitmask }
+                                if (-not [System.String]::IsNullOrEmpty($associatedAction.displayName))
+                                {
+                                    $entry = @{
+                                        DisplayName = $associatedAction.displayName
+                                        Bit         = $associatedAction.bit
+                                        NamespaceId = $namespace.namespaceId
+                                        Token       = $token
+                                    }
+                                    $results.Allow += $entry
+                                }
+                            }
+
+                            # Breakdown the deny bits
+                            $position = -1
+                            $bitMaskPositionsFound = @()
+                            do
+                            {
+                                $position = $denyBinary.IndexOf('1', $position + 1)
+                                if ($position -ge 0)
+                                {
+                                    $zerosToAdd = $denyBinary.Length - $position - 1
+                                    $value = '1'
+                                    for ($i = 1; $i -le $zerosToAdd; $i++)
+                                    {
+                                        $value += '0'
+                                    }
+
+                                    $bitMaskPositionsFound += $value
+                                }
+                            } while ($position -ge 0 -and ($position + 1) -le $denyBinary.Length)
+
+                            foreach ($bitmask in $bitMaskPositionsFound)
+                            {
+                                $associatedAction = $namespace.actions | Where-Object -FilterScript { [Convert]::ToString($_.bit, 2) -eq $bitmask }
+                                if (-not [System.String]::IsNullOrEmpty($associatedAction.displayName))
+                                {
+                                    $entry = @{
+                                        DisplayName = $associatedAction.displayName
+                                        Bit         = $associatedAction.bit
+                                        NamespaceId = $namespace.namespaceId
+                                        Token       = $token
+                                    }
+                                    $results.Deny += $entry
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch
+        {
+            throw $_
+        }
+        return $results
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [ADOPermissionGroupSettings] AsResult([System.Object] $Values)
     {
@@ -389,153 +520,4 @@ class MSFT_ADOPermission
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('Token value')]
     [System.String] $Token
-}
-
-# Was Get-M365DSCADOGroupPermission. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-ADOPermissionGroupSettingsM365DSCADOGroupPermission
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $OrganizationName,
-
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache
-    )
-
-    $results = @{
-        Allow = @()
-        Deny  = @()
-    }
-
-    try
-    {
-        $mygroup = $Cache['AllGroups'] | Where-Object -FilterScript { $_.principalName -eq $GroupName }
-
-        $uri = "https://vssps.dev.azure.com/$($OrganizationName)/_apis/identities?subjectDescriptors=$($mygroup.descriptor)&api-version=7.2-preview.1"
-        $info = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-        $descriptor = $info.value.descriptor
-
-        if ($null -eq $Cache['AllSecurityNamespaces'] -or $Cache['CurrentOrganization'] -ne $OrganizationName)
-        {
-            $uri = "https://dev.azure.com/$($OrganizationName)/_apis/securitynamespaces?api-version=7.1-preview.1"
-            $response = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-            $Cache['AllSecurityNamespaces'] = $response.Value
-            $Cache['CurrentOrganization'] = $OrganizationName
-        }
-
-        if ($null -eq $Cache['AllAccessControlLists'] -or $Cache['CurrentOrganization'] -ne $OrganizationName)
-        {
-            $Cache['AllAccessControlLists'] = [System.Collections.Generic.Dictionary[System.String, System.Object[]]]::new(100)
-            foreach ($namespace in $Cache['AllSecurityNamespaces'])
-            {
-                $uri = "https://dev.azure.com/$($OrganizationName)/_apis/accesscontrollists/$($namespace.namespaceId)?api-version=7.2-preview.1"
-                $response = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-                if ($response.value.Count -gt 0)
-                {
-                    $Cache['AllAccessControlLists'].Add($namespace.namespaceId, @($response.value))
-                }
-            }
-        }
-
-        foreach ($namespace in $Cache['AllSecurityNamespaces'])
-        {
-            foreach ($entry in $Cache['AllAccessControlLists'][$namespace.namespaceId])
-            {
-                $token = $entry.token
-                foreach ($ace in $entry.acesDictionary)
-                {
-                    if ($ace.$descriptor)
-                    {
-                        $allow = $ace.$descriptor.Allow
-                        $allowBinary = [Convert]::ToString($allow, 2)
-
-                        $deny = $ace.$descriptor.Deny
-                        $denyBinary = [Convert]::ToString($deny, 2)
-
-                        # Breakdown the allow bits
-                        $position = -1
-                        $bitMaskPositionsFound = @()
-                        do
-                        {
-                            $position = $allowBinary.IndexOf('1', $position + 1)
-                            if ($position -ge 0)
-                            {
-                                $zerosToAdd = $allowBinary.Length - $position - 1
-                                $value = '1'
-                                for ($i = 1; $i -le $zerosToAdd; $i++)
-                                {
-                                    $value += '0'
-                                }
-
-                                $bitMaskPositionsFound += $value
-                            }
-                        } while ($position -ge 0 -and ($position + 1) -le $allowBinary.Length)
-
-                        foreach ($bitmask in $bitMaskPositionsFound)
-                        {
-                            $associatedAction = $namespace.actions | Where-Object -FilterScript { [Convert]::ToString($_.bit, 2) -eq $bitmask }
-                            if (-not [System.String]::IsNullOrEmpty($associatedAction.displayName))
-                            {
-                                $entry = @{
-                                    DisplayName = $associatedAction.displayName
-                                    Bit         = $associatedAction.bit
-                                    NamespaceId = $namespace.namespaceId
-                                    Token       = $token
-                                }
-                                $results.Allow += $entry
-                            }
-                        }
-
-                        # Breakdown the deny bits
-                        $position = -1
-                        $bitMaskPositionsFound = @()
-                        do
-                        {
-                            $position = $denyBinary.IndexOf('1', $position + 1)
-                            if ($position -ge 0)
-                            {
-                                $zerosToAdd = $denyBinary.Length - $position - 1
-                                $value = '1'
-                                for ($i = 1; $i -le $zerosToAdd; $i++)
-                                {
-                                    $value += '0'
-                                }
-
-                                $bitMaskPositionsFound += $value
-                            }
-                        } while ($position -ge 0 -and ($position + 1) -le $denyBinary.Length)
-
-                        foreach ($bitmask in $bitMaskPositionsFound)
-                        {
-                            $associatedAction = $namespace.actions | Where-Object -FilterScript { [Convert]::ToString($_.bit, 2) -eq $bitmask }
-                            if (-not [System.String]::IsNullOrEmpty($associatedAction.displayName))
-                            {
-                                $entry = @{
-                                    DisplayName = $associatedAction.displayName
-                                    Bit         = $associatedAction.bit
-                                    NamespaceId = $namespace.namespaceId
-                                    Token       = $token
-                                }
-                                $results.Deny += $entry
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    catch
-    {
-        throw $_
-    }
-    return $results
 }

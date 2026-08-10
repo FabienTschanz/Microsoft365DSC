@@ -631,7 +631,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
             if ($policy.Id)
             {
                 Write-Verbose -Message "Update targetApps for iOS App Protection Policy with Id {$($policy.Id)} and DisplayName {$($this.DisplayName)}"
-                $targetApps = Get-IntuneAppProtectionPolicyiOSIntuneAppProtectionPolicyiOSAppsToHashtable -Apps $this.Apps -AppGroupType $this.AppGroupType
+                $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
                 $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/iosManagedAppProtections('$($policy.Id)')/targetApps"
                 Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
 
@@ -673,7 +673,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
             Update-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $currentPolicy.Identity -BodyParameter $updateParameters
 
             Write-Verbose -Message "Updating targetApps for iOS App Protection Policy with Id {$($currentPolicy.Identity)} and DisplayName {$($this.DisplayName)}"
-            $targetApps = Get-IntuneAppProtectionPolicyiOSIntuneAppProtectionPolicyiOSAppsToHashtable -Apps $this.Apps -AppGroupType $this.AppGroupType
+            $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
             $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/iosManagedAppProtections('$($currentPolicy.Identity)')/targetApps"
             Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
 
@@ -823,6 +823,59 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetAppsToHashtable([System.String[]] $AppList, [System.String] $AppGroupType)
+    {
+        $formattedApps = @()
+        $allApps = (Get-MgBetaDeviceAppManagementManagedAppStatus -ManagedAppStatusId managedAppList).content.appList | Where-Object {
+            $_.appIdentifier.'@odata.type' -eq '#microsoft.graph.iosMobileAppIdentifier'
+        }
+
+        switch ($AppGroupType)
+        {
+            'selectedPublicApps'
+            {
+                if ($AppList.Count -eq 0)
+                {
+                    throw "AppGroupType is set to 'selectedPublicApps' but no Apps were provided."
+                }
+            }
+            'allCoreMicrosoftApps'
+            {
+                $AppList = $allApps | Where-Object appGroups -EQ 'coreMicrosoft' | ForEach-Object {
+                    $_.appIdentifier.bundleId
+                }
+            }
+            'allMicrosoftApps'
+            {
+                $AppList = $allApps | Where-Object appGroups -EQ 'microsoft' | ForEach-Object {
+                    $_.appIdentifier.bundleId
+                }
+            }
+            'allApps'
+            {
+                $AppList = $allApps | ForEach-Object {
+                    $_.appIdentifier.bundleId
+                }
+            }
+        }
+
+        foreach ($app in $AppList)
+        {
+            $formattedApps += @{
+                id                  = $app + '.ios'
+                mobileAppIdentifier = @{
+                    '@odata.type' = '#microsoft.graph.iosMobileAppIdentifier'
+                    bundleId      = $app
+                }
+            }
+        }
+
+        return @{
+            apps         = $formattedApps
+            appGroupType = $AppGroupType
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAppProtectionPolicyiOS] AsResult([System.Object] $Values)
     {
@@ -872,74 +925,4 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
-}
-
-# Was Get-IntuneAppProtectionPolicyiOSAppsToHashtable. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneAppProtectionPolicyiOSIntuneAppProtectionPolicyiOSAppsToHashtable
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [System.String[]]
-        $Apps,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('selectedPublicApps', 'allCoreMicrosoftApps', 'allMicrosoftApps', 'allApps')]
-        [System.String]
-        $AppGroupType
-    )
-
-    $formattedApps = @()
-    $allApps = (Get-MgBetaDeviceAppManagementManagedAppStatus -ManagedAppStatusId managedAppList).content.appList | Where-Object {
-        $_.appIdentifier.'@odata.type' -eq '#microsoft.graph.iosMobileAppIdentifier'
-    }
-
-    switch ($AppGroupType)
-    {
-        'selectedPublicApps'
-        {
-            if ($Apps.Count -eq 0)
-            {
-                throw "AppGroupType is set to 'selectedPublicApps' but no Apps were provided."
-            }
-        }
-        'allCoreMicrosoftApps'
-        {
-            $Apps = $allApps | Where-Object appGroups -EQ 'coreMicrosoft' | ForEach-Object {
-                $_.appIdentifier.bundleId
-            }
-        }
-        'allMicrosoftApps'
-        {
-            $Apps = $allApps | Where-Object appGroups -EQ 'microsoft' | ForEach-Object {
-                $_.appIdentifier.bundleId
-            }
-        }
-        'allApps'
-        {
-            $Apps = $allApps | ForEach-Object {
-                $_.appIdentifier.bundleId
-            }
-        }
-    }
-
-    foreach ($app in $Apps)
-    {
-        $formattedApps += @{
-            id                  = $app + '.ios'
-            mobileAppIdentifier = @{
-                '@odata.type' = '#microsoft.graph.iosMobileAppIdentifier'
-                bundleId      = $app
-            }
-        }
-    }
-
-    return @{
-        apps         = $formattedApps
-        appGroupType = $AppGroupType
-    }
 }

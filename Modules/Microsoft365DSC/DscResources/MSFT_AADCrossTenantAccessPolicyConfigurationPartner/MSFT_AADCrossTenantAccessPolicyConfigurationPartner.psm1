@@ -136,19 +136,19 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
             }
 
             $B2BCollaborationInboundValue = $null
-            if ($null -ne $getValue.B2BCollaborationInbound -and (Test-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCB2BIsDefault -B2BSetting $getValue.B2BCollaborationInbound) -eq $false)
+            if ($null -ne $getValue.B2BCollaborationInbound -and $this.TestB2BIsDefault($getValue.B2BCollaborationInbound) -eq $false)
             {
                 $B2BCollaborationInboundValue = $getValue.B2BCollaborationInbound
             }
-            if ($null -ne $getValue.B2BCollaborationOutbound -and (Test-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCB2BIsDefault -B2BSetting $getValue.B2BCollaborationOutbound) -eq $false)
+            if ($null -ne $getValue.B2BCollaborationOutbound -and $this.TestB2BIsDefault($getValue.B2BCollaborationOutbound) -eq $false)
             {
                 $B2BCollaborationOutboundValue = $getValue.B2BCollaborationOutbound
             }
-            if ($null -ne $getValue.B2BDirectConnectInbound -and (Test-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCB2BIsDefault -B2BSetting $getValue.B2BDirectConnectInbound) -eq $false)
+            if ($null -ne $getValue.B2BDirectConnectInbound -and $this.TestB2BIsDefault($getValue.B2BDirectConnectInbound) -eq $false)
             {
                 $B2BDirectConnectInboundValue = $getValue.B2BDirectConnectInbound
             }
-            if ($null -ne $getValue.B2BDirectConnectOutbound -and (Test-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCB2BIsDefault -B2BSetting $getValue.B2BDirectConnectOutbound) -eq $false)
+            if ($null -ne $getValue.B2BDirectConnectOutbound -and $this.TestB2BIsDefault($getValue.B2BDirectConnectOutbound) -eq $false)
             {
                 $B2BDirectConnectOutboundValue = $getValue.B2BDirectConnectOutbound
             }
@@ -234,35 +234,35 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
 
         if ($null -ne $OperationParams.B2BCollaborationInbound)
         {
-            $OperationParams.B2BCollaborationInbound = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyB2BSetting -Setting $OperationParams.B2BCollaborationInbound)
-            $OperationParams.B2BCollaborationInbound = (Update-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCSettingUserIdFromUPN -Setting $OperationParams.B2BCollaborationInbound)
+            $OperationParams.B2BCollaborationInbound = $this.GetB2BSetting($OperationParams.B2BCollaborationInbound)
+            $OperationParams.B2BCollaborationInbound = $this.UpdateSettingUserIdFromUPN($OperationParams.B2BCollaborationInbound)
         }
         if ($null -ne $OperationParams.B2BCollaborationOutbound)
         {
-            $OperationParams.B2BCollaborationOutbound = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyB2BSetting -Setting $OperationParams.B2BCollaborationOutbound)
-            $OperationParams.B2BCollaborationOutbound = (Update-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCSettingUserIdFromUPN -Setting $OperationParams.B2BCollaborationOutbound)
+            $OperationParams.B2BCollaborationOutbound = $this.GetB2BSetting($OperationParams.B2BCollaborationOutbound)
+            $OperationParams.B2BCollaborationOutbound = $this.UpdateSettingUserIdFromUPN($OperationParams.B2BCollaborationOutbound)
         }
         if ($null -ne $OperationParams.B2BDirectConnectInbound)
         {
-            $OperationParams.B2BDirectConnectInbound = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyB2BSetting -Setting $OperationParams.B2BDirectConnectInbound)
-            $OperationParams.B2BDirectConnectInbound = (Update-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCSettingUserIdFromUPN -Setting $OperationParams.B2BDirectConnectInbound)
+            $OperationParams.B2BDirectConnectInbound = $this.GetB2BSetting($OperationParams.B2BDirectConnectInbound)
+            $OperationParams.B2BDirectConnectInbound = $this.UpdateSettingUserIdFromUPN($OperationParams.B2BDirectConnectInbound)
         }
         if ($null -ne $OperationParams.B2BDirectConnectOutbound)
         {
-            $OperationParams.B2BDirectConnectOutbound = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyB2BSetting -Setting $OperationParams.B2BDirectConnectOutbound)
-            $OperationParams.B2BDirectConnectOutbound = (Update-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCSettingUserIdFromUPN -Setting $OperationParams.B2BDirectConnectOutbound)
+            $OperationParams.B2BDirectConnectOutbound = $this.GetB2BSetting($OperationParams.B2BDirectConnectOutbound)
+            $OperationParams.B2BDirectConnectOutbound = $this.UpdateSettingUserIdFromUPN($OperationParams.B2BDirectConnectOutbound)
         }
         if ($null -ne $OperationParams.AutomaticUserConsentSettings)
         {
-            $OperationParams.AutomaticUserConsentSettings = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyAutomaticUserConsentSettings -Setting $OperationParams.AutomaticUserConsentSettings)
+            $OperationParams.AutomaticUserConsentSettings = $this.GetAutomaticUserConsentSettings($OperationParams.AutomaticUserConsentSettings)
         }
         if ($null -ne $OperationParams.InboundTrust)
         {
-            $OperationParams.InboundTrust = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyInboundTrust -Setting $OperationParams.InboundTrust)
+            $OperationParams.InboundTrust = $this.GetInboundTrust($OperationParams.InboundTrust)
         }
         if ($null -ne $OperationParams.IdentitySynchronization)
         {
-            $identitySynchronizationValue = (Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyIdentitySynchronization -Setting $OperationParams.IdentitySynchronization)
+            $identitySynchronizationValue = $this.GetIdentitySynchronization($OperationParams.IdentitySynchronization)
             $OperationParams.Remove('IdentitySynchronization') | Out-Null
         }
 
@@ -629,6 +629,161 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetAutomaticUserConsentSettings([System.Object] $Setting)
+    {
+        $result = @{
+            InboundAllowed  = $Setting.InboundAllowed
+            OutboundAllowed = $Setting.OutboundAllowed
+        }
+
+        return $result
+    }
+
+    hidden [System.Boolean] TestB2BIsDefault([System.Object] $B2BSetting)
+    {
+        if ($null -eq $B2BSetting.Applications.AccessType -and `
+            $null -eq $B2BSetting.Applications.Target -and `
+            $null -eq $B2BSetting.UsersAndGroups.AccessType -and `
+            $null -eq $B2BSetting.UsersAndGroups.Target)
+        {
+            return $true
+        }
+
+        return $false
+    }
+
+    hidden [System.Collections.Hashtable] GetB2BSetting([System.Object] $Setting)
+    {
+        #region Applications
+        $applications = @{
+            AccessType = $Setting.applications.accessType
+        }
+
+        if ($null -ne $Setting.applications.targets)
+        {
+            $targets = @()
+            foreach ($currentTarget in $Setting.applications.targets)
+            {
+                $targets += @{
+                    Target     = $currentTarget.target
+                    TargetType = $currentTarget.targetType
+                }
+            }
+            $applications.Add('Targets', $targets)
+        }
+        #endregion
+
+        #region UsersAndGroups
+        $usersAndGroups = @{
+            AccessType = $Setting.usersAndGroups.accessType
+        }
+
+        if ($null -ne $Setting.usersAndGroups.targets)
+        {
+            $targets = @()
+            $user = $null
+            $group = $null
+            foreach ($currentTarget in $Setting.usersAndGroups.targets)
+            {
+                if ($currentTarget.targetType -eq 'User')
+                {
+                    $user = Get-MgUser -UserId $currentTarget.target -ErrorAction SilentlyContinue
+                }
+                elseif ($currentTarget.targetType -eq 'Group')
+                {
+                    $group = Get-MgGroup -GroupId $currentTarget.target -ErrorAction SilentlyContinue
+                }
+
+                $targetValue = $currentTarget.target
+                if ($null -ne $user)
+                {
+                    $targetValue = $user.UserPrincipalName
+                }
+                elseif ($null -ne $group)
+                {
+                    $targetValue = $group.DisplayName
+                }
+                $targets += @{
+                    Target     = $targetValue
+                    TargetType = $currentTarget.targetType
+                }
+            }
+            $usersAndGroups.Add('Targets', $targets)
+        }
+        #endregion
+        $results = @{
+            Applications   = $applications
+            UsersAndGroups = $usersAndGroups
+        }
+
+        return $results
+    }
+
+    hidden [System.Collections.Hashtable] GetIdentitySynchronization([System.Object] $Setting)
+    {
+        return @{
+            groupSyncInbound = @{
+                isSyncAllowed = $Setting.GroupSyncInbound.IsSyncAllowed
+            }
+            userSyncInbound = @{
+                isSyncAllowed = $Setting.UserSyncInbound.IsSyncAllowed
+            }
+        }
+    }
+
+    hidden [System.Collections.Hashtable] UpdateSettingUserIdFromUPN([System.Collections.Hashtable] $Setting)
+    {
+        if ($null -ne $Setting.UsersAndGroups -and $null -ne $Setting.UsersAndGroups.Targets)
+        {
+            for ($i = 0; $i -le $Setting.UsersAndGroups.Targets.Length; $i++)
+            {
+                $user = $Setting.UsersAndGroups.Targets[$i]
+                $userValue = $user.Target
+                if ($null -ne $userValue)
+                {
+                    if ($user.TargetType -eq 'User')
+                    {
+                        Write-Verbose -Message "Detected User type with UPN {$($user.Target)}"
+                        $user = Get-MgUser -UserId $user.Target -ErrorAction SilentlyContinue
+                        if ($null -ne $user)
+                        {
+                            $userValue = $user.Id
+                        }
+                    }
+                    elseif ($user.TargetType -eq 'Group')
+                    {
+                        Write-Verbose -Message "Detected Group type with Name {$($user.Target)}"
+                        $group = Get-MgGroup -Filter "DisplayName eq  '$($user.Target)'" -ErrorAction SilentlyContinue
+                        if ($null -ne $group)
+                        {
+                            $userValue = $group.Id
+                        }
+                    }
+                }
+                if ($null -ne $userValue)
+                {
+                    Write-Verbose -Message "Updating principal to Id {$userValue}"
+                }
+                if ($null -ne $Setting.UsersAndGroups.Targets[$i].Target)
+                {
+                    $Setting.UsersAndGroups.Targets[$i].Target = $userValue
+                }
+            }
+        }
+        return $Setting
+    }
+
+    hidden [System.Collections.Hashtable] GetInboundTrust([System.Object] $Setting)
+    {
+        $result = @{
+            IsCompliantDeviceAccepted           = $Setting.isCompliantDeviceAccepted
+            IsHybridAzureADJoinedDeviceAccepted = $Setting.isHybridAzureADJoinedDeviceAccepted
+            IsMfaAccepted                       = $Setting.isMfaAccepted
+        }
+
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADCrossTenantAccessPolicyConfigurationPartner] AsResult([System.Object] $Values)
     {
@@ -732,218 +887,3 @@ class MSFT_AADCrossTenantAccessPolicyTarget
     [ValidateSet('user', 'group', 'application', 'unknownFutureValue')]
     [System.String] $TargetType
 }
-
-# Was Get-M365DSCAADCrossTenantAccessPolicyAutomaticUserConsentSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyAutomaticUserConsentSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Setting
-    )
-
-    $result = @{
-        InboundAllowed  = $Setting.InboundAllowed
-        OutboundAllowed = $Setting.OutboundAllowed
-    }
-
-    return $result
-}
-
-# Was Test-M365DSCB2BIsDefault. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Test-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCB2BIsDefault
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $B2BSetting
-    )
-
-    if ($null -eq $B2BSetting.Applications.AccessType -and `
-        $null -eq $B2BSetting.Applications.Target -and `
-        $null -eq $B2BSetting.UsersAndGroups.AccessType -and `
-        $null -eq $B2BSetting.UsersAndGroups.Target)
-    {
-        return $true
-    }
-
-    return $false
-}
-
-# Was Get-M365DSCAADCrossTenantAccessPolicyB2BSetting. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyB2BSetting
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Setting
-    )
-
-    #region Applications
-    $applications = @{
-        AccessType = $Setting.applications.accessType
-    }
-
-    if ($null -ne $Setting.applications.targets)
-    {
-        $targets = @()
-        foreach ($currentTarget in $Setting.applications.targets)
-        {
-            $targets += @{
-                Target     = $currentTarget.target
-                TargetType = $currentTarget.targetType
-            }
-        }
-        $applications.Add('Targets', $targets)
-    }
-    #endregion
-
-    #region UsersAndGroups
-    $usersAndGroups = @{
-        AccessType = $Setting.usersAndGroups.accessType
-    }
-
-    if ($null -ne $Setting.usersAndGroups.targets)
-    {
-        $targets = @()
-        foreach ($currentTarget in $Setting.usersAndGroups.targets)
-        {
-            if ($currentTarget.targetType -eq 'User')
-            {
-                $user = Get-MgUser -UserId $currentTarget.target -ErrorAction SilentlyContinue
-            }
-            elseif ($currentTarget.targetType -eq 'Group')
-            {
-                $group = Get-MgGroup -GroupId $currentTarget.target -ErrorAction SilentlyContinue
-            }
-
-            $targetValue = $currentTarget.target
-            if ($null -ne $user)
-            {
-                $targetValue = $user.UserPrincipalName
-            }
-            elseif ($null -ne $group)
-            {
-                $targetValue = $group.DisplayName
-            }
-            $targets += @{
-                Target     = $targetValue
-                TargetType = $currentTarget.targetType
-            }
-        }
-        $usersAndGroups.Add('Targets', $targets)
-    }
-    #endregion
-    $results = @{
-        Applications   = $applications
-        UsersAndGroups = $usersAndGroups
-    }
-
-    return $results
-}
-
-# Was Get-M365DSCAADCrossTenantAccessPolicyIdentitySynchronization. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyIdentitySynchronization
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Setting
-    )
-
-    @{
-        groupSyncInbound = @{
-            isSyncAllowed = $Setting.GroupSyncInbound.IsSyncAllowed
-        }
-        userSyncInbound = @{
-            isSyncAllowed = $Setting.UserSyncInbound.IsSyncAllowed
-        }
-    }
-}
-
-# Was Update-M365DSCSettingUserIdFromUPN. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Update-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCSettingUserIdFromUPN
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Setting
-    )
-
-    if ($null -ne $Setting.UsersAndGroups -and $null -ne $Setting.UsersAndGroups.Targets)
-    {
-        for ($i = 0; $i -le $Setting.UsersAndGroups.Targets.Length; $i++)
-        {
-            $user = $Setting.UsersAndGroups.Targets[$i]
-            $userValue = $user.Target
-            if ($null -ne $userValue)
-            {
-                if ($user.TargetType -eq 'User')
-                {
-                    Write-Verbose -Message "Detected User type with UPN {$($user.Target)}"
-                    $user = Get-MgUser -UserId $user.Target -ErrorAction SilentlyContinue
-                    if ($null -ne $user)
-                    {
-                        $userValue = $user.Id
-                    }
-                }
-                elseif ($user.TargetType -eq 'Group')
-                {
-                    Write-Verbose -Message "Detected Group type with Name {$($user.Target)}"
-                    $group = Get-MgGroup -Filter "DisplayName eq  '$($user.Target)'" -ErrorAction SilentlyContinue
-                    if ($null -ne $group)
-                    {
-                        $userValue = $group.Id
-                    }
-                }
-            }
-            if ($null -ne $userValue)
-            {
-                Write-Verbose -Message "Updating principal to Id {$userValue}"
-            }
-            if ($null -ne $Setting.UsersAndGroups.Targets[$i].Target)
-            {
-                $Setting.UsersAndGroups.Targets[$i].Target = $userValue
-            }
-        }
-    }
-    return $Setting
-}
-
-# Was Get-M365DSCAADCrossTenantAccessPolicyInboundTrust. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADCrossTenantAccessPolicyConfigurationPartnerM365DSCAADCrossTenantAccessPolicyInboundTrust
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $Setting
-    )
-
-    $result = @{
-        IsCompliantDeviceAccepted           = $Setting.isCompliantDeviceAccepted
-        IsHybridAzureADJoinedDeviceAccepted = $Setting.isHybridAzureADJoinedDeviceAccepted
-        IsMfaAccepted                       = $Setting.isMfaAccepted
-    }
-
-    return $result
-}
-

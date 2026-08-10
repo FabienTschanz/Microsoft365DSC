@@ -314,7 +314,7 @@ class AADGroup : M365DSCResourceBase
             $assignedLicensesRequest = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Licenses' }).body
             if ($assignedLicensesRequest.value.Length -gt 0)
             {
-                [Array]$assignedLicensesValues = Get-AADGroupM365DSCAzureADGroupLicenses -AssignedLicenses $assignedLicensesRequest.value -Cache $this.ResourceCache
+                [Array]$assignedLicensesValues = $this.GetGroupLicenses($assignedLicensesRequest.value)
             }
 
             # GroupLifecyclePolicies
@@ -438,7 +438,7 @@ class AADGroup : M365DSCResourceBase
         # Convert AssignedLicenses from SkuPartNumber back to GUID
         $licensesToAdd = @()
         $licensesToRemove = @()
-        [Array]$AllLicenses = Get-AADGroupM365DSCCombinedLicenses -DesiredLicenses $this.AssignedLicenses -CurrentLicenses $currentGroup.AssignedLicenses
+        [Array]$AllLicenses = $this.GetCombinedLicenses($currentGroup.AssignedLicenses, $this.AssignedLicenses)
 
         $allSkus = Get-MgBetaSubscribedSku
         # Create complete list of all Service Plans
@@ -1081,6 +1081,104 @@ class AADGroup : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable[]] GetGroupLicenses([System.Object] $AssignedLicenses)
+    {
+        $returnValue = @()
+        if ($null -eq $this.ResourceCache['SubscribedSkus'])
+        {
+            $this.ResourceCache['SubscribedSkus'] = Get-MgBetaSubscribedSku
+        }
+
+        # Create complete list of all Service Plans
+        $allServicePlans = @()
+        Write-Verbose -Message 'Getting all Service Plans'
+        foreach ($sku in $this.ResourceCache['SubscribedSkus'])
+        {
+            foreach ($serviceplan in $sku.ServicePlans)
+            {
+                if ($allServicePlans.Length -eq 0 -or -not $allServicePlans.ServicePlanName.Contains($servicePlan.ServicePlanName))
+                {
+                    $allServicePlans += @{
+                        ServicePlanId   = $serviceplan.ServicePlanId
+                        ServicePlanName = $serviceplan.ServicePlanName
+                    }
+                }
+            }
+        }
+
+        foreach ($assignedLicense in $AssignedLicenses)
+        {
+            $skuPartNumber = $this.ResourceCache['SubscribedSkus'] | Where-Object -FilterScript { $_.SkuId -eq $assignedLicense.SkuId }
+            $disabledPlansValues = @()
+            foreach ($plan in $assignedLicense.DisabledPlans)
+            {
+                $foundItem = $allServicePlans | Where-Object -FilterScript { $_.ServicePlanId -eq $plan }
+                $disabledPlansValues += $foundItem.ServicePlanName
+            }
+            $currentLicense = @{
+                disabledPlans = $disabledPlansValues
+                skuId         = $skuPartNumber.SkuPartNumber -replace [char]0xFEFF
+            }
+            $returnValue += $currentLicense
+        }
+
+        return $returnValue
+    }
+
+    hidden [System.Object[]] GetCombinedLicenses([System.Object[]] $CurrentLicenses, [System.Object[]] $DesiredLicenses)
+    {
+        $result = @()
+        if ($currentLicenses.Length -gt 0)
+        {
+            foreach ($license in $CurrentLicenses)
+            {
+                Write-Verbose -Message "Including Current $license"
+                $result += @{
+                    skuId         = $license.SkuId
+                    disabledPlans = $license.DisabledPlans
+                }
+            }
+        }
+
+        if ($DesiredLicenses.Length -gt 0)
+        {
+            foreach ($license in $DesiredLicenses)
+            {
+                $licenseSkuId = $license.SkuId
+                if ($result.Length -eq 0)
+                {
+                    $result += @{
+                        skuId         = $licenseSkuId
+                        disabledPlans = $license.DisabledPlans
+                    }
+                }
+                else
+                {
+                    if (-not $result.skuId.Contains($licenseSkuId))
+                    {
+                        $result += @{
+                            skuId         = $licenseSkuId
+                            disabledPlans = $license.DisabledPlans
+                        }
+                    }
+                    else
+                    {
+                        # Set the Desired Disabled Plans if the sku is already added to the list
+                        foreach ($item in $result)
+                        {
+                            if ($item.skuId -eq $licenseSkuId)
+                            {
+                                $item.disabledPlans = $license.disabledPlans
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADGroup] AsResult([System.Object] $Values)
     {
@@ -1108,129 +1206,4 @@ class MSFT_AADGroupLicense
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The unique identifier for the SKU.')]
     [System.String] $SkuId
-}
-
-# Was Get-M365DSCAzureADGroupLicenses. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADGroupM365DSCAzureADGroupLicenses
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param(
-        [Parameter(Mandatory = $true)]
-        $AssignedLicenses,
-
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache
-    )
-
-    $returnValue = @()
-    if ($null -eq $Cache['SubscribedSkus'])
-    {
-        $Cache['SubscribedSkus'] = Get-MgBetaSubscribedSku
-    }
-
-    # Create complete list of all Service Plans
-    $allServicePlans = @()
-    Write-Verbose -Message 'Getting all Service Plans'
-    foreach ($sku in $Cache['SubscribedSkus'])
-    {
-        foreach ($serviceplan in $sku.ServicePlans)
-        {
-            if ($allServicePlans.Length -eq 0 -or -not $allServicePlans.ServicePlanName.Contains($servicePlan.ServicePlanName))
-            {
-                $allServicePlans += @{
-                    ServicePlanId   = $serviceplan.ServicePlanId
-                    ServicePlanName = $serviceplan.ServicePlanName
-                }
-            }
-        }
-    }
-
-    foreach ($assignedLicense in $AssignedLicenses)
-    {
-        $skuPartNumber = $Cache['SubscribedSkus'] | Where-Object -FilterScript { $_.SkuId -eq $assignedLicense.SkuId }
-        $disabledPlansValues = @()
-        foreach ($plan in $assignedLicense.DisabledPlans)
-        {
-            $foundItem = $allServicePlans | Where-Object -FilterScript { $_.ServicePlanId -eq $plan }
-            $disabledPlansValues += $foundItem.ServicePlanName
-        }
-        $currentLicense = @{
-            disabledPlans = $disabledPlansValues
-            skuId         = $skuPartNumber.SkuPartNumber -replace [char]0xFEFF
-        }
-        $returnValue += $currentLicense
-    }
-
-    return $returnValue
-}
-
-# Was Get-M365DSCCombinedLicenses. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADGroupM365DSCCombinedLicenses
-{
-    [CmdletBinding()]
-    [OutputType([System.Object[]])]
-    param(
-        [Parameter()]
-        [System.Object[]]
-        $CurrentLicenses,
-
-        [Parameter()]
-        [System.Object[]]
-        $DesiredLicenses
-    )
-
-    $result = @()
-    if ($currentLicenses.Length -gt 0)
-    {
-        foreach ($license in $CurrentLicenses)
-        {
-            Write-Verbose -Message "Including Current $license"
-            $result += @{
-                skuId         = $license.SkuId
-                disabledPlans = $license.DisabledPlans
-            }
-        }
-    }
-
-    if ($DesiredLicenses.Length -gt 0)
-    {
-        foreach ($license in $DesiredLicenses)
-        {
-            $licenseSkuId = $license.SkuId
-            if ($result.Length -eq 0)
-            {
-                $result += @{
-                    skuId         = $licenseSkuId
-                    disabledPlans = $license.DisabledPlans
-                }
-            }
-            else
-            {
-                if (-not $result.skuId.Contains($licenseSkuId))
-                {
-                    $result += @{
-                        skuId         = $licenseSkuId
-                        disabledPlans = $license.DisabledPlans
-                    }
-                }
-                else
-                {
-                    # Set the Desired Disabled Plans if the sku is already added to the list
-                    foreach ($item in $result)
-                    {
-                        if ($item.skuId -eq $licenseSkuId)
-                        {
-                            $item.disabledPlans = $license.disabledPlans
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return $result
 }

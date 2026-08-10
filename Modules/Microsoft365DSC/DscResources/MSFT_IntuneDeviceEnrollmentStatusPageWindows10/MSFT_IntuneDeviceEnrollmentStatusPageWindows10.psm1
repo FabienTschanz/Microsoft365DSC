@@ -340,9 +340,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
 
             if ($boundParameters.ContainsKey('Priority') -and $policy.Priority -ne $this.Priority)
             {
-                Update-IntuneDeviceEnrollmentStatusPageWindows10DeviceEnrollmentConfigurationPriority `
-                    -DeviceEnrollmentConfigurationId $policy.id `
-                    -Priority $this.Priority
+                $this.UpdateDeviceEnrollmentConfigurationPriority($policy.id, $this.Priority)
             }
             #endregion
         }
@@ -381,9 +379,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
 
                 if ($boundParameters.ContainsKey('Priority') -and $this.Priority -ne $currentInstance.Priority)
                 {
-                    Update-IntuneDeviceEnrollmentStatusPageWindows10DeviceEnrollmentConfigurationPriority `
-                        -DeviceEnrollmentConfigurationId $currentInstance.id `
-                        -Priority $this.Priority
+                    $this.UpdateDeviceEnrollmentConfigurationPriority($currentInstance.id, $this.Priority)
                 }
             }
             #endregion
@@ -540,6 +536,24 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
         }
     }
 
+    hidden [void] UpdateDeviceEnrollmentConfigurationPriority([System.String] $DeviceEnrollmentConfigurationId, [System.UInt32] $Priority)
+    {
+        try
+        {
+            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$DeviceEnrollmentConfigurationId/setpriority"
+            $body = @{'priority' = $Priority } | ConvertTo-Json -Depth 100
+            $null = Invoke-MgGraphRequest `
+                -Method POST `
+                -Body $body `
+                -Uri $Uri `
+                -ErrorAction Stop 4> $null
+        }
+        catch
+        {
+            $this.LogError($_, 'Error updating data:')
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceEnrollmentStatusPageWindows10] AsResult([System.Object] $Values)
     {
@@ -589,43 +603,4 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
-}
-
-# Was Update-DeviceEnrollmentConfigurationPriority. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Update-IntuneDeviceEnrollmentStatusPageWindows10DeviceEnrollmentConfigurationPriority
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceEnrollmentConfigurationId,
-
-        [Parameter(Mandatory = 'true')]
-        [System.UInt32]
-        $Priority
-    )
-    try
-    {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$DeviceEnrollmentConfigurationId/setpriority"
-        $body = @{'priority' = $Priority } | ConvertTo-Json -Depth 100
-        #write-verbose -Message $body
-        Invoke-MgGraphRequest `
-            -Method POST `
-            -Body $body `
-            -Uri $Uri `
-            -ErrorAction Stop 4> $null
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error updating data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        return $null
-    }
 }

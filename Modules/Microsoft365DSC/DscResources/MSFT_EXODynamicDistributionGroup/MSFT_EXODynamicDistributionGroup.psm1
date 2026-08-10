@@ -399,56 +399,56 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
             if ($null -ne $instance.AcceptMessagesOnlyFrom)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group AcceptMessagesOnlyFrom for $($this.Identity)"
-                $acceptMessagesOnlyFromValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.AcceptMessagesOnlyFrom -Cache $this.ResourceCache
+                $acceptMessagesOnlyFromValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.AcceptMessagesOnlyFrom)
             }
 
             $acceptMessagesOnlyFromDLMembersValue = @()
             if ($null -ne $instance.AcceptMessagesOnlyFromDLMembers)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group AcceptMessagesOnlyFromDLMembers for $($this.Identity)"
-                $acceptMessagesOnlyFromDLMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.AcceptMessagesOnlyFromDLMembers -Cache $this.ResourceCache
+                $acceptMessagesOnlyFromDLMembersValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.AcceptMessagesOnlyFromDLMembers)
             }
 
             $bypassModerationFromSendersOrMembersValue = @()
             if ($null -ne $instance.BypassModerationFromSendersOrMembers)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group BypassModerationFromSendersOrMembers for $($this.Identity)"
-                $bypassModerationFromSendersOrMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.BypassModerationFromSendersOrMembers -Cache $this.ResourceCache
+                $bypassModerationFromSendersOrMembersValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.BypassModerationFromSendersOrMembers)
             }
 
             $grantSendOnBehalfToValue = @()
             if ($null -ne $instance.GrantSendOnBehalfTo)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group GrantSendOnBehalfTo for $($this.Identity)"
-                $grantSendOnBehalfToValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.GrantSendOnBehalfTo -Cache $this.ResourceCache
+                $grantSendOnBehalfToValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.GrantSendOnBehalfTo)
             }
 
             $managedByValue = $null
             if ($null -ne $instance.ManagedBy)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group manager for $($this.Identity)"
-                $managedByValue = Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.ManagedBy -Cache $this.ResourceCache
+                $managedByValue = $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.ManagedBy)
             }
 
             $moderatedByValue = @()
             if ($null -ne $instance.ModeratedBy)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group moderators for $($this.Identity)"
-                $moderatedByValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.ModeratedBy -Cache $this.ResourceCache
+                $moderatedByValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.ModeratedBy)
             }
 
             $rejectMessagesFromValue = @()
             if ($null -ne $instance.RejectMessagesFrom)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group RejectMessagesFrom for $($this.Identity)"
-                $rejectMessagesFromValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.RejectMessagesFrom -Cache $this.ResourceCache
+                $rejectMessagesFromValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.RejectMessagesFrom)
             }
 
             $rejectMessagesFromDLMembersValue = @()
             if ($null -ne $instance.RejectMessagesFromDLMembers)
             {
                 Write-Verbose -Message "Getting Dynamic Distribution Group RejectMessagesFromDLMembers for $($this.Identity)"
-                $rejectMessagesFromDLMembersValue += Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress -RecipientName $instance.RejectMessagesFromDLMembers -Cache $this.ResourceCache
+                $rejectMessagesFromDLMembersValue += $this.GetElementFromRecipientsCacheAsPrimarySmtpAddress($instance.RejectMessagesFromDLMembers)
             }
 
             $results = @{
@@ -511,7 +511,7 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
                 PhoneticDisplayName                    = $instance.PhoneticDisplayName
                 PrimarySmtpAddress                     = $instance.PrimarySmtpAddress
                 RecipientContainer                     = $instance.RecipientContainer
-                RecipientFilter                        = Restore-EXODynamicDistributionGroupOriginalRecipientFilter -ExpandedFilter $instance.RecipientFilter
+                RecipientFilter                        = $this.RestoreOriginalRecipientFilter($instance.RecipientFilter)
                 RejectMessagesFrom                     = $rejectMessagesFromValue
                 RejectMessagesFromDLMembers            = $rejectMessagesFromDLMembersValue
                 ReportToManagerEnabled                 = $instance.ReportToManagerEnabled
@@ -763,6 +763,86 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object[]] GetElementFromRecipientsCacheAsPrimarySmtpAddress([System.String[]] $RecipientName)
+    {
+        if ($null -eq $this.ResourceCache['RecipientsCache'])
+        {
+            $this.ResourceCache['RecipientsCache'] = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+        }
+
+        $recipientsCache = $this.ResourceCache['RecipientsCache']
+        $addresses = @()
+        foreach ($name in $RecipientName)
+        {
+            if (-not $recipientsCache.ContainsKey($name))
+            {
+                Get-Recipient -Identity $name -ErrorAction SilentlyContinue | ForEach-Object {
+                    $recipientsCache[$_.Name] = @{
+                        PrimarySmtpAddress = $_.PrimarySmtpAddress
+                        WindowsLiveID      = $_.WindowsLiveID
+                    }
+                }
+            }
+            $addresses += $recipientsCache[$name].PrimarySmtpAddress
+        }
+
+        return $addresses
+    }
+
+    hidden [System.String] RestoreOriginalRecipientFilter([System.String] $ExpandedFilter)
+    {
+        # region --- define the two known Exchange Online auto-append patterns ---
+        $patterns = @()
+
+        # 1. System/Arbitration mailbox exclusion block
+        $patterns += [regex]::Escape("-and (-not(Name -like 'SystemMailbox{*')) -and (-not(Name -like 'CAS_{*')) -and (-not(RecipientTypeDetailsValue -eq 'MailboxPlan')) -and (-not(RecipientTypeDetailsValue -eq 'DiscoveryMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'PublicFolderMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'ArbitrationMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'AuditLogMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'AuxAuditLogMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'SupervisoryReviewPolicyMailbox'))")
+
+        # 2. Extended RecipientType filtering block
+        $patterns += [regex]::Escape("-and (((RecipientType -eq 'UserMailbox') -or (RecipientType -eq 'MailContact') -or (RecipientType -eq 'MailUser') -or (((RecipientType -eq 'MailUniversalDistributionGroup') -or (RecipientType -eq 'MailUniversalSecurityGroup') -or (RecipientType -eq 'MailNonUniversalGroup') -or (RecipientType -eq 'DynamicDistributionGroup'))) -or (((RecipientType -eq 'UserMailbox') -and (ResourceMetaData -like 'ResourceType:*') -and (ResourceSearchProperties -ne )))))))  -and (-not(RecipientTypeDetailsValue -eq 'GuestMailUser')))")
+
+        # endregion
+
+        $cleaned = $ExpandedFilter
+
+        foreach ($pattern in $patterns)
+        {
+            $cleaned = [regex]::Replace($cleaned, $pattern, '', 'IgnoreCase')
+        }
+
+        # Normalize whitespace
+        $cleaned = $cleaned -replace '\s{2,}', ' '
+
+        # Trim outer parentheses if they wrap the whole expression
+        $trimmed = $cleaned.Trim()
+        if ($trimmed.StartsWith('(') -and $trimmed.EndsWith(')'))
+        {
+            # Check parentheses balance before trimming
+            $open = 0
+            $balanced = $true
+            for ($i = 0; $i -lt $trimmed.Length; $i++)
+            {
+                switch ($trimmed[$i])
+                {
+                    '(' { $open++ }
+                    ')' { $open-- }
+                }
+
+                if ($open -lt 0)
+                {
+                    $balanced = $false
+                    break
+                }
+            }
+            if ($balanced -and $open -eq 0)
+            {
+                # Remove only one outer layer of parentheses
+                $trimmed = $trimmed.Substring(1, $trimmed.Length - 2).Trim()
+            }
+        }
+
+        return $trimmed
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXODynamicDistributionGroup] AsResult([System.Object] $Values)
     {
@@ -778,43 +858,6 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
         }
 
         return $result
-    }
-}
-
-# Was Get-ElementFromRecipientsCacheAsPrimarySmtpAddress. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-EXODynamicDistributionGroupElementFromRecipientsCacheAsPrimarySmtpAddress
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [System.String[]]
-        $RecipientName,
-
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache
-    )
-
-    if ($null -eq $Cache['RecipientsCache'])
-    {
-        $Cache['RecipientsCache'] = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
-    }
-
-    $recipientsCache = $Cache['RecipientsCache']
-    foreach ($name in $RecipientName)
-    {
-        if (-not $recipientsCache.ContainsKey($name))
-        {
-            Get-Recipient -Identity $name -ErrorAction SilentlyContinue | ForEach-Object {
-                $recipientsCache[$_.Name] = @{
-                    PrimarySmtpAddress = $_.PrimarySmtpAddress
-                    WindowsLiveID      = $_.WindowsLiveID
-                }
-            }
-        }
-        $recipientsCache[$name].PrimarySmtpAddress
     }
 }
 
@@ -944,68 +987,4 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
 
     $normalized = ConvertFrom-ExchangeExpression $Expression
     return "($normalized)"  # Always add one final outer wrapper
-}
-
-# Was Restore-OriginalRecipientFilter. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Restore-EXODynamicDistributionGroupOriginalRecipientFilter
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ExpandedFilter
-    )
-
-    # region --- define the two known Exchange Online auto-append patterns ---
-    $patterns = @()
-
-    # 1. System/Arbitration mailbox exclusion block
-    $patterns += [regex]::Escape("-and (-not(Name -like 'SystemMailbox{*')) -and (-not(Name -like 'CAS_{*')) -and (-not(RecipientTypeDetailsValue -eq 'MailboxPlan')) -and (-not(RecipientTypeDetailsValue -eq 'DiscoveryMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'PublicFolderMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'ArbitrationMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'AuditLogMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'AuxAuditLogMailbox')) -and (-not(RecipientTypeDetailsValue -eq 'SupervisoryReviewPolicyMailbox'))")
-
-    # 2. Extended RecipientType filtering block
-    $patterns += [regex]::Escape("-and (((RecipientType -eq 'UserMailbox') -or (RecipientType -eq 'MailContact') -or (RecipientType -eq 'MailUser') -or (((RecipientType -eq 'MailUniversalDistributionGroup') -or (RecipientType -eq 'MailUniversalSecurityGroup') -or (RecipientType -eq 'MailNonUniversalGroup') -or (RecipientType -eq 'DynamicDistributionGroup'))) -or (((RecipientType -eq 'UserMailbox') -and (ResourceMetaData -like 'ResourceType:*') -and (ResourceSearchProperties -ne )))))))  -and (-not(RecipientTypeDetailsValue -eq 'GuestMailUser')))")
-
-    # endregion
-
-    $cleaned = $ExpandedFilter
-
-    foreach ($pattern in $patterns)
-    {
-        $cleaned = [regex]::Replace($cleaned, $pattern, '', 'IgnoreCase')
-    }
-
-    # Normalize whitespace
-    $cleaned = $cleaned -replace '\s{2,}', ' '
-
-    # Trim outer parentheses if they wrap the whole expression
-    $trimmed = $cleaned.Trim()
-    if ($trimmed.StartsWith('(') -and $trimmed.EndsWith(')'))
-    {
-        # Check parentheses balance before trimming
-        $open = 0
-        $balanced = $true
-        for ($i = 0; $i -lt $trimmed.Length; $i++)
-        {
-            switch ($trimmed[$i])
-            {
-                '(' { $open++ }
-                ')' { $open-- }
-            }
-
-            if ($open -lt 0)
-            {
-                $balanced = $false
-                break
-            }
-        }
-        if ($balanced -and $open -eq 0)
-        {
-            # Remove only one outer layer of parentheses
-            $trimmed = $trimmed.Substring(1, $trimmed.Length - 2).Trim()
-        }
-    }
-
-    return $trimmed
 }

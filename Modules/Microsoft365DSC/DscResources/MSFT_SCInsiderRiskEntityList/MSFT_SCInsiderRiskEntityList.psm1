@@ -781,51 +781,35 @@ class SCInsiderRiskEntityList : M365DSCResourceBase
             <################## Group Exclusions #############>
             if ($null -ne $this.ExcludedDomainGroups -and $this.ExcludedDomainGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedDomainGroups `
-                    -DesiredValues $this.ExcludedDomainGroups `
-                    -Name 'IrmXSGDomains'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedDomainGroups, $this.ExcludedDomainGroups, 'IrmXSGDomains')
             }
             elseif ($null -ne $this.ExcludedFilePathGroups -and $this.ExcludedFilePathGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedFilePathGroups `
-                    -DesiredValues $this.ExcludedFilePathGroups `
-                    -Name 'IrmXSGFilePaths'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedFilePathGroups, $this.ExcludedFilePathGroups, 'IrmXSGFilePaths')
             }
             elseif ($null -ne $this.ExcludedFileTypeGroups -and $this.ExcludedFileTypeGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedFileTypeGroups `
-                    -DesiredValues $this.ExcludedFileTypeGroups `
-                    -Name 'IrmXSGFiletypes'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedFileTypeGroups, $this.ExcludedFileTypeGroups, 'IrmXSGFiletypes')
             }
             elseif ($null -ne $this.ExceptionKeyworkGroups -and $this.ExceptionKeyworkGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExceptionKeyworkGroups `
-                    -DesiredValues $this.ExceptionKeyworkGroups `
-                    -Name 'IrmXSGExceptionKeywords'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExceptionKeyworkGroups, $this.ExceptionKeyworkGroups, 'IrmXSGExceptionKeywords')
             }
             elseif ($null -ne $this.ExcludedKeyworkGroups -and $this.ExcludedKeyworkGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedKeyworkGroups `
-                    -DesiredValues $this.ExcludedKeyworkGroups `
-                    -Name 'IrmXSGExcludedKeywords'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedKeyworkGroups, $this.ExcludedKeyworkGroups, 'IrmXSGExcludedKeywords')
             }
             elseif ($null -ne $this.ExcludedSensitiveInformationTypeGroups -and $this.ExcludedSensitiveInformationTypeGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedSensitiveInformationTypeGroups `
-                    -DesiredValues $this.ExcludedSensitiveInformationTypeGroups `
-                    -Name 'IrmXSGSensitiveInfoTypes'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedSensitiveInformationTypeGroups, $this.ExcludedSensitiveInformationTypeGroups, 'IrmXSGSensitiveInfoTypes')
             }
             elseif ($null -ne $this.ExcludedSiteGroups -and $this.ExcludedSiteGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedSiteGroups `
-                    -DesiredValues $this.ExcludedSiteGroups `
-                    -Name 'IrmXSGSites'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedSiteGroups, $this.ExcludedSiteGroups, 'IrmXSGSites')
             }
             elseif ($null -ne $this.ExcludedClassifierGroups -and $this.ExcludedClassifierGroups.Length -gt 0)
             {
-                Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup -CurrentValues $currentInstance.ExcludedClassifierGroups `
-                    -DesiredValues $this.ExcludedClassifierGroups `
-                    -Name 'IrmXSGMLClassifierTypes'
+                $this.SetInsiderRiskExclusionGroup($currentInstance.ExcludedClassifierGroups, $this.ExcludedClassifierGroups, 'IrmXSGMLClassifierTypes')
             }
         }
         # REMOVE
@@ -959,6 +943,32 @@ class SCInsiderRiskEntityList : M365DSCResourceBase
         }
     }
 
+    hidden [void] SetInsiderRiskExclusionGroup([System.String[]] $CurrentValues, [System.String[]] $DesiredValues, [System.String] $Name)
+    {
+        $entitiesToAdd = @()
+        $entitiesToRemove = @()
+        $differences = Compare-Object -ReferenceObject $CurrentValues -DifferenceObject $DesiredValues
+        foreach ($diff in $differences)
+        {
+            if ($diff.SideIndicator -eq '=>')
+            {
+                $entitiesToAdd += "{`"GroupId`":`"$($diff.InputObject)`"}"
+            }
+            else
+            {
+                $entitiesToRemove += "{`"GroupId`":`"$($diff.InputObject)`"}"
+            }
+        }
+
+        Write-Verbose -Message "Updating Group Exclusions for {$Name}"
+        Write-Verbose -Message "Adding entities: $($entitiesToAdd -join ',')"
+        Write-Verbose -Message "Removing entities: $($entitiesToRemove -join ',')"
+
+        Set-InsiderRiskEntityList -Identity $Name `
+            -AddEntities $entitiesToAdd `
+            -RemoveEntities $entitiesToRemove | Out-Null
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCInsiderRiskEntityList] AsResult([System.Object] $Values)
     {
@@ -1001,48 +1011,5 @@ class MSFT_SCInsiderRiskEntityListSite
     [DscProperty()]
     [System.ComponentModel.Description('Unique identifier of the site.')]
     [System.String] $Guid
-}
-
-# Was Set-M365DSCSCInsiderRiskExclusionGroup. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Set-SCInsiderRiskEntityListM365DSCSCInsiderRiskExclusionGroup
-{
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $CurrentValues,
-
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $DesiredValues,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name
-    )
-
-    $entitiesToAdd = @()
-    $entitiesToRemove = @()
-    $differences = Compare-Object -ReferenceObject $CurrentValues -DifferenceObject $DesiredValues
-    foreach ($diff in $differences)
-    {
-        if ($diff.SideIndicator -eq '=>')
-        {
-            $entitiesToAdd += "{`"GroupId`":`"$($diff.InputObject)`"}"
-        }
-        else
-        {
-            $entitiesToRemove += "{`"GroupId`":`"$($diff.InputObject)`"}"
-        }
-    }
-
-    Write-Verbose -Message "Updating Group Exclusions for {$Name}"
-    Write-Verbose -Message "Adding entities: $($entitiesToAdd -join ',')"
-    Write-Verbose -Message "Removing entities: $($entitiesToRemove -join ',')"
-
-    Set-InsiderRiskEntityList -Identity $Name `
-        -AddEntities $entitiesToAdd `
-        -RemoveEntities $entitiesToRemove | Out-Null
 }
 

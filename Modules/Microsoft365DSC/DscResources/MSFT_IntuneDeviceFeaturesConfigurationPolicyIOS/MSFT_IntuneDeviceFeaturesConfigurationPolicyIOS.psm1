@@ -191,7 +191,7 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             }
 
             #value could be bool, string or int - export as a string and handle later
-            $complexIosSingleSignonExtension = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType $getValue.iosSingleSignOnExtension
+            $complexIosSingleSignonExtension = $this.ConvertComplexObjectToHashtableArrayExportDataType($getValue.iosSingleSignOnExtension)
             foreach ($configuration in $complexIosSingleSignonExtension.configurations)
             {
                 $configuration.value = [string]$configuration.value
@@ -212,18 +212,18 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
                 CertificatePassword      = $this.CertificatePassword
                 ManagedIdentity          = $this.ManagedIdentity.IsPresent
                 AccessTokens             = $this.AccessTokens
-                AirPrintDestinations     = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.airPrintDestinations
+                AirPrintDestinations     = $this.ConvertComplexObjectToHashtableArray($getValue.airPrintDestinations)
                 AssetTagTemplate         = $getValue.assetTagTemplate
-                ContentFilterSettings    = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType $getValue.contentFilterSettings
+                ContentFilterSettings    = $this.ConvertComplexObjectToHashtableArrayExportDataType($getValue.contentFilterSettings)
                 LockScreenFootnote       = $getValue.lockScreenFootnote
-                HomeScreenDockIcons      = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.homeScreenDockIcons
-                HomeScreenPages          = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.homeScreenPages
+                HomeScreenDockIcons      = $this.ConvertComplexObjectToHashtableArray($getValue.homeScreenDockIcons)
+                HomeScreenPages          = $this.ConvertComplexObjectToHashtableArray($getValue.homeScreenPages)
                 HomeScreenGridWidth      = $getValue.homeScreenGridWidth
                 HomeScreenGridHeight     = $getValue.homeScreenGridHeight
-                NotificationSettings     = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.notificationSettings
-                SingleSignOnSettings     = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.singleSignOnSettings
+                NotificationSettings     = $this.ConvertComplexObjectToHashtableArray($getValue.notificationSettings)
+                SingleSignOnSettings     = $this.ConvertComplexObjectToHashtableArray($getValue.singleSignOnSettings)
                 WallpaperDisplayLocation = $getValue.wallpaperDisplayLocation
-                WallpaperImage           = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $getValue.wallpaperImage
+                WallpaperImage           = $this.ConvertComplexObjectToHashtableArray($getValue.wallpaperImage)
                 IosSingleSignOnExtension = $complexIosSingleSignonExtension
             }
 
@@ -310,7 +310,7 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             }
             if ($CreateParameters.ContentFilterSettings)
             {
-                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $CreateParameters.ContentFilterSettings
+                $this.ConvertDataTypeFormat($CreateParameters.ContentFilterSettings)
                 $CreateParameters['ContentFilterSettings'] = $CreateParameters.ContentFilterSettings[0] #needs the hashtable not embedded in array
             }
             if ($CreateParameters.SingleSignOnSettings)
@@ -319,10 +319,10 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             }
             if ($CreateParameters.IosSingleSignOnExtension)
             {
-                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $CreateParameters.IosSingleSignOnExtension
+                $this.ConvertDataTypeFormat($CreateParameters.IosSingleSignOnExtension)
                 if ($null -ne $CreateParameters.IosSingleSignOnExtension.configurations)
                 {
-                    Convert-IntuneDeviceFeaturesConfigurationPolicyIOSStringToBooleans $CreateParameters.IosSingleSignOnExtension.configurations
+                    $this.ConvertStringToBooleans($CreateParameters.IosSingleSignOnExtension.configurations)
                 }
                 $CreateParameters['iosSingleSignOnExtension'] = $CreateParameters.IosSingleSignOnExtension[0] #needs the hashtable not embedded in array
             }
@@ -385,7 +385,7 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             }
             if ($UpdateParameters.ContentFilterSettings)
             {
-                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $UpdateParameters.ContentFilterSettings
+                $this.ConvertDataTypeFormat($UpdateParameters.ContentFilterSettings)
                 $UpdateParameters['ContentFilterSettings'] = $UpdateParameters.ContentFilterSettings[0] #needs the hashtable not embedded in array
             }
             if ($UpdateParameters.SingleSignOnSettings)
@@ -394,10 +394,10 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             }
             if ($UpdateParameters.IosSingleSignOnExtension)
             {
-                Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $UpdateParameters.IosSingleSignOnExtension
+                $this.ConvertDataTypeFormat($UpdateParameters.IosSingleSignOnExtension)
                 if ($null -ne $UpdateParameters.IosSingleSignOnExtension.configurations)
                 {
-                    Convert-IntuneDeviceFeaturesConfigurationPolicyIOSStringToBooleans $UpdateParameters.IosSingleSignOnExtension.configurations
+                    $this.ConvertStringToBooleans($UpdateParameters.IosSingleSignOnExtension.configurations)
                 }
                 $UpdateParameters['IosSingleSignOnExtension'] = $UpdateParameters.IosSingleSignOnExtension[0] #needs the hashtable not embedded in array
             }
@@ -717,6 +717,132 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
 
         # Every code path must return in a method with a declared return type.
         return ''
+    }
+
+    hidden [System.Object[]] ConvertComplexObjectToHashtableArray([System.Object] $InputObject)
+    {
+        $resultArray = @()
+
+        foreach ($item in $InputObject)
+        {
+            $hashtable = [ordered]@{}
+
+            foreach ($key in $item.Keys)
+            {
+                $keyValue = $item.$key
+                if ($key -ne '@odata.type')
+                {
+                    if ($keyValue -is [array])
+                    {
+                        $elementTypes = $keyValue | ForEach-Object { $_.GetType().Name }
+                        if ($elementTypes -contains 'Hashtable') #another embedded complex type, not a string array
+                        {
+                            $keyValue = $this.ConvertComplexObjectToHashtableArray($keyValue)
+                        }
+                    }
+                    $hashtable.Add($key, $keyValue)
+                }
+            }
+
+            # Add the hash table to the result array only if it contains non-null values
+            if ($hashtable.Values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $resultArray += $hashtable
+            }
+        }
+
+        return $resultArray
+    }
+
+    hidden [System.Object[]] ConvertComplexObjectToHashtableArrayExportDataType([System.Object] $InputObject)
+    {
+        $resultArray = @()
+
+        foreach ($item in $InputObject)
+        {
+            $hashtable = [ordered]@{}
+
+            foreach ($key in $item.Keys)
+            {
+                $keyValue = $item.$key
+                if ($key -ne '@odata.type')
+                {
+                    if ($keyValue -is [array])
+                    {
+                        $elementTypes = $keyValue | ForEach-Object { $_.GetType().Name }
+                        if ($elementTypes -contains 'Hashtable') #another embedded complex type, not a string array
+                        {
+                            $keyValue = $this.ConvertComplexObjectToHashtableArrayExportDataType($keyValue)
+                        }
+                    }
+                    $hashtable.Add($key, $keyValue)
+                }
+                else
+                {
+                    $hashtable.Add('dataType', $item.$key)
+                }
+            }
+
+            # Add the hash table to the result array only if it contains non-null values
+            if ($hashtable.Values.Where({ $null -ne $_ }).Count -gt 0)
+            {
+                $resultArray += $hashtable
+            }
+        }
+
+        return $resultArray
+    }
+
+    hidden [System.Object] ConvertDataTypeFormat([System.Object] $InputObject)
+    {
+        foreach ($item in $InputObject)
+        {
+            $keysToModify = @()
+            $keysToRecurse = @()
+            foreach ($key in $item.Keys)
+            {
+                if ($key -eq 'dataType')
+                {
+                    $keysToModify += $key
+                }
+                if ($item.$key -is [array] -and ($item.$key | Where-Object { $_ -is [hashtable] }))
+                {
+                    $keysToRecurse += $key
+                }
+            }
+            foreach ($key in $keysToModify)
+            {
+                $item['@odata.type'] = $item.$key
+                $item.Remove($key)
+            }
+            foreach ($key in $keysToRecurse)
+            {
+                $item[$key] = $this.ConvertDataTypeFormat($item.$key)
+            }
+        }
+        return $InputObject
+    }
+
+    hidden [System.Object[]] ConvertStringToBooleans([System.Object[]] $Configurations)
+    {
+        foreach ($config in $Configurations)
+        {
+            if ($config.ContainsKey('value'))
+            {
+                switch ($config.value)
+                {
+                    'True'
+                    {
+                        $config.value = $true
+                    }
+                    'False'
+                    {
+                        $config.value = $false
+                    }
+                }
+            }
+        }
+        return $Configurations
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
@@ -1148,163 +1274,3 @@ class MSFT_keyTypedValuePair
     [System.ComponentModel.Description('Value for the custom data entry.')]
     [System.String] $value
 }
-
-# Was Convert-ComplexObjectToHashtableArray. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray
-{
-    param
-    (
-        [Parameter()]
-        [Object]$InputObject
-    )
-
-    $resultArray = @()
-
-    foreach ($item in $InputObject)
-    {
-        $hashtable = [ordered]@{}
-
-        foreach ($key in $item.Keys)
-        {
-            $keyValue = $item.$key
-            if ($key -ne '@odata.type')
-            {
-                if ($keyValue -is [array])
-                {
-                    $elementTypes = $keyValue | ForEach-Object { $_.GetType().Name }
-                    if ($elementTypes -contains 'Hashtable') #another embedded complex type, not a string array
-                    {
-                        $keyValue = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray $keyValue #recurse the function
-                    }
-                }
-                $hashtable.Add($key, $keyValue)
-            }
-        }
-
-        # Add the hash table to the result array only if it contains non-null values
-        if ($hashtable.Values.Where({ $null -ne $_ }).Count -gt 0)
-        {
-            $resultArray += $hashtable
-        }
-    }
-
-    return , $resultArray
-}
-
-# Was Convert-ComplexObjectToHashtableArray_ExportDataType. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType
-{
-    param
-    (
-        [Parameter()]
-        [Object]$InputObject
-    )
-
-    $resultArray = @()
-
-    foreach ($item in $InputObject)
-    {
-        $hashtable = [ordered]@{}
-
-        foreach ($key in $item.Keys)
-        {
-            $keyValue = $item.$key
-            if ($key -ne '@odata.type')
-            {
-                if ($keyValue -is [array])
-                {
-                    $elementTypes = $keyValue | ForEach-Object { $_.GetType().Name }
-                    if ($elementTypes -contains 'Hashtable') #another embedded complex type, not a string array
-                    {
-                        $keyValue = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSComplexObjectToHashtableArray_ExportDataType $keyValue #recurse the function
-                    }
-                }
-                $hashtable.Add($key, $keyValue)
-            }
-            else
-            {
-                $hashtable.Add('dataType', $item.$key)
-            }
-        }
-
-        # Add the hash table to the result array only if it contains non-null values
-        if ($hashtable.Values.Where({ $null -ne $_ }).Count -gt 0)
-        {
-            $resultArray += $hashtable
-        }
-    }
-
-    return , $resultArray
-}
-
-# Was Convert-DataTypeFormat. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat
-{
-    param
-    (
-        [Parameter()]
-        [Object]$InputObject
-    )
-    foreach ($item in $InputObject)
-    {
-        $keysToModify = @()
-        $keysToRecurse = @()
-        foreach ($key in $item.Keys)
-        {
-            if ($key -eq 'dataType')
-            {
-                $keysToModify += $key
-            }
-            if ($item.$key -is [array] -and ($item.$key | Where-Object { $_ -is [hashtable] }))
-            {
-                $keysToRecurse += $key
-            }
-        }
-        foreach ($key in $keysToModify)
-        {
-
-            $item['@odata.type'] = $item.$key
-            $item.Remove($key)
-        }
-        foreach ($key in $keysToRecurse)
-        {
-
-            $item[$key] = Convert-IntuneDeviceFeaturesConfigurationPolicyIOSDataTypeFormat $item.$key
-        }
-    }
-    return $InputObject
-}
-
-# Was Convert-StringToBooleans. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-IntuneDeviceFeaturesConfigurationPolicyIOSStringToBooleans
-{
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [array]$Configurations
-    )
-
-    foreach ($config in $Configurations)
-    {
-        if ($config.ContainsKey('value'))
-        {
-            switch ($config.value)
-            {
-                'True'
-                {
-                    $config.value = $true
-                }
-                'False'
-                {
-                    $config.value = $false
-                }
-            }
-        }
-    }
-    return $Configurations
-}
-

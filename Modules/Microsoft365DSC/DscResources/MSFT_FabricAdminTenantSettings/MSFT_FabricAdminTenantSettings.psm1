@@ -782,190 +782,190 @@ class FabricAdminTenantSettings : M365DSCResourceBase
 
             $results = @{
                 IsSingleInstance                                                      = 'Yes'
-                AADSSOForGateway                                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AADSSOForGateway' })
-                AdminApisIncludeDetailedMetadata                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminApisIncludeDetailedMetadata' })
-                AdminApisIncludeExpressions                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminApisIncludeExpressions' })
-                AdminCustomDisclaimer                                                 = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminCustomDisclaimer' })
-                AISkillArtifactTenantSwitch                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AISkillArtifactTenantSwitch' })
-                AllowAccessOverPrivateLinks                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowAccessOverPrivateLinks' })
-                AllowCVAuthenticationTenant                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCVAuthenticationTenant' })
-                AllowCVLocalStorageV2Tenant                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCVLocalStorageV2Tenant' })
-                AllowCVToExportDataToFileTenant                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCVToExportDataToFileTenant' })
-                AllowEndorsementMasterDataSwitch                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowEndorsementMasterDataSwitch' })
-                AllowExternalDataSharingReceiverSwitch                                = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowExternalDataSharingReceiverSwitch' })
-                AllowExternalDataSharingSwitch                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowExternalDataSharingSwitch' })
-                AllowFreeTrial                                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowFreeTrial' })
-                AllowGetOneLakeUDK                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowGetOneLakeUDK' })
-                AllowGuestLookup                                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowGuestLookup' })
-                AllowGuestUserToAccessSharedContent                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowGuestUserToAccessSharedContent' })
+                AADSSOForGateway                                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AADSSOForGateway' }))
+                AdminApisIncludeDetailedMetadata                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminApisIncludeDetailedMetadata' }))
+                AdminApisIncludeExpressions                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminApisIncludeExpressions' }))
+                AdminCustomDisclaimer                                                 = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminCustomDisclaimer' }))
+                AISkillArtifactTenantSwitch                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AISkillArtifactTenantSwitch' }))
+                AllowAccessOverPrivateLinks                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowAccessOverPrivateLinks' }))
+                AllowCVAuthenticationTenant                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCVAuthenticationTenant' }))
+                AllowCVLocalStorageV2Tenant                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCVLocalStorageV2Tenant' }))
+                AllowCVToExportDataToFileTenant                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCVToExportDataToFileTenant' }))
+                AllowEndorsementMasterDataSwitch                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowEndorsementMasterDataSwitch' }))
+                AllowExternalDataSharingReceiverSwitch                                = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowExternalDataSharingReceiverSwitch' }))
+                AllowExternalDataSharingSwitch                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowExternalDataSharingSwitch' }))
+                AllowFreeTrial                                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowFreeTrial' }))
+                AllowGetOneLakeUDK                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowGetOneLakeUDK' }))
+                AllowGuestLookup                                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowGuestLookup' }))
+                AllowGuestUserToAccessSharedContent                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowGuestUserToAccessSharedContent' }))
                 # DEPRECATED
                 #AllowMountDfCreation                                                  = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowMountDfCreation' })
-                AllowOneLakeUDK                                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowOneLakeUDK' })
-                AllowPowerBIASDQOnTenant                                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowPowerBIASDQOnTenant' })
-                AllowSendAOAIDataToOtherRegions                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowSendAOAIDataToOtherRegions' })
-                AllowSendNLToDaxDataToOtherRegions                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowSendNLToDaxDataToOtherRegions' })
-                AllowServicePrincipalsCreateAndUseProfiles                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowServicePrincipalsCreateAndUseProfiles' })
-                AllowServicePrincipalsUseReadAdminAPIs                                = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowServicePrincipalsUseReadAdminAPIs' })
-                AppPush                                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AppPush' })
-                ArtifactOrgAppPreview                                                 = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactOrgAppPreview' })
-                ArtifactSearchTenant                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactSearchTenant' })
-                ASCollectQueryTextTelemetryTenantSwitch                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASCollectQueryTextTelemetryTenantSwitch' })
-                ASShareableCloudConnectionBindingSecurityModeTenant                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASShareableCloudConnectionBindingSecurityModeTenant' })
-                ASWritethruContinuousExportTenantSwitch                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASWritethruContinuousExportTenantSwitch' })
-                ASWritethruTenantSwitch                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASWritethruTenantSwitch' })
-                AutoInstallPowerBIAppInTeamsTenant                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutoInstallPowerBIAppInTeamsTenant' })
-                AutomatedInsightsEntryPoints                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutomatedInsightsEntryPoints' })
-                AutomatedInsightsTenant                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutomatedInsightsTenant' })
+                AllowOneLakeUDK                                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowOneLakeUDK' }))
+                AllowPowerBIASDQOnTenant                                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowPowerBIASDQOnTenant' }))
+                AllowSendAOAIDataToOtherRegions                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowSendAOAIDataToOtherRegions' }))
+                AllowSendNLToDaxDataToOtherRegions                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowSendNLToDaxDataToOtherRegions' }))
+                AllowServicePrincipalsCreateAndUseProfiles                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowServicePrincipalsCreateAndUseProfiles' }))
+                AllowServicePrincipalsUseReadAdminAPIs                                = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowServicePrincipalsUseReadAdminAPIs' }))
+                AppPush                                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AppPush' }))
+                ArtifactOrgAppPreview                                                 = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactOrgAppPreview' }))
+                ArtifactSearchTenant                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactSearchTenant' }))
+                ASCollectQueryTextTelemetryTenantSwitch                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASCollectQueryTextTelemetryTenantSwitch' }))
+                ASShareableCloudConnectionBindingSecurityModeTenant                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASShareableCloudConnectionBindingSecurityModeTenant' }))
+                ASWritethruContinuousExportTenantSwitch                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASWritethruContinuousExportTenantSwitch' }))
+                ASWritethruTenantSwitch                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ASWritethruTenantSwitch' }))
+                AutoInstallPowerBIAppInTeamsTenant                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutoInstallPowerBIAppInTeamsTenant' }))
+                AutomatedInsightsEntryPoints                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutomatedInsightsEntryPoints' }))
+                AutomatedInsightsTenant                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutomatedInsightsTenant' }))
                 # DEPRECATED
                 #AzureMap                                                              = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMap' })
-                BingMap                                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BingMap' })
-                BlockAccessFromPublicNetworks                                         = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockAccessFromPublicNetworks' })
-                BlockAutoDiscoverAndPackageRefresh                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockAutoDiscoverAndPackageRefresh' })
-                BlockProtectedLabelSharingToEntireOrg                                 = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockProtectedLabelSharingToEntireOrg' })
-                BlockResourceKeyAuthentication                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockResourceKeyAuthentication' })
-                CDSAManagement                                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CDSAManagement' })
-                CertifiedCustomVisualsTenant                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CertifiedCustomVisualsTenant' })
-                CertifyDatasets                                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CertifyDatasets' })
-                ConfigureFolderRetentionPeriod                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ConfigureFolderRetentionPeriod' })
-                CreateAppWorkspaces                                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CreateAppWorkspaces' })
-                CustomVisualsTenant                                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CustomVisualsTenant' })
-                DatamartTenant                                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DatamartTenant' })
-                DatasetExecuteQueries                                                 = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DatasetExecuteQueries' })
-                DevelopServiceApps                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DevelopServiceApps' })
-                DiscoverDatasetsConsumption                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DiscoverDatasetsConsumption' })
-                DiscoverDatasetsSettingsCertified                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DiscoverDatasetsSettingsCertified' })
-                DiscoverDatasetsSettingsPromoted                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DiscoverDatasetsSettingsPromoted' })
-                DremioSSO                                                             = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DremioSSO' })
-                EimInformationProtectionDataSourceInheritanceSetting                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionDataSourceInheritanceSetting' })
-                EimInformationProtectionDownstreamInheritanceSetting                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionDownstreamInheritanceSetting' })
-                EimInformationProtectionEdit                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionEdit' })
+                BingMap                                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BingMap' }))
+                BlockAccessFromPublicNetworks                                         = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockAccessFromPublicNetworks' }))
+                BlockAutoDiscoverAndPackageRefresh                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockAutoDiscoverAndPackageRefresh' }))
+                BlockProtectedLabelSharingToEntireOrg                                 = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockProtectedLabelSharingToEntireOrg' }))
+                BlockResourceKeyAuthentication                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'BlockResourceKeyAuthentication' }))
+                CDSAManagement                                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CDSAManagement' }))
+                CertifiedCustomVisualsTenant                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CertifiedCustomVisualsTenant' }))
+                CertifyDatasets                                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CertifyDatasets' }))
+                ConfigureFolderRetentionPeriod                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ConfigureFolderRetentionPeriod' }))
+                CreateAppWorkspaces                                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CreateAppWorkspaces' }))
+                CustomVisualsTenant                                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CustomVisualsTenant' }))
+                DatamartTenant                                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DatamartTenant' }))
+                DatasetExecuteQueries                                                 = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DatasetExecuteQueries' }))
+                DevelopServiceApps                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DevelopServiceApps' }))
+                DiscoverDatasetsConsumption                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DiscoverDatasetsConsumption' }))
+                DiscoverDatasetsSettingsCertified                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DiscoverDatasetsSettingsCertified' }))
+                DiscoverDatasetsSettingsPromoted                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DiscoverDatasetsSettingsPromoted' }))
+                DremioSSO                                                             = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DremioSSO' }))
+                EimInformationProtectionDataSourceInheritanceSetting                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionDataSourceInheritanceSetting' }))
+                EimInformationProtectionDownstreamInheritanceSetting                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionDownstreamInheritanceSetting' }))
+                EimInformationProtectionEdit                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionEdit' }))
                 # DEPRECATED
                 #EimInformationProtectionLessElevated                                  = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionLessElevated' })
-                EimInformationProtectionWorkspaceAdminsOverrideAutomaticLabelsSetting = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionWorkspaceAdminsOverrideAutomaticLabelsSetting' })
-                ElevatedGuestsTenant                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ElevatedGuestsTenant' })
-                EmailSecurityGroupsOnOutage                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSecurityGroupsOnOutage' })
-                EmailSubscriptionsToB2BUsers                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSubscriptionsToB2BUsers' })
-                EmailSubscriptionsToExternalUsers                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSubscriptionsToExternalUsers' })
-                EmailSubscriptionTenant                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSubscriptionTenant' })
-                Embedding                                                             = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'Embedding' })
-                EnableAOAI                                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableAOAI' })
-                EnableDatasetInPlaceSharing                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableDatasetInPlaceSharing' })
-                EnableExcelYellowIntegration                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableExcelYellowIntegration' })
+                EimInformationProtectionWorkspaceAdminsOverrideAutomaticLabelsSetting = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionWorkspaceAdminsOverrideAutomaticLabelsSetting' }))
+                ElevatedGuestsTenant                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ElevatedGuestsTenant' }))
+                EmailSecurityGroupsOnOutage                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSecurityGroupsOnOutage' }))
+                EmailSubscriptionsToB2BUsers                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSubscriptionsToB2BUsers' }))
+                EmailSubscriptionsToExternalUsers                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSubscriptionsToExternalUsers' }))
+                EmailSubscriptionTenant                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EmailSubscriptionTenant' }))
+                Embedding                                                             = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'Embedding' }))
+                EnableAOAI                                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableAOAI' }))
+                EnableDatasetInPlaceSharing                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableDatasetInPlaceSharing' }))
+                EnableExcelYellowIntegration                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableExcelYellowIntegration' }))
                 # DEPRECATED
                 #EnableFabricAirflow                                                   = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableFabricAirflow' })
-                EnableNLToDax                                                         = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableNLToDax' })
-                EnableReassignDataDomainSwitch                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableReassignDataDomainSwitch' })
-                EsriVisual                                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EsriVisual' })
-                ExpFlightingTenant                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExpFlightingTenant' })
-                ExportReport                                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportReport' })
-                ExportToCsv                                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToCsv' })
-                ExportToExcelSetting                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToExcelSetting' })
-                ExportToImage                                                         = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToImage' })
-                ExportToMHTML                                                         = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToMHTML' })
-                ExportToPowerPoint                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToPowerPoint' })
-                ExportToWord                                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToWord' })
-                ExportToXML                                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToXML' })
-                ExportVisualImageTenant                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportVisualImageTenant' })
-                ExternalDatasetSharingTenant                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExternalDatasetSharingTenant' })
-                ExternalSharingV2                                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExternalSharingV2' })
-                FabricAddPartnerWorkload                                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricAddPartnerWorkload' })
-                FabricFeedbackTenantSwitch                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricFeedbackTenantSwitch' })
-                FabricGAWorkloads                                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricGAWorkloads' })
-                FabricThirdPartyWorkloads                                             = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricThirdPartyWorkloads' })
-                GitHubTenantSettings                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitHubTenantSettings' })
-                GitIntegrationCrossGeoTenantSwitch                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitIntegrationCrossGeoTenantSwitch' })
-                GitIntegrationSensitivityLabelsTenantSwitch                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitIntegrationSensitivityLabelsTenantSwitch' })
-                GitIntegrationTenantSwitch                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitIntegrationTenantSwitch' })
-                GoogleBigQuerySSO                                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GoogleBigQuerySSO' })
+                EnableNLToDax                                                         = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableNLToDax' }))
+                EnableReassignDataDomainSwitch                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableReassignDataDomainSwitch' }))
+                EsriVisual                                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EsriVisual' }))
+                ExpFlightingTenant                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExpFlightingTenant' }))
+                ExportReport                                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportReport' }))
+                ExportToCsv                                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToCsv' }))
+                ExportToExcelSetting                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToExcelSetting' }))
+                ExportToImage                                                         = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToImage' }))
+                ExportToMHTML                                                         = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToMHTML' }))
+                ExportToPowerPoint                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToPowerPoint' }))
+                ExportToWord                                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToWord' }))
+                ExportToXML                                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportToXML' }))
+                ExportVisualImageTenant                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExportVisualImageTenant' }))
+                ExternalDatasetSharingTenant                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExternalDatasetSharingTenant' }))
+                ExternalSharingV2                                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ExternalSharingV2' }))
+                FabricAddPartnerWorkload                                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricAddPartnerWorkload' }))
+                FabricFeedbackTenantSwitch                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricFeedbackTenantSwitch' }))
+                FabricGAWorkloads                                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricGAWorkloads' }))
+                FabricThirdPartyWorkloads                                             = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricThirdPartyWorkloads' }))
+                GitHubTenantSettings                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitHubTenantSettings' }))
+                GitIntegrationCrossGeoTenantSwitch                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitIntegrationCrossGeoTenantSwitch' }))
+                GitIntegrationSensitivityLabelsTenantSwitch                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitIntegrationSensitivityLabelsTenantSwitch' }))
+                GitIntegrationTenantSwitch                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GitIntegrationTenantSwitch' }))
+                GoogleBigQuerySSO                                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GoogleBigQuerySSO' }))
                 # DEPRECATED
                 #GraphQLTenant                                                         = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'GraphQLTenant' })
-                HealthcareSolutionsTenantSwitch                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'HealthcareSolutionsTenantSwitch' })
-                InstallNonvalidatedTemplateApps                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'InstallNonvalidatedTemplateApps' })
-                InstallServiceApps                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'InstallServiceApps' })
-                KustoDashboardTenantSwitch                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'KustoDashboardTenantSwitch' })
-                LiveConnection                                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'LiveConnection' })
-                LogAnalyticsAttachForWorkspaceAdmins                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'LogAnalyticsAttachForWorkspaceAdmins' })
-                M365DataSharing                                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'M365DataSharing' })
-                Mirroring                                                             = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'Mirroring' })
-                ODSPRefreshEnforcementTenantAllowAutomaticUpdate                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ODSPRefreshEnforcementTenantAllowAutomaticUpdate' })
-                OneDriveSharePointAllowSharingTenantSetting                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneDriveSharePointAllowSharingTenantSetting' })
-                OneDriveSharePointViewerIntegrationTenantSettingV2                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneDriveSharePointViewerIntegrationTenantSettingV2' })
-                OneLakeFileExplorer                                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneLakeFileExplorer' })
-                OneLakeForThirdParty                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneLakeForThirdParty' })
-                OnPremAnalyzeInExcel                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OnPremAnalyzeInExcel' })
-                PowerBIGoalsTenant                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PowerBIGoalsTenant' })
+                HealthcareSolutionsTenantSwitch                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'HealthcareSolutionsTenantSwitch' }))
+                InstallNonvalidatedTemplateApps                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'InstallNonvalidatedTemplateApps' }))
+                InstallServiceApps                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'InstallServiceApps' }))
+                KustoDashboardTenantSwitch                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'KustoDashboardTenantSwitch' }))
+                LiveConnection                                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'LiveConnection' }))
+                LogAnalyticsAttachForWorkspaceAdmins                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'LogAnalyticsAttachForWorkspaceAdmins' }))
+                M365DataSharing                                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'M365DataSharing' }))
+                Mirroring                                                             = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'Mirroring' }))
+                ODSPRefreshEnforcementTenantAllowAutomaticUpdate                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ODSPRefreshEnforcementTenantAllowAutomaticUpdate' }))
+                OneDriveSharePointAllowSharingTenantSetting                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneDriveSharePointAllowSharingTenantSetting' }))
+                OneDriveSharePointViewerIntegrationTenantSettingV2                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneDriveSharePointViewerIntegrationTenantSettingV2' }))
+                OneLakeFileExplorer                                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneLakeFileExplorer' }))
+                OneLakeForThirdParty                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneLakeForThirdParty' }))
+                OnPremAnalyzeInExcel                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OnPremAnalyzeInExcel' }))
+                PowerBIGoalsTenant                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PowerBIGoalsTenant' }))
                 # DEPRECATED
                 #PowerPlatformSolutionsIntegrationTenant                               = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PowerPlatformSolutionsIntegrationTenant' })
-                Printing                                                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'Printing' })
-                PromoteContent                                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PromoteContent' })
-                PublishContentPack                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PublishContentPack' })
-                PublishToWeb                                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PublishToWeb' })
-                QnaFeedbackLoop                                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'QnaFeedbackLoop' })
-                QnaLsdlSharing                                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'QnaLsdlSharing' })
-                QueryScaleOutTenant                                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'QueryScaleOutTenant' })
-                RedshiftSSO                                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RedshiftSSO' })
-                RestrictMyFolderCapacity                                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RestrictMyFolderCapacity' })
+                Printing                                                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'Printing' }))
+                PromoteContent                                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PromoteContent' }))
+                PublishContentPack                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PublishContentPack' }))
+                PublishToWeb                                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PublishToWeb' }))
+                QnaFeedbackLoop                                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'QnaFeedbackLoop' }))
+                QnaLsdlSharing                                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'QnaLsdlSharing' }))
+                QueryScaleOutTenant                                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'QueryScaleOutTenant' }))
+                RedshiftSSO                                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RedshiftSSO' }))
+                RestrictMyFolderCapacity                                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RestrictMyFolderCapacity' }))
                 # DEPRECATED
                 #RetailSolutionsTenantSwitch                                           = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RetailSolutionsTenantSwitch' })
-                RScriptVisual                                                         = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RScriptVisual' })
+                RScriptVisual                                                         = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RScriptVisual' }))
                 # DEPRECATED
                 #ServicePrincipalAccess                                                = Get-M365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ServicePrincipalAccess' })
-                ShareLinkToEntireOrg                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ShareLinkToEntireOrg' })
-                ShareToTeamsTenant                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ShareToTeamsTenant' })
-                SnowflakeSSO                                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'SnowflakeSSO' })
-                StorytellingTenant                                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'StorytellingTenant' })
-                SustainabilitySolutionsTenantSwitch                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'SustainabilitySolutionsTenantSwitch' })
-                TemplatePublish                                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'TemplatePublish' })
-                TenantSettingPublishGetHelpInfo                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'TenantSettingPublishGetHelpInfo' })
-                TridentPrivatePreview                                                 = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'TridentPrivatePreview' })
-                UsageMetrics                                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'UsageMetrics' })
-                UsageMetricsTrackUserLevelInfo                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'UsageMetricsTrackUserLevelInfo' })
-                UseDatasetsAcrossWorkspaces                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'UseDatasetsAcrossWorkspaces' })
-                VisualizeListInPowerBI                                                = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'VisualizeListInPowerBI' })
-                WebContentTilesTenant                                                 = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WebContentTilesTenant' })
-                WebModelingTenantSwitch                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WebModelingTenantSwitch' })
-                AdminDataExploreViewPermission                                        = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminDataExploreViewPermission' })
-                AllowCapacityMetricsReportUserMask                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCapacityMetricsReportUserMask' })
-                AllowNonEntraADAuthInEventStream                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowNonEntraADAuthInEventStream' })
-                AllowServicePrincipalsUseWriteAdminAPIs                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowServicePrincipalsUseWriteAdminAPIs' })
-                AllowStoreAOAIDataInOtherRegions                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowStoreAOAIDataInOtherRegions' })
-                ArtifactDBTItemTenantSwitch                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactDBTItemTenantSwitch' })
-                ArtifactGraphPreview                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactGraphPreview' })
-                ArtifactMapTenantSwitch                                               = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactMapTenantSwitch' })
-                ArtifactSnowflakeDatabasePreview                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactSnowflakeDatabasePreview' })
-                AutomaticallyUsePBIR                                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutomaticallyUsePBIR' })
-                AzureMaps                                                             = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMaps' })
-                AzureMapsCrossRegionDataProcessing                                    = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsCrossRegionDataProcessing' })
-                AzureMapsInFabric                                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsInFabric' })
-                AzureMapsInFabricCrossRegionDataProcessing                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsInFabricCrossRegionDataProcessing' })
-                AzureMapsThirdPartyDataProcessing                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsThirdPartyDataProcessing' })
-                AzureMapsWeatherServices                                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsWeatherServices' })
-                ConfigureWorkspaceLevelIPFirewallRules                                = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ConfigureWorkspaceLevelIPFirewallRules' })
-                CopilotCapacitySetupPermissionSwitch                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CopilotCapacitySetupPermissionSwitch' })
-                DataSecurityForAIInteractions                                         = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DataSecurityForAIInteractions' })
-                DeltaToIcebergTableVirtualization                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DeltaToIcebergTableVirtualization' })
-                DigitalOperationsPreview                                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DigitalOperationsPreview' })
-                DirectLakeOnOneLakeSemanticModelCreation                              = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DirectLakeOnOneLakeSemanticModelCreation' })
-                EimInformationProtectionDefaultLabelDomainSetting                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionDefaultLabelDomainSetting' })
-                EnableEsriLibraries                                                   = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableEsriLibraries' })
-                FabricAddWorkloadToWorkspace                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricAddWorkloadToWorkspace' })
-                FabricPromotionTenantSwitch                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricPromotionTenantSwitch' })
-                ImmersiveTenantAdminSwitch                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ImmersiveTenantAdminSwitch' })
-                MLModelEndpointsTenantSwitch                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'MLModelEndpointsTenantSwitch' })
-                OneLakeDiagnosticLogsEUII                                             = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneLakeDiagnosticLogsEUII' })
-                OntologyPreview                                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OntologyPreview' })
-                PlatformMonitoringTenantSetting                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PlatformMonitoringTenantSetting' })
-                PowerBIMCP                                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PowerBIMCP' })
-                PreppedForCopilotContentDiscovery                                     = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PreppedForCopilotContentDiscovery' })
-                RTHAnomalyDetectionTenantSwitch                                       = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RTHAnomalyDetectionTenantSwitch' })
-                RTHOperationalAgentsTenantSwitch                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RTHOperationalAgentsTenantSwitch' })
-                ServicePrincipalAccessGlobalAPIs                                      = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ServicePrincipalAccessGlobalAPIs' })
-                ServicePrincipalAccessPermissionAPIs                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ServicePrincipalAccessPermissionAPIs' })
-                ShowActivatorEntryPointsTenantSwitch                                  = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ShowActivatorEntryPointsTenantSwitch' })
-                ThirdPartyPrivateWorkloads                                            = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ThirdPartyPrivateWorkloads' })
-                WorkspaceBlockInboundAccess                                           = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WorkspaceBlockInboundAccess' })
-                WorkspaceBlockOutboundAccess                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WorkspaceBlockOutboundAccess' })
-                WorkspaceCmk                                                          = Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject -Setting ($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WorkspaceCmk' })
+                ShareLinkToEntireOrg                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ShareLinkToEntireOrg' }))
+                ShareToTeamsTenant                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ShareToTeamsTenant' }))
+                SnowflakeSSO                                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'SnowflakeSSO' }))
+                StorytellingTenant                                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'StorytellingTenant' }))
+                SustainabilitySolutionsTenantSwitch                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'SustainabilitySolutionsTenantSwitch' }))
+                TemplatePublish                                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'TemplatePublish' }))
+                TenantSettingPublishGetHelpInfo                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'TenantSettingPublishGetHelpInfo' }))
+                TridentPrivatePreview                                                 = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'TridentPrivatePreview' }))
+                UsageMetrics                                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'UsageMetrics' }))
+                UsageMetricsTrackUserLevelInfo                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'UsageMetricsTrackUserLevelInfo' }))
+                UseDatasetsAcrossWorkspaces                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'UseDatasetsAcrossWorkspaces' }))
+                VisualizeListInPowerBI                                                = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'VisualizeListInPowerBI' }))
+                WebContentTilesTenant                                                 = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WebContentTilesTenant' }))
+                WebModelingTenantSwitch                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WebModelingTenantSwitch' }))
+                AdminDataExploreViewPermission                                        = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AdminDataExploreViewPermission' }))
+                AllowCapacityMetricsReportUserMask                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowCapacityMetricsReportUserMask' }))
+                AllowNonEntraADAuthInEventStream                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowNonEntraADAuthInEventStream' }))
+                AllowServicePrincipalsUseWriteAdminAPIs                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowServicePrincipalsUseWriteAdminAPIs' }))
+                AllowStoreAOAIDataInOtherRegions                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AllowStoreAOAIDataInOtherRegions' }))
+                ArtifactDBTItemTenantSwitch                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactDBTItemTenantSwitch' }))
+                ArtifactGraphPreview                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactGraphPreview' }))
+                ArtifactMapTenantSwitch                                               = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactMapTenantSwitch' }))
+                ArtifactSnowflakeDatabasePreview                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ArtifactSnowflakeDatabasePreview' }))
+                AutomaticallyUsePBIR                                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AutomaticallyUsePBIR' }))
+                AzureMaps                                                             = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMaps' }))
+                AzureMapsCrossRegionDataProcessing                                    = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsCrossRegionDataProcessing' }))
+                AzureMapsInFabric                                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsInFabric' }))
+                AzureMapsInFabricCrossRegionDataProcessing                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsInFabricCrossRegionDataProcessing' }))
+                AzureMapsThirdPartyDataProcessing                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsThirdPartyDataProcessing' }))
+                AzureMapsWeatherServices                                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'AzureMapsWeatherServices' }))
+                ConfigureWorkspaceLevelIPFirewallRules                                = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ConfigureWorkspaceLevelIPFirewallRules' }))
+                CopilotCapacitySetupPermissionSwitch                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'CopilotCapacitySetupPermissionSwitch' }))
+                DataSecurityForAIInteractions                                         = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DataSecurityForAIInteractions' }))
+                DeltaToIcebergTableVirtualization                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DeltaToIcebergTableVirtualization' }))
+                DigitalOperationsPreview                                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DigitalOperationsPreview' }))
+                DirectLakeOnOneLakeSemanticModelCreation                              = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'DirectLakeOnOneLakeSemanticModelCreation' }))
+                EimInformationProtectionDefaultLabelDomainSetting                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EimInformationProtectionDefaultLabelDomainSetting' }))
+                EnableEsriLibraries                                                   = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'EnableEsriLibraries' }))
+                FabricAddWorkloadToWorkspace                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricAddWorkloadToWorkspace' }))
+                FabricPromotionTenantSwitch                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'FabricPromotionTenantSwitch' }))
+                ImmersiveTenantAdminSwitch                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ImmersiveTenantAdminSwitch' }))
+                MLModelEndpointsTenantSwitch                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'MLModelEndpointsTenantSwitch' }))
+                OneLakeDiagnosticLogsEUII                                             = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OneLakeDiagnosticLogsEUII' }))
+                OntologyPreview                                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'OntologyPreview' }))
+                PlatformMonitoringTenantSetting                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PlatformMonitoringTenantSetting' }))
+                PowerBIMCP                                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PowerBIMCP' }))
+                PreppedForCopilotContentDiscovery                                     = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'PreppedForCopilotContentDiscovery' }))
+                RTHAnomalyDetectionTenantSwitch                                       = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RTHAnomalyDetectionTenantSwitch' }))
+                RTHOperationalAgentsTenantSwitch                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'RTHOperationalAgentsTenantSwitch' }))
+                ServicePrincipalAccessGlobalAPIs                                      = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ServicePrincipalAccessGlobalAPIs' }))
+                ServicePrincipalAccessPermissionAPIs                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ServicePrincipalAccessPermissionAPIs' }))
+                ShowActivatorEntryPointsTenantSwitch                                  = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ShowActivatorEntryPointsTenantSwitch' }))
+                ThirdPartyPrivateWorkloads                                            = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'ThirdPartyPrivateWorkloads' }))
+                WorkspaceBlockInboundAccess                                           = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WorkspaceBlockInboundAccess' }))
+                WorkspaceBlockOutboundAccess                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WorkspaceBlockOutboundAccess' }))
+                WorkspaceCmk                                                          = $this.GetFabricTenantSettingObject(($instance.tenantSettings | Where-Object -FilterScript { $_.settingName -eq 'WorkspaceCmk' }))
                 ApplicationId                                                         = $this.ApplicationId
                 TenantId                                                              = $this.TenantId
                 ApplicationSecret                                                     = $this.ApplicationSecret
@@ -1102,6 +1102,62 @@ class FabricAdminTenantSettings : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetFabricTenantSettingObject([System.Object] $Setting)
+    {
+        if ($null -eq $Setting)
+        {
+            return $null
+        }
+
+        Write-Verbose -Message "Retrieving values for setting {$($Setting.settingName)}"
+
+        $values = @{
+            settingName = $Setting.settingName
+            enabled     = [Boolean]$Setting.enabled
+            title       = ($Setting.title -creplace '\P{IsBasicLatin}').Replace("`"", "```"")
+        }
+        if (-not [System.String]::IsNullOrEmpty($Setting.canSpecifySecurityGroups))
+        {
+            $values.Add('canSpecifySecurityGroups', [Boolean]$Setting.canSpecifySecurityGroups)
+        }
+        if (-not [System.String]::IsNullOrEmpty($Setting.delegateToWorkspace))
+        {
+            $values.Add('delegateToWorkspace', $Setting.delegateToWorkspace)
+        }
+        if (-not [System.String]::IsNullOrEmpty($Setting.delegatedFrom))
+        {
+            $values.Add('delegatedFrom', $Setting.delegatedFrom)
+        }
+        if (-not [System.String]::IsNullOrEmpty($Setting.tenantSettingGroup))
+        {
+            $values.Add('tenantSettingGroup', ($Setting.tenantSettingGroup -creplace '\P{IsBasicLatin}'))
+        }
+        if ($null -ne $Setting.properties -and $Setting.properties.Length -gt 0)
+        {
+            $propertiesValue = @()
+            foreach ($property in $Setting.Properties)
+            {
+                $curProperty = @{
+                    name  = $property.name
+                    value = $property.value
+                    type  = $property.type
+                }
+                $propertiesValue += $curProperty
+            }
+
+            $values.Add('properties', $propertiesValue)
+        }
+        if ($null -ne $Setting.excludedSecurityGroups -and $Setting.excludedSecurityGroups.Length -gt 0)
+        {
+            $values.Add('excludedSecurityGroups', [Array]$Setting.excludedSecurityGroups.name)
+        }
+        if ($null -ne $Setting.enabledSecurityGroups -and $Setting.enabledSecurityGroups.Length -gt 0)
+        {
+            $values.Add('enabledSecurityGroups', [Array]$Setting.enabledSecurityGroups.name)
+        }
+        return $values
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [FabricAdminTenantSettings] AsResult([System.Object] $Values)
     {
@@ -1191,70 +1247,5 @@ class MSFT_FabricTenantSettingProperty
     [DscProperty()]
     [System.ComponentModel.Description('The value of the property.')]
     [System.String] $value
-}
-
-# Was Get-M365DSCFabricTenantSettingObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-FabricAdminTenantSettingsM365DSCFabricTenantSettingObject
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter()]
-        $Setting
-    )
-
-    if ($null -eq $Setting)
-    {
-        return $null
-    }
-
-    Write-Verbose -Message "Retrieving values for setting {$($Setting.settingName)}"
-
-    $values = @{
-        settingName = $Setting.settingName
-        enabled     = [Boolean]$Setting.enabled
-        title       = ($Setting.title -creplace '\P{IsBasicLatin}').Replace("`"", "```"")
-    }
-    if (-not [System.String]::IsNullOrEmpty($Setting.canSpecifySecurityGroups))
-    {
-        $values.Add('canSpecifySecurityGroups', [Boolean]$Setting.canSpecifySecurityGroups)
-    }
-    if (-not [System.String]::IsNullOrEmpty($Setting.delegateToWorkspace))
-    {
-        $values.Add('delegateToWorkspace', $Setting.delegateToWorkspace)
-    }
-    if (-not [System.String]::IsNullOrEmpty($Setting.delegatedFrom))
-    {
-        $values.Add('delegatedFrom', $Setting.delegatedFrom)
-    }
-    if (-not [System.String]::IsNullOrEmpty($Setting.tenantSettingGroup))
-    {
-        $values.Add('tenantSettingGroup', ($Setting.tenantSettingGroup -creplace '\P{IsBasicLatin}'))
-    }
-    if ($null -ne $Setting.properties -and $Setting.properties.Length -gt 0)
-    {
-        $propertiesValue = @()
-        foreach ($property in $Setting.Properties)
-        {
-            $curProperty = @{
-                name  = $property.name
-                value = $property.value
-                type  = $property.type
-            }
-            $propertiesValue += $curProperty
-        }
-
-        $values.Add('properties', $propertiesValue)
-    }
-    if ($null -ne $Setting.excludedSecurityGroups -and $Setting.excludedSecurityGroups.Length -gt 0)
-    {
-        $values.Add('excludedSecurityGroups', [Array]$Setting.excludedSecurityGroups.name)
-    }
-    if ($null -ne $Setting.enabledSecurityGroups -and $Setting.enabledSecurityGroups.Length -gt 0)
-    {
-        $values.Add('enabledSecurityGroups', [Array]$Setting.enabledSecurityGroups.name)
-    }
-    return $values
 }
 

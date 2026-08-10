@@ -243,7 +243,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
             }
             if ($null -ne $schedule.ScheduleInfo.Recurrence)
             {
-                if (Test-AADRoleAssignmentScheduleRequestM365DSCRecurrenceIsConfigured -RecurrenceSettings $schedule.ScheduleInfo.Recurrence)
+                if ($this.TestRecurrenceIsConfigured($schedule.ScheduleInfo.Recurrence))
                 {
                     $recurrenceValue = [ordered]@{
                         pattern = [ordered]@{
@@ -654,6 +654,27 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         }
     }
 
+    hidden [System.Boolean] TestRecurrenceIsConfigured([System.Object] $RecurrenceSettings)
+    {
+        if ($null -eq $RecurrenceSettings.Pattern.DayOfMonth -and `
+            $null -eq $RecurrenceSettings.Pattern.DayOfWeek -and `
+            $null -eq $RecurrenceSettings.Pattern.FirstDayOfWeek -and `
+            $null -eq $RecurrenceSettings.Pattern.Index -and `
+            $null -eq $RecurrenceSettings.Pattern.Interval -and `
+            $null -eq $RecurrenceSettings.Pattern.Month -and `
+            $null -eq $RecurrenceSettings.Pattern.Type -and `
+            $null -eq $RecurrenceSettings.Range.EndDate -and `
+            $null -eq $RecurrenceSettings.Range.NumberOfOccurrences -and `
+            $null -eq $RecurrenceSettings.Range.RecurrenceTimeZone -and `
+            $null -eq $RecurrenceSettings.Range.StartDate -and `
+            $null -eq $RecurrenceSettings.Range.Type)
+        {
+            return $false
+        }
+
+        return $true
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADRoleAssignmentScheduleRequest] AsResult([System.Object] $Values)
     {
@@ -772,36 +793,3 @@ class MSFT_AADRoleAssignmentScheduleRequestScheduleRecurrenceRange
     [ValidateSet('endDate', 'noEnd', 'numbered')]
     [System.String] $type
 }
-
-# Was Test-M365DSCRecurrenceIsConfigured. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Test-AADRoleAssignmentScheduleRequestM365DSCRecurrenceIsConfigured
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $RecurrenceSettings
-    )
-
-    if ($null -eq $RecurrenceSettings.Pattern.DayOfMonth -and `
-        $null -eq $RecurrenceSettings.Pattern.DayOfWeek -and `
-        $null -eq $RecurrenceSettings.Pattern.FirstDayOfWeek -and `
-        $null -eq $RecurrenceSettings.Pattern.Index -and `
-        $null -eq $RecurrenceSettings.Pattern.Interval -and `
-        $null -eq $RecurrenceSettings.Pattern.Month -and `
-        $null -eq $RecurrenceSettings.Pattern.Type -and `
-        $null -eq $RecurrenceSettings.Range.EndDate -and `
-        $null -eq $RecurrenceSettings.Range.NumberOfOccurrences -and `
-        $null -eq $RecurrenceSettings.Range.RecurrenceTimeZone -and `
-        $null -eq $RecurrenceSettings.Range.StartDate -and `
-        $null -eq $RecurrenceSettings.Range.Type)
-    {
-        return $false
-    }
-
-    return $true
-}
-

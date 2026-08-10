@@ -105,13 +105,13 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
             else
             {
                 $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-                $response = Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+                $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
                 $authorities = $response.value
                 if ($null -eq $authorities)
                 {
                     return $this.AsResult($nullResult)
                 }
-                $authority = Get-AADVerifiedIdAuthorityContractM365DSCVerifiedIdAuthorityObject -Authority ($authorities | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.linkedDomainUrl })
+                $authority = $this.GetVerifiedIdAuthorityObject(($authorities | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.linkedDomainUrl }))
 
                 if ($null -eq $authority)
                 {
@@ -119,7 +119,7 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
                 }
 
                 $uri = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities/$($authority.Id)/contracts"
-                $response = Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+                $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
                 $contracts = $response.value
             }
             if ($null -eq $contracts)
@@ -127,7 +127,7 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
                 return $this.AsResult($nullResult)
             }
 
-            $contract = Get-AADVerifiedIdAuthorityContractM365DSCVerifiedIdAuthorityContractObject -Contract ($contracts | Where-Object -FilterScript { $_.name -eq $this.name })
+            $contract = $this.GetVerifiedIdAuthorityContractObject(($contracts | Where-Object -FilterScript { $_.name -eq $this.name }))
             if ($null -eq $contract)
             {
                 return $this.AsResult($nullResult)
@@ -204,21 +204,21 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-            $response = Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+            $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
             $authorities = $response.value
-            $authority = Get-AADVerifiedIdAuthorityContractM365DSCVerifiedIdAuthorityObject -Authority ($authorities | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.linkedDomainUrl })
+            $authority = $this.GetVerifiedIdAuthorityObject(($authorities | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.linkedDomainUrl }))
 
             Write-Verbose -Message "Creating an VerifiedId Authority Contract with Name {$($this.name)} for Authority Id $($authority.Id)"
 
             $uri = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities/$($authority.Id)/contracts"
-            Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'POST' -Body $body
+            $null = $this.InvokeVerifiedIdWebRequest($uri, 'POST', $body)
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating an VerifiedId Authority Contract with Name {$($this.name)} for Authority Id $($authority.Id)"
             $uri = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities/$($authority.Id)/contracts/$($currentInstance.id)"
             $body.Remove('name') | Out-Null
-            Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'PATCH' -Body $body
+            $null = $this.InvokeVerifiedIdWebRequest($uri, 'PATCH', $body)
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
@@ -254,14 +254,14 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
         {
             $this.ResourceCache['ExportMode'] = $true
             $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-            $response = Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+            $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
             [array] $authorities = $response.value
             [array] $this.ResourceCache['exportedInstances'] = $()
 
             foreach ($authority in $authorities)
             {
                 $uri = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities/$($authority.Id)/contracts"
-                $response = Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+                $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
                 $contracts = $response.value
 
                 foreach ($contract in $contracts)
@@ -428,6 +428,260 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
 
             throw
         }
+    }
+
+    hidden [System.Collections.Hashtable] GetVerifiedIdAuthorityContractObject([System.Object] $Contract)
+    {
+        if ($null -eq $Contract)
+        {
+            return $null
+        }
+
+        Write-Verbose -Message "Retrieving values for contract {$($Contract.name)}"
+        $values = @{
+            id   = $Contract.id
+            name = $Contract.name
+        }
+        if ($null -ne $Contract.displays)
+        {
+            $displayValues = @()
+            foreach ($display in $Contract.displays)
+            {
+                $claims = @()
+                foreach ($claim in $display.claims)
+                {
+                    $claims += @{
+                        claim = $claim.claim
+                        label = $claim.label
+                        type  = $claim.type
+                    }
+                }
+                $displayValues += @{
+                    locale  = $display.locale
+                    card    = @{
+                        title           = $display.card.title
+                        issuedBy        = $display.card.issuedBy
+                        backgroundColor = $display.card.backgroundColor
+                        textColor       = $display.card.textColor
+                        logo            = @{
+                            uri         = $display.card.logo.uri
+                            description = $display.card.logo.description
+                        }
+                        description     = $display.card.description
+                    }
+                    consent = @{
+                        title        = $display.consent.title
+                        instructions = $display.consent.instructions
+                    }
+                    claims  = $claims
+                }
+            }
+
+            $values.Add('displays', $displayValues)
+        }
+
+        if ($null -ne $Contract.rules)
+        {
+            $ruleValues = @{}
+            $attestations = @{}
+            if ($null -ne $Contract.rules.attestations.idTokenHints)
+            {
+                $idTokenHints = @()
+                foreach ($idTokenHint in $Contract.rules.attestations.idTokenHints)
+                {
+                    $mapping = @()
+                    foreach ($map in $idTokenHint.mapping)
+                    {
+                        $mapping += @{
+                            outputClaim = $map.outputClaim
+                            inputClaim  = $map.inputClaim
+                            required    = $map.required
+                            indexed     = $map.indexed
+                            type        = $map.type
+                        }
+                    }
+                    $idTokenHints += @{
+                        required       = $idTokenHint.required
+                        mapping        = $mapping
+                        trustedIssuers = $idTokenHint.trustedIssuers
+                    }
+                }
+                $attestations.Add('idTokenHints', $idTokenHints)
+            }
+
+            if ($null -ne $Contract.rules.attestations.idTokens)
+            {
+                $idTokens = @()
+                foreach ($idToken in $Contract.rules.attestations.idTokens)
+                {
+                    $mapping = @()
+                    foreach ($map in $idToken.mapping)
+                    {
+                        $mapping += @{
+                            outputClaim = $map.outputClaim
+                            inputClaim  = $map.inputClaim
+                            required    = $map.required
+                            indexed     = $map.indexed
+                            type        = $map.type
+                        }
+                    }
+                    $idTokens += @{
+                        required      = $idToken.required
+                        mapping       = $mapping
+                        configuration = $idToken.configuration
+                        clientId      = $idToken.clientId
+                        redirectUri   = $idToken.redirectUri
+                        scopeValue    = $idToken.scope
+                    }
+                }
+                $attestations.Add('idTokens', $idTokens)
+            }
+
+            if ($null -ne $Contract.rules.attestations.presentations)
+            {
+                $presentations = @()
+                foreach ($presentation in $Contract.rules.attestations.presentations)
+                {
+                    $mapping = @()
+                    foreach ($map in $presentation.mapping)
+                    {
+                        $mapping += @{
+                            outputClaim = $map.outputClaim
+                            inputClaim  = $map.inputClaim
+                            required    = $map.required
+                            indexed     = $map.indexed
+                            type        = $map.type
+                        }
+                    }
+                    $presentations += @{
+                        required       = $presentation.required
+                        mapping        = $mapping
+                        trustedIssuers = $presentation.trustedIssuers
+                        credentialType = $presentation.credentialType
+                    }
+                }
+                $attestations.Add('presentations', $presentations)
+            }
+
+            if ($null -ne $Contract.rules.attestations.selfIssued)
+            {
+                $mySelfIssueds = @()
+                foreach ($mySelfIssued in $Contract.rules.attestations.selfIssued)
+                {
+                    $mapping = @()
+                    foreach ($map in $mySelfIssued.mapping)
+                    {
+                        $mapping += @{
+                            outputClaim = $map.outputClaim
+                            inputClaim  = $map.inputClaim
+                            required    = $map.required
+                            indexed     = $map.indexed
+                            type        = $map.type
+                        }
+                    }
+                    $mySelfIssueds += @{
+                        required = $mySelfIssued.required
+                        mapping  = $mapping
+                    }
+                }
+                $attestations.Add('selfIssued', $mySelfIssueds)
+            }
+
+            if ($null -ne $Contract.rules.attestations.accessTokens)
+            {
+                $accessTokenValues = @()
+                foreach ($accessToken in $Contract.rules.attestations.accessTokens)
+                {
+                    $mapping = @()
+                    foreach ($map in $accessToken.mapping)
+                    {
+                        $mapping += @{
+                            outputClaim = $map.outputClaim
+                            inputClaim  = $map.inputClaim
+                            required    = $map.required
+                            indexed     = $map.indexed
+                            type        = $map.type
+                        }
+                    }
+                    $accessTokenValues += @{
+                        required = $accessToken.required
+                        mapping  = $mapping
+                    }
+                }
+                $attestations.Add('accessTokens', $accessTokenValues)
+            }
+
+            $ruleValues.Add('attestations', $attestations)
+            $ruleValues.Add('vc', @{
+                    type = $Contract.rules.vc.type
+                })
+            $ruleValues.Add('validityInterval', $Contract.rules.validityInterval)
+
+            $values.Add('rules', $ruleValues)
+        }
+
+        return $values
+    }
+
+    hidden [System.Collections.Hashtable] GetVerifiedIdAuthorityObject([System.Object] $Authority)
+    {
+        if ($null -eq $Authority)
+        {
+            return $null
+        }
+
+        Write-Verbose -Message "Retrieving values for authority {$($Authority.didModel.linkedDomainUrls[0])}"
+        $did = ($Authority.didModel.did -split ':')[1]
+        $values = @{
+            Id              = $Authority.Id
+            Name            = $Authority.Name
+            LinkedDomainUrl = $Authority.didModel.linkedDomainUrls[0]
+            DidMethod       = $did
+        }
+        if ($null -ne $Authority.KeyVaultMetadata)
+        {
+            $KeyVaultMetadata = @{
+                SubscriptionId = $Authority.KeyVaultMetadata.SubscriptionId
+                ResourceGroup  = $Authority.KeyVaultMetadata.ResourceGroup
+                ResourceName   = $Authority.KeyVaultMetadata.ResourceName
+                ResourceUrl    = $Authority.KeyVaultMetadata.ResourceUrl
+            }
+
+            $values.Add('KeyVaultMetadata', $KeyVaultMetadata)
+        }
+        return $values
+    }
+
+    hidden [System.Object] InvokeVerifiedIdWebRequest([System.String] $Uri, [System.String] $Method)
+    {
+        return $this.InvokeVerifiedIdWebRequest($Uri, $Method, $null)
+    }
+
+    hidden [System.Object] InvokeVerifiedIdWebRequest([System.String] $Uri, [System.String] $Method, [System.Collections.Hashtable] $Body)
+    {
+        $headers = @{
+            Authorization  = (Get-MSCloudLoginConnectionProfile -Workload AdminAPI).AccessToken
+            'Content-Type' = 'application/json'
+        }
+
+        # Declared up front: assigned conditionally below, which class methods reject.
+        $response = $null
+        if ($Method -eq 'PATCH' -or $Method -eq 'POST')
+        {
+            $BodyJson = $Body | ConvertTo-Json -Depth 10
+            $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -Body $BodyJson -UseBasicParsing
+        }
+        else
+        {
+            $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -UseBasicParsing
+        }
+
+        if ($Method -eq 'DELETE')
+        {
+            return $null
+        }
+        $result = ConvertFrom-Json $response.Content
+        return $result
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
@@ -651,287 +905,4 @@ class MSFT_AADVerifiedIdAuthorityContractClaimMapping
     [DscProperty()]
     [System.ComponentModel.Description('Type of claim.')]
     [System.String] $type
-}
-
-# Was Get-M365DSCVerifiedIdAuthorityContractObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADVerifiedIdAuthorityContractM365DSCVerifiedIdAuthorityContractObject
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter()]
-        $Contract
-    )
-
-    if ($null -eq $Contract)
-    {
-        return $null
-    }
-
-    Write-Verbose -Message "Retrieving values for contract {$($Contract.name)}"
-    $values = @{
-        id   = $Contract.id
-        name = $Contract.name
-    }
-    if ($null -ne $Contract.displays)
-    {
-        $displays = @()
-        foreach ($display in $Contract.displays)
-        {
-            $claims = @()
-            foreach ($claim in $display.claims)
-            {
-                $claims += @{
-                    claim = $claim.claim
-                    label = $claim.label
-                    type  = $claim.type
-                }
-            }
-            $displays += @{
-                locale  = $display.locale
-                card    = @{
-                    title           = $display.card.title
-                    issuedBy        = $display.card.issuedBy
-                    backgroundColor = $display.card.backgroundColor
-                    textColor       = $display.card.textColor
-                    logo            = @{
-                        uri         = $display.card.logo.uri
-                        description = $display.card.logo.description
-                    }
-                    description     = $display.card.description
-                }
-                consent = @{
-                    title        = $display.consent.title
-                    instructions = $display.consent.instructions
-                }
-                claims  = $claims
-            }
-        }
-
-        $values.Add('displays', $displays)
-    }
-
-    if ($null -ne $Contract.rules)
-    {
-        $rules = @{}
-        $attestations = @{}
-        if ($null -ne $Contract.rules.attestations.idTokenHints)
-        {
-            $idTokenHints = @()
-            foreach ($idTokenHint in $Contract.rules.attestations.idTokenHints)
-            {
-                $mapping = @()
-                foreach ($map in $idTokenHint.mapping)
-                {
-                    $mapping += @{
-                        outputClaim = $map.outputClaim
-                        inputClaim  = $map.inputClaim
-                        required    = $map.required
-                        indexed     = $map.indexed
-                        type        = $map.type
-                    }
-                }
-                $idTokenHints += @{
-                    required       = $idTokenHint.required
-                    mapping        = $mapping
-                    trustedIssuers = $idTokenHint.trustedIssuers
-                }
-            }
-            $attestations.Add('idTokenHints', $idTokenHints)
-        }
-
-        if ($null -ne $Contract.rules.attestations.idTokens)
-        {
-            $idTokens = @()
-            foreach ($idToken in $Contract.rules.attestations.idTokens)
-            {
-                $mapping = @()
-                foreach ($map in $idToken.mapping)
-                {
-                    $mapping += @{
-                        outputClaim = $map.outputClaim
-                        inputClaim  = $map.inputClaim
-                        required    = $map.required
-                        indexed     = $map.indexed
-                        type        = $map.type
-                    }
-                }
-                $idTokens += @{
-                    required      = $idToken.required
-                    mapping       = $mapping
-                    configuration = $idToken.configuration
-                    clientId      = $idToken.clientId
-                    redirectUri   = $idToken.redirectUri
-                    scopeValue    = $idToken.scope
-                }
-            }
-            $attestations.Add('idTokens', $idTokens)
-        }
-
-        if ($null -ne $Contract.rules.attestations.presentations)
-        {
-            $presentations = @()
-            foreach ($presentation in $Contract.rules.attestations.presentations)
-            {
-                $mapping = @()
-                foreach ($map in $presentation.mapping)
-                {
-                    $mapping += @{
-                        outputClaim = $map.outputClaim
-                        inputClaim  = $map.inputClaim
-                        required    = $map.required
-                        indexed     = $map.indexed
-                        type        = $map.type
-                    }
-                }
-                $presentations += @{
-                    required       = $presentation.required
-                    mapping        = $mapping
-                    trustedIssuers = $presentation.trustedIssuers
-                    credentialType = $presentation.credentialType
-                }
-            }
-            $attestations.Add('presentations', $presentations)
-        }
-
-        if ($null -ne $Contract.rules.attestations.selfIssued)
-        {
-            $mySelfIssueds = @()
-            foreach ($mySelfIssued in $Contract.rules.attestations.selfIssued)
-            {
-                $mapping = @()
-                foreach ($map in $mySelfIssued.mapping)
-                {
-                    $mapping += @{
-                        outputClaim = $map.outputClaim
-                        inputClaim  = $map.inputClaim
-                        required    = $map.required
-                        indexed     = $map.indexed
-                        type        = $map.type
-                    }
-                }
-                $mySelfIssueds += @{
-                    required = $mySelfIssued.required
-                    mapping  = $mapping
-                }
-            }
-            $attestations.Add('selfIssued', $mySelfIssueds)
-        }
-
-        if ($null -ne $Contract.rules.attestations.accessTokens)
-        {
-            $accessTokens = @()
-            foreach ($accessToken in $Contract.rules.attestations.accessTokens)
-            {
-                $mapping = @()
-                foreach ($map in $accessToken.mapping)
-                {
-                    $mapping += @{
-                        outputClaim = $map.outputClaim
-                        inputClaim  = $map.inputClaim
-                        required    = $map.required
-                        indexed     = $map.indexed
-                        type        = $map.type
-                    }
-                }
-                $accessTokens += @{
-                    required = $accessToken.required
-                    mapping  = $mapping
-                }
-            }
-            $attestations.Add('accessTokens', $accessTokens)
-        }
-
-        $rules.Add('attestations', $attestations)
-        $rules.Add('vc', @{
-                type = $Contract.rules.vc.type
-            })
-        $rules.Add('validityInterval', $Contract.rules.validityInterval)
-
-        $values.Add('rules', $rules)
-    }
-
-    return $values
-}
-
-# Was Get-M365DSCVerifiedIdAuthorityObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADVerifiedIdAuthorityContractM365DSCVerifiedIdAuthorityObject
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter()]
-        $Authority
-    )
-
-    if ($null -eq $Authority)
-    {
-        return $null
-    }
-
-    Write-Verbose -Message "Retrieving values for authority {$($Authority.didModel.linkedDomainUrls[0])}"
-    $did = ($Authority.didModel.did -split ':')[1]
-    $values = @{
-        Id              = $Authority.Id
-        Name            = $Authority.Name
-        LinkedDomainUrl = $Authority.didModel.linkedDomainUrls[0]
-        DidMethod       = $did
-    }
-    if ($null -ne $Authority.KeyVaultMetadata)
-    {
-        $KeyVaultMetadata = @{
-            SubscriptionId = $Authority.KeyVaultMetadata.SubscriptionId
-            ResourceGroup  = $Authority.KeyVaultMetadata.ResourceGroup
-            ResourceName   = $Authority.KeyVaultMetadata.ResourceName
-            ResourceUrl    = $Authority.KeyVaultMetadata.ResourceUrl
-        }
-
-        $values.Add('KeyVaultMetadata', $KeyVaultMetadata)
-    }
-    return $values
-}
-
-# Was Invoke-M365DSCVerifiedIdWebRequest. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Invoke-AADVerifiedIdAuthorityContractM365DSCVerifiedIdWebRequest
-{
-    [OutputType([System.Collections.Hashtable])]
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Uri,
-
-        [Parameter()]
-        [System.String]
-        $Method = 'GET',
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Body
-    )
-
-    $headers = @{
-        Authorization  = (Get-MSCloudLoginConnectionProfile -Workload AdminAPI).AccessToken
-        'Content-Type' = 'application/json'
-    }
-
-    if ($Method -eq 'PATCH' -or $Method -eq 'POST')
-    {
-        $BodyJson = $body | ConvertTo-Json -Depth 10
-        $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -Body $BodyJson -UseBasicParsing
-    }
-    else
-    {
-        $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -UseBasicParsing
-    }
-
-    if ($Method -eq 'DELETE')
-    {
-        return $null
-    }
-    $result = ConvertFrom-Json $response.Content
-    return $result
 }

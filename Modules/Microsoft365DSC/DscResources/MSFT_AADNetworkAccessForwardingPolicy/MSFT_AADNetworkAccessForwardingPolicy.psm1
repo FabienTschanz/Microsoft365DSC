@@ -88,7 +88,7 @@ class AADNetworkAccessForwardingPolicy : M365DSCResourceBase
                 throw "Could not retrieve the Forwarding Policy with name: $($this.Name)"
             }
 
-            $complexPolicyRules = Get-AADNetworkAccessForwardingPolicyMicrosoftGraphNetworkAccessForwardingPolicyRules -PolicyRules $instance.PolicyRules
+            $complexPolicyRules = $this.GetMicrosoftGraphNetworkAccessForwardingPolicyRules($instance.PolicyRules)
 
             $results = @{
                 Name                  = $instance.Name
@@ -175,7 +175,7 @@ class AADNetworkAccessForwardingPolicy : M365DSCResourceBase
                 $testResult = $false
                 foreach ($currentRule in $currentPolicy.PolicyRules)
                 {
-                    $currentRuleHashtable = Get-AADNetworkAccessForwardingPolicyMicrosoftGraphNetworkAccessForwardingPolicyRules -PolicyRules @($currentRule)
+                    $currentRuleHashtable = $this.GetMicrosoftGraphNetworkAccessForwardingPolicyRules(@($currentRule))
                     $currentRuleHashtable.Remove('ActionValue')
                     $testResult = Compare-M365DSCComplexObject `
                         -Source ($currentRuleHashtable) `
@@ -319,6 +319,29 @@ class AADNetworkAccessForwardingPolicy : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object[]] GetMicrosoftGraphNetworkAccessForwardingPolicyRules([System.Object[]] $PolicyRules)
+    {
+        $newPolicyRules = @()
+        foreach ($rule in $PolicyRules)
+        {
+            [System.String[]]$destinations = @()
+            foreach ($destination in $rule.destinations)
+            {
+                $destinations += $destination.value
+            }
+            $newPolicyRules += [ordered]@{
+                Name         = $rule.Name
+                ActionValue  = $rule.action
+                RuleType     = $rule.ruleType
+                Ports        = [System.Int32[]]$rule.ports
+                Protocol     = $rule.protocol
+                Destinations = $destinations
+            }
+        }
+
+        return $newPolicyRules
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADNetworkAccessForwardingPolicy] AsResult([System.Object] $Values)
     {
@@ -362,40 +385,5 @@ class MSFT_MicrosoftGraphNetworkAccessForwardingPolicyRule
     [DscProperty()]
     [System.ComponentModel.Description('List of destinations.')]
     [System.String[]] $Destinations
-}
-
-# Was Get-MicrosoftGraphNetworkAccessForwardingPolicyRules. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADNetworkAccessForwardingPolicyMicrosoftGraphNetworkAccessForwardingPolicyRules
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [System.Collections.ArrayList]
-        $PolicyRules
-    )
-
-    $newPolicyRules = @()
-    foreach ($rule in $PolicyRules)
-    {
-        [System.String[]]$destinations = @()
-        foreach ($destination in $rule.destinations)
-        {
-            $destinations += $destination.value
-        }
-        $newPolicyRules += [ordered]@{
-            Name         = $rule.Name
-            ActionValue  = $rule.action
-            RuleType     = $rule.ruleType
-            Ports        = [System.Int32[]]$rule.ports
-            Protocol     = $rule.protocol
-            Destinations = $destinations
-        }
-    }
-
-    ,$newPolicyRules
 }
 

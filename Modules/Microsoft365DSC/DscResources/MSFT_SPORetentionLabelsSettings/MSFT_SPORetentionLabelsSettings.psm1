@@ -86,10 +86,10 @@ class SPORetentionLabelsSettings : M365DSCResourceBase
                 #endregion
             }
 
-            $AllowFilesWithKeepLabelToBeDeletedODBValue = Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'GetAllowFilesWithKeepLabelToBeDeletedODB'
-            $AllowFilesWithKeepLabelToBeDeletedSPOValue = Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'GetAllowFilesWithKeepLabelToBeDeletedSPO'
-            $AdvancedRecordVersioningDisabledValue      = Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'GetAdvancedRecordVersioningDisabled'
-            $MetadataEditBlockingEnabledValue           = Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'GetMetadataEditBlockingEnabled'
+            $AllowFilesWithKeepLabelToBeDeletedODBValue = $this.InvokeRetentionLabelsSetting('GetAllowFilesWithKeepLabelToBeDeletedODB')
+            $AllowFilesWithKeepLabelToBeDeletedSPOValue = $this.InvokeRetentionLabelsSetting('GetAllowFilesWithKeepLabelToBeDeletedSPO')
+            $AdvancedRecordVersioningDisabledValue      = $this.InvokeRetentionLabelsSetting('GetAdvancedRecordVersioningDisabled')
+            $MetadataEditBlockingEnabledValue           = $this.InvokeRetentionLabelsSetting('GetMetadataEditBlockingEnabled')
             $results = @{
                 IsSingleInstance                      = 'Yes'
                 AllowFilesWithKeepLabelToBeDeletedODB = $AllowFilesWithKeepLabelToBeDeletedODBValue
@@ -137,30 +137,22 @@ class SPORetentionLabelsSettings : M365DSCResourceBase
         if ($this.AllowFilesWithKeepLabelToBeDeletedODB -ne $currentInstance.AllowFilesWithKeepLabelToBeDeletedODB)
         {
             Write-Verbose -Message "Updating AllowFilesWithKeepLabelToBeDeletedODB with value {$($this.AllowFilesWithKeepLabelToBeDeletedODB)}"
-            Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'SetAllowFilesWithKeepLabelToBeDeletedODB' `
-                -Method 'POST' `
-                -Body @{allowDeletion = $this.AllowFilesWithKeepLabelToBeDeletedODB }
+            $null = $this.InvokeRetentionLabelsSetting('SetAllowFilesWithKeepLabelToBeDeletedODB', 'POST', @{allowDeletion = $this.AllowFilesWithKeepLabelToBeDeletedODB })
         }
         if ($this.AllowFilesWithKeepLabelToBeDeletedSPO -ne $currentInstance.AllowFilesWithKeepLabelToBeDeletedSPO)
         {
             Write-Verbose -Message "Updating AllowFilesWithKeepLabelToBeDeletedSPO with value {$($this.AllowFilesWithKeepLabelToBeDeletedSPO)}"
-            Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'SetAllowFilesWithKeepLabelToBeDeletedSPO' `
-                -Method 'POST' `
-                -Body @{allowDeletion = $this.AllowFilesWithKeepLabelToBeDeletedSPO }
+            $null = $this.InvokeRetentionLabelsSetting('SetAllowFilesWithKeepLabelToBeDeletedSPO', 'POST', @{allowDeletion = $this.AllowFilesWithKeepLabelToBeDeletedSPO })
         }
         if ($this.AdvancedRecordVersioningDisabled -ne $currentInstance.AdvancedRecordVersioningDisabled)
         {
             Write-Verbose -Message "Updating AdvancedRecordVersioningDisabled with value {$($this.AdvancedRecordVersioningDisabled)}"
-            Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'SetAdvancedRecordVersioningDisabled' `
-                -Method 'POST' `
-                -Body @{disabled = $this.AdvancedRecordVersioningDisabled }
+            $null = $this.InvokeRetentionLabelsSetting('SetAdvancedRecordVersioningDisabled', 'POST', @{disabled = $this.AdvancedRecordVersioningDisabled })
         }
         if ($this.MetadataEditBlockingEnabled -ne $currentInstance.MetadataEditBlockingEnabled)
         {
             Write-Verbose -Message "Updating MetadataEditBlockingEnabled with value {$($this.MetadataEditBlockingEnabled)}"
-            Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting -CommandName 'SetMetadataEditBlockingEnabled' `
-                -Method 'POST' `
-                -Body @{enabled = $this.MetadataEditBlockingEnabled }
+            $null = $this.InvokeRetentionLabelsSetting('SetMetadataEditBlockingEnabled', 'POST', @{enabled = $this.MetadataEditBlockingEnabled })
         }
     }
 
@@ -227,6 +219,39 @@ class SPORetentionLabelsSettings : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] InvokeRetentionLabelsSetting([System.String] $CommandName)
+    {
+        return $this.InvokeRetentionLabelsSetting($CommandName, 'GET', $null)
+    }
+
+    hidden [System.Object] InvokeRetentionLabelsSetting([System.String] $CommandName, [System.String] $Method, [System.Collections.Hashtable] $Body)
+    {
+        try
+        {
+            $url = $(Get-MSCloudLoginConnectionProfile -Workload 'SharePointOnlineREST').AdminUrl + `
+                "/_api/SP.CompliancePolicy.SPPolicyStoreProxy.$($CommandName)/"
+
+            $invokeParams = @{
+                Url     = $url
+                Method  = $Method
+                Content = $Body
+            }
+
+            $result = Invoke-PnPSPRestMethod @invokeParams
+
+            if ($Method -eq 'GET')
+            {
+                return $result.Value
+            }
+        }
+        catch
+        {
+            throw $_
+        }
+
+        return $true
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPORetentionLabelsSettings] AsResult([System.Object] $Values)
     {
@@ -244,50 +269,3 @@ class SPORetentionLabelsSettings : M365DSCResourceBase
         return $result
     }
 }
-
-# Was Invoke-M365DSCSPORetentionLabelsSetting. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Invoke-SPORetentionLabelsSettingsM365DSCSPORetentionLabelsSetting
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $CommandName,
-
-        [Parameter()]
-        [System.String]
-        $Method = 'GET',
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Body
-    )
-
-    try
-    {
-        $url = $($MSCloudLoginConnectionProfile.SharePointOnlineREST.AdminUrl) + `
-            "/_api/SP.CompliancePolicy.SPPolicyStoreProxy.$($CommandName)/"
-
-        $invokeParams = @{
-            Url     = $url
-            Method  = $Method
-            Content = $Body
-        }
-
-        $result = Invoke-PnPSPRestMethod @invokeParams
-
-        if ($Method -eq 'GET')
-        {
-            return $result.Value
-        }
-    }
-    catch
-    {
-        throw $_
-    }
-
-    return $true
-}
-

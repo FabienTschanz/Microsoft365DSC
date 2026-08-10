@@ -632,7 +632,7 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
         $BoundParameters.ExemptedAppPackages = $myExemptedAppPackages
 
         # Set the managedbrowser values
-        $ManagedBrowserValuesHash = Set-IntuneAppProtectionPolicyAndroidManagedBrowserValues @BoundParameters
+        $ManagedBrowserValuesHash = $this.SetManagedBrowserValues($BoundParameters.ManagedBrowser, $BoundParameters.ManagedBrowserToOpenLinksRequired, $BoundParameters.CustomBrowserDisplayName, $BoundParameters.CustomBrowserPackageId)
         $BoundParameters.ManagedBrowser = $ManagedBrowserValuesHash.ManagedBrowser
         $BoundParameters.ManagedBrowserToOpenLinksRequired = $ManagedBrowserValuesHash.ManagedBrowserToOpenLinksRequired
         $BoundParameters.CustomBrowserDisplayName = $ManagedBrowserValuesHash.CustomBrowserDisplayName
@@ -651,7 +651,7 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
             if ($newPolicy.Id)
             {
                 Write-Verbose -Message "Update targetApps for Android App Protection Policy with Id {$($newPolicy.Id)} and DisplayName {$($this.DisplayName)}"
-                $targetApps = Get-IntuneAppProtectionPolicyAndroidIntuneAppProtectionPolicyAndroidAppsToHashtable -Apps $this.Apps -AppGroupType $this.AppGroupType
+                $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
                 $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/androidManagedAppProtections('$($newPolicy.Id)')/targetApps"
                 Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
 
@@ -673,7 +673,7 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
             Update-MgBetaDeviceAppManagementAndroidManagedAppProtection -AndroidManagedAppProtectionId $currentPolicy.Id -BodyParameter $updateParameters
 
             Write-Verbose -Message "Update targetApps for Android App Protection Policy with Id {$($currentPolicy.Id)} and DisplayName {$($this.DisplayName)}"
-            $targetApps = Get-IntuneAppProtectionPolicyAndroidIntuneAppProtectionPolicyAndroidAppsToHashtable -Apps $this.Apps -AppGroupType $this.AppGroupType
+            $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
             $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/androidManagedAppProtections('$($currentPolicy.Id)')/targetApps"
             Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
 
@@ -823,6 +823,105 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
         }
     }
 
+    # $CustomDisplayName / $CustomPackageId are deliberately [System.Object] and not [System.String]:
+    # the original function took unbound [string] parameters, so an omitted value arrived as $null and
+    # the '-ne ''' guards below evaluated to $true. A [String] method parameter coerces $null to '',
+    # which would silently flip the guard and pick 'microsoftEdge' where the function picked
+    # 'notConfigured'. [System.Object] keeps $null intact and preserves the original behaviour.
+    hidden [System.Collections.Hashtable] SetManagedBrowserValues([System.String] $Browser, [System.Boolean] $OpenLinksRequired, [System.Object] $CustomDisplayName, [System.Object] $CustomPackageId)
+    {
+        # via the gui there are only 3 possible configs:
+        # edge - edge, true, empty id strings
+        # any app - not configured, false, empty strings
+        # unmanaged browser not configured, true, strings must not be empty
+        if (!$OpenLinksRequired)
+        {
+            $Browser = 'notConfigured'
+            $OpenLinksRequired = $false
+            $CustomDisplayName = ''
+            $CustomPackageId = ''
+
+        }
+        else
+        {
+            if (($CustomDisplayName -ne '') -and ($CustomPackageId -ne ''))
+            {
+                $Browser = 'notConfigured'
+                $OpenLinksRequired = $true
+            }
+            else
+            {
+                $Browser = 'microsoftEdge'
+                $OpenLinksRequired = $true
+                $CustomDisplayName = ''
+                $CustomPackageId = ''
+            }
+
+        }
+
+        $ManagedBrowserHash = @{
+            'ManagedBrowser'                    = $Browser
+            'ManagedBrowserToOpenLinksRequired' = $OpenLinksRequired
+            'CustomBrowserDisplayName'          = $CustomDisplayName
+            'CustomBrowserPackageId'            = $CustomPackageId
+        }
+
+        return $ManagedBrowserHash
+    }
+
+    hidden [System.Collections.Hashtable] GetAppsToHashtable([System.String[]] $AppList, [System.String] $GroupType)
+    {
+        $formattedApps = @()
+        $allApps = (Get-MgBetaDeviceAppManagementManagedAppStatus -ManagedAppStatusId managedAppList).content.appList | Where-Object {
+            $_.appIdentifier.'@odata.type' -eq '#microsoft.graph.androidMobileAppIdentifier'
+        }
+
+        switch ($GroupType)
+        {
+            'selectedPublicApps'
+            {
+                if ($AppList.Count -eq 0)
+                {
+                    throw "AppGroupType is set to 'selectedPublicApps' but no Apps were provided."
+                }
+            }
+            'allCoreMicrosoftApps'
+            {
+                $AppList = $allApps | Where-Object appGroups -EQ 'coreMicrosoft' | ForEach-Object {
+                    $_.appIdentifier.bundleId
+                }
+            }
+            'allMicrosoftApps'
+            {
+                $AppList = $allApps | Where-Object appGroups -EQ 'microsoft' | ForEach-Object {
+                    $_.appIdentifier.bundleId
+                }
+            }
+            'allApps'
+            {
+                $AppList = $allApps | ForEach-Object {
+                    $_.appIdentifier.bundleId
+                }
+            }
+        }
+
+        foreach ($app in $AppList)
+        {
+            $formattedApps += @{
+                id                  = $app + '.android'
+                mobileAppIdentifier = @{
+                    '@odata.type' = '#microsoft.graph.androidMobileAppIdentifier'
+                    packageId     = $app
+                }
+            }
+        }
+
+        return @{
+            apps         = $formattedApps
+            appGroupType = $GroupType
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAppProtectionPolicyAndroid] AsResult([System.Object] $Values)
     {
@@ -872,128 +971,5 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [DscProperty()]
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
-}
-
-# Was Set-ManagedBrowserValues. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Set-IntuneAppProtectionPolicyAndroidManagedBrowserValues
-{
-    param
-    (
-        [string]$ManagedBrowser,
-        [switch]$ManagedBrowserToOpenLinksRequired,
-        [string]$CustomBrowserDisplayName,
-        [string]$CustomBrowserPackageId
-    )
-
-    # via the gui there are only 3 possible configs:
-    # edge - edge, true, empty id strings
-    # any app - not configured, false, empty strings
-    # unmanaged browser not configured, true, strings must not be empty
-    if (!$ManagedBrowserToOpenLinksRequired)
-    {
-        $ManagedBrowser = 'notConfigured'
-        $ManagedBrowserToOpenLinksRequired = $false
-        $CustomBrowserDisplayName = ''
-        $CustomBrowserPackageId = ''
-
-    }
-    else
-    {
-        if (($CustomBrowserDisplayName -ne '') -and ($CustomBrowserPackageId -ne ''))
-        {
-            $ManagedBrowser = 'notConfigured'
-            $ManagedBrowserToOpenLinksRequired = $true
-            $CustomBrowserDisplayName = $CustomBrowserDisplayName
-            $CustomBrowserPackageId = $CustomBrowserPackageId
-        }
-        else
-        {
-            $ManagedBrowser = 'microsoftEdge'
-            $ManagedBrowserToOpenLinksRequired = $true
-            $CustomBrowserDisplayName = ''
-            $CustomBrowserPackageId = ''
-        }
-
-    }
-
-    $ManagedBrowserHash = @{
-        'ManagedBrowser'                    = $ManagedBrowser
-        'ManagedBrowserToOpenLinksRequired' = $ManagedBrowserToOpenLinksRequired.IsPresent
-        'CustomBrowserDisplayName'          = $CustomBrowserDisplayName
-        'CustomBrowserPackageId'            = $CustomBrowserPackageId
-    }
-
-    return $ManagedBrowserHash
-}
-
-# Was Get-IntuneAppProtectionPolicyAndroidAppsToHashtable. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneAppProtectionPolicyAndroidIntuneAppProtectionPolicyAndroidAppsToHashtable
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [System.String[]]
-        $Apps,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('selectedPublicApps', 'allCoreMicrosoftApps', 'allMicrosoftApps', 'allApps')]
-        [System.String]
-        $AppGroupType
-    )
-
-    $formattedApps = @()
-    $allApps = (Get-MgBetaDeviceAppManagementManagedAppStatus -ManagedAppStatusId managedAppList).content.appList | Where-Object {
-        $_.appIdentifier.'@odata.type' -eq '#microsoft.graph.androidMobileAppIdentifier'
-    }
-
-    switch ($AppGroupType)
-    {
-        'selectedPublicApps'
-        {
-            if ($Apps.Count -eq 0)
-            {
-                throw "AppGroupType is set to 'selectedPublicApps' but no Apps were provided."
-            }
-        }
-        'allCoreMicrosoftApps'
-        {
-            $Apps = $allApps | Where-Object appGroups -EQ 'coreMicrosoft' | ForEach-Object {
-                $_.appIdentifier.bundleId
-            }
-        }
-        'allMicrosoftApps'
-        {
-            $Apps = $allApps | Where-Object appGroups -EQ 'microsoft' | ForEach-Object {
-                $_.appIdentifier.bundleId
-            }
-        }
-        'allApps'
-        {
-            $Apps = $allApps | ForEach-Object {
-                $_.appIdentifier.bundleId
-            }
-        }
-    }
-
-    foreach ($app in $Apps)
-    {
-        $formattedApps += @{
-            id                  = $app + '.android'
-            mobileAppIdentifier = @{
-                '@odata.type' = '#microsoft.graph.androidMobileAppIdentifier'
-                packageId     = $app
-            }
-        }
-    }
-
-    return @{
-        apps         = $formattedApps
-        appGroupType = $AppGroupType
-    }
 }
 

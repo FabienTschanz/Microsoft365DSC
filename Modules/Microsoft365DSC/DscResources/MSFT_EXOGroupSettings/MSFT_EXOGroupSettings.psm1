@@ -342,19 +342,19 @@ class EXOGroupSettings : M365DSCResourceBase
                 $ExtensionCustomAttribute5Value = @()
             }
 
-            $GrantSendOnBehalfToValue = Get-EXOGroupSettingsDisplayNameSimplified -DisplayName $group.GrantSendOnBehalfToWithDisplayNames
+            $GrantSendOnBehalfToValue = $this.GetDisplayNameSimplified($group.GrantSendOnBehalfToWithDisplayNames)
             if ($null -eq $group.GrantSendOnBehalfToWithDisplayNames)
             {
                 $GrantSendOnBehalfToValue = @()
             }
 
-            $ModeratedByValue = Get-EXOGroupSettingsDisplayNameSimplified -DisplayName $group.ModeratedByWithDisplayNames
+            $ModeratedByValue = $this.GetDisplayNameSimplified($group.ModeratedByWithDisplayNames)
             if ($null -eq $group.ModeratedByWithDisplayNames)
             {
                 $ModeratedByValue = @()
             }
 
-            $AcceptMessagesOnlyFromSendersOrMembersValue = Get-EXOGroupSettingsDisplayNameSimplified -DisplayName $group.AcceptMessagesOnlyFromSendersOrMembersWithDisplayNames
+            $AcceptMessagesOnlyFromSendersOrMembersValue = $this.GetDisplayNameSimplified($group.AcceptMessagesOnlyFromSendersOrMembersWithDisplayNames)
             if ($null -eq $group.AcceptMessagesOnlyFromSendersOrMembersWithDisplayNames)
             {
                 $AcceptMessagesOnlyFromSendersOrMembersValue = @()
@@ -366,7 +366,7 @@ class EXOGroupSettings : M365DSCResourceBase
                 $MailTipTranslationsValue = @()
             }
 
-            $RejectMessagesFromSendersOrMembersValue = Get-EXOGroupSettingsDisplayNameSimplified -DisplayName $group.RejectMessagesFromSendersOrMembersWithDisplayNames
+            $RejectMessagesFromSendersOrMembersValue = $this.GetDisplayNameSimplified($group.RejectMessagesFromSendersOrMembersWithDisplayNames)
             if ($null -eq $group.RejectMessagesFromSendersOrMembersWithDisplayNames)
             {
                 $RejectMessagesFromSendersOrMembersValue = @()
@@ -636,6 +636,20 @@ class EXOGroupSettings : M365DSCResourceBase
         }
     }
 
+    hidden [System.String[]] GetDisplayNameSimplified([System.String[]] $DisplayName)
+    {
+        $simplifiedNames = @()
+        foreach ($name in $DisplayName)
+        {
+            if ([System.String]::IsNullOrEmpty($name))
+            {
+                continue
+            }
+            $simplifiedNames += $name.Split(',')[0].Replace('(', '')
+        }
+        return @($simplifiedNames | Sort-Object)
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOGroupSettings] AsResult([System.Object] $Values)
     {
@@ -652,28 +666,4 @@ class EXOGroupSettings : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Get-DisplayNameSimplified. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-EXOGroupSettingsDisplayNameSimplified
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [AllowNull()]
-        [System.String[]]
-        $DisplayName
-    )
-
-    $simplifiedNames = @()
-    foreach ($name in $DisplayName)
-    {
-        if ([System.String]::IsNullOrEmpty($name))
-        {
-            continue
-        }
-        $simplifiedNames += $name.Split(',')[0].Replace('(', '')
-    }
-    return ,@($simplifiedNames | Sort-Object)
 }

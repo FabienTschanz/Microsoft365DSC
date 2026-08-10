@@ -213,7 +213,7 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
                 $found = $false
                 foreach ($currentDevice in $currentDevices)
                 {
-                    if (Compare-IntuneCorporateDeviceIdentifierDeviceIdentifier -Device1 $desiredDevice -Device2 $currentDevice)
+                    if ($this.CompareDeviceIdentifier($desiredDevice, $currentDevice))
                     {
                         $found = $true
                         break
@@ -232,7 +232,7 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
                 $found = $false
                 foreach ($desiredDevice in $desiredDevices)
                 {
-                    if (Compare-IntuneCorporateDeviceIdentifierDeviceIdentifier -Device1 $currentDevice -Device2 $desiredDevice)
+                    if ($this.CompareDeviceIdentifier($currentDevice, $desiredDevice))
                     {
                         $found = $true
                         break
@@ -451,6 +451,29 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
         }
     }
 
+    hidden [System.Boolean] CompareDeviceIdentifier([System.Collections.Hashtable] $Device1, [System.Collections.Hashtable] $Device2)
+    {
+        # Match on importedDeviceIdentifier and importedDeviceIdentityType if both have them
+        if (-not [System.String]::IsNullOrEmpty($Device1.importedDeviceIdentifier) -and
+            -not [System.String]::IsNullOrEmpty($Device2.importedDeviceIdentifier))
+        {
+            # Case-insensitive comparison for device identifiers
+            $identifierMatch = ($Device1.importedDeviceIdentifier.ToLower() -eq $Device2.importedDeviceIdentifier.ToLower())
+
+            # Also check type if both have it
+            if (-not [System.String]::IsNullOrEmpty($Device1.importedDeviceIdentityType) -and
+                -not [System.String]::IsNullOrEmpty($Device2.importedDeviceIdentityType))
+            {
+                return ($identifierMatch -and ($Device1.importedDeviceIdentityType -eq $Device2.importedDeviceIdentityType))
+            }
+
+            return $identifierMatch
+        }
+
+        # If we can't determine a match, consider them different
+        return $false
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneCorporateDeviceIdentifier] AsResult([System.Object] $Values)
     {
@@ -492,42 +515,3 @@ class MSFT_IntuneDeviceIdentifier
     [System.ComponentModel.Description('Platform of the device (e.g., Windows, Android, iOS).')]
     [System.String] $platform
 }
-
-# Was Compare-DeviceIdentifier. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Compare-IntuneCorporateDeviceIdentifierDeviceIdentifier
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Device1,
-
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Device2
-    )
-
-    # Match on importedDeviceIdentifier and importedDeviceIdentityType if both have them
-    if (-not [System.String]::IsNullOrEmpty($Device1.importedDeviceIdentifier) -and
-        -not [System.String]::IsNullOrEmpty($Device2.importedDeviceIdentifier))
-    {
-        # Case-insensitive comparison for device identifiers
-        $identifierMatch = ($Device1.importedDeviceIdentifier.ToLower() -eq $Device2.importedDeviceIdentifier.ToLower())
-
-        # Also check type if both have it
-        if (-not [System.String]::IsNullOrEmpty($Device1.importedDeviceIdentityType) -and
-            -not [System.String]::IsNullOrEmpty($Device2.importedDeviceIdentityType))
-        {
-            return ($identifierMatch -and ($Device1.importedDeviceIdentityType -eq $Device2.importedDeviceIdentityType))
-        }
-
-        return $identifierMatch
-    }
-
-    # If we can't determine a match, consider them different
-    return $false
-}
-

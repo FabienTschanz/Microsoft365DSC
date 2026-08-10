@@ -450,7 +450,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 )
 
-                Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId -AppRoles $appRoles -PrincipalType 'Group' | Should -Be '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal').GetAppRoleId($appRoles, 'Group') | Should -Be '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
             }
 
             It 'Should return the default access app role id when no role matches the principal type' {
@@ -461,7 +461,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 )
 
-                Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId -AppRoles $appRoles -PrincipalType 'Group' | Should -Be '00000000-0000-0000-0000-000000000000'
+                (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal').GetAppRoleId($appRoles, 'Group') | Should -Be '00000000-0000-0000-0000-000000000000'
             }
         }
     }

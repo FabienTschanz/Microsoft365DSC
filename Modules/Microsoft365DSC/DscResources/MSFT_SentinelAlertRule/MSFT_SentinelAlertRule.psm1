@@ -200,18 +200,11 @@ class SentinelAlertRule : M365DSCResourceBase
 
             if (-not [System.String]::IsNullOrEmpty($this.Id))
             {
-                $instance = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
-                    -ResourceGroupName $this.ResourceGroupName `
-                    -WorkspaceName $this.WorkspaceName `
-                    -TenantId $tenantIdValue `
-                    -Id $this.Id
+                $instance = $this.GetAlertRule($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $this.Id)
             }
             if ($null -eq $instance)
             {
-                $instances = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
-                    -ResourceGroupName $this.ResourceGroupName `
-                    -WorkspaceName $this.WorkspaceName `
-                    -TenantId $tenantIdValue
+                $instances = $this.GetAlertRule($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $null)
                 $instance = $instances | Where-Object -FilterScript { $_.properties.displayName -eq $this.DisplayName }
             }
             if ($null -eq $instance)
@@ -572,32 +565,19 @@ class SentinelAlertRule : M365DSCResourceBase
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating new Alert Rule {$($this.DisplayName)}"
-            New-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
-                -ResourceGroupName $this.ResourceGroupName `
-                -WorkspaceName $this.WorkspaceName `
-                -TenantId $tenantIdValue `
-                -Body $instance
+            $this.NewAlertRule($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $instance, $null)
         }
         # UPDATE
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating Alert Rule {$($this.DisplayName)}"
-            New-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
-                -ResourceGroupName $this.ResourceGroupName `
-                -WorkspaceName $this.WorkspaceName `
-                -TenantId $tenantIdValue `
-                -Body $instance `
-                -Id $currentInstance.Id
+            $this.NewAlertRule($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $instance, $currentInstance.Id)
         }
         # REMOVE
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing Alert Rule {$($this.DisplayName)}"
-            Remove-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $this.SubscriptionId `
-                -ResourceGroupName $this.ResourceGroupName `
-                -WorkspaceName $this.WorkspaceName `
-                -TenantId $tenantIdValue `
-                -Id $currentInstance.Id
+            $this.RemoveAlertRule($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $tenantIdValue, $currentInstance.Id)
         }
     }
 
@@ -659,10 +639,7 @@ class SentinelAlertRule : M365DSCResourceBase
                 $resourceGroupNameValue = $workspace.ResourceGroupName
                 $workspaceNameValue = $workspace.Name
 
-                $rules = Get-SentinelAlertRuleM365DSCSentinelAlertRule -SubscriptionId $subscriptionIdValue `
-                    -ResourceGroupName $resourceGroupNameValue `
-                    -WorkspaceName $workspaceNameValue `
-                    -TenantId $tenantIdValue
+                $rules = $this.GetAlertRule($subscriptionIdValue, $resourceGroupNameValue, $workspaceNameValue, $tenantIdValue, $null)
 
                 $j = 1
                 if ($rules.Length -eq 0)
@@ -855,6 +832,90 @@ class SentinelAlertRule : M365DSCResourceBase
         }
     }
 
+    hidden [void] NewAlertRule([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.Collections.Hashtable] $Body, [System.String] $Id)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+
+            if ([System.String]::IsNullOrEmpty($Id))
+            {
+                $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules/$((New-Guid).ToString())?api-version=2024-04-01-preview"
+            }
+            else
+            {
+                $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules/$($Id)?api-version=2024-04-01-preview"
+            }
+            $payload = ConvertTo-Json $Body -Depth 10 -Compress
+            Write-Verbose -Message "Creating new rule against URL:`r`n$($uri)`r`nWith payload:`r`n$payload"
+            $response = Invoke-AzRestMethod -Uri $uri -Method 'PUT' -Payload $payload
+            Write-Verbose -Message $response.Content
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
+    hidden [System.Object] GetAlertRule([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.String] $Id)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+            if (-not [System.String]::IsNullOrEmpty($Id))
+            {
+                $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules/$($Id)?api-version=2023-12-01-preview"
+                $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
+                $result = ConvertFrom-Json $response.Content
+                return $result
+            }
+            else
+            {
+                $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules?api-version=2023-12-01-preview"
+                $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
+                $result = ConvertFrom-Json $response.Content
+                return $result.value
+            }
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
+    hidden [void] RemoveAlertRule([System.String] $SubscriptionId, [System.String] $ResourceGroupName, [System.String] $WorkspaceName, [System.String] $TenantId, [System.String] $Id)
+    {
+        try
+        {
+            $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
+            $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
+
+            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertRules/$($Id)?api-version=2024-04-01-preview"
+            $null = Invoke-AzRestMethod -Uri $uri -Method 'DELETE'
+        }
+        catch
+        {
+            Write-Verbose -Message $_
+            New-M365DSCLogEntry -Message 'Error retrieving data:' `
+                -Exception $_ `
+                -Source $this.GetResourceName() `
+                -TenantId $TenantId
+            throw $_
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SentinelAlertRule] AsResult([System.Object] $Values)
     {
@@ -989,168 +1050,3 @@ class MSFT_SentinelAlertRuleIncidentConfigurationGroupingConfiguration
     [System.ComponentModel.Description('Re-open closed matching incidents')]
     [System.Nullable[System.Boolean]] $reopenClosedIncident
 }
-
-# Was New-M365DSCSentinelAlertRule. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function New-SentinelAlertRuleM365DSCSentinelAlertRule
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Body,
-
-        [Parameter()]
-        [System.String]
-        $Id
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-
-        if ([string]::IsNullOrEmpty($Id))
-        {
-            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules/$((New-Guid).ToString())?api-version=2024-04-01-preview"
-        }
-        else
-        {
-            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules/$($Id)?api-version=2024-04-01-preview"
-        }
-        $payload = ConvertTo-Json $Body -Depth 10 -Compress
-        Write-Verbose -Message "Creating new rule against URL:`r`n$($uri)`r`nWith payload:`r`n$payload"
-        $response = Invoke-AzRestMethod -Uri $uri -Method 'PUT' -Payload $payload
-        Write-Verbose -Message $response.Content
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-
-# Was Get-M365DSCSentinelAlertRule. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-SentinelAlertRuleM365DSCSentinelAlertRule
-{
-    [CmdletBinding()]
-    [OutputType([Array])]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $Id
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-        if (-not [System.String]::IsNullOrEmpty($Id))
-        {
-            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules/$($Id)?api-version=2023-12-01-preview"
-            $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
-            $result = ConvertFrom-Json $response.Content
-            return $result
-        }
-        else
-        {
-            $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertrules?api-version=2023-12-01-preview"
-            $response = Invoke-AzRestMethod -Uri $uri -Method 'GET'
-            $result = ConvertFrom-Json $response.Content
-            return $result.value
-        }
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-
-# Was Remove-M365DSCSentinelAlertRule. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Remove-SentinelAlertRuleM365DSCSentinelAlertRule
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $SubscriptionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceGroupName,
-
-        [Parameter()]
-        [System.String]
-        $WorkspaceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $TenantId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Id
-    )
-
-    try
-    {
-        $hostUrl = Get-M365DSCAPIEndpoint -TenantId $TenantId
-        $uri = $hostUrl.AzureManagement + "/subscriptions/$($SubscriptionId)/resourceGroups/$($ResourceGroupName)/"
-
-        $uri += "providers/Microsoft.OperationalInsights/workspaces/$($WorkspaceName)/providers/Microsoft.SecurityInsights/alertRules/$($Id)?api-version=2024-04-01-preview"
-        Invoke-AzRestMethod -Uri $uri -Method 'DELETE' | Out-Null
-    }
-    catch
-    {
-        Write-Verbose -Message $_
-        New-M365DSCLogEntry -Message 'Error retrieving data:' `
-            -Exception $_ `
-            -Source $($MyInvocation.MyCommand.Source) `
-            -TenantId $TenantId
-        throw $_
-    }
-}
-

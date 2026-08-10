@@ -265,7 +265,7 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
             }
             if ($null -ne $this.CustomSettings)
             {
-                [System.Object[]]$customSettingsValue = ConvertTo-IntuneAppConfigurationPolicyM365DSCIntuneAppConfigurationPolicyCustomSettings -Settings $this.CustomSettings
+                [System.Object[]]$customSettingsValue = $this.ConvertToCustomSettings($this.CustomSettings)
                 $creationParams.Add('customSettings', $customSettingsValue)
             }
 
@@ -332,7 +332,7 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
             }
             if ($null -ne $this.CustomSettings)
             {
-                $customSettingsValue = ConvertTo-IntuneAppConfigurationPolicyM365DSCIntuneAppConfigurationPolicyCustomSettings -Settings $this.CustomSettings
+                $customSettingsValue = $this.ConvertToCustomSettings($this.CustomSettings)
                 $updateParams.Add('customSettings', $customSettingsValue)
             }
 
@@ -565,6 +565,20 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
         return ''
     }
 
+    hidden [System.Object[]] ConvertToCustomSettings([MSFT_IntuneAppConfigurationPolicyCustomSetting[]] $Settings)
+    {
+        $result = @()
+        foreach ($setting in $Settings)
+        {
+            $currentSetting = @{
+                name  = $setting.name
+                value = $setting.value
+            }
+            $result += $currentSetting
+        }
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAppConfigurationPolicy] AsResult([System.Object] $Values)
     {
@@ -651,28 +665,5 @@ class MSFT_AppIdentifier
     [DscProperty()]
     [System.ComponentModel.Description('AppId Windows.')]
     [System.String] $windowsAppId
-}
-
-# Was ConvertTo-M365DSCIntuneAppConfigurationPolicyCustomSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function ConvertTo-IntuneAppConfigurationPolicyM365DSCIntuneAppConfigurationPolicyCustomSettings
-{
-    [OutputType([System.Object[]])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
-        $Settings
-    )
-
-    $result = @()
-    foreach ($setting in $Settings)
-    {
-        $currentSetting = @{
-            name  = $setting.name
-            value = $setting.value
-        }
-        $result += $currentSetting
-    }
-    return $result
 }
 

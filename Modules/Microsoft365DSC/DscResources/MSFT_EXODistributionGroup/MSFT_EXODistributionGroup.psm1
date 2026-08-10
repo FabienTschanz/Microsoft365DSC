@@ -331,13 +331,13 @@ class EXODistributionGroup : M365DSCResourceBase
                 $groupTypeValue = 'Security'
             }
 
-            $acceptMessagesOnlyFromValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.AcceptMessagesOnlyFromWithDisplayNames
-            $acceptMessagesOnlyFromDlMembersValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.AcceptMessagesOnlyFromDLMembersWithDisplayNames
-            $acceptMessagesOnlyFromSendersOrMembersValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.AcceptMessagesOnlyFromWithDisplayNames
-            $bypassModerationFromSendersOrMembersValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.BypassModerationFromSendersOrMembersWithDisplayNames
-            $grantSendOnBehalfToValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.GrantSendOnBehalfToWithDisplayNames
-            $managedByValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.ManagedByWithDisplayName
-            $moderatedByValue = Get-EXODistributionGroupDisplayNameSimplified -DisplayName $distributionGroup.ModeratedByWithDisplayNames
+            $acceptMessagesOnlyFromValue = $this.GetDisplayNameSimplified($distributionGroup.AcceptMessagesOnlyFromWithDisplayNames)
+            $acceptMessagesOnlyFromDlMembersValue = $this.GetDisplayNameSimplified($distributionGroup.AcceptMessagesOnlyFromDLMembersWithDisplayNames)
+            $acceptMessagesOnlyFromSendersOrMembersValue = $this.GetDisplayNameSimplified($distributionGroup.AcceptMessagesOnlyFromWithDisplayNames)
+            $bypassModerationFromSendersOrMembersValue = $this.GetDisplayNameSimplified($distributionGroup.BypassModerationFromSendersOrMembersWithDisplayNames)
+            $grantSendOnBehalfToValue = $this.GetDisplayNameSimplified($distributionGroup.GrantSendOnBehalfToWithDisplayNames)
+            $managedByValue = $this.GetDisplayNameSimplified($distributionGroup.ManagedByWithDisplayName)
+            $moderatedByValue = $this.GetDisplayNameSimplified($distributionGroup.ModeratedByWithDisplayNames)
 
             $result = @{
                 Identity                               = $distributionGroup.Identity
@@ -685,6 +685,20 @@ class EXODistributionGroup : M365DSCResourceBase
         }
     }
 
+    hidden [System.String[]] GetDisplayNameSimplified([System.String[]] $DisplayNames)
+    {
+        $simplifiedNames = @()
+        foreach ($currentName in $DisplayNames)
+        {
+            if ([System.String]::IsNullOrEmpty($currentName))
+            {
+                continue
+            }
+            $simplifiedNames += $currentName.Split(',')[0].Replace('(','')
+        }
+        return @($simplifiedNames | Sort-Object)
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXODistributionGroup] AsResult([System.Object] $Values)
     {
@@ -701,28 +715,4 @@ class EXODistributionGroup : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Get-DisplayNameSimplified. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-EXODistributionGroupDisplayNameSimplified
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyCollection()]
-        [AllowNull()]
-        [System.String[]]
-        $DisplayName
-    )
-
-    $simplifiedNames = @()
-    foreach ($name in $DisplayName)
-    {
-        if ([System.String]::IsNullOrEmpty($name))
-        {
-            continue
-        }
-        $simplifiedNames += $name.Split(',')[0].Replace('(','')
-    }
-    return ,@($simplifiedNames | Sort-Object)
 }

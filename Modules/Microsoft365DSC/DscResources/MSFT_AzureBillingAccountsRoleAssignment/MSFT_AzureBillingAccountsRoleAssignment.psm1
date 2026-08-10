@@ -106,8 +106,7 @@ class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
             if ($null -ne $currentAccount)
             {
                 $instances = Get-M365DSCAzureBillingAccountsRoleAssignment -BillingAccountId $currentAccount.Name -ErrorAction Stop
-                $PrincipalIdValue = Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalIdFromName -PrincipalName $this.PrincipalName `
-                    -PrincipalType $this.PrincipalType
+                $PrincipalIdValue = $this.GetPrincipalIdFromName($this.PrincipalName, $this.PrincipalType)
                 $instance = $instances.value | Where-Object -FilterScript { $_.properties.principalId -eq $PrincipalIdValue }
 
                 if ($null -ne $instance)
@@ -173,8 +172,7 @@ class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
 
         $billingAccounts = Get-M365DSCAzureBillingAccount
         $account = $billingAccounts.value | Where-Object -FilterScript { $_.properties.displayName -eq $this.BillingAccount }
-        $PrincipalIdValue = Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalIdFromName -PrincipalName $this.PrincipalName `
-            -PrincipalType $this.PrincipalType
+        $PrincipalIdValue = $this.GetPrincipalIdFromName($this.PrincipalName, $this.PrincipalType)
         $RoleDefinitionValues = Get-M365DSCAzureBillingAccountsRoleDefinition -BillingAccountId $account.Name
         $roleDefinitionInstance = $RoleDefinitionValues.value | Where-Object -FilterScript { $_.properties.roleName -eq $currentInstance.RoleDefinition }
         $instanceParams = @{
@@ -262,8 +260,7 @@ class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
                         $Global:M365DSCExportResourceInstancesCount++
                     }
 
-                    $PrincipalNameValue = Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalNameFromId -PrincipalId $assignment.properties.principalId `
-                        -PrincipalType $assignment.properties.principalType
+                    $PrincipalNameValue = $this.GetPrincipalNameFromId($assignment.properties.principalId, $assignment.properties.principalType)
                     $roleDefinitionId = $assignment.properties.roleDefinitionId.Split('/')
                     $roleDefinitionId = $roleDefinitionId[$roleDefinitionId.Length - 1]
 
@@ -315,6 +312,66 @@ class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
         }
     }
 
+    hidden [System.String] GetPrincipalNameFromId([System.String] $PrincipalId, [System.String] $PrincipalType)
+    {
+        $result = $null
+        if ($PrincipalType -eq 'User')
+        {
+            $userInfo = Get-MgUser -UserId $PrincipalId
+            if ($null -ne $userInfo)
+            {
+                $result = $userInfo.UserPrincipalName
+            }
+        }
+        elseif ($PrincipalType -eq 'ServicePrincipal')
+        {
+            $spnInfo = Get-MgServicePrincipal -ServicePrincipalId $PrincipalId
+            if ($null -ne $spnInfo)
+            {
+                $result = $spnInfo.DisplayName
+            }
+        }
+        elseif ($PrincipalType -eq 'Group')
+        {
+            $groupInfo = Get-MgGroup -GroupId $PrincipalId
+            if ($null -ne $groupInfo)
+            {
+                $result = $groupInfo.DisplayName
+            }
+        }
+        return $result
+    }
+
+    hidden [System.String] GetPrincipalIdFromName([System.String] $PrincipalName, [System.String] $PrincipalType)
+    {
+        $result = $null
+        if ($PrincipalType -eq 'User')
+        {
+            $userInfo = Get-MgUser -Filter "UserPrincipalName eq '$($PrincipalName -replace "'", "''")'"
+            if ($null -ne $userInfo)
+            {
+                $result = $userInfo.Id
+            }
+        }
+        elseif ($PrincipalType -eq 'ServicePrincipal')
+        {
+            $spnInfo = Get-MgServicePrincipal -Filter "DisplayName eq '$($PrincipalName -replace "'", "''")'"
+            if ($null -ne $spnInfo)
+            {
+                $result = $spnInfo.Id
+            }
+        }
+        elseif ($PrincipalType -eq 'Group')
+        {
+            $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($PrincipalName -replace "'", "''")'"
+            if ($null -ne $groupInfo)
+            {
+                $result = $groupInfo.Id
+            }
+        }
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureBillingAccountsRoleAssignment] AsResult([System.Object] $Values)
     {
@@ -331,92 +388,4 @@ class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Get-M365DSCPrincipalNameFromId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalNameFromId
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalType
-    )
-
-    $result = $null
-    if ($PrincipalType -eq 'User')
-    {
-        $userInfo = Get-MgUser -UserId $PrincipalId
-        if ($null -ne $userInfo)
-        {
-            $result = $userInfo.UserPrincipalName
-        }
-    }
-    elseif ($PrincipalType -eq 'ServicePrincipal')
-    {
-        $spnInfo = Get-MgServicePrincipal -ServicePrincipalId $PrincipalId
-        if ($null -ne $spnInfo)
-        {
-            $result = $spnInfo.DisplayName
-        }
-    }
-    elseif ($PrincipalType -eq 'Group')
-    {
-        $groupInfo = Get-MgGroup -GroupId $PrincipalId
-        if ($null -ne $groupInfo)
-        {
-            $result = $groupInfo.DisplayName
-        }
-    }
-    return $result
-}
-
-# Was Get-M365DSCPrincipalIdFromName. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AzureBillingAccountsRoleAssignmentM365DSCPrincipalIdFromName
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalType
-    )
-
-    $result = $null
-    if ($PrincipalType -eq 'User')
-    {
-        $userInfo = Get-MgUser -Filter "UserPrincipalName eq '$($PrincipalName -replace "'", "''")'"
-        if ($null -ne $userInfo)
-        {
-            $result = $userInfo.Id
-        }
-    }
-    elseif ($PrincipalType -eq 'ServicePrincipal')
-    {
-        $spnInfo = Get-MgServicePrincipal -Filter "DisplayName eq '$($PrincipalName -replace "'", "''")'"
-        if ($null -ne $spnInfo)
-        {
-            $result = $spnInfo.Id
-        }
-    }
-    elseif ($PrincipalType -eq 'Group')
-    {
-        $groupInfo = Get-MgGroup -Filter "DisplayName eq '$($PrincipalName -replace "'", "''")'"
-        if ($null -ne $groupInfo)
-        {
-            $result = $groupInfo.Id
-        }
-    }
-    return $result
 }

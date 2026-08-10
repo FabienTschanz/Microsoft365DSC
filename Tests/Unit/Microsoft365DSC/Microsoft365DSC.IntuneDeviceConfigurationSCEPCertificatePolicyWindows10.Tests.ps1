@@ -59,7 +59,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Get-MgBetaDeviceManagementDeviceConfigurationAssignment -MockWith {
             }
 
-            Mock -CommandName Get-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificate -MockWith {
+            Mock -CommandName Invoke-MgGraphRequest -MockWith {
                 return @{
                     Id = "00000000-0000-0000-0000-000000000000"
                     DisplayName = "RootCertificate"
@@ -99,9 +99,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     id = "FakeStringValue"
 
                 }
-            }
-
-            Mock -CommandName Update-IntuneDeviceConfigurationSCEPCertificatePolicyWindows10DeviceConfigurationPolicyRootCertificateId -MockWith {
             }
         }
 

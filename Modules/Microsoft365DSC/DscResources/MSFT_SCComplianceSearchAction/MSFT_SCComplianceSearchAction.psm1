@@ -129,16 +129,16 @@ class SCComplianceSearchAction : M365DSCResourceBase
 
             if ($this.Action -eq 'Export' -or $this.Action -eq 'Retention')
             {
-                $Scenario = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Scenario'
-                $FileTypeExclusion = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'File type exclusions for unindexed'
-                $rawEnableDedupe = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Enable dedupe'
+                $Scenario = $this.GetResultProperty($currentAction.Results, 'Scenario')
+                $FileTypeExclusion = $this.GetResultProperty($currentAction.Results, 'File type exclusions for unindexed')
+                $rawEnableDedupe = $this.GetResultProperty($currentAction.Results, 'Enable dedupe')
                 if (-not [System.String]::IsNullOrEmpty($rawEnableDedupe))
                 {
                     $enableDedupeValue = [System.Convert]::ToBoolean($rawEnableDedupe)
                 }
-                $IncludeCreds = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'SAS token'
-                $IncludeSP = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Include SharePoint versions'
-                $ScopeValue = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Scope'
+                $IncludeCreds = $this.GetResultProperty($currentAction.Results, 'SAS token')
+                $IncludeSP = $this.GetResultProperty($currentAction.Results, 'Include SharePoint versions')
+                $ScopeValue = $this.GetResultProperty($currentAction.Results, 'Scope')
 
                 $ActionName = $this.Action
                 if ('RetentionReports' -eq $Scenario)
@@ -171,7 +171,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
             }
             elseif ($this.Action -eq 'Purge')
             {
-                $PurgeTP = Get-SCComplianceSearchActionResultProperty -ResultString $currentAction.Results -PropertyName 'Purge Type'
+                $PurgeTP = $this.GetResultProperty($currentAction.Results, 'Purge Type')
                 $result = @{
                     Action                = $currentAction.Action
                     SearchName            = $currentAction.SearchName
@@ -375,7 +375,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
                     SearchName = $action.SearchName
                 }
 
-                $Scenario = Get-SCComplianceSearchActionResultProperty -ResultString $action.Results -PropertyName 'Scenario'
+                $Scenario = $this.GetResultProperty($action.Results, 'Scenario')
 
                 if ('RetentionReports' -eq $Scenario)
                 {
@@ -421,7 +421,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
                         SearchName = $action.SearchName
                     }
 
-                    $Scenario = Get-SCComplianceSearchActionResultProperty -ResultString $action.Results -PropertyName 'Scenario'
+                    $Scenario = $this.GetResultProperty($action.Results, 'Scenario')
 
                     if ('RetentionReports' -eq $Scenario)
                     {
@@ -450,6 +450,39 @@ class SCComplianceSearchAction : M365DSCResourceBase
 
             throw
         }
+    }
+
+    # Returns [System.Object] rather than [System.String]: the body also yields $true / $false / $null,
+    # and callers feed the result into nullable-boolean properties.
+    hidden [System.Object] GetResultProperty([System.String] $ResultString, [System.String] $PropertyName)
+    {
+        $start = $ResultString.IndexOf($PropertyName) + $PropertyName.Length + 2
+        if ($start -lt 0 -or $start -gt $ResultString.Length)
+        {
+            return $null
+        }
+        $end = $ResultString.IndexOf(';', $start)
+
+        $result = $null
+        if ($end -gt $start)
+        {
+            $result = $ResultString.SubString($start, $end - $start).Trim()
+
+            if ('<null>' -eq $result)
+            {
+                $result = $null
+            }
+            elseif ('True' -eq $result)
+            {
+                $result = $true
+            }
+            elseif ('False' -eq $result)
+            {
+                $result = $false
+            }
+        }
+
+        return $result
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
@@ -529,50 +562,4 @@ function Get-SCComplianceSearchActionCurrentAction
     }
 
     return $currentAction
-}
-
-# Was Get-ResultProperty. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-SCComplianceSearchActionResultProperty
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResultString,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PropertyName
-    )
-
-    $start = $ResultString.IndexOf($PropertyName) + $PropertyName.Length + 2
-    if ($start -lt 0 -or $start -gt $ResultString.Length)
-    {
-        return $null
-    }
-    $end = $ResultString.IndexOf(';', $start)
-
-    $result = $null
-    if ($end -gt $start)
-    {
-        $result = $ResultString.SubString($start, $end - $start).Trim()
-
-        if ('<null>' -eq $result)
-        {
-            $result = $null
-        }
-        elseif ('True' -eq $result)
-        {
-            $result = $true
-        }
-        elseif ('False' -eq $result)
-        {
-            $result = $false
-        }
-    }
-
-    return $result
 }

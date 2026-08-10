@@ -429,7 +429,7 @@ class AADApplication : M365DSCResourceBase
             }
 
             #YK: Added Array typecasting
-            [Array]$permissionsObj = Get-AADApplicationM365DSCAzureADAppPermissions -App $AADApp
+            [Array]$permissionsObj = $this.GetAzureADAppPermissions($AADApp)
             $isPublicClient = $false
             if (-not [System.String]::IsNullOrEmpty($AADApp.PublicClient) -and $AADApp.PublicClient -eq $true)
             {
@@ -1689,6 +1689,138 @@ class AADApplication : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] GetAzureADAppPermissions([System.Object] $App)
+    {
+        Write-Verbose -Message "Retrieving permissions for Azure AD Application {$($App.DisplayName)}"
+        [array]$requiredAccesses = $App.RequiredResourceAccess
+
+        $permissionResults = @()
+        $oAuth2grant = $null
+        $roleAssignments = $null
+        $i = 1
+        foreach ($requiredAccess in $requiredAccesses)
+        {
+            Write-Verbose -Message "[$i/$($requiredAccesses.Length)]Obtaining information for App's Permission for {$($requiredAccess.ResourceAppId)}"
+            $batchRequests = @(
+                @{
+                    id     = 'SourceAPI'
+                    method = 'GET'
+                    url    = "/servicePrincipals?`$filter=appId eq '$($requiredAccess.ResourceAppId)'"
+                }
+                @{
+                    id     = 'AppServicePrincipal'
+                    method = 'GET'
+                    url    = "/servicePrincipals?`$filter=appId eq '$($App.AppId)'"
+                }
+            )
+            $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+
+            $SourceAPI = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'SourceAPI' }).body.value
+            if ([System.String]::IsNullOrEmpty($SourceAPI))
+            {
+                Write-Warning -Message "Could not find the Service Principal for API with AppId {$($requiredAccess.ResourceAppId)}. Using ResourceAppId as the identifier in the exported configuration."
+                $SourceAPI = @{
+                    AppId = $requiredAccess.ResourceAppId
+                    DisplayName = $requiredAccess.ResourceAppId
+                    Id = $requiredAccess.ResourceAppId
+                }
+            }
+            $appServicePrincipal = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'AppServicePrincipal' }).body.value
+            if ($null -ne $appServicePrincipal)
+            {
+                $batchRequests = @(
+                    @{
+                        id     = 'oAuth2grant'
+                        method = 'GET'
+                        url    = "/oauth2PermissionGrants?`$filter=clientId eq '$($appServicePrincipal.Id)'"
+                    }
+                    @{
+                        id     = 'roleAssignments'
+                        method = 'GET'
+                        url    = "/servicePrincipals/$($appServicePrincipal.Id)/appRoleAssignments"
+                    }
+                )
+                $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+                $oAuth2grant = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'oAuth2grant' }).body.value
+                $roleAssignments = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'roleAssignments' }).body.value
+            }
+
+            foreach ($resourceAccess in $requiredAccess.ResourceAccess)
+            {
+                $currentPermission = @{}
+                $currentPermission.Add('SourceAPI', $SourceAPI.DisplayName)
+                if ($resourceAccess.Type -eq 'Scope')
+                {
+                    $scopeInfo = $SourceAPI.publishedPermissionScopes | Where-Object -FilterScript { $_.Id -eq $resourceAccess.Id }
+                    $scopeInfoValue = $null
+                    if ($null -eq $scopeInfo)
+                    {
+                        if ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
+                        {
+                            $scopeInfoValue = $resourceAccess.Id
+                        }
+                    }
+                    else
+                    {
+                        $scopeInfoValue = $scopeInfo.Value
+                    }
+                    $currentPermission.Add('Type', 'Delegated')
+                    $currentPermission.Add('Name', $scopeInfoValue)
+                    $currentPermission.Add('AdminConsentGranted', $false)
+
+                    if ($null -ne $appServicePrincipal)
+                    {
+                        if ($oAuth2grant.Count -gt 0)
+                        {
+                            $scopes = ($oAuth2grant.Scope -join ' ').Split(' ')
+                            if ($scopes.Contains($scopeInfoValue))
+                            {
+                                $currentPermission.AdminConsentGranted = $true
+                            }
+                        }
+                    }
+                }
+                elseif ($resourceAccess.Type -eq 'Role' -or $resourceAccess.Type -eq 'Role,Scope')
+                {
+                    $currentPermission.Add('Type', 'AppOnly')
+                    $role = $SourceAPI.AppRoles | Where-Object -FilterScript { $_.Id -eq $resourceAccess.Id }
+                    $roleValue = $null
+                    if ($null -eq $role)
+                    {
+                        if ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
+                        {
+                            $roleValue = $resourceAccess.Id
+                        }
+                    }
+                    else
+                    {
+                        $roleValue = $role.Value
+                    }
+                    $currentPermission.Add('Name', $roleValue)
+                    $currentPermission.Add('AdminConsentGranted', $false)
+
+                    if ($null -ne $appServicePrincipal)
+                    {
+                        $foundPermission = $roleAssignments | Where-Object -FilterScript { $_.AppRoleId -eq $resourceAccess.Id }
+                        if ($foundPermission)
+                        {
+                            $currentPermission.AdminConsentGranted = $true
+                        }
+                    }
+                }
+                $permissionResults += $currentPermission
+            }
+            $i++
+        }
+
+        if ($permissionResults.Count -eq 0)
+        {
+            return $null
+        }
+
+        return $permissionResults
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADApplication] AsResult([System.Object] $Values)
     {
@@ -2063,139 +2195,4 @@ class MSFT_AADApplicationOnPremisesPublishingSingleSignOnSettingKerberos
     [DscProperty()]
     [System.ComponentModel.Description('The Delegated Login Identity for the connector to use on behalf of your users. For more information, see Working with different on-premises and cloud identities . Possible values are: userPrincipalName, onPremisesUserPrincipalName, userPrincipalUsername, onPremisesUserPrincipalUsername, onPremisesSAMAccountName.')]
     [System.String] $kerberosSignOnMappingAttributeType
-}
-
-# Was Get-M365DSCAzureADAppPermissions. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADApplicationM365DSCAzureADAppPermissions
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        $App
-    )
-
-    Write-Verbose -Message "Retrieving permissions for Azure AD Application {$($App.DisplayName)}"
-    [array]$requiredAccesses = $App.RequiredResourceAccess
-
-    $permissions = @()
-    $i = 1
-    foreach ($requiredAccess in $requiredAccesses)
-    {
-        Write-Verbose -Message "[$i/$($requiredAccesses.Length)]Obtaining information for App's Permission for {$($requiredAccess.ResourceAppId)}"
-        $batchRequests = @(
-            @{
-                id     = 'SourceAPI'
-                method = 'GET'
-                url    = "/servicePrincipals?`$filter=appId eq '$($requiredAccess.ResourceAppId)'"
-            }
-            @{
-                id     = 'AppServicePrincipal'
-                method = 'GET'
-                url    = "/servicePrincipals?`$filter=appId eq '$($App.AppId)'"
-            }
-        )
-        $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
-
-        $SourceAPI = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'SourceAPI' }).body.value
-        if ([System.String]::IsNullOrEmpty($SourceAPI))
-        {
-            Write-Warning -Message "Could not find the Service Principal for API with AppId {$($requiredAccess.ResourceAppId)}. Using ResourceAppId as the identifier in the exported configuration."
-            $SourceAPI = @{
-                AppId = $requiredAccess.ResourceAppId
-                DisplayName = $requiredAccess.ResourceAppId
-                Id = $requiredAccess.ResourceAppId
-            }
-        }
-        $appServicePrincipal = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'AppServicePrincipal' }).body.value
-        if ($null -ne $appServicePrincipal)
-        {
-            $batchRequests = @(
-                @{
-                    id     = 'oAuth2grant'
-                    method = 'GET'
-                    url    = "/oauth2PermissionGrants?`$filter=clientId eq '$($appServicePrincipal.Id)'"
-                }
-                @{
-                    id     = 'roleAssignments'
-                    method = 'GET'
-                    url    = "/servicePrincipals/$($appServicePrincipal.Id)/appRoleAssignments"
-                }
-            )
-            $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
-            $oAuth2grant = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'oAuth2grant' }).body.value
-            $roleAssignments = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'roleAssignments' }).body.value
-        }
-
-        foreach ($resourceAccess in $requiredAccess.ResourceAccess)
-        {
-            $currentPermission = @{}
-            $currentPermission.Add('SourceAPI', $SourceAPI.DisplayName)
-            if ($resourceAccess.Type -eq 'Scope')
-            {
-                $scopeInfo = $SourceAPI.publishedPermissionScopes | Where-Object -FilterScript { $_.Id -eq $resourceAccess.Id }
-                $scopeInfoValue = $null
-                if ($null -eq $scopeInfo)
-                {
-                    if ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
-                    {
-                        $scopeInfoValue = $resourceAccess.Id
-                    }
-                }
-                else
-                {
-                    $scopeInfoValue = $scopeInfo.Value
-                }
-                $currentPermission.Add('Type', 'Delegated')
-                $currentPermission.Add('Name', $scopeInfoValue)
-                $currentPermission.Add('AdminConsentGranted', $false)
-
-                if ($null -ne $appServicePrincipal)
-                {
-                    if ($oAuth2grant.Count -gt 0)
-                    {
-                        $scopes = ($oAuth2grant.Scope -join ' ').Split(' ')
-                        if ($scopes.Contains($scopeInfoValue))
-                        {
-                            $currentPermission.AdminConsentGranted = $true
-                        }
-                    }
-                }
-            }
-            elseif ($resourceAccess.Type -eq 'Role' -or $resourceAccess.Type -eq 'Role,Scope')
-            {
-                $currentPermission.Add('Type', 'AppOnly')
-                $role = $SourceAPI.AppRoles | Where-Object -FilterScript { $_.Id -eq $resourceAccess.Id }
-                $roleValue = $null
-                if ($null -eq $role)
-                {
-                    if ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
-                    {
-                        $roleValue = $resourceAccess.Id
-                    }
-                }
-                else
-                {
-                    $roleValue = $role.Value
-                }
-                $currentPermission.Add('Name', $roleValue)
-                $currentPermission.Add('AdminConsentGranted', $false)
-
-                if ($null -ne $appServicePrincipal)
-                {
-                    $foundPermission = $roleAssignments | Where-Object -FilterScript { $_.AppRoleId -eq $resourceAccess.Id }
-                    if ($foundPermission)
-                    {
-                        $currentPermission.AdminConsentGranted = $true
-                    }
-                }
-            }
-            $permissions += $currentPermission
-        }
-        $i++
-    }
-
-    return $permissions
 }

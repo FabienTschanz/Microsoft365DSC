@@ -285,7 +285,7 @@ class IntunePolicySets : M365DSCResourceBase
             Update-MgBetaDeviceAppManagementPolicySet -PolicySetId $currentInstance.Id -BodyParameter $UpdateParameters
 
             $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($currentInstance.Id)/update"
-            if ($null -ne ($itemamendments = Get-IntunePolicySetsItemsAmendmentsObject -currentObjectItems $this.ResourceCache['itemResultCache'] -targetObjectItems $this.items))
+            if ($null -ne ($itemamendments = $this.GetItemsAmendmentsObject($this.ResourceCache['itemResultCache'], $this.items)))
             {
                 Write-Verbose $($itemamendments | ConvertTo-Json -Depth 10) -Verbose
                 Invoke-MgGraphRequest -Method POST -Uri $url -Body $itemamendments
@@ -439,6 +439,46 @@ class IntunePolicySets : M365DSCResourceBase
         return @{
             ExcludedProperties = @('PayloadId')
         }
+    }
+
+    hidden [System.Object] GetItemsAmendmentsObject([System.Object] $currentObjectItems, [System.Object] $targetObjectItems)
+    {
+        $nullreturn = $true
+        $ItemsModificationTemplate = @{
+            deletedPolicySetItems = @()
+            updatedPolicySetItems = @()
+            addedPolicySetItems   = @()
+        }
+
+        $nullreturn = $true
+        $currentObjectItems | ForEach-Object {
+            if (-not ($targetObjectItems.DisplayName -contains $_.DisplayName))
+            {
+                Write-Verbose -Message ($_.DisplayName + ' NOT present in Config Document, Removing')
+                $ItemsModificationTemplate.deletedPolicySetItems += $_.id
+                $nullreturn = $false
+            }
+        }
+
+        $targetObjectItems | ForEach-Object {
+            if (-not ($currentObjectItems.DisplayName -contains $_.DisplayName))
+            {
+                Write-Verbose -Message ($_.DisplayName + ' NOT already present in Policy Set, Adding')
+                $ItemsModificationTemplate.addedPolicySetItems += @{
+                    payloadId            = Get-IntunePolicySetsPayloadIdFromItem -Item $_
+                    '@odata.type'        = $_.dataType
+                    guidedDeploymentTags = $_.guidedDeploymentTags
+                }
+                $nullreturn = $false
+            }
+        }
+
+        if (-not $nullreturn)
+        {
+            return $ItemsModificationTemplate
+        }
+
+        return $null
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
@@ -646,53 +686,3 @@ function Get-IntunePolicySetsPayloadIdFromItem
 
     return $object.Id
 }
-
-# Was Get-ItemsAmendmentsObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntunePolicySetsItemsAmendmentsObject
-{
-    [CmdletBinding()]
-    param
-    (
-        $currentObjectItems,
-        $targetObjectItems
-    )
-
-    $nullreturn = $true
-    $ItemsModificationTemplate = @{
-        deletedPolicySetItems = @()
-        updatedPolicySetItems = @()
-        addedPolicySetItems   = @()
-    }
-
-    $nullreturn = $true
-    $currentObjectItems | ForEach-Object {
-        if (-not ($targetObjectItems.DisplayName -contains $_.DisplayName))
-        {
-            Write-Verbose -Message ($_.DisplayName + ' NOT present in Config Document, Removing')
-            $ItemsModificationTemplate.deletedPolicySetItems += $_.id
-            $nullreturn = $false
-        }
-    }
-
-    $targetObjectItems | ForEach-Object {
-        if (-not ($currentObjectItems.DisplayName -contains $_.DisplayName))
-        {
-            Write-Verbose -Message ($_.DisplayName + ' NOT already present in Policy Set, Adding')
-            $ItemsModificationTemplate.addedPolicySetItems += @{
-                payloadId            = Get-IntunePolicySetsPayloadIdFromItem -Item $_
-                '@odata.type'        = $_.dataType
-                guidedDeploymentTags = $_.guidedDeploymentTags
-            }
-            $nullreturn = $false
-        }
-    }
-
-    if (-not $nullreturn)
-    {
-        return $ItemsModificationTemplate
-    }
-
-    return $null
-}
-

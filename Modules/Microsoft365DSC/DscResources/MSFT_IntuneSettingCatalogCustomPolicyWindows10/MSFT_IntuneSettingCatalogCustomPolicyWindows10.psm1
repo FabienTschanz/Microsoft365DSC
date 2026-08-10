@@ -169,7 +169,7 @@ class IntuneSettingCatalogCustomPolicyWindows10 : M365DSCResourceBase
                 }
                 $valueName = $currentSettings.settingInstance.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
                 $rawValue = $currentSettings.settingInstance.$valueName
-                $complexValue = Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $rawValue -SettingValueType $currentSettings.settingInstance.'@odata.type'
+                $complexValue = $this.GetSettingValue($rawValue, $currentSettings.settingInstance.'@odata.type')
                 $complexSettingInstance[$valueName] = $complexValue
                 $complexSettings += [MSFT_MicrosoftGraphDeviceManagementConfigurationSetting] @{
                     'SettingInstance' = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $complexSettingInstance
@@ -498,6 +498,246 @@ class IntuneSettingCatalogCustomPolicyWindows10 : M365DSCResourceBase
         return ''
     }
 
+    hidden [System.Object] GetSettingValue([System.Object] $SettingValue, [System.String] $SettingValueType)
+    {
+        switch -Wildcard ($SettingValueType)
+        {
+            '*ChoiceSettingInstance'
+            {
+                $hash = [hashtable]@{}
+                if ($SettingValue.Keys -contains '@odata.type' -and -not([string]::IsNullOrEmpty($SettingValue.'@odata.type')))
+                {
+                    $hash['odataType'] = $SettingValue.'@odata.type'
+                }
+                if ($SettingValue.Keys -contains 'value' -and -not([string]::IsNullOrEmpty($SettingValue.value)))
+                {
+                    $hash['Value'] = $SettingValue.value
+                }
+                if ($SettingValue.Keys -contains 'SettingValueTemplateReference')
+                {
+                    # MSFT_...SettingValueTemplateReference declares settingValueTemplateId, which is also
+                    # the name Graph returns on a value. SettingInstanceTemplateId is the instance-side
+                    # name and is not a member of that class, so the assignment threw.
+                    if (-not [string]::IsNullOrEmpty($SettingValue.SettingValueTemplateReference.SettingValueTemplateId))
+                    {
+                        $hash['SettingValueTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] @{
+                            'settingValueTemplateId' = "$($SettingValue.SettingValueTemplateReference.SettingValueTemplateId)"
+                        }
+                    }
+                }
+                if (-not [String]::IsNullOrEmpty($SettingValue.children))
+                {
+                    $children = @()
+                    foreach ($child in $SettingValue.children)
+                    {
+                        $childHash = [hashtable]@{}
+                        if (-not([string]::IsNullOrEmpty($child.'@odata.type')))
+                        {
+                            $childHash['odataType'] = $child.'@odata.type'
+                        }
+                        if (-not([string]::IsNullOrEmpty($child.settingDefinitionId)))
+                        {
+                            $childHash['SettingDefinitionId'] = $child.settingDefinitionId
+                        }
+                        # A child is a setting INSTANCE, so Graph gives it a
+                        # settingInstanceTemplateReference/settingInstanceTemplateId pair. The value-side
+                        # name is not a member of MSFT_...SettingInstance, so writing it here threw on the
+                        # cast below the moment a child carried a template reference.
+                        if (-not [string]::IsNullOrEmpty($child.SettingInstanceTemplateReference.SettingInstanceTemplateId))
+                        {
+                            $childHash['SettingInstanceTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] @{
+                                'SettingInstanceTemplateId' = "$($child.SettingInstanceTemplateReference.SettingInstanceTemplateId)"
+                            }
+                        }
+                        $valueName = $child.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
+                        $rawValue = $child.$valueName
+                        $childSettingValue = $this.GetSettingValue($rawValue, $child.'@odata.type')
+                        # No per-value-name cast: every value property on the class below is already
+                        # declared with its own type, so the hashtable-to-class conversion coerces a
+                        # single instance or a collection to whatever that property expects.
+                        $childHash.Add($valueName, $childSettingValue)
+                        $complexChild = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $childHash
+                        $children += $complexChild
+                    }
+                    $hash['Children'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $children
+                }
+                return ([MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue] $hash)
+            }
+            '*ChoiceSettingCollectionInstance'
+            {
+                $complexCollection = @()
+                foreach ($item in $SettingValue)
+                {
+                    $complexCollection += $this.GetSettingValue($item, '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance')
+                }
+                return ([MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue[]] $complexCollection)
+            }
+            '*SimpleSettingInstance'
+            {
+                $hash = [hashtable]@{}
+                if ($SettingValue.Keys -contains '@odata.type' -and -not([string]::IsNullOrEmpty($SettingValue.'@odata.type')))
+                {
+                    $hash['odataType'] = $SettingValue.'@odata.type'
+                }
+                if ($SettingValue.Keys -contains 'value' -and $null -ne $SettingValue.value)
+                {
+                    # Handle the case where the value is a string that only consists of whitespace characters
+                    if ([System.String]::IsNullOrWhiteSpace($SettingValue.value))
+                    {
+                        $hash['StringValue'] = [string]$SettingValue.value
+                    }
+                    else
+                    {
+                        try
+                        {
+                            $hash['IntValue'] = [UInt32]($SettingValue.value)
+                        }
+                        catch
+                        {
+                            $hash['StringValue'] = [string]($SettingValue.value)
+                        }
+                    }
+                }
+                if ($SettingValue.Keys -contains 'ValueState' -and -not([string]::IsNullOrEmpty($SettingValue.ValueState)))
+                {
+                    $hash['ValueState'] = $SettingValue.ValueState
+                }
+                if ($SettingValue.Keys -contains 'SettingValueTemplateReference')
+                {
+                    # MSFT_...SettingValueTemplateReference declares settingValueTemplateId, which is also
+                    # the name Graph returns on a value. SettingInstanceTemplateId is the instance-side
+                    # name and is not a member of that class, so the assignment threw.
+                    if (-not [string]::IsNullOrEmpty($SettingValue.SettingValueTemplateReference.SettingValueTemplateId))
+                    {
+                        $hash['SettingValueTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] @{
+                            'settingValueTemplateId' = "$($SettingValue.SettingValueTemplateReference.SettingValueTemplateId)"
+                        }
+                    }
+                }
+                if (-not [String]::IsNullOrEmpty($SettingValue.children))
+                {
+                    $children = @()
+                    foreach ($child in $SettingValue.children)
+                    {
+                        $childHash = [hashtable]@{}
+                        if (-not([string]::IsNullOrEmpty($child.'@odata.type')))
+                        {
+                            $childHash['odataType'] = $child.'@odata.type'
+                        }
+                        if (-not([string]::IsNullOrEmpty($child.settingDefinitionId)))
+                        {
+                            $childHash['SettingDefinitionId'] = $child.settingDefinitionId
+                        }
+                        # A child is a setting INSTANCE, so Graph gives it a
+                        # settingInstanceTemplateReference/settingInstanceTemplateId pair. The value-side
+                        # name is not a member of MSFT_...SettingInstance, so writing it here threw on the
+                        # cast below the moment a child carried a template reference.
+                        if (-not [string]::IsNullOrEmpty($child.SettingInstanceTemplateReference.SettingInstanceTemplateId))
+                        {
+                            $childHash['SettingInstanceTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] @{
+                                'SettingInstanceTemplateId' = "$($child.SettingInstanceTemplateReference.SettingInstanceTemplateId)"
+                            }
+                        }
+                        $valueName = $child.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
+                        $rawValue = $child.$valueName
+                        $childSettingValue = $this.GetSettingValue($rawValue, $child.'@odata.type')
+                        # No per-value-name cast: every value property on the class below is already
+                        # declared with its own type, so the hashtable-to-class conversion coerces a
+                        # single instance or a collection to whatever that property expects.
+                        $childHash.Add($valueName, $childSettingValue)
+                        $complexChild = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $childHash
+                        $children += $complexChild
+                    }
+                    $hash['Children'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $children
+                }
+                return ([MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue] $hash)
+
+            }
+            '*SimpleSettingCollectionInstance'
+            {
+                $complexCollection = @()
+                foreach ($item in $SettingValue)
+                {
+                    $complexCollection += $this.GetSettingValue($item, '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance')
+                }
+                return ([MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue[]] $complexCollection)
+            }
+            '*GroupSettingInstance'
+            {
+                $hash = [hashtable]@{}
+                if ($SettingValue.Keys -contains '@odata.type' -and -not([string]::IsNullOrEmpty($SettingValue.'@odata.type')))
+                {
+                    $hash['odataType'] = $SettingValue.'@odata.type'
+                }
+                if ($SettingValue.Keys -contains 'value' -and -not([string]::IsNullOrEmpty($SettingValue.value)))
+                {
+                    $hash['Value'] = $SettingValue.value
+                }
+                if ($SettingValue.Keys -contains 'SettingValueTemplateReference')
+                {
+                    # MSFT_...SettingValueTemplateReference declares settingValueTemplateId, which is also
+                    # the name Graph returns on a value. SettingInstanceTemplateId is the instance-side
+                    # name and is not a member of that class, so the assignment threw.
+                    if (-not [string]::IsNullOrEmpty($SettingValue.SettingValueTemplateReference.SettingValueTemplateId))
+                    {
+                        $hash['SettingValueTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] @{
+                            'settingValueTemplateId' = "$($SettingValue.SettingValueTemplateReference.SettingValueTemplateId)"
+                        }
+                    }
+                }
+                if (-not [String]::IsNullOrEmpty($SettingValue.children))
+                {
+                    $children = @()
+                    foreach ($child in $SettingValue.children)
+                    {
+                        $childHash = [hashtable]@{}
+                        if (-not([string]::IsNullOrEmpty($child.'@odata.type')))
+                        {
+                            $childHash['odataType'] = $child.'@odata.type'
+                        }
+                        if (-not([string]::IsNullOrEmpty($child.settingDefinitionId)))
+                        {
+                            $childHash['SettingDefinitionId'] = $child.settingDefinitionId
+                        }
+                        # A child is a setting INSTANCE, so Graph gives it a
+                        # settingInstanceTemplateReference/settingInstanceTemplateId pair. The value-side
+                        # name is not a member of MSFT_...SettingInstance, so writing it here threw on the
+                        # cast below the moment a child carried a template reference.
+                        if (-not [string]::IsNullOrEmpty($child.SettingInstanceTemplateReference.SettingInstanceTemplateId))
+                        {
+                            $childHash['SettingInstanceTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] @{
+                                'SettingInstanceTemplateId' = "$($child.SettingInstanceTemplateReference.SettingInstanceTemplateId)"
+                            }
+                        }
+                        $valueName = $child.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
+                        $rawValue = $child.$valueName
+                        $childSettingValue = $this.GetSettingValue($rawValue, $child.'@odata.type')
+                        # No per-value-name cast: every value property on the class below is already
+                        # declared with its own type, so the hashtable-to-class conversion coerces a
+                        # single instance or a collection to whatever that property expects.
+                        $childHash.Add($valueName, $childSettingValue)
+                        $complexChild = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $childHash
+                        $children += $complexChild
+                    }
+                    $hash['Children'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $children
+                }
+                return ([MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue] $hash)
+
+            }
+            '*GroupSettingCollectionInstance'
+            {
+                $complexCollection = @()
+                foreach ($item in $SettingValue)
+                {
+                    $complexCollection += $this.GetSettingValue($item, '#microsoft.graph.deviceManagementConfigurationGroupSettingInstance')
+                }
+                return ([MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue[]] $complexCollection)
+            }
+        }
+
+        return $null
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneSettingCatalogCustomPolicyWindows10] AsResult([System.Object] $Values)
     {
@@ -705,257 +945,4 @@ class MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateRefere
     [DscProperty()]
     [System.ComponentModel.Description('Indicates whether to update policy setting value to match template setting default value')]
     [System.Nullable[System.Boolean]] $useTemplateDefault
-}
-
-# Was Get-SettingValue. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue
-{
-    [CmdletBinding()]
-    [OutputType([System.Object], [System.Object[]])]
-    param (
-        [Parameter()]
-        $SettingValue,
-        [Parameter()]
-        $SettingValueType
-
-    )
-
-    switch -Wildcard ($SettingValueType)
-    {
-        '*ChoiceSettingInstance'
-        {
-            $hash = [hashtable]@{}
-            if ($SettingValue.Keys -contains '@odata.type' -and -not([string]::IsNullOrEmpty($SettingValue.'@odata.type')))
-            {
-                $hash['odataType'] = $SettingValue.'@odata.type'
-            }
-            if ($SettingValue.Keys -contains 'value' -and -not([string]::IsNullOrEmpty($SettingValue.value)))
-            {
-                $hash['Value'] = $SettingValue.value
-            }
-            if ($SettingValue.Keys -contains 'SettingValueTemplateReference')
-            {
-                # MSFT_...SettingValueTemplateReference declares settingValueTemplateId, which is also
-                # the name Graph returns on a value. SettingInstanceTemplateId is the instance-side
-                # name and is not a member of that class, so the assignment threw.
-                if (-not [string]::IsNullOrEmpty($SettingValue.SettingValueTemplateReference.SettingValueTemplateId))
-                {
-                    $hash['SettingValueTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] @{
-                        'settingValueTemplateId' = "$($SettingValue.SettingValueTemplateReference.SettingValueTemplateId)"
-                    }
-                }
-            }
-            if (-not [String]::IsNullOrEmpty($SettingValue.children))
-            {
-                $children = @()
-                foreach ($child in $SettingValue.children)
-                {
-                    $childHash = [hashtable]@{}
-                    if (-not([string]::IsNullOrEmpty($child.'@odata.type')))
-                    {
-                        $childHash['odataType'] = $child.'@odata.type'
-                    }
-                    if (-not([string]::IsNullOrEmpty($child.settingDefinitionId)))
-                    {
-                        $childHash['SettingDefinitionId'] = $child.settingDefinitionId
-                    }
-                    # A child is a setting INSTANCE, so Graph gives it a
-                    # settingInstanceTemplateReference/settingInstanceTemplateId pair. The value-side
-                    # name is not a member of MSFT_...SettingInstance, so writing it here threw on the
-                    # cast below the moment a child carried a template reference.
-                    if (-not [string]::IsNullOrEmpty($child.SettingInstanceTemplateReference.SettingInstanceTemplateId))
-                    {
-                        $childHash['SettingInstanceTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] @{
-                            'SettingInstanceTemplateId' = "$($child.SettingInstanceTemplateReference.SettingInstanceTemplateId)"
-                        }
-                    }
-                    $valueName = $child.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
-                    $rawValue = $child.$valueName
-                    $childSettingValue = Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $rawValue -SettingValueType $child.'@odata.type'
-                    # No per-value-name cast: every value property on the class below is already
-                    # declared with its own type, so the hashtable-to-class conversion coerces a
-                    # single instance or a collection to whatever that property expects.
-                    $childHash.Add($valueName, $childSettingValue)
-                    $complexChild = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $childHash
-                    $children += $complexChild
-                }
-                $hash['Children'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $children
-            }
-            return ([MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue] $hash)
-        }
-        '*ChoiceSettingCollectionInstance'
-        {
-            $complexCollection = @()
-            foreach ($item in $SettingValue)
-            {
-                $complexCollection += Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $item -SettingValueType '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
-            }
-            # Comma-wrapped so a single-element collection does not unroll to a scalar on return.
-            return , ([MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue[]] $complexCollection)
-        }
-        '*SimpleSettingInstance'
-        {
-            $hash = [hashtable]@{}
-            if ($SettingValue.Keys -contains '@odata.type' -and -not([string]::IsNullOrEmpty($SettingValue.'@odata.type')))
-            {
-                $hash['odataType'] = $SettingValue.'@odata.type'
-            }
-            if ($SettingValue.Keys -contains 'value' -and $null -ne $SettingValue.value)
-            {
-                # Handle the case where the value is a string that only consists of whitespace characters
-                if ([System.String]::IsNullOrWhiteSpace($SettingValue.value))
-                {
-                    $hash['StringValue'] = [string]$SettingValue.value
-                }
-                else
-                {
-                    try
-                    {
-                        $hash['IntValue'] = [UInt32]($SettingValue.value)
-                    }
-                    catch
-                    {
-                        $hash['StringValue'] = [string]($SettingValue.value)
-                    }
-                }
-            }
-            if ($SettingValue.Keys -contains 'ValueState' -and -not([string]::IsNullOrEmpty($SettingValue.ValueState)))
-            {
-                $hash['ValueState'] = $SettingValue.ValueState
-            }
-            if ($SettingValue.Keys -contains 'SettingValueTemplateReference')
-            {
-                # MSFT_...SettingValueTemplateReference declares settingValueTemplateId, which is also
-                # the name Graph returns on a value. SettingInstanceTemplateId is the instance-side
-                # name and is not a member of that class, so the assignment threw.
-                if (-not [string]::IsNullOrEmpty($SettingValue.SettingValueTemplateReference.SettingValueTemplateId))
-                {
-                    $hash['SettingValueTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] @{
-                        'settingValueTemplateId' = "$($SettingValue.SettingValueTemplateReference.SettingValueTemplateId)"
-                    }
-                }
-            }
-            if (-not [String]::IsNullOrEmpty($SettingValue.children))
-            {
-                $children = @()
-                foreach ($child in $SettingValue.children)
-                {
-                    $childHash = [hashtable]@{}
-                    if (-not([string]::IsNullOrEmpty($child.'@odata.type')))
-                    {
-                        $childHash['odataType'] = $child.'@odata.type'
-                    }
-                    if (-not([string]::IsNullOrEmpty($child.settingDefinitionId)))
-                    {
-                        $childHash['SettingDefinitionId'] = $child.settingDefinitionId
-                    }
-                    # A child is a setting INSTANCE, so Graph gives it a
-                    # settingInstanceTemplateReference/settingInstanceTemplateId pair. The value-side
-                    # name is not a member of MSFT_...SettingInstance, so writing it here threw on the
-                    # cast below the moment a child carried a template reference.
-                    if (-not [string]::IsNullOrEmpty($child.SettingInstanceTemplateReference.SettingInstanceTemplateId))
-                    {
-                        $childHash['SettingInstanceTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] @{
-                            'SettingInstanceTemplateId' = "$($child.SettingInstanceTemplateReference.SettingInstanceTemplateId)"
-                        }
-                    }
-                    $valueName = $child.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
-                    $rawValue = $child.$valueName
-                    $childSettingValue = Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $rawValue -SettingValueType $child.'@odata.type'
-                    # No per-value-name cast: every value property on the class below is already
-                    # declared with its own type, so the hashtable-to-class conversion coerces a
-                    # single instance or a collection to whatever that property expects.
-                    $childHash.Add($valueName, $childSettingValue)
-                    $complexChild = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $childHash
-                    $children += $complexChild
-                }
-                $hash['Children'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $children
-            }
-            return ([MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue] $hash)
-
-        }
-        '*SimpleSettingCollectionInstance'
-        {
-            $complexCollection = @()
-            foreach ($item in $SettingValue)
-            {
-                $complexCollection += Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $item -SettingValueType '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
-            }
-            # Comma-wrapped so a single-element collection does not unroll to a scalar on return.
-            return , ([MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue[]] $complexCollection)
-        }
-        '*GroupSettingInstance'
-        {
-            $hash = [hashtable]@{}
-            if ($SettingValue.Keys -contains '@odata.type' -and -not([string]::IsNullOrEmpty($SettingValue.'@odata.type')))
-            {
-                $hash['odataType'] = $SettingValue.'@odata.type'
-            }
-            if ($SettingValue.Keys -contains 'value' -and -not([string]::IsNullOrEmpty($SettingValue.value)))
-            {
-                $hash['Value'] = $SettingValue.value
-            }
-            if ($SettingValue.Keys -contains 'SettingValueTemplateReference')
-            {
-                # MSFT_...SettingValueTemplateReference declares settingValueTemplateId, which is also
-                # the name Graph returns on a value. SettingInstanceTemplateId is the instance-side
-                # name and is not a member of that class, so the assignment threw.
-                if (-not [string]::IsNullOrEmpty($SettingValue.SettingValueTemplateReference.SettingValueTemplateId))
-                {
-                    $hash['SettingValueTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingValueTemplateReference] @{
-                        'settingValueTemplateId' = "$($SettingValue.SettingValueTemplateReference.SettingValueTemplateId)"
-                    }
-                }
-            }
-            if (-not [String]::IsNullOrEmpty($SettingValue.children))
-            {
-                $children = @()
-                foreach ($child in $SettingValue.children)
-                {
-                    $childHash = [hashtable]@{}
-                    if (-not([string]::IsNullOrEmpty($child.'@odata.type')))
-                    {
-                        $childHash['odataType'] = $child.'@odata.type'
-                    }
-                    if (-not([string]::IsNullOrEmpty($child.settingDefinitionId)))
-                    {
-                        $childHash['SettingDefinitionId'] = $child.settingDefinitionId
-                    }
-                    # A child is a setting INSTANCE, so Graph gives it a
-                    # settingInstanceTemplateReference/settingInstanceTemplateId pair. The value-side
-                    # name is not a member of MSFT_...SettingInstance, so writing it here threw on the
-                    # cast below the moment a child carried a template reference.
-                    if (-not [string]::IsNullOrEmpty($child.SettingInstanceTemplateReference.SettingInstanceTemplateId))
-                    {
-                        $childHash['SettingInstanceTemplateReference'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstanceTemplateReference] @{
-                            'SettingInstanceTemplateId' = "$($child.SettingInstanceTemplateReference.SettingInstanceTemplateId)"
-                        }
-                    }
-                    $valueName = $child.keys | Where-Object { @('ChoiceSettingCollectionValue', 'ChoiceSettingValue', 'GroupSettingCollectionValue', 'GroupSettingValue', 'SimpleSettingCollectionValue', 'SimpleSettingValue') -contains $_ }
-                    $rawValue = $child.$valueName
-                    $childSettingValue = Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $rawValue -SettingValueType $child.'@odata.type'
-                    # No per-value-name cast: every value property on the class below is already
-                    # declared with its own type, so the hashtable-to-class conversion coerces a
-                    # single instance or a collection to whatever that property expects.
-                    $childHash.Add($valueName, $childSettingValue)
-                    $complexChild = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance] $childHash
-                    $children += $complexChild
-                }
-                $hash['Children'] = [MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance[]] $children
-            }
-            return ([MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue] $hash)
-
-        }
-        '*GroupSettingCollectionInstance'
-        {
-            $complexCollection = @()
-            foreach ($item in $SettingValue)
-            {
-                $complexCollection += Get-IntuneSettingCatalogCustomPolicyWindows10SettingValue -SettingValue $item -SettingValueType '#microsoft.graph.deviceManagementConfigurationGroupSettingInstance'
-            }
-            # Comma-wrapped so a single-element collection does not unroll to a scalar on return.
-            return , ([MSFT_MicrosoftGraphDeviceManagementConfigurationGroupSettingValue[]] $complexCollection)
-        }
-    }
 }

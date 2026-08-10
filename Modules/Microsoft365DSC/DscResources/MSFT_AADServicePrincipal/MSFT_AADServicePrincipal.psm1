@@ -363,7 +363,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 }
             }
 
-            $complexCustomSecurityAttributes = [Array](Get-AADServicePrincipalCustomSecurityAttributes -ServicePrincipal $AADServicePrincipal)
+            $complexCustomSecurityAttributes = [Array]($this.GetCustomSecurityAttributes($AADServicePrincipal))
             if ($null -eq $complexCustomSecurityAttributes)
             {
                 $complexCustomSecurityAttributes = @()
@@ -495,7 +495,7 @@ class AADServicePrincipal : M365DSCResourceBase
         # update the custom security attributes to be cmdlet comsumable
         if ($null -ne $currentParameters.CustomSecurityAttributes -and $currentParameters.CustomSecurityAttributes.Count -gt 0)
         {
-            $currentSCAValue = Get-AADServicePrincipalM365DSCAADServicePrincipalCustomSecurityAttributesAsCmdletHashtable -CustomSecurityAttributes $currentParameters.CustomSecurityAttributes
+            $currentSCAValue = $this.GetCustomSecurityAttributesAsCmdletHashtable($currentParameters.CustomSecurityAttributes)
             $currentParameters.Remove('CustomSecurityAttributes') | Out-Null
             $currentParameters.Add('customSecurityAttributes', $currentSCAValue)
         }
@@ -575,7 +575,7 @@ class AADServicePrincipal : M365DSCResourceBase
                         $PrincipalIdValue = $group.Id
                     }
 
-                    $appRoleId = Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId -AppRoles $newSP.AppRoles -PrincipalType $assignment.PrincipalType
+                    $appRoleId = $this.GetAppRoleId($newSP.AppRoles, $assignment.PrincipalType)
                     $bodyParam = @{
                         principalId = $PrincipalIdValue
                         resourceId  = $newSP.Id
@@ -616,7 +616,7 @@ class AADServicePrincipal : M365DSCResourceBase
             #removing the current custom security attributes
             if ($currentAADServicePrincipal.CustomSecurityAttributes.Count -gt 0)
             {
-                $currentAADServicePrincipal.CustomSecurityAttributes = Get-AADServicePrincipalM365DSCAADServicePrincipalCustomSecurityAttributesAsCmdletHashtable -CustomSecurityAttributes $currentAADServicePrincipal.CustomSecurityAttributes -GetForDelete $true
+                $currentAADServicePrincipal.CustomSecurityAttributes = $this.GetCustomSecurityAttributesAsCmdletHashtable($currentAADServicePrincipal.CustomSecurityAttributes, $true)
                 $CSAParams = @{
                     customSecurityAttributes = $currentAADServicePrincipal.CustomSecurityAttributes
                 }
@@ -702,7 +702,7 @@ class AADServicePrincipal : M365DSCResourceBase
                                 $servicePrincipalDetails = Get-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppRoles'
                             }
 
-                            $appRoleId = Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId -AppRoles $servicePrincipalDetails.AppRoles -PrincipalType $assignment.PrincipalType
+                            $appRoleId = $this.GetAppRoleId($servicePrincipalDetails.AppRoles, $assignment.PrincipalType)
                             $bodyParam = @{
                                 principalId = $PrincipalIdValue
                                 resourceId  = $currentAADServicePrincipal.ObjectID
@@ -1046,6 +1046,151 @@ class AADServicePrincipal : M365DSCResourceBase
         }
     }
 
+    hidden [System.String] GetAppRoleId([System.Object[]] $AppRoles, [System.String] $PrincipalType)
+    {
+        $appRoleId = ($AppRoles | Where-Object -FilterScript { $_.DisplayName -eq $PrincipalType } | Select-Object -First 1).Id
+        if ([System.String]::IsNullOrEmpty($appRoleId))
+        {
+            $appRoleId = '00000000-0000-0000-0000-000000000000'
+        }
+
+        return $appRoleId
+    }
+
+    hidden [System.Collections.Hashtable] NewAttributeValue([System.String] $AttributeName, [System.Object] $Value)
+    {
+        $attributeValue = @{
+            AttributeName    = $AttributeName
+            StringArrayValue = $null
+            IntArrayValue    = $null
+            StringValue      = $null
+            IntValue         = $null
+            BoolValue        = $null
+        }
+
+        # Handle different types of values
+        if ($Value -is [string])
+        {
+            $attributeValue.StringValue = $Value
+        }
+        elseif ($Value -is [System.Int32] -or $Value -is [System.Int64])
+        {
+            $attributeValue.IntValue = $Value
+        }
+        elseif ($Value -is [bool])
+        {
+            $attributeValue.BoolValue = $Value
+        }
+        elseif ($Value -is [array])
+        {
+            if ($Value[0] -is [string])
+            {
+                $attributeValue.StringArrayValue = $Value
+            }
+            elseif ($Value[0] -is [System.Int32] -or $Value[0] -is [System.Int64])
+            {
+                $attributeValue.IntArrayValue = $Value
+            }
+        }
+
+        return $attributeValue
+    }
+
+    hidden [System.Collections.Hashtable] GetCustomSecurityAttributesAsCmdletHashtable([System.Object] $CustomSecurityAttributes)
+    {
+        return $this.GetCustomSecurityAttributesAsCmdletHashtable($CustomSecurityAttributes, $false)
+    }
+
+    hidden [System.Collections.Hashtable] GetCustomSecurityAttributesAsCmdletHashtable([System.Object] $CustomSecurityAttributes, [System.Boolean] $GetForDelete)
+    {
+        $attributeValue = $null
+
+        # logic to update the custom security attributes to be cmdlet comsumable
+        $updatedCustomSecurityAttributes = @{}
+        foreach ($attributeSet in $CustomSecurityAttributes)
+        {
+            $attributeSetKey = $attributeSet.AttributeSetName
+
+            $valuesHashtable = @{}
+            $valuesHashtable.Add('@odata.type', '#Microsoft.DirectoryServices.CustomSecurityAttributeValue')
+            foreach ($attribute in $attributeSet.AttributeValues)
+            {
+                $attributeKey = $attribute.AttributeName
+                # supply attributeName = $null in the body, if you want to delete this attribute
+                if ($GetForDelete -eq $true)
+                {
+                    $valuesHashtable.Add($attributeKey, $null)
+                    continue
+                }
+
+                $odataKey = $attributeKey + '@odata.type'
+
+                if ($null -ne $attribute.StringArrayValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#Collection(String)')
+                    $attributeValue = $attribute.StringArrayValue
+                }
+                elseif ($null -ne $attribute.IntArrayValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#Collection(Int32)')
+                    $attributeValue = $attribute.IntArrayValue
+                }
+                elseif ($null -ne $attribute.StringValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#String')
+                    $attributeValue = $attribute.StringValue
+                }
+                elseif ($null -ne $attribute.IntValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#Int32')
+                    $attributeValue = $attribute.IntValue
+                }
+                elseif ($null -ne $attribute.BoolValue)
+                {
+                    $attributeValue = $attribute.BoolValue
+                }
+
+                $valuesHashtable.Add($attributeKey, $attributeValue)
+            }
+            $updatedCustomSecurityAttributes.Add($attributeSetKey, $valuesHashtable)
+        }
+        return $updatedCustomSecurityAttributes
+    }
+
+    hidden [System.Object[]] GetCustomSecurityAttributes([System.Object] $ServicePrincipal)
+    {
+        $existingAttributes = $ServicePrincipal.customSecurityAttributes
+        $newCustomSecurityAttributes = @()
+
+        foreach ($key in $existingAttributes.Keys)
+        {
+            $attributeSet = @{
+                AttributeSetName = $key
+                AttributeValues  = @()
+            }
+
+            foreach ($attribute in $existingAttributes[$key].Keys)
+            {
+                # Skip properties that end with '@odata.type'
+                if ($attribute -like '*@odata.type')
+                {
+                    continue
+                }
+
+                $value = $existingAttributes[$key][$attribute]
+                $attributeName = $attribute # Keep the attribute name as it is
+
+                # Create the attribute value and add it to the set
+                $attributeSet.AttributeValues += $this.NewAttributeValue($attributeName, $value)
+            }
+
+            #Add the attribute set to the final structure
+            $newCustomSecurityAttributes += $attributeSet
+        }
+
+        return $newCustomSecurityAttributes
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADServicePrincipal] AsResult([System.Object] $Values)
     {
@@ -1357,188 +1502,4 @@ class MSFT_AADServicePrincipalTransformationAttribute
     [DscProperty()]
     [System.ComponentModel.Description('Attribute to be used as input for the transformation.')]
     [MSFT_AADServicePrincipalCustomClaimAttribute] $attribute
-}
-
-# Was Get-M365DSCAADServicePrincipalAppRoleId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADServicePrincipalM365DSCAADServicePrincipalAppRoleId
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param(
-        [Parameter()]
-        [AllowNull()]
-        [System.Object[]]
-        $AppRoles,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalType
-    )
-
-    $appRoleId = ($AppRoles | Where-Object -FilterScript { $_.DisplayName -eq $PrincipalType } | Select-Object -First 1).Id
-    if ([System.String]::IsNullOrEmpty($appRoleId))
-    {
-        $appRoleId = '00000000-0000-0000-0000-000000000000'
-    }
-
-    return $appRoleId
-}
-
-# Was New-AttributeValue. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function New-AADServicePrincipalAttributeValue
-{
-    param
-    (
-        [string]$AttributeName,
-        [object]$Value
-    )
-
-    $attributeValue = @{
-        AttributeName    = $AttributeName
-        StringArrayValue = $null
-        IntArrayValue    = $null
-        StringValue      = $null
-        IntValue         = $null
-        BoolValue        = $null
-    }
-
-    # Handle different types of values
-    if ($Value -is [string])
-    {
-        $attributeValue.StringValue = $Value
-    }
-    elseif ($Value -is [System.Int32] -or $Value -is [System.Int64])
-    {
-        $attributeValue.IntValue = $Value
-    }
-    elseif ($Value -is [bool])
-    {
-        $attributeValue.BoolValue = $Value
-    }
-    elseif ($Value -is [array])
-    {
-        if ($Value[0] -is [string])
-        {
-            $attributeValue.StringArrayValue = $Value
-        }
-        elseif ($Value[0] -is [System.Int32] -or $Value[0] -is [System.Int64])
-        {
-            $attributeValue.IntArrayValue = $Value
-        }
-    }
-
-    return $attributeValue
-}
-
-# Was Get-M365DSCAADServicePrincipalCustomSecurityAttributesAsCmdletHashtable. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADServicePrincipalM365DSCAADServicePrincipalCustomSecurityAttributesAsCmdletHashtable
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.ArrayList]
-        $CustomSecurityAttributes,
-
-        [Parameter()]
-        [System.Boolean]
-        $GetForDelete = $false
-    )
-
-    # logic to update the custom security attributes to be cmdlet comsumable
-    $updatedCustomSecurityAttributes = @{}
-    foreach ($attributeSet in $CustomSecurityAttributes)
-    {
-        $attributeSetKey = $attributeSet.AttributeSetName
-
-        $valuesHashtable = @{}
-        $valuesHashtable.Add('@odata.type', '#Microsoft.DirectoryServices.CustomSecurityAttributeValue')
-        foreach ($attribute in $attributeSet.AttributeValues)
-        {
-            $attributeKey = $attribute.AttributeName
-            # supply attributeName = $null in the body, if you want to delete this attribute
-            if ($GetForDelete -eq $true)
-            {
-                $valuesHashtable.Add($attributeKey, $null)
-                continue
-            }
-
-            $odataKey = $attributeKey + '@odata.type'
-
-            if ($null -ne $attribute.StringArrayValue)
-            {
-                $valuesHashtable.Add($odataKey, '#Collection(String)')
-                $attributeValue = $attribute.StringArrayValue
-            }
-            elseif ($null -ne $attribute.IntArrayValue)
-            {
-                $valuesHashtable.Add($odataKey, '#Collection(Int32)')
-                $attributeValue = $attribute.IntArrayValue
-            }
-            elseif ($null -ne $attribute.StringValue)
-            {
-                $valuesHashtable.Add($odataKey, '#String')
-                $attributeValue = $attribute.StringValue
-            }
-            elseif ($null -ne $attribute.IntValue)
-            {
-                $valuesHashtable.Add($odataKey, '#Int32')
-                $attributeValue = $attribute.IntValue
-            }
-            elseif ($null -ne $attribute.BoolValue)
-            {
-                $attributeValue = $attribute.BoolValue
-            }
-
-            $valuesHashtable.Add($attributeKey, $attributeValue)
-        }
-        $updatedCustomSecurityAttributes.Add($attributeSetKey, $valuesHashtable)
-    }
-    return $updatedCustomSecurityAttributes
-}
-
-# Was Get-CustomSecurityAttributes. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADServicePrincipalCustomSecurityAttributes
-{
-    [OutputType([System.Array])]
-    param
-    (
-        $ServicePrincipal
-    )
-
-    $customSecurityAttributes = $ServicePrincipal.customSecurityAttributes
-    $newCustomSecurityAttributes = @()
-
-    foreach ($key in $customSecurityAttributes.Keys)
-    {
-        $attributeSet = @{
-            AttributeSetName = $key
-            AttributeValues  = @()
-        }
-
-        foreach ($attribute in $customSecurityAttributes[$key].Keys)
-        {
-            # Skip properties that end with '@odata.type'
-            if ($attribute -like '*@odata.type')
-            {
-                continue
-            }
-
-            $value = $customSecurityAttributes[$key][$attribute]
-            $attributeName = $attribute # Keep the attribute name as it is
-
-            # Create the attribute value and add it to the set
-            $attributeSet.AttributeValues += New-AADServicePrincipalAttributeValue -AttributeName $attributeName -Value $value
-        }
-
-        #Add the attribute set to the final structure
-        $newCustomSecurityAttributes += $attributeSet
-    }
-
-    # Display the new structure
-    return [Array]$newCustomSecurityAttributes
 }

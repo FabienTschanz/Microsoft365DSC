@@ -355,9 +355,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 $formattedDefinitionValuesToAdd += $complexDefinitionValue
             }
 
-            Update-IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10DeviceConfigurationGroupPolicyDefinitionValue `
-                -DeviceConfigurationPolicyId $policy.Id `
-                -DefinitionValueToAdd $formattedDefinitionValuesToAdd
+            $this.UpdateGroupPolicyDefinitionValue($policy.Id, $formattedDefinitionValuesToAdd, @(), @())
             #endregion
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
@@ -474,11 +472,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 $formattedDefinitionValuesToremove += ($currentDefinitionValues | Where-Object { $_.definition.id -eq $definitionValueId }).id
             }
 
-            Update-IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10DeviceConfigurationGroupPolicyDefinitionValue `
-                -DeviceConfigurationPolicyId $currentInstance.Id `
-                -DefinitionValueToAdd $formattedDefinitionValuesToAdd `
-                -DefinitionValueToUpdate $formattedDefinitionValuesToUpdate `
-                -DefinitionValueToRemove $formattedDefinitionValuesToRemove
+            $this.UpdateGroupPolicyDefinitionValue($currentInstance.Id, $formattedDefinitionValuesToAdd, $formattedDefinitionValuesToUpdate, $formattedDefinitionValuesToRemove)
 
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
@@ -673,6 +667,31 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
         }
     }
 
+    hidden [void] UpdateGroupPolicyDefinitionValue([System.String] $DeviceConfigurationPolicyId, [Array] $DefinitionValueToAdd, [Array] $DefinitionValueToUpdate, [Array] $DefinitionValueToRemove)
+    {
+        try
+        {
+            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/groupPolicyConfigurations/$DeviceConfigurationPolicyId/updateDefinitionValues"
+
+            $body = @{}
+            $DefinitionValueToRemoveIds = @()
+            if ($null -ne $DefinitionValueToRemove -and $DefinitionValueToRemove.Count -gt 0)
+            {
+                $DefinitionValueToRemoveIds = $DefinitionValueToRemove
+            }
+            $body = @{
+                'added'      = $DefinitionValueToAdd
+                'updated'    = $DefinitionValueToUpdate
+                'deletedIds' = $DefinitionValueToRemoveIds
+            }
+            Invoke-MgGraphRequest -Method POST -Uri $Uri -Body ($body | ConvertTo-Json -Depth 20) -ErrorAction Stop 4> $null
+        }
+        catch
+        {
+            $this.LogError($_, 'Error updating data:')
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10] AsResult([System.Object] $Values)
     {
@@ -846,58 +865,4 @@ class MSFT_IntuneGroupPolicyDefinitionValuePresentationValueKeyValuePair
     [DscProperty()]
     [System.ComponentModel.Description('Name for this key-value pair.')]
     [System.String] $Name
-}
-
-# Was Update-DeviceConfigurationGroupPolicyDefinitionValue. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Update-IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10DeviceConfigurationGroupPolicyDefinitionValue
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceConfigurationPolicyId,
-
-        [Parameter()]
-        [Array]
-        $DefinitionValueToAdd = @(),
-
-        [Parameter()]
-        [Array]
-        $DefinitionValueToUpdate = @(),
-
-        [Parameter()]
-        [Array]
-        $DefinitionValueToRemove = @()
-    )
-    try
-    {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/groupPolicyConfigurations/$DeviceConfigurationPolicyId/updateDefinitionValues"
-
-        $body = @{}
-        $DefinitionValueToRemoveIds = @()
-        if ($null -ne $DefinitionValueToRemove -and $DefinitionValueToRemove.Count -gt 0)
-        {
-            $DefinitionValueToRemoveIds = $DefinitionValueToRemove
-        }
-        $body = @{
-            'added'      = $DefinitionValueToAdd
-            'updated'    = $DefinitionValueToUpdate
-            'deletedIds' = $DefinitionValueToRemoveIds
-        }
-        #Write-Verbose -Message ($body | ConvertTo-Json -Depth 100)
-        Invoke-MgGraphRequest -Method POST -Uri $Uri -Body ($body | ConvertTo-Json -Depth 20) -ErrorAction Stop 4> $null
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error updating data:'
-        -Exception $_
-        -Source $($MyInvocation.MyCommand.Source)
-        -TenantId $TenantId
-        -Credential $Credential
-
-        return $null
-    }
 }

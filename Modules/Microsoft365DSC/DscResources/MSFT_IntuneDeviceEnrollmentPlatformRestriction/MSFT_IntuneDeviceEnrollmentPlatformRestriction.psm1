@@ -212,7 +212,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
                 AccessTokens                      = $this.AccessTokens
             }
 
-            $results += Get-IntuneDeviceEnrollmentPlatformRestrictionDevicePlatformRestrictionSetting -Properties $config
+            $results += $this.GetDevicePlatformRestrictionSetting($config)
 
             if ($null -ne $results.WindowsMobileRestriction)
             {
@@ -654,6 +654,92 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetDevicePlatformRestrictionSetting([System.Collections.Hashtable] $Properties)
+    {
+        $results = @{}
+        if ($null -ne $Properties.platformType)
+        {
+            $keyName = ($Properties.platformType).Substring(0, 1).ToUpper() + ($Properties.platformType).Substring(1, $Properties.platformType.length - 1) + 'Restriction'
+            $keyValue = $Properties.platformRestriction
+            $hash = @{}
+            foreach ($key in $keyValue.Keys)
+            {
+                if ($null -ne $keyValue.$key)
+                {
+                    switch -Wildcard ($keyValue.$key.GetType().name)
+                    {
+                        '*[[\]]'
+                        {
+                            if ($keyValue.$key.Count -gt 0)
+                            {
+                                $hash.Add($key, $keyValue.$key)
+                            }
+                        }
+                        'String'
+                        {
+                            if (-not [String]::IsNullOrEmpty($keyValue.$key))
+                            {
+                                $hash.Add($key, $keyValue.$key)
+                            }
+                        }
+                        default
+                        {
+                            $hash.Add($key, $keyValue.$key)
+                        }
+                    }
+                }
+            }
+            $results.Add($keyName, $hash)
+        }
+        else
+        {
+            $platformRestrictions = $Properties
+            $platformRestrictions.Remove('@odata.type')
+            $platformRestrictions.Remove('@odata.context')
+            foreach ($key in $($platformRestrictions.Keys | Where-Object { $_ -like "*Restriction" }))
+            {
+                $keyName = $key.Substring(0, 1).ToUpper() + $key.Substring(1, $key.Length - 1)
+                $keyValue = $platformRestrictions.$key
+                if ($null -eq $keyValue)
+                {
+                    continue
+                }
+                $hash = @{}
+                foreach ($key in $keyValue.Keys)
+                {
+                    if ($null -ne $keyValue.$key)
+                    {
+                        switch -Wildcard ($keyValue.$key.GetType().name)
+                        {
+                            '*[[\]]'
+                            {
+                                if ($keyValue.$key.Count -gt 0)
+                                {
+                                    $hash.Add($key, $keyValue.$key)
+                                }
+                            }
+                            'String'
+                            {
+                                if (-not [String]::IsNullOrEmpty($keyValue.$key))
+                                {
+                                    $hash.Add($key, $keyValue.$key)
+                                }
+                            }
+                            default
+                            {
+                                $hash.Add($key, $keyValue.$key)
+                            }
+                        }
+
+                    }
+                }
+                $results.Add($keyName, $hash)
+            }
+        }
+
+        return $results
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceEnrollmentPlatformRestriction] AsResult([System.Object] $Values)
     {
@@ -731,101 +817,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-
-# Was Get-DevicePlatformRestrictionSetting. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneDeviceEnrollmentPlatformRestrictionDevicePlatformRestrictionSetting
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.Collections.Hashtable]
-        $Properties
-    )
-
-    $results = @{}
-    if ($null -ne $Properties.platformType)
-    {
-        $keyName = ($Properties.platformType).Substring(0, 1).ToUpper() + ($Properties.platformType).Substring(1, $Properties.platformType.length - 1) + 'Restriction'
-        $keyValue = $Properties.platformRestriction
-        $hash = @{}
-        foreach ($key in $keyValue.Keys)
-        {
-            if ($null -ne $keyValue.$key)
-            {
-                switch -Wildcard ($keyValue.$key.GetType().name)
-                {
-                    '*[[\]]'
-                    {
-                        if ($keyValue.$key.Count -gt 0)
-                        {
-                            $hash.Add($key, $keyValue.$key)
-                        }
-                    }
-                    'String'
-                    {
-                        if (-not [String]::IsNullOrEmpty($keyValue.$key))
-                        {
-                            $hash.Add($key, $keyValue.$key)
-                        }
-                    }
-                    default
-                    {
-                        $hash.Add($key, $keyValue.$key)
-                    }
-                }
-            }
-        }
-        $results.Add($keyName, $hash)
-    }
-    else
-    {
-        $platformRestrictions = $Properties
-        $platformRestrictions.Remove('@odata.type')
-        $platformRestrictions.Remove('@odata.context')
-        foreach ($key in $($platformRestrictions.Keys | Where-Object { $_ -like "*Restriction" }))
-        {
-            $keyName = $key.Substring(0, 1).ToUpper() + $key.Substring(1, $key.Length - 1)
-            $keyValue = $platformRestrictions.$key
-            if ($null -eq $keyValue)
-            {
-                continue
-            }
-            $hash = @{}
-            foreach ($key in $keyValue.Keys)
-            {
-                if ($null -ne $keyValue.$key)
-                {
-                    switch -Wildcard ($keyValue.$key.GetType().name)
-                    {
-                        '*[[\]]'
-                        {
-                            if ($keyValue.$key.Count -gt 0)
-                            {
-                                $hash.Add($key, $keyValue.$key)
-                            }
-                        }
-                        'String'
-                        {
-                            if (-not [String]::IsNullOrEmpty($keyValue.$key))
-                            {
-                                $hash.Add($key, $keyValue.$key)
-                            }
-                        }
-                        default
-                        {
-                            $hash.Add($key, $keyValue.$key)
-                        }
-                    }
-
-                }
-            }
-            $results.Add($keyName, $hash)
-        }
-    }
-
-    return $results
-}
-

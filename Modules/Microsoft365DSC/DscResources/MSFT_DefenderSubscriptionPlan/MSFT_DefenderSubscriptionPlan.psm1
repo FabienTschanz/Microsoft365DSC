@@ -209,7 +209,7 @@ class DefenderSubscriptionPlan : M365DSCResourceBase
 
         try
         {
-            [array] $this.ResourceCache['exportedInstances'] = Get-DefenderSubscriptionPlanSubscriptionsDefenderPlansFromArg -ErrorAction Stop
+            [array] $this.ResourceCache['exportedInstances'] = $this.GetSubscriptionsDefenderPlansFromArg()
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
@@ -263,6 +263,32 @@ class DefenderSubscriptionPlan : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object[]] GetSubscriptionsDefenderPlansFromArg()
+    {
+        try
+        {
+            $results = @()
+            $argQuery = @'
+securityresources | where type == "microsoft.security/pricings" | project Id=id, PlanName=name, SubscriptionId=subscriptionId, SubPlan=tostring(properties.subPlan), PricingTier=tostring(properties.pricingTier), Extensions=tostring(properties.extensions)
+| join kind=inner (resourcecontainers | where type == "microsoft.resources/subscriptions" | project SubscriptionName = name, SubscriptionId = subscriptionId) on SubscriptionId | project-away SubscriptionId1
+'@
+            $queryResult = Search-AzGraph -Query $argQuery -First 1000 -UseTenantScope -ErrorAction Stop
+            $results += $queryResult.Data
+
+            while ($null -ne $queryResult.SkipToken)
+            {
+                $queryResult = Search-AzGraph -Query $argQuery -First 1000 -UseTenantScope -SkipToken $queryResult.SkipToken -ErrorAction Stop
+                $results += $queryResult.Data
+            }
+
+            return $results
+        }
+        catch
+        {
+            throw $_
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [DefenderSubscriptionPlan] AsResult([System.Object] $Values)
     {
@@ -278,34 +304,6 @@ class DefenderSubscriptionPlan : M365DSCResourceBase
         }
 
         return $result
-    }
-}
-
-# Was Get-SubscriptionsDefenderPlansFromArg. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-DefenderSubscriptionPlanSubscriptionsDefenderPlansFromArg
-{
-    try
-    {
-        $results = @()
-        $argQuery = @'
-securityresources | where type == "microsoft.security/pricings" | project Id=id, PlanName=name, SubscriptionId=subscriptionId, SubPlan=tostring(properties.subPlan), PricingTier=tostring(properties.pricingTier), Extensions=tostring(properties.extensions)
-| join kind=inner (resourcecontainers | where type == "microsoft.resources/subscriptions" | project SubscriptionName = name, SubscriptionId = subscriptionId) on SubscriptionId | project-away SubscriptionId1
-'@
-        $queryResult = Search-AzGraph -Query $argQuery -First 1000 -UseTenantScope -ErrorAction Stop
-        $results += $queryResult.Data
-
-        while ($null -ne $queryResult.SkipToken)
-        {
-            $queryResult = Search-AzGraph -Query $argQuery -First 1000 -UseTenantScope -SkipToken $queryResult.SkipToken -ErrorAction Stop
-            $results += $queryResult.Data
-        }
-
-        return $results
-    }
-    catch
-    {
-        throw $_
     }
 }
 

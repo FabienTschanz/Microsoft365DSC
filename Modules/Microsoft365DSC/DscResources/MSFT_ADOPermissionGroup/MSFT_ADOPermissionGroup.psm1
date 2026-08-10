@@ -234,10 +234,7 @@ class ADOPermissionGroup : M365DSCResourceBase
             foreach ($member in $this.Members)
             {
                 Write-Verbose -Message "Adding Member {$member} to group ${$PrincipalName}"
-                Set-ADOPermissionGroupM365DSCADOPermissionGroupMember -OrganizationName $this.OrganizationName `
-                    -GroupId $newGroup.originId `
-                    -PrincipalName $member `
-                    -Cache $this.ResourceCache
+                $this.SetPermissionGroupMember($this.OrganizationName, $newGroup.originId, $member, 'Put')
             }
         }
         # UPDATE
@@ -256,20 +253,12 @@ class ADOPermissionGroup : M365DSCResourceBase
                 if ($diff.SideIndicator -eq '=>')
                 {
                     Write-Verbose -Message "Adding Member {$($diff.InputObject)} to group ${$PrincipalName}"
-                    Set-ADOPermissionGroupM365DSCADOPermissionGroupMember -OrganizationName $this.OrganizationName `
-                        -GroupId $currentInstance.Id `
-                        -PrincipalName $diff.InputObject `
-                        -Method 'PUT' `
-                        -Cache $this.ResourceCache
+                    $this.SetPermissionGroupMember($this.OrganizationName, $currentInstance.Id, $diff.InputObject, 'PUT')
                 }
                 else
                 {
                     Write-Verbose -Message "Removing Member {$($diff.InputObject)} to group ${$PrincipalName}"
-                    Set-ADOPermissionGroupM365DSCADOPermissionGroupMember -OrganizationName $this.OrganizationName `
-                        -GroupId $currentInstance.Id `
-                        -PrincipalName $diff.InputObject `
-                        -Method 'DELETE' `
-                        -Cache $this.ResourceCache
+                    $this.SetPermissionGroupMember($this.OrganizationName, $currentInstance.Id, $diff.InputObject, 'DELETE')
                 }
             }
         }
@@ -377,6 +366,19 @@ class ADOPermissionGroup : M365DSCResourceBase
         }
     }
 
+    hidden [void] SetPermissionGroupMember([System.String] $OrganizationName, [System.String] $GroupId, [System.String] $PrincipalName, [System.String] $Method)
+    {
+        if ($null -eq $this.ResourceCache['allUsers'])
+        {
+            $uri = "https://vsaex.dev.azure.com/$($OrganizationName)/_apis/userentitlements?api-version=7.2-preview.4"
+            $this.ResourceCache['allUsers'] = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
+        }
+        $user = $this.ResourceCache['allUsers'].items | Where-Object -FilterScript { $_.user.principalName -eq $PrincipalName }
+        $UserId = $user.id
+        $uri = "https://vsaex.dev.azure.com/$($OrganizationName)/_apis/GroupEntitlements/$($GroupId)/members/$($UserId)?api-version=5.0-preview.1"
+        Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri -Method $Method | Out-Null
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [ADOPermissionGroup] AsResult([System.Object] $Values)
     {
@@ -393,42 +395,4 @@ class ADOPermissionGroup : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Set-M365DSCADOPermissionGroupMember. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Set-ADOPermissionGroupM365DSCADOPermissionGroupMember
-{
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $OrganizationName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $GroupId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PrincipalName,
-
-        [Parameter()]
-        [System.String]
-        $Method = 'Put',
-
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache
-    )
-
-    if ($null -eq $Cache['allUsers'])
-    {
-        $uri = "https://vsaex.dev.azure.com/$($OrganizationName)/_apis/userentitlements?api-version=7.2-preview.4"
-        $Cache['allUsers'] = Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri
-    }
-    $user = $Cache['allUsers'].items | Where-Object -FilterScript { $_.user.principalName -eq $PrincipalName }
-    $UserId = $user.id
-    $uri = "https://vsaex.dev.azure.com/$($OrganizationName)/_apis/GroupEntitlements/$($GroupId)/members/$($UserId)?api-version=5.0-preview.1"
-    Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri -Method $Method | Out-Null
 }

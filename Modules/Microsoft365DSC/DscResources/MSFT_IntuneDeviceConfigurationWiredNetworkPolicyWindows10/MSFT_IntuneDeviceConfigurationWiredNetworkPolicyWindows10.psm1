@@ -282,11 +282,11 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
             }
             #endregion
 
-            $rootCertificateForClientValidation = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -DeviceConfigurationPolicyId $getValue.Id -CertificateName rootCertificateForClientValidation
-            $rootCertificatesForServerValidation = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -DeviceConfigurationPolicyId $getValue.Id -CertificateName rootCertificatesForServerValidation
-            $identityCertificateForClientAuthentication = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -DeviceConfigurationPolicyId $getValue.Id -CertificateName identityCertificateForClientAuthentication
-            $secondaryIdentityCertificateForClientAuthentication = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -DeviceConfigurationPolicyId $getValue.Id -CertificateName secondaryIdentityCertificateForClientAuthentication
-            $secondaryRootCertificateForClientValidation = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -DeviceConfigurationPolicyId $getValue.Id -CertificateName secondaryRootCertificateForClientValidation
+            $rootCertificateForClientValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'rootCertificateForClientValidation')
+            $rootCertificatesForServerValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'rootCertificatesForServerValidation')
+            $identityCertificateForClientAuthentication = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'identityCertificateForClientAuthentication')
+            $secondaryIdentityCertificateForClientAuthentication = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'secondaryIdentityCertificateForClientAuthentication')
+            $secondaryRootCertificateForClientValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'secondaryRootCertificateForClientValidation')
 
             $results = @{
                 #region resource generator code
@@ -400,10 +400,10 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
                 $rootCertificatesForServerValidation = @()
                 for ($i = 0; $i -lt $this.RootCertificatesForServerValidationIds.Length; $i++)
                 {
-                    $checkedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                        -CertificateId $this.RootCertificatesForServerValidationIds[$i] `
-                        -CertificateDisplayName $this.RootCertificatesForServerValidationDisplayNames[$i] `
-                        -OdataTypes @('#microsoft.graph.windows81TrustedRootCertificate')
+                    $checkedCertId = $this.GetCertificateId(
+                        $this.RootCertificatesForServerValidationIds[$i],
+                        $this.RootCertificatesForServerValidationDisplayNames[$i],
+                        @('#microsoft.graph.windows81TrustedRootCertificate'))
                     $rootCertificatesForServerValidation += "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$checkedCertId')"
                 }
                 $CreateParameters.Add('rootCertificatesForServerValidation@odata.bind', $rootCertificatesForServerValidation)
@@ -411,48 +411,48 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
 
             if (-not [String]::IsNullOrWhiteSpace($this.IdentityCertificateForClientAuthenticationId))
             {
-                $checkedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                    -CertificateId $this.IdentityCertificateForClientAuthenticationId `
-                    -CertificateDisplayName $this.IdentityCertificateForClientAuthenticationDisplayName `
-                    -OdataTypes @( `
-                        '#microsoft.graph.windows81SCEPCertificateProfile', `
-                        '#microsoft.graph.windows81TrustedRootCertificate', `
-                        '#microsoft.graph.windows10PkcsCertificateProfile' `
-                )
+                $checkedCertId = $this.GetCertificateId(
+                    $this.IdentityCertificateForClientAuthenticationId,
+                    $this.IdentityCertificateForClientAuthenticationDisplayName,
+                    @(
+                        '#microsoft.graph.windows81SCEPCertificateProfile',
+                        '#microsoft.graph.windows81TrustedRootCertificate',
+                        '#microsoft.graph.windows10PkcsCertificateProfile'
+                    ))
                 $ref = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$checkedCertId')"
                 $CreateParameters.Add('identityCertificateForClientAuthentication@odata.bind', $ref)
             }
 
             if (-not [String]::IsNullOrWhiteSpace($this.SecondaryIdentityCertificateForClientAuthenticationId))
             {
-                $checkedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                    -CertificateId $this.SecondaryIdentityCertificateForClientAuthenticationId `
-                    -CertificateDisplayName $this.SecondaryIdentityCertificateForClientAuthenticationDisplayName `
-                    -OdataTypes @( `
-                        '#microsoft.graph.windows81SCEPCertificateProfile', `
-                        '#microsoft.graph.windows81TrustedRootCertificate', `
-                        '#microsoft.graph.windows10PkcsCertificateProfile' `
-                )
+                $checkedCertId = $this.GetCertificateId(
+                    $this.SecondaryIdentityCertificateForClientAuthenticationId,
+                    $this.SecondaryIdentityCertificateForClientAuthenticationDisplayName,
+                    @(
+                        '#microsoft.graph.windows81SCEPCertificateProfile',
+                        '#microsoft.graph.windows81TrustedRootCertificate',
+                        '#microsoft.graph.windows10PkcsCertificateProfile'
+                    ))
                 $ref = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$checkedCertId')"
                 $CreateParameters.Add('secondaryIdentityCertificateForClientAuthentication@odata.bind', $ref)
             }
 
             if (-not [String]::IsNullOrWhiteSpace($this.RootCertificateForClientValidationId))
             {
-                $checkedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                    -CertificateId $this.RootCertificateForClientValidationId `
-                    -CertificateDisplayName $this.RootCertificateForClientValidationDisplayName `
-                    -OdataTypes @('#microsoft.graph.windows81TrustedRootCertificate')
+                $checkedCertId = $this.GetCertificateId(
+                    $this.RootCertificateForClientValidationId,
+                    $this.RootCertificateForClientValidationDisplayName,
+                    @('#microsoft.graph.windows81TrustedRootCertificate'))
                 $ref = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$checkedCertId')"
                 $CreateParameters.Add('rootCertificateForClientValidation@odata.bind', $ref)
             }
 
             if (-not [String]::IsNullOrWhiteSpace($this.SecondaryRootCertificateForClientValidationId))
             {
-                $checkedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                    -CertificateId $this.SecondaryRootCertificateForClientValidationId `
-                    -CertificateDisplayName $this.SecondaryRootCertificateForClientValidationDisplayName `
-                    -OdataTypes @('#microsoft.graph.windows81TrustedRootCertificate')
+                $checkedCertId = $this.GetCertificateId(
+                    $this.SecondaryRootCertificateForClientValidationId,
+                    $this.SecondaryRootCertificateForClientValidationDisplayName,
+                    @('#microsoft.graph.windows81TrustedRootCertificate'))
                 $ref = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$checkedCertId')"
                 $CreateParameters.Add('secondaryRootCertificateForClientValidation@odata.bind', $ref)
             }
@@ -507,7 +507,7 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
                 {
                     $certId = $this.RootCertificatesForServerValidationIds[$i]
                     $certName = $this.RootCertificatesForServerValidationDisplayNames[$i]
-                    $checkedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId -CertificateId $certId -CertificateDisplayName $certName -OdataTypes @('#microsoft.graph.windows81TrustedRootCertificate')
+                    $checkedCertId = $this.GetCertificateId($certId, $certName, @('#microsoft.graph.windows81TrustedRootCertificate'))
                     $rootCertificatesForServerValidationChecked += $checkedCertId
                 }
                 $compareResult = Compare-Object -ReferenceObject $currentInstance.RootCertificatesForServerValidationIds `
@@ -518,16 +518,12 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
 
                 if ($certsToAdd.Count -gt 0)
                 {
-                    Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -DeviceConfigurationPolicyId $currentInstance.Id `
-                        -CertificateIds $certsToAdd `
-                        -CertificateName rootCertificatesForServerValidation
+                    $this.UpdateDeviceConfigurationPolicyCertificateId($currentInstance.Id, $certsToAdd, 'rootCertificatesForServerValidation')
                 }
 
                 if ($certsToRemove.Count -gt 0)
                 {
-                    Remove-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -DeviceConfigurationPolicyId $currentInstance.Id `
-                        -CertificateIds $certsToRemove `
-                        -CertificateName rootCertificatesForServerValidation
+                    $this.RemoveDeviceConfigurationPolicyCertificateId($currentInstance.Id, $certsToRemove, 'rootCertificatesForServerValidation')
                 }
             }
 
@@ -535,17 +531,15 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
             {
                 if ($this.IdentityCertificateForClientAuthenticationId -ne $currentInstance.IdentityCertificateForClientAuthenticationId)
                 {
-                    $resolvedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                        -CertificateId $this.IdentityCertificateForClientAuthenticationId `
-                        -CertificateDisplayName $this.IdentityCertificateForClientAuthenticationDisplayName `
-                        -OdataTypes @( `
-                            '#microsoft.graph.windows81SCEPCertificateProfile', `
-                            '#microsoft.graph.windows81TrustedRootCertificate', `
-                            '#microsoft.graph.windows10PkcsCertificateProfile' `
-                    )
-                    Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -DeviceConfigurationPolicyId $currentInstance.Id `
-                        -CertificateIds $resolvedCertId `
-                        -CertificateName identityCertificateForClientAuthentication
+                    $resolvedCertId = $this.GetCertificateId(
+                        $this.IdentityCertificateForClientAuthenticationId,
+                        $this.IdentityCertificateForClientAuthenticationDisplayName,
+                        @(
+                            '#microsoft.graph.windows81SCEPCertificateProfile',
+                            '#microsoft.graph.windows81TrustedRootCertificate',
+                            '#microsoft.graph.windows10PkcsCertificateProfile'
+                        ))
+                    $this.UpdateDeviceConfigurationPolicyCertificateId($currentInstance.Id, $resolvedCertId, 'identityCertificateForClientAuthentication')
                 }
             }
 
@@ -553,17 +547,15 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
             {
                 if ($this.SecondaryIdentityCertificateForClientAuthenticationId -ne $currentInstance.SecondaryIdentityCertificateForClientAuthenticationId)
                 {
-                    $resolvedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                        -CertificateId $this.SecondaryIdentityCertificateForClientAuthenticationId `
-                        -CertificateDisplayName $this.SecondaryIdentityCertificateForClientAuthenticationDisplayName `
-                        -OdataTypes @( `
-                            '#microsoft.graph.windows81SCEPCertificateProfile', `
-                            '#microsoft.graph.windows81TrustedRootCertificate', `
-                            '#microsoft.graph.windows10PkcsCertificateProfile' `
-                    )
-                    Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -DeviceConfigurationPolicyId $currentInstance.Id `
-                        -CertificateIds $resolvedCertId `
-                        -CertificateName secondaryIdentityCertificateForClientAuthentication
+                    $resolvedCertId = $this.GetCertificateId(
+                        $this.SecondaryIdentityCertificateForClientAuthenticationId,
+                        $this.SecondaryIdentityCertificateForClientAuthenticationDisplayName,
+                        @(
+                            '#microsoft.graph.windows81SCEPCertificateProfile',
+                            '#microsoft.graph.windows81TrustedRootCertificate',
+                            '#microsoft.graph.windows10PkcsCertificateProfile'
+                        ))
+                    $this.UpdateDeviceConfigurationPolicyCertificateId($currentInstance.Id, $resolvedCertId, 'secondaryIdentityCertificateForClientAuthentication')
                 }
             }
 
@@ -571,13 +563,11 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
             {
                 if ($this.RootCertificateForClientValidationId -ne $currentInstance.RootCertificateForClientValidationId)
                 {
-                    $resolvedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                        -CertificateId $this.RootCertificateForClientValidationId `
-                        -CertificateDisplayName $this.RootCertificateForClientValidationDisplayName `
-                        -OdataTypes @('#microsoft.graph.windows81TrustedRootCertificate')
-                    Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -DeviceConfigurationPolicyId $currentInstance.Id `
-                        -CertificateIds $resolvedCertId `
-                        -CertificateName rootCertificateForClientValidation
+                    $resolvedCertId = $this.GetCertificateId(
+                        $this.RootCertificateForClientValidationId,
+                        $this.RootCertificateForClientValidationDisplayName,
+                        @('#microsoft.graph.windows81TrustedRootCertificate'))
+                    $this.UpdateDeviceConfigurationPolicyCertificateId($currentInstance.Id, $resolvedCertId, 'rootCertificateForClientValidation')
                 }
             }
 
@@ -585,13 +575,11 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
             {
                 if ($this.SecondaryRootCertificateForClientValidationId -ne $currentInstance.SecondaryRootCertificateForClientValidationId)
                 {
-                    $resolvedCertId = Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId `
-                        -CertificateId $this.SecondaryRootCertificateForClientValidationId `
-                        -CertificateDisplayName $this.SecondaryRootCertificateForClientValidationDisplayName `
-                        -OdataTypes @('#microsoft.graph.windows81TrustedRootCertificate')
-                    Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -DeviceConfigurationPolicyId $currentInstance.Id `
-                        -CertificateIds $resolvedCertId `
-                        -CertificateName secondaryRootCertificateForClientValidation
+                    $resolvedCertId = $this.GetCertificateId(
+                        $this.SecondaryRootCertificateForClientValidationId,
+                        $this.SecondaryRootCertificateForClientValidationDisplayName,
+                        @('#microsoft.graph.windows81TrustedRootCertificate'))
+                    $this.UpdateDeviceConfigurationPolicyCertificateId($currentInstance.Id, $resolvedCertId, 'secondaryRootCertificateForClientValidation')
                 }
             }
         }
@@ -757,6 +745,97 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
         }
     }
 
+    hidden [System.String] GetCertificateId([System.String] $CertificateId, [System.String] $CertificateDisplayName, [System.String[]] $OdataTypes)
+    {
+        $Certificate = Get-MgBetaDeviceManagementDeviceConfiguration `
+            -DeviceConfigurationId $CertificateId `
+            -ErrorAction SilentlyContinue | `
+                Where-Object -FilterScript {
+                $_.'@odata.type' -in $OdataTypes
+            }
+
+        if ($null -eq $Certificate)
+        {
+            Write-Verbose -Message "Could not find certificate with Id {$CertificateId}, searching by display name {$CertificateDisplayName}"
+
+            $Certificate = Get-MgBetaDeviceManagementDeviceConfiguration `
+                -Filter "DisplayName eq '$($CertificateDisplayName -replace "'", "''")'" `
+                -ErrorAction SilentlyContinue | `
+                    Where-Object -FilterScript {
+                    $_.'@odata.type' -in $OdataTypes
+                }
+
+            if ($null -eq $Certificate)
+            {
+                throw "Could not find certificate with Id {$CertificateId} or display name {$CertificateDisplayName}"
+            }
+
+            $CertificateId = $Certificate.Id
+            Write-Verbose -Message "Found certificate with Id {$($CertificateId)} and DisplayName {$($Certificate.DisplayName)}"
+        }
+        else
+        {
+            Write-Verbose -Message "Found certificate with Id {$CertificateId}"
+        }
+
+        return $CertificateId
+    }
+
+    hidden [System.Object] GetDeviceConfigurationPolicyCertificate([System.String] $DeviceConfigurationPolicyId, [System.String] $CertificateName)
+    {
+        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName"
+        try
+        {
+            $result = Invoke-MgGraphRequest -Method Get -Uri $Uri 4>$null
+
+            if ($result.value)
+            {
+                return $result.value
+            }
+
+            return $result
+        }
+        catch
+        {
+            return $null
+        }
+    }
+
+    hidden [void] RemoveDeviceConfigurationPolicyCertificateId([System.String] $DeviceConfigurationPolicyId, [System.String[]] $CertificateIds, [System.String] $CertificateName)
+    {
+        foreach ($certificateId in $CertificateIds)
+        {
+            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/$certificateId/`$ref"
+            $ref = @{
+                '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$certificateId')"
+            }
+            $null = Invoke-MgGraphRequest -Method DELETE -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
+        }
+    }
+
+    hidden [void] UpdateDeviceConfigurationPolicyCertificateId([System.String] $DeviceConfigurationPolicyId, [System.String[]] $CertificateIds, [System.String] $CertificateName)
+    {
+        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/`$ref"
+
+        if ($CertificateName -eq 'rootCertificatesForServerValidation')
+        {
+            $method = 'POST'
+        }
+        else
+        {
+            $method = 'PUT'
+        }
+
+        foreach ($certificateId in $CertificateIds)
+        {
+            $ref = @{
+                '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$certificateId')"
+            }
+
+            $null = Invoke-MgGraphRequest -Method $method -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationWiredNetworkPolicyWindows10] AsResult([System.Object] $Values)
     {
@@ -807,170 +886,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-
-# Was Get-IntuneDeviceConfigurationCertificateId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $CertificateId,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $CertificateDisplayName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.String[]]
-        $OdataTypes
-    )
-    $Certificate = Get-MgBetaDeviceManagementDeviceConfiguration `
-        -DeviceConfigurationId $CertificateId `
-        -ErrorAction SilentlyContinue | `
-            Where-Object -FilterScript {
-            $_.'@odata.type' -in $OdataTypes
-        }
-
-    if ($null -eq $Certificate)
-    {
-        Write-Verbose -Message "Could not find certificate with Id {$CertificateId}, searching by display name {$CertificateDisplayName}"
-
-        $Certificate = Get-MgBetaDeviceManagementDeviceConfiguration `
-            -Filter "DisplayName eq '$($CertificateDisplayName -replace "'", "''")'" `
-            -ErrorAction SilentlyContinue | `
-                Where-Object -FilterScript {
-                $_.'@odata.type' -in $OdataTypes
-            }
-
-        if ($null -eq $Certificate)
-        {
-            throw "Could not find certificate with Id {$CertificateId} or display name {$CertificateDisplayName}"
-        }
-
-        $CertificateId = $Certificate.Id
-        Write-Verbose -Message "Found certificate with Id {$($CertificateId)} and DisplayName {$($Certificate.DisplayName)}"
-    }
-    else
-    {
-        Write-Verbose -Message "Found certificate with Id {$CertificateId}"
-    }
-
-    return $CertificateId
-}
-
-# Was Get-DeviceConfigurationPolicyCertificate. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate
-{
-    [CmdletBinding()]
-    [OutputType([System.String], [System.String[]])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceConfigurationPolicyId,
-
-        [Parameter(Mandatory = 'true')]
-        [ValidateSet('rootCertificatesForServerValidation', 'identityCertificateForClientAuthentication', 'secondaryIdentityCertificateForClientAuthentication', 'rootCertificateForClientValidation', 'secondaryRootCertificateForClientValidation')]
-        [System.String]
-        $CertificateName
-    )
-    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName"
-    try
-    {
-        $result = Invoke-MgGraphRequest -Method Get -Uri $Uri 4>$null
-
-        return $(if ($result.value)
-            {
-                $result.value
-            }
-            else
-            {
-                $result
-            })
-    }
-    catch
-    {
-        return $null
-    }
-
-}
-
-# Was Remove-DeviceConfigurationPolicyCertificateId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Remove-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceConfigurationPolicyId,
-
-        [Parameter(Mandatory = 'true')]
-        [System.String[]]
-        $CertificateIds,
-
-        [Parameter(Mandatory = 'true')]
-        [ValidateSet('rootCertificatesForServerValidation', 'identityCertificateForClientAuthentication', 'secondaryIdentityCertificateForClientAuthentication', 'rootCertificateForClientValidation', 'secondaryRootCertificateForClientValidation')]
-        [System.String]
-        $CertificateName
-    )
-
-    foreach ($certificateId in $CertificateIds)
-    {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/$certificateId/`$ref"
-        $ref = @{
-            '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$certificateId')"
-        }
-        Invoke-MgGraphRequest -Method DELETE -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
-    }
-}
-
-# Was Update-DeviceConfigurationPolicyCertificateId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = 'true')]
-        [System.String]
-        $DeviceConfigurationPolicyId,
-
-        [Parameter(Mandatory = 'true')]
-        [System.String[]]
-        $CertificateIds,
-
-        [Parameter(Mandatory = 'true')]
-        [ValidateSet('rootCertificatesForServerValidation', 'identityCertificateForClientAuthentication', 'secondaryIdentityCertificateForClientAuthentication', 'rootCertificateForClientValidation', 'secondaryRootCertificateForClientValidation')]
-        [System.String]
-        $CertificateName
-    )
-    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/`$ref"
-
-    if ($CertificateName -eq 'rootCertificatesForServerValidation')
-    {
-        $method = 'POST'
-    }
-    else
-    {
-        $method = 'PUT'
-    }
-
-    foreach ($certificateId in $CertificateIds)
-    {
-        $ref = @{
-            '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$certificateId')"
-        }
-
-        Invoke-MgGraphRequest -Method $method -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
-    }
-}
-

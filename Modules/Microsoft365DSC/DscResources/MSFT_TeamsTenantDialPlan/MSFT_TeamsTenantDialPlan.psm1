@@ -110,7 +110,7 @@ class TeamsTenantDialPlan : M365DSCResourceBase
             $rules = @()
             if ($config.NormalizationRules.Count -gt 0)
             {
-                $rules = Get-TeamsTenantDialPlanM365DSCNormalizationRules -Rules $config.NormalizationRules
+                $rules = $this.GetNormalizationRules($config.NormalizationRules)
             }
 
             $result = @{
@@ -203,7 +203,7 @@ class TeamsTenantDialPlan : M365DSCResourceBase
             $boundParameters.Remove('NormalizationRules') | Out-Null
             Set-CsTenantDialPlan @boundParameters
 
-            $differences = Get-TeamsTenantDialPlanM365DSCVoiceNormalizationRulesDifference -CurrentRules $CurrentValues.NormalizationRules -DesiredRules $desiredRules
+            $differences = $this.GetVoiceNormalizationRulesDifference($CurrentValues.NormalizationRules, $desiredRules)
             foreach ($ruleToAdd in $differences.RulesToAdd)
             {
                 Write-Verbose "Adding new VoiceNormalizationRule {$($ruleToAdd.Identity)}"
@@ -360,6 +360,88 @@ class TeamsTenantDialPlan : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetVoiceNormalizationRulesDifference([System.Object[]] $CurrentRules, [System.Object[]] $DesiredRules)
+    {
+        $differences = @{}
+        $rulesToRemove = @()
+        $rulesToAdd = @()
+        $rulesToUpdate = @()
+        foreach ($currentRule in $CurrentRules)
+        {
+            $equivalentDesiredRule = $DesiredRules | Where-Object -FilterScript { $_.Identity -eq $currentRule.Identity }
+
+            # Case the current rule is not listed in the Desired rules, we need to remove it
+            if ($null -eq $equivalentDesiredRule)
+            {
+                Write-Verbose "Adding Rule {$($currentRule.Identity)} to the RulesToRemove"
+                $rulesToRemove += $currentRule
+            }
+            # Case the rule exists but is not in the desired state
+            else
+            {
+                $differenceFound = $false
+                foreach ($key in $currentRule.Keys)
+                {
+                    if (-not [System.String]::IsNullOrEmpty($equivalentDesiredRule.$key) -and $currentRule.$key -ne $equivalentDesiredRule.$key)
+                    {
+                        $differenceFound = $true
+                    }
+                }
+
+                if ($differenceFound)
+                {
+                    Write-Verbose "Adding Rule {$($currentRule.Identity)} to the RulesToUpdate"
+                    $rulesToUpdate += $equivalentDesiredRule
+                }
+            }
+        }
+
+        foreach ($desiredRule in $DesiredRules)
+        {
+            $equivalentCurrentRule = $CurrentRules | Where-Object -FilterScript { $_.Identity -eq $desiredRule.Identity }
+
+            # Case the desired rule doesn't exist, we need to create it
+            if ($null -eq $equivalentCurrentRule)
+            {
+                Write-Verbose "Adding Rule {$($desiredRule.Identity)} to the RulesToAdd"
+                $rulesToAdd += $desiredRule
+            }
+        }
+        $differences.Add('RulesToAdd', $rulesToAdd)
+        $differences.Add('RulesToUpdate', $rulesToUpdate)
+        $differences.Add('RulesToRemove', $rulesToRemove)
+        return $differences
+    }
+
+    hidden [System.Object[]] GetNormalizationRules([System.Object] $Rules)
+    {
+        if ($null -eq $Rules)
+        {
+            return $null
+        }
+
+        $result = @()
+        foreach ($rule in $Rules)
+        {
+            $ruleName = $rule.Name.Replace('Tag:', '')
+            $currentRule = @{
+                Identity            = $ruleName
+                Priority            = $rule.Priority
+                Description         = $rule.Description
+                Pattern             = $rule.Pattern
+                Translation         = $rule.Translation
+                IsInternalExtension = $rule.IsInternalExtension
+            }
+            if ([System.String]::IsNullOrEmpty($rule.Priority))
+            {
+                $currentRule.Remove('Priority') | Out-Null
+            }
+            $result += $currentRule
+        }
+
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTenantDialPlan] AsResult([System.Object] $Values)
     {
@@ -403,112 +485,5 @@ class MSFT_TeamsVoiceNormalizationRule
     [DscProperty()]
     [System.ComponentModel.Description('If True, the result of applying this rule will be a number internal to the organization. If False, applying the rule results in an external number. This value is ignored if the value of the OptimizeDeviceDialing property of the associated dial plan is set to False.')]
     [System.Nullable[System.Boolean]] $IsInternalExtension
-}
-
-# Was Get-M365DSCVoiceNormalizationRulesDifference. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-TeamsTenantDialPlanM365DSCVoiceNormalizationRulesDifference
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        [System.Object[]]
-        $CurrentRules,
-
-        [Parameter(Mandatory = $true)]
-        [System.Object[]]
-        $DesiredRules
-    )
-
-    $differences = @{}
-    $rulesToRemove = @()
-    $rulesToAdd = @()
-    $rulesToUpdate = @()
-    foreach ($currentRule in $CurrentRules)
-    {
-        $equivalentDesiredRule = $DesiredRules | Where-Object -FilterScript { $_.Identity -eq $currentRule.Identity }
-
-        # Case the current rule is not listed in the Desired rules, we need to remove it
-        if ($null -eq $equivalentDesiredRule)
-        {
-            Write-Verbose "Adding Rule {$($currentRule.Identity)} to the RulesToRemove"
-            $rulesToRemove += $currentRule
-        }
-        # Case the rule exists but is not in the desired state
-        else
-        {
-            $differenceFound = $false
-            foreach ($key in $currentRule.Keys)
-            {
-                if (-not [System.String]::IsNullOrEmpty($equivalentDesiredRule.$key) -and $currentRule.$key -ne $equivalentDesiredRule.$key)
-                {
-                    $differenceFound = $true
-                }
-            }
-
-            if ($differenceFound)
-            {
-                Write-Verbose "Adding Rule {$($currentRule.Identity)} to the RulesToUpdate"
-                $rulesToUpdate += $equivalentDesiredRule
-            }
-        }
-    }
-
-    foreach ($desiredRule in $DesiredRules)
-    {
-        $equivalentCurrentRule = $CurrentRules | Where-Object -FilterScript { $_.Identity -eq $desiredRule.Identity }
-
-        # Case the desired rule doesn't exist, we need to create it
-        if ($null -eq $equivalentCurrentRule)
-        {
-            Write-Verbose "Adding Rule {$($desiredRule.Identity)} to the RulesToAdd"
-            $rulesToAdd += $desiredRule
-        }
-    }
-    $differences.Add('RulesToAdd', $rulesToAdd)
-    $differences.Add('RulesToUpdate', $rulesToUpdate)
-    $differences.Add('RulesToRemove', $rulesToRemove)
-    return $differences
-}
-
-# Was Get-M365DSCNormalizationRules. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-TeamsTenantDialPlanM365DSCNormalizationRules
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        $Rules
-    )
-
-    if ($null -eq $Rules)
-    {
-        return $null
-    }
-
-    $result = @()
-    foreach ($rule in $Rules)
-    {
-        $ruleName = $rule.Name.Replace('Tag:', '')
-        $currentRule = @{
-            Identity            = $ruleName
-            Priority            = $rule.Priority
-            Description         = $rule.Description
-            Pattern             = $rule.Pattern
-            Translation         = $rule.Translation
-            IsInternalExtension = $rule.IsInternalExtension
-        }
-        if ([System.String]::IsNullOrEmpty($rule.Priority))
-        {
-            $currentRule.Remove('Priority') | Out-Null
-        }
-        $result += $currentRule
-    }
-
-    return ,$result
 }
 

@@ -98,7 +98,7 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
             else
             {
                 $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-                $response = Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+                $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
                 $instances = $response.value
             }
             if ($null -eq $instances)
@@ -106,7 +106,7 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
                 return $this.AsResult($nullResult)
             }
 
-            $instance = Get-AADVerifiedIdAuthorityM365DSCVerifiedIdAuthorityObject -Authority ($instances | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.LinkedDomainUrl })
+            $instance = $this.GetVerifiedIdAuthorityObject(($instances | Where-Object -FilterScript { $_.didModel.linkedDomainUrls[0] -eq $this.LinkedDomainUrl }))
             if ($null -eq $instance)
             {
                 return $this.AsResult($nullResult)
@@ -176,7 +176,7 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
             Write-Verbose -Message "Creating VerifiedId Authority with body $($body | ConvertTo-Json -Depth 5)"
 
             $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-            Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'POST' -Body $body
+            $null = $this.InvokeVerifiedIdWebRequest($uri, 'POST', $body)
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
@@ -186,14 +186,14 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
             $body = @{
                 name = $this.Name
             }
-            Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'PATCH' -Body $body
+            $null = $this.InvokeVerifiedIdWebRequest($uri, 'PATCH', $body)
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing VerifiedId Authority with Name {$($this.Name)} and Id $($currentInstance.Id)"
 
             $uri = 'https://verifiedid.did.msidentity.com/beta/verifiableCredentials/authorities/' + $currentInstance.Id
-            Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'DELETE'
+            $null = $this.InvokeVerifiedIdWebRequest($uri, 'DELETE')
         }
     }
 
@@ -225,7 +225,7 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
         {
             $this.ResourceCache['ExportMode'] = $true
             $uri = 'https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/authorities'
-            $response = Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Uri $uri -Method 'GET'
+            $response = $this.InvokeVerifiedIdWebRequest($uri, 'GET')
             [array] $this.ResourceCache['exportedInstances'] = $response.value
 
             foreach ($authority in $this.ResourceCache['exportedInstances'])
@@ -300,6 +300,65 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetVerifiedIdAuthorityObject([System.Object] $Authority)
+    {
+        if ($null -eq $Authority)
+        {
+            return $null
+        }
+
+        Write-Verbose -Message "Retrieving values for authority {$($Authority.didModel.linkedDomainUrls[0])}"
+        $did = ($Authority.didModel.did -split ':')[1]
+        $values = @{
+            Id              = $Authority.Id
+            Name            = $Authority.Name
+            LinkedDomainUrl = $Authority.didModel.linkedDomainUrls[0]
+            DidMethod       = $did
+        }
+        if ($null -ne $Authority.KeyVaultMetadata)
+        {
+            $keyVaultMetadataValue = @{
+                SubscriptionId = $Authority.KeyVaultMetadata.SubscriptionId
+                ResourceGroup  = $Authority.KeyVaultMetadata.ResourceGroup
+                ResourceName   = $Authority.KeyVaultMetadata.ResourceName
+                ResourceUrl    = $Authority.KeyVaultMetadata.ResourceUrl
+            }
+
+            $values.Add('KeyVaultMetadata', $keyVaultMetadataValue)
+        }
+        return $values
+    }
+
+    hidden [System.Object] InvokeVerifiedIdWebRequest([System.String] $Uri, [System.String] $Method)
+    {
+        return $this.InvokeVerifiedIdWebRequest($Uri, $Method, $null)
+    }
+
+    hidden [System.Object] InvokeVerifiedIdWebRequest([System.String] $Uri, [System.String] $Method, [System.Collections.Hashtable] $Body)
+    {
+        $headers = @{
+            Authorization  = (Get-MSCloudLoginConnectionProfile -Workload AdminAPI).AccessToken
+            'Content-Type' = 'application/json'
+        }
+
+        if ($Method -eq 'PATCH' -or $Method -eq 'POST')
+        {
+            $BodyJson = $Body | ConvertTo-Json
+            $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -Body $BodyJson -UseBasicParsing
+        }
+        else
+        {
+            $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -UseBasicParsing
+        }
+
+        if ($Method -eq 'DELETE')
+        {
+            return $null
+        }
+        $result = ConvertFrom-Json $response.Content
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADVerifiedIdAuthority] AsResult([System.Object] $Values)
     {
@@ -335,86 +394,5 @@ class MSFT_AADVerifiedIdAuthorityKeyVaultMetadata
     [DscProperty()]
     [System.ComponentModel.Description('Resource URL of the Key Vault.')]
     [System.String] $ResourceUrl
-}
-
-# Was Get-M365DSCVerifiedIdAuthorityObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADVerifiedIdAuthorityM365DSCVerifiedIdAuthorityObject
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter()]
-        $Authority
-    )
-
-    if ($null -eq $Authority)
-    {
-        return $null
-    }
-
-    Write-Verbose -Message "Retrieving values for authority {$($Authority.didModel.linkedDomainUrls[0])}"
-    $did = ($Authority.didModel.did -split ':')[1]
-    $values = @{
-        Id              = $Authority.Id
-        Name            = $Authority.Name
-        LinkedDomainUrl = $Authority.didModel.linkedDomainUrls[0]
-        DidMethod       = $did
-    }
-    if ($null -ne $Authority.KeyVaultMetadata)
-    {
-        $KeyVaultMetadata = @{
-            SubscriptionId = $Authority.KeyVaultMetadata.SubscriptionId
-            ResourceGroup  = $Authority.KeyVaultMetadata.ResourceGroup
-            ResourceName   = $Authority.KeyVaultMetadata.ResourceName
-            ResourceUrl    = $Authority.KeyVaultMetadata.ResourceUrl
-        }
-
-        $values.Add('KeyVaultMetadata', $KeyVaultMetadata)
-    }
-    return $values
-}
-
-# Was Invoke-M365DSCVerifiedIdWebRequest. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest
-{
-    [OutputType([System.Collections.Hashtable])]
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Uri,
-
-        [Parameter()]
-        [System.String]
-        $Method = 'GET',
-
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $Body
-    )
-
-    $headers = @{
-        Authorization  = (Get-MSCloudLoginConnectionProfile -Workload AdminAPI).AccessToken
-        'Content-Type' = 'application/json'
-    }
-
-    if ($Method -eq 'PATCH' -or $Method -eq 'POST')
-    {
-        $BodyJson = $body | ConvertTo-Json
-        $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -Body $BodyJson -UseBasicParsing
-    }
-    else
-    {
-        $response = Invoke-WebRequest -Method $Method -Uri $Uri -Headers $headers -UseBasicParsing
-    }
-
-    if ($Method -eq 'DELETE')
-    {
-        return $null
-    }
-    $result = ConvertFrom-Json $response.Content
-    return $result
 }
 

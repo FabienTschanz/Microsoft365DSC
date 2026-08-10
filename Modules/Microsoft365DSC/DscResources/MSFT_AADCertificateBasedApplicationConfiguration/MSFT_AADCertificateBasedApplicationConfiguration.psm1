@@ -127,7 +127,7 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
 
                 foreach ($ca in $certificateAuthorities)
                 {
-                    $certificateValue = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $ca.Certificate
+                    $certificateValue = $this.ConvertToBase64CertificateValue($ca.Certificate)
                     $trustedCAs += @{
                         Certificate                 = $certificateValue
                         IsRootAuthority             = [System.Boolean]$ca.IsRootAuthority
@@ -207,7 +207,7 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
                     $params.trustedCertificateAuthorities = @()
                     foreach ($ca in $this.TrustedCertificateAuthorities)
                     {
-                        $normalizedCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $ca.Certificate
+                        $normalizedCertificate = $this.ConvertToBase64CertificateValue($ca.Certificate)
                         $caParams = @{
                             certificate     = $normalizedCertificate
                             isRootAuthority = $ca.IsRootAuthority
@@ -285,8 +285,8 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
                         # Check if any certificate differs
                         for ($i = 0; $i -lt $this.TrustedCertificateAuthorities.Count; $i++)
                         {
-                            $desiredCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $this.TrustedCertificateAuthorities[$i].Certificate
-                            $currentCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $currentInstance.TrustedCertificateAuthorities[$i].Certificate
+                            $desiredCertificate = $this.ConvertToBase64CertificateValue($this.TrustedCertificateAuthorities[$i].Certificate)
+                            $currentCertificate = $this.ConvertToBase64CertificateValue($currentInstance.TrustedCertificateAuthorities[$i].Certificate)
                             if ($desiredCertificate -ne $currentCertificate -or
                                 $this.TrustedCertificateAuthorities[$i].IsRootAuthority -ne $currentInstance.TrustedCertificateAuthorities[$i].IsRootAuthority)
                             {
@@ -323,13 +323,13 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
                     foreach ($currentCA in $currentCAs)
                     {
                         $found = $false
-                        $currentCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $currentCA.Certificate
+                        $currentCertificate = $this.ConvertToBase64CertificateValue($currentCA.Certificate)
 
                         if ($null -ne $this.TrustedCertificateAuthorities)
                         {
                             foreach ($desiredCA in $this.TrustedCertificateAuthorities)
                             {
-                                $desiredCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $desiredCA.Certificate
+                                $desiredCertificate = $this.ConvertToBase64CertificateValue($desiredCA.Certificate)
 
                                 if ($currentCertificate -eq $desiredCertificate)
                                 {
@@ -362,12 +362,12 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
                         foreach ($desiredCA in $this.TrustedCertificateAuthorities)
                         {
                             $existingCA = $null
-                            $desiredCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $desiredCA.Certificate
+                            $desiredCertificate = $this.ConvertToBase64CertificateValue($desiredCA.Certificate)
 
                             foreach ($currentCA in $currentCAs)
                             {
 
-                                $currentCertificate = ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue -CertificateValue $currentCA.Certificate
+                                $currentCertificate = $this.ConvertToBase64CertificateValue($currentCA.Certificate)
                                 if ($currentCertificate -eq $desiredCertificate)
                                 {
                                     $existingCA = $currentCA
@@ -569,6 +569,27 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
         }
     }
 
+    # Returns [System.Object] rather than [System.String] on purpose: the trailing branch hands back
+    # $CertificateValue unchanged, which may be $null, and a [System.String]-typed method would
+    # convert that $null to an empty string.
+    hidden [System.Object] ConvertToBase64CertificateValue([System.Object] $CertificateValue)
+    {
+        if ($CertificateValue -is [System.Security.Cryptography.X509Certificates.X509Certificate2])
+        {
+            return [System.Convert]::ToBase64String($CertificateValue.RawData)
+        }
+        elseif ($CertificateValue -is [System.Byte[]])
+        {
+            return [System.Convert]::ToBase64String($CertificateValue)
+        }
+        elseif ($null -ne $CertificateValue -and -not ($CertificateValue -is [System.String]))
+        {
+            return $CertificateValue.ToString()
+        }
+
+        return $CertificateValue
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADCertificateBasedApplicationConfiguration] AsResult([System.Object] $Values)
     {
@@ -604,29 +625,4 @@ class MSFT_AADCertificateBasedApplicationConfigurationTrustedCertificateAuthorit
     [DscProperty()]
     [System.ComponentModel.Description('The subject key identifier of the issuer.')]
     [System.String] $IssuerSubjectKeyIdentifier
-}
-
-# Was ConvertTo-M365DSCBase64CertificateValue. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function ConvertTo-AADCertificateBasedApplicationConfigurationM365DSCBase64CertificateValue
-{
-    param(
-        [Parameter()]
-        $CertificateValue
-    )
-
-    if ($CertificateValue -is [System.Security.Cryptography.X509Certificates.X509Certificate2])
-    {
-        return [System.Convert]::ToBase64String($CertificateValue.RawData)
-    }
-    elseif ($CertificateValue -is [System.Byte[]])
-    {
-        return [System.Convert]::ToBase64String($CertificateValue)
-    }
-    elseif ($null -ne $CertificateValue -and -not ($CertificateValue -is [System.String]))
-    {
-        return $CertificateValue.ToString()
-    }
-
-    return $CertificateValue
 }

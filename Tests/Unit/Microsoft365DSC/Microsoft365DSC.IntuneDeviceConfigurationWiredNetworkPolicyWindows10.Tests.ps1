@@ -81,36 +81,40 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -MockWith {
+            Mock -CommandName Invoke-MgGraphRequest -MockWith {
             }
 
-            Mock -CommandName Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -MockWith {
-                return @(@{
-                    Id = 'a485d322-13cd-43ef-beda-733f656f48ea'
-                    DisplayName = 'RootCertificate'
-                })
-            } -ParameterFilter { $CertificateName -eq 'rootCertificatesForServerValidation' }
+            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                return @{
+                    value = @(@{
+                        Id = 'a485d322-13cd-43ef-beda-733f656f48ea'
+                        DisplayName = 'RootCertificate'
+                    })
+                }
+            } -ParameterFilter { $Method -eq 'Get' -and $Uri -like '*/rootCertificatesForServerValidation' }
 
-            Mock -CommandName Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificate -MockWith {
+            Mock -CommandName Invoke-MgGraphRequest -MockWith {
                 return @{
                     Id = '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
                     DisplayName = 'ClientCertificate'
                 }
-            } -ParameterFilter { $CertificateName -eq 'secondaryIdentityCertificateForClientAuthentication' }
+            } -ParameterFilter { $Method -eq 'Get' -and $Uri -like '*/secondaryIdentityCertificateForClientAuthentication' }
 
-            Mock -CommandName Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId -MockWith {
-                return 'a485d322-13cd-43ef-beda-733f656f48ea'
-            } -ParameterFilter { $CertificateDisplayName -eq 'RootCertificate' }
+            Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
+                return @{
+                    Id = 'a485d322-13cd-43ef-beda-733f656f48ea'
+                    DisplayName = 'RootCertificate'
+                    '@odata.type' = '#microsoft.graph.windows81TrustedRootCertificate'
+                }
+            } -ParameterFilter { $DeviceConfigurationId -eq 'a485d322-13cd-43ef-beda-733f656f48ea' }
 
-            Mock -CommandName Get-IntuneDeviceConfigurationWiredNetworkPolicyWindows10IntuneDeviceConfigurationCertificateId -MockWith {
-                return '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
-            } -ParameterFilter { $CertificateDisplayName -eq 'ClientCertificate' }
-
-            Mock -CommandName Update-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -MockWith {
-            }
-
-            Mock -CommandName Remove-IntuneDeviceConfigurationWiredNetworkPolicyWindows10DeviceConfigurationPolicyCertificateId -MockWith {
-            }
+            Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
+                return @{
+                    Id = '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
+                    DisplayName = 'ClientCertificate'
+                    '@odata.type' = '#microsoft.graph.windows81SCEPCertificateProfile'
+                }
+            } -ParameterFilter { $DeviceConfigurationId -eq '0b9aef2f-1671-4260-8eb9-3ab3138e176a' }
         }
         # Test contexts
         Context -Name 'The IntuneDeviceConfigurationWiredNetworkPolicyWindows10 should exist but it DOES NOT' -Fixture {
@@ -149,6 +153,22 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
                     return $null
                 }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
+                    return @{
+                        Id = 'a485d322-13cd-43ef-beda-733f656f48ea'
+                        DisplayName = 'RootCertificate'
+                        '@odata.type' = '#microsoft.graph.windows81TrustedRootCertificate'
+                    }
+                } -ParameterFilter { $DeviceConfigurationId -eq 'a485d322-13cd-43ef-beda-733f656f48ea' }
+
+                Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
+                    return @{
+                        Id = '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
+                        DisplayName = 'ClientCertificate'
+                        '@odata.type' = '#microsoft.graph.windows81SCEPCertificateProfile'
+                    }
+                } -ParameterFilter { $DeviceConfigurationId -eq '0b9aef2f-1671-4260-8eb9-3ab3138e176a' }
             }
             It 'Should return Values from the Get method' {
                 ((New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationWiredNetworkPolicyWindows10' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'

@@ -126,8 +126,8 @@ class AADIdentityGovernanceLifecycleWorkflow : M365DSCResourceBase
             $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $instance.Id
             if ($null -ne $instance)
             {
-                $executionConditionsResults = Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceWorkflowExecutionConditions -WorkflowId $instance.Id
-                $taskResults = Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceTasks -WorkflowId $instance.Id
+                $executionConditionsResults = $this.GetWorkflowExecutionConditions($instance.Id)
+                $taskResults = $this.GetTasks($instance.Id)
             }
 
             $results = @{
@@ -465,6 +465,73 @@ class AADIdentityGovernanceLifecycleWorkflow : M365DSCResourceBase
         return ''
     }
 
+    hidden [System.Collections.Hashtable] GetWorkflowExecutionConditions([System.String] $WorkflowId)
+    {
+        $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $WorkflowId
+        $executionConditionsResult = @{}
+
+        if ($null -ne $instance -and $null -ne $instance.ExecutionConditions)
+        {
+            $conditionsValue = $instance.ExecutionConditions
+            $executionConditionsResult = @{
+                ScopeValue   = @{
+                    Rule      = $conditionsValue['scope']['rule']
+                    OdataType = $conditionsValue['scope']['@odata.type']
+                }
+                TriggerValue = @{
+                    OffsetInDays       = $conditionsValue['trigger']['offsetInDays']
+                    TimeBasedAttribute = $conditionsValue['trigger']['timeBasedAttribute']
+                    ODataType          = $conditionsValue['trigger']['@odata.type']
+                }
+                OdataType    = $conditionsValue['@odata.type']
+            }
+        }
+
+        return $executionConditionsResult
+    }
+
+    hidden [System.Object[]] GetTasks([System.String] $WorkflowId)
+    {
+        $workflowTasks = Get-MgBetaIdentityGovernanceLifecycleWorkflowTask -WorkflowId $WorkflowId
+
+        $taskList = @()
+
+        if ($null -eq $workflowTasks)
+        {
+            return $taskList
+        }
+
+        foreach ($task in $workflowTasks)
+        {
+            [Array]$argumentsArray = @()
+
+            if ($task.Arguments)
+            {
+                foreach ($arg in $task.Arguments)
+                {
+                    $argumentsArray += @{
+                        Name  = $arg.Name.ToString()
+                        Value = $arg.Value.ToString()
+                    }
+                }
+            }
+            $taskHashtable = @{
+                DisplayName       = $task.DisplayName.ToString()
+                Description       = $task.Description.ToString()
+                Category          = $task.Category.ToString()
+                IsEnabled         = $task.IsEnabled
+                ExecutionSequence = $task.ExecutionSequence
+                ContinueOnError   = $task.ContinueOnError
+                TaskDefinitionId  = $task.TaskDefinitionId
+                Arguments         = [Array]$argumentsArray
+            }
+
+            $taskList += $taskHashtable
+        }
+
+        return $taskList
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADIdentityGovernanceLifecycleWorkflow] AsResult([System.Object] $Values)
     {
@@ -568,97 +635,5 @@ class MSFT_IdentityGovernanceTrigger
     [DscProperty()]
     [System.ComponentModel.Description('The offset in days for the Trigger.')]
     [System.Nullable[System.Int32]] $OffsetInDays
-}
-
-# Was Get-M365DSCIdentityGovernanceWorkflowExecutionConditions. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceWorkflowExecutionConditions
-{
-    [CmdletBinding()]
-    [OutputType([Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        $WorkflowId
-    )
-
-    $instance = Get-MgBetaIdentityGovernanceLifecycleWorkflow -WorkflowId $WorkflowId
-    $executionConditionsResult = @{}
-
-    if ($null -ne $instance -and $null -ne $instance.ExecutionConditions)
-    {
-        $executionConditions = $instance.ExecutionConditions
-        $executionConditionsResult = @{
-            ScopeValue   = @{
-                Rule      = $ExecutionConditions['scope']['rule']
-                OdataType = $ExecutionConditions['scope']['@odata.type']
-            }
-            TriggerValue = @{
-                OffsetInDays       = $ExecutionConditions['trigger']['offsetInDays']
-                TimeBasedAttribute = $ExecutionConditions['trigger']['timeBasedAttribute']
-                ODataType          = $ExecutionConditions['trigger']['@odata.type']
-            }
-            OdataType    = $ExecutionConditions['@odata.type']
-        }
-    }
-
-    return $executionConditionsResult
-}
-
-# Was Get-M365DSCIdentityGovernanceTasks. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-AADIdentityGovernanceLifecycleWorkflowM365DSCIdentityGovernanceTasks
-{
-    [CmdletBinding()]
-    [OutputType([Array])]
-    param(
-        [Parameter(Mandatory = $true)]
-        $WorkflowId
-    )
-
-    # Get the tasks from the specified workflow
-    $tasks = Get-MgBetaIdentityGovernanceLifecycleWorkflowTask -WorkflowId $WorkflowId
-
-    # Initialize an array to hold the hashtables
-    $taskList = @()
-
-    if ($null -eq $tasks)
-    {
-        return $taskList
-    }
-
-    # Loop through each task and create a hashtable
-    foreach ($task in $tasks)
-    {
-        [Array]$argumentsArray = @()
-
-        if ($task.Arguments)
-        {
-            foreach ($arg in $task.Arguments)
-            {
-                # Create a hashtable for each argument
-                $argumentsArray += @{
-                    Name  = $arg.Name.ToString()
-                    Value = $arg.Value.ToString()
-                }
-            }
-        }
-        $taskHashtable = @{
-            DisplayName       = $task.DisplayName.ToString()
-            Description       = $task.Description.ToString()
-            Category          = $task.Category.ToString()
-            IsEnabled         = $task.IsEnabled
-            ExecutionSequence = $task.ExecutionSequence
-            ContinueOnError   = $task.ContinueOnError
-            TaskDefinitionId  = $task.TaskDefinitionId
-
-            # If Arguments exist, populate the hashtable
-            Arguments         = [Array]$argumentsArray
-        }
-
-        # Add the task hashtable to the task list
-        $taskList += $taskHashtable
-    }
-
-    return $taskList
 }
 

@@ -36,32 +36,31 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -MockWith {
-                return @{
-                    value = @(
-                        @{
-                            id = "FakeStringValue"
-                            name = "FakeStringValue"
-                            didModel = @{
-                                linkedDomainUrls = @("FakeStringValue")
-                                did = "did:FakeStringValue"
-                            }
-                            keyVaultMetadata = @{
-                                subscriptionId = "FakeStringValue"
-                                resourceGroup = "FakeStringValue"
-                                resourceName = "FakeStringValue"
-                                resourceUrl = "FakeStringValue"
-                            }
-                        }
-                    )
-                }
-            }
-
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }
 
             Mock -CommandName Invoke-WebRequest -MockWith {
+                return @{
+                    Content = (ConvertTo-Json @{
+                        value = @(
+                            @{
+                                id = "FakeStringValue"
+                                name = "FakeStringValue"
+                                didModel = @{
+                                    linkedDomainUrls = @("FakeStringValue")
+                                    did = "did:FakeStringValue"
+                                }
+                                keyVaultMetadata = @{
+                                    subscriptionId = "FakeStringValue"
+                                    resourceGroup = "FakeStringValue"
+                                    resourceName = "FakeStringValue"
+                                    resourceUrl = "FakeStringValue"
+                                }
+                            }
+                        )
+                    } -Depth 10)
+                }
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
@@ -89,8 +88,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure = 'Present'
                 }
 
-                Mock -CommandName Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -MockWith {
-                    return @()
+                Mock -CommandName Invoke-WebRequest -MockWith {
+                    return @{
+                        Content = (ConvertTo-Json @())
+                    }
                 }
 
             }
@@ -102,7 +103,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the id from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthority' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Exactly 2
+                Should -Invoke -CommandName Invoke-WebRequest -Exactly 2
             }
         }
 
@@ -133,7 +134,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthority' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Exactly 2
+                Should -Invoke -CommandName Invoke-WebRequest -Exactly 2
             }
         }
         Context -Name "The AADVerifiedIdAuthority Exists and Values are already in the desired state" -Fixture {
@@ -185,7 +186,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADVerifiedIdAuthority' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-AADVerifiedIdAuthorityM365DSCVerifiedIdWebRequest -Exactly 2
+                Should -Invoke -CommandName Invoke-WebRequest -Exactly 2
             }
         }
 

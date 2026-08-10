@@ -82,9 +82,7 @@ class EXOManagementRole : M365DSCResourceBase
                 $nullReturn = $this.GetBoundParameters()
                 $nullReturn.Ensure = 'Absent'
 
-                $ManagementRole = Get-EXOManagementRoleM365DSCEXOManagementRoleWithRetry -Identity $this.Name `
-                    -TenantId $this.TenantId `
-                    -Credential $this.Credential
+                $ManagementRole = $this.GetManagementRoleWithRetry($this.Name)
                 if ($null -eq $ManagementRole)
                 {
                     Write-Verbose -Message "Management Role $($this.Name) does not exist."
@@ -196,8 +194,7 @@ class EXOManagementRole : M365DSCResourceBase
 
         try
         {
-            [array] $exportedInstances = Get-EXOManagementRoleM365DSCEXOManagementRoleWithRetry -TenantId $this.TenantId `
-                -Credential $this.Credential | Where-Object -FilterScript { $null -ne $_.Parent }
+            [array] $exportedInstances = $this.GetManagementRoleWithRetry($null) | Where-Object -FilterScript { $null -ne $_.Parent }
 
             $dscContent = [System.Text.StringBuilder]::new()
 
@@ -256,6 +253,49 @@ class EXOManagementRole : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object] GetManagementRoleWithRetry([System.String] $Identity)
+    {
+        $maxAttempts = 2
+        $retryDelayInSeconds = 10
+
+        for ($attempt = 1; $attempt -le $maxAttempts; $attempt++)
+        {
+            if ([System.String]::IsNullOrEmpty($Identity))
+            {
+                $managementRole = Invoke-M365DSCCommand -ScriptBlock { Get-ManagementRole -ErrorAction Stop }
+                $lookupDescription = 'all management roles'
+            }
+            else
+            {
+                $managementRole = Invoke-M365DSCCommand -ScriptBlock { Get-ManagementRole -Identity $Identity -ErrorAction Stop } -SuppressNotFoundError
+                $lookupDescription = "management role '$Identity'"
+            }
+
+            if ($null -ne $managementRole -and @($managementRole).Count -gt 0)
+            {
+                return $managementRole
+            }
+
+            $message = "Get-ManagementRole returned no results for $lookupDescription on attempt $attempt of $maxAttempts."
+            if ($attempt -lt $maxAttempts)
+            {
+                $message += " Retrying in $retryDelayInSeconds seconds."
+            }
+
+            New-M365DSCLogEntry -Message $message `
+                -Source $this.GetResourceName() `
+                -TenantId $this.TenantId `
+                -Credential $this.Credential
+
+            if ($attempt -lt $maxAttempts)
+            {
+                Start-Sleep -Seconds $retryDelayInSeconds
+            }
+        }
+
+        return $null
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOManagementRole] AsResult([System.Object] $Values)
     {
@@ -272,71 +312,5 @@ class EXOManagementRole : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Get-M365DSCEXOManagementRoleWithRetry. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-EXOManagementRoleM365DSCEXOManagementRoleWithRetry
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $Identity,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxAttempts = 2,
-
-        [Parameter()]
-        [System.Int32]
-        $RetryDelayInSeconds = 10,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential
-    )
-
-    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++)
-    {
-        if ([System.String]::IsNullOrEmpty($Identity))
-        {
-            $managementRole = Invoke-M365DSCCommand -ScriptBlock { Get-ManagementRole -ErrorAction Stop }
-            $lookupDescription = 'all management roles'
-        }
-        else
-        {
-            $managementRole = Invoke-M365DSCCommand -ScriptBlock { Get-ManagementRole -Identity $Identity -ErrorAction Stop } -SuppressNotFoundError
-            $lookupDescription = "management role '$Identity'"
-        }
-
-        if ($null -ne $managementRole -and @($managementRole).Count -gt 0)
-        {
-            return $managementRole
-        }
-
-        $message = "Get-ManagementRole returned no results for $lookupDescription on attempt $attempt of $MaxAttempts."
-        if ($attempt -lt $MaxAttempts)
-        {
-            $message += " Retrying in $RetryDelayInSeconds seconds."
-        }
-
-        New-M365DSCLogEntry -Message $message `
-            -Source $MyInvocation.MyCommand.Source `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        if ($attempt -lt $MaxAttempts)
-        {
-            Start-Sleep -Seconds $RetryDelayInSeconds
-        }
-    }
-
-    return $null
 }
 

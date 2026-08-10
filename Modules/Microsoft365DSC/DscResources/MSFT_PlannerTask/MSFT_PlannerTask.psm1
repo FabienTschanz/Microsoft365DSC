@@ -184,7 +184,7 @@ class PlannerTask : M365DSCResourceBase
                     $categoryValue = $this.ResourceCache['AppliedCategories'].$category
                     if ([String]::IsNullOrEmpty($categoryValue))
                     {
-                        $categoryValue = Get-PlannerTaskTaskColorNameByCategory -CategoryName $category
+                        $categoryValue = $this.GetTaskColorNameByCategory($category)
                     }
                     $categoriesValue += $categoryValue
                 }
@@ -383,7 +383,7 @@ class PlannerTask : M365DSCResourceBase
             $categoryName = $appliedCategoriesInverse.PSObject.Properties | Where-Object { $_.Value -eq $category } | Select-Object -ExpandProperty Name
             if ([String]::IsNullOrEmpty($categoryName))
             {
-                $categoryName = Get-PlannerTaskTaskCategoryNameByColor -ColorName $category
+                $categoryName = $this.GetTaskCategoryNameByColor($category)
             }
             $categoriesValue.$categoryName = $true
         }
@@ -626,6 +626,222 @@ class PlannerTask : M365DSCResourceBase
         }
     }
 
+    hidden [System.String] GetTaskCategoryNameByColor([System.String] $ColorName)
+    {
+        switch ($ColorName)
+        {
+            'Pink'
+            {
+                return 'category1'
+            }
+            'Red'
+            {
+                return 'category2'
+            }
+            'Yellow'
+            {
+                return 'category3'
+            }
+            'Green'
+            {
+                return 'category4'
+            }
+            'Blue'
+            {
+                return 'category5'
+            }
+            'Purple'
+            {
+                return 'category6'
+            }
+            'Bronze'
+            {
+                return 'category7'
+            }
+            'Lime'
+            {
+                return 'category8'
+            }
+            'Aqua'
+            {
+                return 'category9'
+            }
+            'Gray'
+            {
+                return 'category10'
+            }
+            'Silver'
+            {
+                return 'category11'
+            }
+            'Brown'
+            {
+                return 'category12'
+            }
+            'Cranberry'
+            {
+                return 'category13'
+            }
+            'Orange'
+            {
+                return 'category14'
+            }
+            'Peach'
+            {
+                return 'category15'
+            }
+            'Marigold'
+            {
+                return 'category16'
+            }
+            'Light green'
+            {
+                return 'category17'
+            }
+            'Dark green'
+            {
+                return 'category18'
+            }
+            'Teal'
+            {
+                return 'category19'
+            }
+            'Light blue'
+            {
+                return 'category20'
+            }
+            'Dark blue'
+            {
+                return 'category21'
+            }
+            'Lavender'
+            {
+                return 'category22'
+            }
+            'Plum'
+            {
+                return 'category23'
+            }
+            'Light gray'
+            {
+                return 'category24'
+            }
+            'Dark gray'
+            {
+                return 'category25'
+            }
+        }
+        return $null
+    }
+
+    hidden [System.String] GetTaskColorNameByCategory([System.String] $CategoryName)
+    {
+        switch ($CategoryName)
+        {
+            'category1'
+            {
+                return 'Pink'
+            }
+            'category2'
+            {
+                return 'Red'
+            }
+            'category3'
+            {
+                return 'Yellow'
+            }
+            'category4'
+            {
+                return 'Green'
+            }
+            'category5'
+            {
+                return 'Blue'
+            }
+            'category6'
+            {
+                return 'Purple'
+            }
+            'category7'
+            {
+                return 'Bronze'
+            }
+            'category8'
+            {
+                return 'Lime'
+            }
+            'category9'
+            {
+                return 'Aqua'
+            }
+            'category10'
+            {
+                return 'Gray'
+            }
+            'category11'
+            {
+                return 'Silver'
+            }
+            'category12'
+            {
+                return 'Brown'
+            }
+            'category13'
+            {
+                return 'Cranberry'
+            }
+            'category14'
+            {
+                return 'Orange'
+            }
+            'category15'
+            {
+                return 'Peach'
+            }
+            'category16'
+            {
+                return 'Marigold'
+            }
+            'category17'
+            {
+                return 'Light green'
+            }
+            'category18'
+            {
+                return 'Dark green'
+            }
+            'category19'
+            {
+                return 'Teal'
+            }
+            'category20'
+            {
+                return 'Light blue'
+            }
+            'category21'
+            {
+                return 'Dark blue'
+            }
+            'category22'
+            {
+                return 'Lavender'
+            }
+            'category23'
+            {
+                return 'Plum'
+            }
+            'category24'
+            {
+                return 'Light gray'
+            }
+            'category25'
+            {
+                return 'Dark gray'
+            }
+        }
+        return $null
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PlannerTask] AsResult([System.Object] $Values)
     {
@@ -669,238 +885,4 @@ class MSFT_PlannerTaskChecklistItem
     [DscProperty()]
     [System.ComponentModel.Description('True if the item is completed, false otherwise.')]
     [System.String] $Completed
-}
-
-# Was Get-TaskCategoryNameByColor. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-PlannerTaskTaskCategoryNameByColor
-{
-    [CmdletBinding()]
-    [OutputType([System.string])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ColorName
-    )
-    switch ($ColorName)
-    {
-        'Pink'
-        {
-            return 'category1'
-        }
-        'Red'
-        {
-            return 'category2'
-        }
-        'Yellow'
-        {
-            return 'category3'
-        }
-        'Green'
-        {
-            return 'category4'
-        }
-        'Blue'
-        {
-            return 'category5'
-        }
-        'Purple'
-        {
-            return 'category6'
-        }
-        'Bronze'
-        {
-            return 'category7'
-        }
-        'Lime'
-        {
-            return 'category8'
-        }
-        'Aqua'
-        {
-            return 'category9'
-        }
-        'Gray'
-        {
-            return 'category10'
-        }
-        'Silver'
-        {
-            return 'category11'
-        }
-        'Brown'
-        {
-            return 'category12'
-        }
-        'Cranberry'
-        {
-            return 'category13'
-        }
-        'Orange'
-        {
-            return 'category14'
-        }
-        'Peach'
-        {
-            return 'category15'
-        }
-        'Marigold'
-        {
-            return 'category16'
-        }
-        'Light green'
-        {
-            return 'category17'
-        }
-        'Dark green'
-        {
-            return 'category18'
-        }
-        'Teal'
-        {
-            return 'category19'
-        }
-        'Light blue'
-        {
-            return 'category20'
-        }
-        'Dark blue'
-        {
-            return 'category21'
-        }
-        'Lavender'
-        {
-            return 'category22'
-        }
-        'Plum'
-        {
-            return 'category23'
-        }
-        'Light gray'
-        {
-            return 'category24'
-        }
-        'Dark gray'
-        {
-            return 'category25'
-        }
-    }
-    return $null
-}
-
-# Was Get-TaskColorNameByCategory. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-PlannerTaskTaskColorNameByCategory
-{
-    [CmdletBinding()]
-    [OutputType([System.string])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $CategoryName
-    )
-    switch ($CategoryName)
-    {
-        'category1'
-        {
-            return 'Pink'
-        }
-        'category2'
-        {
-            return 'Red'
-        }
-        'category3'
-        {
-            return 'Yellow'
-        }
-        'category4'
-        {
-            return 'Green'
-        }
-        'category5'
-        {
-            return 'Blue'
-        }
-        'category6'
-        {
-            return 'Purple'
-        }
-        'category7'
-        {
-            return 'Bronze'
-        }
-        'category8'
-        {
-            return 'Lime'
-        }
-        'category9'
-        {
-            return 'Aqua'
-        }
-        'category10'
-        {
-            return 'Gray'
-        }
-        'category11'
-        {
-            return 'Silver'
-        }
-        'category12'
-        {
-            return 'Brown'
-        }
-        'category13'
-        {
-            return 'Cranberry'
-        }
-        'category14'
-        {
-            return 'Orange'
-        }
-        'category15'
-        {
-            return 'Peach'
-        }
-        'category16'
-        {
-            return 'Marigold'
-        }
-        'category17'
-        {
-            return 'Light green'
-        }
-        'category18'
-        {
-            return 'Dark green'
-        }
-        'category19'
-        {
-            return 'Teal'
-        }
-        'category20'
-        {
-            return 'Light blue'
-        }
-        'category21'
-        {
-            return 'Dark blue'
-        }
-        'category22'
-        {
-            return 'Lavender'
-        }
-        'category23'
-        {
-            return 'Plum'
-        }
-        'category24'
-        {
-            return 'Light gray'
-        }
-        'category25'
-        {
-            return 'Dark gray'
-        }
-    }
-    return $null
 }

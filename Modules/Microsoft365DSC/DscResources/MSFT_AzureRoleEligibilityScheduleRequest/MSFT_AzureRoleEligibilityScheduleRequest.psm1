@@ -881,36 +881,3 @@ class MSFT_AzureRoleEligibilityScheduleRequestScheduleRecurrenceRange
     [ValidateSet('endDate', 'noEnd', 'numbered')]
     [System.String] $type
 }
-
-# Was Test-M365DSCRecurrenceIsConfigured. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Test-AzureRoleEligibilityScheduleRequestM365DSCRecurrenceIsConfigured
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $RecurrenceSettings
-    )
-
-    if ($null -eq $RecurrenceSettings.Pattern.DayOfMonth -and `
-        $null -eq $RecurrenceSettings.Pattern.DayOfWeek -and `
-        $null -eq $RecurrenceSettings.Pattern.FirstDayOfWeek -and `
-        $null -eq $RecurrenceSettings.Pattern.Index -and `
-        $null -eq $RecurrenceSettings.Pattern.Interval -and `
-        $null -eq $RecurrenceSettings.Pattern.Month -and `
-        $null -eq $RecurrenceSettings.Pattern.Type -and `
-        $null -eq $RecurrenceSettings.Range.EndDate -and `
-        $null -eq $RecurrenceSettings.Range.NumberOfOccurrences -and `
-        $null -eq $RecurrenceSettings.Range.RecurrenceTimeZone -and `
-        $null -eq $RecurrenceSettings.Range.StartDate -and `
-        $null -eq $RecurrenceSettings.Range.Type)
-    {
-        return $false
-    }
-
-    return $true
-}
-

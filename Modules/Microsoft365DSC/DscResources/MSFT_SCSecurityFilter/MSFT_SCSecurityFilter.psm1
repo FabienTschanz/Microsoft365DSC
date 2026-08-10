@@ -103,7 +103,7 @@ class SCSecurityFilter : M365DSCResourceBase
             else
             {
                 Write-Verbose "Found existing Security Filter $($this.FilterName)"
-                $result = Get-SCSecurityFilterM365DSCSCMapSecurityFilter -Filter $secFilter -Credential $this.Credential -ApplicationId $this.ApplicationId -TenantId $this.TenantId -CertificateThumbprint $this.CertificateThumbprint -CertificatePath $this.CertificatePath -CertificatePassword $this.CertificatePassword
+                $result = $this.MapSecurityFilter($secFilter)
 
                 return $this.AsResult($result)
             }
@@ -225,8 +225,7 @@ class SCSecurityFilter : M365DSCResourceBase
 
                 Write-M365DSCHost -Message "    |---[$i/$($securityFilters.Count)] $($filter.FilterName)" -DeferWrite
 
-                $Results = Get-SCSecurityFilterM365DSCSCMapSecurityFilter -Filter $filter -Credential $this.Credential -ApplicationId $this.ApplicationId `
-                    -TenantId $this.TenantId -CertificateThumbprint $this.CertificateThumbprint -CertificatePath $this.CertificatePath -CertificatePassword $this.CertificatePassword
+                $Results = $this.MapSecurityFilter($filter)
                 $rawResults = $Results.Clone()
 
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
@@ -252,6 +251,28 @@ class SCSecurityFilter : M365DSCResourceBase
         return $dscContent.ToString()
     }
 
+    hidden [System.Collections.Hashtable] MapSecurityFilter([System.Object] $Filter)
+    {
+        $result = @{
+            FilterName            = $Filter.FilterName
+            Action                = $Filter.Action
+            Users                 = $Filter.Users
+            Description           = $Filter.Description
+            Filters               = $Filter.Filters
+            Region                = $Filter.Region
+            Ensure                = 'Present'
+            Credential            = $this.Credential
+            ApplicationId         = $this.ApplicationId
+            TenantId              = $this.TenantId
+            CertificateThumbprint = $this.CertificateThumbprint
+            CertificatePath       = $this.CertificatePath
+            CertificatePassword   = $this.CertificatePassword
+            ManagedIdentity       = $false
+            AccessTokens          = $null
+        }
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCSecurityFilter] AsResult([System.Object] $Values)
     {
@@ -268,65 +289,5 @@ class SCSecurityFilter : M365DSCResourceBase
 
         return $result
     }
-}
-
-# Was Get-M365DSCSCMapSecurityFilter. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-SCSecurityFilterM365DSCSCMapSecurityFilter
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        $Filter,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter()]
-        [System.String]
-        $ApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $TenantId,
-
-        [Parameter()]
-        [System.String]
-        $CertificateThumbprint,
-
-        [Parameter()]
-        [System.String]
-        $CertificatePath,
-
-        [Parameter()]
-        [System.Management.Automation.PSCredential]
-        $CertificatePassword,
-
-        [Parameter()]
-        [Switch]
-        $ManagedIdentity,
-
-        [Parameter()]
-        [System.String[]]
-        $AccessTokens
-    )
-    $result = @{
-        FilterName            = $Filter.FilterName
-        Action                = $Filter.Action
-        Users                 = $Filter.Users
-        Description           = $Filter.Description
-        Filters               = $Filter.Filters
-        Region                = $Filter.Region
-        Ensure                = 'Present'
-        Credential            = $Credential
-        ApplicationId         = $ApplicationId
-        TenantId              = $TenantId
-        CertificateThumbprint = $CertificateThumbprint
-        CertificatePath       = $CertificatePath
-        CertificatePassword   = $CertificatePassword
-        ManagedIdentity       = $ManagedIdentity.IsPresent
-        AccessTokens          = $AccessTokens
-    }
-    return $result
 }
 

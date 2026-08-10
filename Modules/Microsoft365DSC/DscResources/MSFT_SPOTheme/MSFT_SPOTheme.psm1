@@ -100,7 +100,7 @@ class SPOTheme : M365DSCResourceBase
                 Write-Verbose -Message "The specified theme doesn't exist."
                 return $this.AsResult($nullReturn)
             }
-            $convertedPalette = Convert-SPOThemeExistingThemePaletteToArray -Palette ([System.Collections.Hashtable]$theme.Palette)
+            $convertedPalette = $this.ConvertExistingThemePaletteToArray([System.Collections.Hashtable]$theme.Palette)
 
             return $this.AsResult(@{
                 Name                  = $theme.Name
@@ -293,6 +293,19 @@ class SPOTheme : M365DSCResourceBase
         }
     }
 
+    hidden [System.Object[]] ConvertExistingThemePaletteToArray([System.Collections.Hashtable] $Palette)
+    {
+        $themes = @()
+        foreach ($entry in $Palette.GetEnumerator())
+        {
+            $themes += [ordered]@{
+                Property = $entry.Key
+                Value    = $entry.Value
+            }
+        }
+        return $themes
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOTheme] AsResult([System.Object] $Values)
     {
@@ -320,28 +333,5 @@ class MSFT_SPOThemePaletteProperty
     [DscProperty()]
     [System.ComponentModel.Description('Color value in Hexadecimal.')]
     [System.String] $Value
-}
-
-# Was Convert-ExistingThemePaletteToArray. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Convert-SPOThemeExistingThemePaletteToArray
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable[]])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Palette
-    )
-
-    $themes = @()
-    foreach ($entry in $Palette.GetEnumerator())
-    {
-        $themes += [ordered]@{
-            Property = $entry.Key
-            Value    = $entry.Value
-        }
-    }
-    return $themes
 }
 

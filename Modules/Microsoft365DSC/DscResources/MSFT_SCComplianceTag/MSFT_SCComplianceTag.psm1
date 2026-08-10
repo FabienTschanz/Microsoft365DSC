@@ -163,7 +163,7 @@ class SCComplianceTag : M365DSCResourceBase
 
             if (-not [System.String]::IsNullOrEmpty($tagObject.FilePlanMetadata))
             {
-                $ConvertedFilePlanProperty = Get-SCComplianceTagSCFilePlanProperty $tagObject.FilePlanMetadata
+                $ConvertedFilePlanProperty = $this.GetFilePlanProperty($tagObject.FilePlanMetadata)
                 $result.Add('FilePlanProperty', $ConvertedFilePlanProperty)
             }
 
@@ -204,7 +204,7 @@ class SCComplianceTag : M365DSCResourceBase
             if ($this.FilePlanProperty)
             {
                 Write-Verbose -Message 'Converting FilePlan to JSON'
-                $FilePlanPropertyJSON = ConvertTo-Json (Get-SCComplianceTagSCFilePlanPropertyObject $this.FilePlanProperty)
+                $FilePlanPropertyJSON = ConvertTo-Json ($this.GetFilePlanPropertyObject($this.FilePlanProperty))
                 $CreationParams.FilePlanProperty = $FilePlanPropertyJSON
             }
             Write-Verbose "Creating new Compliance Tag $($this.Name) calling the New-ComplianceTag cmdlet."
@@ -254,7 +254,7 @@ class SCComplianceTag : M365DSCResourceBase
             if ($this.FilePlanProperty)
             {
                 Write-Verbose -Message 'Converting FilePlan properties to JSON'
-                $FilePlanPropertyJSON = ConvertTo-Json (Get-SCComplianceTagSCFilePlanPropertyObject $this.FilePlanProperty)
+                $FilePlanPropertyJSON = ConvertTo-Json ($this.GetFilePlanPropertyObject($this.FilePlanProperty))
                 $SetParams['FilePlanProperty'] = $FilePlanPropertyJSON
             }
             Set-ComplianceTag @SetParams -Identity $this.Name
@@ -354,6 +354,45 @@ class SCComplianceTag : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetFilePlanPropertyObject([System.Object] $Properties)
+    {
+        if ($null -eq $Properties)
+        {
+            return $null
+        }
+
+        $result = @{
+            Settings = @(
+                @{Key = 'FilePlanPropertyDepartment'; Value = $Properties.FilePlanPropertyDepartment },
+                @{Key = 'FilePlanPropertyCategory'; Value = $Properties.FilePlanPropertyCategory },
+                @{Key = 'FilePlanPropertySubcategory'; Value = $Properties.FilePlanPropertySubcategory },
+                @{Key = 'FilePlanPropertyCitation'; Value = $Properties.FilePlanPropertyCitation },
+                @{Key = 'FilePlanPropertyReferenceId'; Value = $Properties.FilePlanPropertyReferenceId },
+                @{Key = 'FilePlanPropertyAuthority'; Value = $Properties.FilePlanPropertyAuthority }
+            )
+        }
+
+        return $result
+    }
+
+    hidden [System.Collections.Hashtable] GetFilePlanProperty([System.String] $Metadata)
+    {
+        if ($null -eq $Metadata)
+        {
+            return $null
+        }
+        $JSONObject = ConvertFrom-Json $Metadata
+
+        $result = @{}
+
+        foreach ($item in $JSONObject.Settings)
+        {
+            $result.Add($item.Key, $item.Value)
+        }
+
+        return $result
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCComplianceTag] AsResult([System.Object] $Values)
     {
@@ -398,64 +437,3 @@ class MSFT_SCFilePlanProperty
     [System.ComponentModel.Description('File plan subcategory. Can get a list by running Get-FilePlanPropertySubCategory.')]
     [System.String] $FilePlanPropertySubCategory
 }
-
-# Was Get-SCFilePlanPropertyObject. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-SCComplianceTagSCFilePlanPropertyObject
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter()]
-        $Properties
-    )
-
-    if ($null -eq $Properties)
-    {
-        return $null
-    }
-
-    $result = @{
-        Settings = @(
-            @{Key = 'FilePlanPropertyDepartment'; Value = $properties.FilePlanPropertyDepartment },
-            @{Key = 'FilePlanPropertyCategory'; Value = $properties.FilePlanPropertyCategory },
-            @{Key = 'FilePlanPropertySubcategory'; Value = $properties.FilePlanPropertySubcategory },
-            @{Key = 'FilePlanPropertyCitation'; Value = $properties.FilePlanPropertyCitation },
-            @{Key = 'FilePlanPropertyReferenceId'; Value = $properties.FilePlanPropertyReferenceId },
-            @{Key = 'FilePlanPropertyAuthority'; Value = $properties.FilePlanPropertyAuthority }
-        )
-    }
-
-    return $result
-}
-
-# Was Get-SCFilePlanProperty. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
-function Get-SCComplianceTagSCFilePlanProperty
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Metadata
-    )
-
-    if ($null -eq $Metadata)
-    {
-        return $null
-    }
-    $JSONObject = ConvertFrom-Json $Metadata
-
-    $result = @{}
-
-    foreach ($item in $JSONObject.Settings)
-    {
-        $result.Add($item.Key, $item.Value)
-    }
-
-    return $result
-}
-
