@@ -313,10 +313,7 @@ class IntuneMobileAppsBundleMacOS : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of the Intune Mobile Apps Bundle for macOS with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
-        if ($this.GetBoundParameters().PackageFileType -eq 'Dmg' -and ($this.GetBoundParameters().ContainsKey('PreInstallScript') -or $this.GetBoundParameters().ContainsKey('PostInstallScript')))
-        {
-            throw 'PreInstallScript and PostInstallScript are not supported for Dmg package type.'
-        }
+        $this.ValidateBoundParameters()
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -421,25 +418,9 @@ class IntuneMobileAppsBundleMacOS : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        $this.ValidateBoundParameters()
 
-        if ($this.GetBoundParameters().PackageFileType -eq 'Dmg' -and ($this.GetBoundParameters().ContainsKey('PreInstallScript') -or $this.GetBoundParameters().ContainsKey('PostInstallScript')))
-        {
-            throw 'PreInstallScript and PostInstallScript are not supported for Dmg package type.'
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -617,6 +598,15 @@ class IntuneMobileAppsBundleMacOS : M365DSCResourceBase
         }
     }
 
+    hidden [void] ValidateBoundParameters()
+    {
+        $boundParameters = $this.GetBoundParameters()
+        if ($boundParameters.PackageFileType -eq 'Dmg' -and ($boundParameters.ContainsKey('PreInstallScript') -or $boundParameters.ContainsKey('PostInstallScript')))
+        {
+            throw 'PreInstallScript and PostInstallScript are not supported for Dmg package type.'
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsBundleMacOS] AsResult([System.Object] $Values)
     {
@@ -760,4 +750,3 @@ class MSFT_DeviceManagementMobileAppAssignment
     [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
-

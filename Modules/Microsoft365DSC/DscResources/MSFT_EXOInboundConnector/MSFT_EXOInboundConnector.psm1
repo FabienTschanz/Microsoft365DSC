@@ -242,23 +242,34 @@ class EXOInboundConnector : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.GetBoundParameters().ContainsKey('SenderDomains'))
-        {
-            $newSenderDomains = @()
-            foreach ($domain in $this.GetBoundParameters().SenderDomains)
-            {
-                if ($domain -notlike 'smtp:*')
-                {
-                    $newSenderDomains += 'smtp:' + $domain + ';1'
-                }
-                else
-                {
-                    $newSenderDomains += $domain
-                }
-            }
-            $this.SenderDomains = $newSenderDomains
-        }
         return ([M365DSCResourceBase] $this).Test()
+    }
+
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($DesiredValues.ContainsKey('SenderDomains'))
+                {
+                    $newSenderDomains = @()
+                    foreach ($domain in $DesiredValues.SenderDomains)
+                    {
+                        if ($domain -notlike 'smtp:*')
+                        {
+                            $newSenderDomains += 'smtp:' + $domain + ';1'
+                        }
+                        else
+                        {
+                            $newSenderDomains += $domain
+                        }
+                    }
+                    $DesiredValues.SenderDomains = [Array] $newSenderDomains
+                    $ValuesToCheck.SenderDomains = [Array] $newSenderDomains
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
     }
 
     [string] Export()

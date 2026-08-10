@@ -394,172 +394,9 @@ class PPTenantIsolationSettings : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        Write-Verbose -Message 'Testing Power Platform Tenant Isolation Settings configuration'
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $CurrentValues = $this.Get().ToHashtable()
-
-        Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
-        Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $this.GetBoundParameters())"
-
-        $result = $true
-        $driftedRules = @{}
-        if ($this.GetBoundParameters().ContainsKey('Rules'))
-        {
-            Write-Verbose 'Processing parameter Rules'
-            foreach ($rule in $this.Rules)
-            {
-                Write-Verbose "Checking Rule for TenantName $($rule.TenantName). Rules"
-                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
-                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-                $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
-                if ($null -eq $existingRule)
-                {
-                    Write-Verbose "Rule for $($rule.TenantName) does not exist."
-                    $driftedRules.($rule.TenantName) = @{
-                        CurrentValue = 'Rule does not exist'
-                        DesiredValue = "Direction: $($rule.Direction)"
-                    }
-                    $result = $false
-                }
-                else
-                {
-                    Write-Verbose "Rule for $($rule.TenantName) exists. Checking specified direction."
-                    if ($rule.Direction -ne $existingRule.Direction)
-                    {
-                        Write-Verbose "Direction for rule incorrect: Current = $($existingRule.Direction) / Desired = $($rule.Direction)"
-                        $driftedRules.($rule.TenantName) = @{
-                            CurrentValue = "Direction: $($existingRule.Direction)"
-                            DesiredValue = "Direction: $($rule.Direction)"
-                        }
-                        $result = $false
-                    }
-                }
-            }
-
-            # Resolved up front rather than inside the Where-Object below because $this does not resolve
-            # inside a scriptblock nested in a class method.
-            $desiredTenantIds = @()
-            foreach ($rule in $this.Rules)
-            {
-                $desiredTenantIds += $this.GetM365TenantId($rule.TenantName)
-            }
-
-            foreach ($existingRule in $CurrentValues.Rules)
-            {
-                # Check if rules are not in the specified list
-                if ($existingRule.TenantName -notin $desiredTenantIds)
-                {
-                    Write-Verbose "Rule for tenant id $($existingRule.TenantName) does not exist in the Desired State."
-
-                    $driftedRules.($existingRule.TenantName) = @{
-                        CurrentValue = "Direction: $($existingRule.Direction)"
-                        DesiredValue = "Direction: $($rule.Direction)"
-                    }
-                    $result = $false
-                }
-            }
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('RulesToInclude'))
-        {
-            Write-Verbose 'Processing parameter RulesToInclude'
-            $driftedRules = @{}
-            foreach ($rule in $this.RulesToInclude)
-            {
-                Write-Verbose "Checking Rule for TenantName $($rule.TenantName). RulesToInclude"
-                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
-                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-                $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
-                if ($null -eq $existingRule)
-                {
-                    Write-Verbose "Rule for $($rule.TenantName) does not exist."
-                    $driftedRules.($rule.TenantName) = @{
-                        CurrentValue = 'Rule does not exist'
-                        DesiredValue = "Direction: $($rule.Direction)"
-                    }
-                    $result = $false
-                }
-                else
-                {
-                    Write-Verbose "Rule for $($rule.TenantName) exists. Checking specified direction."
-                    if ($rule.Direction -ne $existingRule.Direction)
-                    {
-                        Write-Verbose "Direction for rule incorrect: Current = $($existingRule.Direction) / Desired = $($rule.Direction)"
-                        $driftedRules.($rule.TenantName) = @{
-                            CurrentValue = "Direction: $($existingRule.Direction)"
-                            DesiredValue = "Direction: $($rule.Direction)"
-                        }
-                        $result = $false
-                    }
-                }
-            }
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('RulesToExclude'))
-        {
-            Write-Verbose 'Processing parameter RulesToExclude'
-            $driftedRules = @{}
-            foreach ($rule in $this.RulesToExclude)
-            {
-                Write-Verbose "Checking Rule for TenantName $($rule.TenantName). RulesToExclude"
-                $ruleTenantId = $this.GetM365TenantId($rule.TenantName)
-                Write-Verbose -Message "Found TenantName {$($rule.TenantName)}"
-
-                $existingRule = $CurrentValues.Rules | Where-Object -FilterScript { $_.TenantName -eq $ruleTenantId }
-                if ($null -ne $existingRule)
-                {
-                    Write-Verbose "Rule for $($rule.TenantName) exists."
-                    $driftedRules.($rule.TenantName) = @{
-                        CurrentValue = "Direction: $($existingRule.Direction)"
-                        DesiredValue = 'Should not exist'
-                    }
-                    $result = $false
-                }
-            }
-        }
-
-        if ($result -eq $false)
-        {
-            $message = "Tenant Isolation Rules not in the Desired State:`n"
-            $message += "<Rules>`n"
-            foreach ($driftedRule in $driftedRules.GetEnumerator())
-            {
-                $message += "    <Rule>`n"
-                $message += "        <TenantName>$($driftedRule.Name)</TenantName>`n"
-                $message += "        <CurrentValue>$($driftedRule.Value.CurrentValue)</CurrentValue>`n"
-                $message += "        <DesiredValue>$($driftedRule.Value.DesiredValue)</DesiredValue>`n"
-                $message += "    </Rule>`n"
-            }
-            $message += '</Rules>'
-            Add-M365DSCEvent -Message $message -EntryType 'Error' `
-                -EventID 1 -Source $($this.GetResourceName())
-            Write-Verbose -Message 'Test-TargetResource returned False'
-            return $false
-        }
-
-        $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-            -Source $($this.GetResourceName()) `
-            -DesiredValues $this.GetBoundParameters() `
-            -ValuesToCheck @('Enabled')
-
-        Write-Verbose -Message "Test-TargetResource returned $TestResult"
-
-        return $TestResult
+        return ([M365DSCResourceBase] $this).Test()
     }
+
 
     [string] Export()
     {
@@ -651,6 +488,85 @@ class PPTenantIsolationSettings : M365DSCResourceBase
             $this.LogError($_, 'Error during Export:')
 
             throw
+        }
+    }
+
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        # Resolved up front because $this does not resolve inside the PostProcessing scriptblock.
+        # TODO: Only do this if not doing a Report. It requires a connection to internet, which is not (always) available when doing a report.
+        $tenantIdMap = @{}
+        foreach ($rule in (@($this.Rules) + @($this.RulesToInclude) + @($this.RulesToExclude)))
+        {
+            if ($null -ne $rule -and -not $tenantIdMap.ContainsKey($rule.TenantName))
+            {
+                $tenantIdMap[$rule.TenantName] = $this.GetM365TenantId($rule.TenantName)
+            }
+        }
+
+        return @{
+            IncludedProperties = @('Enabled', 'Rules')
+            PostProcessing     = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                $tenantIdMap = $PostProcessingArgs[0]
+                if ($null -ne $DesiredValues['Rules'])
+                {
+                    $effectiveRules = @()
+                    foreach ($rule in @($DesiredValues['Rules']))
+                    {
+                        $tenantId = if ($tenantIdMap.ContainsKey($rule.TenantName)) { $tenantIdMap[$rule.TenantName] } else { $rule.TenantName }
+                        $effectiveRules += [MSFT_PPTenantRule] @{
+                            TenantName = $tenantId
+                            Direction  = $rule.Direction
+                        }
+                    }
+                    $DesiredValues['Rules'] = $effectiveRules
+                    $ValuesToCheck['Rules'] = $effectiveRules
+                }
+                elseif ($null -ne $DesiredValues['RulesToInclude'] -or $null -ne $DesiredValues['RulesToExclude'])
+                {
+                    $effectiveRules = [ordered]@{}
+                    foreach ($rule in @($CurrentValues['Rules']))
+                    {
+                        if ($null -ne $rule)
+                        {
+                            $effectiveRules[$rule.TenantName] = [MSFT_PPTenantRule] @{
+                                TenantName = $rule.TenantName
+                                Direction  = $rule.Direction
+                            }
+                        }
+                    }
+                    foreach ($rule in @($DesiredValues['RulesToInclude']))
+                    {
+                        if ($null -ne $rule)
+                        {
+                            $tenantId = if ($tenantIdMap.ContainsKey($rule.TenantName)) { $tenantIdMap[$rule.TenantName] } else { $rule.TenantName }
+                            $effectiveRules[$tenantId] = [MSFT_PPTenantRule] @{
+                                TenantName = $tenantId
+                                Direction  = $rule.Direction
+                            }
+                        }
+                    }
+                    foreach ($rule in @($DesiredValues['RulesToExclude']))
+                    {
+                        if ($null -ne $rule)
+                        {
+                            $tenantId = if ($tenantIdMap.ContainsKey($rule.TenantName)) { $tenantIdMap[$rule.TenantName] } else { $rule.TenantName }
+                            $effectiveRules.Remove($tenantId)
+                        }
+                    }
+                    $DesiredValues['Rules'] = @($effectiveRules.Values)
+                    $ValuesToCheck['Rules'] = $DesiredValues['Rules']
+                }
+                foreach ($key in @('RulesToInclude', 'RulesToExclude'))
+                {
+                    $DesiredValues.Remove($key)
+                    $CurrentValues.Remove($key)
+                    $ValuesToCheck.Remove($key)
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+            PostProcessingArgs = @(, $tenantIdMap)
         }
     }
 

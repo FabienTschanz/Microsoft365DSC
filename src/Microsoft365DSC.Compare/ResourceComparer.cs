@@ -1,4 +1,5 @@
 using Microsoft365DSC.Converter;
+using Microsoft365DSC.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -251,7 +252,7 @@ namespace Microsoft365DSC.Compare
             foreach (string key in simpleKeys)
             {
                 if (desiredValues.ContainsKey(key))
-                    simpleDesired[key] = desiredValues[key];
+                    simpleDesired[key] = MemberAccessor.Unwrap(desiredValues[key]);
             }
 
             if (simpleKeys.Count > 0)

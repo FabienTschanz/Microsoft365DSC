@@ -441,115 +441,9 @@ class SCLabelPolicy : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        Write-Verbose -Message "Testing configuration of Sensitivity label for $($this.Name)"
-        $CurrentValues = $this.Get().ToHashtable()
-
-        $ValuesToCheck = ([Hashtable]$this.GetBoundParameters()).Clone()
-        $ValuesToCheck.Remove('AddLabels') | Out-Null
-        $ValuesToCheck.Remove('AddExchangeLocation') | Out-Null
-        $ValuesToCheck.Remove('AddExchangeLocationException') | Out-Null
-        $ValuesToCheck.Remove('AddModernGroupLocation') | Out-Null
-        $ValuesToCheck.Remove('AddModernGroupLocationException') | Out-Null
-        $ValuesToCheck.Remove('RemoveLabels') | Out-Null
-        $ValuesToCheck.Remove('RemoveExchangeLocation') | Out-Null
-        $ValuesToCheck.Remove('RemoveExchangeLocationException') | Out-Null
-        $ValuesToCheck.Remove('RemoveModernGroupLocation') | Out-Null
-        $ValuesToCheck.Remove('RemoveModernGroupLocationException') | Out-Null
-
-        if ($null -ne $this.AdvancedSettings)
-        {
-            $TestAdvancedSettings = Test-SCLabelPolicyAdvancedSettings -DesiredProperty $this.AdvancedSettings -CurrentProperty $CurrentValues.AdvancedSettings
-            if ($false -eq $TestAdvancedSettings)
-            {
-                return $false
-            }
-            $ValuesToCheck.Remove('AdvancedSettings') | Out-Null
-        }
-
-        $locationDriftProperties = @{
-            ModernGroupLocation          = @{ Add = $this.AddModernGroupLocation;          Remove = $this.RemoveModernGroupLocation;          Desired = $this.ModernGroupLocation }
-            ModernGroupLocationException = @{ Add = $this.AddModernGroupLocationException; Remove = $this.RemoveModernGroupLocationException; Desired = $this.ModernGroupLocationException }
-            ExchangeLocation             = @{ Add = $this.AddExchangeLocation;             Remove = $this.RemoveExchangeLocation;             Desired = $this.ExchangeLocation }
-            ExchangeLocationException    = @{ Add = $this.AddExchangeLocationException;    Remove = $this.RemoveExchangeLocationException;    Desired = $this.ExchangeLocationException }
-        }
-
-        foreach ($locationProperty in $locationDriftProperties.Keys)
-        {
-            $entry = $locationDriftProperties[$locationProperty]
-            if ($null -eq $entry.Desired -and $null -eq $entry.Add -and $null -eq $entry.Remove)
-            {
-                continue
-            }
-
-            $configData = New-SCLabelPolicyPolicyData -configData $entry.Desired `
-                -currentData $CurrentValues.$locationProperty `
-                -removedData $entry.Remove `
-                -additionalData $entry.Add
-
-            if ($null -eq $configData -and $null -ne $CurrentValues.$locationProperty -and $null -ne $entry.Remove)
-            {
-                return $false
-            }
-
-            $current = @($CurrentValues.$locationProperty | Where-Object { $null -ne $_ -and '' -ne $_ })
-            $expected = @($configData | Where-Object { $null -ne $_ -and '' -ne $_ })
-
-            if ($current.Count -ne $expected.Count -or `
-                ($expected.Count -gt 0 -and `
-                    (Compare-Object -ReferenceObject $current -DifferenceObject $expected).Count -gt 0))
-            {
-                Write-Verbose -Message "$locationProperty drift detected on policy $($this.Name). Current: $($current -join ', '); Expected: $($expected -join ', ')"
-                return $false
-            }
-
-            $ValuesToCheck.Remove("Remove$locationProperty") | Out-Null
-            $ValuesToCheck.Remove("Add$locationProperty") | Out-Null
-            $ValuesToCheck.Remove($locationProperty) | Out-Null
-        }
-
-        if ($null -ne $this.RemoveLabels -or $null -ne $this.AddLabels -or $null -ne $this.Labels)
-        {
-            $configData = New-SCLabelPolicyPolicyData -configData $this.Labels -currentData $CurrentValues.Labels `
-                -removedData $this.RemoveLabels -additionalData $this.AddLabels
-
-            if ($null -ne $configData)
-            {
-                $ValuesToCheck['Labels'] = $configData
-            }
-
-            if ($null -eq $configData -and $null -ne $CurrentValues.Labels `
-                    -and $null -ne $this.RemoveLabels)
-            {
-                return $false
-            }
-            $ValuesToCheck.Remove('RemoveLabels') | Out-Null
-            $ValuesToCheck.Remove('AddLabels') | Out-Null
-            $ValuesToCheck.Remove('Labels') | Out-Null
-        }
-
-        Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
-        Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $ValuesToCheck)"
-
-        $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-            -Source $($this.GetResourceName()) `
-            -DesiredValues $this.GetBoundParameters() `
-            -ValuesToCheck $ValuesToCheck.Keys
-
-        Write-Verbose -Message "Test-TargetResource returned $TestResult"
-        return $TestResult
+        return ([M365DSCResourceBase] $this).Test()
     }
+
 
     [string] Export()
     {
@@ -640,6 +534,73 @@ class SCLabelPolicy : M365DSCResourceBase
             throw
         }
         return $dscContent.ToString()
+    }
+
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @(
+                'AddLabels',
+                'AddExchangeLocation',
+                'AddExchangeLocationException',
+                'AddModernGroupLocation',
+                'AddModernGroupLocationException',
+                'RemoveLabels',
+                'RemoveExchangeLocation',
+                'RemoveExchangeLocationException',
+                'RemoveModernGroupLocation',
+                'RemoveModernGroupLocationException'
+            )
+            PostProcessing     = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($null -ne $DesiredValues.AdvancedSettings)
+                {
+                    $TestAdvancedSettings = Test-SCLabelPolicyAdvancedSettings -DesiredProperty $DesiredValues.AdvancedSettings -CurrentProperty $CurrentValues.AdvancedSettings
+                    if ($TestAdvancedSettings)
+                    {
+                        $ValuesToCheck.Remove('AdvancedSettings') | Out-Null
+                    }
+                    else
+                    {
+                        $DesiredValues['AdvancedSettings'] = 'AdvancedSettings drift detected'
+                        $CurrentValues['AdvancedSettings'] = 'AdvancedSettings drift current'
+                        $ValuesToCheck['AdvancedSettings'] = 'AdvancedSettings drift detected'
+                    }
+                }
+
+                foreach ($deltaProperty in @('ModernGroupLocation', 'ModernGroupLocationException', 'ExchangeLocation', 'ExchangeLocationException', 'Labels'))
+                {
+                    $desired = $DesiredValues[$deltaProperty]
+                    $added = $DesiredValues["Add$deltaProperty"]
+                    $removed = $DesiredValues["Remove$deltaProperty"]
+                    if ($null -eq $desired -and $null -eq $added -and $null -eq $removed)
+                    {
+                        continue
+                    }
+
+                    $configData = New-SCLabelPolicyPolicyData -configData $desired `
+                        -currentData $CurrentValues[$deltaProperty] `
+                        -removedData $removed `
+                        -additionalData $added
+
+                    if ($null -eq $configData -and $null -ne $CurrentValues[$deltaProperty] -and $null -ne $removed)
+                    {
+                        $DesiredValues[$deltaProperty] = "$deltaProperty drift detected"
+                        $CurrentValues[$deltaProperty] = "$deltaProperty drift current"
+                        $ValuesToCheck[$deltaProperty] = "$deltaProperty drift detected"
+                        continue
+                    }
+
+                    $current = @($CurrentValues[$deltaProperty] | Where-Object { $null -ne $_ -and '' -ne $_ })
+                    $expected = @($configData | Where-Object { $null -ne $_ -and '' -ne $_ })
+                    $DesiredValues[$deltaProperty] = [System.String[]] $expected
+                    $CurrentValues[$deltaProperty] = [System.String[]] $current
+                    $ValuesToCheck[$deltaProperty] = [System.String[]] $expected
+                }
+
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.

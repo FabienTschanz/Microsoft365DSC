@@ -607,47 +607,7 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $boundParameters = $this.GetBoundParameters()
-        $excludedProperties = @()
-        if ($boundParameters.ContainsKey('RootCertificatesForServerValidationDisplayNames'))
-        {
-            $excludedProperties += 'RootCertificatesForServerValidationIds'
-        }
-
-        if ($boundParameters.ContainsKey('IdentityCertificateForClientAuthenticationDisplayName'))
-        {
-            $excludedProperties += 'IdentityCertificateForClientAuthenticationId'
-        }
-
-        if ($boundParameters.ContainsKey('SecondaryIdentityCertificateForClientAuthenticationDisplayName'))
-        {
-            $excludedProperties += 'SecondaryIdentityCertificateForClientAuthenticationId'
-        }
-
-        if ($boundParameters.ContainsKey('RootCertificateForClientValidationDisplayName'))
-        {
-            $excludedProperties += 'RootCertificateForClientValidationId'
-        }
-
-        if ($boundParameters.ContainsKey('SecondaryRootCertificateForClientValidationDisplayName'))
-        {
-            $excludedProperties += 'SecondaryRootCertificateForClientValidationId'
-        }
-
-        $result = Test-M365DSCTargetResource -DesiredValues $boundParameters `
-            -ResourceName $this.GetResourceName() `
-            -ExcludedProperties $excludedProperties `
-            -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -766,6 +726,36 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
     
         # Every code path must return in a method with a declared return type.
         return ''
+    }
+
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                if ($DesiredValues.ContainsKey('RootCertificatesForServerValidationDisplayNames'))
+                {
+                    $ValuesToCheck.Remove('RootCertificatesForServerValidationIds') | Out-Null
+                }
+                if ($DesiredValues.ContainsKey('IdentityCertificateForClientAuthenticationDisplayName'))
+                {
+                    $ValuesToCheck.Remove('IdentityCertificateForClientAuthenticationId') | Out-Null
+                }
+                if ($DesiredValues.ContainsKey('SecondaryIdentityCertificateForClientAuthenticationDisplayName'))
+                {
+                    $ValuesToCheck.Remove('SecondaryIdentityCertificateForClientAuthenticationId') | Out-Null
+                }
+                if ($DesiredValues.ContainsKey('RootCertificateForClientValidationDisplayName'))
+                {
+                    $ValuesToCheck.Remove('RootCertificateForClientValidationId') | Out-Null
+                }
+                if ($DesiredValues.ContainsKey('SecondaryRootCertificateForClientValidationDisplayName'))
+                {
+                    $ValuesToCheck.Remove('SecondaryRootCertificateForClientValidationId') | Out-Null
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.

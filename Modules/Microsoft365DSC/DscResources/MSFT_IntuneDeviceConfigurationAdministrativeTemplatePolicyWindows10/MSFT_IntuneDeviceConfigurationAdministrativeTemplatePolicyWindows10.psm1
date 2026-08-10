@@ -492,93 +492,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        Write-Verbose -Message "Testing configuration of the Intune Device Configuration Administrative Template Policy for Windows10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
-
-        $CurrentValues = $this.Get().ToHashtable()
-
-        $ValuesToCheck = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
-        $testResult = $true
-
-        #Compare Cim instances
-        foreach ($key in $this.GetBoundParameters().Keys)
-        {
-            $source = $this.GetBoundParameters().$key
-            $target = $CurrentValues.$key
-            if ($source.GetType().Name -like '*MSFT_*')
-            {
-                #Removing Key Definition because it is Read-Only and ID as random
-                if ($key -eq 'DefinitionValues')
-                {
-                    $source = Get-M365DSCDRGComplexTypeToHashtable -ComplexObject $source
-                    $target = Get-M365DSCDRGComplexTypeToHashtable -ComplexObject $target
-                    foreach ($definitionValue in $source)
-                    {
-                        $definitionValue.Remove('Definition') | Out-Null
-                        $definitionValue.Remove('Id') | Out-Null
-                        #Removing Key presentationDefinitionLabel because it is Read-Only and ID as random
-                        foreach ($presentationValue in $definitionValue.PresentationValues)
-                        {
-                            $presentationValue.Remove('presentationDefinitionLabel') | Out-Null
-                            $presentationValue.Remove('Id') | Out-Null
-                        }
-                    }
-                    foreach ($definitionValue in $target)
-                    {
-                        $definitionValue.Remove('Definition') | Out-Null
-                        $definitionValue.Remove('Id') | Out-Null
-                        #Removing Key presentationDefinitionLabel because it is Read-Only and ID as random
-                        foreach ($presentationValue in $definitionValue.PresentationValues)
-                        {
-                            $presentationValue.Remove('presentationDefinitionLabel') | Out-Null
-                            $presentationValue.Remove('Id') | Out-Null
-                        }
-                    }
-                }
-
-                $testResult = Compare-M365DSCComplexObject `
-                    -Source ($source) `
-                    -Target ($target) `
-                    -PropertyName $key
-
-                if (-not $testResult)
-                {
-                    $testResult = $false
-                    break
-                }
-
-                $ValuesToCheck.Remove($key) | Out-Null
-            }
-        }
-
-        $ValuesToCheck.Remove('Id') | Out-Null
-        $ValuesToCheck.Remove('PolicyConfigurationIngestionType') | Out-Null
-
-        Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
-        Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $ValuesToCheck)"
-
-        if ($testResult)
-        {
-            $testResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-                -Source $($this.GetResourceName()) `
-                -DesiredValues $this.GetBoundParameters() `
-                -ValuesToCheck $ValuesToCheck.Keys
-        }
-
-        Write-Verbose -Message "Test-TargetResource returned $testResult"
-
-        return $testResult
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -723,6 +637,40 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
 
         # Every code path must return in a method with a declared return type.
         return ''
+    }
+
+    # DefinitionValues carry read-only (Definition, presentationDefinitionLabel) and random (Id) keys that must not be compared.
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('Id', 'PolicyConfigurationIngestionType')
+            PostProcessing     = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                foreach ($side in @($DesiredValues, $CurrentValues))
+                {
+                    if ($null -ne $side.DefinitionValues)
+                    {
+                        $definitionValues = @(Get-M365DSCDRGComplexTypeToHashtable -ComplexObject $side.DefinitionValues)
+                        foreach ($definitionValue in $definitionValues)
+                        {
+                            $definitionValue.Remove('Definition') | Out-Null
+                            $definitionValue.Remove('Id') | Out-Null
+                            foreach ($presentationValue in $definitionValue.PresentationValues)
+                            {
+                                $presentationValue.Remove('presentationDefinitionLabel') | Out-Null
+                                $presentationValue.Remove('Id') | Out-Null
+                            }
+                        }
+                        $side.DefinitionValues = $definitionValues
+                    }
+                }
+                if ($ValuesToCheck.ContainsKey('DefinitionValues'))
+                {
+                    $ValuesToCheck.DefinitionValues = $DesiredValues.DefinitionValues
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.

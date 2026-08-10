@@ -31,25 +31,12 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
     [System.String] $AppScopeId
 
     [DscProperty()]
-    [System.ComponentModel.Description('This parameter is deprecated and will be removed in a future release. Represents the type of operation on the role assignment request.The possible values are: adminAssign, adminUpdate, adminRemove, selfActivate, selfDeactivate, adminExtend, adminRenew, selfExtend, selfRenew, unknownFutureValue.')]
-    [ValidateSet('adminAssign', 'adminUpdate', 'adminRemove', 'selfActivate', 'selfDeactivate', 'adminExtend', 'adminRenew', 'selfExtend', 'selfRenew', 'unknownFutureValue')]
-    [System.String] $Action
-
-    [DscProperty()]
-    [System.ComponentModel.Description('This parameter is deprecated and will be removed in a future release. Determines whether the call is a validation or an actual call. Only set this property if you want to check whether an activation is subject to additional rules like MFA before actually submitting the request.')]
-    [System.Nullable[System.Boolean]] $IsValidationOnly
-
-    [DscProperty()]
     [System.ComponentModel.Description('A message provided by users and administrators when create they create the unifiedRoileAssignmentScheduleRequest object. Optional when action is adminRemove. Whether this property is required or optional is also dependent on the settings for the Azure AD role.')]
     [System.String] $Justification
 
     [DscProperty()]
     [System.ComponentModel.Description('The period of the role assignment. Optional when action is adminRemove. The period of assignment is dependent on the settings of the Azure AD role.')]
     [MSFT_AADRoleAssignmentScheduleRequestSchedule] $ScheduleInfo
-
-    [DscProperty()]
-    [System.ComponentModel.Description('This parameter is deprecated and will be removed in a future release. Ticket details linked to the role assignment request including details of the ticket number and ticket system.')]
-    [MSFT_AADRoleAssignmentScheduleRequestTicketInfo] $TicketInfo
 
     [DscProperty()]
     [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
@@ -290,10 +277,8 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
                 RoleDefinition        = $this.RoleDefinition
                 DirectoryScopeId      = $request.DirectoryScopeId
                 AppScopeId            = $request.AppScopeId
-                #Action                = $request.Action
                 Id                    = $request.Id
                 Justification         = "Assignment of role '$($this.RoleDefinition)' to principal '$PrincipalValue' of type '$($this.PrincipalType)'."
-                #IsValidationOnly      = $request.IsValidationOnly
                 ScheduleInfo          = $ScheduleInfoValue
                 Ensure                = 'Present'
                 Credential            = $this.Credential
@@ -324,22 +309,6 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         {
             $null = $this.InvokeInPowerShellCore('Set')
             return
-        }
-
-        # TODO: Remove during next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Action'))
-        {
-            Write-Warning -Message "The parameter 'Action' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('IsValidationOnly'))
-        {
-            Write-Warning -Message "The parameter 'IsValidationOnly' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('TicketInfo'))
-        {
-            Write-Warning -Message "The parameter 'TicketInfo' is deprecated. It will be removed in the next breaking change release."
         }
 
         #Ensure the proper dependencies are installed in the current environment.
@@ -477,36 +446,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        # TODO: Remove during next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Action'))
-        {
-            Write-Warning -Message "The parameter 'Action' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('IsValidationOnly'))
-        {
-            Write-Warning -Message "The parameter 'IsValidationOnly' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('TicketInfo'))
-        {
-            Write-Warning -Message "The parameter 'TicketInfo' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-                                             -ResourceName $this.GetResourceName() `
-                                             @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -683,7 +623,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{
-            ExcludedProperties = @('Action', 'IsValidationOnly', 'Justification', 'TicketInfo')
+            ExcludedProperties = @('Justification')
             PostProcessing = {
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
                 if (-not [System.String]::IsNullOrEmpty($DesiredValues.ScheduleInfo.StartDateTime))
@@ -741,17 +681,6 @@ class MSFT_AADRoleAssignmentScheduleRequestSchedule
     [DscProperty()]
     [System.ComponentModel.Description('When the eligible or active assignment becomes active.')]
     [System.String] $startDateTime
-}
-
-class MSFT_AADRoleAssignmentScheduleRequestTicketInfo
-{
-    [DscProperty()]
-    [System.ComponentModel.Description('The ticket number.')]
-    [System.String] $ticketNumber
-
-    [DscProperty()]
-    [System.ComponentModel.Description('The description of the ticket system.')]
-    [System.String] $ticketSystem
 }
 
 class MSFT_AADRoleAssignmentScheduleRequestScheduleExpiration

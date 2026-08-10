@@ -279,28 +279,28 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
         Write-Verbose -Message "Setting configuration of the Intune Device Enrollment Status Page for Windows 10 with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
         $currentInstance = $this.Get().ToHashtable()
-        $this.GetBoundParameters() = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
-        if ($this.GetBoundParameters().ContainsKey('SelectedMobileAppNames') -eq $true)
+        if ($boundParameters.ContainsKey('SelectedMobileAppNames') -eq $true)
         {
             Write-Verbose -Message 'Converting SelectedMobileAppNames to SelectedMobileAppIds'
-            if ($this.GetBoundParameters().SelectedMobileAppNames.Count -ne 0)
+            if ($boundParameters.SelectedMobileAppNames.Count -ne 0)
             {
-                [Array]$mobileAppIds = $this.SelectedMobileAppNames | ForEach-Object { (Get-MgBetaDeviceAppManagementMobileApp -Filter "DisplayName eq '$($_ -replace "'", "''")'").Id }
-                $this.GetBoundParameters().SelectedMobileAppIds = $mobileAppIds
+                [Array]$mobileAppIds = $boundParameters.SelectedMobileAppNames | ForEach-Object { (Get-MgBetaDeviceAppManagementMobileApp -Filter "DisplayName eq '$($_ -replace "'", "''")'").Id }
+                $boundParameters.SelectedMobileAppIds = $mobileAppIds
             }
             else
             {
-                $this.GetBoundParameters().SelectedMobileAppIds = @()
+                $boundParameters.SelectedMobileAppIds = @()
             }
-            $this.GetBoundParameters().Remove('SelectedMobileAppNames') | Out-Null
+            $boundParameters.Remove('SelectedMobileAppNames') | Out-Null
         }
 
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating an Intune Device Enrollment Configuration for Windows10 with DisplayName {$($this.DisplayName)}"
 
-            $CreateParameters = ([Hashtable]$this.GetBoundParameters()).Clone()
+            $CreateParameters = ([Hashtable]$boundParameters).Clone()
             $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
             $CreateParameters.Remove('Id') | Out-Null
             $CreateParameters.Remove('Assignments') | Out-Null
@@ -338,7 +338,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
             $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$($policy.Id)/assign"
             Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $body -ErrorAction Stop
 
-            if ($this.GetBoundParameters().ContainsKey('Priority') -and $policy.Priority -ne $this.Priority)
+            if ($boundParameters.ContainsKey('Priority') -and $policy.Priority -ne $this.Priority)
             {
                 Update-IntuneDeviceEnrollmentStatusPageWindows10DeviceEnrollmentConfigurationPriority `
                     -DeviceEnrollmentConfigurationId $policy.id `
@@ -350,7 +350,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating the Intune Device Enrollment Configuration for Windows10 with Id {$($currentInstance.Id)}"
 
-            $UpdateParameters = ([Hashtable]$this.GetBoundParameters()).Clone()
+            $UpdateParameters = ([Hashtable]$boundParameters).Clone()
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
             $UpdateParameters.Remove('Assignments') | Out-Null
             $UpdateParameters.Remove('Priority') | Out-Null
@@ -379,7 +379,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
                 $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$($currentInstance.Id)/assign"
                 Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $body -ErrorAction Stop
 
-                if ($this.GetBoundParameters().ContainsKey('Priority') -and $this.Priority -ne $currentInstance.Priority)
+                if ($boundParameters.ContainsKey('Priority') -and $this.Priority -ne $currentInstance.Priority)
                 {
                     Update-IntuneDeviceEnrollmentStatusPageWindows10DeviceEnrollmentConfigurationPriority `
                         -DeviceEnrollmentConfigurationId $currentInstance.id `
@@ -399,31 +399,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        if ($this.GetBoundParameters().ContainsKey('SelectedMobileAppIds') -eq $true -and $this.GetBoundParameters().ContainsKey('SelectedMobileAppNames') -eq $false)
-        {
-            Write-Verbose -Message 'Converting SelectedMobileAppIds to SelectedMobileAppNames'
-            $resolvedNames = @()
-            foreach ($appId in $this.SelectedMobileAppIds)
-            {
-                $mobileEntry = Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $appId
-                $resolvedNames += $mobileEntry.DisplayName
-            }
-            $this.GetBoundParameters().SelectedMobileAppNames = $resolvedNames
-        }
-        $this.GetBoundParameters().Remove('SelectedMobileAppIds') | Out-Null
-
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -534,9 +510,34 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
+    }
+
+    # TODO: Only do this if not doing a Report. It requires a connection to the Graph workload, which is not available when doing a report.
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('SelectedMobileAppIds')
+            # Compare on app display names: resolve desired ids to names, then drop the id lists.
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                if ($DesiredValues.ContainsKey('SelectedMobileAppIds') -and -not $DesiredValues.ContainsKey('SelectedMobileAppNames'))
+                {
+                    $resolvedNames = @()
+                    foreach ($appId in $DesiredValues.SelectedMobileAppIds)
+                    {
+                        $resolvedNames += (Get-MgBetaDeviceAppManagementMobileApp -MobileAppId $appId).DisplayName
+                    }
+                    $DesiredValues.SelectedMobileAppNames = $resolvedNames
+                    $ValuesToCheck.SelectedMobileAppNames = $resolvedNames
+                }
+                $DesiredValues.Remove('SelectedMobileAppIds') | Out-Null
+                $ValuesToCheck.Remove('SelectedMobileAppIds') | Out-Null
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
@@ -628,4 +629,3 @@ function Update-IntuneDeviceEnrollmentStatusPageWindows10DeviceEnrollmentConfigu
         return $null
     }
 }
-

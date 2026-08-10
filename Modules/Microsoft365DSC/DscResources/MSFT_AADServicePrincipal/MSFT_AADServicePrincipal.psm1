@@ -819,25 +819,7 @@ class AADServicePrincipal : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        $null = $this.Connect('MicrosoftGraph')
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()

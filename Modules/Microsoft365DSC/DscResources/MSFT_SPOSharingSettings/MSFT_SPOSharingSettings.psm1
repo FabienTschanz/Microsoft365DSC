@@ -539,70 +539,7 @@ class SPOSharingSettings : M365DSCResourceBase
 
     [bool] Test()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $SignInAccelerationDomain = $null
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $boundParameters = $this.GetBoundParameters()
-
-        if ($this.DefaultLinkPermission -eq 'None')
-        {
-            Write-Verbose -Message 'Valid values to set are View and Edit. A value of None will be set to Edit as its the default value.'
-            $boundParameters.DefaultLinkPermission = 'Edit'
-        }
-
-        if ($null -eq $SignInAccelerationDomain)
-        {
-            $boundParameters.Remove('SignInAccelerationDomain') | Out-Null
-            $boundParameters.Remove('EnableGuestSignInAcceleration') | Out-Null #removing EnableGuestSignInAcceleration since it can only be configured with a configured SignINAccerlation domain
-        }
-
-        if ($this.SharingCapability -ne 'ExternalUserAndGuestSharing')
-        {
-            Write-Warning -Message 'The sharing capabilities for the tenant are not configured to be ExternalUserAndGuestSharing for that the RequireAnonymousLinksExpireInDays property cannot be configured'
-            $boundParameters.Remove('RequireAnonymousLinksExpireInDays') | Out-Null
-        }
-
-        if ($this.ExternalUserExpireInDays -and $this.ExternalUserExpirationRequired -eq $false)
-        {
-            Write-Warning -Message 'ExternalUserExpirationRequired is set to be false. For that the ExternalUserExpireInDays property cannot be configured'
-            $boundParameters.Remove('ExternalUserExpireInDays') | Out-Null
-        }
-
-        if ($this.SharingCapability -ne 'ExternalUserAndGuestSharing' -and ($null -ne $this.FileAnonymousLinkType -or $null -ne $this.FolderAnonymousLinkType))
-        {
-            Write-Warning -Message 'If anonymous file or folder links are set, SharingCapability must be set to ExternalUserAndGuestSharing '
-            $boundParameters.Remove('FolderAnonymousLinkType') | Out-Null
-            $boundParameters.Remove('FileAnonymousLinkType') | Out-Null
-        }
-
-        if ($this.SharingDomainRestrictionMode -eq 'None')
-        {
-            Write-Warning -Message 'SharingDomainRestrictionMode is set to None. For that SharingAllowedDomainList / SharingBlockedDomainList cannot be configured'
-            $boundParameters.Remove('SharingAllowedDomainList') | Out-Null
-            $boundParameters.Remove('SharingBlockedDomainList') | Out-Null
-        }
-        elseif ($this.SharingDomainRestrictionMode -eq 'AllowList')
-        {
-            Write-Verbose -Message 'SharingDomainRestrictionMode is set to AllowList. For that SharingBlockedDomainList cannot be configured'
-            $boundParameters.Remove('SharingBlockedDomainList') | Out-Null
-        }
-        elseif ($this.SharingDomainRestrictionMode -eq 'BlockList')
-        {
-            Write-Warning -Message 'SharingDomainRestrictionMode is set to BlockList. For that SharingAllowedDomainList cannot be configured'
-            $boundParameters.Remove('SharingAllowedDomainList') | Out-Null
-        }
-
-        $result = Test-M365DSCTargetResource -DesiredValues $boundParameters `
-            -ResourceName $this.GetResourceName() -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -664,6 +601,75 @@ class SPOSharingSettings : M365DSCResourceBase
             $this.LogError($_, 'Error during Export:')
 
             throw
+        }
+    }
+
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($DesiredValues.DefaultLinkPermission -eq 'None')
+                {
+                    Write-Verbose -Message 'Valid values to set are View and Edit. A value of None will be set to Edit as its the default value.'
+                    $DesiredValues.DefaultLinkPermission = 'Edit'
+                    $ValuesToCheck.DefaultLinkPermission = 'Edit'
+                }
+
+                if ([System.String]::IsNullOrEmpty($DesiredValues.SignInAccelerationDomain))
+                {
+                    $DesiredValues.Remove('SignInAccelerationDomain') | Out-Null
+                    $ValuesToCheck.Remove('SignInAccelerationDomain') | Out-Null
+                    $DesiredValues.Remove('EnableGuestSignInAcceleration') | Out-Null #removing EnableGuestSignInAcceleration since it can only be configured with a configured SignINAccerlation domain
+                    $ValuesToCheck.Remove('EnableGuestSignInAcceleration') | Out-Null
+                }
+
+                if ($DesiredValues.SharingCapability -ne 'ExternalUserAndGuestSharing')
+                {
+                    Write-Warning -Message 'The sharing capabilities for the tenant are not configured to be ExternalUserAndGuestSharing for that the RequireAnonymousLinksExpireInDays property cannot be configured'
+                    $DesiredValues.Remove('RequireAnonymousLinksExpireInDays') | Out-Null
+                    $ValuesToCheck.Remove('RequireAnonymousLinksExpireInDays') | Out-Null
+                }
+
+                if ($DesiredValues.ExternalUserExpireInDays -and $DesiredValues.ExternalUserExpirationRequired -eq $false)
+                {
+                    Write-Warning -Message 'ExternalUserExpirationRequired is set to be false. For that the ExternalUserExpireInDays property cannot be configured'
+                    $DesiredValues.Remove('ExternalUserExpireInDays') | Out-Null
+                    $ValuesToCheck.Remove('ExternalUserExpireInDays') | Out-Null
+                }
+
+                if ($DesiredValues.SharingCapability -ne 'ExternalUserAndGuestSharing' -and ($null -ne $DesiredValues.FileAnonymousLinkType -or $null -ne $DesiredValues.FolderAnonymousLinkType))
+                {
+                    Write-Warning -Message 'If anonymous file or folder links are set, SharingCapability must be set to ExternalUserAndGuestSharing '
+                    $DesiredValues.Remove('FolderAnonymousLinkType') | Out-Null
+                    $ValuesToCheck.Remove('FolderAnonymousLinkType') | Out-Null
+                    $DesiredValues.Remove('FileAnonymousLinkType') | Out-Null
+                    $ValuesToCheck.Remove('FileAnonymousLinkType') | Out-Null
+                }
+
+                if ($DesiredValues.SharingDomainRestrictionMode -eq 'None')
+                {
+                    Write-Warning -Message 'SharingDomainRestrictionMode is set to None. For that SharingAllowedDomainList / SharingBlockedDomainList cannot be configured'
+                    $DesiredValues.Remove('SharingAllowedDomainList') | Out-Null
+                    $ValuesToCheck.Remove('SharingAllowedDomainList') | Out-Null
+                    $DesiredValues.Remove('SharingBlockedDomainList') | Out-Null
+                    $ValuesToCheck.Remove('SharingBlockedDomainList') | Out-Null
+                }
+                elseif ($DesiredValues.SharingDomainRestrictionMode -eq 'AllowList')
+                {
+                    Write-Verbose -Message 'SharingDomainRestrictionMode is set to AllowList. For that SharingBlockedDomainList cannot be configured'
+                    $DesiredValues.Remove('SharingBlockedDomainList') | Out-Null
+                    $ValuesToCheck.Remove('SharingBlockedDomainList') | Out-Null
+                }
+                elseif ($DesiredValues.SharingDomainRestrictionMode -eq 'BlockList')
+                {
+                    Write-Warning -Message 'SharingDomainRestrictionMode is set to BlockList. For that SharingAllowedDomainList cannot be configured'
+                    $DesiredValues.Remove('SharingAllowedDomainList') | Out-Null
+                    $ValuesToCheck.Remove('SharingAllowedDomainList') | Out-Null
+                }
+
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
         }
     }
 

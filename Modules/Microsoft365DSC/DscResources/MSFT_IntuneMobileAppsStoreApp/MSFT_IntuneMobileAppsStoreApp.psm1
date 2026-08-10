@@ -322,34 +322,7 @@ class IntuneMobileAppsStoreApp : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of the Intune Mobile Apps Store App with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
-        if ($this.GetBoundParameters().ContainsKey('ApplicableDeviceType') -and $this.GetBoundParameters().TargetPlatform -ne 'iOS')
-        {
-            throw 'ApplicableDeviceType is only applicable for iOS Store Apps.'
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('BundleId') -and $this.GetBoundParameters().TargetPlatform -ne 'iOS')
-        {
-            throw 'BundleId is only applicable for iOS Store Apps.'
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('MinimumSupportedOperatingSystem'))
-        {
-            foreach ($keyValuePair in $this.GetBoundParameters().MinimumSupportedOperatingSystem.PSObject.Properties.GetEnumerator())
-            {
-                if ($null -eq $keyValuePair.Value)
-                {
-                    continue
-                }
-                if ($keyValuePair.Name -in $this.ResourceCache['androidExclusive'] -and $this.TargetPlatform -ne 'Android')
-                {
-                    throw "MinimumSupportedOperatingSystem.$($keyValuePair.Name) is only applicable for Android Store Apps."
-                }
-                if ($keyValuePair.Name -in $this.ResourceCache['iOSExclusive'] -and $this.TargetPlatform -ne 'IOS')
-                {
-                    throw "MinimumSupportedOperatingSystem.$($keyValuePair.Name) is only applicable for iOS Store Apps."
-                }
-            }
-        }
+        $this.ValidateBoundParameters()
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -445,45 +418,9 @@ class IntuneMobileAppsStoreApp : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        $this.ValidateBoundParameters()
 
-        if ($this.GetBoundParameters().ContainsKey('ApplicableDeviceType') -and $this.GetBoundParameters().TargetPlatform -ne 'iOS')
-        {
-            throw 'ApplicableDeviceType is only applicable for iOS Store Apps.'
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('BundleId') -and $this.GetBoundParameters().TargetPlatform -ne 'iOS')
-        {
-            throw 'BundleId is only applicable for iOS Store Apps.'
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('MinimumSupportedOperatingSystem'))
-        {
-            foreach ($keyValuePair in $this.GetBoundParameters().MinimumSupportedOperatingSystem.PSObject.Properties.GetEnumerator())
-            {
-                if ($keyValuePair.Key -in $this.ResourceCache['androidExclusive'] -and $this.TargetPlatform -ne 'Android')
-                {
-                    throw "MinimumSupportedOperatingSystem.$($keyValuePair.Key) is only applicable for Android Store Apps."
-                }
-                if ($keyValuePair.Key -in $this.ResourceCache['iOSExclusive'] -and $this.TargetPlatform -ne 'IOS')
-                {
-                    throw "MinimumSupportedOperatingSystem.$($keyValuePair.Key) is only applicable for iOS Store Apps."
-                }
-            }
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -668,6 +605,35 @@ class IntuneMobileAppsStoreApp : M365DSCResourceBase
     {
         return @{
             ExcludedProperties = @('AppStoreUrl', 'TargetPlatform')
+        }
+    }
+
+    hidden [void] ValidateBoundParameters()
+    {
+        $boundParameters = $this.GetBoundParameters()
+        if ($boundParameters.ContainsKey('ApplicableDeviceType') -and $boundParameters.TargetPlatform -ne 'iOS')
+        {
+            throw 'ApplicableDeviceType is only applicable for iOS Store Apps.'
+        }
+
+        if ($boundParameters.ContainsKey('BundleId') -and $boundParameters.TargetPlatform -ne 'iOS')
+        {
+            throw 'BundleId is only applicable for iOS Store Apps.'
+        }
+
+        if ($boundParameters.ContainsKey('MinimumSupportedOperatingSystem'))
+        {
+            foreach ($property in $boundParameters.MinimumSupportedOperatingSystem.PSObject.Properties | Where-Object { $null -ne $_.Value })
+            {
+                if ($property.Name -in $this.ResourceCache['androidExclusive'] -and $this.TargetPlatform -ne 'Android')
+                {
+                    throw "MinimumSupportedOperatingSystem.$($property.Name) is only applicable for Android Store Apps."
+                }
+                if ($property.Name -in $this.ResourceCache['iOSExclusive'] -and $this.TargetPlatform -ne 'IOS')
+                {
+                    throw "MinimumSupportedOperatingSystem.$($property.Name) is only applicable for iOS Store Apps."
+                }
+            }
         }
     }
 

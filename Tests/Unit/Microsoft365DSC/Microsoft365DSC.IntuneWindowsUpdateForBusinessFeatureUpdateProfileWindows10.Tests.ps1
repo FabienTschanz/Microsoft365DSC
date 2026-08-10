@@ -24,7 +24,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             $secpasswd = ConvertTo-SecureString (New-GUID).ToString() -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
-            Mock -CommandName Confirm-M365DSCDependencies -MockWith {
+            Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
 
             Mock -CommandName Get-MgBetaDeviceManagementWindowsFeatureUpdateProfile -MockWith {

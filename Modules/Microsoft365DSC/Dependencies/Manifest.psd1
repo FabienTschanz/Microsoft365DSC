@@ -26,7 +26,7 @@
         },
         @{
             ModuleName      = 'DSCParser'
-            RequiredVersion = '3.1.0.0'
+            RequiredVersion = '3.1.0.1'
         },
         @{
             ModuleName      = 'ExchangeOnlineManagement'

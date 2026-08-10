@@ -734,32 +734,28 @@ class TeamsMeetingPolicy : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        return ([M365DSCResourceBase] $this).Test()
+    }
 
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $excludedProperties = @('AllowAnonymousUsersToDialOut', 'AllowIPVideo', 'AllowUserToJoinExternalMeeting')
-        if ($this.AllowCloudRecording -eq $false -and $this.GetBoundParameters().ContainsKey('AllowRecordingStorageOutsideRegion'))
-        {
-            $excludedProperties += 'AllowCloudRecording'
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            ExcludedProperties = @('AllowAnonymousUsersToDialOut', 'AllowIPVideo', 'AllowUserToJoinExternalMeeting')
+            PostProcessing     = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($DesiredValues.AllowCloudRecording -eq $false -and $DesiredValues.ContainsKey('AllowRecordingStorageOutsideRegion'))
+                {
+                    $ValuesToCheck.Remove('AllowCloudRecording') | Out-Null
+                }
+                elseif ($DesiredValues.AllowCloudRecording -eq $false)
+                {
+                    # AllowRecordingStorageOutsideRegion and RecordingStorageMode only work if AllowCloudRecording is set to True
+                    $ValuesToCheck.Remove('AllowRecordingStorageOutsideRegion') | Out-Null
+                    $ValuesToCheck.Remove('RecordingStorageMode') | Out-Null
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
         }
-        elseif ($this.AllowCloudRecording -eq $false)
-        {
-            # AllowRecordingStorageOutsideRegion and RecordingStorageMode only work if AllowCloudRecording is set to True
-            $excludedProperties += 'AllowRecordingStorageOutsideRegion'
-            $excludedProperties += 'RecordingStorageMode'
-        }
-
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            -ExcludedProperties $excludedProperties `
-            -CurrentValues $this.Get().ToHashtable()
-        return $result
     }
 
     [string] Export()

@@ -270,10 +270,7 @@ class IntuneWifiConfigurationPolicyWindows10 : M365DSCResourceBase
             return
         }
 
-        if ($this.ProxySetting -ne 'automatic' -and $this.ProxyAutomaticConfigurationUrl -ne '')
-        {
-            throw 'ProxyAutomaticConfigurationUrl must be empty if ProxySetting is not "automatic"'
-        }
+        $this.ValidateBoundParameters()
 
         if ($this.WiFiSecurityType -eq 'wpaPersonal' -and [string]::IsNullOrEmpty($this.PreSharedKey))
         {
@@ -353,25 +350,17 @@ class IntuneWifiConfigurationPolicyWindows10 : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        $this.ValidateBoundParameters()
 
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    hidden [void] ValidateBoundParameters()
+    {
         if ($this.ProxySetting -ne 'automatic' -and $this.ProxyAutomaticConfigurationUrl -ne '')
         {
             throw 'ProxyAutomaticConfigurationUrl must be empty if ProxySetting is not "automatic".'
         }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
     }
 
     [string] Export()

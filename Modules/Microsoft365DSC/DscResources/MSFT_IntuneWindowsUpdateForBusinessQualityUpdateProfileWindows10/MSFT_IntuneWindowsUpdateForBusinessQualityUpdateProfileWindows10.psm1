@@ -202,10 +202,7 @@ class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResou
         $this.AddTelemetry('Set')
         #endregion
 
-        if ($this.ExpeditedUpdateSettings.DaysUntilForcedReboot -lt 0 -or $this.ExpeditedUpdateSettings.DaysUntilForcedReboot -gt 2)
-        {
-            throw 'DaysUntilForcedReboot must be between 0 and 2.'
-        }
+        $this.ValidateInput()
 
         $currentInstance = $this.Get().ToHashtable()
         $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
@@ -263,18 +260,18 @@ class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResou
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        $this.ValidateInput()
 
+        return ([M365DSCResourceBase] $this).Test()
+    }
+
+    hidden [void] ValidateInput()
+    {
         if ($null -ne $this.ExpeditedUpdateSettings -and
             ($this.ExpeditedUpdateSettings.DaysUntilForcedReboot -lt 0 -or $this.ExpeditedUpdateSettings.DaysUntilForcedReboot -gt 2))
         {
             throw 'DaysUntilForcedReboot must be between 0 and 2.'
         }
-
-        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()

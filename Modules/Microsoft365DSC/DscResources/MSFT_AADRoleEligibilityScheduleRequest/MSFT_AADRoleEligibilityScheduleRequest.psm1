@@ -31,15 +31,6 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
     [System.String] $AppScopeId
 
     [DscProperty()]
-    [System.ComponentModel.Description('This parameter is deprecated and will be removed in a future release. Represents the type of operation on the role eligibility request.The possible values are: adminAssign, adminUpdate, adminRemove, selfActivate, selfDeactivate, adminExtend, adminRenew, selfExtend, selfRenew, unknownFutureValue.')]
-    [ValidateSet('adminAssign', 'adminUpdate', 'adminRemove', 'selfActivate', 'selfDeactivate', 'adminExtend', 'adminRenew', 'selfExtend', 'selfRenew', 'unknownFutureValue')]
-    [System.String] $Action
-
-    [DscProperty()]
-    [System.ComponentModel.Description('This parameter is deprecated and will be removed in a future release. Determines whether the call is a validation or an actual call. Only set this property if you want to check whether an activation is subject to additional rules like MFA before actually submitting the request.')]
-    [System.Nullable[System.Boolean]] $IsValidationOnly
-
-    [DscProperty()]
     [System.ComponentModel.Description('A message provided by users and administrators when create they create the unifiedRoleEligibilityScheduleRequest object. Optional when action is adminRemove. Whether this property is required or optional is also dependent on the settings for the Azure AD role.')]
     [System.String] $Justification
 
@@ -278,10 +269,8 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
                 RoleDefinition        = $this.RoleDefinition
                 DirectoryScopeId      = $schedule.DirectoryScopeId
                 AppScopeId            = $schedule.AppScopeId
-                #Action                = $schedule.Action
                 Id                    = $schedule.Id
                 Justification         = "Assignment of role eligibility '$($this.RoleDefinition)' to principal '$PrincipalValue' of type '$($this.PrincipalType)'."
-                #IsValidationOnly      = $schedule.IsValidationOnly
                 ScheduleInfo          = $ScheduleInfoValue
                 Ensure                = 'Present'
                 Credential            = $this.Credential
@@ -310,17 +299,6 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
         {
             $null = $this.InvokeInPowerShellCore('Set')
             return
-        }
-
-        # TODO: Remove during next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Action'))
-        {
-            Write-Warning -Message "The parameter 'Action' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('IsValidationOnly'))
-        {
-            Write-Warning -Message "The parameter 'IsValidationOnly' is deprecated. It will be removed in the next breaking change release."
         }
 
         #Ensure the proper dependencies are installed in the current environment.
@@ -455,31 +433,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        # TODO: Remove during next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Action'))
-        {
-            Write-Warning -Message "The parameter 'Action' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('IsValidationOnly'))
-        {
-            Write-Warning -Message "The parameter 'IsValidationOnly' is deprecated. It will be removed in the next breaking change release."
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-                                             -ResourceName $this.GetResourceName() `
-                                             @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -637,7 +591,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{
-            ExcludedProperties = @('Action', 'IsValidationOnly', 'Justification')
+            ExcludedProperties = @('Justification')
             PostProcessing = {
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
                 if (-not [System.String]::IsNullOrEmpty($DesiredValues.ScheduleInfo.StartDateTime))

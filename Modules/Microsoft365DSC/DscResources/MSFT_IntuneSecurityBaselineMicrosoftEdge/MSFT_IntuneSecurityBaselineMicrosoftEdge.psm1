@@ -62,11 +62,6 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
     [System.Nullable[System.Int32]] $SitePerProcess
 
     [DscProperty()]
-    [System.ComponentModel.Description('Enhance images enabled (0: Disabled, 1: Enabled)')]
-    [ValidateSet('0', '1')]
-    [System.Nullable[System.Int32]] $EdgeEnhanceImagesEnabled
-
-    [DscProperty()]
     [System.ComponentModel.Description('Control which extensions cannot be installed (0: Disabled, 1: Enabled)')]
     [ValidateSet('0', '1')]
     [System.Nullable[System.Int32]] $ExtensionInstallBlocklist
@@ -75,11 +70,6 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
     [System.ComponentModel.Description('Extension IDs the user should be prevented from installing (or * for all) (Device) - Depends on ExtensionInstallBlocklist')]
     [ValidateLength(0, 2048)]
     [System.String[]] $ExtensionInstallBlocklistDesc
-
-    [DscProperty()]
-    [System.ComponentModel.Description('Force WebSQL to be enabled (0: Disabled, 1: Enabled)')]
-    [ValidateSet('0', '1')]
-    [System.Nullable[System.Int32]] $WebSQLAccess
 
     [DscProperty()]
     [System.ComponentModel.Description('Allow Basic authentication for HTTP (0: Disabled, 1: Enabled)')]
@@ -315,18 +305,6 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of the Intune Security Baseline Microsoft Edge with Id {$($this.Id)} and Name {$Name}"
 
-        if ($this.GetBoundParameters().ContainsKey('WebSQLAccess'))
-        {
-            Write-Warning -Message 'The WebSQLAccess parameter is deprecated and will be removed in a future version. It will not be used in the current operation.'
-            $this.GetBoundParameters().Remove('WebSQLAccess') | Out-Null
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('EdgeEnhanceImagesEnabled'))
-        {
-            Write-Warning -Message 'The EdgeEnhanceImagesEnabled parameter is deprecated and will be removed in a future version. It will not be used in the current operation.'
-            $this.GetBoundParameters().Remove('EdgeEnhanceImagesEnabled') | Out-Null
-        }
-
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
 
@@ -411,32 +389,7 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('WebSQLAccess'))
-        {
-            Write-Warning -Message 'The WebSQLAccess parameter is deprecated and will be removed in a future version. It will not be used in the current operation.'
-            $this.GetBoundParameters().Remove('WebSQLAccess') | Out-Null
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('EdgeEnhanceImagesEnabled'))
-        {
-            Write-Warning -Message 'The EdgeEnhanceImagesEnabled parameter is deprecated and will be removed in a future version. It will not be used in the current operation.'
-            $this.GetBoundParameters().Remove('EdgeEnhanceImagesEnabled') | Out-Null
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -550,7 +503,7 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
 
     [System.Collections.Hashtable] GetCompareParameters()
     {
-        return $this.GetSettingsCatalogCompareParameters(@('WebSQLAccess', 'EdgeEnhanceImagesEnabled'))
+        return $this.GetSettingsCatalogCompareParameters()
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
@@ -603,4 +556,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

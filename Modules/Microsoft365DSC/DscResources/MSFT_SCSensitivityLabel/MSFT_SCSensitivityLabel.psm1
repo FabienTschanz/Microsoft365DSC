@@ -1065,71 +1065,9 @@ class SCSensitivityLabel : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        Write-Verbose -Message "Testing configuration of Sensitivity label for $($this.Name)"
-
-        $CurrentValues = $this.Get().ToHashtable()
-        Write-Verbose -Message "Current Values: $(Convert-M365DscHashtableToString -Hashtable $CurrentValues)"
-        Write-Verbose -Message "Target Values: $(Convert-M365DscHashtableToString -Hashtable $this.GetBoundParameters())"
-
-        $ValuesToCheck = ([Hashtable]$this.GetBoundParameters()).Clone()
-        $ValuesToCheck.Remove('AdvancedSettings') | Out-Null
-        $ValuesToCheck.Remove('LocaleSettings') | Out-Null
-        $ValuesToCheck.Remove('AutoLabelingSettings') | Out-Null
-
-        if ($null -ne $this.AdvancedSettings -and $null -ne $CurrentValues.AdvancedSettings)
-        {
-            Write-Verbose -Message 'Testing AdvancedSettings'
-            $TestAdvancedSettings = Test-SCSensitivityLabelAdvancedSettings -DesiredProperty $this.AdvancedSettings -CurrentProperty $CurrentValues.AdvancedSettings
-            if ($false -eq $TestAdvancedSettings)
-            {
-                return $false
-            }
-        }
-
-        if ($null -ne $this.LocaleSettings -and $null -ne $CurrentValues.LocaleSettings)
-        {
-            Write-Verbose -Message 'Testing LocaleSettings'
-            $localeSettingsSame = Test-SCSensitivityLabelLocaleSettings -DesiredProperty $this.LocaleSettings -CurrentProperty $CurrentValues.LocaleSettings
-            if ($false -eq $localeSettingsSame)
-            {
-                return $false
-            }
-        }
-
-        if ($null -ne $this.AutoLabelingSettings -and $null -ne $CurrentValues.AutoLabelingSettings)
-        {
-            Write-Verbose -Message 'Testing AutoLabelingSettings'
-
-            # Convert the AutoLabelingSettings to the correct JSON format, ready to be inserted into the label cmdlets
-            $autoLabelingSettingsHT = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $this.AutoLabelingSettings
-
-            $autoLabelSettingsSame = Test-SCSensitivityLabelAutoLabelingSettings -CurrentProperty $CurrentValues.AutoLabelingSettings -DesiredProperty $autoLabelingSettingsHT
-            if ($false -eq $autoLabelSettingsSame)
-            {
-                return $false
-            }
-        }
-
-        $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-            -Source $($this.GetResourceName()) `
-            -DesiredValues $this.GetBoundParameters() `
-            -ValuesToCheck $ValuesToCheck.Keys
-
-        Write-Verbose -Message "Test-TargetResource returned $TestResult"
-        return $TestResult
+        return ([M365DSCResourceBase] $this).Test()
     }
+
 
     [string] Export()
     {
@@ -1290,6 +1228,60 @@ class SCSensitivityLabel : M365DSCResourceBase
             throw
         }
         return $dscContent.ToString()
+    }
+
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                $ValuesToCheck.Remove('AdvancedSettings') | Out-Null
+                $ValuesToCheck.Remove('LocaleSettings') | Out-Null
+                $ValuesToCheck.Remove('AutoLabelingSettings') | Out-Null
+
+                if ($null -ne $DesiredValues.AdvancedSettings -and $null -ne $CurrentValues.AdvancedSettings)
+                {
+                    Write-Verbose -Message 'Testing AdvancedSettings'
+                    $TestAdvancedSettings = Test-SCSensitivityLabelAdvancedSettings -DesiredProperty $DesiredValues.AdvancedSettings -CurrentProperty $CurrentValues.AdvancedSettings
+                    if ($false -eq $TestAdvancedSettings)
+                    {
+                        $DesiredValues['AdvancedSettings'] = 'AdvancedSettings drift detected'
+                        $CurrentValues['AdvancedSettings'] = 'AdvancedSettings drift current'
+                        $ValuesToCheck['AdvancedSettings'] = 'AdvancedSettings drift detected'
+                    }
+                }
+
+                if ($null -ne $DesiredValues.LocaleSettings -and $null -ne $CurrentValues.LocaleSettings)
+                {
+                    Write-Verbose -Message 'Testing LocaleSettings'
+                    $localeSettingsSame = Test-SCSensitivityLabelLocaleSettings -DesiredProperty $DesiredValues.LocaleSettings -CurrentProperty $CurrentValues.LocaleSettings
+                    if ($false -eq $localeSettingsSame)
+                    {
+                        $DesiredValues['LocaleSettings'] = 'LocaleSettings drift detected'
+                        $CurrentValues['LocaleSettings'] = 'LocaleSettings drift current'
+                        $ValuesToCheck['LocaleSettings'] = 'LocaleSettings drift detected'
+                    }
+                }
+
+                if ($null -ne $DesiredValues.AutoLabelingSettings -and $null -ne $CurrentValues.AutoLabelingSettings)
+                {
+                    Write-Verbose -Message 'Testing AutoLabelingSettings'
+
+                    # Convert the AutoLabelingSettings to the correct JSON format, ready to be inserted into the label cmdlets
+                    $autoLabelingSettingsHT = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $DesiredValues.AutoLabelingSettings
+
+                    $autoLabelSettingsSame = Test-SCSensitivityLabelAutoLabelingSettings -CurrentProperty $CurrentValues.AutoLabelingSettings -DesiredProperty $autoLabelingSettingsHT
+                    if ($false -eq $autoLabelSettingsSame)
+                    {
+                        $DesiredValues['AutoLabelingSettings'] = 'AutoLabelingSettings drift detected'
+                        $CurrentValues['AutoLabelingSettings'] = 'AutoLabelingSettings drift current'
+                        $ValuesToCheck['AutoLabelingSettings'] = 'AutoLabelingSettings drift detected'
+                    }
+                }
+
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
     }
 
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.

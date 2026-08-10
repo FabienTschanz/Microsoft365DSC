@@ -705,120 +705,89 @@ class SCDLPComplianceRule : M365DSCResourceBase
 
     [bool] Test()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $desiredState = $null
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        return ([M365DSCResourceBase] $this).Test()
+    }
 
-        #Ensure the proper dependencies are installed in the current environment.
-        Confirm-M365DSCDependencies
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        Write-Verbose -Message "Testing configuration of DLPComplianceRule for $($this.Name)"
-
-        $CurrentValues = $this.Get().ToHashtable()
-        $ValuesToCheck = ([Hashtable]$this.GetBoundParameters()).Clone()
-
-        #region Test Sensitive Information Type
-        # For each Desired SIT check to see if there is an existing rule with the same name
-        if ($null -ne $ValuesToCheck['ContentContainsSensitiveInformation'])
-        {
-            if ($null -ne $ValuesToCheck['ContentContainsSensitiveInformation'].groups)
-            {
-                $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $ValuesToCheck['ContentContainsSensitiveInformation']
-                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues.ContentContainsSensitiveInformation
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
-            }
-            else
-            {
-                $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $ValuesToCheck['ContentContainsSensitiveInformation']
-                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues.ContentContainsSensitiveInformation
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
-            }
-        }
-
-        if ($desiredState -eq $false)
-        {
-            Write-Verbose -Message "Test-TargetResource returned $desiredState"
-            return $false
-        }
-
-        if ($null -ne $ValuesToCheck['ExceptIfContentContainsSensitiveInformation'])
-        {
-            if ($null -ne $ValuesToCheck['ExceptIfContentContainsSensitiveInformation'].groups)
-            {
-                $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $ValuesToCheck['ExceptIfContentContainsSensitiveInformation']
-                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues.ExceptIfContentContainsSensitiveInformation
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
-            }
-            else
-            {
-                $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $ValuesToCheck['ExceptIfContentContainsSensitiveInformation']
-                $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues.ExceptIfContentContainsSensitiveInformation
-                $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
-            }
-        }
-
-        if ($desiredState -eq $false)
-        {
-            Write-Verbose -Message "Test-TargetResource returned $desiredState"
-            return $false
-        }
-
-        #endregion
-        $ValuesToCheck.Remove('ContentContainsSensitiveInformation') | Out-Null
-        $ValuesToCheck.Remove('ExceptIfContentContainsSensitiveInformation') | Out-Null
-
-        if ($null -ne $ValuesToCheck['EndpointDlpRestrictions'])
-        {
-            $ValuesToCheck['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $ValuesToCheck['EndpointDlpRestrictions']
-            $CurrentValues['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $CurrentValues['EndpointDlpRestrictions']
-        }
-
-        if ($null -ne $ValuesToCheck['AdvancedRule'])
-        {
-            $advancedRuleObject = $ValuesToCheck['AdvancedRule'] | ConvertFrom-Json | ConvertFrom-Json
-            $conditions = @($advancedRuleObject.Condition)
-            while ($conditions.Count -gt 0)
-            {
-                $currentCondition = $conditions[0]
-                $conditions = @($conditions | Select-Object -Skip 1)
-
-                if ($null -ne $currentCondition.SubConditions)
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                foreach ($key in @('ContentContainsSensitiveInformation', 'ExceptIfContentContainsSensitiveInformation'))
                 {
-                    $conditions += $currentCondition.SubConditions
-                }
-
-                if ($currentCondition.ConditionName -like '*ContentContainsSensitiveInformation*' -and `
-                    $null -ne $currentCondition.Value.Groups.Sensitivetypes)
-                {
-                    foreach ($sensitiveType in $currentCondition.Value.Groups.Sensitivetypes)
+                    if ($null -ne $DesiredValues[$key])
                     {
-                        if ($sensitiveType.Classifiertype -eq 'MLModel' -and $null -ne $sensitiveType.Id)
+                        if ($null -ne $DesiredValues[$key].groups)
                         {
-                            $sensitiveType.Id = $null
+                            $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $DesiredValues[$key]
+                            $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues[$key]
+                            $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
+                        }
+                        else
+                        {
+                            $contentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $DesiredValues[$key]
+                            $currentSITS = Get-SCDLPComplianceRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues[$key]
+                            $desiredState = Test-SCDLPComplianceRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
+                        }
+
+                        if ($desiredState)
+                        {
+                            $DesiredValues.Remove($key)
+                            $CurrentValues.Remove($key)
+                            $ValuesToCheck.Remove($key)
+                        }
+                        else
+                        {
+                            # Sentinel strings force the comparer to flag drift on this key.
+                            $DesiredValues[$key] = 'SIT-Drift-Desired'
+                            $CurrentValues[$key] = 'SIT-Drift-Current'
+                            $ValuesToCheck[$key] = 'SIT-Drift-Desired'
                         }
                     }
                 }
+
+                if ($null -ne $DesiredValues['EndpointDlpRestrictions'])
+                {
+                    $DesiredValues['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $DesiredValues['EndpointDlpRestrictions']
+                    $ValuesToCheck['EndpointDlpRestrictions'] = $DesiredValues['EndpointDlpRestrictions']
+                    $CurrentValues['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $CurrentValues['EndpointDlpRestrictions']
+                }
+
+                if ($null -ne $DesiredValues['AdvancedRule'])
+                {
+                    $advancedRuleObject = $DesiredValues['AdvancedRule'] | ConvertFrom-Json | ConvertFrom-Json
+                    $conditions = @($advancedRuleObject.Condition)
+                    while ($conditions.Count -gt 0)
+                    {
+                        $currentCondition = $conditions[0]
+                        $conditions = @($conditions | Select-Object -Skip 1)
+
+                        if ($null -ne $currentCondition.SubConditions)
+                        {
+                            $conditions += $currentCondition.SubConditions
+                        }
+
+                        if ($currentCondition.ConditionName -like '*ContentContainsSensitiveInformation*' -and `
+                            $null -ne $currentCondition.Value.Groups.Sensitivetypes)
+                        {
+                            foreach ($sensitiveType in $currentCondition.Value.Groups.Sensitivetypes)
+                            {
+                                if ($sensitiveType.Classifiertype -eq 'MLModel' -and $null -ne $sensitiveType.Id)
+                                {
+                                    $sensitiveType.Id = $null
+                                }
+                            }
+                        }
+                    }
+
+                    $newAdvancedRule = $advancedRuleObject | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
+                    $DesiredValues['AdvancedRule'] = $newAdvancedRule | ConvertTo-Json -Compress
+                    $ValuesToCheck['AdvancedRule'] = $DesiredValues['AdvancedRule']
+                }
+
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
             }
-
-            $newAdvancedRule = $advancedRuleObject | ConvertTo-Json -Depth 32 | Format-SCDLPComplianceRuleJson
-            $ValuesToCheck['AdvancedRule'] = $newAdvancedRule | ConvertTo-Json -Compress
         }
-
-        $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-            -Source $($this.GetResourceName()) `
-            -DesiredValues $ValuesToCheck `
-            -ValuesToCheck $ValuesToCheck.Keys
-
-        Write-Verbose -Message "Test-TargetResource returned $TestResult"
-
-        return $TestResult
     }
 
     [string] Export()

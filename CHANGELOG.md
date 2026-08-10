@@ -9,8 +9,13 @@
     `AADAccessReview[Definition|Policy]` instead.
 * AADPIMGroupSetting
   * Improved performance with batch requests.
+* AADRoleAssignmentScheduleRequest
+  * [BREAKING CHANGE] Removed deprecated properties `Action`, `IsValidationOnly`
+    and `TicketInfo`.
 * AADRoleDefinition
   * Fixed an issue where roles with empty permissions were not exported.
+* AADRoleEligibilityScheduleRequest
+  * [BREAKING CHANGE] Removed deprecated properties `Action` and `IsValidationOnly`.
 * AADUser
   * Updated the password generation routine to work with PowerShell 7.
 * EXOAvailabilityAddressSpace
@@ -19,6 +24,8 @@
 * EXOArcConfig
   * Fixed an issue where the `ArcTrustedSealers` property was exported as
     a single string instead of an array.
+* EXOTenantAllowBlockListItems
+  * [BREAKING CHANGE] Removed property `AppliationSecret`.
 * IntuneAppControlForBusinessPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneAppControlForBusinessPolicyWindows10V2` instead.
@@ -41,6 +48,8 @@
   * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementSystemMobileAppAssignment`.
 * IntuneMobileAppsWindowsOfficeSuiteApp
   * Removed unused class reference `MSFT_DeviceManagementMimeContent`.
+* IntuneSecurityBaselineMicrosoftEdge
+  * [BREAKING CHANGE] Removed deprecated properties `WebSQLAccess` and `EdgeEnhanceImagesEnabled`.
 * IntuneSettingCatalogCustomPolicyWindows10
   * Fixed an issue where some nested properties didn't have the correct type.
 * IntuneVPNConfigurationPolicyIOS

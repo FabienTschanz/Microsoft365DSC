@@ -315,27 +315,7 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $excludedProperties = @()
-        if ($this.ConnectionType -eq 'azureADJoin')
-        {
-            $excludedProperties += @('AdDomainName', 'AdDomainUsername', 'OrganizationalUnit')
-        }
-
-        $compareParameters = $this.GetCompareParameters()
-        $compareParameters.ExcludedProperties += $excludedProperties
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -438,6 +418,16 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
         return @{
             ExcludedProperties = @('SubscriptionName', 'AdDomainPassword')
             IncludedProperties = @('ResourceGroupId', 'SubnetId', 'SubscriptionName', 'VirtualNetworkId')
+            PostProcessing     = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($DesiredValues.ConnectionType -eq 'azureADJoin')
+                {
+                    $ValuesToCheck.Remove('AdDomainName') | Out-Null
+                    $ValuesToCheck.Remove('AdDomainUsername') | Out-Null
+                    $ValuesToCheck.Remove('OrganizationalUnit') | Out-Null
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
         }
     }
 

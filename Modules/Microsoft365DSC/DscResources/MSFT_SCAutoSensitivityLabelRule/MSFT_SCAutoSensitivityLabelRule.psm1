@@ -540,82 +540,49 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
 
     [bool] Test()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $desiredState = $null
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
+        return ([M365DSCResourceBase] $this).Test()
+    }
 
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                foreach ($key in @('ContentContainsSensitiveInformation', 'ExceptIfContentContainsSensitiveInformation'))
+                {
+                    if ($null -ne $DesiredValues[$key])
+                    {
+                        if ($null -ne $DesiredValues[$key].groups)
+                        {
+                            $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $DesiredValues[$key]
+                            $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues[$key]
+                            $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
+                        }
+                        else
+                        {
+                            $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $DesiredValues[$key]
+                            $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues[$key]
+                            $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
+                        }
 
-        Write-Verbose -Message "Testing configuration of AutoSensitivityLabelRule for $($this.Name)"
-
-        $CurrentValues = $this.Get().ToHashtable()
-        $ValuesToCheck = ([Hashtable]$this.GetBoundParameters()).Clone()
-
-        #region Test Sensitive Information Type
-        # For each Desired SIT check to see if there is an existing rule with the same name
-        # Both sides now arrive in the MSFT_SCDLPContainsSensitiveInformation shape, so both go
-        # through the same normaliser
-        if ($null -ne $ValuesToCheck['ContentContainsSensitiveInformation'])
-        {
-            if ($null -ne $ValuesToCheck['ContentContainsSensitiveInformation'].groups)
-            {
-                $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $ValuesToCheck['ContentContainsSensitiveInformation']
-                $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues.ContentContainsSensitiveInformation
-                $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
-            }
-            else
-            {
-                $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $ValuesToCheck['ContentContainsSensitiveInformation']
-                $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues.ContentContainsSensitiveInformation
-                $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
-            }
-        }
-
-        if ($desiredState -eq $false)
-        {
-            Write-Verbose -Message "Test-TargetResource returned $desiredState"
-            return $false
-        }
-
-        if ($null -ne $ValuesToCheck['ExceptIfContentContainsSensitiveInformation'])
-        {
-            if ($null -ne $ValuesToCheck['ExceptIfContentContainsSensitiveInformation'].groups)
-            {
-                $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $ValuesToCheck['ExceptIfContentContainsSensitiveInformation']
-                $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues.ExceptIfContentContainsSensitiveInformation
-                $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
-            }
-            else
-            {
-                $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $ValuesToCheck['ExceptIfContentContainsSensitiveInformation']
-                $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues.ExceptIfContentContainsSensitiveInformation
-                $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
+                        if ($desiredState)
+                        {
+                            $DesiredValues.Remove($key)
+                            $CurrentValues.Remove($key)
+                            $ValuesToCheck.Remove($key)
+                        }
+                        else
+                        {
+                            # Sentinel strings force the comparer to flag drift on this key.
+                            $DesiredValues[$key] = 'SIT-Drift-Desired'
+                            $CurrentValues[$key] = 'SIT-Drift-Current'
+                            $ValuesToCheck[$key] = 'SIT-Drift-Desired'
+                        }
+                    }
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
             }
         }
-
-        if ($desiredState -eq $false)
-        {
-            Write-Verbose -Message "Test-TargetResource returned $desiredState"
-            return $false
-        }
-
-        #endregion
-        $ValuesToCheck.Remove('ContentContainsSensitiveInformation') | Out-Null
-        $ValuesToCheck.Remove('ExceptIfContentContainsSensitiveInformation') | Out-Null
-
-        $TestResult = Test-M365DSCParameterState -CurrentValues $CurrentValues `
-            -Source $($this.GetResourceName()) `
-            -DesiredValues $this.GetBoundParameters() `
-            -ValuesToCheck $ValuesToCheck.Keys
-
-        Write-Verbose -Message "Test-TargetResource returned $TestResult"
-
-        return $TestResult
     }
 
     [string] Export()

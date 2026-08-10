@@ -58,10 +58,6 @@ class EXOTenantAllowBlockListItems : M365DSCResourceBase
     [System.String] $CertificateThumbprint
 
     [DscProperty()]
-    [System.ComponentModel.Description('Secret of the Azure Active Directory tenant used for authentication.')]
-    [System.Management.Automation.PSCredential] $ApplicationSecret
-
-    [DscProperty()]
     [System.ComponentModel.Description('Username can be made up to anything but password will be used for CertificatePassword')]
     [System.Management.Automation.PSCredential] $CertificatePassword
 
@@ -136,7 +132,6 @@ class EXOTenantAllowBlockListItems : M365DSCResourceBase
                 ApplicationId         = $this.ApplicationId
                 TenantId              = $this.TenantId
                 CertificateThumbprint = $this.CertificateThumbprint
-                ApplicationSecret     = $this.ApplicationSecret
                 CertificatePath       = $this.CertificatePath
                 CertificatePassword   = $this.CertificatePassword
                 ManagedIdentity       = $this.ManagedIdentity.IsPresent
@@ -161,11 +156,6 @@ class EXOTenantAllowBlockListItems : M365DSCResourceBase
         }
 
         Write-Verbose -Message "Setting configuration for Tenant Allow/Block List Items with Action {$($this.Action)} and Value {$($this.Value)}"
-
-        if ($this.GetBoundParameters().ContainsKey('ApplicationSecret'))
-        {
-            Write-Warning -Message "The 'ApplicationSecret' parameter is deprecated and will be removed in future versions."
-        }
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -216,25 +206,7 @@ class EXOTenantAllowBlockListItems : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        if ($this.GetBoundParameters().ContainsKey('ApplicationSecret'))
-        {
-            Write-Warning -Message "The 'ApplicationSecret' parameter is deprecated and will be removed in future versions."
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $compareParameters = $this.GetCompareParameters()
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            @compareParameters -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -300,7 +272,6 @@ class EXOTenantAllowBlockListItems : M365DSCResourceBase
                     ApplicationId         = $this.ApplicationId
                     TenantId              = $this.TenantId
                     CertificateThumbprint = $this.CertificateThumbprint
-                    ApplicationSecret     = $this.ApplicationSecret
                     CertificatePath       = $this.CertificatePath
                     CertificatePassword   = $this.CertificatePassword
                     ManagedIdentity       = $this.ManagedIdentity.IsPresent

@@ -258,10 +258,7 @@ class IntuneUserSettingsPolicyWindows365 : M365DSCResourceBase
         $this.AddTelemetry('Set')
         #endregion
 
-        if ($this.CrossRegionDisasterRecoverySetting.UserInitiatedDisasterRecoveryAllowed -and $this.CrossRegionDisasterRecoverySetting.DisasterRecoveryType -ne 'premium')
-        {
-            throw "The property UserInitiatedDisasterRecoveryAllowed can only be set to 'True' when DisasterRecoveryType is configured as 'premium'."
-        }
+        $this.ValidateBoundParameters()
 
         $currentInstance = $this.Get().ToHashtable()
         $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
@@ -353,17 +350,7 @@ class IntuneUserSettingsPolicyWindows365 : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        if ($null -ne $this.CrossRegionDisasterRecoverySetting -and
-            $this.CrossRegionDisasterRecoverySetting.UserInitiatedDisasterRecoveryAllowed -and
-            $this.CrossRegionDisasterRecoverySetting.DisasterRecoveryType -ne 'premium')
-        {
-            throw "The property UserInitiatedDisasterRecoveryAllowed can only be set to 'True' when DisasterRecoveryType is configured as 'premium'."
-        }
+        $this.ValidateBoundParameters()
 
         return ([M365DSCResourceBase] $this).Test()
     }
@@ -530,6 +517,16 @@ class IntuneUserSettingsPolicyWindows365 : M365DSCResourceBase
         }
     }
 
+    hidden [void] ValidateBoundParameters()
+    {
+        if ($null -ne $this.CrossRegionDisasterRecoverySetting -and
+            $this.CrossRegionDisasterRecoverySetting.UserInitiatedDisasterRecoveryAllowed -and
+            $this.CrossRegionDisasterRecoverySetting.DisasterRecoveryType -ne 'premium')
+        {
+            throw "The property UserInitiatedDisasterRecoveryAllowed can only be set to 'True' when DisasterRecoveryType is configured as 'premium'."
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneUserSettingsPolicyWindows365] AsResult([System.Object] $Values)
     {
@@ -640,4 +637,3 @@ class MSFT_MicrosoftGraphCloudPcDisasterRecoveryNetworkSetting
     [ValidateSet('#microsoft.graph.cloudPcDisasterRecoveryAzureConnectionSetting', '#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting')]
     [System.String] $odataType
 }
-

@@ -241,62 +241,7 @@ class EXORoleGroup : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        # If the group is passed in a display name (no @) then we resolve it manually
-        if ($this.GetBoundParameters().ContainsKey('Members'))
-        {
-            $newMembersValue = @()
-            foreach ($member in $this.Members)
-            {
-                Write-Verbose -Message "The current member {$member} is provided as a group display name."
-                $group = Get-Group -Filter "DisplayName eq '$member'" -ErrorAction 'SilentlyContinue'
-
-                if ($null -ne $group)
-                {
-                    if ($null -ne $group.PrimaryStmpAddress)
-                    {
-                        $newMembersValue += $group.PrimarySmtpAddress
-                    }
-                    elseif ($null -ne $group.WindowsEmailAddress)
-                    {
-                        $newMembersValue += $group.WindowsEmailAddress
-                    }
-                }
-                else
-                {
-                    $user = Get-User -Identity $member -ErrorAction 'SilentlyContinue'
-                    if ($null -ne $user)
-                    {
-                        if ($member.Contains('@'))
-                        {
-                            $newMembersValue += $user.UserPrincipalName
-                        }
-                        else
-                        {
-                            $newMembersValue += $user.DisplayName
-                        }
-                    }
-                    else
-                    {
-                        # Case where the member is an app.
-                        $newMembersValue += $member
-                    }
-                }
-            }
-            $this.GetBoundParameters().Members = $newMembersValue
-        }
-
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -385,6 +330,56 @@ class EXORoleGroup : M365DSCResourceBase
         }
     }
 
+    # Members provided as display names are resolved to comparable identifiers.
+    # TODO: Only do this if not doing a Report. It requires a connection to the EXO workload, which is not available when doing a report.
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ($DesiredValues.ContainsKey('Members'))
+                {
+                    $newMembersValue = @()
+                    foreach ($member in $DesiredValues.Members)
+                    {
+                        $group = Get-Group -Filter "DisplayName eq '$member'" -ErrorAction 'SilentlyContinue'
+                        if ($null -ne $group -and $null -ne $group.PrimarySmtpAddress)
+                        {
+                            $newMembersValue += $group.PrimarySmtpAddress
+                        }
+                        elseif ($null -ne $group -and $null -ne $group.WindowsEmailAddress)
+                        {
+                            $newMembersValue += $group.WindowsEmailAddress
+                        }
+                        else
+                        {
+                            $user = Get-User -Identity $member -ErrorAction 'SilentlyContinue'
+                            if ($null -ne $user)
+                            {
+                                if ($member.Contains('@'))
+                                {
+                                    $newMembersValue += $user.UserPrincipalName
+                                }
+                                else
+                                {
+                                    $newMembersValue += $user.DisplayName
+                                }
+                            }
+                            else
+                            {
+                                $newMembersValue += $member
+                            }
+                        }
+                    }
+                    $DesiredValues.Members = [Array] $newMembersValue
+                    $ValuesToCheck.Members = [Array] $newMembersValue
+                }
+
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXORoleGroup] AsResult([System.Object] $Values)
     {
@@ -402,4 +397,3 @@ class EXORoleGroup : M365DSCResourceBase
         return $result
     }
 }
-

@@ -221,26 +221,7 @@ class TeamsClientConfiguration : M365DSCResourceBase
 
     [bool] Test()
     {
-        if ($this.RequiresPowerShellCore())
-        {
-            return [bool] $this.InvokeInPowerShellCore('Test')
-        }
-
-        #region Telemetry
-        $this.AddTelemetry('Test')
-        #endregion
-
-        $excludedProperties = @()
-        if ([System.String]::IsNullOrEmpty($this.RestrictedSenderList))
-        {
-            $excludedProperties += 'RestrictedSenderList'
-        }
-
-        $result = Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-            -ResourceName $this.GetResourceName() `
-            -ExcludedProperties $excludedProperties `
-            -CurrentValues $this.Get().ToHashtable()
-        return $result
+        return ([M365DSCResourceBase] $this).Test()
     }
 
     [string] Export()
@@ -309,6 +290,20 @@ class TeamsClientConfiguration : M365DSCResourceBase
         }
     }
 
+    [System.Collections.Hashtable] GetCompareParameters()
+    {
+        return @{
+            PostProcessing = {
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                if ([System.String]::IsNullOrEmpty($DesiredValues.RestrictedSenderList))
+                {
+                    $ValuesToCheck.Remove('RestrictedSenderList') | Out-Null
+                }
+                return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+            }
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsClientConfiguration] AsResult([System.Object] $Values)
     {
@@ -326,4 +321,3 @@ class TeamsClientConfiguration : M365DSCResourceBase
         return $result
     }
 }
-

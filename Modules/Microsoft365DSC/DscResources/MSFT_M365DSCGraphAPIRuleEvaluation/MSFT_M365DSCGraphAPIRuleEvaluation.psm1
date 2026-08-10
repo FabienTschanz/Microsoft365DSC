@@ -99,8 +99,6 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
         $validInstances = $null
         # Declared up front: assigned conditionally below, which class methods reject.
         $invalidInstances = $null
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $ResourceTypeName = $null
         if ($this.RequiresPowerShellCore())
         {
             return [bool] $this.InvokeInPowerShellCore('Test')
@@ -110,6 +108,8 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
         $CurrentResourceName = $this.GetResourceName() -replace 'MSFT_', ''
         $this.AddTelemetry('Test')
         #endregion
+
+        $ResourceTypeName = $CurrentResourceName
 
         $ConnectionMode = $this.Connect('MicrosoftGraph')
 
@@ -161,8 +161,8 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
 
             if ($this.InstanceIdentifier)
             {
-                [array]$validInstances = $instances.$this.InstanceIdentifier
-                [array]$invalidInstances = $DSCConvertedInstances.$this.InstanceIdentifier | Where-Object -FilterScript { $_ -notin $validInstances }
+                [array]$validInstances = $instances.($this.InstanceIdentifier)
+                [array]$invalidInstances = $DSCConvertedInstances.($this.InstanceIdentifier) | Where-Object -FilterScript { $_ -notin $validInstances }
             }
 
             if (-not $result)
@@ -201,6 +201,11 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
             [void]$message.AppendLine('  <AfterRuleCount></AfterRuleCount>')
 
             $compareInstances = @()
+            if ($this.InstanceIdentifier -and $DSCConvertedInstances.Length -gt 0)
+            {
+                $compareInstances += Compare-Object -ReferenceObject $DSCConvertedInstances.($this.InstanceIdentifier) -DifferenceObject $instances.($this.InstanceIdentifier) -IncludeEqual
+            }
+
             if ($compareInstances.Count -gt 0)
             {
                 [array]$validInstances = $($compareInstances | Where-Object -FilterScript { $_.SideIndicator -eq '==' }).InputObject
@@ -209,7 +214,7 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
             else
             {
                 [array]$validInstances = @()
-                [array]$invalidInstances = [array]$DSCConvertedInstances.$this.InstanceIdentifier
+                [array]$invalidInstances = [array]$DSCConvertedInstances.($this.InstanceIdentifier)
             }
 
             if ($validInstances.Count -gt 0)

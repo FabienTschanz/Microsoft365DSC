@@ -24,7 +24,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
 
-            Mock -CommandName Confirm-M365DSCDependencies -MockWith {
+            Mock -ModuleName M365DSCUtil -CommandName Confirm-M365DSCDependencies -MockWith {
             }
 
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
@@ -360,7 +360,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential   = $Credential
                 }
 
-                $Script:AdvancedRulePassedToTest = $null
                 Mock -CommandName Get-DLPComplianceRule -MockWith {
                     return @{
                         Name             = 'TestPolicy'
@@ -370,20 +369,24 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         BlockAccess      = $False
                     }
                 }
-
-                Mock -CommandName Test-M365DSCParameterState -MockWith {
-                    param($CurrentValues, $Source, $DesiredValues, $ValuesToCheck)
-                    $Script:AdvancedRulePassedToTest = $DesiredValues.AdvancedRule
-                    return $true
-                }
             }
 
             It 'Should ignore trainable classifier ids when testing AdvancedRules for drift' {
-                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $true
-                $normalizedAdvancedRule = $Script:AdvancedRulePassedToTest | ConvertFrom-Json | ConvertFrom-Json
+                $instance = New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams
+                $desiredValues = $instance.GetBoundParameters()
+                $currentValues = $instance.Get().ToHashtable()
+                $valuesToCheck = $desiredValues.Clone()
+
+                $result = $instance.GetCompareParameters().PostProcessing.Invoke($desiredValues, $currentValues, $valuesToCheck, @())
+
+                $normalizedAdvancedRule = $result.Item1.AdvancedRule | ConvertFrom-Json | ConvertFrom-Json
                 $sensitiveTypes = $normalizedAdvancedRule.Condition.SubConditions[0].Value[0].Groups[0].Sensitivetypes
                 ($sensitiveTypes | Where-Object -FilterScript { $_.Name -eq 'Healthcare' }).Id | Should -Be $null
                 ($sensitiveTypes | Where-Object -FilterScript { $_.Name -eq 'EU Debit Card Number' }).Id | Should -Be '0e9b3178-9678-47dd-a509-37222ca96b42'
+            }
+
+            It 'Should run the full Test() compare over AdvancedRules without throwing' {
+                { (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() } | Should -Not -Throw
             }
         }
 
