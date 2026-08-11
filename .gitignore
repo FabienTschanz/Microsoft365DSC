@@ -31,3 +31,6 @@ coverage.xml
 docs/site
 # Added by code-review-graph
 .code-review-graph/
+
+Modules/Microsoft365DSC/DscSchemaCache.json
+Modules/Microsoft365DSC/Dependencies/PSDesiredStateConfiguration/

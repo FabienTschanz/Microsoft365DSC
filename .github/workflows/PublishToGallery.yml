@@ -36,7 +36,7 @@ jobs:
       - name: Build Class Modules
         shell: pwsh
         run: |
-          & ./Utilities/Build-Microsoft365DSC.ps1
+          & ./Utilities/Build-Microsoft365DSC.ps1 -SkipSchemaCache
       - name: Build Dll Files
         shell: pwsh
         run: |
@@ -45,6 +45,19 @@ jobs:
         shell: pwsh
         run: |
           & ./Utilities/Remove-M365DSCBuildOnlySource.ps1 -Confirm:$false
+      - name: Bundle DSC Engine and Generate Schema Cache
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pin = Import-PowerShellDataFile ./Utilities/DscEngineVersion.psd1
+          $clone = Join-Path $env:RUNNER_TEMP 'dsc-engine'
+          git clone --depth 1 --branch "v$($pin.RequiredVersion)" $pin.Repository $clone
+          if ($LASTEXITCODE -ne 0) { throw "Could not clone $($pin.Repository) at tag v$($pin.RequiredVersion)." }
+          $target = "./Modules/Microsoft365DSC/Dependencies/PSDesiredStateConfiguration/$($pin.RequiredVersion)"
+          $null = New-Item -ItemType Directory -Force -Path $target
+          Copy-Item -Path (Join-Path $clone 'src/PSDesiredStateConfiguration/*') -Destination $target -Recurse -Force
+          Copy-Item -Path (Join-Path $clone 'LICENSE') -Destination $target -ErrorAction Ignore
+          & ./Utilities/New-M365DSCDscSchemaCache.ps1
       - name: Publish
         shell: powershell
         env:

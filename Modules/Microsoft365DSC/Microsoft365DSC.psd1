@@ -74,6 +74,7 @@
     'Modules/M365DSCInit.psm1',
     'Modules/M365DSCAgent.psm1',
     'Modules/M365DSCCompare.psm1',
+    'Modules/M365DSCConfigurationCompiler.psm1',
     'Modules/M365DSCConnection.psm1',
     'Modules/M365DSCDocGenerator.psm1',
     'Modules/M365DSCErrorHandler.psm1',
