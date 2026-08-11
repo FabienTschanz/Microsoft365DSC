@@ -10,8 +10,8 @@ function Get-M365DSCDscEngineManifest
 
     $moduleRoot = Split-Path -Path $PSScriptRoot -Parent
 
-    $bundled = Get-ChildItem -Path (Join-Path -Path $moduleRoot -ChildPath 'Dependencies/PSDesiredStateConfiguration') `
-        -Filter 'PSDesiredStateConfiguration.psd1' -Recurse -ErrorAction Ignore |
+    $bundled = Get-ChildItem -Path (Join-Path -Path $moduleRoot -ChildPath 'Dependencies/M365DSC.PSDesiredStateConfiguration') `
+        -Filter 'M365DSC.PSDesiredStateConfiguration.psd1' -Recurse -ErrorAction Ignore |
         Sort-Object -Property FullName -Descending |
         Select-Object -First 1 -ExpandProperty FullName
     if ($bundled)
@@ -19,7 +19,7 @@ function Get-M365DSCDscEngineManifest
         return $bundled
     }
 
-    $installed = Get-Module -ListAvailable -Name PSDesiredStateConfiguration | Where-Object {
+    $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
         $_.Version -ge [Version]'3.1.0' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1
     if ($installed)
@@ -47,27 +47,23 @@ function Import-M365DSCDscEngine
     $manifest = Get-M365DSCDscEngineManifest
     if (-not $manifest)
     {
-        throw 'No M365DSCFastHost-capable PSDesiredStateConfiguration engine (3.1.0 or later) was found.'
+        throw 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.0 or later) was found.'
     }
 
-    # Compiled configuration bodies resolve the engine BY NAME through PSModulePath,
-    # so its parent directory must be on the path with the highest version.
-    $probe = Split-Path -Path $manifest -Parent
-    while ($probe -and (Split-Path -Path $probe -Leaf) -ne 'PSDesiredStateConfiguration')
-    {
-        $probe = Split-Path -Path $probe -Parent
-    }
-    $modulePathEntry = Split-Path -Path $probe -Parent
+    # The engine bundles a compatibility module that claims the PSDesiredStateConfiguration
+    # name the engine resolves while executing a configuration statement. Its parent folder
+    # must be on PSModulePath to be found.
+    $compatRoot = Join-Path -Path (Split-Path -Path $manifest -Parent) -ChildPath 'Compat'
     $entries = $env:PSModulePath -split [System.IO.Path]::PathSeparator
-    if ($entries -notcontains $modulePathEntry)
+    if ((Test-Path -Path $compatRoot) -and $entries -notcontains $compatRoot)
     {
-        $env:PSModulePath = $modulePathEntry + [System.IO.Path]::PathSeparator + $env:PSModulePath
+        $env:PSModulePath = $compatRoot + [System.IO.Path]::PathSeparator + $env:PSModulePath
     }
 
-    $loaded = Get-Module -Name PSDesiredStateConfiguration
+    $loaded = Get-Module -Name M365DSC.PSDesiredStateConfiguration
     if (-not $loaded -or $loaded.Path -ne $manifest)
     {
-        Get-Module -Name PSDesiredStateConfiguration | Remove-Module -Force
+        Get-Module -Name M365DSC.PSDesiredStateConfiguration | Remove-Module -Force
         Import-Module -Name $manifest -Force -Global
     }
 }

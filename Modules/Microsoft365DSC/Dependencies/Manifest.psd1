@@ -26,7 +26,7 @@
         },
         @{
             ModuleName      = 'DSCParser'
-            RequiredVersion = '3.1.0.1'
+            RequiredVersion = '3.1.0.2'
         },
         @{
             ModuleName      = 'ExchangeOnlineManagement'
@@ -34,7 +34,7 @@
         },
         @{
             ModuleName      = 'M365DSC.mgx'
-            RequiredVersion = '2.0.3'
+            RequiredVersion = '2.0.4'
             PowerShellCore  = $true
         },
         @{
@@ -47,7 +47,7 @@
         },
         @{
             ModuleName      = "MSCloudLoginAssistant"
-            RequiredVersion = "1.2.0"
+            RequiredVersion = "1.2.1"
         },
         @{
             ModuleName      = 'PnP.PowerShell'

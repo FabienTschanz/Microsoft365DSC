@@ -58,7 +58,7 @@ function Resolve-M365DSCDscEngineManifest
         }
         else
         {
-            Join-Path -Path $ExplicitPath -ChildPath 'PSDesiredStateConfiguration.psd1'
+            Join-Path -Path $ExplicitPath -ChildPath 'M365DSC.PSDesiredStateConfiguration.psd1'
         }
         if (Test-Path -Path $candidate)
         {
@@ -67,15 +67,15 @@ function Resolve-M365DSCDscEngineManifest
         throw "No engine manifest found at '$ExplicitPath'."
     }
 
-    $bundled = Get-ChildItem -Path (Join-Path -Path $ModuleRoot -ChildPath 'Dependencies/PSDesiredStateConfiguration') `
-        -Filter 'PSDesiredStateConfiguration.psd1' -Recurse -ErrorAction Ignore |
+    $bundled = Get-ChildItem -Path (Join-Path -Path $ModuleRoot -ChildPath 'Dependencies/M365DSC.PSDesiredStateConfiguration') `
+        -Filter 'M365DSC.PSDesiredStateConfiguration.psd1' -Recurse -ErrorAction Ignore |
         Select-Object -First 1 -ExpandProperty FullName
     if ($bundled)
     {
         return $bundled
     }
 
-    $installed = Get-Module -ListAvailable -Name PSDesiredStateConfiguration | Where-Object {
+    $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
         $_.Version -ge [Version]'3.1.0' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1
     if ($installed)
@@ -83,7 +83,7 @@ function Resolve-M365DSCDscEngineManifest
         return $installed.Path
     }
 
-    $sibling = Join-Path -Path (Split-Path -Path $RepoRoot -Parent) -ChildPath 'PSDesiredStateConfiguration/src/PSDesiredStateConfiguration/PSDesiredStateConfiguration.psd1'
+    $sibling = Join-Path -Path (Split-Path -Path $RepoRoot -Parent) -ChildPath 'PSDesiredStateConfiguration/M365DSC.PSDesiredStateConfiguration/M365DSC.PSDesiredStateConfiguration.psd1'
     if (Test-Path -Path $sibling)
     {
         return (Resolve-Path -Path $sibling).ProviderPath
@@ -95,7 +95,7 @@ function Resolve-M365DSCDscEngineManifest
 $engineManifest = Resolve-M365DSCDscEngineManifest -ExplicitPath $EnginePath -RepoRoot $RepoRoot -ModuleRoot $moduleRoot
 if (-not $engineManifest)
 {
-    $message = 'No M365DSCFastHost-capable PSDesiredStateConfiguration engine (3.1.0+) was found. DscSchemaCache.json was not generated.'
+    $message = 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.0+) was found. DscSchemaCache.json was not generated.'
     if ($WarnOnly)
     {
         Write-Warning -Message $message
@@ -103,21 +103,6 @@ if (-not $engineManifest)
     }
     throw $message
 }
-
-# The PSModulePath entry is the parent of the folder named after the module, which is
-# one level up for a flat layout (src\PSDesiredStateConfiguration) and two levels up
-# for a versioned layout (Dependencies\PSDesiredStateConfiguration\3.1.0).
-$engineDirectory = Split-Path -Path $engineManifest -Parent
-$probe = $engineDirectory
-while ($probe -and (Split-Path -Path $probe -Leaf) -ne 'PSDesiredStateConfiguration')
-{
-    $probe = Split-Path -Path $probe -Parent
-}
-if (-not $probe)
-{
-    throw "Could not determine the PSModulePath entry for engine manifest '$engineManifest'."
-}
-$engineModulePathEntry = Split-Path -Path $probe -Parent
 
 $cachePath = Join-Path -Path $moduleRoot -ChildPath 'DscSchemaCache.json'
 $stage = New-M365DSCProbeStage -ModuleRoot $moduleRoot -Version $version
@@ -127,14 +112,13 @@ try
     $shell = if (Get-Command -Name pwsh -ErrorAction Ignore) { 'pwsh' } else { 'powershell' }
     $stageRoot = $stage.Root.Replace("'", "''")
     $engineManifestEscaped = $engineManifest.Replace("'", "''")
-    $engineEntryEscaped = $engineModulePathEntry.Replace("'", "''")
     $cachePathEscaped = $cachePath.Replace("'", "''")
 
     $child = @"
 `$ErrorActionPreference = 'Stop'
 `$entries = @(`$env:PSModulePath -split [System.IO.Path]::PathSeparator |
     Where-Object { `$_ -and -not (Test-Path -Path (Join-Path -Path `$_ -ChildPath 'Microsoft365DSC')) })
-`$env:PSModulePath = (@('$stageRoot', '$engineEntryEscaped') + `$entries) -join [System.IO.Path]::PathSeparator
+`$env:PSModulePath = (@('$stageRoot') + `$entries) -join [System.IO.Path]::PathSeparator
 Import-Module -Name '$engineManifestEscaped' -Force
 `$summary = Export-DscSchemaCache -ModuleName 'Microsoft365DSC' -OutputPath '$cachePathEscaped'
 'RESULT:' + (`$summary | ConvertTo-Json -Compress)

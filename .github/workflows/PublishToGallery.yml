@@ -53,9 +53,10 @@ jobs:
           $clone = Join-Path $env:RUNNER_TEMP 'dsc-engine'
           git clone --depth 1 --branch "v$($pin.RequiredVersion)" $pin.Repository $clone
           if ($LASTEXITCODE -ne 0) { throw "Could not clone $($pin.Repository) at tag v$($pin.RequiredVersion)." }
-          $target = "./Modules/Microsoft365DSC/Dependencies/PSDesiredStateConfiguration/$($pin.RequiredVersion)"
+          # The engine folder already contains its compatibility module under Compat.
+          $target = "./Modules/Microsoft365DSC/Dependencies/$($pin.ModuleName)/$($pin.RequiredVersion)"
           $null = New-Item -ItemType Directory -Force -Path $target
-          Copy-Item -Path (Join-Path $clone 'src/PSDesiredStateConfiguration/*') -Destination $target -Recurse -Force
+          Copy-Item -Path (Join-Path $clone "$($pin.ModuleName)/*") -Destination $target -Recurse -Force
           Copy-Item -Path (Join-Path $clone 'LICENSE') -Destination $target -ErrorAction Ignore
           & ./Utilities/New-M365DSCDscSchemaCache.ps1
       - name: Publish
