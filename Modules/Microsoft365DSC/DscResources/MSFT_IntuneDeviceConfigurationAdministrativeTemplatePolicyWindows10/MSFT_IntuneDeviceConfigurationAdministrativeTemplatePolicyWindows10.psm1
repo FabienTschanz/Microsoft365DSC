@@ -309,9 +309,9 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating an Intune Device Configuration Administrative Template Policy for Windows10 with DisplayName {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
-
             $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreateParameters.Remove('Assignments') | Out-Null
+
             $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters -KeyMapping $keyToRename
             $CreateParameters.Remove('Id') | Out-Null
             $CreateParameters.Remove('DefinitionValues') | Out-Null
@@ -361,9 +361,9 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Intune Device Configuration Administrative Template Policy for Windows10 with Id {$($currentInstance.Id)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
-
             $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $UpdateParameters.Remove('Assignments') | Out-Null
+
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters -KeyMapping $keyToRename
             $UpdateParameters.Remove('Id') | Out-Null
             $UpdateParameters.Remove('DefinitionValues') | Out-Null

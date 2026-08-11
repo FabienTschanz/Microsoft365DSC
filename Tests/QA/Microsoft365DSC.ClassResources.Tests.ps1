@@ -28,6 +28,20 @@ BeforeDiscovery {
                 }
             }
     )
+
+    # Invoke-DscResource drives the Local Configuration Manager over WinRM/CIM: it exists only on
+    # Windows, and it refuses to run without elevation. Everywhere else the round-trip cannot be
+    # attempted at all, so the check is skipped rather than reported as a failure.
+    $onWindows = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform(
+        [System.Runtime.InteropServices.OSPlatform]::Windows)
+
+    $canInvokeDscResource = $false
+    if ($onWindows)
+    {
+        $currentIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $canInvokeDscResource = ([Security.Principal.WindowsPrincipal] $currentIdentity).IsInRole(
+            [Security.Principal.WindowsBuiltInRole]::Administrator)
+    }
 }
 
 BeforeAll {
@@ -74,7 +88,7 @@ Describe 'Class-based resource sources' {
     }
 }
 
-Describe 'DSC marshalling' {
+Describe 'DSC marshalling' -Skip:(-not $canInvokeDscResource) {
 
     # $classResourceFiles belongs to discovery, so an It body cannot read it. -ForEach is what
     # carries the data across, and it fails discovery on an empty collection, hence the guard.
@@ -118,11 +132,12 @@ Describe 'Generated class modules' {
     It 'does not ship the editor-only using statement' -Skip:(-not (Test-Path -Path (
                 Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/Microsoft365DSC/Classes'))) {
 
-        # The generated parts legitimately open with `using module .\_Shared.psm1`. Any reference to
-        # _Base means the build started carrying source-only lines into the shipped module, and a
-        # using statement anywhere but the first line does not parse.
+        # The generated parts legitimately open with `using module .\_Shared.psm1` plus one
+        # `using module .\_Types<NN>.psm1` per complex-type bucket they reference. Any OTHER using
+        # statement - _Base above all - means the build started carrying source-only lines into the
+        # shipped module. This mirrors the guard Build-Microsoft365DSC.ps1 applies to each part.
         $offenders = @(Get-ChildItem -Path $script:classesPath -Filter 'Part*.psm1' -File |
-                Where-Object { (Get-Content -Path $_.FullName -Raw) -match '(?m)^\s*using module (?!\.\\_Shared\.psm1)' })
+                Where-Object { (Get-Content -Path $_.FullName -Raw) -match '(?m)^\s*using module (?!\.\\(?:_Shared|_Types\d{2})\.psm1)' })
 
         $offenders.Name -join ', ' | Should -BeNullOrEmpty -Because (
             'Build-Microsoft365DSC.ps1 emits class extents only, and a file-level using statement is never inside one')

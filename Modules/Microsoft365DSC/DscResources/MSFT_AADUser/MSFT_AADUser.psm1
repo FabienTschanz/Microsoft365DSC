@@ -78,10 +78,6 @@ class AADUser : M365DSCResourceBase
     [System.String[]] $OtherMails
 
     [DscProperty()]
-    [System.ComponentModel.Description('Specifies whether the user password expires periodically. Default value is false')]
-    [System.Nullable[System.Boolean]] $PasswordNeverExpires
-
-    [DscProperty()]
     [System.ComponentModel.Description('Specifies password policies for the user.')]
     [System.String] $PasswordPolicies
 
@@ -174,13 +170,6 @@ class AADUser : M365DSCResourceBase
         }
 
         Write-Verbose -Message "Getting configuration of Office 365 User $($this.UserPrincipalName)"
-
-        # TODO: Remove property 'PasswordNeverExpires' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('PasswordNeverExpires'))
-        {
-            $this.GetBoundParameters().Remove('PasswordNeverExpires') | Out-Null
-            Write-Warning "Property 'PasswordNeverExpires' is deprecated and will be removed, please use 'PasswordPolicies' instead with 'DisablePasswordExpiration'"
-        }
 
         try
         {
@@ -345,13 +334,6 @@ class AADUser : M365DSCResourceBase
         }
 
         Write-Verbose -Message "Setting configuration of Office 365 User $($this.UserPrincipalName)"
-
-        # TODO: Remove property 'PasswordNeverExpires' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('PasswordNeverExpires'))
-        {
-            $this.GetBoundParameters().Remove('PasswordNeverExpires') | Out-Null
-            Write-Warning "Property 'PasswordNeverExpires' is deprecated and will be removed, please use 'PasswordPolicies' instead with 'DisablePasswordExpiration'"
-        }
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -828,13 +810,6 @@ class AADUser : M365DSCResourceBase
             $this.LogError($_, 'Error during Export:')
 
             throw
-        }
-    }
-
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('PasswordNeverExpires')
         }
     }
 

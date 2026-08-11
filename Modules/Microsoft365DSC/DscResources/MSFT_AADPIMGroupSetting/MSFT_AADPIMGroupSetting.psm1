@@ -423,7 +423,7 @@ class AADPIMGroupSetting : M365DSCResourceBase
         {
             Write-Verbose -Message "Found configuration of Rule $($this.DisplayName)"
             $result = @{
-                Id                                                        = $this.Id
+                Id                                                        = $Policy.Id
                 DisplayName                                               = $this.DisplayName
                 RoleDefinitionId                                          = $this.RoleDefinitionId
                 ActivationMaxDuration                                     = $ActivationMaxDurationValue

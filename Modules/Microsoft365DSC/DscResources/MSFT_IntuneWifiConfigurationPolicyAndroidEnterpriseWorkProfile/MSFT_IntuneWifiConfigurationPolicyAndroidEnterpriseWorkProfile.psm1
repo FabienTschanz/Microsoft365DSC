@@ -210,9 +210,10 @@ class IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile : M365DSCResourc
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
+            $boundParameters = $this.GetBoundParameters()
+            $boundParameters.Remove('Assignments') | Out-Null
 
-            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
             $CreateParameters.Remove('Id') | Out-Null
 
@@ -233,9 +234,10 @@ class IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile : M365DSCResourc
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
+            $boundParameters = $this.GetBoundParameters()
+            $boundParameters.Remove('Assignments') | Out-Null
 
-            $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
             $UpdateParameters.Remove('Id') | Out-Null
 

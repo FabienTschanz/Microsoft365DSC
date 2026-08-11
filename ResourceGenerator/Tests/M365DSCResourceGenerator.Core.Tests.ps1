@@ -107,6 +107,11 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
                 Should -Be 'System.String'
         }
 
+        It 'does not wrap a key property in System.Nullable' {
+            (New-M365DSCPropertyModel -Name 'Priority' -Type 'Edm.Int32' -IsKey $true).ClrType |
+                Should -Be 'System.Int32'
+        }
+
         It 'derives the camelCase Graph name' {
             (New-M365DSCPropertyModel -Name 'DisplayName').GraphName | Should -Be 'displayName'
         }

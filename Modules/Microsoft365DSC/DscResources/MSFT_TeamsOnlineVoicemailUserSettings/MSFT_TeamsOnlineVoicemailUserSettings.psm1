@@ -31,10 +31,6 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $OofGreetingFollowAutomaticRepliesEnabled
 
     [DscProperty()]
-    [System.ComponentModel.Description('The OofGreetingFollowCalendarEnabled parameter represents whether to play out-of-office greeting in voicemail deposit scenario when user set out-of-office in calendar.')]
-    [System.Nullable[System.Boolean]] $OofGreetingFollowCalendarEnabled
-
-    [DscProperty()]
     [System.ComponentModel.Description('The PromptLanguage parameter represents the language that is used to play voicemail prompts.')]
     [System.String] $PromptLanguage
 
@@ -103,12 +99,7 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
 
         Write-Verbose -Message "Getting the Teams Online Voicemail User Settings $($this.Identity)"
 
-        # TODO: Remove property 'OofGreetingFollowCalendarEnabled' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('OofGreetingFollowCalendarEnabled'))
-        {
-            $this.GetBoundParameters().Remove('OofGreetingFollowCalendarEnabled') | Out-Null
-            Write-Warning "Property 'OofGreetingFollowCalendarEnabled' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         try
         {
@@ -124,7 +115,7 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
                 #endregion
             }
 
-            $nullReturn = $this.GetBoundParameters()
+            $nullReturn = $boundParameters
             $nullReturn.Ensure = 'Absent'
 
             $instance = Get-CsOnlineVoicemailUserSettings -Identity $this.Identity -ErrorAction 'SilentlyContinue'
@@ -176,12 +167,7 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
 
         Write-Verbose -Message 'Setting Teams Online Voicemail User Settings'
 
-        # TODO: Remove property 'OofGreetingFollowCalendarEnabled' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('OofGreetingFollowCalendarEnabled'))
-        {
-            $this.GetBoundParameters().Remove('OofGreetingFollowCalendarEnabled') | Out-Null
-            Write-Warning "Property 'OofGreetingFollowCalendarEnabled' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -192,7 +178,7 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
 
         $null = $this.Connect('MicrosoftTeams')
 
-        $SetParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $SetParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
 
         try
         {
@@ -284,13 +270,6 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
         }
     }
 
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('OofGreetingFollowCalendarEnabled')
-        }
-    }
-
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsOnlineVoicemailUserSettings] AsResult([System.Object] $Values)
     {
@@ -308,4 +287,3 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
         return $result
     }
 }
-

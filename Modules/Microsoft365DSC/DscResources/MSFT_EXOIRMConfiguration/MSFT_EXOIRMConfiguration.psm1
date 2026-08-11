@@ -31,10 +31,6 @@ class EXOIRMConfiguration : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $EnablePdfEncryption
 
     [DscProperty()]
-    [System.ComponentModel.Description('The EnablePortalTrackingLogs parameter specifies whether to enable portal message tracking logs.')]
-    [System.Nullable[System.Boolean]] $EnablePortalTrackingLogs
-
-    [DscProperty()]
     [System.ComponentModel.Description('The InternalLicensingEnabled parameter specifies whether to enable IRM features for messages that are sent to internal and external recipients.')]
     [System.Nullable[System.Boolean]] $InternalLicensingEnabled
 
@@ -123,13 +119,6 @@ class EXOIRMConfiguration : M365DSCResourceBase
 
         Write-Verbose -Message 'Getting IRM Configuration'
 
-        # TODO: Remove property 'EnablePortalTrackingLogs' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('EnablePortalTrackingLogs'))
-        {
-            $this.GetBoundParameters().Remove('EnablePortalTrackingLogs') | Out-Null
-            Write-Warning "Property 'EnablePortalTrackingLogs' is deprecated and will be removed"
-        }
-
         try
         {
             if (-not $this.ExportedInstance)
@@ -171,7 +160,6 @@ class EXOIRMConfiguration : M365DSCResourceBase
                 DecryptAttachmentForEncryptOnly            = $IRMConfiguration.DecryptAttachmentForEncryptOnly
                 EDiscoverySuperUserEnabled                 = $IRMConfiguration.EDiscoverySuperUserEnabled
                 EnablePdfEncryption                        = $IRMConfiguration.EnablePdfEncryption
-                EnablePortalTrackingLogs                   = $IRMConfiguration.EnablePortalTrackingLogs
                 InternalLicensingEnabled                   = $IRMConfiguration.InternalLicensingEnabled
                 JournalReportDecryptionEnabled             = $IRMConfiguration.JournalReportDecryptionEnabled
                 LicensingLocation                          = $LicensingLocationValue
@@ -220,16 +208,11 @@ class EXOIRMConfiguration : M365DSCResourceBase
 
         Write-Verbose -Message 'Setting configuration of Resource Configuration'
 
-        # TODO: Remove property 'EnablePortalTrackingLogs' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('EnablePortalTrackingLogs'))
-        {
-            $this.GetBoundParameters().Remove('EnablePortalTrackingLogs') | Out-Null
-            Write-Warning "Property 'EnablePortalTrackingLogs' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         $null = $this.Connect('ExchangeOnline')
 
-        $IRMConfigurationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $IRMConfigurationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
         $IRMConfigurationParams.Remove('IsSingleInstance') | Out-Null
 
         if ($this.Ensure -eq 'Present' -and $null -ne $IRMConfigurationParams)
@@ -306,13 +289,6 @@ class EXOIRMConfiguration : M365DSCResourceBase
         }
     }
 
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('EnablePortalTrackingLogs')
-        }
-    }
-
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOIRMConfiguration] AsResult([System.Object] $Values)
     {
@@ -330,4 +306,3 @@ class EXOIRMConfiguration : M365DSCResourceBase
         return $result
     }
 }
-

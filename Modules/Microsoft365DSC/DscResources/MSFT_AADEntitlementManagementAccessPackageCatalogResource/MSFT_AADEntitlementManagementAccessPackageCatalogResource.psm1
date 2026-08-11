@@ -207,7 +207,7 @@ class AADEntitlementManagementAccessPackageCatalogResource : M365DSCResourceBase
             }
 
             $results = @{
-                Id                    = $this.Id
+                Id                    = $getValue.Id
                 CatalogId             = $CatalogIdValue
                 Attributes            = $hashAttributes
                 AddedBy               = $getValue.addedBy #Read-Only

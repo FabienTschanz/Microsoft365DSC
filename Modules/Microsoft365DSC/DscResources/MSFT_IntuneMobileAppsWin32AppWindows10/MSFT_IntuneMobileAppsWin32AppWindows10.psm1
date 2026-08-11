@@ -441,7 +441,6 @@ class IntuneMobileAppsWin32AppWindows10 : M365DSCResourceBase
 
             $boundParameters.Remove('AllowedArchitectures') | Out-Null
             $boundParameters.Add('allowedArchitectures', ($this.GetBoundParameters().AllowedArchitectures -join ','))
-            $this.GetBoundParameters().Add('applicableArchitectures', 'none')
             $boundParameters.Add('applicableArchitectures', 'none')
 
             if ([System.String]::IsNullOrEmpty($boundParameters.allowedArchitectures))

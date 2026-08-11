@@ -272,7 +272,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
                 }
                 else
                 {
-                    Write-Verbose -Message "No member of type group with DisplayName {$membersDisplayName} was found"
+                    Write-Warning -Message "No member of type group with DisplayName {$membersDisplayName} was found"
                 }
             }
         }
@@ -297,7 +297,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
                 }
                 else
                 {
-                    Write-Verbose -Message "No resource scope of type group with DisplayName {$resourceScopesDisplayName} was found"
+                    Write-Warning -Message "No resource scope of type group with DisplayName {$resourceScopesDisplayName} was found"
                 }
             }
         }
@@ -517,4 +517,3 @@ class IntuneRoleAssignment : M365DSCResourceBase
         return $result
     }
 }
-

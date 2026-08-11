@@ -218,12 +218,12 @@ class <ResourceName> : M365DSCResourceBase
 
         return $result
     }
+<#IF HelperFunctionBlock#>
+
+<HelperFunctionBlock>
+<#ENDIF HelperFunctionBlock#>
 }
 <#IF CimInstanceClassBlock#>
 
 <CimInstanceClassBlock>
 <#ENDIF CimInstanceClassBlock#>
-<#IF HelperFunctionBlock#>
-
-<HelperFunctionBlock>
-<#ENDIF HelperFunctionBlock#>

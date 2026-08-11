@@ -48,10 +48,6 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $AllowImmersiveReader
 
     [DscProperty()]
-    [System.ComponentModel.Description('Determines whether a user is allowed to delete messages sent by bots. Set this to TRUE to allow. Set this to FALSE to prohibit.')]
-    [System.Nullable[System.Boolean]] $UsersCanDeleteBotMessages
-
-    [DscProperty()]
     [System.ComponentModel.Description('Credentials of the Teams Admin')]
     [System.Management.Automation.PSCredential] $Credential
 
@@ -93,13 +89,6 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
         }
 
         Write-Verbose -Message 'Getting configuration of Teams Guest Messaging settings'
-
-        # TODO: Remove property 'UsersCanDeleteBotMessages' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('UsersCanDeleteBotMessages'))
-        {
-            $this.GetBoundParameters().Remove('UsersCanDeleteBotMessages') | Out-Null
-            Write-Warning "Property 'UsersCanDeleteBotMessages' is deprecated and will be removed"
-        }
 
         try
         {
@@ -155,12 +144,7 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
 
         Write-Verbose -Message 'Setting configuration of Teams Guest Messaging settings'
 
-        # TODO: Remove property 'UsersCanDeleteBotMessages' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('UsersCanDeleteBotMessages'))
-        {
-            $this.GetBoundParameters().Remove('UsersCanDeleteBotMessages') | Out-Null
-            Write-Warning "Property 'UsersCanDeleteBotMessages' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -172,7 +156,7 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
         $null = $this.Connect('MicrosoftTeams')
 
         # Check that at least one optional parameter is specified
-        $inputValues = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $inputValues = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters.Clone()
         foreach ($item in $inputValues.GetEnumerator())
         {
             if ([System.String]::IsNullOrEmpty($item.Value))
@@ -186,7 +170,7 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
             throw "You need to specify at least one optional parameter for the [TeamsGuestMessagingConfiguration] instance {$Identity}"
         }
 
-        $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters.Clone()
         $SetParams.Add('Identity', 'Global')
         $SetParams.Remove('IsSingleInstance') | Out-Null
         Set-CsTeamsGuestMessagingConfiguration @SetParams
@@ -261,13 +245,6 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
         }
     }
 
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('UsersCanDeleteBotMessages')
-        }
-    }
-
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsGuestMessagingConfiguration] AsResult([System.Object] $Values)
     {
@@ -285,4 +262,3 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
         return $result
     }
 }
-

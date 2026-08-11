@@ -106,9 +106,10 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             $script:classContent | Should -Match '(?s)\[DscProperty\(Key\)\]\s*\[System\.ComponentModel\.Description\(''The unique identifier\.''\)\]\s*\[System\.String\] \$Id'
         }
 
-        It 'generates a per-resource hashtable helper for the complex type' {
-            $script:classContent | Should -Match 'function Get-AADTestPolicyTestRuleAsHashtable'
-            $script:classContent | Should -Match '\$complexRules \+= Get-AADTestPolicyTestRuleAsHashtable'
+        It 'generates a hidden hashtable helper method for the complex type' {
+            $script:classContent | Should -Match 'hidden \[System\.Collections\.Hashtable\] GetTestRuleAsHashtable\(\[System\.Object\] \$ComplexObject\)'
+            $script:classContent | Should -Match '\$complexRules \+= \$this\.GetTestRuleAsHashtable\(\$currentRules\)'
+            $script:classContent | Should -Not -Match '(?m)^function '
         }
 
         It 'converts enums and dates before the result hashtable' {

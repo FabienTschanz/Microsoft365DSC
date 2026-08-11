@@ -333,11 +333,11 @@ class AADAuthenticationMethodPolicyFido2 : M365DSCResourceBase
             if ($UpdateParameters.ContainsKey('PasskeyProfiles'))
             {
                 # Ensure passkeyTypes is handled as a single string value for API compatibility
-                foreach ($global:profile in $UpdateParameters.PasskeyProfiles)
+                foreach ($passkeyProfile in $UpdateParameters.PasskeyProfiles)
                 {
-                    if ($null -ne $global:profile.passkeyTypes -and $global:profile.passkeyTypes -is [Array])
+                    if ($null -ne $passkeyProfile.passkeyTypes -and $passkeyProfile.passkeyTypes -is [Array])
                     {
-                        $global:profile.passkeyTypes = $global:profile.passkeyTypes -join ','
+                        $passkeyProfile.passkeyTypes = $passkeyProfile.passkeyTypes -join ','
                     }
                 }
             }

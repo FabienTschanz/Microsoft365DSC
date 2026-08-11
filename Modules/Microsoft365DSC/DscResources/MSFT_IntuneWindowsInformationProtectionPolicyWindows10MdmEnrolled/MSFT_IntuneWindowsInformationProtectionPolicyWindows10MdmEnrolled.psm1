@@ -481,8 +481,9 @@ class IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled : M365DSCReso
         {
             Write-Verbose -Message "Creating an Intune Windows Information Protection Policy for Windows10 Mdm Enrolled with DisplayName {$($this.DisplayName)}"
 
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
-            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $boundParameters = $this.GetBoundParameters()
+            $boundParameters.Remove('Assignments') | Out-Null
+            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
             $createParameters.Remove('Id') | Out-Null
 
@@ -503,8 +504,9 @@ class IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled : M365DSCReso
         {
             Write-Verbose -Message "Updating the Intune Windows Information Protection Policy for Windows10 Mdm Enrolled with Id {$($currentInstance.Id)}"
 
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
-            $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $boundParameters = $this.GetBoundParameters()
+            $boundParameters.Remove('Assignments') | Out-Null
+            $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
             $UpdateParameters.Remove('Id') | Out-Null
 

@@ -492,21 +492,23 @@ class IntuneDeviceConfigurationPolicyMacOS : M365DSCResourceBase
 
         $currentInstance = $this.Get().ToHashtable()
 
+        $boundParameters = $this.GetBoundParameters()
+
         if ($this.UpdateDelayPolicy.Count -gt 0)
         {
-            $this.GetBoundParameters().UpdateDelayPolicy = $this.UpdateDelayPolicy -join ','
+            $boundParameters.UpdateDelayPolicy = $this.UpdateDelayPolicy -join ','
         }
         else
         {
-            $this.GetBoundParameters().UpdateDelayPolicy = 'none'
+            $boundParameters.UpdateDelayPolicy = 'none'
         }
 
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
 
-            $CreateParameters = ([Hashtable]$this.GetBoundParameters()).Clone()
+            $CreateParameters = ([Hashtable]$boundParameters).Clone()
+            $CreateParameters.Remove('Assignments') | Out-Null
             $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $CreateParameters
             $CreateParameters = Rename-M365DSCCimInstanceParameter -Properties $CreateParameters
             $CreateParameters.Remove('Id') | Out-Null
@@ -527,9 +529,9 @@ class IntuneDeviceConfigurationPolicyMacOS : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
 
-            $UpdateParameters = ([Hashtable]$this.GetBoundParameters()).Clone()
+            $UpdateParameters = ([Hashtable]$boundParameters).Clone()
+            $UpdateParameters.Remove('Assignments') | Out-Null
             $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $UpdateParameters
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
             $UpdateParameters.Remove('Id') | Out-Null

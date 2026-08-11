@@ -181,6 +181,17 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             $model.AlternativeKey | Should -Be 'DisplayName'
         }
 
+        It 'unwraps System.Nullable when a value-typed property becomes the key' {
+            $valueKeyProperties = @(
+                New-M365DSCPropertyModel -Name 'Priority' -Type 'Edm.Int32' -Description 'The priority.'
+                New-M365DSCPropertyModel -Name 'DisplayName' -Type 'Edm.String' -Description 'The name.'
+            )
+            $model = New-M365DSCResourceModel -ResourceName 'AADTestPolicy' -Workload 'MicrosoftGraph' `
+                -CmdletInfo (@{} + $script:cmdletInfo + @{ PrimaryKey = 'Priority' }) -Properties $valueKeyProperties
+
+            ($model.Properties | Where-Object { $_.Name -eq 'Priority' }).ClrType | Should -Be 'System.Int32'
+        }
+
         It 'replaces the key with IsSingleInstance for singletons' {
             $model = New-M365DSCResourceModel -ResourceName 'AADTestPolicy' -Workload 'MicrosoftGraph' `
                 -CmdletInfo $script:cmdletInfo -Properties $script:properties -IsSingleInstance $true

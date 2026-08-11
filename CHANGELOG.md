@@ -17,6 +17,8 @@
 * AADRoleEligibilityScheduleRequest
   * [BREAKING CHANGE] Removed deprecated properties `Action` and `IsValidationOnly`.
 * AADUser
+  * [BREAKING CHANGE] Removed deprecated property `PasswordNeverExpires`.
+    Please use `PasswordPolicies` instead with `DisablePasswordExpiration`.
   * Updated the password generation routine to work with PowerShell 7.
 * EXOAvailabilityAddressSpace
   * [BREAKING CHANGE] Changed type for `Credentials` from String
@@ -24,6 +26,14 @@
 * EXOArcConfig
   * Fixed an issue where the `ArcTrustedSealers` property was exported as
     a single string instead of an array.
+* EXODistributionGroup
+  * [BREAKING CHANGE] Removed deprecated property `Notes`.
+* EXOIRMConfiguration
+  * [BREAKING CHANGE] Removed deprecated property `EnablePortalTrackingLogs`.
+* EXOManagementRoleEntry
+  * Reinstated deprecated property `Type`.
+* EXOPlace
+  * [BREAKING CHANGE] Removed deprecated property `Desks`.
 * EXOTenantAllowBlockListItems
   * [BREAKING CHANGE] Removed property `AppliationSecret`.
 * IntuneAppControlForBusinessPolicyWindows10
@@ -124,9 +134,15 @@
   * [BREAKING CHANGE] Changed type of `MeetingInvitePhoneNumbers` from ``String`` to ``String[]``.
 * TeamsCallQueue
   * Added GUID resolution to `AuthorizedUsers` and `Users`.
-* TeamsUpdateManagementPolicy
+* TeamsGuestMessagingConfiguration
+  * [BREAKING CHANGE] Removed deprecated property `UsersCanDeleteBotMessages`. It is available
+    on the `TeamsMessagingPolicy` resource instead.
+* TeamsOnlineVoicemailUserSettings
+  * [BREAKING CHANGE] Removed deprecated property `OofGreetingFollowCalendarEnabled`.
   * Updated `UpdateTimeOfDay` to use the format `h:mm tt` with invariant culture.
     An example is `6:00 pm`. This is the standard on en-US cultures.
+* TeamsTenantNetworkSite
+  * [BREAKING CHANGE] Removed deprecated property `SiteAddress`.
 * M365DSCGraphShim
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
 * M365DSCModuleMgmt

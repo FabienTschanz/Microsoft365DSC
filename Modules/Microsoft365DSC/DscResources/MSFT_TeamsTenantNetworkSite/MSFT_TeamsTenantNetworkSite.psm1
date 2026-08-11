@@ -38,10 +38,6 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
     [System.String] $NetworkRoamingPolicy
 
     [DscProperty()]
-    [System.ComponentModel.Description('The address of current network site.')]
-    [System.String] $SiteAddress
-
-    [DscProperty()]
     [System.ComponentModel.Description('Present ensures the instance exists, absent ensures it is removed.')]
     [ValidateSet('Present', 'Absent')]
     [System.String] $Ensure
@@ -97,12 +93,7 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
 
         Write-Verbose -Message "Getting configuration for Teams Tenant Network Site $($this.Identity)"
 
-        # TODO: Remove property 'SiteAddress' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('SiteAddress'))
-        {
-            $this.GetBoundParameters().Remove('SiteAddress') | Out-Null
-            Write-Warning "Property 'SiteAddress' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         try
         {
@@ -117,7 +108,7 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
                 $this.AddTelemetry('Get')
                 #endregion
 
-                $nullResult = $this.GetBoundParameters()
+                $nullResult = $boundParameters
                 $nullResult.Ensure = 'Absent'
 
                 $instance = Get-CsTenantNetworkSite -Identity $this.Identity -ErrorAction SilentlyContinue
@@ -172,12 +163,7 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
 
         Write-Verbose -Message "Getting configuration for Teams Tenant Network Site $($this.Identity)"
 
-        # TODO: Remove property 'SiteAddress' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('SiteAddress'))
-        {
-            $this.GetBoundParameters().Remove('SiteAddress') | Out-Null
-            Write-Warning "Property 'SiteAddress' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -191,13 +177,13 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating a Teams Tenant Network Site with Identity {$($this.Identity)}"
-            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             New-CsTenantNetworkSite @CreateParameters | Out-Null
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Teams Tenant Network Site with Identity {$($this.Identity)}"
-            $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             Set-CsTenantNetworkSite @UpdateParameters | Out-Null
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
@@ -294,13 +280,6 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
         }
     }
 
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('SiteAddress')
-        }
-    }
-
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTenantNetworkSite] AsResult([System.Object] $Values)
     {
@@ -318,4 +297,3 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
         return $result
     }
 }
-

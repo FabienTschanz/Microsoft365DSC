@@ -60,10 +60,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
             Mock -CommandName Get-MgDeviceManagementRoleDefinition -MockWith {
-                return @()
+                return @{
+                    Id          = '7fbbd347-98de-431d-942b-cf5bea92998d'
+                    DisplayName = 'FakeStringValue'
+                }
             }
             Mock -CommandName Get-MgDeviceManagementRoleDefinitionRoleAssignment -MockWith {
-                return @()
+                return @{
+                    Id = 'FakeStringValue'
+                }
             }
             Mock -CommandName Get-MgGroup -MockWith {
                 return @{

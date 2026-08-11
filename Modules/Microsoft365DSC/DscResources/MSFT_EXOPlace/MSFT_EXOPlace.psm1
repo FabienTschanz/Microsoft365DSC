@@ -34,10 +34,6 @@ class EXOPlace : M365DSCResourceBase
     [System.String] $CountryOrRegion
 
     [DscProperty()]
-    [System.ComponentModel.Description('N/A')]
-    [System.String[]] $Desks
-
-    [DscProperty()]
     [System.ComponentModel.Description('The DisplayDeviceName parameter specifies the name of the display device in the room. If the value contains spaces, enclose the value in quotation marks.')]
     [System.String] $DisplayDeviceName
 
@@ -146,12 +142,7 @@ class EXOPlace : M365DSCResourceBase
 
         Write-Verbose -Message "Getting configuration for Place for $($this.Identity)"
 
-        # TODO: Remove property 'Desks' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Desks'))
-        {
-            $this.GetBoundParameters().Remove('Desks') | Out-Null
-            Write-Warning "Property 'Desks' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         try
         {
@@ -166,7 +157,7 @@ class EXOPlace : M365DSCResourceBase
                 $this.AddTelemetry('Get')
                 #endregion
 
-                $nullReturn = $this.GetBoundParameters()
+                $nullReturn = $boundParameters
                 $nullReturn.Ensure = 'Absent'
 
                 $place = Get-Place -Identity $this.Identity -ErrorAction SilentlyContinue
@@ -204,7 +195,6 @@ class EXOPlace : M365DSCResourceBase
                 Capacity               = $place.Capacity
                 City                   = $place.City
                 CountryOrRegion        = $place.CountryOrRegion
-                Desks                  = [System.String[]] $place.Desks
                 DisplayDeviceName      = $place.DisplayDeviceName
                 DisplayName            = $place.DisplayName
                 Floor                  = $place.Floor
@@ -259,16 +249,11 @@ class EXOPlace : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of Place for $($this.Identity)"
 
-        # TODO: Remove property 'Desks' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Desks'))
-        {
-            $this.GetBoundParameters().Remove('Desks') | Out-Null
-            Write-Warning "Property 'Desks' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         $null = $this.Connect('ExchangeOnline')
 
-        $updateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $updateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
 
         if ([System.String]::IsNullOrEmpty($this.ParentId) -and $null -ne $this.ParentType)
         {
@@ -357,13 +342,6 @@ class EXOPlace : M365DSCResourceBase
         }
     }
 
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('Desks')
-        }
-    }
-
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOPlace] AsResult([System.Object] $Values)
     {
@@ -381,4 +359,3 @@ class EXOPlace : M365DSCResourceBase
         return $result
     }
 }
-

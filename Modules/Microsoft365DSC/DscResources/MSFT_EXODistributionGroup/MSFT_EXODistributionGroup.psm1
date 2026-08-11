@@ -68,10 +68,6 @@ class EXODistributionGroup : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $ModerationEnabled
 
     [DscProperty()]
-    [System.ComponentModel.Description('The Notes parameters specifies additional information about the object.')]
-    [System.String] $Notes
-
-    [DscProperty()]
     [System.ComponentModel.Description('The OrganizationalUnit parameter specifies the location in Active Directory where the group is created.')]
     [System.String] $OrganizationalUnit
 
@@ -246,12 +242,7 @@ class EXODistributionGroup : M365DSCResourceBase
 
         Write-Verbose -Message "Getting configuration of Distribution Group for $($this.Identity)"
 
-        # TODO: Remove property 'Notes' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Notes'))
-        {
-            $this.GetBoundParameters().Remove('Notes') | Out-Null
-            Write-Warning "Property 'Notes' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         try
         {
@@ -266,7 +257,7 @@ class EXODistributionGroup : M365DSCResourceBase
                 $this.AddTelemetry('Get')
                 #endregion
 
-                $nullReturn = $this.GetBoundParameters()
+                $nullReturn = $boundParameters
                 $nullReturn.Ensure = 'Absent'
 
                 $displayNameProperties = $this.ResourceCache['displayNameProperties']
@@ -355,7 +346,6 @@ class EXODistributionGroup : M365DSCResourceBase
                 ModeratedBy                            = $moderatedByValue
                 ModerationEnabled                      = $distributionGroup.ModerationEnabled
                 Name                                   = $distributionGroup.Name
-                Notes                                  = $distributionGroup.Notes
                 OrganizationalUnit                     = $distributionGroup.OrganizationalUnit
                 PrimarySmtpAddress                     = $distributionGroup.PrimarySmtpAddress
                 RequireSenderAuthenticationEnabled     = $distributionGroup.RequireSenderAuthenticationEnabled
@@ -415,12 +405,7 @@ class EXODistributionGroup : M365DSCResourceBase
 
         Write-Verbose -Message "Setting configuration of Distribution Group for $($this.Identity)"
 
-        # TODO: Remove property 'Notes' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Notes'))
-        {
-            $this.GetBoundParameters().Remove('Notes') | Out-Null
-            Write-Warning "Property 'Notes' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -431,13 +416,13 @@ class EXODistributionGroup : M365DSCResourceBase
 
         $currentDistributionGroup = $this.Get().ToHashtable()
 
-        $currentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+        $currentParameters = Remove-M365DSCAuthenticationParameter -BoundParameters ([Hashtable]$boundParameters).Clone()
 
         # Distribution group doesn't exist but it should
         $newGroup = $null
         if ($this.Ensure -eq 'Present' -and $currentDistributionGroup.Ensure -eq 'Absent')
         {
-            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters ([Hashtable]$boundParameters).Clone()
             Write-Verbose -Message "The Distribution Group {$($this.Identity)} does not exist but it should. Creating it."
             $CreateParameters.Remove('Identity') | Out-Null
             $CreateParameters.Remove('AcceptMessagesOnlyFrom') | Out-Null
@@ -648,7 +633,6 @@ class EXODistributionGroup : M365DSCResourceBase
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{
-            ExcludedProperties = @('Notes')
             # The script block is invoked by Test-M365DSCTargetResource, outside this instance's
             # scope, so $this is not available inside it. State travels via PostProcessingArgs.
             PostProcessing = {

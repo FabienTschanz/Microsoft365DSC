@@ -308,7 +308,9 @@ class SCDLPCompliancePolicy : M365DSCResourceBase
 
         $null = $this.Connect('MicrosoftGraph')
 
-        if ($this.GetBoundParameters().ContainsKey('OneDriveSharedByMemberOf') -and $this.OneDriveSharedByMemberOf.Count -gt 0)
+        $boundParameters = $this.GetBoundParameters()
+
+        if ($boundParameters.ContainsKey('OneDriveSharedByMemberOf') -and $this.OneDriveSharedByMemberOf.Count -gt 0)
         {
             $groupIds = @()
             foreach ($group in $this.OneDriveSharedByMemberOf)
@@ -323,11 +325,11 @@ class SCDLPCompliancePolicy : M365DSCResourceBase
                     throw "Failed to find group with display name '$group' to add to OneDriveSharedByMemberOf. Ensure the group exists and the display name is correct."
                 }
             }
-            $this.GetBoundParameters().Remove('OneDriveSharedByMemberOf') | Out-Null
-            $this.GetBoundParameters().Add('OneDriveSharedByMemberOf', $groupIds)
+            $boundParameters.Remove('OneDriveSharedByMemberOf') | Out-Null
+            $boundParameters.Add('OneDriveSharedByMemberOf', $groupIds)
         }
 
-        if ($this.GetBoundParameters().ContainsKey('ExceptIfOneDriveSharedByMemberOf') -and $this.ExceptIfOneDriveSharedByMemberOf.Count -gt 0)
+        if ($boundParameters.ContainsKey('ExceptIfOneDriveSharedByMemberOf') -and $this.ExceptIfOneDriveSharedByMemberOf.Count -gt 0)
         {
             $exceptGroupIds = @()
             foreach ($group in $this.ExceptIfOneDriveSharedByMemberOf)
@@ -342,18 +344,18 @@ class SCDLPCompliancePolicy : M365DSCResourceBase
                     throw "Failed to find group with display name '$group' to add to ExceptIfOneDriveSharedByMemberOf. Ensure the group exists and the display name is correct."
                 }
             }
-            $this.GetBoundParameters().Remove('ExceptIfOneDriveSharedByMemberOf') | Out-Null
-            $this.GetBoundParameters().Add('ExceptIfOneDriveSharedByMemberOf', $exceptGroupIds)
+            $boundParameters.Remove('ExceptIfOneDriveSharedByMemberOf') | Out-Null
+            $boundParameters.Add('ExceptIfOneDriveSharedByMemberOf', $exceptGroupIds)
         }
 
         if ($this.Ensure -eq 'Present' -and $CurrentPolicy.Ensure -eq 'Absent')
         {
-            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             New-DLPCompliancePolicy @CreationParams
         }
         elseif ($this.Ensure -eq 'Present' -and $CurrentPolicy.Ensure -eq 'Present')
         {
-            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
             $CreationParams.Remove('Name') | Out-Null
             $CreationParams.Add('Identity', $this.Name) | Out-Null
 

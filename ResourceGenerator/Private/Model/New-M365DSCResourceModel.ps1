@@ -136,6 +136,7 @@ function New-M365DSCResourceModel
             if ($property.Name -eq $primaryKey)
             {
                 $property.IsKey = $true
+                $property.ClrType = $property.ClrType -replace '^System\.Nullable\[(.+)\]$', '$1'
             }
         }
     }

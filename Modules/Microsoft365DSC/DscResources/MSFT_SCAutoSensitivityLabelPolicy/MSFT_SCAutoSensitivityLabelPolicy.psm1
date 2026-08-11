@@ -254,18 +254,19 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
         #endregion
 
         $CurrentPolicy = $this.Get().ToHashtable()
+        $boundParameters = $this.GetBoundParameters()
 
-        if ($this.GetBoundParameters().ContainsKey('SharePointLocation') -or $this.GetBoundParameters().ContainsKey('OneDriveLocation'))
+        if ($boundParameters.ContainsKey('SharePointLocation') -or $boundParameters.ContainsKey('OneDriveLocation'))
         {
-            if ($this.GetBoundParameters().ContainsKey('Mode') -eq $false)
+            if ($boundParameters.ContainsKey('Mode') -eq $false)
             {
                 Write-Verbose 'SharePoint or OneDrive location has been specified. Setting Mode to TestWithoutNotifications.'
-                $this.GetBoundParameters().Add('Mode', 'TestWithoutNotifications')
+                $boundParameters.Add('Mode', 'TestWithoutNotifications')
             }
-            elseif ($this.GetBoundParameters().Mode -eq 'Enable')
+            elseif ($boundParameters.Mode -eq 'Enable')
             {
                 Write-Verbose 'SharePoint or OneDrive location has been specified. Changing Mode to TestWithoutNotifications.'
-                $this.GetBoundParameters().Mode = 'TestWithoutNotifications'
+                $boundParameters.Mode = 'TestWithoutNotifications'
             }
         }
 
@@ -273,7 +274,7 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
         {
             Write-Verbose "Creating new Auto Sensitivity label policy $($this.Name)."
 
-            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreationParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
 
             # Remove parameters not used in New-LabelPolicy
             $CreationParams.Remove('AddExchangeLocation') | Out-Null
@@ -298,7 +299,7 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
             try
             {
                 Start-Sleep 5
-                $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+                $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
 
                 #Remove unused parameters for Set-Label cmdlet
                 $SetParams.Remove('Name') | Out-Null
@@ -318,7 +319,7 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
         }
         elseif ($this.Ensure -eq 'Present' -and $CurrentPolicy.Ensure -eq 'Present')
         {
-            $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $SetParams = Remove-M365DSCAuthenticationParameter -BoundParameters $boundParameters
 
             #Remove unused parameters for Set-Label cmdlet
             $SetParams.Remove('Name') | Out-Null
@@ -445,4 +446,3 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
         return $result
     }
 }
-

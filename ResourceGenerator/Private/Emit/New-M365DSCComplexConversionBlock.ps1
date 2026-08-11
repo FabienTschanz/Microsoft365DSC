@@ -5,9 +5,9 @@
       - New-M365DSCComplexConversionBlock: the lines inside Get() that convert complex, enum and
         date properties into local variables.
       - New-M365DSCHashtableMappingBlock: the $result = @{ ... } body.
-      - New-M365DSCHelperFunctionBlock: one Get-<Resource><Type>AsHashtable helper function per
-        complex class, following the shipped hand-written resources' pattern (helper names are
-        suffixed with the resource name because all resources share one module scope).
+      - New-M365DSCHelperFunctionBlock: one hidden Get<Type>AsHashtable method per complex class,
+        declared on the resource class itself so the conversion is reachable through $this rather
+        than through a module-scoped function.
 #>
 
 <#
@@ -77,19 +77,19 @@ function New-M365DSCComplexConversionBlock
 
         if ($property.IsComplex)
         {
-            $helperName = Get-M365DSCComplexHelperName -ResourceName $ResourceModel.ResourceName -CimClassName $property.CimClassName
+            $methodName = Get-M365DSCComplexHelperName -CimClassName $property.CimClassName
 
             if ($property.IsArray)
             {
                 $null = $builder.AppendLine("$indent`$complex$name = @()")
                 $null = $builder.AppendLine("${indent}foreach (`$current$name in $path)")
                 $null = $builder.AppendLine("$indent{")
-                $null = $builder.AppendLine("$indent    `$complex$name += $helperName -ComplexObject `$current$name")
+                $null = $builder.AppendLine("$indent    `$complex$name += `$this.$methodName(`$current$name)")
                 $null = $builder.AppendLine("$indent}")
             }
             else
             {
-                $null = $builder.AppendLine("$indent`$complex$name = $helperName -ComplexObject $path")
+                $null = $builder.AppendLine("$indent`$complex$name = `$this.$methodName($path)")
             }
             $null = $builder.AppendLine('')
         }
@@ -205,7 +205,7 @@ function New-M365DSCHashtableMappingBlock
 
 <#
 .SYNOPSIS
-    Renders one Get-<Resource><Type>AsHashtable helper function per complex class.
+    Renders one hidden Get<Type>AsHashtable method per complex class.
 #>
 function New-M365DSCHelperFunctionBlock
 {
@@ -235,25 +235,16 @@ function New-M365DSCHelperFunctionBlock
         }
         $first = $false
 
-        $helperName = Get-M365DSCComplexHelperName -ResourceName $ResourceModel.ResourceName -CimClassName $complexClass.CimClassName
+        $methodName = Get-M365DSCComplexHelperName -CimClassName $complexClass.CimClassName
 
-        $null = $builder.AppendLine("function $helperName")
-        $null = $builder.AppendLine('{')
-        $null = $builder.AppendLine('    [CmdletBinding()]')
-        $null = $builder.AppendLine('    [OutputType([System.Collections.Hashtable])]')
-        $null = $builder.AppendLine('    param')
-        $null = $builder.AppendLine('    (')
-        $null = $builder.AppendLine('        [Parameter()]')
-        $null = $builder.AppendLine('        [System.Object]')
-        $null = $builder.AppendLine('        $ComplexObject')
-        $null = $builder.AppendLine('    )')
-        $null = $builder.AppendLine('')
-        $null = $builder.AppendLine('    if ($null -eq $ComplexObject)')
+        $null = $builder.AppendLine("    hidden [System.Collections.Hashtable] $methodName([System.Object] `$ComplexObject)")
         $null = $builder.AppendLine('    {')
-        $null = $builder.AppendLine('        return $null')
-        $null = $builder.AppendLine('    }')
+        $null = $builder.AppendLine('        if ($null -eq $ComplexObject)')
+        $null = $builder.AppendLine('        {')
+        $null = $builder.AppendLine('            return $null')
+        $null = $builder.AppendLine('        }')
         $null = $builder.AppendLine('')
-        $null = $builder.AppendLine('    $result = @{}')
+        $null = $builder.AppendLine('        $result = @{}')
         $null = $builder.AppendLine('')
 
         foreach ($member in $complexClass.Members)
@@ -264,15 +255,15 @@ function New-M365DSCHelperFunctionBlock
             {
                 # Typed SDK objects keep the discriminator in AdditionalProperties; plain
                 # hashtables carry it directly.
-                $null = $builder.AppendLine("    `$odataType = `$ComplexObject.AdditionalProperties.'@odata.type'")
-                $null = $builder.AppendLine("    if (`$null -eq `$odataType)")
-                $null = $builder.AppendLine('    {')
-                $null = $builder.AppendLine("        `$odataType = `$ComplexObject.'@odata.type'")
-                $null = $builder.AppendLine('    }')
-                $null = $builder.AppendLine("    if (`$null -ne `$odataType)")
-                $null = $builder.AppendLine('    {')
-                $null = $builder.AppendLine("        `$result.Add('$memberName', `$odataType.ToString())")
-                $null = $builder.AppendLine('    }')
+                $null = $builder.AppendLine("        `$odataType = `$ComplexObject.AdditionalProperties.'@odata.type'")
+                $null = $builder.AppendLine("        if (`$null -eq `$odataType)")
+                $null = $builder.AppendLine('        {')
+                $null = $builder.AppendLine("            `$odataType = `$ComplexObject.'@odata.type'")
+                $null = $builder.AppendLine('        }')
+                $null = $builder.AppendLine("        if (`$null -ne `$odataType)")
+                $null = $builder.AppendLine('        {')
+                $null = $builder.AppendLine("            `$result.Add('$memberName', `$odataType.ToString())")
+                $null = $builder.AppendLine('        }')
                 $null = $builder.AppendLine('')
                 continue
             }
@@ -281,27 +272,27 @@ function New-M365DSCHelperFunctionBlock
 
             if ($member.IsComplex)
             {
-                $nestedHelperName = Get-M365DSCComplexHelperName -ResourceName $ResourceModel.ResourceName -CimClassName $member.CimClassName
+                $nestedMethodName = Get-M365DSCComplexHelperName -CimClassName $member.CimClassName
 
                 if ($member.IsArray)
                 {
-                    $null = $builder.AppendLine("    `$nested$memberName = @()")
-                    $null = $builder.AppendLine("    foreach (`$current$memberName in $memberPath)")
-                    $null = $builder.AppendLine('    {')
-                    $null = $builder.AppendLine("        `$nested$memberName += $nestedHelperName -ComplexObject `$current$memberName")
-                    $null = $builder.AppendLine('    }')
-                    $null = $builder.AppendLine("    if (`$nested$memberName.Count -gt 0)")
-                    $null = $builder.AppendLine('    {')
-                    $null = $builder.AppendLine("        `$result.Add('$memberName', [Array]`$nested$memberName)")
-                    $null = $builder.AppendLine('    }')
+                    $null = $builder.AppendLine("        `$nested$memberName = @()")
+                    $null = $builder.AppendLine("        foreach (`$current$memberName in $memberPath)")
+                    $null = $builder.AppendLine('        {')
+                    $null = $builder.AppendLine("            `$nested$memberName += `$this.$nestedMethodName(`$current$memberName)")
+                    $null = $builder.AppendLine('        }')
+                    $null = $builder.AppendLine("        if (`$nested$memberName.Count -gt 0)")
+                    $null = $builder.AppendLine('        {')
+                    $null = $builder.AppendLine("            `$result.Add('$memberName', [Array]`$nested$memberName)")
+                    $null = $builder.AppendLine('        }')
                 }
                 else
                 {
-                    $null = $builder.AppendLine("    `$nested$memberName = $nestedHelperName -ComplexObject $memberPath")
-                    $null = $builder.AppendLine("    if (`$null -ne `$nested$memberName)")
-                    $null = $builder.AppendLine('    {')
-                    $null = $builder.AppendLine("        `$result.Add('$memberName', `$nested$memberName)")
-                    $null = $builder.AppendLine('    }')
+                    $null = $builder.AppendLine("        `$nested$memberName = `$this.$nestedMethodName($memberPath)")
+                    $null = $builder.AppendLine("        if (`$null -ne `$nested$memberName)")
+                    $null = $builder.AppendLine('        {')
+                    $null = $builder.AppendLine("            `$result.Add('$memberName', `$nested$memberName)")
+                    $null = $builder.AppendLine('        }')
                 }
                 $null = $builder.AppendLine('')
                 continue
@@ -332,20 +323,20 @@ function New-M365DSCHelperFunctionBlock
                 $valueExpression = "[Array]$memberPath"
             }
 
-            $null = $builder.AppendLine("    if (`$null -ne $memberPath)")
-            $null = $builder.AppendLine('    {')
-            $null = $builder.AppendLine("        `$result.Add('$memberName', $valueExpression)")
-            $null = $builder.AppendLine('    }')
+            $null = $builder.AppendLine("        if (`$null -ne $memberPath)")
+            $null = $builder.AppendLine('        {')
+            $null = $builder.AppendLine("            `$result.Add('$memberName', $valueExpression)")
+            $null = $builder.AppendLine('        }')
             $null = $builder.AppendLine('')
         }
 
-        $null = $builder.AppendLine('    if ($result.Count -eq 0)')
-        $null = $builder.AppendLine('    {')
-        $null = $builder.AppendLine('        return $null')
-        $null = $builder.AppendLine('    }')
+        $null = $builder.AppendLine('        if ($result.Count -eq 0)')
+        $null = $builder.AppendLine('        {')
+        $null = $builder.AppendLine('            return $null')
+        $null = $builder.AppendLine('        }')
         $null = $builder.AppendLine('')
-        $null = $builder.AppendLine('    return $result')
-        $null = $builder.AppendLine('}')
+        $null = $builder.AppendLine('        return $result')
+        $null = $builder.AppendLine('    }')
     }
 
     return $builder.ToString().TrimEnd()
@@ -353,7 +344,7 @@ function New-M365DSCHelperFunctionBlock
 
 <#
 .SYNOPSIS
-    Builds the resource-suffixed helper function name for a complex class.
+    Builds the hidden conversion method name for a complex class.
 #>
 function Get-M365DSCComplexHelperName
 {
@@ -363,13 +354,9 @@ function Get-M365DSCComplexHelperName
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ResourceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
         $CimClassName
     )
 
     $baseName = $CimClassName -replace '^MSFT_MicrosoftGraph', '' -replace '^MSFT_', ''
-    return "Get-$ResourceName$($baseName)AsHashtable"
+    return "Get$($baseName)AsHashtable"
 }

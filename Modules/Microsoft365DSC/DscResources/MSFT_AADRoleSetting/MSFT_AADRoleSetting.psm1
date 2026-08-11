@@ -398,7 +398,7 @@ class AADRoleSetting : M365DSCResourceBase
         {
             Write-Verbose -Message "Found configuration of Rule $DisplayNameValue"
             $result = @{
-                Id                                                        = $this.Id
+                Id                                                        = $RoleDefinition.Id
                 DisplayName                                               = $DisplayNameValue
                 ActivationMaxDuration                                     = $ActivationMaxDurationValue
                 ActivationReqJustification                                = $ActivationReqJustificationValue

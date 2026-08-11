@@ -2044,9 +2044,9 @@ class IntuneDeviceConfigurationPolicyWindows10 : M365DSCResourceBase
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Creating an Intune Device Configuration Policy for Windows10 with DisplayName {$($this.DisplayName)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
-
             $CreateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $CreateParameters.Remove('Assignments') | Out-Null
+
             $createParameters = Rename-M365DSCCimInstanceParameter -Properties $createParameters
             $createParameters.Remove('Id') | Out-Null
 
@@ -2074,9 +2074,9 @@ class IntuneDeviceConfigurationPolicyWindows10 : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Intune Device Configuration Policy for Windows10 with Id {$($currentInstance.Id)}"
-            $this.GetBoundParameters().Remove('Assignments') | Out-Null
-
             $UpdateParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
+            $UpdateParameters.Remove('Assignments') | Out-Null
+
             $UpdateParameters = Rename-M365DSCCimInstanceParameter -Properties $UpdateParameters
             $UpdateParameters.Remove('Id') | Out-Null
 

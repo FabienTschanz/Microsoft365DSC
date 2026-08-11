@@ -66,12 +66,7 @@ class EXOManagementRoleEntry : M365DSCResourceBase
 
         Write-Verbose -Message "Getting Management Role Entry configuration for {$($this.Identity)}"
 
-        # TODO: Remove property 'Type' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Type'))
-        {
-            $this.GetBoundParameters().Remove('Type') | Out-Null
-            Write-Warning "Property 'Type' is deprecated and will be removed"
-        }
+        $boundParameters = $this.GetBoundParameters()
 
         try
         {
@@ -91,7 +86,7 @@ class EXOManagementRoleEntry : M365DSCResourceBase
                 if ($null -eq $roleEntry)
                 {
                     Write-Verbose -Message "Management Role Entry {$($this.Identity)} does not exist."
-                    $nullReturn = $this.GetBoundParameters()
+                    $nullReturn = $boundParameters
                     $nullReturn.Ensure = 'Absent'
                     return $this.AsResult($nullReturn)
                 }
@@ -136,13 +131,6 @@ class EXOManagementRoleEntry : M365DSCResourceBase
         }
 
         Write-Verbose -Message "Setting Management Role Entry configuration for {$($this.Identity)}"
-
-        # TODO: Remove property 'Type' in next breaking change
-        if ($this.GetBoundParameters().ContainsKey('Type'))
-        {
-            $this.GetBoundParameters().Remove('Type') | Out-Null
-            Write-Warning "Property 'Type' is deprecated and will be removed"
-        }
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -285,13 +273,6 @@ class EXOManagementRoleEntry : M365DSCResourceBase
         }
     }
 
-    [System.Collections.Hashtable] GetCompareParameters()
-    {
-        return @{
-            ExcludedProperties = @('Type')
-        }
-    }
-
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOManagementRoleEntry] AsResult([System.Object] $Values)
     {
@@ -309,4 +290,3 @@ class EXOManagementRoleEntry : M365DSCResourceBase
         return $result
     }
 }
-

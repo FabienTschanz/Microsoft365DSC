@@ -6,6 +6,8 @@
     Value-type class properties are emitted as System.Nullable[T]. The base class treats
     "specified" as "not $null" (see M365DSCResourceBase.GetBoundParameters), so a plain [Boolean]
     would make an omitted property indistinguishable from one explicitly set to $false.
+    Key properties are the exception: the DSC engine rejects Nullable[T] on a [DscProperty(Key)]
+    member outright, and a key is always supplied anyway.
 #>
 $script:M365DSCTypeTable = @{
     'edm.string'                                    = @{ Clr = 'System.String'; FakeKind = 'String' }
@@ -215,7 +217,7 @@ function New-M365DSCPropertyModel
     {
         $clrType = "$clrType[]"
     }
-    elseif ($clrType -in $script:M365DSCNullableClrTypes)
+    elseif (-not $IsKey -and $clrType -in $script:M365DSCNullableClrTypes)
     {
         $clrType = "System.Nullable[$clrType]"
     }
