@@ -1007,7 +1007,6 @@ function Start-M365DSCConfigurationExtract
         }
 
         $launchCommand = "$ConfigurationName -ConfigurationData .\ConfigurationData.psd1"
-        $compilerArguments = ''
         switch ($AuthMethods)
         {
             'CertificatePath'
@@ -1018,7 +1017,6 @@ function Start-M365DSCConfigurationExtract
                 $startPosition = $DSCContent.ToString().IndexOf('<# Credentials #>') + 19
                 $DSCContent = $DSCContent.Insert($startPosition, $credsContent)
                 $launchCommand += " -CertificatePassword `$CredsCertificatePassword"
-                $compilerArguments += " -CertificatePassword `$CredsCertificatePassword"
             }
             { $_ -in 'Credentials', 'CredentialsWithApplicationId' }
             {
@@ -1029,23 +1027,12 @@ function Start-M365DSCConfigurationExtract
                 $startPosition = $DSCContent.ToString().IndexOf('<# Credentials #>') + 19
                 $DSCContent = $DSCContent.Insert($startPosition, $credsContent)
                 $launchCommand += " -Credential `$CredsCredential"
-                $compilerArguments += " -Credential `$CredsCredential"
                 #endregion
             }
         }
 
-        # Build-M365DSCConfiguration compiles through the fast host when the capable
-        # DSC engine is present. $Global:PSDscFastCompileActive guards against
-        # recursion when the fast host re-executes this script.
         $DSCContent.Append("`r`n") | Out-Null
-        $DSCContent.Append("if (-not `$Global:PSDscFastCompileActive -and (Get-Command -Name 'Build-M365DSCConfiguration' -ErrorAction SilentlyContinue))`r`n") | Out-Null
-        $DSCContent.Append("{`r`n") | Out-Null
-        $DSCContent.Append("    Build-M365DSCConfiguration -Path `$PSCommandPath$compilerArguments`r`n") | Out-Null
-        $DSCContent.Append("}`r`n") | Out-Null
-        $DSCContent.Append("else`r`n") | Out-Null
-        $DSCContent.Append("{`r`n") | Out-Null
-        $DSCContent.Append("    $launchCommand`r`n") | Out-Null
-        $DSCContent.Append("}") | Out-Null
+        $DSCContent.Append("$launchCommand") | Out-Null
 
         #region Benchmarks
         $M365DSCExportEndTime = [System.DateTime]::Now

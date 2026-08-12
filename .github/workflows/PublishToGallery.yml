@@ -45,19 +45,14 @@ jobs:
         shell: pwsh
         run: |
           & ./Utilities/Remove-M365DSCBuildOnlySource.ps1 -Confirm:$false
-      - name: Bundle DSC Engine and Generate Schema Cache
+      - name: Generate Schema Cache
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $pin = Import-PowerShellDataFile ./Utilities/DscEngineVersion.psd1
-          $clone = Join-Path $env:RUNNER_TEMP 'dsc-engine'
-          git clone --depth 1 --branch "v$($pin.RequiredVersion)" $pin.Repository $clone
-          if ($LASTEXITCODE -ne 0) { throw "Could not clone $($pin.Repository) at tag v$($pin.RequiredVersion)." }
-          # The engine folder already contains its compatibility module under Compat.
-          $target = "./Modules/Microsoft365DSC/Dependencies/$($pin.ModuleName)/$($pin.RequiredVersion)"
-          $null = New-Item -ItemType Directory -Force -Path $target
-          Copy-Item -Path (Join-Path $clone "$($pin.ModuleName)/*") -Destination $target -Recurse -Force
-          Copy-Item -Path (Join-Path $clone 'LICENSE') -Destination $target -ErrorAction Ignore
+          $dependencies = (Import-PowerShellDataFile ./Modules/Microsoft365DSC/Dependencies/Manifest.psd1).Dependencies
+          $engine = $dependencies | Where-Object ModuleName -EQ 'M365DSC.PSDesiredStateConfiguration'
+          if (-not $engine) { throw 'M365DSC.PSDesiredStateConfiguration is missing from Dependencies/Manifest.psd1.' }
+          Install-Module -Name $engine.ModuleName -RequiredVersion $engine.RequiredVersion -Force -Scope CurrentUser -AllowClobber
           & ./Utilities/New-M365DSCDscSchemaCache.ps1
       - name: Publish
         shell: powershell

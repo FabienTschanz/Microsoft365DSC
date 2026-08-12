@@ -8,17 +8,6 @@ function Get-M365DSCDscEngineManifest
     [OutputType([System.String])]
     param ()
 
-    $moduleRoot = Split-Path -Path $PSScriptRoot -Parent
-
-    $bundled = Get-ChildItem -Path (Join-Path -Path $moduleRoot -ChildPath 'Dependencies/M365DSC.PSDesiredStateConfiguration') `
-        -Filter 'M365DSC.PSDesiredStateConfiguration.psd1' -Recurse -ErrorAction Ignore |
-        Sort-Object -Property FullName -Descending |
-        Select-Object -First 1 -ExpandProperty FullName
-    if ($bundled)
-    {
-        return $bundled
-    }
-
     $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
         $_.Version -ge [Version]'3.1.0' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1
@@ -50,18 +39,11 @@ function Import-M365DSCDscEngine
         throw 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.0 or later) was found.'
     }
 
-    # The engine bundles a compatibility module that claims the PSDesiredStateConfiguration
-    # name the engine resolves while executing a configuration statement. Its parent folder
-    # must be on PSModulePath to be found.
-    $compatRoot = Join-Path -Path (Split-Path -Path $manifest -Parent) -ChildPath 'Compat'
-    $entries = $env:PSModulePath -split [System.IO.Path]::PathSeparator
-    if ((Test-Path -Path $compatRoot) -and $entries -notcontains $compatRoot)
-    {
-        $env:PSModulePath = $compatRoot + [System.IO.Path]::PathSeparator + $env:PSModulePath
-    }
+    $manifestBase = Split-Path -Path $manifest -Parent
+    $loaded = Get-Module -Name M365DSC.PSDesiredStateConfiguration |
+        Where-Object -Property ModuleBase -EQ -Value $manifestBase
 
-    $loaded = Get-Module -Name M365DSC.PSDesiredStateConfiguration
-    if (-not $loaded -or $loaded.Path -ne $manifest)
+    if (-not $loaded)
     {
         Get-Module -Name M365DSC.PSDesiredStateConfiguration | Remove-Module -Force
         Import-Module -Name $manifest -Force -Global
@@ -73,7 +55,7 @@ function Import-M365DSCDscEngine
     Compiles an exported Microsoft365DSC configuration script to MOF.
 
 .DESCRIPTION
-    Uses the fast compile host of the bundled DSC engine when available
+    Uses the fast compile host of the M365DSC.PSDesiredStateConfiguration engine when installed
     (seconds instead of minutes for class-based resources) and falls back
     to standard compilation otherwise.
 
@@ -101,9 +83,9 @@ function Import-M365DSCDscEngine
     Folder for the generated MOF files.
 
 .EXAMPLE
-    Build-M365DSCConfiguration -Path .\M365TenantConfig.ps1
+    Invoke-M365DSCConfigurationBuild -Path .\M365TenantConfig.ps1
 #>
-function Build-M365DSCConfiguration
+function Invoke-M365DSCConfigurationBuild
 {
     [CmdletBinding()]
     param
@@ -233,4 +215,4 @@ function Build-M365DSCConfiguration
     }
 }
 
-Export-ModuleMember -Function Build-M365DSCConfiguration, Test-M365DSCFastCompileAvailable
+Export-ModuleMember -Function Invoke-M365DSCConfigurationBuild, Test-M365DSCFastCompileAvailable

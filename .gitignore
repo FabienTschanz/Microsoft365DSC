@@ -33,5 +33,4 @@ docs/site
 .code-review-graph/
 
 Modules/Microsoft365DSC/DscSchemaCache.json
-Modules/Microsoft365DSC/Dependencies/M365DSC.PSDesiredStateConfiguration/
 

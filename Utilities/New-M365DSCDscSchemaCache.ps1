@@ -67,14 +67,6 @@ function Resolve-M365DSCDscEngineManifest
         throw "No engine manifest found at '$ExplicitPath'."
     }
 
-    $bundled = Get-ChildItem -Path (Join-Path -Path $ModuleRoot -ChildPath 'Dependencies/M365DSC.PSDesiredStateConfiguration') `
-        -Filter 'M365DSC.PSDesiredStateConfiguration.psd1' -Recurse -ErrorAction Ignore |
-        Select-Object -First 1 -ExpandProperty FullName
-    if ($bundled)
-    {
-        return $bundled
-    }
-
     $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
         $_.Version -ge [Version]'3.1.0' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1

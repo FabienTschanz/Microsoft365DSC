@@ -38,6 +38,10 @@
             PowerShellCore  = $true
         },
         @{
+            ModuleName      = 'M365DSC.PSDesiredStateConfiguration'
+            RequiredVersion = '3.1.0'
+        },
+        @{
             ModuleName      = 'Microsoft.Graph.Authentication'
             RequiredVersion = '2.35.1'
         },

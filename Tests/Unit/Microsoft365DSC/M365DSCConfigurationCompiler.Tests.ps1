@@ -9,12 +9,13 @@ Describe 'Fast compile host contract' {
         $script:CompilerText | Should -Match '\$Global:PSDscFastCompileActive'
     }
 
-    It 'the export trailer emits the PSDscFastCompileActive recursion guard' {
-        $script:ReverseText | Should -Match 'PSDscFastCompileActive'
+    It 'the export trailer emits the plain configuration invocation only' {
+        $script:ReverseText | Should -Match '\$DSCContent\.Append\("\$launchCommand"\)'
+        $script:ReverseText | Should -Not -Match 'Invoke-M365DSCConfigurationBuild -Path `\$PSCommandPath'
     }
 
-    It 'the export trailer emits a fallback to the plain configuration invocation' {
-        $script:ReverseText | Should -Match 'Build-M365DSCConfiguration -Path'
+    It 'the compiler exports the approved-verb name' {
+        $script:CompilerText | Should -Match 'function Invoke-M365DSCConfigurationBuild'
     }
 
     It 'the wrapper probes for the M365DSCFastHost engine tag' {
