@@ -4,6 +4,12 @@
 
 * AADApplication
   * Updated `Owners` to use `DisplayName` for Service Principal objects.
+* AADEntitlementManagementAccessPackageAssignmentPolicy
+  * [BREAKING CHANGE] Renamed sub-property `Sequence` to `SequencePosition` to
+    avoid a conflict with a reserved PowerShell keyword.
+* AADEntitlementManagementAccessPackageCatalogResource
+  * [BREAKING CHANGE] Renamed sub-property `Sequence` to `SequencePosition` to
+    avoid a conflict with a reserved PowerShell keyword.
 * AADIdentityGovernanceProgram
   * [BREAKING CHANGE] Removed resource. Please use the resources
     `AADAccessReview[Definition|Policy]` instead.

@@ -279,6 +279,19 @@ class AADEntitlementManagementAccessPackageAssignmentPolicy : M365DSCResourceBas
                     $question.Add('QuestionText', $question.Text)
                     $question.Remove('Text') | Out-Null
                 }
+                # Rename Sequence to SequencePosition to avoid conflicts with the reserved word "Sequence" in PowerShell
+                if ($question.ContainsKey('Sequence'))
+                {
+                    $question.Add('SequencePosition', $question.Sequence)
+                    $question.Remove('Sequence') | Out-Null
+                }
+                # TODO: Remove this once the documentation is updated on the Graph page
+                # Periodically check for new releases or if the property is still being returned from the API
+                # See https://learn.microsoft.com/en-us/graph/api/resources/accesspackagemultiplechoicequestion?view=graph-rest-beta
+                if ($question.ContainsKey('attribute'))
+                {
+                    $question.Remove('attribute') | Out-Null
+                }
             }
             #endregion
 
@@ -358,8 +371,9 @@ class AADEntitlementManagementAccessPackageAssignmentPolicy : M365DSCResourceBas
         $currentInstance = $this.Get().ToHashtable()
 
         $keyToRename = @{
-            'odataType'    = '@odata.type'
-            'QuestionText' = 'text'
+            'odataType'        = '@odata.type'
+            'QuestionText'     = 'text'
+            'SequencePosition' = 'sequence'
         }
 
         $commonParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
@@ -870,7 +884,7 @@ class MSFT_MicrosoftGraphaccesspackagequestion
 
     [DscProperty()]
     [System.ComponentModel.Description('Relative position of this question when displaying a list of questions to the requestor.')]
-    [System.Nullable[System.UInt32]] $Sequence
+    [System.Nullable[System.UInt32]] $SequencePosition
 
     [DscProperty()]
     [System.ComponentModel.Description('The text of the question to show to the requestor.')]

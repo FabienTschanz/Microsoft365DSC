@@ -275,9 +275,9 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
                 Principal             = $PrincipalValue
                 PrincipalType         = $this.PrincipalType
                 RoleDefinition        = $this.RoleDefinition
-                DirectoryScopeId      = $request.DirectoryScopeId
-                AppScopeId            = $request.AppScopeId
-                Id                    = $request.Id
+                DirectoryScopeId      = $schedule.DirectoryScopeId
+                AppScopeId            = $schedule.AppScopeId
+                Id                    = $schedule.Id
                 Justification         = "Assignment of role '$($this.RoleDefinition)' to principal '$PrincipalValue' of type '$($this.PrincipalType)'."
                 ScheduleInfo          = $ScheduleInfoValue
                 Ensure                = 'Present'

@@ -138,19 +138,19 @@ class AADEntitlementManagementRoleAssignment : M365DSCResourceBase
                 $getValue = $this.ExportedInstance
             }
 
-            switch ($getValue.Principal)
+            switch ($getValue.Principal.'@odata.type')
             {
                 '#microsoft.graph.user'
                 {
                     $principalName = $getValue.Principal.userPrincipalName
                 }
-                '#microsoft.graph.group'
-                {
-                    $principalName = Get-MgGroup -GroupId $getValue.PrincipalId
-                }
                 '#microsoft.graph.servicePrincipal'
                 {
                     $principalName = $getValue.Principal.displayName
+                }
+                $null
+                {
+                    $principalName = (Get-MgGroup -GroupId $getValue.PrincipalId).displayName
                 }
             }
 
@@ -359,7 +359,7 @@ class AADEntitlementManagementRoleAssignment : M365DSCResourceBase
                     }
                     $null
                     {
-                        $principalName = (Get-MgGroup -GroupId $config.PrincipalId).DisplayName
+                        $principalName = (Get-MgGroup -GroupId $config.PrincipalId).displayName
                     }
                 }
                 $params = @{
@@ -409,7 +409,7 @@ class AADEntitlementManagementRoleAssignment : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }

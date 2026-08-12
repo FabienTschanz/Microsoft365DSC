@@ -172,7 +172,7 @@ class AADEntitlementManagementAccessPackageCatalogResource : M365DSCResourceBase
                             odataType               = $attribute.attributeSource.question.'@odata.type'
                             Id                      = $attribute.attributeSource.question.id
                             IsRequired              = $attribute.attributeSource.question.isRequired
-                            Sequence                = $attribute.attributeSource.question.sequence
+                            SequencePosition        = $attribute.attributeSource.question.sequence
                             IsSingleLine            = $attribute.attributeSource.question.isSingleLine
                             QuestionText            = Get-M365DSCDRGComplexTypeToHashtable -ComplexObject ($attribute.attributeSource.question.text)
                             AllowsMultipleSelection = $attribute.attributeSource.question.allowsMultipleSelection
@@ -307,6 +307,7 @@ class AADEntitlementManagementAccessPackageCatalogResource : M365DSCResourceBase
             $mapping = @{
                 odataType    = '@odata.type'
                 questionText = 'text'
+                sequencePosition = 'sequence'
             }
             $resource = Rename-M365DSCCimInstanceParameter -Properties $resource `
                 -KeyMapping $mapping
@@ -334,6 +335,7 @@ class AADEntitlementManagementAccessPackageCatalogResource : M365DSCResourceBase
             $mapping = @{
                 odataType    = '@odata.type'
                 questionText = 'text'
+                sequencePosition = 'sequence'
             }
             $resource = Rename-M365DSCCimInstanceParameter -Properties $resource `
                 -KeyMapping $mapping
@@ -359,6 +361,7 @@ class AADEntitlementManagementAccessPackageCatalogResource : M365DSCResourceBase
             $mapping = @{
                 odataType    = '@odata.type'
                 questionText = 'text'
+                sequencePosition = 'sequence'
             }
             $resource = Rename-M365DSCCimInstanceParameter -Properties $resource `
                 -KeyMapping $mapping
@@ -639,7 +642,7 @@ class MSFT_MicrosoftGraphaccessPackageResourceAttributeQuestion
 
     [DscProperty()]
     [System.ComponentModel.Description('Relative position of this question when displaying a list of questions to the requestor.')]
-    [System.Nullable[System.UInt32]] $Sequence
+    [System.Nullable[System.UInt32]] $SequencePosition
 
     [DscProperty()]
     [System.ComponentModel.Description('The text of the question to show to the requestor.')]

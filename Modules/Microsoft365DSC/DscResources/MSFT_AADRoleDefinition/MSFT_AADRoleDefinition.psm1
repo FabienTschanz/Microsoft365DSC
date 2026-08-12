@@ -134,13 +134,14 @@ class AADRoleDefinition : M365DSCResourceBase
             {
                 $AADRoleDefinition = $this.ExportedInstance
             }
+
             $result = @{
                 Id                    = $AADRoleDefinition.Id
                 DisplayName           = $AADRoleDefinition.DisplayName
                 Description           = $AADRoleDefinition.Description
                 ResourceScopes        = $AADRoleDefinition.ResourceScopes
                 IsEnabled             = $AADRoleDefinition.IsEnabled
-                RolePermissions       = [Array]$AADRoleDefinition.RolePermissions.AllowedResourceActions
+                RolePermissions       = Get-M365DSCArrayFromProperty -PropertyValue $AADRoleDefinition.RolePermissions.AllowedResourceActions -ElementType ([System.String])
                 TemplateId            = $AADRoleDefinition.TemplateId
                 Version               = $AADRoleDefinition.Version
                 Ensure                = 'Present'
