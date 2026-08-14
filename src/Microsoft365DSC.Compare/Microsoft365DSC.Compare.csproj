@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>Microsoft365DSC.Compare</AssemblyName>
     <RootNamespace>Microsoft365DSC.Compare</RootNamespace>
+    <IsPackable>true</IsPackable>
     <Product>Microsoft365DSC Compare</Product>
     <Description>Performance-optimized C# library for Microsoft365DSC configuration comparison operations</Description>
   </PropertyGroup>

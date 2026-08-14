@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>Microsoft365DSC.Utilities</AssemblyName>
     <RootNamespace>Microsoft365DSC.Utilities</RootNamespace>
+    <IsPackable>true</IsPackable>
     <Product>Microsoft365DSC Utilities</Product>
     <Description>Performance-optimized C# utilities for Microsoft365DSC configuration operations</Description>
   </PropertyGroup>

@@ -80,12 +80,12 @@ namespace Microsoft365DSC.Utilities
             return input;
         }
 
-        public static List<Hashtable> FilterHashtablesByResourceAndKey(IEnumerable<object> hashtables, string resourceName, string key, string keyValue)
+        public static List<Hashtable> FilterHashtablesByResourceAndKey(IEnumerable<object> hashtables, string resourceName, string key, string? keyValue)
         {
             List<Hashtable> results = [];
             foreach (Hashtable entry in hashtables.Cast<Hashtable>())
             {
-                if (entry["ResourceName"].ToString() == resourceName &&
+                if (entry["ResourceName"]?.ToString() == resourceName &&
                     entry[key]?.ToString() == keyValue)
                 {
                     results.Add(entry);

@@ -260,6 +260,55 @@ $payload = & $module {
         return $result
     }
 
+    function Get-CompareParameterInfo
+    {
+        param([Type] $Type)
+
+        $declared = $null
+        try
+        {
+            $declared = $Type::new().GetCompareParameters()
+        }
+        catch
+        {
+            return @{}
+        }
+
+        if ($null -eq $declared -or $declared.Count -eq 0)
+        {
+            return @{}
+        }
+
+        $result = @{}
+        $parameters = [ordered] @{}
+
+        foreach ($name in @('ExcludedProperties', 'IncludedProperties'))
+        {
+            if (-not $declared.ContainsKey($name))
+            {
+                continue
+            }
+
+            $values = @([System.String[]] $declared[$name])
+            if ($values.Count -gt 0)
+            {
+                $parameters[$name] = $values
+            }
+        }
+
+        if ($parameters.Count -gt 0)
+        {
+            $result['CompareParameters'] = $parameters
+        }
+
+        if ($declared.ContainsKey('PostProcessing') -and $null -ne $declared['PostProcessing'])
+        {
+            $result['HasPostProcessing'] = $true
+        }
+
+        return $result
+    }
+
     $baseMembers = [M365DSCResourceBase].GetProperties().Name
     $classInfo = [System.Collections.Generic.List[Object]]::new()
 
@@ -269,12 +318,19 @@ $payload = & $module {
         $type = [M365DSCResourceBase]::Resolve($name)
         $prefixed = "MSFT_$name"
 
-        $classInfo.Add([ordered] @{
-                ClassName   = $prefixed
-                Parameters  = @(Get-ParameterInfo -Type $type -ExcludeNames $baseMembers `
-                        -DescriptionMap $propertyDescriptions)
-                Description = $(if ($descriptions.PSObject.Properties.Name -contains $prefixed) { $descriptions.$prefixed } else { '' })
-            })
+        $entry = [ordered] @{
+            ClassName   = $prefixed
+            Parameters  = @(Get-ParameterInfo -Type $type -ExcludeNames $baseMembers `
+                    -DescriptionMap $propertyDescriptions)
+            Description = $(if ($descriptions.PSObject.Properties.Name -contains $prefixed) { $descriptions.$prefixed } else { '' })
+        }
+
+        foreach ($compareEntry in (Get-CompareParameterInfo -Type $type).GetEnumerator())
+        {
+            $entry[$compareEntry.Key] = $compareEntry.Value
+        }
+
+        $classInfo.Add($entry)
     }
 
     <#

@@ -153,6 +153,8 @@
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
 * M365DSCModuleMgmt
   * Added automatic dependency update for both Windows PowerShell and PowerShell 7.
+* M365DSCReport
+  * Moved `Get-M365DSCResourceKey` and other conversion logic entirely to C#.
 * DEPENDENCIES
   * Added `Mgx` with version 2.0.3.
   * Updated `DSCParser` to version 3.1.0.0.

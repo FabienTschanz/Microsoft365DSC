@@ -1,4 +1,4 @@
-*.suo
+﻿*.suo
 *.user
 *.coverage
 .vs
@@ -34,3 +34,7 @@ docs/site
 
 Modules/Microsoft365DSC/DscSchemaCache.json
 
+# NuGet packages produced by dotnet pack
+artifacts/
+*.nupkg
+*.snupkg

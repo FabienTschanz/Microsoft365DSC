@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyName>Microsoft365DSC.Cache</AssemblyName>
     <RootNamespace>Microsoft365DSC.Cache</RootNamespace>
+    <IsPackable>true</IsPackable>
     <Product>Microsoft365DSC Cache</Product>
     <Description>Performance-optimized C# Cache for Microsoft365DSC configuration operations</Description>
   </PropertyGroup>
