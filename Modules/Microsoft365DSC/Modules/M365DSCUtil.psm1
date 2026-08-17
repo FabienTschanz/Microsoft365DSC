@@ -1046,7 +1046,7 @@ function Install-M365DSCDevBranch
 
         #region Install M365DSC
         Write-Host 'Updating the Core Microsoft365DSC module...' -NoNewline
-        $defaultPath = 'C:\Program Files\WindowsPowerShell\Modules\Microsoft365DSC\'
+        $defaultPath = "$env:ProgramFiles\WindowsPowerShell\Modules\Microsoft365DSC\"
         $currentVersionPath = $defaultPath + ([Version]$($manifest.ModuleVersion)).ToString()
 
         Copy-Item "$extractPath\Microsoft365DSC-Dev\Modules\Microsoft365DSC\*" `
