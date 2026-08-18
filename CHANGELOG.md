@@ -156,11 +156,11 @@
 * M365DSCReport
   * Moved `Get-M365DSCResourceKey` and other conversion logic entirely to C#.
 * DEPENDENCIES
-  * Added `Mgx` with version 2.0.3.
-  * Updated `DSCParser` to version 3.1.0.0.
-  * Updated `MSCloudLoginAssistant` to version 1.2.0.
+  * Added `Mgx` with version 2.0.4.
+  * Updated `DSCParser` to version 3.1.0.3.
+  * Updated `MSCloudLoginAssistant` to version 1.2.4.
   * Updated `PnP.PowerShell` to version 3.3.0.
-  * Updated `ReverseDSC` to version 2.0.35.
+  * Updated `ReverseDSC` to version 2.0.36.
 * MISC
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.
@@ -193,6 +193,22 @@
   * Updated `Get-CompareParameters` to class method and replaced all usages with class method calls.
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
   * Updated all DSC resources from script-based to class-based.
+
+# UNRELEASED
+
+* AADAuthenticationMethodPolicy
+  * Added additional support for Passkeys (FIDO2) as the target of a registrationcampaign.
+    `TargetedAuthenticationMethod` can now contain `microsoftAuthenticator` *or* `fido2`.
+* AADCertificateBasedApplicationConfiguration
+  * Fixed an issue where the target address for the POST request was incorrect.
+    FIXES [#7405](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7405)
+* AADConditionalAccessPolicy
+  * Added missing `-All` switch when fetching policies with a filter.
+    FIXES [#7350](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7350)
+* M365DSCReverse
+  * Fixed an issue where exporting the Intune workload against a tenant with no
+    matching Settings Catalog configuration policies aborted the entire export.
+    FIXES [#7396](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7396)
 
 # 1.26.812.1
 

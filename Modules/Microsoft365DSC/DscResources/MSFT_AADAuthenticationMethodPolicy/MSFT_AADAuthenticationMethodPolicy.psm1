@@ -667,7 +667,8 @@ class MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget
     [System.String] $Id
 
     [DscProperty(Mandatory)]
-    [System.ComponentModel.Description('The authentication method that the user is prompted to register. The value must be microsoftAuthenticator.')]
+    [System.ComponentModel.Description('The authentication method that the user is prompted to register. The value can be Fido2 or microsoftAuthenticator.')]
+    [ValidateSet('Fido2', 'microsoftAuthenticator')]
     [System.String] $TargetedAuthenticationMethod
 
     [DscProperty(Key)]
@@ -675,4 +676,3 @@ class MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget
     [ValidateSet('user', 'group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
-

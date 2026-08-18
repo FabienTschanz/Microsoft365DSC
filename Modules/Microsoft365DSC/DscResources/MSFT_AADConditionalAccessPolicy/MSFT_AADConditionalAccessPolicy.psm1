@@ -318,7 +318,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     catch
                     {
                         Write-Verbose -Message "Couldn't find existing policy by ID {$($this.Id)}"
-                        $Policy = Get-MgBetaIdentityConditionalAccessPolicy -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
+                        $Policy = Get-MgBetaIdentityConditionalAccessPolicy -All -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
 
                         if ($Policy.Length -gt 1)
                         {
@@ -330,7 +330,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 {
                     Write-Verbose -Message 'Id was NOT specified'
                     ## Can retreive multiple CA Policies since displayname is not unique
-                    $Policy = Get-MgBetaIdentityConditionalAccessPolicy -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
+                    $Policy = Get-MgBetaIdentityConditionalAccessPolicy -All -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
 
                     if ($Policy.Length -gt 1)
                     {

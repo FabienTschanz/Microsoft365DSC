@@ -13,12 +13,18 @@ namespace Microsoft365DSC.Intune
         private static bool _isPopulated;
         private static readonly object _lock = new();
 
-        public static void Populate(IEnumerable<object> allPolicies, Func<object, string> templateIdSelector)
+        public static void Populate(IEnumerable<object>? allPolicies, Func<object, string> templateIdSelector)
         {
             lock (_lock)
             {
                 if (_isPopulated)
                     return;
+
+                if (allPolicies is null)
+                {
+                    _isPopulated = true;
+                    return;
+                }
 
                 var grouped = new Dictionary<string, List<object>>(StringComparer.OrdinalIgnoreCase);
                 foreach (var policy in allPolicies)
