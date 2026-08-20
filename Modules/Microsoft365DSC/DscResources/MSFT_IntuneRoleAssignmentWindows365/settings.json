@@ -18,6 +18,12 @@
         "update": [
           {
             "name": "Group.Read.All"
+          },
+          {
+            "name": "CloudPC.Read.All"
+          },
+          {
+            "name": "DeviceManagementRBAC.ReadWrite.All"
           }
         ]
       },
@@ -36,6 +42,12 @@
         "update": [
           {
             "name": "Group.Read.All"
+          },
+          {
+            "name": "CloudPC.Read.All"
+          },
+          {
+            "name": "DeviceManagementRBAC.ReadWrite.All"
           }
         ]
       }

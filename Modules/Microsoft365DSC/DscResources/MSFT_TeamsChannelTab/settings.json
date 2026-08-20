@@ -28,6 +28,9 @@
           },
           {
             "name": "TeamsTab.ReadWrite.All"
+          },
+          {
+            "name": "Group.Read.All"
           }
         ]
       },
@@ -52,6 +55,9 @@
           },
           {
             "name": "TeamsTab.ReadWrite.All"
+          },
+          {
+            "name": "Group.Read.All"
           }
         ]
       }

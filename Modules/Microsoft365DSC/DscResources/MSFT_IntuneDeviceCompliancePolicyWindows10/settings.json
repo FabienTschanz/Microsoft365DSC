@@ -21,6 +21,9 @@
           },
           {
             "name": "DeviceManagementConfiguration.ReadWrite.All"
+          },
+          {
+            "name": "DeviceManagementScripts.Read.All"
           }
         ]
       },
@@ -42,6 +45,9 @@
           },
           {
             "name": "DeviceManagementConfiguration.ReadWrite.All"
+          },
+          {
+            "name": "DeviceManagementScripts.Read.All"
           }
         ]
       }

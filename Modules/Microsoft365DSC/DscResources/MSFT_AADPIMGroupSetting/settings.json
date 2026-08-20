@@ -26,6 +26,9 @@
         ],
         "update": [
           {
+            "name": "AuthenticationContext.Read.All"
+          },
+          {
             "name": "Group.Read.All"
           },
           {
@@ -39,6 +42,9 @@
       "application": {
         "read": [
           {
+            "name": "AuthenticationContext.Read.All"
+          },
+          {
             "name": "Group.Read.All"
           },
           {
@@ -49,6 +55,9 @@
           }
         ],
         "update": [
+          {
+            "name": "AuthenticationContext.Read.All"
+          },
           {
             "name": "Group.Read.All"
           },

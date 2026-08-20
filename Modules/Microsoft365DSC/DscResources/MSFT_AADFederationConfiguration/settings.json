@@ -16,6 +16,9 @@
         "update": [
           {
             "name": "IdentityProvider.ReadWrite.All"
+          },
+          {
+            "name": "Domain.Read.All"
           }
         ]
       },
@@ -28,6 +31,9 @@
         "update": [
           {
             "name": "IdentityProvider.ReadWrite.All"
+          },
+          {
+            "name": "Domain.Read.All"
           }
         ]
       }

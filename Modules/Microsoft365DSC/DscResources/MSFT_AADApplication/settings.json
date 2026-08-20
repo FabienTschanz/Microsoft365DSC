@@ -24,6 +24,9 @@
           },
           {
             "name": "User.Read.All"
+          },
+          {
+            "name": "Policy.Read.All"
           }
         ]
       },
@@ -42,6 +45,9 @@
           },
           {
             "name": "User.Read.All"
+          },
+          {
+            "name": "Policy.Read.All"
           }
         ]
       }

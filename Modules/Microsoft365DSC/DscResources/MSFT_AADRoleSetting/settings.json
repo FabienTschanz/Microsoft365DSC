@@ -30,6 +30,9 @@
           },
           {
             "name": "User.Read.All"
+          },
+          {
+            "name": "RoleManagementPolicy.ReadWrite.Directory"
           }
         ]
       },

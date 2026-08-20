@@ -15,6 +15,9 @@
         "update": [
           {
             "name": "DeviceManagementConfiguration.ReadWrite.All"
+          },
+          {
+            "name": "Group.Read.All"
           }
         ]
       },
