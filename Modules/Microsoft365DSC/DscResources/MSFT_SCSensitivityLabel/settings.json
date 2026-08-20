@@ -25,14 +25,22 @@
       }
     },
     "purview": {
-      "requiredroles": [
-        "Sensitivity Label Administrator",
-        "Sensitivity Label Reader"
-      ],
-      "requiredrolegroups": [
-        "Compliance Data Administrator",
-        "Security Reader"
-      ]
+      "requiredRoles": {
+        "read": [
+          "Sensitivity Label Reader"
+        ],
+        "update": [
+          "Sensitivity Label Administrator"
+        ]
+      },
+      "requiredRoleGroups": {
+        "read": [
+          "Security Reader"
+        ],
+        "update": [
+          "Compliance Data Administrator"
+        ]
+      }
     }
   },
   "requiredModules": [],

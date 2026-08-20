@@ -25,14 +25,24 @@
       }
     },
     "purview": {
-      "requiredroles": [
-        "Security Reader",
-        "Supervisory Review Administrator"
-      ],
-      "requiredrolegroups": [
-        "Global Reader",
-        "Supervisory Review"
-      ]
+      "requiredRoles": {
+        "read": [
+          "Security Reader"
+        ],
+        "update": [
+          "Supervisory Review Administrator"
+        ]
+      },
+      "requiredRoleGroups": {
+        "read": [
+          "Global Reader",
+          "Supervisory Review"
+        ],
+        "update": [
+          "Global Reader",
+          "Supervisory Review"
+        ]
+      }
     }
   },
   "requiredModules": [],

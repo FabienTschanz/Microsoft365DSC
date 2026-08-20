@@ -9,18 +9,26 @@
     "WindowsDefenderATP": {
       "delegated": {
         "read": [
-          "Machine.Read.All"
+          {
+            "name": "Machine.Read.All"
+          }
         ],
         "update": [
-          "Machine.ReadWrite.All"
+          {
+            "name": "Machine.ReadWrite.All"
+          }
         ]
       },
       "application": {
         "read": [
-          "Machine.Read.All"
+          {
+            "name": "Machine.Read.All"
+          }
         ],
         "update": [
-          "Machine.ReadWrite.All"
+          {
+            "name": "Machine.ReadWrite.All"
+          }
         ]
       }
     }

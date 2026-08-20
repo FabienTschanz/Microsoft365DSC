@@ -25,10 +25,14 @@
       }
     },
     "azure": {
-      "requiredRoles": [
-        "Security Reader",
-        "Security Admin"
-      ]
+      "requiredRoles": {
+        "read": [
+          "Security Reader"
+        ],
+        "update": [
+          "Security Admin"
+        ]
+      }
     }
   },
   "requiredModules": [

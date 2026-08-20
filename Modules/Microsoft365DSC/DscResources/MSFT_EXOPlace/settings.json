@@ -25,7 +25,7 @@
       }
     },
     "exchange": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "View-Only Configuration"
         ],
@@ -33,7 +33,7 @@
           "TenantPlacesManagement"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "View-Only Organization Management"
         ],

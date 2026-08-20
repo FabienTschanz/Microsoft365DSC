@@ -17,10 +17,18 @@
       }
     },
     "exchange": {
-      "requiredroles": [
-        "Audit Logs"
-      ],
-      "requiredrolegroups": []
+      "requiredRoles": {
+        "read": [
+          "Audit Logs"
+        ],
+        "update": [
+          "Audit Logs"
+        ]
+      },
+      "requiredRoleGroups": {
+        "read": [],
+        "update": []
+      }
     }
   },
   "requiredModules": [],

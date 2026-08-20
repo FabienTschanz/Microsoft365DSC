@@ -9,7 +9,7 @@
       "Teams Administrator"
     ]
   },
-  "permissions": [],
+  "permissions": {},
   "requiredModules": [
     "MicrosoftTeams"
   ],

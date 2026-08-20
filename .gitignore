@@ -33,6 +33,7 @@ docs/site
 .code-review-graph/
 
 Modules/Microsoft365DSC/DscSchemaCache.json
+Modules/Microsoft365DSC/ResourcePermissions.json
 
 # NuGet packages produced by dotnet pack
 artifacts/

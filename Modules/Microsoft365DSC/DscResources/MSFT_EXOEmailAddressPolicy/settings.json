@@ -25,7 +25,7 @@
       }
     },
     "exchange": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "E-Mail Address Policies"
         ],
@@ -33,7 +33,7 @@
           "E-Mail Address Policies"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "Recipient Management"
         ],

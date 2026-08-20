@@ -23,7 +23,7 @@
       }
     },
     "exchange": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "View-Only Recipients"
         ],
@@ -31,7 +31,7 @@
           "Distribution Groups"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "View-Only Organization Management"
         ],

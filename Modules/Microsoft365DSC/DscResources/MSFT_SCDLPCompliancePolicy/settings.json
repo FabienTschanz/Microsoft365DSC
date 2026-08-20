@@ -43,7 +43,7 @@
       }
     },
     "purview": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "Security Reader"
         ],
@@ -51,7 +51,7 @@
           "Organization Configuration"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "Security Reader"
         ],

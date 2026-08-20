@@ -26,14 +26,8 @@
         ]
       },
       "application": {
-        "read": [
-          "User Access Administrator",
-          "Owner"
-        ],
-        "update": [
-          "User Access Administrator",
-          "Owner"
-        ]
+        "read": [],
+        "update": []
       }
     },
     "graph": {

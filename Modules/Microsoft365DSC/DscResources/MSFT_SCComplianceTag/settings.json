@@ -25,7 +25,7 @@
       }
     },
     "purview": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "Tag Reader"
         ],
@@ -33,7 +33,7 @@
           "Tag Manager"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "Security Reader"
         ],

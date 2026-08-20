@@ -25,14 +25,22 @@
       }
     },
     "purview": {
-      "requiredroles": [
-        "Retention Management",
-        "View-Only Retention Management"
-      ],
-      "requiredrolegroups": [
-        "Records Management",
-        "Global Reader"
-      ]
+      "requiredRoles": {
+        "read": [
+          "View-Only Retention Management"
+        ],
+        "update": [
+          "Retention Management"
+        ]
+      },
+      "requiredRoleGroups": {
+        "read": [
+          "Global Reader"
+        ],
+        "update": [
+          "Records Management"
+        ]
+      }
     }
   },
   "requiredModules": [],

@@ -23,11 +23,19 @@
       }
     },
     "exchange": {
-      "requiredroles": [
-        "Organization Management",
-        "Recipient Management"
-      ],
-      "requiredrolegroups": []
+      "requiredRoles": {
+        "read": [
+          "Recipient Management"
+        ],
+        "update": [
+          "Organization Management",
+          "Recipient Management"
+        ]
+      },
+      "requiredRoleGroups": {
+        "read": [],
+        "update": []
+      }
     }
   },
   "requiredModules": [],

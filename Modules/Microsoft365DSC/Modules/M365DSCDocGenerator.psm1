@@ -563,15 +563,13 @@ function New-DscMofResourceWikiPage
             $null = $output.AppendLine($descriptionContent)
 
             # Add required permissions information
-            $settingsFile = Join-Path -Path $mofSchemaFile.DirectoryName -ChildPath 'settings.json'
+            $settingsJson = Get-M365DSCResourceSetting -ResourceName (Split-Path -Path $mofSchemaFile.DirectoryName -Leaf)
 
             $permissionsContent = New-Object -TypeName System.Text.StringBuilder
 
-            if (Test-Path -Path $settingsFile)
+            if ($null -ne $settingsJson)
             {
                 $null = $permissionsContent.AppendLine('## Permissions')
-                $settingsContent = Get-Content -Path $settingsFile -Raw
-                $settingsJson = ConvertFrom-Json -InputObject $settingsContent
 
                 $workloads = @('exchange', 'purview')
                 foreach ($workload in $workloads)

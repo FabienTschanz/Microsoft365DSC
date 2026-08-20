@@ -25,7 +25,7 @@
       }
     },
     "exchange": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "Mail Recipients"
         ],
@@ -33,7 +33,7 @@
           "Mail Recipients"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "Recipient Management"
         ],

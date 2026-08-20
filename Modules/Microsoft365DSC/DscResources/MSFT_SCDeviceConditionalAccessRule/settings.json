@@ -43,7 +43,7 @@
       }
     },
     "purview": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "View-Only Device Management"
         ],
@@ -51,7 +51,7 @@
           "Device Management"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "Security Reader"
         ],

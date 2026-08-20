@@ -25,9 +25,14 @@
       }
     },
     "azure": {
-      "requiredRoles": [
-        "Billing Reader"
-      ]
+      "requiredRoles": {
+        "read": [
+          "Billing Reader"
+        ],
+        "update": [
+          "Billing Reader"
+        ]
+      }
     }
   },
   "requiredModules": [

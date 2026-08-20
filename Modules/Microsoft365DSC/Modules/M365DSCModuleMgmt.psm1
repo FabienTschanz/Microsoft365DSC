@@ -5,6 +5,51 @@ $Script:M365DSCGraphShimLoaded = $false
 
 <#
 .DESCRIPTION
+    Reads every resource's settings.json, keyed by resource name without the MSFT_ prefix. A built
+    module carries them folded into ResourcePermissions.json. The individual files are only opened
+    in a working tree that has not been built yet.
+
+.FUNCTIONALITY
+    Internal
+#>
+function Import-M365DSCResourceSettings
+{
+    [CmdletBinding()]
+    param()
+
+    $settings = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $aggregatePath = Join-Path -Path $PSScriptRoot -ChildPath '../ResourcePermissions.json'
+
+    if (Test-Path -Path $aggregatePath)
+    {
+        $aggregate = [System.IO.File]::ReadAllText($aggregatePath) | ConvertFrom-Json
+        foreach ($resource in $aggregate.PSObject.Properties)
+        {
+            $settings.Add($resource.Name, $resource.Value)
+        }
+
+        return , $settings
+    }
+
+    $dscResourcesFolder = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources'
+    if (-not (Test-Path -Path $dscResourcesFolder))
+    {
+        Write-Verbose -Message "Neither '$aggregatePath' nor '$dscResourcesFolder' exists, resource settings will be empty."
+        return , $settings
+    }
+
+    Write-Verbose -Message "No aggregate at '$aggregatePath', reading each resource's settings.json instead."
+    foreach ($file in (Get-ChildItem -Path $dscResourcesFolder -Filter 'settings.json' -Recurse -File))
+    {
+        $resourceName = (Split-Path -Path $file.DirectoryName -Leaf).Replace('MSFT_', '')
+        $settings.Add($resourceName, ([System.IO.File]::ReadAllText($file.FullName) | ConvertFrom-Json))
+    }
+
+    return , $settings
+}
+
+<#
+.DESCRIPTION
     This function performs the one-time initialization of the M365DSC dependency and resource-settings
     metadata used throughout this module. It is wrapped in a function (rather than run as top-level module
     code) so that the scratch/intermediate variables it uses are released once it returns, instead of being
@@ -43,25 +88,14 @@ function Initialize-M365DSCModuleMgmt
 
         $commandToModuleMap = @{}
         $Script:M365DSCResourceSettings = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::OrdinalIgnoreCase)
-        $dscResourcesFolder = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources'
-        $settingsFiles = @()
-        if (Test-Path -Path $dscResourcesFolder)
-        {
-            $settingsFiles = @(Get-ChildItem -Path $dscResourcesFolder -Filter 'settings.json' -Recurse -File)
-        }
-        else
-        {
-            Write-Verbose -Message "No DscResources folder at '$dscResourcesFolder', resource settings will be empty."
-        }
+        $Script:M365DSCAllResourceSettings = Import-M365DSCResourceSettings
 
-        foreach ($file in $settingsFiles) {
-            Write-Verbose -Message "Processing settings.json file at path: $($file.FullName)"
-            $jsonContent = [System.IO.File]::ReadAllText($file.FullName) | ConvertFrom-Json
+        foreach ($entry in $Script:M365DSCAllResourceSettings.GetEnumerator()) {
+            $jsonContent = $entry.Value
             foreach ($commandMap in ($jsonContent.commands | Where-Object -Property module -NotIn $Script:M365DSCDevDependencies.Keys)) {
                 $commandToModuleMap[$commandMap.module] += @($commandMap.cmdlets)
             }
-            $directoryName = (Split-Path -Path $file.DirectoryName -Leaf).Replace('MSFT_', '')
-            $Script:M365DSCResourceSettings.Add($directoryName, @{
+            $Script:M365DSCResourceSettings.Add($entry.Key, @{
                 requiredModules = $jsonContent.requiredModules | Where-Object { $_ -notin $Script:M365DSCDevDependencies.Keys }
                 mode = $jsonContent.mode
             })
@@ -101,6 +135,34 @@ function Get-M365DSCResourceSettings
     param()
 
     return $Script:M365DSCResourceSettings
+}
+
+<#
+.SYNOPSIS
+    Returns one resource's settings.json content.
+
+.DESCRIPTION
+    Returns everything a resource declares about itself, being its permissions, roles, required
+    modules, commands and mode. Returns $null for a resource the module carries no settings for.
+
+.PARAMETER ResourceName
+    Name of the resource, with or without its MSFT_ prefix.
+#>
+function Get-M365DSCResourceSetting
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ResourceName
+    )
+
+    $settings = $null
+    $null = $Script:M365DSCAllResourceSettings.TryGetValue($ResourceName.Replace('MSFT_', ''), [ref] $settings)
+
+    return $settings
 }
 
 <#
@@ -1057,6 +1119,7 @@ Export-ModuleMember -Function @(
     'Confirm-M365DSCModuleDependency',
     'Get-M365DSCModuleConfiguration',
     'Get-M365DSCRequiredModules',
+    'Get-M365DSCResourceSetting',
     'Get-M365DSCResourceSettings',
     'Set-M365DSCModuleConfiguration',
     'Set-M365DSCRequiredModulesLoaded',

@@ -21,7 +21,7 @@
       }
     },
     "exchange": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "View-Only Configuration"
         ],
@@ -29,7 +29,7 @@
           "Transport Hygiene"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "View-Only Organization Management"
         ],

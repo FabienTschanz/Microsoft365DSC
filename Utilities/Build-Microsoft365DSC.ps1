@@ -63,6 +63,9 @@
 .PARAMETER SkipSchema
     Skip regenerating SchemaDefinition.json.
 
+.PARAMETER SkipResourcePermissions
+    Skip regenerating ResourcePermissions.json.
+
 .PARAMETER SkipValidation
     Skip the post-build import and discovery check.
 
@@ -107,6 +110,10 @@ param
     [Parameter()]
     [Switch]
     $SkipSchemaCache,
+
+    [Parameter()]
+    [Switch]
+    $SkipResourcePermissions,
 
     [Parameter()]
     [Switch]
@@ -1015,25 +1022,23 @@ if ($manifestData.ContainsKey('FunctionsToExport'))
 
 #endregion
 
-#region Schema
-
 if (-not $SkipSchema)
 {
     Write-BuildLog 'Regenerating SchemaDefinition.json from class reflection...'
     & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCSchemaFromClasses.ps1') -RepoRoot $RepoRoot
 }
 
-#endregion
-
-#region SchemaCache
+if (-not $SkipResourcePermissions)
+{
+    Write-BuildLog 'Regenerating ResourcePermissions.json from the resource settings files...'
+    $null = & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCResourcePermissions.ps1') -RepoRoot $RepoRoot
+}
 
 if (-not $SkipSchemaCache)
 {
     Write-BuildLog 'Generating DscSchemaCache.json for the fast compile host...'
     $null = & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCDscSchemaCache.ps1') -RepoRoot $RepoRoot -WarnOnly
 }
-
-#endregion
 
 #region Validate
 

@@ -177,6 +177,7 @@
     property at all and `AADRoleDefinition` was missing `IsEnabled` and `RolePermissions`.
     Every mandatory property is now emitted with a placeholder matching its type.
   * Fixed an issue with module parsing for Teams resources after changing to PowerShell classes.
+  * Fixed an issue where many `settings.json` files contained invalid role elements.
   * Fixed an issue where several resources had a different resource name in the Mof definition.
   * Moved export relation resolution and `DependsOn` injection into the new
     `Microsoft365DSC.Relations` assembly. Relation lookup, dependency collection and the

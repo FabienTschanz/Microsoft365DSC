@@ -33,9 +33,14 @@
       }
     },
     "powerPlatform": {
-      "requiredRoles": [
-        "System Administrator"
-      ]
+      "requiredRoles": {
+        "read": [
+          "System Administrator"
+        ],
+        "update": [
+          "System Administrator"
+        ]
+      }
     }
   },
   "requiredModules": [

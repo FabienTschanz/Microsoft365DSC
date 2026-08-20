@@ -21,10 +21,18 @@
       }
     },
     "exchange": {
-      "requiredroles": [
-        "Organization Configuration"
-      ],
-      "requiredrolegroups": []
+      "requiredRoles": {
+        "read": [
+          "Organization Configuration"
+        ],
+        "update": [
+          "Organization Configuration"
+        ]
+      },
+      "requiredRoleGroups": {
+        "read": [],
+        "update": []
+      }
     }
   },
   "requiredModules": [],

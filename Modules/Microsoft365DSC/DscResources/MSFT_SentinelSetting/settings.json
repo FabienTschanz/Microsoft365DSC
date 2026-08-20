@@ -25,10 +25,14 @@
       }
     },
     "azure": {
-      "requiredRoles": [
-        "Microsoft Sentinel Reader",
-        "Microsoft Sentinel Contributor"
-      ]
+      "requiredRoles": {
+        "read": [
+          "Microsoft Sentinel Reader"
+        ],
+        "update": [
+          "Microsoft Sentinel Contributor"
+        ]
+      }
     }
   },
   "requiredModules": [

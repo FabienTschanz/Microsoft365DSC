@@ -25,7 +25,7 @@
       }
     },
     "purview": {
-      "requiredroles": {
+      "requiredRoles": {
         "read": [
           "Compliance Search"
         ],
@@ -33,7 +33,7 @@
           "Compliance Search"
         ]
       },
-      "requiredrolegroups": {
+      "requiredRoleGroups": {
         "read": [
           "Data Investigator"
         ],
