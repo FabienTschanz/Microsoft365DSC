@@ -9,7 +9,7 @@ function Get-M365DSCDscEngineManifest
     param ()
 
     $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
-        $_.Version -ge [Version]'3.1.3' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
+        $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1
     if ($installed)
     {
@@ -36,7 +36,7 @@ function Import-M365DSCDscEngine
     $manifest = Get-M365DSCDscEngineManifest
     if (-not $manifest)
     {
-        throw 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.3 or later) was found.'
+        throw 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine was found.'
     }
 
     $manifestBase = Split-Path -Path $manifest -Parent

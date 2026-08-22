@@ -68,7 +68,7 @@ Configuration Example
                 MSFT_MicrosoftGraphWin32LobAppRule{
                     Script = "Write-Output 'Hello World'"
                     DisplayName = "PowerShell Script Rule.ps1"
-                    Operator = "equals"
+                    Operator = "equal"
                     RunAs32Bit = $False
                     EnforceSignatureCheck = $False
                     RunAsAccount = "system"

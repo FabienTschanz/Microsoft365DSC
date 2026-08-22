@@ -209,9 +209,44 @@ function Get-M365DSCClassSchema
             })
     }
 
+    $complexTypes = @{}
+    foreach ($typeDefinition in $typeDefinitions)
+    {
+        if ($typeDefinition -eq $resourceType)
+        {
+            continue
+        }
+
+        $members = @{}
+        foreach ($member in $typeDefinition.Members)
+        {
+            if ($member -isnot [System.Management.Automation.Language.PropertyMemberAst])
+            {
+                continue
+            }
+
+            $validateSet = $member.Attributes | Where-Object -FilterScript { $_.TypeName.Name -eq 'ValidateSet' }
+            if (-not $validateSet)
+            {
+                continue
+            }
+
+            $members[$member.Name] = [PSCustomObject] @{
+                AllowedValues = @($validateSet.PositionalArguments | ForEach-Object { $_.Extent.Text.Trim("'", '"') })
+                IsArray       = $member.PropertyType.TypeName.FullName.EndsWith('[]')
+            }
+        }
+
+        if ($members.Count -gt 0)
+        {
+            $complexTypes[$typeDefinition.Name] = $members
+        }
+    }
+
     return [PSCustomObject] @{
-        ClassName  = $resourceType.Name
-        Properties = $properties
+        ClassName    = $resourceType.Name
+        Properties   = $properties
+        ComplexTypes = $complexTypes
     }
 }
 
@@ -232,6 +267,10 @@ function Get-M365DSCExampleProperties
     $lines = [System.IO.File]::ReadAllLines($Path)
     $assignments = [ordered] @{}
     $markers = [System.Collections.Generic.List[String]]::new()
+
+    $nested = [System.Collections.Generic.List[Object]]::new()
+    $stack = [System.Collections.Generic.Stack[Object]]::new()
+    $pendingType = $null
 
     $inBlock = $false
     $depth = 0
@@ -276,6 +315,23 @@ function Get-M365DSCExampleProperties
         $closers = ([regex]::Matches($masked, '[\}\)]')).Count
         $depthBefore = $depth
 
+        if ($depthBefore -gt 1 -and $stack.Count -gt 0 -and
+            $masked -match '^\s*(?<name>[A-Za-z_][A-Za-z0-9_]*)\s*=')
+        {
+            $memberName = $Matches['name']
+            $memberValue = ''
+            if ($literal -match '^\s*[A-Za-z_][A-Za-z0-9_]*\s*=(?<value>.*)$')
+            {
+                $memberValue = $Matches['value'].Trim()
+            }
+
+            $nested.Add([PSCustomObject] @{
+                    Type   = $stack.Peek().Type
+                    Member = $memberName
+                    Value  = $memberValue
+                })
+        }
+
         if ($depthBefore -eq 1 -and $masked -match '^\s*(?<name>[A-Za-z_][A-Za-z0-9_]*)\s*=')
         {
             if ($null -ne $current)
@@ -300,7 +356,32 @@ function Get-M365DSCExampleProperties
             $currentValue = $currentValue + ' ' + $literal.Trim()
         }
 
+        $opened = @([regex]::Matches($masked, '(?<t>MSFT_[A-Za-z0-9_]+)\s*\{') |
+                ForEach-Object { $_.Groups['t'].Value })
+        foreach ($openedType in $opened)
+        {
+            $stack.Push([PSCustomObject] @{ Type = $openedType; Depth = $depthBefore })
+        }
+
+        if ($opened.Count -eq 0)
+        {
+            if ($masked -match '(?<t>MSFT_[A-Za-z0-9_]+)\s*$')
+            {
+                $pendingType = $Matches['t']
+            }
+            elseif ($null -ne $pendingType -and $masked.Trim() -eq '{')
+            {
+                $stack.Push([PSCustomObject] @{ Type = $pendingType; Depth = $depthBefore })
+                $pendingType = $null
+            }
+        }
+
         $depth = $depth + $openers - $closers
+
+        while ($stack.Count -gt 0 -and $depth -le $stack.Peek().Depth)
+        {
+            $null = $stack.Pop()
+        }
 
         if ($depth -le 0)
         {
@@ -322,6 +403,7 @@ function Get-M365DSCExampleProperties
     return [PSCustomObject] @{
         Assignments = $assignments
         Markers     = $markers
+        Nested      = $nested
     }
 }
 
@@ -563,6 +645,27 @@ foreach ($resourceDirectory in $resourceDirectories)
                 {
                     $invalidValues.Add("$($entry.Name): $property = '$value'")
                 }
+            }
+        }
+
+        foreach ($member in $entry.Data.Nested)
+        {
+            $type = $schema.ComplexTypes[$member.Type]
+            if ($null -eq $type -or -not $type.ContainsKey($member.Member))
+            {
+                continue
+            }
+
+            $definition = $type[$member.Member]
+            if ($definition.IsArray)
+            {
+                continue
+            }
+
+            $value = "$($member.Value)".Trim().TrimEnd(';').Trim().Trim("'", '"')
+            if ($value -and $value -notmatch '^[\$@]' -and $value -notin $definition.AllowedValues)
+            {
+                $invalidValues.Add("$($entry.Name): $($member.Type).$($member.Member) = '$value'")
             }
         }
 

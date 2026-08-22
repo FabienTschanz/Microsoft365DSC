@@ -156,13 +156,11 @@
 * M365DSCReport
   * Moved `Get-M365DSCResourceKey` and other conversion logic entirely to C#.
 * DEPENDENCIES
-  * Added `Mgx` with version 2.0.4.
-  * Added `M365DSC.PSDesiredStateConfiguration` with version 3.1.3.
-  * Updated `DSCParser` to version 3.1.0.3.
-  * Updated `MSCloudLoginAssistant` to version 1.2.4.
+  * Added `M365DSC.Mgx` with version 2.0.4.
+  * Added `M365DSC.PSDesiredStateConfiguration` with version 3.1.4.
+  * Updated `MSCloudLoginAssistant` to version 1.2.5.
   * Updated `PnP.PowerShell` to version 3.3.0.
     FIXES [#7414](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7414)
-  * Updated `ReverseDSC` to version 2.0.36.
 * MISC
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.

@@ -39,7 +39,7 @@
         },
         @{
             ModuleName      = 'M365DSC.PSDesiredStateConfiguration'
-            RequiredVersion = '3.1.3'
+            RequiredVersion = '3.1.4'
         },
         @{
             ModuleName      = 'Microsoft.Graph.Authentication'
@@ -51,7 +51,7 @@
         },
         @{
             ModuleName      = "MSCloudLoginAssistant"
-            RequiredVersion = "1.2.4"
+            RequiredVersion = "1.2.5"
         },
         @{
             ModuleName      = 'PnP.PowerShell'
