@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsManagedGooglePlayApp "IntuneMobileAppsManagedGooglePlayApp-Office"
+        IntuneMobileAppsManagedGooglePlayApp "IntuneMobileAppsManagedGooglePlayApp-Example"
         {
             DisplayName           = "Office";
             PackageId             = "com.microsoft.office";
@@ -32,10 +32,10 @@ Configuration Example
             Ensure                = "Present";
             Assignments           = @(
                 MSFT_DeviceManagementManagedGooglePlayMobileAppAssignment{
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
                 }
             );
             ApplicationId         = $ApplicationId;

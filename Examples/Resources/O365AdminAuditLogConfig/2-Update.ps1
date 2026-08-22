@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        O365AdminAuditLogConfig 'AuditLogConfig'
+        O365AdminAuditLogConfig 'O365AdminAuditLogConfig-Example'
         {
             IsSingleInstance                = "Yes"
             UnifiedAuditLogIngestionEnabled = "Enabled"

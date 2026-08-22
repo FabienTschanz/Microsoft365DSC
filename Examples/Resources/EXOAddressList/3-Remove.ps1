@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAddressList 'HRUsersAddressList'
+        EXOAddressList 'EXOAddressList-Example'
         {
-            Name                       = "HR Users"
-            Ensure                     = "Absent"
+            Name                  = "HR Users"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

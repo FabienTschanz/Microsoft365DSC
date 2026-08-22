@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppProtectionPolicyAndroid 'ConfigureAppProtectionPolicyAndroid'
+        IntuneAppProtectionPolicyAndroid 'IntuneAppProtectionPolicyAndroid-Example'
         {
-            DisplayName                             = 'My DSC Android App Protection Policy'
+            DisplayName                             = 'Android App Protection - Corporate'
             AllowedDataStorageLocations             = @('sharePoint')
             AllowedInboundDataTransferSources       = 'managedApps'
             AllowedOutboundClipboardSharingLevel    = 'managedAppsWithPasteIn'
@@ -47,9 +47,9 @@ Configuration Example
             SaveAsBlocked                           = $True
             SimplePinBlocked                        = $True
             Ensure                                  = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                           = $ApplicationId;
+            TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

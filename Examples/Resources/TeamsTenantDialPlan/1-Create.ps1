@@ -15,11 +15,11 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTenantDialPlan 'ConfigureTenantDialPlan'
+        TeamsTenantDialPlan 'TeamsTenantDialPlan-Example'
         {
-            Identity              = 'DemoPlan'
-            Description           = 'This is a demo dial plan'
-            NormalizationRules    = @(
+            Identity           = 'AmsterdamPlan'
+            Description        = 'Dial plan for the Amsterdam office'
+            NormalizationRules = @(
                 MSFT_TeamsVoiceNormalizationRule
                 {
                     Pattern             = '^00(\d+)$'
@@ -30,9 +30,9 @@ Configuration Example
                     IsInternalExtension = $False
                 }
             )
-            SimpleName            = 'DemoPlan'
-            Ensure                = 'Present'
-            Credential            = $Credscredential
+            SimpleName         = 'AmsterdamPlan'
+            Ensure             = 'Present'
+            Credential         = $Credscredential
         }
     }
 }

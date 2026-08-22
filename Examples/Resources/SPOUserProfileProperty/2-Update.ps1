@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOUserProfileProperty 'ConfigureUserProfileProperty'
+        SPOUserProfileProperty 'SPOUserProfileProperty-Example'
         {
             UserName   = "John.Smith@contoso.com"
             Properties = @(

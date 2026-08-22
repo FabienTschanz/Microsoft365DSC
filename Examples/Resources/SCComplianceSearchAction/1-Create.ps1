@@ -16,22 +16,22 @@ Configuration Example
 
     Node localhost
     {
-        SCComplianceSearchAction 'ComplianceSearchActionPurge'
+        SCComplianceSearchAction 'SCComplianceSearchAction-Example1'
         {
             Action            = "Purge"
             PurgeType         = "SoftDelete"
             IncludeCredential = $True
             RetryOnError      = $False
-            SearchName        = "Demo Search"
+            SearchName        = "Budget Mailbox Search"
             Ensure            = "Present"
             Credential        = $Credscredential
         }
 
-        SCComplianceSearchAction 'ComplianceSearchActionExport'
+        SCComplianceSearchAction 'SCComplianceSearchAction-Example2'
         {
             IncludeSharePointDocumentVersions   = $False
             Action                              = "Export"
-            SearchName                          = "Demo Search"
+            SearchName                          = "Budget Mailbox Search"
             FileTypeExclusionsForUnindexedItems = $null
             IncludeCredential                   = $False
             RetryOnError                        = $False
@@ -41,11 +41,11 @@ Configuration Example
             Credential                          = $Credscredential
         }
 
-        SCComplianceSearchAction 'ComplianceSearchActionRetention'
+        SCComplianceSearchAction 'SCComplianceSearchAction-Example3'
         {
             IncludeSharePointDocumentVersions   = $False
             Action                              = "Retention"
-            SearchName                          = "Demo Search"
+            SearchName                          = "Budget Mailbox Search"
             FileTypeExclusionsForUnindexedItems = $null
             IncludeCredential                   = $False
             RetryOnError                        = $False

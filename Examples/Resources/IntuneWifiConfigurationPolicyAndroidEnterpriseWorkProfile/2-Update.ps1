@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile 'myWifiConfigAndroidWorkProfilePolicy'
+        IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile 'IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile-Example'
         {
             DisplayName                    = 'wifi - android BYOD'
             Assignments                    = @(
@@ -40,9 +40,9 @@ Configuration Example
             Ssid                           = 'MySSID'
             WiFiSecurityType               = 'open'
             Ensure                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

@@ -24,16 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        EXOAntiPhishRule 'ConfigureAntiPhishRule'
+        EXOAntiPhishRule 'EXOAntiPhishRule-Example'
         {
-            Identity                  = "Test Rule"
+            Identity                  = "Executive Impersonation Protection"
+            Comments                  = "Applies the anti-phishing policy to the executives group."
             AntiPhishPolicy           = "Our Rule"
             Enabled                   = $True
+            Priority                  = 0
+            RecipientDomainIs         = @("contoso.com")
+            SentTo                    = @("AdeleV@$TenantId")
             SentToMemberOf            = @("executives@$TenantId")
+            ExceptIfRecipientDomainIs = @("fabrikam.com")
+            ExceptIfSentTo            = @("AlexW@$TenantId")
+            ExceptIfSentToMemberOf    = @("LegalTeam@$TenantId")
             Ensure                    = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationVpnPolicyWindows10 'Example'
+        IntuneDeviceConfigurationVpnPolicyWindows10 'IntuneDeviceConfigurationVpnPolicyWindows10-Example'
         {
             Assignments                                = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             AuthenticationMethod                       = "usernameAndPassword";
@@ -39,9 +39,9 @@ Configuration Example
             DisplayName                                = "VPN";
             DnsRules                                   = @(
                 MSFT_MicrosoftGraphvpnDnsRule{
-                    Servers = @('10.0.1.10')
-                    Name = 'NRPT rule'
-                    Persistent = $True
+                    Servers     = @('10.0.1.10')
+                    Name        = 'NRPT rule'
+                    Persistent  = $True
                     AutoTrigger = $True
                 }
             );
@@ -54,37 +54,37 @@ Configuration Example
             Ensure                                     = "Present";
             ProfileTarget                              = "user";
             ProxyServer                                = MSFT_MicrosoftGraphwindows10VpnProxyServer{
-                Port = 8081
+                Port                             = 8081
                 BypassProxyServerForLocalAddress = $True
-                AutomaticConfigurationScriptUrl = ''
-                Address = '10.0.10.100'
+                AutomaticConfigurationScriptUrl  = ''
+                Address                          = '10.0.10.100'
             };
             RememberUserCredentials                    = $True;
             ServerCollection                           = @(
                 MSFT_MicrosoftGraphvpnServer{
                     IsDefaultServer = $True
-                    Description = 'gateway1'
-                    Address = '10.0.1.10'
+                    Description     = 'gateway1'
+                    Address         = '10.0.1.10'
                 }
             );
             TrafficRules                               = @(
                 MSFT_MicrosoftGraphvpnTrafficRule{
-                    Name = 'VPN rule'
-                    AppType = 'none'
-                    LocalAddressRanges = @(
+                    Name                = 'VPN rule'
+                    AppType             = 'none'
+                    LocalAddressRanges  = @(
                         MSFT_MicrosoftGraphIPv4Range{
                             UpperAddress = '10.0.2.240'
                             LowerAddress = '10.0.2.0'
                         }
                     )
-                    RoutingPolicyType = 'forceTunnel'
+                    RoutingPolicyType   = 'forceTunnel'
                     VpnTrafficDirection = 'outbound'
                 }
             );
             TrustedNetworkDomains                      = @();
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                              = $ApplicationId;
+            TenantId                                   = $TenantId;
+            CertificateThumbprint                      = $CertificateThumbprint;
         }
     }
 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationEmailProfilePolicyWindows10 'Example'
+        IntuneDeviceConfigurationEmailProfilePolicyWindows10 'IntuneDeviceConfigurationEmailProfilePolicyWindows10-Example'
         {
             DisplayName           = "email";
             Ensure                = "Absent";

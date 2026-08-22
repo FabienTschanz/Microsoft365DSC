@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined 'Example'
+        IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined 'IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined-Example'
         {
-            DisplayName                            = "hybrid";
-            Ensure                                 = "Absent";
+            DisplayName           = "hybrid";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

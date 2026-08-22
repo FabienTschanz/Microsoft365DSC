@@ -23,11 +23,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceControlPolicyWindows10 'ConfigureDeviceControlPolicy'
+        IntuneDeviceControlPolicyWindows10 'IntuneDeviceControlPolicyWindows10-Example'
         {
-            Id          = '00000000-0000-0000-0000-000000000000'
-            DisplayName = 'Device Control'
-            Ensure      = 'Absent'
+            Id                    = '00000000-0000-0000-0000-000000000000'
+            DisplayName           = 'Device Control'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

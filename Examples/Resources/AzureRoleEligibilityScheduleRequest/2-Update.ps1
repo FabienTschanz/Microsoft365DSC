@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleEligibilityScheduleRequest "ResourceGroupContributorEligibility"
+        AzureRoleEligibilityScheduleRequest "AzureRoleEligibilityScheduleRequest-Example"
         {
             Principal             = "SecurityGroup@contoso.onmicrosoft.com"
             RoleDefinition        = "Contributor"
@@ -26,7 +26,7 @@ Configuration Example
                 startDateTime = '2024-01-01T00:00:00Z'
                 expiration    = MSFT_AzureRoleEligibilityScheduleRequestScheduleExpiration
                 {
-                    type        = 'noExpiration'
+                    type = 'noExpiration'
                 }
             }
             ApplicationId         = $ApplicationId

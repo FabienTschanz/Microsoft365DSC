@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        SHSpaceUser "SHSpaceUser"
+        SHSpaceUser "SHSpaceUser-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Email                 = "Test@contoso.com";
+            Email                 = "john.smith@contoso.com";
             Ensure                = "Present";
             Roles                 = @("TrainingPermissionRole","HealthPermissionRole");
-            SpaceName             = "Test Workspace";
+            SpaceName             = "Contoso Workspace";
             TenantId              = $TenantId;
         }
     }

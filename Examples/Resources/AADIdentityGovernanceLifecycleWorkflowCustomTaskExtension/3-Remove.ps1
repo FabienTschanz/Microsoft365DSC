@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-My Custom"
+        AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

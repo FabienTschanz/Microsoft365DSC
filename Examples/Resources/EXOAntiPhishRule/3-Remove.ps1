@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOAntiPhishRule 'ConfigureAntiPhishRule'
+        EXOAntiPhishRule 'EXOAntiPhishRule-Example'
         {
-            Identity                  = "Test Rule"
-            AntiPhishPolicy           = "Our Rule"
-            Ensure                    = "Absent"
+            Identity              = "Executive Impersonation Protection"
+            AntiPhishPolicy       = "Our Rule"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -24,13 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSharedMailbox 'SharedMailbox'
+        EXOSharedMailbox 'EXOSharedMailbox-Example'
         {
-            DisplayName        = "Integration"
-            PrimarySMTPAddress = "Integration@$TenantId"
-            EmailAddresses     = @("IntegrationSM@$TenantId", "IntegrationSM2@$TenantId")
-            Alias              = "IntegrationSM"
-            Ensure             = "Absent"
+            DisplayName           = "Sales Enquiries"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

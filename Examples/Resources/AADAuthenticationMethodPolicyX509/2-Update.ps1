@@ -24,43 +24,43 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyX509 "AADAuthenticationMethodPolicyX509-X509Certificate"
+        AADAuthenticationMethodPolicyX509 "AADAuthenticationMethodPolicyX509-Example"
         {
             AuthenticationModeConfiguration = MSFT_MicrosoftGraphx509CertificateAuthenticationModeConfiguration{
                 X509CertificateAuthenticationDefaultMode = 'x509CertificateSingleFactor'
-                Rules = @()
+                Rules                                    = @()
             };
             CertificateUserBindings         = @(
                 MSFT_MicrosoftGraphx509CertificateUserBinding{
-                    Priority = 1
-                    UserProperty = 'userPrincipalName'
+                    Priority             = 1
+                    UserProperty         = 'userPrincipalName'
                     X509CertificateField = 'PrincipalName'
                 }
                 MSFT_MicrosoftGraphx509CertificateUserBinding{
-                    Priority = 2
-                    UserProperty = 'userPrincipalName'
+                    Priority             = 2
+                    UserProperty         = 'userPrincipalName'
                     X509CertificateField = 'RFC822Name'
                 }
                 MSFT_MicrosoftGraphx509CertificateUserBinding{
-                    Priority = 3
-                    UserProperty = 'certificateUserIds'
+                    Priority             = 3
+                    UserProperty         = 'certificateUserIds'
                     X509CertificateField = 'SubjectKeyIdentifier'
                 }
             );
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                   = $ApplicationId
+            TenantId                        = $TenantId
+            CertificateThumbprint           = $CertificateThumbprint
             Ensure                          = "Present";
             ExcludeTargets                  = @(
                 MSFT_AADAuthenticationMethodPolicyX509ExcludeTarget{
-                    Id = 'DSCGroup'
+                    Id         = 'Marketing Team'
                     TargetType = 'group'
                 }
             );
             Id                              = "X509Certificate";
             IncludeTargets                  = @(
                 MSFT_AADAuthenticationMethodPolicyX509IncludeTarget{
-                    Id = 'Finance Team'
+                    Id         = 'Finance Team'
                     TargetType = 'group'
                 }
             );

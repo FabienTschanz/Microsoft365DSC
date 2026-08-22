@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2 'IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2'
+        IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2 'IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2-Example'
         {
             DisplayName           = "IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2_1";
             Ensure                = "Absent";

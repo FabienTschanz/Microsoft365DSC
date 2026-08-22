@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyAndroidDeviceOwner 'ConfigureAndroidDeviceCompliancePolicyOwner'
+        IntuneDeviceCompliancePolicyAndroidDeviceOwner 'IntuneDeviceCompliancePolicyAndroidDeviceOwner-Example'
         {
             DisplayName                                        = 'DeviceOwner'
             Description                                        = ''
@@ -42,9 +42,9 @@ Configuration Example
             PasswordPreviousPasswordCountToBlock               = 13
             StorageRequireEncryption                           = $True
             Ensure                                             = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                      = $ApplicationId;
+            TenantId                                           = $TenantId;
+            CertificateThumbprint                              = $CertificateThumbprint;
         }
     }
 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        SCRecordReviewNotificationTemplateConfig "SCRecordReviewNotificationTemplateConfig"
+        SCRecordReviewNotificationTemplateConfig "SCRecordReviewNotificationTemplateConfig-Example"
         {
             ApplicationId                    = $ApplicationId;
             CertificateThumbprint            = $CertificateThumbprint;

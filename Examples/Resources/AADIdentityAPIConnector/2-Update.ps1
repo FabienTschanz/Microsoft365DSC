@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        AADIdentityAPIConnector 'AADIdentityAPIConnector-TestConnector'
+        AADIdentityAPIConnector 'AADIdentityAPIConnector-Example'
         {
             DisplayName           = "NewTestConnector";
             Id                    = "RestApi_NewTestConnector";
             Username              = "anexas 1"; #drift
-            Password              = New-Object System.Management.Automation.PSCredential('Password', (ConvertTo-SecureString "anexas" -AsPlainText -Force));
+            Password              = New-Object System.Management.Automation.PSCredential('api-user', (ConvertTo-SecureString "<api-password>" -AsPlainText -Force))
             TargetUrl             = "https://graph.microsoft.com";
             Ensure                = "Present"
             ApplicationId         = $ApplicationId

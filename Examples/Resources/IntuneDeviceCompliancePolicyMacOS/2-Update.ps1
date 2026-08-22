@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyMacOS 'ConfigureDeviceCompliancePolicyMacOS'
+        IntuneDeviceCompliancePolicyMacOS 'IntuneDeviceCompliancePolicyMacOS-Example'
         {
-            DisplayName                                 = 'MacOS DSC Policy'
-            Description                                 = 'Test policy'
+            DisplayName                                 = 'macOS Device Compliance'
+            Description                                 = 'Baseline compliance requirements for corporate Macs'
             PasswordRequired                            = $False
             PasswordBlockSimple                         = $False
             PasswordExpirationDays                      = 365
@@ -45,9 +45,9 @@ Configuration Example
             FirewallBlockAllIncoming                    = $False
             FirewallEnableStealthMode                   = $False
             Ensure                                      = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                               = $ApplicationId;
+            TenantId                                    = $TenantId;
+            CertificateThumbprint                       = $CertificateThumbprint;
         }
     }
 }

@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        AADRoleDefinition 'AADRoleDefinition1'
+        AADRoleDefinition 'AADRoleDefinition-Example'
         {
-            IsEnabled                     = $true
-            RolePermissions               = "microsoft.directory/applicationPolicies/allProperties/read"
-            DisplayName                   = "DSCRole1"
-            Ensure                        = "Absent"
+            IsEnabled             = $true
+            RolePermissions       = "microsoft.directory/applicationPolicies/allProperties/read"
+            DisplayName           = "Application Policy Administrator"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

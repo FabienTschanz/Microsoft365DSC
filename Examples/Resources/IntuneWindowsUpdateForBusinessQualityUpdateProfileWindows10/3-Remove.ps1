@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10-Example'
         {
-            DisplayName = 'Windows Quality Update'
-            Ensure      = 'Absent'
+            DisplayName           = 'Windows Quality Update'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

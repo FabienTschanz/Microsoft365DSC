@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyAndroidWorkProfile 97ed22e9-1429-40dc-ab3c-0055e538383b
+        IntuneDeviceConfigurationPolicyAndroidWorkProfile "IntuneDeviceConfigurationPolicyAndroidWorkProfile-Example"
         {
-            DisplayName                                    = 'Android Work Profile - Device Restrictions - Standard'
-            Ensure                                         = 'Absent'
+            DisplayName           = 'Android Work Profile - Device Restrictions - Standard'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

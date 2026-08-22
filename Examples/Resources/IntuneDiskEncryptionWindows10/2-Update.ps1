@@ -24,22 +24,22 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiskEncryptionWindows10 'myDiskEncryption'
+        IntuneDiskEncryptionWindows10 'IntuneDiskEncryptionWindows10-Example'
         {
-            DisplayName        = 'Disk Encryption'
-            Assignments        = @(
+            DisplayName              = 'Disk Encryption'
+            Assignments              = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments {
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 })
-            Description        = ''
+            Description              = ''
             IdentificationField_Name = '1'
-            IdentificationField = 'IdentificationField'
-            SecIdentificationField = 'UpdatedSecIdentificationField' # Updated property
-            Ensure             = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            IdentificationField      = 'IdentificationField'
+            SecIdentificationField   = 'UpdatedSecIdentificationField' # Updated property
+            Ensure                   = 'Present'
+            ApplicationId            = $ApplicationId;
+            TenantId                 = $TenantId;
+            CertificateThumbprint    = $CertificateThumbprint;
         }
     }
 }

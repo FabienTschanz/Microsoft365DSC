@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationSecureAssessmentPolicyWindows10 'Example'
+        IntuneDeviceConfigurationSecureAssessmentPolicyWindows10 'IntuneDeviceConfigurationSecureAssessmentPolicyWindows10-Example'
         {
             AllowPrinting            = $True;
             AllowScreenCapture       = $False; # Updated Property
@@ -33,7 +33,7 @@ Configuration Example
             Assignments              = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             ConfigurationAccount     = "user@domain.com";
@@ -42,9 +42,9 @@ Configuration Example
             Ensure                   = "Present";
             LaunchUri                = "https://assessment.domain.com";
             LocalGuestAccountName    = "";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId            = $ApplicationId;
+            TenantId                 = $TenantId;
+            CertificateThumbprint    = $CertificateThumbprint;
         }
     }
 }

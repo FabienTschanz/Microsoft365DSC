@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiskEncryptionWindows10 'myDiskEncryption'
+        IntuneDiskEncryptionWindows10 'IntuneDiskEncryptionWindows10-Example'
         {
-            DisplayName        = 'Disk Encryption'
-            Description        = ''
-            Ensure             = 'Absent'
+            DisplayName           = 'Disk Encryption'
+            Description           = ''
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        AADPermissionGrantPolicy 'CustomConsentPolicy'
+        AADPermissionGrantPolicy 'AADPermissionGrantPolicy-Example'
         {
             Id                    = "my-custom-consent-policy"
             Ensure                = "Absent"

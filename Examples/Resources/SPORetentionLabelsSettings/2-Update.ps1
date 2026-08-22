@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        SPORetentionLabelsSettings "SPORetentionLabelsSettings"
+        SPORetentionLabelsSettings "SPORetentionLabelsSettings-Example"
         {
             AdvancedRecordVersioningDisabled      = $True;
             AllowFilesWithKeepLabelToBeDeletedODB = $false;

@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXODataAtRestEncryptionPolicy "M365DataAtRestEncryptionPolicy-Riyansh_Policy"
+        EXODataAtRestEncryptionPolicy "EXODataAtRestEncryptionPolicy-Example"
         {
-            AzureKeyIDs          = @("https://m365dataatrestencryption.vault.azure.net/keys/EncryptionKey","https://m365datariyansh.vault.azure.net/keys/EncryptionRiyansh");
-            Description          = "Tenant default policy 2"; # drift
-            Enabled              = $True;
-            Ensure               = "Present";
-            Identity             = "Riyansh_Policy";
-            Name                 = "Riyansh_Policy";
+            AzureKeyIDs           = @("<key-vault-key-uri>")
+            Description           = "Tenant default policy 2"; # drift
+            Enabled               = $True;
+            Ensure                = "Present";
+            Identity              = "Riyansh_Policy";
+            Name                  = "Riyansh_Policy";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

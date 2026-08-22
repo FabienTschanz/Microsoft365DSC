@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10-Example'
         {
             DisplayName                         = 'WUfB Ring'
             AllowWindows11Upgrade               = $True # Updated Property
@@ -49,7 +49,7 @@ Configuration Example
             FeatureUpdatesPauseExpiryDateTime   = '0001-01-01T00:00:00.0000000+00:00'
             FeatureUpdatesRollbackStartDateTime = '0001-01-01T00:00:00.0000000+00:00'
             FeatureUpdatesRollbackWindowInDays  = 10
-            InstallationSchedule = MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType {
+            InstallationSchedule                = MSFT_MicrosoftGraphwindowsUpdateInstallScheduleType {
                 ActiveHoursStart = '08:00:00'
                 ActiveHoursEnd   = '17:00:00'
                 odataType        = '#microsoft.graph.windowsUpdateActiveHoursInstall'
@@ -66,9 +66,9 @@ Configuration Example
             UserPauseAccess                     = 'enabled'
             UserWindowsUpdateScanAccess         = 'enabled'
             Ensure                              = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                       = $ApplicationId;
+            TenantId                            = $TenantId;
+            CertificateThumbprint               = $CertificateThumbprint;
         }
     }
 }

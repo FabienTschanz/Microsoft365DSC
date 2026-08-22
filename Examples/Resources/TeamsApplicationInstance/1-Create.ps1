@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsApplicationInstance "TestResourceAccount"
+        TeamsApplicationInstance "TeamsApplicationInstance-Example"
         {
             ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
             CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;

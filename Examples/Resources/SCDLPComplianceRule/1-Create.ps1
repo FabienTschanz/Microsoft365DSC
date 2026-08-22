@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SCDLPComplianceRule 'ConfigureDLPComplianceRule'
+        SCDLPComplianceRule 'SCDLPComplianceRule-Example'
         {
             Name                                = 'Low volume EU Sensitive content found'
             Policy                              = 'General Data Protection Regulation (GDPR)'

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOIntraOrganizationConnector 'ConfigureIntraOrganizationConnector'
+        EXOIntraOrganizationConnector 'EXOIntraOrganizationConnector-Example'
         {
-            Identity             = "MainCloudConnector"
-            Ensure               = "Absent"
+            Identity              = "MainCloudConnector"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

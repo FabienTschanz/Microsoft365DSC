@@ -24,13 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeAttachmentPolicy 'ConfigureSafeAttachmentPolicy'
+        EXOSafeAttachmentPolicy 'EXOSafeAttachmentPolicy-Example'
         {
-            Identity             = "Marketing Block Attachments"
-            Enable               = $False # Updated Property
-            Redirect             = $True
-            RedirectAddress      = "admin@$TenantId"
-            Ensure               = "Present"
+            Identity              = "Marketing Block Attachments"
+            Action                = "Block"
+            AdminDisplayName      = "Blocks malicious attachments sent to the marketing department"
+            QuarantineTag         = "AdminOnlyAccessPolicy"
+            Enable                = $False # Updated Property
+            Redirect              = $True
+            RedirectAddress       = "admin@$TenantId"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

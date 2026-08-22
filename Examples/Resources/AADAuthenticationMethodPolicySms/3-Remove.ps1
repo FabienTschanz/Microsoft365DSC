@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicySms "AADAuthenticationMethodPolicySms-Sms"
+        AADAuthenticationMethodPolicySms "AADAuthenticationMethodPolicySms-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

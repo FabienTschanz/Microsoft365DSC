@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEndpointDetectionAndResponsePolicyMacOS 'myEDRPolicy'
+        IntuneEndpointDetectionAndResponsePolicyMacOS 'IntuneEndpointDetectionAndResponsePolicyMacOS-Example'
         {
-            DisplayName = 'Edr Policy'
-            Ensure      = 'Absent'
+            DisplayName           = 'Edr Policy'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

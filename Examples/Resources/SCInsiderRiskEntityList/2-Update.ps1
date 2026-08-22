@@ -24,18 +24,18 @@ Configuration Example
 
     Node localhost
     {
-        SCInsiderRiskEntityList "SCInsiderRiskEntityList-MyFileType"
+        SCInsiderRiskEntityList "SCInsiderRiskEntityList-Example"
         {
-            ApplicationId                          = $ApplicationId;
-            CertificateThumbprint                  = $CertificateThumbprint;
-            Description                            = "Test file type";
-            DisplayName                            = "MyFileType";
-            Ensure                                 = "Present";
-            FileTypes                              = @(".exe",".txt",".bat"); # Drfit
-            Keywords                               = @();
-            ListType                               = "CustomFileTypeLists";
-            Name                                   = "MyFileTypeList";
-            TenantId                               = $OrganizationName;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Description           = "Executable file types monitored for insider risk";
+            DisplayName           = "MyFileType";
+            Ensure                = "Present";
+            FileTypes             = @(".exe",".txt",".bat"); # Drfit
+            Keywords              = @();
+            ListType              = "CustomFileTypeLists";
+            Name                  = "MyFileTypeList";
+            TenantId              = $OrganizationName;
         }
     }
 }

@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        TeamsAIPolicy "TeamsAIPolicy-AIEnabled"
+        TeamsAIPolicy "TeamsAIPolicy-Example"
         {
-            ApplicationId             = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint     = $ConfigurationData.NonNodeData.CertificateThumbprint;
-            Ensure                    = "Absent";
-            Identity                  = "AIEnabled";
-            TenantId                  = $OrganizationName;
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
+            Ensure                = "Absent";
+            Identity              = "AIEnabled";
+            TenantId              = $OrganizationName;
         }
     }
 }

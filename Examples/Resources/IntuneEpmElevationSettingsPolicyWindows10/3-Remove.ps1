@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEpmElevationSettingsPolicyWindows10 'Example'
+        IntuneEpmElevationSettingsPolicyWindows10 'IntuneEpmElevationSettingsPolicyWindows10-Example'
         {
-            DisplayName                 = "IntuneEpmElevationSettingsPolicyWindows10_1";
-            Ensure                      = "Absent";
-            Id                          = '00000000-0000-0000-0000-000000000000'
-            ApplicationId               = $ApplicationId;
-            TenantId                    = $TenantId;
-            CertificateThumbprint       = $CertificateThumbprint;
+            DisplayName           = "IntuneEpmElevationSettingsPolicyWindows10_1";
+            Ensure                = "Absent";
+            Id                    = '00000000-0000-0000-0000-000000000000'
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

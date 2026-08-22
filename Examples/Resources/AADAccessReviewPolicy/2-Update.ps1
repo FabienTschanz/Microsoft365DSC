@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAccessReviewPolicy "AADAccessReviewPolicy"
+        AADAccessReviewPolicy "AADAccessReviewPolicy-Example"
         {
             IsGroupOwnerManagementEnabled = $False;
             IsSingleInstance              = "Yes";

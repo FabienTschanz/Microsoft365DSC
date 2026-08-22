@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCFilePlanPropertyReferenceId 'FilePlanPropertyReferenceId'
+        SCFilePlanPropertyReferenceId 'SCFilePlanPropertyReferenceId-Example'
         {
-            Name               = "My Reference ID"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            Name       = "My Reference ID"
+            Ensure     = "Present"
+            Credential = $Credscredential
         }
     }
 }

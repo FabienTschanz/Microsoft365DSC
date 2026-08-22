@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        AADServicePrincipal 'AADServicePrincipal'
+        AADServicePrincipal 'AADServicePrincipal-Example'
         {
-            AppId                 = "AppDisplayName"
+            AppId                 = "<application-id>"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

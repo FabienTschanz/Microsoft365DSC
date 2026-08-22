@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxPlan 'ConfigureMailboxPlan'
+        EXOMailboxPlan 'EXOMailboxPlan-Example'
         {
             Ensure                   = "Present";
             Identity                 = "ExchangeOnlineEssentials";
@@ -35,9 +35,9 @@ Configuration Example
             ProhibitSendReceiveQuota = "15 GB (16,106,127,360 bytes)"; # Updated Property
             RetainDeletedItemsFor    = "14.00:00:00";
             RoleAssignmentPolicy     = "Default Role Assignment Policy";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
         }
     }
 }

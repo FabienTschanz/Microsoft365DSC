@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupEligibilityScheduleSettings 'Example'
+        AADGroupEligibilityScheduleSettings 'AADGroupEligibilityScheduleSettings-Example'
         {
             ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
             CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             expirationRule        = MSFT_AADRoleManagementPolicyExpirationRule{
                 isExpirationRequired = $False
-                maximumDuration = "PT8H"
+                maximumDuration      = "PT8H"
             };
             groupDisplayName      = "MyPIMGroup";
             id                    = "Expiration_EndUser_Assignment";

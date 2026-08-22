@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPlatformScriptLinux 'IntuneDeviceConfigurationPlatformScriptLinux_1'
+        IntuneDeviceConfigurationPlatformScriptLinux 'IntuneDeviceConfigurationPlatformScriptLinux-Example'
         {
-            Assignments                 = @(
+            Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             CustomConfig_Script            = "#!/bin/sh
@@ -38,13 +38,13 @@ echo true";
             CustomConfigExecutionContext   = "user";
             CustomConfigExecutionFrequency = 15;
             CustomConfigExecutionRetries   = 2;
-            DisplayName                 = "IntuneDeviceConfigurationPlatformScriptLinux_1";
-            Ensure                      = "Present";
-            Description                 = "";
-            RoleScopeTagIds             = @("0");
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName                    = "IntuneDeviceConfigurationPlatformScriptLinux_1";
+            Ensure                         = "Present";
+            Description                    = "";
+            RoleScopeTagIds                = @("0");
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

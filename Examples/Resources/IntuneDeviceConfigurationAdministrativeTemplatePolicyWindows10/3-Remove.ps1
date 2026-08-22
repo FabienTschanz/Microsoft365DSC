@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 'IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10-Example'
         {
-            DisplayName                      = 'admin template'
-            Ensure                           = 'Absent'
+            DisplayName           = 'admin template'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

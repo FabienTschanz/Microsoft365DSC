@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        SCInsiderRiskPolicy "SCInsiderRiskPolicy-IRM_Tenant_Setting"
+        SCInsiderRiskPolicy "SCInsiderRiskPolicy-Example"
         {
-            Anonymization = $false
+            Anonymization                                 = $false
             AlertVolume                                   = "Medium";
             AnalyticsNewInsightEnabled                    = $False;
             AnalyticsTurnedOffEnabled                     = $False;

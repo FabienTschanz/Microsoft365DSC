@@ -24,17 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        EXOEOPProtectionPolicyRule "EXOEOPProtectionPolicyRule-Strict Preset Security Policy"
+        EXOEOPProtectionPolicyRule "EXOEOPProtectionPolicyRule-Example"
         {
+            Comments                  = "Scopes the Strict preset EOP policy to the pilot recipients.";
             Ensure                    = "Present";
-            ExceptIfRecipientDomainIs = @("sandrodev.onmicrosoft.com");
+            ExceptIfRecipientDomainIs = @("fabrikam.com");
+            ExceptIfSentTo            = @("AlexW@$TenantId");
+            ExceptIfSentToMemberOf    = @("Executives@$TenantId");
             Identity                  = "Strict Preset Security Policy";
             Name                      = "Strict Preset Security Policy";
             Priority                  = 0;
-            State                     = "Enabled";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            RecipientDomainIs         = @("contoso.com");
+            SentTo                    = @("AdeleV@$TenantId");
+            SentToMemberOf            = @("LegalTeam@$TenantId");
+            State                     = "Disabled";
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

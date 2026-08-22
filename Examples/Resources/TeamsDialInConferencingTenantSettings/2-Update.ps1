@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsDialInConferencingTenantSettings 'TenantSettings'
+        TeamsDialInConferencingTenantSettings 'TeamsDialInConferencingTenantSettings-Example'
         {
             AllowPSTNOnlyMeetingsByDefault   = $False;
             AutomaticallyMigrateUserMeetings = $True;

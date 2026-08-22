@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneRoleDefinitionWindows365 'IntuneRoleDefinitionWindows365'
+        IntuneRoleDefinitionWindows365 'IntuneRoleDefinitionWindows365-Example'
         {
             DisplayName           = 'IntuneRoleDefinitionWindows365_1'
             Ensure                = 'Absent'

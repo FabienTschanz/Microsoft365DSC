@@ -23,18 +23,18 @@ Configuration Example
 
     Node localhost
     {
-        IntuneFirewallPolicyWindows10 'ConfigureIntuneFirewallPolicyWindows10'
+        IntuneFirewallPolicyWindows10 'IntuneFirewallPolicyWindows10-Example'
         {
-            Assignments           = @(
+            Assignments                                   = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '11111111-1111-1111-1111-111111111111'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '11111111-1111-1111-1111-111111111111'
                 }
             );
-            Description           = 'Description'
-            DisplayName           = "Intune Firewall Policy Windows10";
-            DisableStatefulFtp    = "false";
+            Description                                   = 'Description'
+            DisplayName                                   = "Intune Firewall Policy Windows10";
+            DisableStatefulFtp                            = "false";
             DomainProfile_AllowLocalIpsecPolicyMerge      = "false";
             DomainProfile_EnableFirewall                  = "true";
             DomainProfile_LogFilePath                     = "%systemroot%\system32\LogFiles\Firewall\pfirewall.log";
@@ -44,12 +44,12 @@ Configuration Example
             PublicProfile_EnableFirewall                  = "true";
             Target                                        = "wsl";
             AllowHostPolicyMerge                          = "false";
-            Ensure                = "Present";
-            Id                    = '00000000-0000-0000-0000-000000000000'
-            RoleScopeTagIds       = @("0");
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                                        = "Present";
+            Id                                            = '00000000-0000-0000-0000-000000000000'
+            RoleScopeTagIds                               = @("0");
+            ApplicationId                                 = $ApplicationId;
+            TenantId                                      = $TenantId;
+            CertificateThumbprint                         = $CertificateThumbprint;
         }
     }
 }

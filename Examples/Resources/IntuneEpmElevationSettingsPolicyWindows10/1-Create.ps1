@@ -23,13 +23,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEpmElevationSettingsPolicyWindows10 'Example'
+        IntuneEpmElevationSettingsPolicyWindows10 'IntuneEpmElevationSettingsPolicyWindows10-Example'
         {
-            Assignments           = @(
+            Assignments                 = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '11111111-1111-1111-1111-111111111111'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '11111111-1111-1111-1111-111111111111'
                 }
             );
             Description                 = 'Description'

@@ -24,13 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeLinksRule 'ConfigureSafeLinksRule'
+        EXOSafeLinksRule 'EXOSafeLinksRule-Example'
         {
-            Identity                  = "Research Department URL Rule"
-            Comments                  = "Applies to Research Department, except managers"
-            Enabled                   = $False # Updated Property
-            SafeLinksPolicy           = "Marketing Block URL"
-            Ensure                    = "Absent"
+            Identity              = "Research Department URL Rule"
+            SafeLinksPolicy       = "Marketing Block URL"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

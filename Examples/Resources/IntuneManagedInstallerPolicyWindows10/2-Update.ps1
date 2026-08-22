@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneManagedInstallerPolicyWindows10 "IntuneManagedInstallerPolicyWindows10-SideCar ManagedInstaller Script"
+        IntuneManagedInstallerPolicyWindows10 "IntuneManagedInstallerPolicyWindows10-Example"
         {
             Assignments              = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
-                    dataType = "#microsoft.graph.allDevicesAssignmentTarget"
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
                     deviceAndAppManagementAssignmentFilterType = "none"
-                    deviceAndAppManagementAssignmentFilterId = "00000000-0000-0000-0000-000000000000"
-                    groupDisplayName = "All devices"
+                    deviceAndAppManagementAssignmentFilterId   = "00000000-0000-0000-0000-000000000000"
+                    groupDisplayName                           = "All devices"
                 }
             );
             Description              = "This script is used to set SideCar as ManagedInstaller";

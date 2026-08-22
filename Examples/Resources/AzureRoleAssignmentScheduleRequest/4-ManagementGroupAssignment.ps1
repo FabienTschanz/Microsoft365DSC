@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleAssignmentScheduleRequest "ManagementGroupReaderAssignment"
+        AzureRoleAssignmentScheduleRequest "AzureRoleAssignmentScheduleRequest-Example"
         {
             Principal             = "AdeleV@contoso.onmicrosoft.com"
             RoleDefinition        = "Reader"

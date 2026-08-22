@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AzureDiagnosticSettings "AzureDiagnosticSettings-TestDiag"
+        AzureDiagnosticSettings "AzureDiagnosticSettings-Example"
         {
-            ApplicationId               = $ApplicationId;
-            CertificateThumbprint       = $CertificateThumbprint;
-            Ensure                      = "Absent";
-            Name                        = "TestDiag";
-            TenantId                    = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            Name                  = "PlatformDiagnostics";
+            TenantId              = $TenantId;
         }
     }
 }

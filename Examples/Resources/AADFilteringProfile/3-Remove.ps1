@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFilteringProfile "AADFilteringProfile-My Profile"
+        AADFilteringProfile "AADFilteringProfile-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

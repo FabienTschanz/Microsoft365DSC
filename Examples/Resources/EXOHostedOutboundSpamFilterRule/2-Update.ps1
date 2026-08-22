@@ -24,18 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedOutboundSpamFilterRule 'ConfigureHostedOutboundSpamFilterRule'
+        EXOHostedOutboundSpamFilterRule 'EXOHostedOutboundSpamFilterRule-Example'
         {
             Identity                       = "Contoso Executives"
             Comments                       = "Does not apply to Executives"
             Enabled                        = $False # Updated Property
             ExceptIfFrom                   = "AdeleV@$TenantId"
+            ExceptIfFromMemberOf           = "Contractors@$TenantId"
+            ExceptIfSenderDomainIs         = "fabrikam.com"
+            From                           = "AlexW@$TenantId"
+            Priority                       = 0
+            SenderDomainIs                 = "contoso.com"
             FromMemberOf                   = "Executives@$TenantId"
-            HostedOutboundSpamFilterPolicy = "Integration SFP"
+            HostedOutboundSpamFilterPolicy = "Outbound Spam Limits"
             Ensure                         = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                  = $ApplicationId
+            TenantId                       = $TenantId
+            CertificateThumbprint          = $CertificateThumbprint
         }
     }
 }

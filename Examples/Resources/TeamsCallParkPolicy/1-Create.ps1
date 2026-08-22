@@ -16,15 +16,15 @@ Configuration Example
 
     Node localhost
     {
-        TeamsCallParkPolicy 'Example'
+        TeamsCallParkPolicy 'TeamsCallParkPolicy-Example'
         {
-            AllowCallPark        = $False;
-            Credential           = $Credscredential;
-            Ensure               = "Present";
-            Identity             = "Global";
-            ParkTimeoutSeconds   = 300;
-            PickupRangeEnd       = 99;
-            PickupRangeStart     = 10;
+            AllowCallPark      = $False;
+            Credential         = $Credscredential;
+            Ensure             = "Present";
+            Identity           = "Global";
+            ParkTimeoutSeconds = 300;
+            PickupRangeEnd     = 99;
+            PickupRangeStart   = 10;
         }
     }
 }

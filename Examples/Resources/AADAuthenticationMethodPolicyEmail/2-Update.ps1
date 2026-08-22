@@ -24,27 +24,27 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyEmail "AADAuthenticationMethodPolicyEmail-Email"
+        AADAuthenticationMethodPolicyEmail "AADAuthenticationMethodPolicyEmail-Example"
         {
             AllowExternalIdToUseEmailOtp = "enabled";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                = $ApplicationId
+            TenantId                     = $TenantId
+            CertificateThumbprint        = $CertificateThumbprint
             Ensure                       = "Present";
             ExcludeTargets               = @(
                 MSFT_AADAuthenticationMethodPolicyEmailExcludeTarget{
-                    Id = 'Paralegals'
+                    Id         = 'Paralegals'
                     TargetType = 'group'
                 }
             );
             Id                           = "Email";
             IncludeTargets               = @(
                 MSFT_AADAuthenticationMethodPolicyEmailIncludeTarget{
-                    Id = 'Finance Team'
+                    Id         = 'Finance Team'
                     TargetType = 'group'
                 }
                 MSFT_AADAuthenticationMethodPolicyEmailIncludeTarget{
-                    Id = 'Legal Team'
+                    Id         = 'Legal Team'
                     TargetType = 'group'
                 }
             );

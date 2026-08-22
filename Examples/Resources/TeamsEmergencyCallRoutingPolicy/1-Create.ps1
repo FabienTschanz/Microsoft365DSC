@@ -15,9 +15,9 @@ Configuration Example
 
     Node localhost
     {
-        TeamsEmergencyCallRoutingPolicy 'EmergencyCallRoutingPolicyExample'
+        TeamsEmergencyCallRoutingPolicy 'TeamsEmergencyCallRoutingPolicy-Example'
         {
-            Identity                       = "Unit Test"
+            Identity                       = "Amsterdam Office"
             AllowEnhancedEmergencyServices = $False
             Description                    = "Description"
             EmergencyNumbers               = @(

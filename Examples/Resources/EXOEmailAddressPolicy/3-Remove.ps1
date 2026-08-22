@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOEmailAddressPolicy 'ConfigureEmailAddressPolicy'
+        EXOEmailAddressPolicy 'EXOEmailAddressPolicy-Example'
         {
-            Name                              = "Integration Policy"
-            Ensure                            = "Absent"
+            Name                  = "Standard Address Format"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

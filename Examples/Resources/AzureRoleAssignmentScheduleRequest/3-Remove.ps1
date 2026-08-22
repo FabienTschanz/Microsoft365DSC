@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleAssignmentScheduleRequest "RemoveAssignment"
+        AzureRoleAssignmentScheduleRequest "AzureRoleAssignmentScheduleRequest-Example"
         {
             Principal             = "AdeleV@contoso.onmicrosoft.com"
             RoleDefinition        = "Owner"

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        PPAdminDLPPolicy "PPAdminDLPPolicy-Test"
+        PPAdminDLPPolicy "PPAdminDLPPolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

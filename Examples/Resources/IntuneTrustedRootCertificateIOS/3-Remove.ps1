@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneTrustedRootCertificateIOS "ConfigureIntuneTrustedRootCertificateIOS"
+        IntuneTrustedRootCertificateIOS "IntuneTrustedRootCertificateIOS-Example"
         {
-            Description            = "IntuneTrustedRootCertificateIOS Description";
-            DisplayName            = "IntuneTrustedRootCertificateIOS DisplayName";
-            Ensure                 = "Absent";
-            ApplicationId          = $ApplicationId;
-            TenantId               = $TenantId;
-            CertificateThumbprint  = $CertificateThumbprint;
+            Description           = "IntuneTrustedRootCertificateIOS Description";
+            DisplayName           = "IntuneTrustedRootCertificateIOS DisplayName";
+            Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

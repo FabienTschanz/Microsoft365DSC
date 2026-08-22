@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 'Example'
+        IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 'IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10-Example'
         {
-            DisplayName                   = "network boundary";
-            Ensure                        = "Absent";
+            DisplayName           = "network boundary";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

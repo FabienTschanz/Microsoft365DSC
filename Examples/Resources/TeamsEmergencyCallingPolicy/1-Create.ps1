@@ -15,10 +15,10 @@ Configuration Example
 
     Node localhost
     {
-        TeamsEmergencyCallingPolicy 'ConfigureEmergencyCallingPolicy'
+        TeamsEmergencyCallingPolicy 'TeamsEmergencyCallingPolicy-Example'
         {
-            Description               = "Demo"
-            Identity                  = "Demo Emergency Calling Policy"
+            Description               = "Notifies the security desk when an emergency call is placed"
+            Identity                  = "Headquarters Emergency Calling Policy"
             NotificationDialOutNumber = "+1234567890"
             NotificationGroup         = 'john.smith@contoso.com'
             NotificationMode          = "NotificationOnly"

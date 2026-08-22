@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADHomeRealmDiscoveryPolicy "AADHomeRealmDiscoveryPolicy-displayName-value"
+        AADHomeRealmDiscoveryPolicy "AADHomeRealmDiscoveryPolicy-Example"
         {
             Definition            = @(
                 MSFT_AADHomeRealDiscoveryPolicyDefinition {
-                    PreferredDomain       = 'federated.example.edu'
-                    AccelerateToFederatedDomain         = $False
-                    AlternateIdLogin = MSFT_AADHomeRealDiscoveryPolicyDefinitionAlternateIdLogin {
+                    PreferredDomain             = 'federated.example.com'
+                    AccelerateToFederatedDomain = $False
+                    AlternateIdLogin            = MSFT_AADHomeRealDiscoveryPolicyDefinitionAlternateIdLogin {
                         Enabled = $True
                     }
                 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        ADOSecurityPolicy "ADOPolicy"
+        ADOSecurityPolicy "ADOSecurityPolicy-Example"
         {
             AllowAnonymousAccess                    = $True;
             AllowRequestAccessToken                 = $False;
@@ -37,7 +37,7 @@ Configuration Example
             DisallowSecureShell                     = $False;
             EnforceAADConditionalAccess             = $False;
             LogAuditEvents                          = $True;
-            OrganizationName                        = "O365DSC-Dev";
+            OrganizationName                        = "Contoso-Dev";
             TenantId                                = $TenantId;
         }
     }

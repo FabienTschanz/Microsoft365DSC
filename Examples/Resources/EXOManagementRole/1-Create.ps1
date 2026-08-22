@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        EXOManagementRole 'ConfigureManagementRole'
+        EXOManagementRole 'EXOManagementRole-Example'
         {
-            Name                 = "MyDisplayName"
-            Description          = ""
-            Parent               = "$TenantId\MyProfileInformation"
-            Ensure               = "Present"
+            Name                  = "MyDisplayName"
+            Description           = ""
+            Parent                = "$TenantId\MyProfileInformation"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

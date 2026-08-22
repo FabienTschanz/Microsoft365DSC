@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        ADOPermissionGroup "TestPermissionGroup"
+        ADOPermissionGroup "ADOPermissionGroup-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Description           = "My Description";
-            DisplayName           = "TestGroup";
+            DisplayName           = "ProjectAdministrators";
             Ensure                = "Absent";
             Level                 = "Organization";
             Members               = @("AdeleV@$TenantId");
-            OrganizationName      = "O365DSC-Dev";
-            PrincipalName         = "[O365DSC-DEV]\TestGroup";
+            OrganizationName      = "Contoso-Dev";
+            PrincipalName         = "[CONTOSO-DEV]\ProjectAdministrators";
             TenantId              = $TenantId;
         }
     }

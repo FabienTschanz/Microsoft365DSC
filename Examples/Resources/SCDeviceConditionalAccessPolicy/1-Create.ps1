@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        SCDeviceConditionalAccessPolicy 'ConfigureDeviceConditionalAccessPolicy'
+        SCDeviceConditionalAccessPolicy 'SCDeviceConditionalAccessPolicy-Example'
         {
-            Name                 = "Human Resources"
-            Comment              = "Device Conditional Access Policy for Human Resources department"
-            Enabled              = $True
-            Ensure               = "Present"
-            Credential           = $Credscredential
+            Name       = "Human Resources"
+            Comment    = "Device Conditional Access Policy for Human Resources department"
+            Enabled    = $True
+            Ensure     = "Present"
+            Credential = $Credscredential
         }
     }
 }

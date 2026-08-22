@@ -24,25 +24,32 @@ Configuration Example
 
     Node localhost
     {
-        EXOOrganizationRelationship 'ConfigureOrganizationRelationship'
+        EXOOrganizationRelationship 'EXOOrganizationRelationship-Example'
         {
-            Name                  = "Contoso"
-            ArchiveAccessEnabled  = $False # Updated Property
-            DeliveryReportEnabled = $True
-            DomainNames           = "mail.contoso.com"
-            Enabled               = $True
-            FreeBusyAccessEnabled = $True
-            FreeBusyAccessLevel   = "AvailabilityOnly"
-            MailboxMoveEnabled    = $True
-            MailTipsAccessEnabled = $True
-            MailTipsAccessLevel   = "None"
-            PhotosEnabled         = $True
-            TargetApplicationUri  = "mail.contoso.com"
-            TargetAutodiscoverEpr = "https://mail.contoso.com/autodiscover/autodiscover.svc/wssecurity"
-            Ensure                = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Name                       = "Contoso"
+            ArchiveAccessEnabled       = $False # Updated Property
+            DeliveryReportEnabled      = $True
+            DomainNames                = "mail.contoso.com"
+            Enabled                    = $True
+            FreeBusyAccessEnabled      = $True
+            FreeBusyAccessLevel        = "AvailabilityOnly"
+            FreeBusyAccessScope        = "Executives@$TenantId"
+            MailboxMoveEnabled         = $True
+            MailboxMoveCapability      = "RemoteOutbound"
+            MailboxMovePublishedScopes = @("Executives@$TenantId")
+            MailTipsAccessEnabled      = $True
+            MailTipsAccessLevel        = "Limited"
+            MailTipsAccessScope        = "Executives@$TenantId"
+            OrganizationContact        = "administrator@contoso.com"
+            PhotosEnabled              = $True
+            TargetApplicationUri       = "mail.contoso.com"
+            TargetAutodiscoverEpr      = "https://mail.contoso.com/autodiscover/autodiscover.svc/wssecurity"
+            TargetOwaURL               = "https://mail.contoso.com/owa"
+            TargetSharingEpr           = "https://mail.contoso.com/EWS/Exchange.asmx"
+            Ensure                     = "Present"
+            ApplicationId              = $ApplicationId
+            TenantId                   = $TenantId
+            CertificateThumbprint      = $CertificateThumbprint
         }
     }
 }

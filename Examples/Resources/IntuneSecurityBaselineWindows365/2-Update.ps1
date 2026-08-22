@@ -24,22 +24,22 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineWindows365 'mySecurityBaselineWindows365'
+        IntuneSecurityBaselineWindows365 'IntuneSecurityBaselineWindows365-Example'
         {
-            DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineWindows365
+            DisplayName           = 'Windows 365 Security Baseline'
+            DeviceSettings        = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineWindows365
             {
                 Pol_MSS_DisableIPSourceRoutingIPv6 = '1'
-                DisableIPSourceRoutingIPv6 = '0'
+                DisableIPSourceRoutingIPv6         = '0'
                 HardenedUNCPaths_Pol_HardenedPaths = '1'
-                pol_hardenedPaths = @(
+                pol_hardenedPaths                  = @(
                     MSFT_MicrosoftGraphIntuneSettingsCatalogpol_hardenedpaths{
-                        Key = '\\*\SYSVOL'
+                        Key   = '\\*\SYSVOL'
                         Value = 'RequireMutualAuthentication=1,RequireIntegrity=1'
                     }
                 )
             }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineWindows365
+            UserSettings          = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineWindows365
             {
                 AllowWindowsSpotlight = '1' #drift
             }

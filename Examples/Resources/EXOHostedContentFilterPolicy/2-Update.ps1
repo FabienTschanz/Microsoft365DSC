@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedContentFilterPolicy 'ConfigureHostedContentFilterPolicy'
+        EXOHostedContentFilterPolicy 'EXOHostedContentFilterPolicy-Example'
         {
-            Identity                             = "Integration CFP"
+            Identity                             = "Standard Spam Filter"
             AddXHeaderValue                      = ""
             AdminDisplayName                     = ""
             BulkSpamAction                       = "MoveToJmf"
@@ -65,9 +65,9 @@ Configuration Example
             TestModeAction                       = "None"
             TestModeBccToRecipients              = @()
             Ensure                               = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                        = $ApplicationId
+            TenantId                             = $TenantId
+            CertificateThumbprint                = $CertificateThumbprint
         }
     }
 }

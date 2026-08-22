@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOOrgAssetsLibrary 'ConfigureOrgSiteAssets'
+        SPOOrgAssetsLibrary 'SPOOrgAssetsLibrary-Example'
         {
             LibraryUrl   = "https://contoso.sharepoint.com/sites/org/Branding"
             ThumbnailUrl = "https://contoso.sharepoint.com/sites/org/Branding/Logo/Owagroup.png"

@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedOutboundSpamFilterPolicy 'HostedOutboundSpamFilterPolicy'
+        EXOHostedOutboundSpamFilterPolicy 'EXOHostedOutboundSpamFilterPolicy-Example'
         {
-            Identity                                  = "Integration SFP"
+            Identity                                  = "Outbound Spam Limits"
             ActionWhenThresholdReached                = "BlockUserForToday"
             AdminDisplayName                          = ""
             AutoForwardingMode                        = "Automatic"
@@ -34,13 +34,13 @@ Configuration Example
             BccSuspiciousOutboundMail                 = $False
             NotifyOutboundSpam                        = $False
             NotifyOutboundSpamRecipients              = @()
-            #RecipientLimitExternalPerHour             = 0
-            #RecipientLimitInternalPerHour             = 1 # Updated Property
-            #RecipientLimitPerDay                      = 0
+            RecipientLimitExternalPerHour             = 500
+            RecipientLimitInternalPerHour             = 900 # Updated Property
+            RecipientLimitPerDay                      = 1000
             Ensure                                    = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                             = $ApplicationId
+            TenantId                                  = $TenantId
+            CertificateThumbprint                     = $CertificateThumbprint
         }
     }
 }

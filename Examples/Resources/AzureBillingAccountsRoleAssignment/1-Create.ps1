@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AzureBillingAccountsRoleAssignment "AzureBillingAccountsRoleAssignment"
+        AzureBillingAccountsRoleAssignment "AzureBillingAccountsRoleAssignment-Example"
         {
             ApplicationId         = $ApplicationId;
-            BillingAccount        = "MyTestAccount";
+            BillingAccount        = "Contoso Billing Account";
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
             PrincipalName         = "John.Smith@contoso.onmicrosoft.com";

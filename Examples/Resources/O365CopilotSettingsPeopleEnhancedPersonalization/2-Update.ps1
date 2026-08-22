@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        O365CopilotSettingsPeopleEnhancedPersonalization "O365CopilotSettingsPeopleEnhancedPersonalization"
+        O365CopilotSettingsPeopleEnhancedPersonalization "O365CopilotSettingsPeopleEnhancedPersonalization-Example"
         {
             ApplicationId           = $ApplicationId;
             CertificateThumbprint   = $CertificateThumbprint;

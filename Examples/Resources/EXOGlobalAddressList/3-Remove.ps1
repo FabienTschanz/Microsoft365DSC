@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOGlobalAddressList 'ConfigureGlobalAddressList'
+        EXOGlobalAddressList 'EXOGlobalAddressList-Example'
         {
-            Name                         = "Contoso Human Resources in Washington"
-            Ensure                       = "Absent"
+            Name                  = "Contoso Human Resources in Washington"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

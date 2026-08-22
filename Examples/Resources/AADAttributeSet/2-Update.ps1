@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADAttributeSet "AADAttributeSetTest"
+        AADAttributeSet "AADAttributeSet-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Description          = "Attribute set with 420 attributes";
-            Ensure               = "Present";
-            Id                   = "TestAttributeSet";
-            MaxAttributesPerSet  = 300; # Updated Property
+            Description           = "Attribute set with 420 attributes";
+            Ensure                = "Present";
+            Id                    = "Engineering";
+            MaxAttributesPerSet   = 300; # Updated Property
         }
     }
 }

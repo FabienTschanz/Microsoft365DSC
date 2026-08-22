@@ -24,21 +24,21 @@ Configuration Example
 
     Node localhost
     {
-        AADGroup 'DependantGroup'
+        AADGroup 'AADGroup-Example'
         {
-            DisplayName     = "MyGroup"
-            Description     = "Microsoft DSC Group"
-            SecurityEnabled = $True
-            MailEnabled     = $True
-            GroupTypes      = @("Unified")
-            MailNickname    = "MyGroup"
-            Visibility      = "Private"
-            Ensure          = "Present"
+            DisplayName           = "MyGroup"
+            Description           = "Collaboration group for the project management office"
+            SecurityEnabled       = $True
+            MailEnabled           = $True
+            GroupTypes            = @("Unified")
+            MailNickname          = "MyGroup"
+            Visibility            = "Private"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
         }
-        AADEntitlementManagementAccessPackageCatalogResource 'myAccessPackageCatalogResource'
+        AADEntitlementManagementAccessPackageCatalogResource 'AADEntitlementManagementAccessPackageCatalogResource-Example'
         {
             ApplicationId         = $ApplicationId;
             CatalogId             = "My Catalog";
@@ -48,7 +48,7 @@ Configuration Example
             OriginId              = 'MyGroup'
             AddedBy               = "admin@$TenantId";
             AddedOn               = "2026-01-01T00:00:00.0000000Z";
-            Description           = "Microsoft DSC Group";
+            Description           = "Collaboration group for the project management office";
             ResourceType          = "O365 Group";
             Url                   = "https://portal.azure.com/Microsoft_AAD_IAM/GroupDetailsMenuBlade/Overview/groupId/849b3661-61a8-44a8-92e7-fcc91d296235";
             Ensure                = "Present";

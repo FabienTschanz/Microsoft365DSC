@@ -24,16 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        EXOPartnerApplication 'ConfigurePartnerApplication'
+        EXOPartnerApplication 'EXOPartnerApplication-Example'
         {
             Name                                = "HRApp"
             ApplicationIdentifier               = "00000006-0000-0dd1-ac00-000000000000"
             AcceptSecurityIdentifierInformation = $true
+            AccountType                         = "OrganizationalAccount"
             Enabled                             = $True
             Ensure                              = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                       = $ApplicationId
+            TenantId                            = $TenantId
+            CertificateThumbprint               = $CertificateThumbprint
         }
     }
 }

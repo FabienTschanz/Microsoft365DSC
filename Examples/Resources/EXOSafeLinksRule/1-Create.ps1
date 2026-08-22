@@ -24,18 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeLinksRule 'ConfigureSafeLinksRule'
+        EXOSafeLinksRule 'EXOSafeLinksRule-Example'
         {
             Identity                  = "Research Department URL Rule"
             Comments                  = "Applies to Research Department, except managers"
             Enabled                   = $True
+            Priority                  = 0
+            ExceptIfRecipientDomainIs = @("fabrikam.com")
+            ExceptIfSentTo            = @("AlexW@$TenantId")
             ExceptIfSentToMemberOf    = "Executives@$TenantId"
+            RecipientDomainIs         = @("contoso.com")
             SafeLinksPolicy           = "Marketing Block URL"
+            SentTo                    = @("AdeleV@$TenantId")
             SentToMemberOf            = "LegalTeam@$TenantId"
             Ensure                    = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

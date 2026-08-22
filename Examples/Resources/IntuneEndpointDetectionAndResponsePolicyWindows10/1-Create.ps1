@@ -24,18 +24,18 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEndpointDetectionAndResponsePolicyWindows10 'myEDRPolicy'
+        IntuneEndpointDetectionAndResponsePolicyWindows10 'IntuneEndpointDetectionAndResponsePolicyWindows10-Example'
         {
-            DisplayName = 'Edr Policy'
-            Assignments = @()
-            Description = 'My revised description'
-            Ensure      = 'Present'
+            DisplayName           = 'Edr Policy'
+            Assignments           = @()
+            Description           = 'My revised description'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            ConfigurationBlob = "Blob"
-            ConfigurationType = "onboard"
-            SampleSharing = 1
+            ConfigurationBlob     = "Blob"
+            ConfigurationType     = "onboard"
+            SampleSharing         = 1
         }
     }
 }

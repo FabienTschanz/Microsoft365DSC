@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCleanupRuleV2 'Example'
+        IntuneDeviceCleanupRuleV2 'IntuneDeviceCleanupRuleV2-Example'
         {
             DisplayName           = "Rule 1";
             Ensure                = 'Absent';

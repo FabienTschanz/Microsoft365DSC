@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
+        IntuneSecurityBaselineMicrosoftEdge 'IntuneSecurityBaselineMicrosoftEdge-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Microsoft Edge Baseline'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -24,41 +24,41 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsLobAppAndroid "IntuneMobileAppsLobAppAndroid-Apk App"
+        IntuneMobileAppsLobAppAndroid "IntuneMobileAppsLobAppAndroid-Example"
         {
             ApplicationId                   = $ApplicationId;
-            Assignments          = @(
+            Assignments                     = @(
                 MSFT_DeviceManagementMobileAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '57b5e81c-85bb-4644-a4fd-33b03e451c89'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '57b5e81c-85bb-4644-a4fd-33b03e451c89'
+                    intent                                     = 'required'
                 }
             );
             Categories                      = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
+                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
                     DisplayName = "App Category 1"
                 }
             );
             CertificateThumbprint           = $CertificateThumbprint;
-            Description                     = "App.Example.apk";
+            Description                     = "Line-of-business Android application";
             Developer                       = "";
             DisplayName                     = "Apk App";
             MinimumSupportedOperatingSystem = MSFT_MicrosoftGraphAndroidMinimumOperatingSystem{
                 V10_0 = $True
             };
-            PackageId                       = "com.app.example";
+            PackageId                       = "com.contoso.lineofbusiness";
             TargetedPlatforms               = "androidDeviceAdministrator";
             InformationUrl                  = "";
             PrivacyInformationUrl           = "";
             Ensure                          = "Present";
-            FileName                        = "App.Example.apk";
+            FileName                        = "ContosoLineOfBusiness.apk";
             Id                              = "63271b78-0fa4-46b8-9ac0-d4b777555dde";
             IsFeatured                      = $False;
             Notes                           = "";
             Owner                           = "";
-            Publisher                       = "Microsoft";
+            Publisher                       = "Contoso";
             RoleScopeTagIds                 = @("0");
             TenantId                        = $TenantId;
         }

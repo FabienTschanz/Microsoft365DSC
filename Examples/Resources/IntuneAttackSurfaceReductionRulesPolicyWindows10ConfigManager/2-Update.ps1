@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager 'myASRReductionRules'
+        IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager 'IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager-Example'
         {
-            DisplayName = 'asr ConfigMgr'
+            DisplayName                                = 'asr ConfigMgr'
             blockadobereaderfromcreatingchildprocesses = "audit"; # Updated Property
-            Description = 'My revised description'
-            Ensure      = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            Description                                = 'My revised description'
+            Ensure                                     = 'Present'
+            ApplicationId                              = $ApplicationId;
+            TenantId                                   = $TenantId;
+            CertificateThumbprint                      = $CertificateThumbprint;
         }
     }
 }

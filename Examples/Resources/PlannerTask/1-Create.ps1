@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        PlannerTask 'ContosoPlannerTask'
+        PlannerTask 'PlannerTask-Example'
         {
             PlanId                = "1234567890"
             Title                 = "Contoso Task"

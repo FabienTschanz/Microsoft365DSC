@@ -16,12 +16,12 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTenantTrustedIPAddress 'Example'
+        TeamsTenantTrustedIPAddress 'TeamsTenantTrustedIPAddress-Example'
         {
-            Credential           = $Credscredential;
-            Ensure               = "Present";
-            Identity             = "10.2.34.3";
-            MaskBits             = 32;
+            Credential = $Credscredential;
+            Ensure     = "Present";
+            Identity   = "10.2.34.3";
+            MaskBits   = 32;
         }
     }
 }

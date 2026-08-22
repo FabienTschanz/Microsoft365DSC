@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOAvailabilityAddressSpace 'ConfigureAvailabilityAddressSpace'
+        EXOAvailabilityAddressSpace 'EXOAvailabilityAddressSpace-Example'
         {
             Identity              = 'Contoso.com'
             AccessMethod          = 'OrgWideFBToken'
-            ForestName            = 'example.contoso.com'
+            ForestName            = 'freebusy.contoso.com'
             TargetServiceEpr      = 'https://contoso.com/autodiscover/autodiscover.xml'
-            TargetTenantId        = 'o365dsc.onmicrosoft.com'
+            TargetTenantId        = 'fabrikam.onmicrosoft.com'
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

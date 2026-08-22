@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppProtectionPolicyiOS 'MyCustomiOSPolicy'
+        IntuneAppProtectionPolicyiOS 'IntuneAppProtectionPolicyiOS-Example'
         {
-            DisplayName                             = 'My DSC iOS App Protection Policy'
-            Ensure                                  = 'Absent'
+            DisplayName           = 'iOS App Protection - Corporate'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

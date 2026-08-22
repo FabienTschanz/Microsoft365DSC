@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10-Example'
         {
-            DisplayName          = 'WUfB Feature -dsc'
-            Assignments          = @()
-            Description          = 'test 2'
-            FeatureUpdateVersion = 'Windows 10, version 22H2'
-            RolloutSettings = MSFT_MicrosoftGraphwindowsUpdateRolloutSettings {
+            DisplayName           = 'Feature Updates - Windows 10 22H2'
+            Assignments           = @()
+            Description           = 'Holds managed devices on Windows 10 version 22H2'
+            FeatureUpdateVersion  = 'Windows 10, version 22H2'
+            RolloutSettings       = MSFT_MicrosoftGraphwindowsUpdateRolloutSettings {
                 OfferStartDateTimeInUTC = '2023-02-03T16:00:00.0000000+00:00'
             }
-            Ensure               = 'Present'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

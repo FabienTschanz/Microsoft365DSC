@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOTenantAllowBlockListSpoofItems "EXOTenantAllowBlockListSpoofItems-b66ffa0c-ad85-df9d-0a16-ad3cb9956f71"
+        EXOTenantAllowBlockListSpoofItems "EXOTenantAllowBlockListSpoofItems-Example"
         {
             Action                = "Allow";
             ApplicationId         = $ApplicationId;

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationSecureAssessmentPolicyWindows10 'Example'
+        IntuneDeviceConfigurationSecureAssessmentPolicyWindows10 'IntuneDeviceConfigurationSecureAssessmentPolicyWindows10-Example'
         {
-            DisplayName              = "Secure Assessment";
-            Ensure                   = "Absent";
+            DisplayName           = "Secure Assessment";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -23,33 +23,33 @@ Configuration Example
 
     Node localhost
     {
-        AADPermissionGrantPolicy 'CustomConsentPolicy'
+        AADPermissionGrantPolicy 'AADPermissionGrantPolicy-Example'
         {
-            Id           = "my-custom-consent-policy"
-            DisplayName  = "My Custom Consent Policy"
-            Description  = "Custom policy for app consent with specific conditions"
-            Includes     = @(
+            Id                    = "my-custom-consent-policy"
+            DisplayName           = "My Custom Consent Policy"
+            Description           = "Custom policy for app consent with specific conditions"
+            Includes              = @(
                 MSFT_AADPermissionGrantConditionSet {
-                    Id                              = "include-low-risk-delegated"
-                    PermissionType                  = "delegated"
-                    PermissionClassification        = "low"
-                    ClientApplicationIds            = @("all")
-                    ClientApplicationTenantIds      = @($TenantId)
-                    ClientApplicationPublisherIds   = @("all")
+                    Id                                          = "include-low-risk-delegated"
+                    PermissionType                              = "delegated"
+                    PermissionClassification                    = "low"
+                    ClientApplicationIds                        = @("all")
+                    ClientApplicationTenantIds                  = @($TenantId)
+                    ClientApplicationPublisherIds               = @("all")
                     ClientApplicationsFromVerifiedPublisherOnly = $false
-                    ResourceApplication             = "00000003-0000-0000-c000-000000000000"
-                    Permissions                     = @("User.Read", "openid", "profile")
+                    ResourceApplication                         = "00000003-0000-0000-c000-000000000000"
+                    Permissions                                 = @("User.Read", "openid", "profile")
                 }
                 MSFT_AADPermissionGrantConditionSet {
-                    Id                              = "include-verified-publishers"
-                    PermissionType                  = "delegated"
-                    ClientApplicationIds            = @("all")
+                    Id                                          = "include-verified-publishers"
+                    PermissionType                              = "delegated"
+                    ClientApplicationIds                        = @("all")
                     ClientApplicationsFromVerifiedPublisherOnly = $true
-                    ResourceApplication             = "any"
-                    Permissions                     = @("all")
+                    ResourceApplication                         = "any"
+                    Permissions                                 = @("all")
                 }
             )
-            Excludes     = @(
+            Excludes              = @(
                 MSFT_AADPermissionGrantConditionSet {
                     Id                       = "exclude-high-risk-permissions"
                     PermissionType           = "delegated"

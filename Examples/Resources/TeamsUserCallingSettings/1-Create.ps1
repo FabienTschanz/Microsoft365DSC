@@ -15,13 +15,13 @@ Configuration Example
 
     Node localhost
     {
-        TeamsUserCallingSettings 'AssignCallingSettings'
+        TeamsUserCallingSettings 'TeamsUserCallingSettings-Example'
         {
-            CallGroupOrder       = "Simultaneous";
-            Credential           = $credsCredential;
-            Ensure               = "Present";
-            Identity             = "John.Smith@contoso.com";
-            UnansweredDelay      = "00:00:20";
+            CallGroupOrder  = "Simultaneous";
+            Credential      = $credsCredential;
+            Ensure          = "Present";
+            Identity        = "John.Smith@contoso.com";
+            UnansweredDelay = "00:00:20";
         }
     }
 }

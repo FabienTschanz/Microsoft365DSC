@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneTrustedRootCertificateAndroidDeviceOwner "ConfigureIntuneTrustedRootCertificateAndroidDeviceOwner"
+        IntuneTrustedRootCertificateAndroidDeviceOwner "IntuneTrustedRootCertificateAndroidDeviceOwner-Example"
         {
             Description            = "IntuneTrustedRootCertificateAndroidDeviceOwner Description";
             DisplayName            = "IntuneTrustedRootCertificateAndroidDeviceOwner DisplayName";

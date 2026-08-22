@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOArcConfig "EXOArcConfig-Test"
+        EXOArcConfig "EXOArcConfig-Example"
         {
-            ArcTrustedSealers                        = "contoso.com";
-            IsSingleInstance                         = "Yes";
-            TenantId                                 = $TenantId;
-            CertificateThumbprint                    = $CertificateThumbprint;
-            ApplicationId                            = $ApplicationId;
+            ArcTrustedSealers     = "contoso.com";
+            IsSingleInstance      = "Yes";
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId         = $ApplicationId;
         }
     }
 }

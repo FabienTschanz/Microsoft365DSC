@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        VivaEngagementRoleMember "VivaEngagementRoleMember-Network Admin"
+        VivaEngagementRoleMember "VivaEngagementRoleMember-Example1"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
@@ -32,7 +32,7 @@ Configuration Example
             Role                  = "Network Admin";
             TenantId              = $TenantId;
         }
-        VivaEngagementRoleMember "VivaEngagementRoleMember-Verified Admin"
+        VivaEngagementRoleMember "VivaEngagementRoleMember-Example2"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
@@ -40,7 +40,7 @@ Configuration Example
             Role                  = "Verified Admin";
             TenantId              = $TenantId;
         }
-        VivaEngagementRoleMember "VivaEngagementRoleMember-Corporate Communicator"
+        VivaEngagementRoleMember "VivaEngagementRoleMember-Example3"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

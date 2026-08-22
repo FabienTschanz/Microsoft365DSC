@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementRoleAssignment "AADEntitlementManagementRoleAssignment-Remove"
+        AADEntitlementManagementRoleAssignment "AADEntitlementManagementRoleAssignment-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

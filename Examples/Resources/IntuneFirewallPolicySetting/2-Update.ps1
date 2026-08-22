@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneFirewallPolicySetting "IntuneFirewallPolicySetting-IntuneFirewallPolicySetting_1"
+        IntuneFirewallPolicySetting "IntuneFirewallPolicySetting-Example"
         {
             Description           = "";
             DisplayName           = "IntuneFirewallPolicySetting_1";
             Ensure                = "Present";
             PolicySettings        = @(
                 MSFT_ReusableFirewallPolicySetting{
-                    Keyword = "ReusableSetting1"
+                    Keyword     = "ReusableSetting1"
                     AutoResolve = $True # Updated property
                 }
             );

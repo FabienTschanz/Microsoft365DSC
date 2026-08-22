@@ -27,7 +27,7 @@ Configuration Example
         {
             Assignments           = @();
             Description           = "";
-            DisplayName           = "Example";
+            DisplayName           = "Outlook for Android - Managed Configuration";
             Ensure                = "Present";
             Id                    = "0000000-0000-0000-0000-000000000000";
             ConnectedAppsEnabled  = $true;
@@ -35,13 +35,13 @@ Configuration Example
             PayloadJson           = "Base64 encoded settings"
             PermissionActions     = @(
                 MSFT_MicrosoftGraphAndroidPermissionAction{
-                    Action = "prompt"
+                    Action     = "prompt"
                     Permission = "android.permission.READ_CALENDAR"
                 }
             ) # Updated property
             ProfileApplicability  = "default"
             RoleScopeTagIds       = @("0");
-            TargetedMobileApps    = @("<Mobile App Id>");
+            TargetedMobileApps    = @("<mobile-app-id>");
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

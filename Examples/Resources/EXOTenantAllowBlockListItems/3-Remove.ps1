@@ -24,17 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOTenantAllowBlockListItems "Example"
+        EXOTenantAllowBlockListItems "EXOTenantAllowBlockListItems-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
             Action                = "Block";
             Ensure                = "Absent";
-            ExpirationDate        = "10/11/2024 9:00:00 PM";
-            ListSubType           = "Tenant";
             ListType              = "Sender";
-            Notes                 = "Test block";
             Value                 = "example.com";
         }
     }

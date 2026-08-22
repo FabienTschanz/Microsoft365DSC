@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        AzureBillingAccountsAssociatedTenant "AzureBillingAccountsAssociatedTenantIntegration Tenant"
+        AzureBillingAccountsAssociatedTenant "AzureBillingAccountsAssociatedTenant-Example"
         {
             ApplicationId               = $ApplicationId;
             AssociatedTenantId          = "7a575036-2dac-4713-8e23-2963cc2c5f37";
-            BillingAccount              = "My Test Account";
+            BillingAccount              = "Contoso Enterprise Agreement";
             BillingManagementState      = "Active";
             CertificateThumbprint       = $CertificateThumbprint;
-            DisplayName                 = "Integration Tenant";
+            DisplayName                 = "Contoso Manufacturing";
             Ensure                      = "Present";
             ProvisioningManagementState = "Pending";
             TenantId                    = $TenantId;

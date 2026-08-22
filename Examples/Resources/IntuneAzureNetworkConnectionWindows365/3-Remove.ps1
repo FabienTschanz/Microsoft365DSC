@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAzureNetworkConnectionWindows365 "IntuneAzureNetworkConnectionWindows365-IntuneWindows365AzureNetworkConnection_Hybrid"
+        IntuneAzureNetworkConnectionWindows365 "IntuneAzureNetworkConnectionWindows365-Example1"
         {
             AdDomainName          = "contoso.com";
             AdDomainUsername      = "username@contoso.com";
@@ -32,7 +32,7 @@ Configuration Example
             ConnectionType        = "hybridAzureADJoin";
             DisplayName           = "IntuneWindows365AzureNetworkConnection_Hybrid";
             Ensure                = "Absent";
-            OrganizationalUnit    = "OU=Test,DC=contoso,DC=com";
+            OrganizationalUnit    = "OU=CloudPCs,OU=Devices,DC=contoso,DC=com";
             ResourceGroupId       = "/subscriptions/subscription-name/resourceGroups/resource-group-name";
             SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name/subnets/default";
             SubscriptionName      = "subscription-name";
@@ -41,7 +41,7 @@ Configuration Example
             CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
         }
-        IntuneAzureNetworkConnectionWindows365 "IntuneAzureNetworkConnectionWindows365-IntuneWindows365AzureNetworkConnection_Entra"
+        IntuneAzureNetworkConnectionWindows365 "IntuneAzureNetworkConnectionWindows365-Example2"
         {
             ConnectionType        = "azureADJoin";
             DisplayName           = "IntuneWindows365AzureNetworkConnection_Entra_1";

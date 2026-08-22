@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOTheme 'ConfigureSharePointTheme'
+        SPOTheme 'SPOTheme-Example'
         {
             Name       = "PSTheme1"
             IsInverted = $false

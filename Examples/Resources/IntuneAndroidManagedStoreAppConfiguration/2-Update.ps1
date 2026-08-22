@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAndroidManagedStoreAppConfiguration "ConfigureIntuneAndroidManagedStoreAppConfiguration"
+        IntuneAndroidManagedStoreAppConfiguration "IntuneAndroidManagedStoreAppConfiguration-Example"
         {
             Description           = "IntuneAndroidManagedStoreAppConfiguration Description";
             DisplayName           = "IntuneAndroidManagedStoreAppConfiguration DisplayName";
@@ -34,15 +34,15 @@ Configuration Example
             payloadJson           = "";
             permissionActions     = @(
                 MSFT_androidPermissionAction{
-                    action = 'prompt'
+                    action     = 'prompt'
                     permission = 'android.permission.RECEIVE_SMS'
                 }
                 MSFT_androidPermissionAction{
-                    action = 'prompt'
+                    action     = 'prompt'
                     permission = 'android.permission.READ_SMS'
                 }
                 MSFT_androidPermissionAction{
-                    action = 'prompt'
+                    action     = 'prompt'
                     permission = 'android.permission.RECEIVE_WAP_PUSH'
                 }
             );

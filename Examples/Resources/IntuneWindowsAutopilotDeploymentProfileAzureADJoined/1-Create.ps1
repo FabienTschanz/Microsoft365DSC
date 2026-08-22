@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsAutopilotDeploymentProfileAzureADJoined 'Example'
+        IntuneWindowsAutopilotDeploymentProfileAzureADJoined 'IntuneWindowsAutopilotDeploymentProfileAzureADJoined-Example'
         {
             Assignments                = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             Description                = "";
-            DeviceNameTemplate         = "test";
+            DeviceNameTemplate         = "CONTOSO-%RAND:6%";
             DeviceType                 = "windowsPc";
             DisplayName                = "AAD";
             EnableWhiteGlove           = $True;
@@ -41,16 +41,16 @@ Configuration Example
             ExtractHardwareHash        = $True;
             Language                   = "";
             OutOfBoxExperienceSettings = MSFT_MicrosoftGraphoutOfBoxExperienceSettings1{
-                HideEULA = $False
-                HideEscapeLink = $True
-                HidePrivacySettings = $True
-                DeviceUsageType = 'singleUser'
+                HideEULA                  = $False
+                HideEscapeLink            = $True
+                HidePrivacySettings       = $True
+                DeviceUsageType           = 'singleUser'
                 SkipKeyboardSelectionPage = $True
-                UserType = 'administrator'
+                UserType                  = 'administrator'
             };
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId              = $ApplicationId;
+            TenantId                   = $TenantId;
+            CertificateThumbprint      = $CertificateThumbprint;
         }
     }
 }

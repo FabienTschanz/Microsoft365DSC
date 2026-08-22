@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsFeedbackPolicy 'Example'
+        TeamsFeedbackPolicy 'TeamsFeedbackPolicy-Example'
         {
             AllowEmailCollection      = $False;
             AllowLogCollection        = $False;

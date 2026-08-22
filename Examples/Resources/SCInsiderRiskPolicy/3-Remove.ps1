@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        SCInsiderRiskPolicy "SCInsiderRiskPolicy-IRM_Tenant_Setting"
+        SCInsiderRiskPolicy "SCInsiderRiskPolicy-Example"
         {
-            ApplicationId                                 = $ApplicationId;
-            CertificateThumbprint                         = $CertificateThumbprint;
-            Ensure                                        = "Absent";
-            InsiderRiskScenario                           = "TenantSetting";
-            Name                                          = "IRM_Tenant_Setting";
-            TenantId                                      = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            InsiderRiskScenario   = "TenantSetting";
+            Name                  = "IRM_Tenant_Setting";
+            TenantId              = $TenantId;
         }
     }
 }

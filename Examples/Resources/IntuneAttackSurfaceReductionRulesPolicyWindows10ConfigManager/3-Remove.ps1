@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager 'myASRReductionRules'
+        IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager 'IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager-Example'
         {
-            DisplayName = 'asr ConfigMgr'
-            Ensure      = 'Absent'
+            DisplayName           = 'asr ConfigMgr'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

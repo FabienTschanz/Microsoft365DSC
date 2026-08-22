@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAdminConsentRequestPolicy "AADAdminConsentRequestPolicy"
+        AADAdminConsentRequestPolicy "AADAdminConsentRequestPolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

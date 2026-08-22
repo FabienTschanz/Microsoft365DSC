@@ -24,54 +24,54 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsBundleMacOS "IntuneMobileAppsBundleMacOS-Pkg App"
+        IntuneMobileAppsBundleMacOS "IntuneMobileAppsBundleMacOS-Example"
         {
-            Description           = "macOS Pkg App Description";
-            Developer             = "Contoso";
-            DisplayName           = "macOS Pkg App";
-            Ensure                = "Present";
-            InformationUrl        = "";
-            IsFeatured            = $False;
+            Description                     = "macOS Pkg App Description";
+            Developer                       = "Contoso";
+            DisplayName                     = "macOS Pkg App";
+            Ensure                          = "Present";
+            InformationUrl                  = "";
+            IsFeatured                      = $False;
             MinimumSupportedOperatingSystem = MSFT_MicrosoftGraphMacOSMinimumOperatingSystem{
-                V10_7 = $False
-                V10_8 = $False
-                V10_9 = $False
+                V10_7  = $False
+                V10_8  = $False
+                V10_9  = $False
                 V10_10 = $False
                 V10_11 = $False
                 V10_12 = $False
                 V10_13 = $False # Drift
                 V10_14 = $True # Drift
                 V10_15 = $False
-                V11_0 = $False
-                V12_0 = $False
-                V13_0 = $False
-                V14_0 = $False
-                V15_0 = $False
+                V11_0  = $False
+                V12_0  = $False
+                V13_0  = $False
+                V14_0  = $False
+                V15_0  = $False
             };
-            Notes                 = "";
-            Owner                 = "";
-            PrivacyInformationUrl = "";
-            Publisher             = "Contoso";
-            Assignments          = @(
+            Notes                           = "";
+            Owner                           = "";
+            PrivacyInformationUrl           = "";
+            Publisher                       = "Contoso";
+            Assignments                     = @(
                 MSFT_DeviceManagementMobileAppAssignment {
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
                 }
             );
-            Categories             = @(
+            Categories                      = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
+                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
                     DisplayName = "App Category 1"
                 }
             );
-            PackageFileType       = "Pkg";
-            PostInstallScript     = "#! Post-install script";
-            PreInstallScript      = "#! Pre-install script";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            PackageFileType                 = "Pkg";
+            PostInstallScript               = "#! Post-install script";
+            PreInstallScript                = "#! Pre-install script";
+            ApplicationId                   = $ApplicationId;
+            TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationCustomPolicyiOS "ConfigureIntuneDeviceConfigurationCustomPolicyiOS"
+        IntuneDeviceConfigurationCustomPolicyiOS "IntuneDeviceConfigurationCustomPolicyiOS-Example"
         {
-            Description            = "IntuneDeviceConfigurationCustomPolicyiOS Description";
-            DisplayName            = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
-            Ensure                 = "Absent";
-            ApplicationId          = $ApplicationId;
-            TenantId               = $TenantId;
-            CertificateThumbprint  = $CertificateThumbprint;
+            Description           = "IntuneDeviceConfigurationCustomPolicyiOS Description";
+            DisplayName           = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
+            Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

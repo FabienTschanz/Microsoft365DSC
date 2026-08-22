@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsCallHoldPolicy 'Example'
+        TeamsCallHoldPolicy 'TeamsCallHoldPolicy-Example'
         {
             Identity              = 'Global'
             Ensure                = 'Present'

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSecOpsOverrideRule "EXOSecOpsOverrideRule-_Exe:SecOpsOverrid:ca3c51ac-925c-49f4-af42-43e26b874245"
+        EXOSecOpsOverrideRule "EXOSecOpsOverrideRule-Example"
         {
-            Ensure               = "Absent";
-            Identity             = "_Exe:SecOpsOverrid:ca3c51ac-925c-49f4-af42-43e26b874245";
+            Ensure   = "Absent";
+            Identity = "_Exe:SecOpsOverrid:ca3c51ac-925c-49f4-af42-43e26b874245";
         }
     }
 }

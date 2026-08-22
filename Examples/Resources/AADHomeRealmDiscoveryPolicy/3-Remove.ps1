@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADHomeRealmDiscoveryPolicy "AADHomeRealmDiscoveryPolicy-displayName-value"
+        AADHomeRealmDiscoveryPolicy "AADHomeRealmDiscoveryPolicy-Example"
         {
             DisplayName           = "displayName-value";
             Ensure                = "Absent";

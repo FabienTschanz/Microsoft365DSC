@@ -16,12 +16,12 @@ Configuration Example
 
     Node localhost
     {
-        TeamsCortanaPolicy 'Example'
+        TeamsCortanaPolicy 'TeamsCortanaPolicy-Example'
         {
-            CortanaVoiceInvocationMode       = "WakeWordPushToTalkUserOverride";
-            Credential                       = $Credscredential;
-            Ensure                           = "Present";
-            Identity                         = "Global";
+            CortanaVoiceInvocationMode = "WakeWordPushToTalkUserOverride";
+            Credential                 = $Credscredential;
+            Ensure                     = "Present";
+            Identity                   = "Global";
         }
     }
 }

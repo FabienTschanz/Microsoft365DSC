@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOFocusedInbox "EXOFocusedInbox-Test"
+        EXOFocusedInbox "EXOFocusedInbox-Example"
         {
-            Ensure                       = "Present";
-            FocusedInboxOn               = $False; # Updated Property
-            Identity                     = "admin@$TenantId";
-            ApplicationId                = $ApplicationId;
-            TenantId                     = $TenantId;
-            CertificateThumbprint        = $CertificateThumbprint;
+            Ensure                = "Present";
+            FocusedInboxOn        = $False; # Updated Property
+            Identity              = "admin@$TenantId";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
 
     }

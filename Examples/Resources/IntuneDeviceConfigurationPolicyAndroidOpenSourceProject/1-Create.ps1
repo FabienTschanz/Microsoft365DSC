@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyAndroidOpenSourceProject 'myAndroidOpenSourceProjectPolicy'
+        IntuneDeviceConfigurationPolicyAndroidOpenSourceProject 'IntuneDeviceConfigurationPolicyAndroidOpenSourceProject-Example'
         {
             DisplayName               = 'aosp'
             Assignments               = @(
@@ -39,9 +39,9 @@ Configuration Example
             ScreenCaptureBlocked      = $True
             StorageBlockExternalMedia = $True
             Ensure                    = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId             = $ApplicationId;
+            TenantId                  = $TenantId;
+            CertificateThumbprint     = $CertificateThumbprint;
         }
     }
 }

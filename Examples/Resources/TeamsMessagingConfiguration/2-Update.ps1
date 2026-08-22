@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMessagingConfiguration 'Global'
+        TeamsMessagingConfiguration 'TeamsMessagingConfiguration-Example'
         {
             ContentBasedPhishingCheck         = "Disabled";
             CustomEmojis                      = $True;

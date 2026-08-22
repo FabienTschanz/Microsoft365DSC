@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADIdentityProtectionPolicySettings "AADIdentityProtectionPolicySettings"
+        AADIdentityProtectionPolicySettings "AADIdentityProtectionPolicySettings-Example"
         {
             IsUserRiskClearedOnPasswordReset = $false; #drift
-            IsSingleInstance              = "Yes";
-            ApplicationId                 = $ApplicationId
-            TenantId                      = $TenantId
-            CertificateThumbprint         = $CertificateThumbprint
+            IsSingleInstance                 = "Yes";
+            ApplicationId                    = $ApplicationId
+            TenantId                         = $TenantId
+            CertificateThumbprint            = $CertificateThumbprint
         }
 
     }

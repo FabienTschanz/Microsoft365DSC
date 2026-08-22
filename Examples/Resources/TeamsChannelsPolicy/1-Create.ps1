@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        TeamsChannelsPolicy 'ConfigureChannelsPolicy'
+        TeamsChannelsPolicy 'TeamsChannelsPolicy-Example'
         {
             Identity                                      = 'New Channels Policy'
-            Description                                   = 'This is an example'
+            Description                                   = 'Enables private and shared channels for project teams'
             AllowChannelSharingToExternalUser             = $True
             AllowOrgWideTeamCreation                      = $True
             EnablePrivateTeamDiscovery                    = $True

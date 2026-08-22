@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsMicrosoftStoreAppWindows10 "IntuneMobileAppsMicrosoftStoreAppWindows10-PowerShell"
+        IntuneMobileAppsMicrosoftStoreAppWindows10 "IntuneMobileAppsMicrosoftStoreAppWindows10-Example"
         {
             Description           = "PowerShell Description";
             Developer             = "";
@@ -39,17 +39,17 @@ Configuration Example
             PackageIdentifier     = "9MZ1SNWT0N5D";
             PrivacyInformationUrl = "https://github.com/PowerShell/PowerShell#telemetry";
             Publisher             = "Microsoft Corporation";
-            Assignments          = @(
+            Assignments           = @(
                 MSFT_DeviceManagementWingetMobileAppAssignment {
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
                 }
             );
-            Categories             = @(
+            Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
+                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
                     DisplayName = "App Category 1"
                 }
             );

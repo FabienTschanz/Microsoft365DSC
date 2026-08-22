@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        SentinelAlertRule "SentinelAlertRule-MyNRTRule"
+        SentinelAlertRule "SentinelAlertRule-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "Test";
+            Description           = "Raises an incident when a cloud application is accessed from an unrecognised location";
             DisplayName           = "MyNRTRule";
             Ensure                = "Absent";
             ResourceGroupName     = "ResourceGroupName";
             Severity              = "Medium";
-            SubscriptionId        = "xxxx";
+            SubscriptionId        = "<subscription-id>";
             TenantId              = $TenantId;
             WorkspaceName         = "SentinelWorkspace";
         }

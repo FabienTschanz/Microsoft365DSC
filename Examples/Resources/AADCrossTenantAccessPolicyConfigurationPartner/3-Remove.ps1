@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADCrossTenantAccessPolicyConfigurationPartner "AADCrossTenantAccessPolicyConfigurationPartner"
+        AADCrossTenantAccessPolicyConfigurationPartner "AADCrossTenantAccessPolicyConfigurationPartner-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                   = "Absent";
-            PartnerTenantId          = "e7a80bcf-696e-40ca-8775-a7f85fbb3ebc";
+            Ensure                = "Absent";
+            PartnerTenantId       = "e7a80bcf-696e-40ca-8775-a7f85fbb3ebc";
         }
     }
 }

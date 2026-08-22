@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsIPPhonePolicy 'Example'
+        TeamsIPPhonePolicy 'TeamsIPPhonePolicy-Example'
         {
             AllowBetterTogether            = "Enabled";
             AllowHomeScreen                = "EnabledUserOverride";

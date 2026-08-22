@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceComplianceScriptWindows10 'Example'
+        IntuneDeviceComplianceScriptWindows10 'IntuneDeviceComplianceScriptWindows10-Example'
         {
             DisplayName           = "custom";
             Ensure                = "Absent";

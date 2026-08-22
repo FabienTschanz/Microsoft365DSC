@@ -15,19 +15,19 @@ Configuration Example
 
     Node localhost
     {
-        TeamsUpdateManagementPolicy TestPolicy
+        TeamsUpdateManagementPolicy "TeamsUpdateManagementPolicy-Example"
         {
-            AllowManagedUpdates  = $False;
-            AllowPreview         = $False;
-            AllowPublicPreview   = "Enabled";
-            Credential           = $Credscredential;
-            Description          = "Test";
-            Ensure               = "Present";
-            Identity             = "MyTestPolicy";
-            UpdateDayOfWeek      = 1;
-            UpdateTime           = "18:00";
-            UpdateTimeOfDay      = "2022-05-06T18:00:00";
-            UseNewTeamsClient    = 'MicrosoftChoice'
+            AllowManagedUpdates = $False;
+            AllowPreview        = $False;
+            AllowPublicPreview  = "Enabled";
+            Credential          = $Credscredential;
+            Description         = "Controls the Teams client update rollout for early adopters";
+            Ensure              = "Present";
+            Identity            = "EarlyAdopters";
+            UpdateDayOfWeek     = 1;
+            UpdateTime          = "18:00";
+            UpdateTimeOfDay     = "2022-05-06T18:00:00";
+            UseNewTeamsClient   = 'MicrosoftChoice'
         }
     }
 }

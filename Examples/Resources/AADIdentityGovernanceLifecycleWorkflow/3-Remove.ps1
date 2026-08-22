@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADIdentityGovernanceLifecycleWorkflow "AADIdentityGovernanceLifecycleWorkflow-Onboard pre-hire employee updated version"
+        AADIdentityGovernanceLifecycleWorkflow "AADIdentityGovernanceLifecycleWorkflow-Example"
         {
             DisplayName           = "Onboard pre-hire employee updated version";
             Ensure                = "Absent";

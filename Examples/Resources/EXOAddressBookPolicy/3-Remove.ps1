@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAddressBookPolicy 'ConfigureAddressBookPolicy'
+        EXOAddressBookPolicy 'EXOAddressBookPolicy-Example'
         {
-            Name                 = "All Fabrikam ABP"
-            Ensure               = "Absent"
+            Name                  = "All Fabrikam ABP"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

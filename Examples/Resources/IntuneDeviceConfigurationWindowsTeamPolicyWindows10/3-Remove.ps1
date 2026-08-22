@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationWindowsTeamPolicyWindows10 'Example'
+        IntuneDeviceConfigurationWindowsTeamPolicyWindows10 'IntuneDeviceConfigurationWindowsTeamPolicyWindows10-Example'
         {
-            DisplayName                            = "Device restrictions (Windows 10 Team)";
-            Ensure                                 = "Absent";
+            DisplayName           = "Device restrictions (Windows 10 Team)";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -23,22 +23,22 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceRemediation 'ConfigureDeviceRemediation'
+        IntuneDeviceRemediation 'IntuneDeviceRemediation-Example'
         {
             Assignments              = @(
                 MSFT_IntuneDeviceRemediationPolicyAssignments{
-                    RunSchedule = MSFT_IntuneDeviceRemediationRunSchedule{
-                        Date = '2024-01-01'
-                        Time = '01:00:00'
+                    RunSchedule          = MSFT_IntuneDeviceRemediationRunSchedule{
+                        Date     = '2024-01-01'
+                        Time     = '01:00:00'
                         Interval = 1
                         DataType = '#microsoft.graph.deviceHealthScriptRunOnceSchedule'
-                        UseUtc = $False
+                        UseUtc   = $False
                     }
                     RunRemediationScript = $False
-                    Assignment = MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    Assignment           = MSFT_DeviceManagementConfigurationPolicyAssignments{
                         deviceAndAppManagementAssignmentFilterType = 'none'
-                        dataType = '#microsoft.graph.groupAssignmentTarget'
-                        groupId = '11111111-1111-1111-1111-111111111111'
+                        dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                        groupId                                    = '11111111-1111-1111-1111-111111111111'
                     }
                 }
             );
@@ -53,9 +53,9 @@ Configuration Example
             RoleScopeTagIds          = @("0");
             RunAs32Bit               = $True;
             RunAsAccount             = "system";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId            = $ApplicationId;
+            TenantId                 = $TenantId;
+            CertificateThumbprint    = $CertificateThumbprint;
         }
     }
 }

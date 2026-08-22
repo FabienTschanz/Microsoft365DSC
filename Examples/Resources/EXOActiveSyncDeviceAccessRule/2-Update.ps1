@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOActiveSyncDeviceAccessRule 'ConfigureActiveSyncDeviceAccessRule'
+        EXOActiveSyncDeviceAccessRule 'EXOActiveSyncDeviceAccessRule-Example'
         {
-            Identity             = "ContosoPhone(DeviceOS)"
-            Characteristic       = "DeviceModel" # Updated Property
-            QueryString          = "iOS 6.1 10B145"
-            AccessLevel          = "Allow"
-            Ensure               = "Present"
+            Identity              = "ContosoPhone(DeviceOS)"
+            Characteristic        = "DeviceModel" # Updated Property
+            QueryString           = "iOS 6.1 10B145"
+            AccessLevel           = "Allow"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

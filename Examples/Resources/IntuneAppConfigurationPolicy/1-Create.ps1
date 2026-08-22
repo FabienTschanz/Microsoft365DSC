@@ -23,11 +23,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppConfigurationPolicy 'AddAppConfigPolicy'
+        IntuneAppConfigurationPolicy 'IntuneAppConfigurationPolicy-Example'
         {
-            DisplayName          = 'ContosoNew'
-            Description          = 'New Contoso Policy'
-            CustomSettings       = @(
+            DisplayName           = 'ContosoNew'
+            Description           = 'New Contoso Policy'
+            CustomSettings        = @(
                 MSFT_IntuneAppConfigurationPolicyCustomSetting {
                     name  = 'com.microsoft.intune.mam.managedbrowser.BlockListURLs'
                     value = 'https://www.aol.com'
@@ -37,10 +37,10 @@ Configuration Example
                     value = 'Outlook Web|https://outlook.office.com||Bing|https://www.bing.com'
                 }
                 MSFT_IntuneAppConfigurationPolicyCustomSetting {
-                    name  = 'Test'
-                    value = 'TestValue'
+                    name  = 'com.microsoft.intune.mam.managedbrowser.homepage'
+                    value = 'https://intranet.contoso.com'
                 });
-            Ensure      = 'Present'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

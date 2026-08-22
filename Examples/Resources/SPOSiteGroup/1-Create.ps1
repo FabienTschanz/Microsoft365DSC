@@ -16,10 +16,10 @@ Configuration Example
 
     Node localhost
     {
-        SPOSiteGroup 'ConfigureTestSiteGroup1'
+        SPOSiteGroup 'SPOSiteGroup-Example'
         {
-            Url              = "https://contoso.sharepoint.com/sites/testsite1"
-            Identity         = "TestSiteGroup1"
+            Url              = "https://contoso.sharepoint.com/sites/marketing"
+            Identity         = "Contoso Site Owners"
             Owner            = "admin@contoso.onmicrosoft.com"
             PermissionLevels = @("Edit", "Read")
             Ensure           = "Present"

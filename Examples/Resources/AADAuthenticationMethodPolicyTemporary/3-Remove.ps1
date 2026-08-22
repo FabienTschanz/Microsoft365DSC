@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyTemporary "AADAuthenticationMethodPolicyTemporary-TemporaryAccessPass"
+        AADAuthenticationMethodPolicyTemporary "AADAuthenticationMethodPolicyTemporary-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                   = "Absent";
-            Id                       = "TemporaryAccessPass";
+            Ensure                = "Absent";
+            Id                    = "TemporaryAccessPass";
         }
     }
 }

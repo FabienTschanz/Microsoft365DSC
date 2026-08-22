@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedOutboundSpamFilterPolicy 'HostedOutboundSpamFilterPolicy'
+        EXOHostedOutboundSpamFilterPolicy 'EXOHostedOutboundSpamFilterPolicy-Example'
         {
-            Identity                                  = "Integration SFP"
-            Ensure                                    = "Absent"
+            Identity              = "Outbound Spam Limits"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

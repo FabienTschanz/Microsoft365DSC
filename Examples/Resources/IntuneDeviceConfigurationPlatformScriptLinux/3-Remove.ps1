@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPlatformScriptLinux 'IntuneDeviceConfigurationPlatformScriptLinux_1'
+        IntuneDeviceConfigurationPlatformScriptLinux 'IntuneDeviceConfigurationPlatformScriptLinux-Example'
         {
-            DisplayName          = "IntuneDeviceConfigurationPlatformScriptLinux_1";
-            Ensure               = "Absent";
+            DisplayName           = "IntuneDeviceConfigurationPlatformScriptLinux_1";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

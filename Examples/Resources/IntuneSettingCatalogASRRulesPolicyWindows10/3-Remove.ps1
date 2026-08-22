@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSettingCatalogASRRulesPolicyWindows10 'myASRRulesPolicy'
+        IntuneSettingCatalogASRRulesPolicyWindows10 'IntuneSettingCatalogASRRulesPolicyWindows10-Example'
         {
-            DisplayName                                                                = 'asr 2'
-            Ensure                                                                     = 'Absent'
+            DisplayName           = 'Attack Surface Reduction Rules'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

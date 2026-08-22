@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOMobileDeviceMailboxPolicy 'ConfigureMobileDeviceMailboxPolicy'
+        EXOMobileDeviceMailboxPolicy 'EXOMobileDeviceMailboxPolicy-Example'
         {
-            Name                                     = "Default"
-            Ensure                                   = "Absent"
+            Name                  = "Default"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

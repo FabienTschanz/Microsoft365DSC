@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOSearchManagedProperty 'ConfigureSearchMP'
+        SPOSearchManagedProperty 'SPOSearchManagedProperty-Example'
         {
             Searchable                  = $True
             FullTextIndex               = ""
@@ -26,7 +26,7 @@ Configuration Example
             AllowMultipleValues         = $True
             Aliases                     = $True
             Queryable                   = $True
-            Name                        = "TestManagedProperty"
+            Name                        = "ContosoDepartment"
             Safe                        = $True
             Description                 = "Description of item"
             FinerQueryTokenization      = $True

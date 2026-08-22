@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsUser 'ConfigureTeamsUser'
+        TeamsUser 'TeamsUser-Example'
         {
             TeamName   = "SuperSecretTeam"
             User       = "jdoe@contoso.com"

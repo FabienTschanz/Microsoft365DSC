@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneTermsAndConditions "IntuneTermsAndConditions-IntuneTermsAndConditions_1"
+        IntuneTermsAndConditions "IntuneTermsAndConditions-Example"
         {
             ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
             CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;

@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SCProtectionAlert 'CustomSuspiciousEmailSendingPatternDetected'
+        SCProtectionAlert 'SCProtectionAlert-Example'
         {
             AggregationType         = "None";
             Category                = "ThreatManagement";

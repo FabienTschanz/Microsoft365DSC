@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFilteringProfile "AADFilteringProfile-My Profile"
+        AADFilteringProfile "AADFilteringProfile-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
@@ -33,16 +33,16 @@ Configuration Example
             Name                  = "My PRofile";
             Policies              = @(
                 MSFT_AADFilteringProfilePolicyLink{
-                    Priority = 100
+                    Priority     = 100
                     LoggingState = 'enabled'
-                    PolicyName = 'MyPolicyChoseBine'
-                    State = 'enabled'
+                    PolicyName   = 'MyPolicyChoseBine'
+                    State        = 'enabled'
                 }
                 MSFT_AADFilteringProfilePolicyLink{
-                    Priority = 200
+                    Priority     = 200
                     LoggingState = 'enabled'
-                    PolicyName = 'MyTopPolicy'
-                    State = 'enabled'
+                    PolicyName   = 'MyTopPolicy'
+                    State        = 'enabled'
                 }
             );
             Priority              = 140; #Drift

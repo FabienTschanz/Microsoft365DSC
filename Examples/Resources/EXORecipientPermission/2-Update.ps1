@@ -25,10 +25,10 @@ Configuration Example
 
     Node localhost
     {
-        EXORecipientPermission 'AddSendAs'
+        EXORecipientPermission 'EXORecipientPermission-Example'
         {
             Identity              = "AlexW@$TenantId"
-            Trustee               = "AdeleV@$TenantId" # Drift
+            Trustee               = "admin@$TenantId"
             AccessRights          = 'SendAs'
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId

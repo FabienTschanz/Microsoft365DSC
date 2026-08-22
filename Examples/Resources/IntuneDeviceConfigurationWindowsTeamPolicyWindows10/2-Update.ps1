@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationWindowsTeamPolicyWindows10 'Example'
+        IntuneDeviceConfigurationWindowsTeamPolicyWindows10 'IntuneDeviceConfigurationWindowsTeamPolicyWindows10-Example'
         {
             Assignments                            = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             AzureOperationalInsightsBlockTelemetry = $False; # Updated Property
@@ -47,9 +47,9 @@ Configuration Example
             SettingsBlockSigninSuggestions         = $True;
             WelcomeScreenBlockAutomaticWakeUp      = $True;
             WelcomeScreenMeetingInformation        = "showOrganizerAndTimeOnly";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                          = $ApplicationId;
+            TenantId                               = $TenantId;
+            CertificateThumbprint                  = $CertificateThumbprint;
         }
     }
 }

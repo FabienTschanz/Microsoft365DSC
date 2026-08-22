@@ -24,19 +24,19 @@ Configuration Example
 
     Node localhost
     {
-        EXOSweepRule 'MyRule'
+        EXOSweepRule 'EXOSweepRule-Example'
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            DestinationFolder     = "Test2:\Deleted Items";
+            DestinationFolder     = "AdeleV:\Deleted Items";
             Enabled               = $True;
             Ensure                = "Present";
             KeepLatest            = 13; # Drift
-            Mailbox               = "Test2";
+            Mailbox               = "AdeleV";
             Name                  = "From Michelle";
             Provider              = "Exchange16";
             SenderName            = "michelle@fabrikam.com";
-            SourceFolder          = "Test2:\Inbox";
+            SourceFolder          = "AdeleV:\Inbox";
             TenantId              = $TenantId;
         }
     }

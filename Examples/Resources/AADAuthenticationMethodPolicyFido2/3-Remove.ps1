@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyFido2 "AADAuthenticationMethodPolicyFido2-Fido2"
+        AADAuthenticationMethodPolicyFido2 "AADAuthenticationMethodPolicyFido2-Example"
         {
-            Ensure                           = "Absent";
-            Id                               = "Fido2";
+            Ensure                = "Absent";
+            Id                    = "Fido2";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

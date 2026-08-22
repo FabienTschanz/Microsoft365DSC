@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner 'myWifiConfigAndroidDeviceOwnerPolicy'
+        IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner 'IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner-Example'
         {
             DisplayName                    = 'Wifi - androidForWork'
             Assignments                    = @(
@@ -41,9 +41,9 @@ Configuration Example
             ProxySettings                  = 'none'
             Ssid                           = 'MySSID - 3'
             Ensure                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

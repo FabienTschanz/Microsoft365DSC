@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCRetentionCompliancePolicy 'RetentionCompliancePolicy'
+        SCRetentionCompliancePolicy 'SCRetentionCompliancePolicy-Example'
         {
             Name               = "MyPolicy"
-            Comment            = "Test Policy"
-            SharePointLocation = "https://contoso.sharepoint.com/sites/demo"
+            Comment            = "Retains finance site content indefinitely"
+            SharePointLocation = "https://contoso.sharepoint.com/sites/finance"
             Ensure             = "Present"
             Credential         = $Credscredential
         }

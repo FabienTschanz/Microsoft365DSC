@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        SCRoleGroup 'ConfigureRoleGroup'
+        SCRoleGroup 'SCRoleGroup-Example'
         {
-            Name                      = "Contoso Role Group"
-            Description               = "Address Lists Role for Purview Administrators - Modified"
-            Roles                     = @("Address Lists")
-            Ensure                    = "Present"
-            Credential                = $Credscredential
+            Name        = "Contoso Role Group"
+            Description = "Address Lists Role for Purview Administrators - Modified"
+            Roles       = @("Address Lists")
+            Ensure      = "Present"
+            Credential  = $Credscredential
         }
     }
 }

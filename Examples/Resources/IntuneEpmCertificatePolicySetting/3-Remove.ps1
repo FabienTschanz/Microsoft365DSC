@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEpmCertificatePolicySetting "IntuneEpmCertificatePolicySetting-IntuneEpmCertificatePolicySetting_1"
+        IntuneEpmCertificatePolicySetting "IntuneEpmCertificatePolicySetting-Example"
         {
             DisplayName           = "IntuneEpmCertificatePolicySetting_1";
-            CertificateFile       = "<Base64EncodedCertificateContent>";
+            CertificateFile       = "<base64-encoded-certificate>";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

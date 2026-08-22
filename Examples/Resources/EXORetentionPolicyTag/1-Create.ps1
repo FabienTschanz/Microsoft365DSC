@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXORetentionPolicyTag "RetentionPolicyTag"
+        EXORetentionPolicyTag "EXORetentionPolicyTag-Example"
         {
             ApplicationId             = $ApplicationId;
             CertificateThumbprint     = $CertificateThumbprint;

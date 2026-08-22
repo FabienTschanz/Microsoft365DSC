@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 'Example'
+        IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 'IntuneDeviceConfigurationEndpointProtectionPolicyWindows10-Example'
         {
-            DisplayName                                                                  = "endpoint protection legacy - dsc v2.0";
-            Ensure                                                                       = "Absent";
+            DisplayName           = "Endpoint Protection - Windows 10 Baseline";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

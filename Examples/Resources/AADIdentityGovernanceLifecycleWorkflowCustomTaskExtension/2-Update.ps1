@@ -24,25 +24,25 @@ Configuration Example
 
     Node localhost
     {
-        AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-My Custom"
+        AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             CallbackConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConfiguration{
                 TimeoutDuration = 'PT34M'
-                AuthorizedApps = @('M365DSC')
+                AuthorizedApps  = @('Lifecycle Workflow Connector')
             };
             ClientConfiguration   = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionClientConfiguration{
-                MaximumRetries = 1
+                MaximumRetries        = 1
                 TimeoutInMilliseconds = 1000
             };
             Description           = "My Drifted Description"; # Drift
             DisplayName           = "My Custom Extension";
             EndpointConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConfiguration{
-                SubscriptionId =       '63e62ab2-fd92-46ce-a393-2cb338039cc7'
-                logicAppWorkflowName = 'MyTestApp'
-                resourceGroupName =    'TestRG'
-                url = 'https://prod-35.eastus.logic.azure.com:443/workflows/xxxxxxxxxxx/triggers/manual/paths/invoke?api-version=2016-10-01'
+                SubscriptionId       = '<subscription-id>'
+                logicAppWorkflowName = 'OnboardingNotification'
+                resourceGroupName    =    'rg-identity-prod'
+                url                  = 'https://prod-35.eastus.logic.azure.com:443/workflows/xxxxxxxxxxx/triggers/manual/paths/invoke?api-version=2016-10-01'
             };
             Ensure                = "Present";
             TenantId              = $TenantId;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsNotificationAndFeedsPolicy 'Example'
+        TeamsNotificationAndFeedsPolicy 'TeamsNotificationAndFeedsPolicy-Example'
         {
             ApplicationId             = $ApplicationId;
             CertificateThumbprint     = $CertificateThumbprint;

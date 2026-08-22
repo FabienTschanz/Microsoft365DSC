@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyAuthenticator "AADAuthenticationMethodPolicyAuthenticator-MicrosoftAuthenticator"
+        AADAuthenticationMethodPolicyAuthenticator "AADAuthenticationMethodPolicyAuthenticator-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
@@ -32,41 +32,41 @@ Configuration Example
             Ensure                = "Present";
             ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyAuthenticatorExcludeTarget{
-                    Id = 'Executives' # Updated Property
+                    Id         = 'Executives' # Updated Property
                     TargetType = 'group'
                 }
             );
             FeatureSettings       = MSFT_MicrosoftGraphmicrosoftAuthenticatorFeatureSettings{
                 DisplayLocationInformationRequiredState = MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration{
                     IncludeTarget = MSFT_AADAuthenticationMethodPolicyAuthenticatorFeatureTarget{
-                        Id = 'all_users'
+                        Id         = 'all_users'
                         TargetType = 'group'
                     }
-                    State = 'default'
+                    State         = 'default'
                 }
-                CompanionAppAllowedState = MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration{
+                CompanionAppAllowedState                = MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration{
                     IncludeTarget = MSFT_AADAuthenticationMethodPolicyAuthenticatorFeatureTarget{
-                        Id = 'all_users'
+                        Id         = 'all_users'
                         TargetType = 'group'
                     }
-                    State = 'default'
+                    State         = 'default'
                 }
-                DisplayAppInformationRequiredState = MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration{
+                DisplayAppInformationRequiredState      = MSFT_MicrosoftGraphAuthenticationMethodFeatureConfiguration{
                     IncludeTarget = MSFT_AADAuthenticationMethodPolicyAuthenticatorFeatureTarget{
-                        Id = 'all_users'
+                        Id         = 'all_users'
                         TargetType = 'group'
                     }
-                    State = 'default'
+                    State         = 'default'
                 }
             };
             Id                    = "MicrosoftAuthenticator";
             IncludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyAuthenticatorIncludeTarget{
-                    Id = 'Finance Team'
+                    Id         = 'Finance Team'
                     TargetType = 'group'
                 }
                 MSFT_AADAuthenticationMethodPolicyAuthenticatorIncludeTarget{
-                    Id = 'Northwind Traders'
+                    Id         = 'Northwind Traders'
                     TargetType = 'group'
                 }
             );

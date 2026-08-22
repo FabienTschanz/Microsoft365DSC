@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 'Example'
+        IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 'IntuneDeviceConfigurationEndpointProtectionPolicyWindows10-Example'
         {
             ApplicationGuardAllowFileSaveOnHost                                          = $True;
             ApplicationGuardAllowPersistence                                             = $True;
@@ -44,7 +44,7 @@ Configuration Example
             Assignments                                                                  = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             BitLockerAllowStandardUserEncryption                                         = $True;
@@ -52,41 +52,41 @@ Configuration Example
             BitLockerEnableStorageCardEncryptionOnMobile                                 = $True;
             BitLockerEncryptDevice                                                       = $True;
             BitLockerFixedDrivePolicy                                                    = MSFT_MicrosoftGraphbitLockerFixedDrivePolicy{
-                RecoveryOptions = MSFT_MicrosoftGraphBitLockerRecoveryOptions{
-                    RecoveryInformationToStore = 'passwordAndKey'
-                    HideRecoveryOptions = $True
-                    BlockDataRecoveryAgent = $True
-                    RecoveryKeyUsage = 'allowed'
+                RecoveryOptions                 = MSFT_MicrosoftGraphBitLockerRecoveryOptions{
+                    RecoveryInformationToStore                     = 'passwordAndKey'
+                    HideRecoveryOptions                            = $True
+                    BlockDataRecoveryAgent                         = $True
+                    RecoveryKeyUsage                               = 'allowed'
                     EnableBitLockerAfterRecoveryInformationToStore = $True
-                    EnableRecoveryInformationSaveToStore = $True
-                    RecoveryPasswordUsage = 'allowed'
+                    EnableRecoveryInformationSaveToStore           = $True
+                    RecoveryPasswordUsage                          = 'allowed'
                 }
                             RequireEncryptionForWriteAccess = $True
-                EncryptionMethod = 'xtsAes128'
+                EncryptionMethod                = 'xtsAes128'
             };
             BitLockerRecoveryPasswordRotation                                            = "notConfigured";
             BitLockerRemovableDrivePolicy                                                = MSFT_MicrosoftGraphbitLockerRemovableDrivePolicy{
-                RequireEncryptionForWriteAccess = $True
+                RequireEncryptionForWriteAccess   = $True
                 BlockCrossOrganizationWriteAccess = $True
-                EncryptionMethod = 'aesCbc128'
+                EncryptionMethod                  = 'aesCbc128'
             };
             BitLockerSystemDrivePolicy                                                   = MSFT_MicrosoftGraphbitLockerSystemDrivePolicy{
-                PrebootRecoveryEnableMessageAndUrl = $True
-                StartupAuthenticationTpmPinUsage = 'allowed'
-                EncryptionMethod = 'xtsAes128'
-                StartupAuthenticationTpmPinAndKeyUsage = 'allowed'
-                StartupAuthenticationRequired = $True
-                RecoveryOptions = MSFT_MicrosoftGraphBitLockerRecoveryOptions{
-                    RecoveryInformationToStore = 'passwordAndKey'
-                    HideRecoveryOptions = $False
-                    BlockDataRecoveryAgent = $True
-                    RecoveryKeyUsage = 'allowed'
+                PrebootRecoveryEnableMessageAndUrl       = $True
+                StartupAuthenticationTpmPinUsage         = 'allowed'
+                EncryptionMethod                         = 'xtsAes128'
+                StartupAuthenticationTpmPinAndKeyUsage   = 'allowed'
+                StartupAuthenticationRequired            = $True
+                RecoveryOptions                          = MSFT_MicrosoftGraphBitLockerRecoveryOptions{
+                    RecoveryInformationToStore                     = 'passwordAndKey'
+                    HideRecoveryOptions                            = $False
+                    BlockDataRecoveryAgent                         = $True
+                    RecoveryKeyUsage                               = 'allowed'
                     EnableBitLockerAfterRecoveryInformationToStore = $True
-                    EnableRecoveryInformationSaveToStore = $False
-                    RecoveryPasswordUsage = 'allowed'
+                    EnableRecoveryInformationSaveToStore           = $False
+                    RecoveryPasswordUsage                          = 'allowed'
                 }
-                            StartupAuthenticationTpmUsage = 'allowed'
-                StartupAuthenticationTpmKeyUsage = 'allowed'
+                            StartupAuthenticationTpmUsage            = 'allowed'
+                StartupAuthenticationTpmKeyUsage         = 'allowed'
                 StartupAuthenticationBlockWithoutTpmChip = $False
             };
             DefenderAdditionalGuardedFolders                                             = @();
@@ -145,7 +145,7 @@ Configuration Example
             DeviceGuardLaunchSystemGuard                                                 = "notConfigured";
             DeviceGuardLocalSystemAuthorityCredentialGuardSettings                       = "enableWithoutUEFILock";
             DeviceGuardSecureBootWithDMA                                                 = "notConfigured";
-            DisplayName                                                                  = "endpoint protection legacy - dsc v2.0";
+            DisplayName                                                                  = "Endpoint Protection - Windows 10 Baseline";
             DmaGuardDeviceEnumerationPolicy                                              = "deviceDefault";
             Ensure                                                                       = "Present";
             FirewallCertificateRevocationListCheckMethod                                 = "deviceDefault";
@@ -157,38 +157,38 @@ Configuration Example
             FirewallPacketQueueingMethod                                                 = "deviceDefault";
             FirewallPreSharedKeyEncodingMethod                                           = "deviceDefault";
             FirewallProfileDomain                                                        = MSFT_MicrosoftGraphwindowsFirewallNetworkProfile{
-                PolicyRulesFromGroupPolicyNotMerged = $False
-                InboundNotificationsBlocked = $True
-                OutboundConnectionsRequired = $True
-                GlobalPortRulesFromGroupPolicyNotMerged = $True
-                ConnectionSecurityRulesFromGroupPolicyNotMerged = $True
-                UnicastResponsesToMulticastBroadcastsRequired = $True
-                PolicyRulesFromGroupPolicyMerged = $False
-                UnicastResponsesToMulticastBroadcastsBlocked = $False
-                IncomingTrafficRequired = $False
-                IncomingTrafficBlocked = $True
-                ConnectionSecurityRulesFromGroupPolicyMerged = $False
-                StealthModeRequired = $False
-                InboundNotificationsRequired = $False
-                AuthorizedApplicationRulesFromGroupPolicyMerged = $False
-                InboundConnectionsBlocked = $True
-                OutboundConnectionsBlocked = $False
-                StealthModeBlocked = $True
-                GlobalPortRulesFromGroupPolicyMerged = $False
-                SecuredPacketExemptionBlocked = $False
-                SecuredPacketExemptionAllowed = $False
-                InboundConnectionsRequired = $False
-                FirewallEnabled = 'allowed'
+                PolicyRulesFromGroupPolicyNotMerged                = $False
+                InboundNotificationsBlocked                        = $True
+                OutboundConnectionsRequired                        = $True
+                GlobalPortRulesFromGroupPolicyNotMerged            = $True
+                ConnectionSecurityRulesFromGroupPolicyNotMerged    = $True
+                UnicastResponsesToMulticastBroadcastsRequired      = $True
+                PolicyRulesFromGroupPolicyMerged                   = $False
+                UnicastResponsesToMulticastBroadcastsBlocked       = $False
+                IncomingTrafficRequired                            = $False
+                IncomingTrafficBlocked                             = $True
+                ConnectionSecurityRulesFromGroupPolicyMerged       = $False
+                StealthModeRequired                                = $False
+                InboundNotificationsRequired                       = $False
+                AuthorizedApplicationRulesFromGroupPolicyMerged    = $False
+                InboundConnectionsBlocked                          = $True
+                OutboundConnectionsBlocked                         = $False
+                StealthModeBlocked                                 = $True
+                GlobalPortRulesFromGroupPolicyMerged               = $False
+                SecuredPacketExemptionBlocked                      = $False
+                SecuredPacketExemptionAllowed                      = $False
+                InboundConnectionsRequired                         = $False
+                FirewallEnabled                                    = 'allowed'
                 AuthorizedApplicationRulesFromGroupPolicyNotMerged = $True
             };
             FirewallRules                                                                = @(
                 MSFT_MicrosoftGraphwindowsFirewallRule{
-                    Action = 'allowed'
-                    InterfaceTypes = 'notConfigured'
-                    DisplayName = 'ICMP'
+                    Action           = 'allowed'
+                    InterfaceTypes   = 'notConfigured'
+                    DisplayName      = 'ICMP'
                     TrafficDirection = 'in'
-                    ProfileTypes = 'domain'
-                    EdgeTraversal = 'notConfigured'
+                    ProfileTypes     = 'domain'
+                    EdgeTraversal    = 'notConfigured'
                 }
             );
             LanManagerAuthenticationLevel                                                = "lmNtlmAndNtlmV2";
@@ -235,10 +235,10 @@ Configuration Example
             SmartScreenBlockOverrideForFiles                                             = $True;
             SmartScreenEnableInShell                                                     = $True;
             UserRightsAccessCredentialManagerAsTrustedCaller                             = MSFT_MicrosoftGraphdeviceManagementUserRightsSetting{
-                State = 'allowed'
+                State              = 'allowed'
                 LocalUsersOrGroups = @(
                     MSFT_MicrosoftGraphDeviceManagementUserRightsLocalUserOrGroup{
-                        Name = 'NT AUTHORITY\Local service'
+                        Name               = 'NT AUTHORITY\Local service'
                         SecurityIdentifier = '*S-1-5-19'
                     }
                 )
@@ -249,9 +249,9 @@ Configuration Example
             XboxServicesLiveAuthManagerServiceStartupMode                                = "manual";
             XboxServicesLiveGameSaveServiceStartupMode                                   = "manual";
             XboxServicesLiveNetworkingServiceStartupMode                                 = "manual";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                                                = $ApplicationId;
+            TenantId                                                                     = $TenantId;
+            CertificateThumbprint                                                        = $CertificateThumbprint;
         }
     }
 }

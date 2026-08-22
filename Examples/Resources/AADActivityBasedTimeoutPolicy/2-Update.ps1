@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADActivityBasedTimeoutPolicy "AADActivityBasedTimeoutPolicy-displayName-value"
+        AADActivityBasedTimeoutPolicy "AADActivityBasedTimeoutPolicy-Example"
         {
             AzurePortalTimeOut    = "02:00:00";
             DefaultTimeOut        = "04:00:00"; # Updated property

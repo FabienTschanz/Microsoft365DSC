@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10 'Example'
+        IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10 'IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10-Example'
         {
             AdvancedThreatProtectionAutoPopulateOnboardingBlob = $True; # Updated Property
             AdvancedThreatProtectionOnboardingFilename         = "WindowsDefenderATP.onboarding";
@@ -32,15 +32,15 @@ Configuration Example
             Assignments                                        = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             DisplayName                                        = "MDE onboarding Legacy";
             EnableExpeditedTelemetryReporting                  = $True;
             Ensure                                             = "Present";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                      = $ApplicationId;
+            TenantId                                           = $TenantId;
+            CertificateThumbprint                              = $CertificateThumbprint;
         }
     }
 }

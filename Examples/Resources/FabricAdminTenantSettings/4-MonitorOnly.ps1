@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        FabricAdminTenantSettings "FabricAdminTenantSettings"
+        FabricAdminTenantSettings "FabricAdminTenantSettings-Example"
         {
-            IsSingleInstance = 'Yes'
-            AADSSOForGateway                                                      = MSFT_FabricTenantSetting {
+            IsSingleInstance                 = 'Yes'
+            AADSSOForGateway                 = MSFT_FabricTenantSetting {
                 settingName              = 'AADSSOForGateway'
                 canSpecifySecurityGroups = $False
                 enabled                  = $True
                 tenantSettingGroup       = 'Integration settings'
                 title                    = 'Microsoft Entra single sign-on for data gateway'
             };
-            AdminApisIncludeDetailedMetadata                                      = MSFT_FabricTenantSetting {
+            AdminApisIncludeDetailedMetadata = MSFT_FabricTenantSetting {
                 settingName              = 'AdminApisIncludeDetailedMetadata'
                 canSpecifySecurityGroups = $True
                 enabled                  = $True
@@ -43,9 +43,9 @@ Configuration Example
                 excludedSecurityGroups   = @('MyExcludedGroup')
                 enabledSecurityGroups    = @('Group1','Group2')
             };
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                    = $ApplicationId
+            TenantId                         = $TenantId
+            CertificateThumbprint            = $CertificateThumbprint
         }
     }
 }

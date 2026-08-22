@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyWindows10 'myWifiConfigWindows10Policy'
+        IntuneWifiConfigurationPolicyWindows10 'IntuneWifiConfigurationPolicyWindows10-Example'
         {
-            DisplayName                    = 'win10 wifi - revised'
-            Ensure                         = 'Absent'
+            DisplayName           = 'win10 wifi - revised'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXODnssecForVerifiedDomain "EXODnssecForVerifiedDomain-nik-charlebois.com"
+        EXODnssecForVerifiedDomain "EXODnssecForVerifiedDomain-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

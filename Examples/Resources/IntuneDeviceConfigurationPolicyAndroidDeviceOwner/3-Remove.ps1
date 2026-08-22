@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyAndroidDeviceOwner 'myAndroidDeviceOwnerPolicy'
+        IntuneDeviceConfigurationPolicyAndroidDeviceOwner 'IntuneDeviceConfigurationPolicyAndroidDeviceOwner-Example'
         {
-            DisplayName                           = 'general confi - AndroidDeviceOwner'
-            Ensure                                = 'Absent'
+            DisplayName           = 'general confi - AndroidDeviceOwner'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

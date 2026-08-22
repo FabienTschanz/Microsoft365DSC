@@ -24,23 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusExclusionsPolicyLinux 'myIntuneAntivirusExclusionsPolicyLinux'
+        IntuneAntivirusExclusionsPolicyLinux 'IntuneAntivirusExclusionsPolicyLinux-Example'
         {
-            Assignments = @();
-            Description = "";
-            DisplayName = "Test";
-            Ensure      = "Present";
-            Exclusions  = @(
+            Assignments           = @();
+            Description           = "";
+            DisplayName           = "Linux Servers - Antivirus Exclusions";
+            Ensure                = "Present";
+            Exclusions            = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions{
                     Exclusions_item_extension = '.bat' # Updated property
-                    Exclusions_item_type = 'excludedFileExtension'
+                    Exclusions_item_type      = 'excludedFileExtension'
                 }
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions{
                     Exclusions_item_name = 'process1'
                     Exclusions_item_type = 'excludedFileName'
                 }
             );
-            RoleScopeTagIds                    = @("0");
+            RoleScopeTagIds       = @("0");
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

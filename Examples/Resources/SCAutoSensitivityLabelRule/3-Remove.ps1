@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        SCAutoSensitivityLabelRule 'TestRule'
+        SCAutoSensitivityLabelRule 'SCAutoSensitivityLabelRule-Example'
         {
-            Credential                          = $Credscredential
-            Ensure                              = 'Absent'
-            Name                                = 'My Test Rule'
-            Policy                              = 'My Test Policy'
-            Workload                            = 'Exchange'
+            Credential = $Credscredential
+            Ensure     = 'Absent'
+            Name       = 'Credit Card Numbers in Exchange'
+            Policy     = 'Top Secret Auto-labeling'
+            Workload   = 'Exchange'
         }
     }
 }

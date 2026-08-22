@@ -24,31 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAntiPhishPolicy 'ConfigureAntiphishPolicy'
+        EXOAntiPhishPolicy 'EXOAntiPhishPolicy-Example'
         {
-            Identity                              = "Our Rule"
-            MakeDefault                           = $null
-            PhishThresholdLevel                   = 2 # Updated Property
-            EnableTargetedDomainsProtection       = $null
-            Enabled                               = $null
-            TargetedDomainsToProtect              = $null
-            EnableSimilarUsersSafetyTips          = $null
-            ExcludedDomains                       = $null
-            TargetedDomainActionRecipients        = $null
-            EnableMailboxIntelligence             = $null
-            EnableSimilarDomainsSafetyTips        = $null
-            AdminDisplayName                      = ""
-            AuthenticationFailAction              = "MoveToJmf"
-            TargetedUserProtectionAction          = "NoAction"
-            TargetedUsersToProtect                = $null
-            EnableTargetedUserProtection          = $null
-            ExcludedSenders                       = $null
-            EnableOrganizationDomainsProtection   = $null
-            EnableUnusualCharactersSafetyTips     = $null
-            TargetedUserActionRecipients          = $null
-            DmarcQuarantineAction                 = "Quarantine"
-            DmarcRejectAction                     = "Reject"
-            Ensure                                = "Present"
+            Identity              = "Our Rule"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

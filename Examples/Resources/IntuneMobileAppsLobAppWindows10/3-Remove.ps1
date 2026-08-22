@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsLobAppWindows10 "IntuneMobileAppsLobAppWindows10-Appx App"
+        IntuneMobileAppsLobAppWindows10 "IntuneMobileAppsLobAppWindows10-Example"
         {
             DisplayName           = "Appx App";
             Ensure                = "Absent";

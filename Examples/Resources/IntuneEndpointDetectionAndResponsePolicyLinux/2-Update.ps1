@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEndpointDetectionAndResponsePolicyLinux 'myEDRPolicy'
+        IntuneEndpointDetectionAndResponsePolicyLinux 'IntuneEndpointDetectionAndResponsePolicyLinux-Example'
         {
-            DisplayName     = 'Edr Policy'
-            tags_item_key   = 'GROUP'
-            tags_item_value = 'tag'
-            Assignments     = @()
-            Description     = 'My updated description' # Updated Property
-            Ensure          = 'Present'
+            DisplayName           = 'Edr Policy'
+            tags_item_key         = 'GROUP'
+            tags_item_value       = 'tag'
+            Assignments           = @()
+            Description           = 'My updated description' # Updated Property
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

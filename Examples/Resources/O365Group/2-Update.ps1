@@ -16,15 +16,15 @@ Configuration Example
 
     Node localhost
     {
-        O365Group 'OttawaTeamGroup'
+        O365Group 'O365Group-Example'
         {
-            DisplayName        = "Ottawa Employees"
-            MailNickName       = "OttawaEmployees"
-            Description        = "This is only for employees of the Ottawa Office"
-            ManagedBy          = "TenantAdmin@contoso.onmicrosoft.com"
-            Members            = @("John.Smith") # Updated property
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            DisplayName  = "Ottawa Employees"
+            MailNickName = "OttawaEmployees"
+            Description  = "This is only for employees of the Ottawa Office"
+            ManagedBy    = "TenantAdmin@contoso.onmicrosoft.com"
+            Members      = @("John.Smith") # Updated property
+            Ensure       = "Present"
+            Credential   = $Credscredential
         }
     }
 }

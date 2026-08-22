@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxAutoReplyConfiguration "EXOMailboxAutoReplyConfiguration"
+        EXOMailboxAutoReplyConfiguration "EXOMailboxAutoReplyConfiguration-Example"
         {
             AutoDeclineFutureRequestsWhenOOF = $False;
             AutoReplyState                   = "Disabled";
@@ -40,9 +40,9 @@ Configuration Example
             InternalMessage                  = "";
             OOFEventSubject                  = "";
             StartTime                        = "1/22/2024 3:00:00 PM";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                    = $ApplicationId
+            TenantId                         = $TenantId
+            CertificateThumbprint            = $CertificateThumbprint
         }
     }
 }

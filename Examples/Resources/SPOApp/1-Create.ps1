@@ -16,10 +16,10 @@ Configuration Example
 
     Node localhost
     {
-        SPOApp 'ConfigureDemoApp'
+        SPOApp 'SPOApp-Example'
         {
-            Identity   = "DemoApp"
-            Path       = "C:\Demo\DemoApp.sppkg"
+            Identity   = "ContosoIntranet.sppkg"
+            Path       = "C:\Packages\ContosoIntranet.sppkg"
             Publish    = $true
             Ensure     = "Present"
             Credential = $Credscredential

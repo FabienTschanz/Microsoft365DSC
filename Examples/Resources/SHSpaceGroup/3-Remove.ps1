@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        SHSpaceGroup "SHSpaceGroup"
+        SHSpaceGroup "SHSpaceGroup-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
-            GroupName             = "TestApplications";
+            GroupName             = "ApplicationOwners";
             Roles                 = @("TrainingPermissionRole","CustomerActivityPagePermissionRole","InviteUsersPermissionRole");
-            SpaceName             = "Test Workspace";
+            SpaceName             = "Contoso Workspace";
             TenantId              = $TenantId;
         }
     }

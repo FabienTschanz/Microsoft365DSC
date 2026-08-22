@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10 'Example'
+        IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10 'IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10-Example'
         {
-            DisplayName                    = "firmware";
-            Ensure                         = "Absent";
+            DisplayName           = "firmware";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

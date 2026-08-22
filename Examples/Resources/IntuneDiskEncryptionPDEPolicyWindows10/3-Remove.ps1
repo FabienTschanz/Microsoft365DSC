@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiskEncryptionPDEPolicyWindows10 "IntuneDiskEncryptionPDEPolicyWindows10"
+        IntuneDiskEncryptionPDEPolicyWindows10 "IntuneDiskEncryptionPDEPolicyWindows10-Example"
         {
-            DisplayName           = "test";
+            DisplayName           = "Personal Data Encryption - Windows 11";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

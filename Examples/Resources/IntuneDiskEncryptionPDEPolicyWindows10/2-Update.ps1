@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiskEncryptionPDEPolicyWindows10 "IntuneDiskEncryptionPDEPolicyWindows10"
+        IntuneDiskEncryptionPDEPolicyWindows10 "IntuneDiskEncryptionPDEPolicyWindows10-Example"
         {
             Assignments                  = @();
-            Description                  = "test";
-            DisplayName                  = "test";
+            Description                  = "Enables Personal Data Encryption on corporate laptops";
+            DisplayName                  = "Personal Data Encryption - Windows 11";
             Ensure                       = "Present";
             EnablePersonalDataEncryption = "1";
             ProtectDesktop               = "0";

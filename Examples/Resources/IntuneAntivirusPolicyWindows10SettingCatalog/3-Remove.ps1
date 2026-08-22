@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyWindows10SettingCatalog 'myAVWindows10Policy'
+        IntuneAntivirusPolicyWindows10SettingCatalog 'IntuneAntivirusPolicyWindows10SettingCatalog-Example'
         {
-            DisplayName        = 'av exclusions'
-            Ensure             = 'Absent'
+            DisplayName           = 'av exclusions'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

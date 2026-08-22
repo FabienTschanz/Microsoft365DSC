@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        ODSettings 'OneDriveSettings'
+        ODSettings 'ODSettings-Example'
         {
             IsSingleInstance                          = "Yes"
             OneDriveStorageQuota                      = "1024"

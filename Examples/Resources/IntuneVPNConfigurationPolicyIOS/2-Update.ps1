@@ -26,16 +26,16 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyIOS "IntuneVPNConfigurationPolicyIOS-Example"
         {
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId          = $ApplicationId;
+            TenantId               = $TenantId;
+            CertificateThumbprint  = $CertificateThumbprint;
             Assignments            = @();
             associatedDomains      = @();
             authenticationMethod   = "usernameAndPassword";
-            connectionName         = "IntuneVPNConfigurationPolicyIOS-ConnectionName";
+            connectionName         = "Contoso Corporate VPN";
             connectionType         = "ciscoAnyConnectV2";
-            Description            = "IntuneVPNConfigurationPolicyIOS-Example Description";
-            DisplayName            = "IntuneVPNConfigurationPolicyIOS-Example";
+            Description            = "Corporate VPN profile for iOS devices";
+            DisplayName            = "Corporate VPN - iOS";
             enableSplitTunneling   = $False;
             Ensure                 = "Present";
             excludedDomains        = @();
@@ -44,17 +44,17 @@ Configuration Example
             optInToDeviceIdSharing = $True;
             proxyServer            = @(
                 MSFT_MicrosoftvpnProxyServer{
-                    port = 80
-                    automaticConfigurationScriptUrl = 'https://www.test.com'
-                    address = 'proxy.test.com'
+                    port                            = 80
+                    automaticConfigurationScriptUrl = 'https://proxy.contoso.com/proxy.pac'
+                    address                         = 'proxy.contoso.com'
                 }
             );
             safariDomains          = @();
             server                 = @(
                 MSFT_MicrosoftGraphvpnServer{
                     isDefaultServer = $True
-                    description = 'server'
-                    address = 'vpn.newAddress.com' #updated VPN address
+                    description     = 'Primary VPN gateway'
+                    address         = 'vpn2.contoso.com' #updated VPN address
                 }
             );
             targetedMobileApps     = @();

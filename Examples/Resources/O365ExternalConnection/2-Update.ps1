@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        O365ExternalConnection "O365ExternalConnection-Contoso HR"
+        O365ExternalConnection "O365ExternalConnection-Example"
         {
             ApplicationId         = $ApplicationId;
             AuthorizedAppIds      = @("MyApp", "MySecondApp"); # Drift

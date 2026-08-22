@@ -16,16 +16,16 @@ Configuration Example
 
     Node localhost
     {
-        TeamsAppSetupPolicy "TeamsAppSetupPolicy-TestPolicy"
+        TeamsAppSetupPolicy "TeamsAppSetupPolicy-Example"
         {
-            AllowSideLoading     = $True;
-            AllowUserPinning     = $True;
-            AppPresetList        = "com.microsoft.teamspace.tab.vsts";
-            Credential           = $Credscredential;
-            Description          = "My test policy";
-            Ensure               = "Present";
-            Identity             = "Test Policy";
-            PinnedAppBarApps     = @("2a84919f-59d8-4441-a975-2a8c2643b741"); # Updated property
+            AllowSideLoading = $True;
+            AllowUserPinning = $True;
+            AppPresetList    = "com.microsoft.teamspace.tab.vsts";
+            Credential       = $Credscredential;
+            Description      = "Pins the core apps for frontline staff";
+            Ensure           = "Present";
+            Identity         = "Frontline App Setup";
+            PinnedAppBarApps = @("2a84919f-59d8-4441-a975-2a8c2643b741"); # Updated property
         }
     }
 }

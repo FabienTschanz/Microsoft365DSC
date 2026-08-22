@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADUser 'ConfigureJohnSMith'
+        AADUser 'AADUser-Example'
         {
             UserPrincipalName     = "John.Smith@$TenantId"
             Ensure                = "Absent"

@@ -16,15 +16,15 @@ Configuration Example
 
     Node localhost
     {
-        TeamsAppPermissionPolicy "TeamsAppPermissionPolicy-Test-Policy"
+        TeamsAppPermissionPolicy "TeamsAppPermissionPolicy-Example"
         {
             Credential             = $Credscredential;
             DefaultCatalogApps     = "com.microsoft.teamspace.tab.web"; # Updated property
             DefaultCatalogAppsType = "AllowedAppList";
-            Description            = "This is a test policy";
+            Description            = "Restricts apps for the sales department";
             Ensure                 = "Present";
             GlobalCatalogAppsType  = "BlockedAppList";
-            Identity               = "TestPolicy";
+            Identity               = "SalesAppPermissions";
             PrivateCatalogAppsType = "BlockedAppList";
         }
     }

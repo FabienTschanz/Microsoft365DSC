@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        M365DSCRuleEvaluation 'AllowAnonymousUsersToJoinMeetingAllPolicies'
+        M365DSCRuleEvaluation 'M365DSCRuleEvaluation-Example'
         {
             ResourceTypeName = 'TeamsMeetingPolicy'
             RuleDefinition   = "`$_.AllowAnonymousUsersToJoinMeeting -eq `$true"

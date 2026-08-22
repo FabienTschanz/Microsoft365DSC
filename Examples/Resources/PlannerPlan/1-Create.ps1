@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        PlannerPlan 'ContosoPlannerPlan'
+        PlannerPlan 'PlannerPlan-Example'
         {
             Title                 = "Contoso Plan"
             OwnerGroup            = "Contoso Group"

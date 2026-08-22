@@ -23,12 +23,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEpmCertificatePolicySetting "IntuneEpmCertificatePolicySetting-IntuneEpmCertificatePolicySetting_1"
+        IntuneEpmCertificatePolicySetting "IntuneEpmCertificatePolicySetting-Example"
         {
             Description           = "";
             DisplayName           = "IntuneEpmCertificatePolicySetting_1";
             Ensure                = "Present";
-            CertificateFile       = "<Base64EncodedCertificateContent>";
+            CertificateFile       = "<base64-encoded-certificate>";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -16,10 +16,10 @@ Configuration Example
 
     Node localhost
     {
-        SCSupervisoryReviewPolicy 'SupervisoryReviewPolicy'
+        SCSupervisoryReviewPolicy 'SCSupervisoryReviewPolicy-Example'
         {
             Name       = "MyPolicy"
-            Comment    = "Test Policy"
+            Comment    = "Reviews outbound communications from the trading desk"
             Reviewers  = @("admin@contoso.com")
             Ensure     = "Present"
             Credential = $Credscredential

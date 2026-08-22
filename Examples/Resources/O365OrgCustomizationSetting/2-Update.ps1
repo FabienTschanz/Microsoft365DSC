@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        O365OrgCustomizationSetting 'O365OrgCustomizationSetting'
+        O365OrgCustomizationSetting 'O365OrgCustomizationSetting-Example'
         {
             IsSingleInstance = "Yes"
             Credential       = $Credscredential

@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCAuditConfigurationPolicy 'ExchangeAuditPolicy'
+        SCAuditConfigurationPolicy 'SCAuditConfigurationPolicy-Example'
         {
-            Workload           = "Exchange"
-            Ensure             = "Absent"
-            Credential         = $Credscredential
+            Workload   = "Exchange"
+            Ensure     = "Absent"
+            Credential = $Credscredential
         }
     }
 }

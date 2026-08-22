@@ -23,9 +23,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyAndroidWorkProfile 'ConfigureAndroidDeviceCompliancePolicyWorkProfile'
+        IntuneDeviceCompliancePolicyAndroidWorkProfile 'IntuneDeviceCompliancePolicyAndroidWorkProfile-Example'
         {
-            DisplayName                                        = 'Test Policy'
+            DisplayName                                        = 'Android Work Profile Compliance'
             Description                                        = ''
             DeviceThreatProtectionEnabled                      = $False
             DeviceThreatProtectionRequiredSecurityLevel        = 'unavailable'
@@ -45,9 +45,9 @@ Configuration Example
             SecurityRequireVerifyApps                          = $False
             StorageRequireEncryption                           = $True
             Ensure                                             = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                      = $ApplicationId;
+            TenantId                                           = $TenantId;
+            CertificateThumbprint                              = $CertificateThumbprint;
         }
     }
 }

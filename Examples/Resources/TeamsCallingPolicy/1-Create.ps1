@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsCallingPolicy 'ConfigureCallingPolicy'
+        TeamsCallingPolicy 'TeamsCallingPolicy-Example'
         {
             Identity                   = 'New Calling Policy'
             AllowPrivateCalling        = $false

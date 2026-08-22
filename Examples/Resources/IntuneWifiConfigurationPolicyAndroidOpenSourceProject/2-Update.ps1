@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyAndroidOpenSourceProject 'myWifiConfigAndroidOpensourcePolicy'
+        IntuneWifiConfigurationPolicyAndroidOpenSourceProject 'IntuneWifiConfigurationPolicyAndroidOpenSourceProject-Example'
         {
             DisplayName                    = 'wifi aosp'
             Assignments                    = @(
@@ -40,9 +40,9 @@ Configuration Example
             Ssid                           = 'aaaaa'
             WiFiSecurityType               = 'wpaPersonal'
             Ensure                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

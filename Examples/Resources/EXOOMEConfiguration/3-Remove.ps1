@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOOMEConfiguration 'ConfigureOMEConfiguration'
+        EXOOMEConfiguration 'EXOOMEConfiguration-Example'
         {
-            Identity                 = "Contoso Marketing"
-            Ensure                   = "Absent"
+            Identity              = "Contoso Marketing"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

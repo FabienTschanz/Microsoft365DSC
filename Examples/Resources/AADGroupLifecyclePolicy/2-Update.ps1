@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupLifecyclePolicy 'GroupLifecyclePolicy'
+        AADGroupLifecyclePolicy 'AADGroupLifecyclePolicy-Example'
         {
             IsSingleInstance            = "Yes"
             AlternateNotificationEmails = @("john.smith@$TenantId")
             GroupLifetimeInDays         = 99
             ManagedGroupTypes           = "Selected"
             Ensure                      = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId               = $ApplicationId
+            TenantId                    = $TenantId
+            CertificateThumbprint       = $CertificateThumbprint
         }
     }
 }

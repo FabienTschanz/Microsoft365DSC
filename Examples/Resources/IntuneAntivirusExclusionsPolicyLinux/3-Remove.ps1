@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusExclusionsPolicyLinux 'myIntuneAntivirusExclusionsPolicyLinux'
+        IntuneAntivirusExclusionsPolicyLinux 'IntuneAntivirusExclusionsPolicyLinux-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Linux Servers - Antivirus Exclusions'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOApplicationAccessPolicy 'ConfigureApplicationAccessPolicy'
+        EXOApplicationAccessPolicy 'EXOApplicationAccessPolicy-Example'
         {
-            Identity             = "Integration Policy"
-            AccessRight          = "DenyAccess"
-            AppID                = '3dbc2ae1-7198-45ed-9f9f-d86ba3ec35b5'
-            PolicyScopeGroupId   = "IntegrationMailEnabled@$TenantId"
-            Description          = "Engineering Group Policy"
-            Ensure               = "Present"
+            Identity              = "Reporting App Mailbox Access"
+            AccessRight           = "DenyAccess"
+            AppID                 = '3dbc2ae1-7198-45ed-9f9f-d86ba3ec35b5'
+            PolicyScopeGroupId    = "ReportingApps@$TenantId"
+            Description           = "Engineering Group Policy"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

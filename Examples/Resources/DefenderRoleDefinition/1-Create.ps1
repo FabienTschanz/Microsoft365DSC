@@ -23,9 +23,9 @@ Configuration Example
 
     Node localhost
     {
-        DefenderRoleDefinition "DefenderRoleDefinitionExample"
+        DefenderRoleDefinition "DefenderRoleDefinition-Example"
         {
-            Description           = "Test Definition";
+            Description           = "Grants the security operations team full XDR management rights";
             DisplayName           = "MyNewDefinition";
             Ensure                = "Present";
             RolePermissions       = @(

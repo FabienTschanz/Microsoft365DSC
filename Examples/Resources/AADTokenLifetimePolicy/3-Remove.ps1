@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADTokenLifetimePolicy 'CreateTokenLifetimePolicy'
+        AADTokenLifetimePolicy 'AADTokenLifetimePolicy-Example'
         {
             DisplayName           = "PolicyDisplayName"
             Ensure                = "Absent"

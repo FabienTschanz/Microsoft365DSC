@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsShiftsPolicy 'Example'
+        TeamsShiftsPolicy 'TeamsShiftsPolicy-Example'
         {
             Identity                       = 'Global'
             AccessGracePeriodMinutes       = 15

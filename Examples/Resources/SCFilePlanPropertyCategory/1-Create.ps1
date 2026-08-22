@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCFilePlanPropertyCategory 'FilePlanPropertyCategory'
+        SCFilePlanPropertyCategory 'SCFilePlanPropertyCategory-Example'
         {
-            Name               = "My Category"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            Name       = "My Category"
+            Ensure     = "Present"
+            Credential = $Credscredential
         }
     }
 }

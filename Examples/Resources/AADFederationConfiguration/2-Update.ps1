@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFederationConfiguration "MyFederation"
+        AADFederationConfiguration "AADFederationConfiguration-Example"
         {
             IssuerUri                       = 'https://contoso.com/issuerUri'
             DisplayName                     = 'contoso display name'

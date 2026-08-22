@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyWindows10ConfigMgr "IntuneAntivirusPolicyWindows10ConfigMgr-Windows ConfigMgr - Microsoft Defender Antivirus"
+        IntuneAntivirusPolicyWindows10ConfigMgr "IntuneAntivirusPolicyWindows10ConfigMgr-Example"
         {
             AllowArchiveScanning                = "1";
             AllowBehaviorMonitoring             = "1";

@@ -17,11 +17,11 @@ Configuration Example
     {
         TeamsTemplatesPolicy "TeamsTemplatesPolicy-Example"
         {
-            Credential           = $credsTeamsAdmin;
-            Description          = "Example Policy";
-            Ensure               = "Present";
-            HiddenTemplates      = @("Manage a Project","Manage an Event","Adopt Office 365","Organize Help Desk");
-            Identity             = "Example Policy";
+            Credential      = $credsTeamsAdmin;
+            Description     = "Hides the templates that are not approved for use";
+            Ensure          = "Present";
+            HiddenTemplates = @("Manage a Project","Manage an Event","Adopt Office 365","Organize Help Desk");
+            Identity        = "Approved Templates";
         }
     }
 }

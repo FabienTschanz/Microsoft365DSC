@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsCallQueue "TestQueue"
+        TeamsCallQueue "TeamsCallQueue-Example"
         {
             AgentAlertTime                             = 114;
             AllowOptOut                                = $True;
@@ -29,7 +29,7 @@ Configuration Example
             EnableTimeoutSharedVoicemailTranscription  = $False;
             Ensure                                     = "Present";
             LanguageId                                 = "fr-CA";
-            Name                                       = "TestQueue";
+            Name                                       = "Contoso Support Queue";
             OverflowAction                             = "Forward";
             OverflowActionTarget                       = "9abce74d-d108-475f-a2cb-bbb82f484982";
             OverflowThreshold                          = 50;

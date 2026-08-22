@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureSubscription "AzureSubscription-MySubscription"
+        AzureSubscription "AzureSubscription-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

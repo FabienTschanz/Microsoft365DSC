@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsFilesPolicy 'Example'
+        TeamsFilesPolicy 'TeamsFilesPolicy-Example'
         {
             Credential            = $Credscredential;
             Ensure                = "Present";

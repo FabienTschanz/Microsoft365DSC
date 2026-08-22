@@ -24,12 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOManagementRole 'ConfigureManagementRole'
+        EXOManagementRole 'EXOManagementRole-Example'
         {
-            Name                 = "MyDisplayName"
-            Description          = "Updated Description" # Updated Property
-            Parent               = "contoso.onmicrosoft.com\MyProfileInformation"
-            Ensure               = "Absent"
+            Name                  = "MyDisplayName"
+            Parent                = "$TenantId\MyProfileInformation"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

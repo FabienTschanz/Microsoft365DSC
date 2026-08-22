@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsSystemAppAndroid "IntuneMobileAppsSystemAppAndroid-Office"
+        IntuneMobileAppsSystemAppAndroid "IntuneMobileAppsSystemAppAndroid-Example"
         {
             DisplayName           = "Office";
             AppIdentifier         = "com.microsoft.office";

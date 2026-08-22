@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOBrowserIdleSignout 'ConfigureBrowserIdleSignout'
+        SPOBrowserIdleSignout 'SPOBrowserIdleSignout-Example'
         {
             IsSingleInstance = "Yes"
             Enabled          = $True

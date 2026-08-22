@@ -24,23 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineWindows10 'mySecurityBaselineWindows10'
+        IntuneSecurityBaselineWindows10 'IntuneSecurityBaselineWindows10-Example'
         {
-            DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineWindows10
+            DisplayName           = 'Windows 10 Security Baseline'
+            DeviceSettings        = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineWindows10
             {
-                Pol_MSS_DisableIPSourceRoutingIPv6 = '1'
-                DisableIPSourceRoutingIPv6 = '0'
+                Pol_MSS_DisableIPSourceRoutingIPv6           = '1'
+                DisableIPSourceRoutingIPv6                   = '0'
                 BlockExecutionOfPotentiallyObfuscatedScripts = 'block'
-                HardenedUNCPaths_Pol_HardenedPaths = '1'
-                pol_hardenedPaths = @(
+                HardenedUNCPaths_Pol_HardenedPaths           = '1'
+                pol_hardenedPaths                            = @(
                     MSFT_MicrosoftGraphIntuneSettingsCatalogpol_hardenedpaths{
-                        Key = '\\*\SYSVOL'
+                        Key   = '\\*\SYSVOL'
                         Value = 'RequireMutualAuthentication=1,RequireIntegrity=1'
                     }
                 )
             }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineWindows10
+            UserSettings          = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineWindows10
             {
                 AllowWindowsSpotlight = '1'
             }

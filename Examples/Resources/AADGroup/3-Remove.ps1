@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADGroup 'MyGroups'
+        AADGroup 'AADGroup-Example'
         {
-            MailNickname    = "M365DSC"
-            SecurityEnabled = $True
-            MailEnabled     = $True
-            DisplayName     = "DSCGroup"
-            Ensure          = "Absent"
+            MailNickname          = "MarketingTeam"
+            SecurityEnabled       = $True
+            MailEnabled           = $True
+            DisplayName           = "Marketing Team"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyWindows10ConfigMgr "IntuneAntivirusPolicyWindows10ConfigMgr-Windows ConfigMgr - Microsoft Defender Antivirus"
+        IntuneAntivirusPolicyWindows10ConfigMgr "IntuneAntivirusPolicyWindows10ConfigMgr-Example"
         {
-            ApplicationId                              = $ApplicationId;
-            CertificateThumbprint                      = $CertificateThumbprint;
-            DisplayName                                = "Windows ConfigMgr - Microsoft Defender Antivirus";
-            Ensure                                     = "Absent";
-            TenantId                                   = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName           = "Windows ConfigMgr - Microsoft Defender Antivirus";
+            Ensure                = "Absent";
+            TenantId              = $TenantId;
         }
     }
 }

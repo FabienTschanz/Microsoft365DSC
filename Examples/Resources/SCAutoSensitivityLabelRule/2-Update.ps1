@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SCAutoSensitivityLabelRule 'TestRule'
+        SCAutoSensitivityLabelRule 'SCAutoSensitivityLabelRule-Example'
         {
             Comment                             = 'Detects when 1 to 9 credit card numbers are contained in Exchange items'
             ContentContainsSensitiveInformation = MSFT_SCDLPContainsSensitiveInformation{
@@ -47,8 +47,8 @@ Configuration Example
             ExceptIfDocumentIsPasswordProtected = $False
             ExceptIfDocumentIsUnsupported       = $False
             ExceptIfProcessingLimitExceeded     = $False
-            Name                                = 'My Test Rule'
-            Policy                              = 'My Test Policy'
+            Name                                = 'Credit Card Numbers in Exchange'
+            Policy                              = 'Top Secret Auto-labeling'
             ProcessingLimitExceeded             = $False
             ReportSeverityLevel                 = 'Low'
             Workload                            = 'Exchange'

@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        AADSocialIdentityProvider "AADSocialIdentityProvider-Google"
+        AADSocialIdentityProvider "AADSocialIdentityProvider-Example"
         {
-            ClientId             = "Google-OAUTH";
-            ClientSecret         = "FakeSecret";
+            ClientId              = "Google-OAUTH";
+            ClientSecret          = "<client-secret>";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DisplayName          = "My Google Provider";
-            Ensure               = "Present";
-            IdentityProviderType = "Google";
+            DisplayName           = "My Google Provider";
+            Ensure                = "Present";
+            IdentityProviderType  = "Google";
         }
     }
 }

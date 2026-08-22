@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOTenantCdnEnabled 'ConfigureCDN'
+        SPOTenantCdnEnabled 'SPOTenantCdnEnabled-Example'
         {
             Enable     = $True
             CdnType    = "Public"

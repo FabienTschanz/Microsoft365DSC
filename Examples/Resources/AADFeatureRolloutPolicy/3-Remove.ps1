@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADFeatureRolloutPolicy "AADFeatureRolloutPolicy-CertificateBasedAuthentication rollout policy"
+        AADFeatureRolloutPolicy "AADFeatureRolloutPolicy-Example"
         {
-            ApplicationId           = $ApplicationId
-            TenantId                = $TenantId
-            CertificateThumbprint   = $CertificateThumbprint
-            DisplayName             = "certificateBasedAuthentication rollout policy";
-            Ensure                  = "Absent";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            DisplayName           = "certificateBasedAuthentication rollout policy";
+            Ensure                = "Absent";
         }
     }
 }

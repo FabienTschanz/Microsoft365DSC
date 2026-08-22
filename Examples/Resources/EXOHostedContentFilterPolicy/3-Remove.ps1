@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedContentFilterPolicy 'ConfigureHostedContentFilterPolicy'
+        EXOHostedContentFilterPolicy 'EXOHostedContentFilterPolicy-Example'
         {
-            Identity                             = "Integration CFP"
-            Ensure                               = "Absent"
+            Identity              = "Standard Spam Filter"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

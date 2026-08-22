@@ -24,29 +24,29 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyExternal "AADAuthenticationMethodPolicyExternal-Cisco Duo"
+        AADAuthenticationMethodPolicyExternal "AADAuthenticationMethodPolicyExternal-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            AppId                 = "c1a3d8f2-5b47-4e19-9f0a-2d6b8e4c7a35"; # Updated Property
+            AppId                 = "<application-id-updated>"; # Updated Property
             DisplayName           = "Cisco Duo";
             Ensure                = "Present";
             ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyExternalExcludeTarget{
-                    Id = 'Design'
+                    Id         = 'Design'
                     TargetType = 'group'
                 }
             );
             IncludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyExternalIncludeTarget{
-                    Id = 'Contoso'
+                    Id         = 'Contoso'
                     TargetType = 'group'
                 }
             );
             OpenIdConnectSetting  = MSFT_AADAuthenticationMethodPolicyExternalOpenIdConnectSetting{
                 discoveryUrl = 'https://graph.microsoft.com/'
-                clientId = '7698a352-4939-486e-9974-4ea5aff93f74'
+                clientId     = '<client-id>'
             };
             State                 = "disabled";
         }

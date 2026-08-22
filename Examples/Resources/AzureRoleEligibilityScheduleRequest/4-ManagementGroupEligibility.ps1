@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleEligibilityScheduleRequest "ManagementGroupReaderEligibility"
+        AzureRoleEligibilityScheduleRequest "AzureRoleEligibilityScheduleRequest-Example"
         {
             Principal             = "AdeleV@contoso.onmicrosoft.com"
             RoleDefinition        = "Reader"

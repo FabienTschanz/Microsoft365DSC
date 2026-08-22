@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined 'Example'
+        IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined 'IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined-Example'
         {
             Assignments                            = @();
             Description                            = "";
@@ -37,16 +37,16 @@ Configuration Example
             HybridAzureADJoinSkipConnectivityCheck = $True;
             Language                               = "os-default";
             OutOfBoxExperienceSettings             = MSFT_MicrosoftGraphoutOfBoxExperienceSettings{
-                HideEULA = $True
-                HideEscapeLink = $True
-                HidePrivacySettings = $True
-                DeviceUsageType = 'singleUser'
+                HideEULA                  = $True
+                HideEscapeLink            = $True
+                HidePrivacySettings       = $True
+                DeviceUsageType           = 'singleUser'
                 SkipKeyboardSelectionPage = $False
-                UserType = 'standard'
+                UserType                  = 'standard'
             };
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                          = $ApplicationId;
+            TenantId                               = $TenantId;
+            CertificateThumbprint                  = $CertificateThumbprint;
         }
     }
 }

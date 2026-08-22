@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOHubSite 'ConfigureHubSite'
+        SPOHubSite 'SPOHubSite-Example'
         {
             Url                  = "https://contoso.sharepoint.com/sites/Marketing"
             Title                = "Marketing Hub"

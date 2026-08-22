@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADIdentityAPIConnector 'AADIdentityAPIConnector-TestConnector'
+        AADIdentityAPIConnector 'AADIdentityAPIConnector-Example'
         {
             DisplayName           = "NewTestConnector";
             Id                    = "RestApi_NewTestConnector";

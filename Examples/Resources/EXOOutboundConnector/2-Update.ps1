@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOOutboundConnector 'ConfigureOutboundConnector'
+        EXOOutboundConnector 'EXOOutboundConnector-Example'
         {
             Identity                      = "Contoso Outbound Connector"
             AllAcceptedDomains            = $False
@@ -40,9 +40,9 @@ Configuration Example
             TlsSettings                   = "DomainValidation"
             UseMxRecord                   = $True
             Ensure                        = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

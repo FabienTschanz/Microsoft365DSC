@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADExternalIdentityPolicy "AADExternalIdentityPolicy"
+        AADExternalIdentityPolicy "AADExternalIdentityPolicy-Example"
         {
             AllowDeletedIdentitiesDataRemoval = $False;
             AllowExternalIdentitiesToLeave    = $True;
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                     = $ApplicationId
+            TenantId                          = $TenantId
+            CertificateThumbprint             = $CertificateThumbprint
             IsSingleInstance                  = "Yes";
         }
     }

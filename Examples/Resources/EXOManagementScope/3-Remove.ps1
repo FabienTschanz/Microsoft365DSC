@@ -24,16 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOManagementScope "EXOManagementScope-Test New DGs"
+        EXOManagementScope "EXOManagementScope-Example"
         {
-            ApplicationId              = $ApplicationId
-            TenantId                   = $TenantId
-            CertificateThumbprint      = $CertificateThumbprint
-            Ensure                     = "Absent";
-            Exclusive                  = $False;
-            Identity                   = "Test New DGs";
-            Name                       = "Test New DGs";
-            RecipientRestrictionFilter = "Name -like 'NewTest*'";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            Ensure                = "Absent";
+            Identity              = "New Distribution Groups";
         }
 
     }

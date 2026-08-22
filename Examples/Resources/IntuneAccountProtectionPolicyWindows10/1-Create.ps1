@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneAccountProtectionPolicyWindows10 'IntuneAccountProtectionPolicyWindows10-Example'
         {
-            DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
+            DisplayName           = 'Windows Hello for Business - Corporate'
+            DeviceSettings        = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneAccountProtectionPolicyWindows10
             {
-                History = 10
+                History           = 10
                 EnablePinRecovery = 'true'
             }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
+            UserSettings          = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneAccountProtectionPolicyWindows10
             {
-                History = 20
+                History           = 20
                 EnablePinRecovery = 'true'
             }
             Ensure                = 'Present'

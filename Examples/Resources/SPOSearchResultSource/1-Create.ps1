@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOSearchResultSource 'ConfigureSearchResultSource'
+        SPOSearchResultSource 'SPOSearchResultSource-Example'
         {
             Name        = "MyResultSource"
             Description = "Description of item"

@@ -16,12 +16,12 @@ Configuration Example
 
     Node localhost
     {
-        SCDLPCompliancePolicy 'ConfigureCompliancePolicy'
+        SCDLPCompliancePolicy 'SCDLPCompliancePolicy-Example'
         {
             Name               = "MyPolicy"
-            Comment            = "Test Policy"
+            Comment            = "Blocks sharing of credit card numbers"
             Priority           = 1
-            SharePointLocation = "https://contoso.sharepoint.com/sites/demo"
+            SharePointLocation = "https://contoso.sharepoint.com/sites/finance"
             Ensure             = "Present"
             Credential         = $Credscredential
         }

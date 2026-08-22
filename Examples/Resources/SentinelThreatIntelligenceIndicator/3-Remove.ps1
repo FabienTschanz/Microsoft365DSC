@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        SentinelThreatIntelligenceIndicator "SentinelThreatIntelligenceIndicator-ipv6-addr Indicator"
+        SentinelThreatIntelligenceIndicator "SentinelThreatIntelligenceIndicator-Example"
         {
             ApplicationId          = $ApplicationId;
             CertificateThumbprint  = $CertificateThumbprint;
@@ -35,7 +35,7 @@ Configuration Example
             PatternType            = "ipv6-addr";
             ResourceGroupName      = "MyResourceGroup";
             Source                 = "Microsoft Sentinel";
-            SubscriptionId         = "12345-12345-12345-12345-12345";
+            SubscriptionId         = "<subscription-id>";
             TenantId               = $TenantId;
             ThreatIntelligenceTags = @();
             ValidFrom              = "2024-10-21T19:03:57.24Z";

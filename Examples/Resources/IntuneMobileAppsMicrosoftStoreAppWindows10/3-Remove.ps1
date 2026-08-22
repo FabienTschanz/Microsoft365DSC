@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsMicrosoftStoreAppWindows10 "IntuneMobileAppsMicrosoftStoreAppWindows10-PowerShell"
+        IntuneMobileAppsMicrosoftStoreAppWindows10 "IntuneMobileAppsMicrosoftStoreAppWindows10-Example"
         {
-            DisplayName           = "PowerShell App";
+            DisplayName           = "PowerShell";
             PackageIdentifier     = "9MZ1SNWT0N5D";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;

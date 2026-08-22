@@ -24,26 +24,26 @@ Configuration Example
 
     Node localhost
     {
-        IntuneUserSettingsPolicyWindows365 "My User Settings Policy for Windows 365"
+        IntuneUserSettingsPolicyWindows365 "IntuneUserSettingsPolicyWindows365-Example"
         {
-            DisplayName              = "User Settings Policy W365";
-            Ensure                   = "Present";
+            DisplayName                        = "User Settings Policy W365";
+            Ensure                             = "Present";
             Assignments                        = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
-                    dataType = "#microsoft.graph.cloudPcManagementGroupAssignmentTarget"
-                    groupId = "42a638ec-2bf2-47a8-8f5f-176ce2124b7b"
+                    dataType         = "#microsoft.graph.cloudPcManagementGroupAssignmentTarget"
+                    groupId          = "42a638ec-2bf2-47a8-8f5f-176ce2124b7b"
                     groupDisplayName = "COGPASS-PROD-CA_AADP2"
                 }
             );
             CrossRegionDisasterRecoverySetting = MSFT_MicrosoftGraphcloudPcCrossRegionDisasterRecoverySetting{
                 MaintainCrossRegionRestorePointEnabled = $True
-                DisasterRecoveryNetworkSetting = MSFT_MicrosoftGraphCloudPcDisasterRecoveryNetworkSetting{
-                    RegionName = "automatic"
+                DisasterRecoveryNetworkSetting         = MSFT_MicrosoftGraphCloudPcDisasterRecoveryNetworkSetting{
+                    RegionName  = "automatic"
                     RegionGroup = "switzerland"
-                    odataType = "#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting"
+                    odataType   = "#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting"
                 }
-                UserInitiatedDisasterRecoveryAllowed = $false
-                DisasterRecoveryType = "crossRegion"
+                UserInitiatedDisasterRecoveryAllowed   = $false
+                DisasterRecoveryType                   = "crossRegion"
             };
             LocalAdminEnabled                  = $True;
             NotificationSetting                = MSFT_MicrosoftGraphcloudPcNotificationSetting{
@@ -51,12 +51,12 @@ Configuration Example
             };
             ResetEnabled                       = $True;
             RestorePointSetting                = MSFT_MicrosoftGraphcloudPcRestorePointSetting{
-                FrequencyType = "twelveHours"
+                FrequencyType      = "twelveHours"
                 UserRestoreEnabled = $True
             };
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                      = $ApplicationId;
+            TenantId                           = $TenantId;
+            CertificateThumbprint              = $CertificateThumbprint;
         }
     }
 }

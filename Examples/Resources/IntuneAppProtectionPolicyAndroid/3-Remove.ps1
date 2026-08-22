@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppProtectionPolicyAndroid 'ConfigureAppProtectionPolicyAndroid'
+        IntuneAppProtectionPolicyAndroid 'IntuneAppProtectionPolicyAndroid-Example'
         {
-            DisplayName                             = 'My DSC Android App Protection Policy'
-            Ensure                                  = 'Absent'
+            DisplayName           = 'Android App Protection - Corporate'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

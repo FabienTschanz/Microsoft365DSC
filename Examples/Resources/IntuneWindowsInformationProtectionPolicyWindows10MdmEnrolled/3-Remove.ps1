@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled 'Example'
+        IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled 'IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled-Example'
         {
-            DisplayName                            = 'WIP'
-            Ensure                                 = 'Absent'
+            DisplayName           = 'WIP'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceEnrollmentLimitRestriction 'DeviceEnrollmentLimitRestriction'
+        IntuneDeviceEnrollmentLimitRestriction 'IntuneDeviceEnrollmentLimitRestriction-Example'
         {
-            DisplayName = 'My DSC Limit'
-            Ensure      = 'Absent'
+            DisplayName           = 'Standard Enrollment Limit'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

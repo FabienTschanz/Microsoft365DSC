@@ -25,7 +25,7 @@ Configuration Example
     {
         IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 'IntuneWindowsUpdateForBusinessHotpatchProfileWindows10-Example'
         {
-            DisplayName           = "Example";
+            DisplayName           = "Hotpatch - Windows 11 Enterprise";
             Description           = "";
             HotpatchEnabled       = $False; # Updated property
             RoleScopeTagIds       = @("0");

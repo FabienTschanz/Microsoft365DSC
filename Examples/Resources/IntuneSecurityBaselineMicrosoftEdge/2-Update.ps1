@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineMicrosoftEdge 'mySecurityBaselineMicrosoftEdge'
+        IntuneSecurityBaselineMicrosoftEdge 'IntuneSecurityBaselineMicrosoftEdge-Example'
         {
-            DisplayName           = 'test'
+            DisplayName                                             = 'Microsoft Edge Baseline'
             InsecurePrivateNetworkRequestsAllowed                   = "0";
             InternetExplorerIntegrationReloadInIEModeAllowed        = "0";
             InternetExplorerIntegrationZoneIdentifierMhtFileAllowed = "0";
             InternetExplorerModeToolbarButtonEnabled                = "1"; # Drift
-            Ensure                = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                                                  = 'Present'
+            ApplicationId                                           = $ApplicationId;
+            TenantId                                                = $TenantId;
+            CertificateThumbprint                                   = $CertificateThumbprint;
         }
     }
 }

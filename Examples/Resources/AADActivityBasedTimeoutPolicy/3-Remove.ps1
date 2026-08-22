@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADActivityBasedTimeoutPolicy "AADActivityBasedTimeoutPolicy-displayName-value"
+        AADActivityBasedTimeoutPolicy "AADActivityBasedTimeoutPolicy-Example"
         {
             DisplayName           = "displayName-value";
             Ensure                = "Absent";

@@ -15,11 +15,11 @@ Configuration Example
 
     Node localhost
     {
-        TeamsVoiceRoutingPolicy 'ConfigureVoiceRoutingPolicy'
+        TeamsVoiceRoutingPolicy 'TeamsVoiceRoutingPolicy-Example'
         {
             Identity         = 'NewVoiceRoutingPolicy'
             OnlinePstnUsages = @('Long Distance', 'Local', 'Internal')
-            Description      = 'This is a sample Voice Routing Policy'
+            Description      = 'Grants long distance and local calling to corporate users'
             Ensure           = 'Present'
             Credential       = $Credscredential
         }

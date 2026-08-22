@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneRoleDefinition 'IntuneRoleDefinition'
+        IntuneRoleDefinition 'IntuneRoleDefinition-Example'
         {
-            DisplayName               = 'This is my role'
-            Ensure                    = 'Absent'
+            DisplayName           = 'This is my role'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

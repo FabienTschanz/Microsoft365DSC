@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10-Example'
         {
-            DisplayName                         = 'WUfB Ring'
-            Ensure                              = 'Absent'
+            DisplayName           = 'WUfB Ring'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

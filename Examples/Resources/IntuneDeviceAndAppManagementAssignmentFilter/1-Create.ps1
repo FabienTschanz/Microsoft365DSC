@@ -23,17 +23,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceAndAppManagementAssignmentFilter 'AssignmentFilter'
+        IntuneDeviceAndAppManagementAssignmentFilter 'IntuneDeviceAndAppManagementAssignmentFilter-Example'
         {
-            DisplayName = 'Test Device Filter'
-            Description = 'This is a new Filter'
+            DisplayName                    = 'Corporate Windows Devices'
+            Description                    = 'Targets company-owned Windows desktops and laptops'
             AssignmentFilterManagementType = 'devices'
-            Platform    = 'windows10AndLater'
-            Rule        = "(device.manufacturer -ne `"Microsoft Corporation`")"
-            Ensure      = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            Platform                       = 'windows10AndLater'
+            Rule                           = "(device.manufacturer -ne `"Microsoft Corporation`")"
+            Ensure                         = 'Present'
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

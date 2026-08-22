@@ -24,22 +24,22 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAccountProtectionLocalUserGroupMembershipPolicy "My Account Protection Local User Group Membership Policy"
+        IntuneAccountProtectionLocalUserGroupMembershipPolicy "IntuneAccountProtectionLocalUserGroupMembershipPolicy-Example"
         {
-            DisplayName              = "Account Protection LUGM Policy";
-            Description              = "My revised description";
-            Ensure                   = "Present";
-            Assignments              = @(
+            DisplayName           = "Account Protection LUGM Policy";
+            Description           = "My revised description";
+            Ensure                = "Present";
+            Assignments           = @(
                 MSFT_IntuneAccountProtectionLocalUserGroupMembershipPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
-            AccessGroup = @(
+            AccessGroup           = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogAccessGroup{
-                    desc = @('administrators', 'users')
-                    member = @('S-1-12-1-1167842105-1150511762-402702254-1917434032')
-                    action = 'AddUpdate'
+                    desc              = @('administrators', 'users')
+                    member            = @('S-1-12-1-1167842105-1150511762-402702254-1917434032')
+                    action            = 'AddUpdate'
                     userselectiontype = 'users'
                 }
             );

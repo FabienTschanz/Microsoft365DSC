@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationHealthMonitoringPolicyWindows10 'Example'
+        IntuneDeviceConfigurationHealthMonitoringPolicyWindows10 'IntuneDeviceConfigurationHealthMonitoringPolicyWindows10-Example'
         {
-            DisplayName                       = "Health Monitoring Configuration";
-            Ensure                            = "Absent";
+            DisplayName           = "Health Monitoring Configuration";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

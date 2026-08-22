@@ -22,13 +22,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceFeaturesConfigurationPolicyIOS "IntuneDeviceFeaturesConfigurationPolicyIOS-FakeStringValue"
+        IntuneDeviceFeaturesConfigurationPolicyIOS "IntuneDeviceFeaturesConfigurationPolicyIOS-Example"
         {
-            DisplayName              = "FakeStringValue";
-            ApplicationId            = $ApplicationId;
-            TenantId                 = $TenantId;
-            CertificateThumbprint    = $CertificateThumbprint;
-            Ensure                   = 'Absent'
+            DisplayName           = "Corporate iOS Device Features";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = 'Absent'
         }
     }
 }

@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCComplianceSearch 'ConfigureComplianceSearch'
+        SCComplianceSearch 'SCComplianceSearch-Example'
         {
-            Case                                  = "Demo Search"
+            Case                                  = "Contoso Litigation 2026"
             HoldNames                             = @()
-            Name                                  = "Demo Compliance Search"
+            Name                                  = "Budget Mailbox Search"
             Language                              = "iv"
             AllowNotFoundExchangeLocationsEnabled = $False
             SharePointLocation                    = @("All")

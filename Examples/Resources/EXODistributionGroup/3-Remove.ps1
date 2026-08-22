@@ -24,12 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXODistributionGroup 'DemoDG'
+        EXODistributionGroup 'EXODistributionGroup-Example'
         {
-            DisplayName                        = "My Demo DG";
-            Ensure                             = "Absent";
-            Identity                           = "DemoDG";
-            Name                               = "DemoDG";
+            Ensure                = "Absent";
+            Identity              = "FieldOperations";
+            Name                  = "FieldOperations";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

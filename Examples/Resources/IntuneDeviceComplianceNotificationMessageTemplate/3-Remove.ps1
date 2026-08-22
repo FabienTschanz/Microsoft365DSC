@@ -23,9 +23,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceComplianceNotificationMessageTemplate 'IntuneDeviceComplianceNotificationMessageTemplate-Test'
+        IntuneDeviceComplianceNotificationMessageTemplate 'IntuneDeviceComplianceNotificationMessageTemplate-Example'
         {
-            DisplayName           = "Test";
+            DisplayName           = "Non-compliance Notification";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsWebLink "IntuneMobileAppsWebLink-Web App"
+        IntuneMobileAppsWebLink "IntuneMobileAppsWebLink-Example"
         {
             Id                    = "8d027f94-0682-431e-97c1-827d1879fa79";
             DisplayName           = "Web App";

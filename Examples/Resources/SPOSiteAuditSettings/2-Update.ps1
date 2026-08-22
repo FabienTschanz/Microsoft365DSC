@@ -16,9 +16,9 @@ Configuration Example
 
     Node localhost
     {
-        SPOSiteAuditSettings 'ConfigureSiteAuditSettings '
+        SPOSiteAuditSettings 'SPOSiteAuditSettings-Example'
         {
-            Url        = "https://contoso.sharepoint.com/sites/DemoSite"
+            Url        = "https://contoso.sharepoint.com/sites/Marketing"
             AuditFlags = "All"
             Credential = $Credscredential
         }

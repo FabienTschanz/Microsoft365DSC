@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceControlPolicySetting "IntuneDeviceControlPolicySetting-IntuneDeviceControlPolicySetting_1"
+        IntuneDeviceControlPolicySetting "IntuneDeviceControlPolicySetting-Example"
         {
             DisplayName           = "IntuneDeviceControlPolicySetting_1";
             Ensure                = "Absent";

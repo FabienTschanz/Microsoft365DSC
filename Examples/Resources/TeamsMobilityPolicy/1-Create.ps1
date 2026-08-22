@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMobilityPolicy 'Example'
+        TeamsMobilityPolicy 'TeamsMobilityPolicy-Example'
         {
             Credential             = $Credscredential;
             Ensure                 = "Present";

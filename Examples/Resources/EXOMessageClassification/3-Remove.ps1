@@ -24,12 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOMessageClassification 'ConfigureMessageClassification'
+        EXOMessageClassification 'EXOMessageClassification-Example'
         {
-            Identity                    = "Contoso Message Classification"
-            Name                        = "Contoso Message Classification"
-            DisplayName                 = "Contoso Message Classification"
-            Ensure                      = "Absent"
+            Identity              = "Contoso Message Classification"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

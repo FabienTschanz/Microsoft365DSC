@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationVpnPolicyWindows10 'Example'
+        IntuneDeviceConfigurationVpnPolicyWindows10 'IntuneDeviceConfigurationVpnPolicyWindows10-Example'
         {
-            DisplayName                                = "VPN";
-            Ensure                                     = "Absent";
+            DisplayName           = "VPN";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,27 +24,27 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10-Example'
         {
             Assignments             = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    groupDisplayName = 'Exclude'
-                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
-                    groupId          = '258a1749-8408-4dd0-8028-fab6208a28d7'
+                    groupDisplayName                           = 'Exclude'
+                    dataType                                   = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupId                                    = '258a1749-8408-4dd0-8028-fab6208a28d7'
                 }
             );
-            DisplayName              = 'Windows Quality Update'
-            Description              = ''
+            DisplayName             = 'Windows Quality Update'
+            Description             = ''
             ExpeditedUpdateSettings = MSFT_MicrosoftGraphexpeditedWindowsQualityUpdateSettings{
                 QualityUpdateRelease  = '2024-06-11T00:00:00Z'
                 DaysUntilForcedReboot = 1 # Updated property
             }
-            RoleScopeTagIds           = @("0")
-            Ensure                    = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            RoleScopeTagIds         = @("0")
+            Ensure                  = 'Present'
+            ApplicationId           = $ApplicationId;
+            TenantId                = $TenantId;
+            CertificateThumbprint   = $CertificateThumbprint;
         }
     }
 }

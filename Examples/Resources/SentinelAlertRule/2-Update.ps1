@@ -24,21 +24,21 @@ Configuration Example
 
     Node localhost
     {
-        SentinelAlertRule "SentinelAlertRule-MyNRTRule"
+        SentinelAlertRule "SentinelAlertRule-Example"
         {
             AlertDetailsOverride  = MSFT_SentinelAlertRuleAlertDetailsOverride{
-                alertDescriptionFormat = 'This is an example of the alert content'
+                alertDescriptionFormat = 'A cloud application was accessed from an unrecognised location.'
                 alertDisplayNameFormat = 'Alert from {{{TimeGenerated}} '
             };
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             CustomDetails         = @(
                 MSFT_SentinelAlertRuleCustomDetails{
-                    DetailKey = 'Color'
+                    DetailKey   = 'Color'
                     DetailValue = 'TenantId'
                 }
             );
-            Description           = "Test";
+            Description           = "Raises an incident when a cloud application is accessed from an unrecognised location";
             DisplayName           = "MyNRTRule";
             Enabled               = $True;
             Ensure                = "Present";
@@ -50,24 +50,24 @@ Configuration Example
                             columnName = 'Id'
                         }
                     )
-                    entityType = 'CloudApplication'
+                    entityType    = 'CloudApplication'
                 }
             );
             IncidentConfiguration = MSFT_SentinelAlertRuleIncidentConfiguration{
                 groupingConfiguration = MSFT_SentinelAlertRuleIncidentConfigurationGroupingConfiguration{
-                    lookbackDuration = 'PT5H'
-                    matchingMethod = 'Selected'
+                    lookbackDuration     = 'PT5H'
+                    matchingMethod       = 'Selected'
                     groupByCustomDetails = @('Color')
-                    groupByEntities = @('CloudApplication')
+                    groupByEntities      = @('CloudApplication')
                     reopenClosedIncident = $True
-                    enabled = $True
+                    enabled              = $True
                 }
-                            createIncident = $True
+                            createIncident        = $True
             };
             Query                 = "ThreatIntelIndicators";
             ResourceGroupName     = "ResourceGroupName";
             Severity              = "High"; #Drift
-            SubscriptionId        = "xxxx";
+            SubscriptionId        = "<subscription-id>";
             SuppressionDuration   = "PT5H";
             Tactics               = @();
             Techniques            = @();

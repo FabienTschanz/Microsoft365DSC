@@ -16,12 +16,12 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTenantNetworkRegion 'Example'
+        TeamsTenantNetworkRegion 'TeamsTenantNetworkRegion-Example'
         {
-            CentralSite          = "Nik";
-            Credential           = $Credscredential;
-            Ensure               = "Present";
-            Identity             = "Nik";
+            CentralSite = "Nik";
+            Credential  = $Credscredential;
+            Ensure      = "Present";
+            Identity    = "Nik";
         }
     }
 }

@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        SCComplianceCase 'ConfigureComplianceCase'
+        SCComplianceCase 'SCComplianceCase-Example'
         {
-            Name               = "MyCase"
-            Description        = "MyPolicy"
-            Status             = "Active"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            Name        = "MyCase"
+            Description = "MyPolicy"
+            Status      = "Active"
+            Ensure      = "Present"
+            Credential  = $Credscredential
         }
     }
 }

@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAccountProtectionLocalUserGroupMembershipPolicy "My Account Protection Local User Group Membership Policy"
+        IntuneAccountProtectionLocalUserGroupMembershipPolicy "IntuneAccountProtectionLocalUserGroupMembershipPolicy-Example"
         {
-            DisplayName              = "Account Protection LUGM Policy";
-            Description              = "My revised description";
-            Ensure                   = "Absent";
+            DisplayName           = "Account Protection LUGM Policy";
+            Description           = "My revised description";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

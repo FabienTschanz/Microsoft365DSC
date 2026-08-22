@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADRoleAssignmentScheduleRequest "MyRequest"
+        AADRoleAssignmentScheduleRequest "AADRoleAssignmentScheduleRequest-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

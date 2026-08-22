@@ -23,23 +23,23 @@ Configuration Example
 
     Node localhost
     {
-        IntuneFirewallRulesHyperVPolicyWindows10 'myIntuneFirewallRulesHyperVPolicyWindows10'
+        IntuneFirewallRulesHyperVPolicyWindows10 'IntuneFirewallRulesHyperVPolicyWindows10-Example'
         {
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '11111111-1111-1111-1111-111111111111'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '11111111-1111-1111-1111-111111111111'
                 }
             );
-            FirewallRuleName = @(
+            FirewallRuleName      = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName_IntuneFirewallRulesHyperVPolicyWindows10{
-                    Direction = 'in' # Updated property
+                    Direction        = 'in' # Updated property
                     RemotePortRanges = @('0-100')
-                    Name = 'Rule1'
-                    Protocol = 80
-                    Enabled = '1'
-                    Action = '1'
+                    Name             = 'Rule1'
+                    Protocol         = 80
+                    Enabled          = '1'
+                    Action           = '1'
                 }
             )
             Description           = 'Description'

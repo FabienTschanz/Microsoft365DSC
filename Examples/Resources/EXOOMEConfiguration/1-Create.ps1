@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOOMEConfiguration 'ConfigureOMEConfiguration'
+        EXOOMEConfiguration 'EXOOMEConfiguration-Example'
         {
             Identity                 = "Contoso Marketing"
             BackgroundColor          = "0x00FFFF00"
@@ -36,9 +36,9 @@ Configuration Example
             PortalText               = "This portal is encrypted."
             SocialIdSignIn           = $True
             Ensure                   = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
         }
     }
 }

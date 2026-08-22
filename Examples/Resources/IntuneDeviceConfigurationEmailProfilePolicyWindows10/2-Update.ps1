@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationEmailProfilePolicyWindows10 'Example'
+        IntuneDeviceConfigurationEmailProfilePolicyWindows10 'IntuneDeviceConfigurationEmailProfilePolicyWindows10-Example'
         {
             AccountName           = "Corp email2";
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             DisplayName           = "email";

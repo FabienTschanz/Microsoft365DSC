@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsBackupForOrganizationConfiguration "Example"
+        IntuneWindowsBackupForOrganizationConfiguration "IntuneWindowsBackupForOrganizationConfiguration-Example"
         {
             IsSingleInstance      = "Yes";
             State                 = "notConfigured";

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADDeviceRegistrationPolicy "MyDeviceRegistrationPolicy"
+        AADDeviceRegistrationPolicy "AADDeviceRegistrationPolicy-Example"
         {
             ApplicationId                           = $ApplicationId;
             AzureADAllowedToJoin                    = "Selected";

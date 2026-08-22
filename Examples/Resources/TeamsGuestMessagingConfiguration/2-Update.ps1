@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsGuestMessagingConfiguration 'TeamsGuestMessagingConfig'
+        TeamsGuestMessagingConfiguration 'TeamsGuestMessagingConfiguration-Example'
         {
             IsSingleInstance       = 'Yes'
             AllowGiphy             = $True

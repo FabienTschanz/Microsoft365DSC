@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Test"
+        AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Description          = "Context test Updated"; # Updated Property
-            DisplayName          = "My Context";
-            Ensure               = "Present";
-            Id                   = "c3";
-            IsAvailable          = $False; # Updated Property
+            Description           = "Requires step-up authentication for finance and payroll applications"; # Updated Property
+            DisplayName           = "My Context";
+            Ensure                = "Present";
+            Id                    = "c3";
+            IsAvailable           = $False;
         }
     }
 }

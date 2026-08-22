@@ -24,19 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXORetentionPolicyTag "RetentionPolicyTag"
+        EXORetentionPolicyTag "EXORetentionPolicyTag-Example"
         {
-            ApplicationId             = $ApplicationId;
-            CertificateThumbprint     = $CertificateThumbprint;
-            Comment                   = "This is my tag";
-            Ensure                    = "Absent";
-            Identity                  = "MyTag";
-            MessageClass              = "*";
-            MustDisplayCommentEnabled = $False;
-            RetentionAction           = "MoveToArchive";
-            RetentionEnabled          = $False;
-            TenantId                  = $TenantId;
-            Type                      = "Personal";
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            Identity              = "MyTag";
+            TenantId              = $TenantId;
         }
     }
 }

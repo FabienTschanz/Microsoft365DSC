@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        SCDeviceConditionalAccessRule "MyDeviceConditionalAccessRule"
+        SCDeviceConditionalAccessRule "SCDeviceConditionalAccessRule-Example"
         {
-            ApplicationId             = $ApplicationId;
-            CertificateThumbprint     = $CertificateThumbprint;
-            Ensure                    = "Absent";
-            Name                      = "MyPolicy{394b}";
-            Policy                    = "MyPolicy";
-            TenantId                  = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            Name                  = "MyPolicy{394b}";
+            Policy                = "MyPolicy";
+            TenantId              = $TenantId;
         }
     }
 }

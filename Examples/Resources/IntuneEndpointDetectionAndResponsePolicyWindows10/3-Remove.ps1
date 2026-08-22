@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneEndpointDetectionAndResponsePolicyWindows10 'myEDRPolicy'
+        IntuneEndpointDetectionAndResponsePolicyWindows10 'IntuneEndpointDetectionAndResponsePolicyWindows10-Example'
         {
-            DisplayName = 'Edr Policy'
-            Ensure      = 'Absent'
+            DisplayName           = 'Edr Policy'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneCorporateDeviceIdentifier 'CorporateDevices'
+        IntuneCorporateDeviceIdentifier 'IntuneCorporateDeviceIdentifier-Example'
         {
             IsSingleInstance      = 'Yes'
             Ensure                = 'Absent'

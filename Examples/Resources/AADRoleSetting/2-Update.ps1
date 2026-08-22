@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADRoleSetting 28b253d8-cde5-471f-a331-fe7320023cdd
+        AADRoleSetting "AADRoleSetting-Example"
         {
             ActivateApprover                                          = @();
             ActivationMaxDuration                                     = "PT8H";
@@ -65,9 +65,9 @@ Configuration Example
             ExpireEligibleAssignment                                  = "P365D";
             PermanentActiveAssignmentisExpirationRequired             = $False;
             PermanentEligibleAssignmentisExpirationRequired           = $False;
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                                             = $ApplicationId
+            TenantId                                                  = $TenantId
+            CertificateThumbprint                                     = $CertificateThumbprint
             Ensure                                                    = 'Present'
         }
     }

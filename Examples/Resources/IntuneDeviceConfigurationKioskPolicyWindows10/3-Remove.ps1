@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationKioskPolicyWindows10 'Example'
+        IntuneDeviceConfigurationKioskPolicyWindows10 'IntuneDeviceConfigurationKioskPolicyWindows10-Example'
         {
-            DisplayName                         = "kiosk";
-            Ensure                              = "Absent";
+            DisplayName           = "kiosk";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

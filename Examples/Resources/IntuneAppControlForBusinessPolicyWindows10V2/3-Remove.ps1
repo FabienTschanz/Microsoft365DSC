@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppControlForBusinessPolicyWindows10V2 'Example'
+        IntuneAppControlForBusinessPolicyWindows10V2 'IntuneAppControlForBusinessPolicyWindows10V2-Example'
         {
-            ApplicationId                                             = $ApplicationId;
-            CertificateThumbprint                                     = $CertificateThumbprint;
-            DisplayName                                               = "Example";
-            Ensure                                                    = "Absent";
-            TenantId                                                  = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName           = "App Control for Business - Audit Mode";
+            Ensure                = "Absent";
+            TenantId              = $TenantId;
         }
     }
 }

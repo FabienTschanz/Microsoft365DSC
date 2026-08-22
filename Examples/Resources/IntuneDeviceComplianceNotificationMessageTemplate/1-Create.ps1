@@ -23,25 +23,25 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceComplianceNotificationMessageTemplate 'IntuneDeviceComplianceNotificationMessageTemplate-Test'
+        IntuneDeviceComplianceNotificationMessageTemplate 'IntuneDeviceComplianceNotificationMessageTemplate-Example'
         {
             BrandingOptions               = @("includeCompanyName","includeContactInformation","includeCompanyPortalLink");
             LocalizedNotificationMessages = @(
                 MSFT_DeviceManagementNotificationMessageTemplate{
-                    MessageTemplate = "Das ist eine Testnachricht für Deutsch."
-                    IsDefault = $True
-                    Subject = "Test Deutsch2"
-                    Locale = "de-de"
+                    MessageTemplate = "Ihr Gerät erfüllt die Sicherheitsrichtlinien von Contoso nicht. Bitte wenden Sie sich an den Service Desk."
+                    IsDefault       = $True
+                    Subject         = "Ihr Gerät ist nicht konform"
+                    Locale          = "de-de"
                 }
                 MSFT_DeviceManagementNotificationMessageTemplate{
-                    MessageTemplate = "This is a message for English (United States)."
-                    IsDefault = $False
-                    Subject = "Test English"
-                    Locale = "en-us"
+                    MessageTemplate = "Your device does not meet the Contoso security policy. Please contact the Service Desk."
+                    IsDefault       = $False
+                    Subject         = "Your device is not compliant"
+                    Locale          = "en-us"
                 }
             );
             Description                   = "";
-            DisplayName                   = "Test";
+            DisplayName                   = "Non-compliance Notification";
             Ensure                        = "Present";
             RoleScopeTagIds               = @("0");
             ApplicationId                 = $ApplicationId;

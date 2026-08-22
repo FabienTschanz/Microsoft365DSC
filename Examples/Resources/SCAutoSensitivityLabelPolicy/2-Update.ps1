@@ -16,16 +16,16 @@ Configuration Example
 
     Node localhost
     {
-        SCAutoSensitivityLabelPolicy 'TestPolicy'
+        SCAutoSensitivityLabelPolicy 'SCAutoSensitivityLabelPolicy-Example'
         {
-            ApplySensitivityLabel           = "TopSecret";
-            Comment                         = "Updated comment"; # Updated property
-            Credential                      = $Credscredential;
-            Ensure                          = "Present";
-            ExchangeLocation                = @("All");
-            Mode                            = "Enable";
-            Name                            = "TestPolicy";
-            Priority                        = 0;
+            ApplySensitivityLabel = "TopSecret";
+            Comment               = "Applies the Top Secret label to Exchange and SharePoint content automatically"; # Updated property
+            Credential            = $Credscredential;
+            Ensure                = "Present";
+            ExchangeLocation      = @("All");
+            Mode                  = "Enable";
+            Name                  = "Top Secret Auto-labeling";
+            Priority              = 0;
         }
     }
 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADDomainFederation "AADDomainFederation-contoso.com"
+        AADDomainFederation "AADDomainFederation-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

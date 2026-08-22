@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        SentinelSetting 'SentinelSetting'
+        SentinelSetting 'SentinelSetting-Example'
         {
             AnomaliesIsEnabled    = $true
             EyesOnIsEnabled       = $true
-            ResourceGroupName     = 'test'
-            WorkspaceName         = 'test'
-            SubscriptionId        = 'test'
+            ResourceGroupName     = 'ContosoSecurity'
+            WorkspaceName         = 'ContosoSentinel'
+            SubscriptionId        = '<subscription-id>'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

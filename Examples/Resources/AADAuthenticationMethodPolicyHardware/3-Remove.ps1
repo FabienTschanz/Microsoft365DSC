@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyHardware "AADAuthenticationMethodPolicyHardware-HardwareOath"
+        AADAuthenticationMethodPolicyHardware "AADAuthenticationMethodPolicyHardware-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

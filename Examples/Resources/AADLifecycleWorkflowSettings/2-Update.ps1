@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADLifecycleWorkflowSettings "AADLifecycleWorkflowSettings"
+        AADLifecycleWorkflowSettings "AADLifecycleWorkflowSettings-Example"
         {
             ApplicationId                   = $ApplicationId;
             CertificateThumbprint           = $CertificateThumbprint;

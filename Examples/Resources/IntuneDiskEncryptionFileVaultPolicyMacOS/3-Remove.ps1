@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiskEncryptionFileVaultPolicyMacOS "IntuneDiskEncryptionFileVaultPolicyMacOS-IntuneDiskEncryptionFileVaultPolicyMacOS_1"
+        IntuneDiskEncryptionFileVaultPolicyMacOS "IntuneDiskEncryptionFileVaultPolicyMacOS-Example"
         {
-            ApplicationId                          = $ApplicationId;
-            CertificateThumbprint                  = $CertificateThumbprint;
-            Ensure                                 = "Absent";
-            DisplayName                            = "IntuneDiskEncryptionFileVaultPolicyMacOS_1";
-            TenantId                               = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            DisplayName           = "IntuneDiskEncryptionFileVaultPolicyMacOS_1";
+            TenantId              = $TenantId;
         }
     }
 }

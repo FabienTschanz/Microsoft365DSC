@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneCloudProvisioningPolicyWindows365 "IntuneCloudProvisioningPolicyWindows365_1"
+        IntuneCloudProvisioningPolicyWindows365 "IntuneCloudProvisioningPolicyWindows365-Example"
         {
             ApplicationId            = $ApplicationId;
             Assignments              = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType = "#microsoft.graph.cloudPcManagementGroupAssignmentTarget"
-                    groupId = "42a638ec-2bf2-47a8-8f5f-176ce2124b7b"
+                    groupId  = "42a638ec-2bf2-47a8-8f5f-176ce2124b7b"
                 }
             );
             Autopatch                = MSFT_MicrosoftGraphCloudPcProvisioningPolicyAutopatch{
@@ -41,10 +41,10 @@ Configuration Example
             DisplayName              = "IntuneCloudProvisioningPolicyWindows365_1";
             DomainJoinConfigurations = @(
                 MSFT_MicrosoftGraphCloudPcDomainJoinConfiguration{
-                    Type = "azureADJoin"
-                    RegionName = "automatic"
+                    Type           = "azureADJoin"
+                    RegionName     = "automatic"
                     DomainJoinType = "azureADJoin"
-                    RegionGroup = "europe" # Updated property
+                    RegionGroup    = "europe" # Updated property
                 }
             );
             EnableSingleSignOn       = $True;

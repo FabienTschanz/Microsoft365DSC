@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOOfflineAddressBook 'ConfigureOfflineAddressBook'
+        EXOOfflineAddressBook 'EXOOfflineAddressBook-Example'
         {
-            Name                 = "Integration Address Book"
-            AddressLists         = @('\All Users')
-            DiffRetentionPeriod  = "30"
-            IsDefault            = $true
-            Ensure               = "Present"
+            Name                  = "Global Offline Address Book"
+            AddressLists          = @('\All Users')
+            DiffRetentionPeriod   = "30"
+            IsDefault             = $true
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

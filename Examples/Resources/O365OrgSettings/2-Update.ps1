@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        O365OrgSettings 'O365OrgSettings'
+        O365OrgSettings 'O365OrgSettings-Example'
         {
             AdminCenterReportDisplayConcealedNames     = $True;
             Credential                                 = $Credscredential;

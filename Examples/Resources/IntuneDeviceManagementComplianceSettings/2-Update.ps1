@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceManagementComplianceSettings 'DeviceManagementComplianceSettings'
+        IntuneDeviceManagementComplianceSettings 'IntuneDeviceManagementComplianceSettings-Example'
         {
             DeviceComplianceCheckinThresholdDays = 22;
             IsSingleInstance                     = "Yes";
             SecureByDefault                      = $True;
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                        = $ApplicationId;
+            TenantId                             = $TenantId;
+            CertificateThumbprint                = $CertificateThumbprint;
         }
     }
 }

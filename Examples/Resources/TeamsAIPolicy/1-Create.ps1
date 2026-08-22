@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsAIPolicy "TeamsAIPolicy-AIEnabled"
+        TeamsAIPolicy "TeamsAIPolicy-Example"
         {
             ApplicationId             = $ConfigurationData.NonNodeData.ApplicationId;
             CertificateThumbprint     = $ConfigurationData.NonNodeData.CertificateThumbprint;

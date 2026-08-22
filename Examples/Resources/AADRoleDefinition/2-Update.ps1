@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADRoleDefinition 'AADRoleDefinition1'
+        AADRoleDefinition 'AADRoleDefinition-Example'
         {
-            DisplayName                   = "DSCRole1"
-            Description                   = "DSC created role definition"
-            ResourceScopes                = "/"
-            IsEnabled                     = $false # Updated Property
-            RolePermissions               = "microsoft.directory/applicationPolicies/allProperties/read","microsoft.directory/applicationPolicies/allProperties/update","microsoft.directory/applicationPolicies/basic/update"
-            Version                       = "1.0"
-            Ensure                        = "Present"
+            DisplayName           = "Application Policy Administrator"
+            Description           = "Allows management of application policies"
+            ResourceScopes        = "/"
+            IsEnabled             = $false # Updated Property
+            RolePermissions       = "microsoft.directory/applicationPolicies/allProperties/read","microsoft.directory/applicationPolicies/allProperties/update","microsoft.directory/applicationPolicies/basic/update"
+            Version               = "1.0"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsOrgWideAppSettings "TeamsOrgWideAppSettings"
+        TeamsOrgWideAppSettings "TeamsOrgWideAppSettings-Example"
         {
             Credential                         = $credsCredential;
             IsSideloadedAppsInteractionEnabled = $False;

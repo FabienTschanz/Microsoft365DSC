@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsPstnUsage 'ConfigurePstnUsage'
+        TeamsPstnUsage 'TeamsPstnUsage-Example'
         {
             Usage      = 'Long Distance'
             Ensure     = 'Present'

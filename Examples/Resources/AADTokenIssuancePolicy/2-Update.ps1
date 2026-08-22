@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADTokenIssuancePolicy "AADTokenIssuancePolicy-Demo"
+        AADTokenIssuancePolicy "AADTokenIssuancePolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "SAML token issuance policy for the DSC demo application.";
+            Description           = "SAML token issuance policy for the expense reporting application.";
             Definition            = @("{`"TokenResponseSigningPolicy`":`"TokenOnly`",`"SamlTokenVersion`":`"1.1`",`"SigningAlgorithm`":`"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256`",`"Version`":`"1`",`"EmitSAMLNameFormat`":`"true`"}"); # Updated Property
-            DisplayName           = "DemoPolicy";
+            DisplayName           = "ExpenseReportingSamlPolicy";
             Ensure                = "Present";
             IsOrganizationDefault = $False;
             TenantId              = $TenantId;

@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        AADCertificateBasedApplicationConfiguration "ContosoRootCA"
+        AADCertificateBasedApplicationConfiguration "AADCertificateBasedApplicationConfiguration-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

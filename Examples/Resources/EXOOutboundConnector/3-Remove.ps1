@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOOutboundConnector 'ConfigureOutboundConnector'
+        EXOOutboundConnector 'EXOOutboundConnector-Example'
         {
-            Identity                      = "Contoso Outbound Connector"
-            Ensure                        = "Absent"
+            Identity              = "Contoso Outbound Connector"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

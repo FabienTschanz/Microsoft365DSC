@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneCloudProvisioningPolicyWindows365 "IntuneCloudProvisioningPolicyWindows365_1"
+        IntuneCloudProvisioningPolicyWindows365 "IntuneCloudProvisioningPolicyWindows365-Example"
         {
-            ApplicationId            = $ApplicationId;
-            DisplayName              = "IntuneCloudProvisioningPolicyWindows365_1";
-            Ensure                   = "Absent";
-            CertificateThumbprint    = $CertificateThumbprint;
-            TenantId                 = $TenantId;
+            ApplicationId         = $ApplicationId;
+            DisplayName           = "IntuneCloudProvisioningPolicyWindows365_1";
+            Ensure                = "Absent";
+            CertificateThumbprint = $CertificateThumbprint;
+            TenantId              = $TenantId;
         }
     }
 }

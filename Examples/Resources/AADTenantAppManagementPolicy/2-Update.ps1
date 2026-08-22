@@ -24,45 +24,45 @@ Configuration Example
 
     Node localhost
     {
-        AADTenantAppManagementPolicy "AADTenantAppManagementPolicy-Default"
+        AADTenantAppManagementPolicy "AADTenantAppManagementPolicy-Example"
         {
             ApplicationId           = $ApplicationId;
             ApplicationRestrictions = MSFT_AADTenantAppManagementPolicyRestrictions{
                 passwordCredentials = @(
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
                         restrictForAppsCreatedAfterDateTime = "1/1/2021 3:37:00 PM"
-                        restrictionType = "passwordAddition"
-                        state = "enabled"
+                        restrictionType                     = "passwordAddition"
+                        state                               = "enabled"
                     }
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
-                        maxLifetime = "P4DT12H30M5S"
+                        maxLifetime                         = "P4DT12H30M5S"
                         restrictForAppsCreatedAfterDateTime = "1/1/2001 3:37:00 PM"
-                        restrictionType = "passwordLifetime"
-                        state = "enabled"
+                        restrictionType                     = "passwordLifetime"
+                        state                               = "enabled"
                     }
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
                         restrictForAppsCreatedAfterDateTime = "1/1/2002 3:37:00 PM"
-                        restrictionType = "customPasswordAddition"
-                        state = "enabled"
+                        restrictionType                     = "customPasswordAddition"
+                        state                               = "enabled"
                     }
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
                         restrictForAppsCreatedAfterDateTime = "1/1/2003 3:37:00 PM"
-                        restrictionType = "symmetricKeyAddition"
-                        state = "enabled"
+                        restrictionType                     = "symmetricKeyAddition"
+                        state                               = "enabled"
                     }
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
-                        maxLifetime = "P40DT0H0M0S"
+                        maxLifetime                         = "P40DT0H0M0S"
                         restrictForAppsCreatedAfterDateTime = "1/1/2004 3:37:00 PM"
-                        restrictionType = "symmetricKeyLifetime"
-                        state = "enabled"
+                        restrictionType                     = "symmetricKeyLifetime"
+                        state                               = "enabled"
                     }
                 )
-                keyCredentials = @(
+                keyCredentials      = @(
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
-                        maxLifetime = "P30DT0H0M0S"
+                        maxLifetime                         = "P30DT0H0M0S"
                         restrictForAppsCreatedAfterDateTime = "1/1/2015 3:37:00 PM"
-                        restrictionType = "asymmetricKeyLifetime"
-                        state = "enabled"
+                        restrictionType                     = "asymmetricKeyLifetime"
+                        state                               = "enabled"
                     }
                 )
             };

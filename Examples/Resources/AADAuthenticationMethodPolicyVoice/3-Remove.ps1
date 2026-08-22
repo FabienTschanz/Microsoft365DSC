@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyVoice "AADAuthenticationMethodPolicyVoice-Voice"
+        AADAuthenticationMethodPolicyVoice "AADAuthenticationMethodPolicyVoice-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

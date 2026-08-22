@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsDefenderForEndpointMacOS "IntuneMobileAppsDefenderForEndpointMacOS-Defender App"
+        IntuneMobileAppsDefenderForEndpointMacOS "IntuneMobileAppsDefenderForEndpointMacOS-Example"
         {
             DisplayName           = "Defender App";
             Ensure                = "Absent";

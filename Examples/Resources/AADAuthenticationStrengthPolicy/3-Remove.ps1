@@ -26,8 +26,8 @@ Configuration Example
     {
         AADAuthenticationStrengthPolicy "AADAuthenticationStrengthPolicy-Example"
         {
-            DisplayName          = "Example";
-            Ensure               = "Absent";
+            DisplayName           = "Phishing-Resistant MFA";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

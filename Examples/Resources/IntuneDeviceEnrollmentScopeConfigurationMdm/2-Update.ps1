@@ -16,14 +16,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceEnrollmentScopeConfigurationMdm "IntuneDeviceEnrollmentScopeConfigurationMdm"
+        IntuneDeviceEnrollmentScopeConfigurationMdm "IntuneDeviceEnrollmentScopeConfigurationMdm-Example"
         {
-            AppliesTo            = "all";
-            ComplianceUrl        = "https://portal.manage.microsoft.com/?portalAction=Compliance";
-            Credential           = $Credential;
-            DiscoveryUrl         = "https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc";
-            IsSingleInstance     = "Yes";
-            TermsOfUseUrl        = "https://portal.manage.microsoft.com/TermsofUse.aspx";
+            AppliesTo        = "all";
+            ComplianceUrl    = "https://portal.manage.microsoft.com/?portalAction=Compliance";
+            Credential       = $Credential;
+            DiscoveryUrl     = "https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc";
+            IsSingleInstance = "Yes";
+            TermsOfUseUrl    = "https://portal.manage.microsoft.com/TermsofUse.aspx";
         }
     }
 }

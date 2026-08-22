@@ -24,15 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        EXOManagementRoleAssignment 'AssignManagementRole'
+        EXOManagementRoleAssignment 'EXOManagementRoleAssignment-Example'
         {
-            Ensure               = "Present";
-            Name                 = "MyManagementRoleAssignment";
-            Role                 = "UserApplication";
-            User                 = "AlexW@$TenantId"; # Updated Property
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Ensure                      = "Present";
+            Name                        = "MyManagementRoleAssignment";
+            Role                        = "UserApplication";
+            User                        = "AlexW@$TenantId"; # Updated Property
+            RecipientRelativeWriteScope = "Organization";
+            ApplicationId               = $ApplicationId
+            TenantId                    = $TenantId
+            CertificateThumbprint       = $CertificateThumbprint
         }
     }
 }

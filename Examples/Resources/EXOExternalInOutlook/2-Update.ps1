@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOExternalInOutlook "EXOExternalInOutlook"
+        EXOExternalInOutlook "EXOExternalInOutlook-Example"
         {
             Identity              = "ExternalInOutlook";
             AllowList             = @("mobile01@contoso.onmicrosoft.com","*contoso.onmicrosoft.com","contoso.com");

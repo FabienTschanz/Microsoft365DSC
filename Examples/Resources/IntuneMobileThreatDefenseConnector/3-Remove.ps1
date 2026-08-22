@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileThreatDefenseConnector "IntuneMobileThreatDefenseConnector-Microsoft Defender for Endpoint"
+        IntuneMobileThreatDefenseConnector "IntuneMobileThreatDefenseConnector-Example"
         {
             AllowPartnerToCollectIosApplicationMetadata         = $False;
             AllowPartnerToCollectIosPersonalApplicationMetadata = $False;
@@ -44,9 +44,9 @@ Configuration Example
             WindowsDeviceBlockedOnMissingPartnerData            = $False;
             WindowsEnabled                                      = $False;
             Ensure                                              = "Absent";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                       = $ApplicationId;
+            TenantId                                            = $TenantId;
+            CertificateThumbprint                               = $CertificateThumbprint;
         }
     }
 }

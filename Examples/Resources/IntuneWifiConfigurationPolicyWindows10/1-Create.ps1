@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyWindows10 'myWifiConfigWindows10Policy'
+        IntuneWifiConfigurationPolicyWindows10 'IntuneWifiConfigurationPolicyWindows10-Example'
         {
             DisplayName                    = 'win10 wifi - revised'
             Assignments                    = @(
@@ -44,9 +44,9 @@ Configuration Example
             Ssid                           = 'ssid'
             WifiSecurityType               = 'wpa2Personal'
             Ensure                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

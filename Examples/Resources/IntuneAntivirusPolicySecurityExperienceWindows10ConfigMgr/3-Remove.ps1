@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr "IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr-Windows ConfigMgr - Windows Security experience"
+        IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr "IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr-Example"
         {
-            ApplicationId                              = $ApplicationId;
-            CertificateThumbprint                      = $CertificateThumbprint;
-            DisplayName                                = "Windows ConfigMgr - Windows Security experience";
-            Ensure                                     = "Absent";
-            TenantId                                   = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName           = "Windows ConfigMgr - Windows Security experience";
+            Ensure                = "Absent";
+            TenantId              = $TenantId;
         }
     }
 }

@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOAccessControlSettings 'ConfigureAccessControlSettings'
+        SPOAccessControlSettings 'SPOAccessControlSettings-Example'
         {
             IsSingleInstance             = "Yes"
             DisplayStartASiteOption      = $false

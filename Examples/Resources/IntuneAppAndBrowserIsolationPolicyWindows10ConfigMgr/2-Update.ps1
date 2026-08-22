@@ -23,13 +23,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppAndBrowserIsolationPolicyWindows10ConfigMgr 'ConfigureAppAndBrowserIsolationPolicyWindows10ConfigMgr'
+        IntuneAppAndBrowserIsolationPolicyWindows10ConfigMgr 'IntuneAppAndBrowserIsolationPolicyWindows10ConfigMgr-Example'
         {
-            Assignments              = @(
+            Assignments                            = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '11111111-1111-1111-1111-111111111111'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '11111111-1111-1111-1111-111111111111'
                 }
             );
             AllowCameraMicrophoneRedirection       = "0"; # Updated property

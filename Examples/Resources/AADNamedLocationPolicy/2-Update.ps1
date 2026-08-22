@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADNamedLocationPolicy 'CompanyNetwork'
+        AADNamedLocationPolicy 'AADNamedLocationPolicy-Example'
         {
-            DisplayName = "Company Network"
-            IpRanges    = @("2.1.1.1/32") # Updated Property
-            IsTrusted   = $False
-            OdataType   = "#microsoft.graph.ipNamedLocation"
-            Ensure      = "Present"
+            DisplayName           = "Company Network"
+            IpRanges              = @("2.1.1.1/32") # Updated Property
+            IsTrusted             = $False
+            OdataType             = "#microsoft.graph.ipNamedLocation"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

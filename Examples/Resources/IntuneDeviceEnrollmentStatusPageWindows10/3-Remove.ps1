@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceEnrollmentStatusPageWindows10 '6b43c039-c1d0-4a9f-aab9-48c5531acbd6'
+        IntuneDeviceEnrollmentStatusPageWindows10 'IntuneDeviceEnrollmentStatusPageWindows10-Example'
         {
-            DisplayName                             = "All users and all devices";
-            Ensure                                  = "Absent";
+            DisplayName           = "All users and all devices";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

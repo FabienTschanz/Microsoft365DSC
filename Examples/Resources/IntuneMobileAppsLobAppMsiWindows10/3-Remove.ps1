@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsLobAppMsiWindows10 "IntuneMobileAppsLobAppMsiWindows10-MSI App"
+        IntuneMobileAppsLobAppMsiWindows10 "IntuneMobileAppsLobAppMsiWindows10-Example"
         {
             DisplayName           = "MSI App";
             Ensure                = "Absent";

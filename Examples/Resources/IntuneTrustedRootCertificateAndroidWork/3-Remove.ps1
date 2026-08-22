@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneTrustedRootCertificateAndroidWork "ConfigureIntuneTrustedRootCertificateAndroidWork"
+        IntuneTrustedRootCertificateAndroidWork "IntuneTrustedRootCertificateAndroidWork-Example"
         {
-            Description            = "IntuneTrustedRootCertificateAndroidWork Description";
-            DisplayName            = "IntuneTrustedRootCertificateAndroidWork DisplayName";
-            Ensure                 = "Absent";
-            ApplicationId          = $ApplicationId;
-            TenantId               = $TenantId;
-            CertificateThumbprint  = $CertificateThumbprint;
+            Description           = "IntuneTrustedRootCertificateAndroidWork Description";
+            DisplayName           = "IntuneTrustedRootCertificateAndroidWork DisplayName";
+            Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

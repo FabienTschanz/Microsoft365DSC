@@ -24,13 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        EXOAtpPolicyForO365 'ConfigureAntiPhishPolicy'
+        EXOAtpPolicyForO365 'EXOAtpPolicyForO365-Example'
         {
             IsSingleInstance        = "Yes"
+            Identity                = "Default"
             EnableATPForSPOTeamsODB = $true
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            EnableSafeDocs          = $false
+            AllowSafeDocsOpen       = $false
+            ApplicationId           = $ApplicationId
+            TenantId                = $TenantId
+            CertificateThumbprint   = $CertificateThumbprint
         }
     }
 }

@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsGroupPolicyAssignment 'TeamsGroupPolicyAssignment'
+        TeamsGroupPolicyAssignment 'TeamsGroupPolicyAssignment-Example'
         {
             Ensure           = 'Present'
             GroupDisplayname = 'SecGroup'

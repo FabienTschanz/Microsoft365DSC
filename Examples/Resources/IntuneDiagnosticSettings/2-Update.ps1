@@ -24,87 +24,87 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiagnosticSettings "IntuneDiagnosticSettings-TestDiag"
+        IntuneDiagnosticSettings "IntuneDiagnosticSettings-Example"
         {
             ApplicationId               = $ApplicationId;
             Categories                  = @(
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'AuditLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'SignInLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'NonInteractiveUserSignInLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'ServicePrincipalSignInLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'ManagedIdentitySignInLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'ProvisioningLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'ADFSSignInLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'RiskyUsers'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'UserRiskEvents'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'NetworkAccessTrafficLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'RiskyServicePrincipals'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'ServicePrincipalRiskEvents'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'EnrichedOffice365AuditLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'MicrosoftGraphActivityLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'RemoteNetworkHealthLogs'
-                    enabled = $False #Drift
+                    enabled  = $False #Drift
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'NetworkAccessAlerts'
-                    enabled = $True
+                    enabled  = $True
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'B2CRequestLogs'
-                    enabled = $False
+                    enabled  = $False
                 }
             );
             CertificateThumbprint       = $CertificateThumbprint;
             Ensure                      = "Present";
-            EventHubAuthorizationRuleId = "/subscriptions/f854132c-570e-4c98-a4c9-3cd902de77dd/resourceGroups/TBD/providers/Microsoft.EventHub/namespaces/myhub/authorizationrules/RootManageSharedAccessKey";
+            EventHubAuthorizationRuleId = "<event-hub-authorization-rule-id>";
             EventHubName                = "";
-            Name                        = "TestDiag";
-            StorageAccountId            = "/subscriptions/f854132c-570e-4c98-a4c9-3cd902de77dd/resourceGroups/TBD/providers/Microsoft.Storage/storageAccounts/demostore";
+            Name                        = "PlatformDiagnostics";
+            StorageAccountId            = "<storage-account-resource-id>";
             TenantId                    = $TenantId;
-            WorkspaceId                 = "/subscriptions/f854132c-570e-4c98-a4c9-3cd902de77dd/resourceGroups/TBD/providers/Microsoft.OperationalInsights/workspaces/MySentinelWorkspace";
+            WorkspaceId                 = "<log-analytics-workspace-resource-id>";
         }
     }
 }

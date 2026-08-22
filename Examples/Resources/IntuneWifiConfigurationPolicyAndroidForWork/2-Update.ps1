@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyAndroidForWork 'Example'
+        IntuneWifiConfigurationPolicyAndroidForWork 'IntuneWifiConfigurationPolicyAndroidForWork-Example'
         {
             DisplayName                    = 'AndroindForWork'
-            Description                    = 'DSC'
+            Description                    = 'Corporate Wi-Fi for Android work profile devices'
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments {
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
@@ -43,9 +43,9 @@ Configuration Example
             Ssid                           = 'WiFi'
             WiFiSecurityType               = 'wpa2Enterprise'
             Ensure                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

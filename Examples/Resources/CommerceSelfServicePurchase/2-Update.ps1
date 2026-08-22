@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        CommerceSelfServicePurchase "Power Apps per user"
+        CommerceSelfServicePurchase "CommerceSelfServicePurchase-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        SPOSiteDesign 'ConfigureSiteDesign'
+        SPOSiteDesign 'SPOSiteDesign-Example'
         {
-            Title               = "DSC Site Design"
+            Title               = "Contoso Team Site Design"
             SiteScriptNames     = @("Cust List", "List_Views")
             WebTemplate         = "TeamSite"
             IsDefault           = $false
-            Description         = "Created by DSC"
+            Description         = "Standard layout for departmental team sites"
             PreviewImageAltText = "Office 365"
             Ensure              = "Present"
             Credential          = $Credscredential

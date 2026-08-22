@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10-Example'
         {
-            DisplayName  = 'Driver Update Example'
-            Assignments  = @()
-            Description  = 'test 2'
-            approvalType = 'manual'
-            Ensure       = 'Present'
+            DisplayName           = 'Driver Updates - Manual Approval'
+            Assignments           = @()
+            Description           = 'Manually approved driver updates for corporate laptops'
+            approvalType          = 'manual'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,13 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        EXOManagementRoleEntry "UpdateRoleEntry"
+        EXOManagementRoleEntry "EXOManagementRoleEntry-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Identity   = "Information Rights Management\Get-BookingMailbox"
-            Parameters = @("ANR","RecipientTypeDetails", "ResultSize")
+            Identity              = "Information Rights Management\Get-BookingMailbox"
+            Parameters            = @("ANR","RecipientTypeDetails", "ResultSize")
+            Type                  = "Cmdlet"
+            Ensure                = "Present"
         }
     }
 }

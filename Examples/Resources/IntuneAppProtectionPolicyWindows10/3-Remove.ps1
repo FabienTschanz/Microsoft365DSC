@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppProtectionPolicyWindows10 "IntuneAppProtectionPolicyWindows10-IntuneAppProtectionPolicyWindows10_1"
+        IntuneAppProtectionPolicyWindows10 "IntuneAppProtectionPolicyWindows10-Example"
         {
-            ApplicationId                           = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint                   = $ConfigurationData.NonNodeData.CertificateThumbprint;
-            DisplayName                             = "IntuneAppProtectionPolicyWindows10_1";
-            Ensure                                  = "Absent";
-            TenantId                                = $OrganizationName;
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
+            DisplayName           = "IntuneAppProtectionPolicyWindows10_1";
+            Ensure                = "Absent";
+            TenantId              = $OrganizationName;
         }
     }
 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOCalendarProcessing "CalendarProcessing"
+        EXOCalendarProcessing "EXOCalendarProcessing-Example"
         {
             AddAdditionalResponse                = $False;
             AddNewRequestsTentatively            = $True;
@@ -64,9 +64,9 @@ Configuration Example
             ResourceDelegates                    = @();
             ScheduleOnlyDuringWorkHours          = $False;
             TentativePendingApproval             = $True;
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                        = $ApplicationId
+            TenantId                             = $TenantId
+            CertificateThumbprint                = $CertificateThumbprint
         }
     }
 }

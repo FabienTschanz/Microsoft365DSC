@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMeetingBroadcastPolicy 'ConfigureMeetingBroadcastPolicy'
+        TeamsMeetingBroadcastPolicy 'TeamsMeetingBroadcastPolicy-Example'
         {
             Identity                        = "MyDemoPolicy"
             AllowBroadcastScheduling        = $True

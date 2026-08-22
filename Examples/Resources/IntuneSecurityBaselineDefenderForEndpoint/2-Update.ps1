@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineDefenderForEndpoint 'mySecurityBaselineDefenderForEndpoint'
+        IntuneSecurityBaselineDefenderForEndpoint 'IntuneSecurityBaselineDefenderForEndpoint-Example'
         {
-            DisplayName           = 'test'
-            DeviceSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineDefenderForEndpoint
+            DisplayName           = 'Defender for Endpoint Baseline'
+            DeviceSettings        = MSFT_MicrosoftGraphIntuneSettingsCatalogDeviceSettings_IntuneSecurityBaselineDefenderForEndpoint
             {
                 BlockExecutionOfPotentiallyObfuscatedScripts = 'off'
-                AllowRealtimeMonitoring = '0' #drift
-                BlockWin32APICallsFromOfficeMacros = 'warn'
-                CloudBlockLevel = '2'
+                AllowRealtimeMonitoring                      = '0' #drift
+                BlockWin32APICallsFromOfficeMacros           = 'warn'
+                CloudBlockLevel                              = '2'
             }
-            UserSettings = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineDefenderForEndpoint
+            UserSettings          = MSFT_MicrosoftGraphIntuneSettingsCatalogUserSettings_IntuneSecurityBaselineDefenderForEndpoint
             {
                 DisableSafetyFilterOverrideForAppRepUnknown = '1'
             }

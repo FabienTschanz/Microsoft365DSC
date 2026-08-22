@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADRemoteNetwork "AADRemoteNetwork-Test Remote Network"
+        AADRemoteNetwork "AADRemoteNetwork-Example"
         {
             Ensure                = "Absent";
-            Name                  = "Test Remote Network";
+            Name                  = "Sydney Branch Network";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

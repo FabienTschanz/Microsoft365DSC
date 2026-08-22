@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyExternal "AADAuthenticationMethodPolicyExternal-Cisco Duo"
+        AADAuthenticationMethodPolicyExternal "AADAuthenticationMethodPolicyExternal-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

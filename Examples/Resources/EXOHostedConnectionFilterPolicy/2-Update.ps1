@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedConnectionFilterPolicy 'ConfigureHostedConnectionFilterPolicy'
+        EXOHostedConnectionFilterPolicy 'EXOHostedConnectionFilterPolicy-Example'
         {
-            Identity         = "Default"
-            AdminDisplayName = ""
-            EnableSafeList   = $True # Updated Property
-            IPAllowList      = @()
-            IPBlockList      = @()
-            MakeDefault      = $True
-            Ensure           = "Present"
+            Identity              = "Default"
+            AdminDisplayName      = ""
+            EnableSafeList        = $True # Updated Property
+            IPAllowList           = @()
+            IPBlockList           = @()
+            MakeDefault           = $True
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

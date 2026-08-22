@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntunePolicySets "Example"
+        IntunePolicySets "IntunePolicySets-Example"
         {
-            DisplayName          = "Example";
-            Ensure               = "Absent";
+            DisplayName           = "New Device Baseline";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy 'Example'
+        IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy 'IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy-Example'
         {
             AccountType           = "1";
             AllowDiagnostics      = "true";
@@ -34,9 +34,9 @@ Configuration Example
             ApplicationId         = $ApplicationId;
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
-                    dataType = "#microsoft.graph.groupAssignmentTarget"
+                    dataType                                   = "#microsoft.graph.groupAssignmentTarget"
                     deviceAndAppManagementAssignmentFilterType = "none"
-                    groupDisplayName = "Include"
+                    groupDisplayName                           = "Include"
                 }
             );
             AssignmentTarget      = "Include";

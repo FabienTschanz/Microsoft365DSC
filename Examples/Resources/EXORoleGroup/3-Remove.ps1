@@ -24,12 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXORoleGroup 'ConfigureRoleGroup'
+        EXORoleGroup 'EXORoleGroup-Example'
         {
-            Name                      = "Contoso Role Group"
-            Members                   = @("Exchange Administrator")
-            Roles                     = @("Address Lists")
-            Ensure                    = "Absent"
+            Name                  = "Contoso Role Group"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

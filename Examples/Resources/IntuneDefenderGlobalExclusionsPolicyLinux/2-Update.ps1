@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDefenderGlobalExclusionsPolicyLinux 'myIntuneDefenderGlobalExclusionsPolicyLinux'
+        IntuneDefenderGlobalExclusionsPolicyLinux 'IntuneDefenderGlobalExclusionsPolicyLinux-Example'
         {
-            Assignments = @();
-            Description = "";
-            DisplayName = "Test";
-            Ensure      = "Present";
-            Exclusions  = @(
+            Assignments           = @();
+            Description           = "";
+            DisplayName           = "Linux Servers - Defender Global Exclusions";
+            Ensure                = "Present";
+            Exclusions            = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusionsV2{
-                    exclusions_item_path = '/path/to/otherDirectory' # Updated property
+                    exclusions_item_path        = '/path/to/otherDirectory' # Updated property
                     exclusions_item_isDirectory = 'true'
-                    exclusions_item_type = 'excludedPath'
+                    exclusions_item_type        = 'excludedPath'
                 }
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusionsV2{
                     Exclusions_item_name = 'process1'

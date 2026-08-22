@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 'IntuneDeviceConfigurationSCEPCertificatePolicyWindows10-Example'
         {
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             CertificateStore               = "user";
@@ -38,7 +38,7 @@ Configuration Example
             CustomSubjectAlternativeNames  = @(
                 MSFT_MicrosoftGraphcustomSubjectAlternativeName{
                     SanType = 'domainNameService'
-                    Name = 'dns'
+                    Name    = 'dns'
                 }
             );
             DisplayName                    = "SCEP";
@@ -46,7 +46,7 @@ Configuration Example
             ExtendedKeyUsages              = @(
                 MSFT_MicrosoftGraphextendedKeyUsage{
                     ObjectIdentifier = '1.3.6.1.5.5.7.3.2'
-                    Name = 'Client Authentication'
+                    Name             = 'Client Authentication'
                 }
             );
             HashAlgorithm                  = "sha2";
@@ -59,9 +59,9 @@ Configuration Example
             SubjectNameFormat              = "custom";
             SubjectNameFormatString        = "CN={{UserName}},E={{EmailAddress}}";
             RootCertificateId              = "169bf4fc-5914-40f4-ad33-48c225396183";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

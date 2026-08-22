@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicySoftware "AADAuthenticationMethodPolicySoftware-SoftwareOath"
+        AADAuthenticationMethodPolicySoftware "AADAuthenticationMethodPolicySoftware-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPlatformScriptMacOS 'Example'
+        IntuneDeviceConfigurationPlatformScriptMacOS 'IntuneDeviceConfigurationPlatformScriptMacOS-Example'
         {
-            DisplayName          = "custom";
-            Ensure               = "Absent";
-            Id                   = "00000000-0000-0000-0000-000000000000";
+            DisplayName           = "custom";
+            Ensure                = "Absent";
+            Id                    = "00000000-0000-0000-0000-000000000000";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

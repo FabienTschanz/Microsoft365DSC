@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsAutopilotDevicePreparationAutomaticPolicy 'Example'
+        IntuneWindowsAutopilotDevicePreparationAutomaticPolicy 'IntuneWindowsAutopilotDevicePreparationAutomaticPolicy-Example'
         {
             AllowedApplications   = @("IntuneMobileAppsWindowsOfficeSuiteApp_1","IntuneMobileAppsMicrosoftEdge_Windows");
             AllowedScripts        = @("IntuneDeviceConfigurationPlatformScriptWindows_1");

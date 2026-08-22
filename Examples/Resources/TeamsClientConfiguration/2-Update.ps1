@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsClientConfiguration 'TeamsClientConfiguration'
+        TeamsClientConfiguration 'TeamsClientConfiguration-Example'
         {
             AllowBox                         = $True
             AllowDropBox                     = $True

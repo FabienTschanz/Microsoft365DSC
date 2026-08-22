@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyAndroidOpenSourceProject 'myAndroidOpenSourceProjectPolicy'
+        IntuneDeviceConfigurationPolicyAndroidOpenSourceProject 'IntuneDeviceConfigurationPolicyAndroidOpenSourceProject-Example'
         {
-            DisplayName               = 'aosp'
-            Ensure                    = 'Absent'
+            DisplayName           = 'aosp'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

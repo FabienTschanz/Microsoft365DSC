@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOResourceConfiguration 'ConfigureResourceConfiguration'
+        EXOResourceConfiguration 'EXOResourceConfiguration-Example'
         {
             IsSingleInstance       = 'Yes'
             ResourcePropertySchema = @('Room/TV', 'Equipment/Laptop')
             Ensure                 = 'Present'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId          = $ApplicationId
+            TenantId               = $TenantId
+            CertificateThumbprint  = $CertificateThumbprint
         }
     }
 }

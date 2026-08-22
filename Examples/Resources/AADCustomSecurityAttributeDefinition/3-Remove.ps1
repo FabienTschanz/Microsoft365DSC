@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADCustomSecurityAttributeDefinition "AADCustomSecurityAttributeDefinition-ShoeSize"
+        AADCustomSecurityAttributeDefinition "AADCustomSecurityAttributeDefinition-Example"
         {
             ApplicationId         = $ApplicationId;
-            AttributeSet          = "TestAttributeSet";
+            AttributeSet          = "Engineering";
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "ShoeSize";

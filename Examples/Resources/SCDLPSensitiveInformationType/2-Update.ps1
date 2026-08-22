@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        SCDLPSensitiveInformationType "SCDLPSensitiveInformationType"
+        SCDLPSensitiveInformationType "SCDLPSensitiveInformationType-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "This is a test SIT - With modifications"; #drift
+            Description           = "Detects internal employee and contractor identification numbers"; #drift
             Ensure                = "Present";
-            FileData              = "orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s.";
+            FileData              = "Employee identification numbers at Contoso consist of the letters EMP followed by five digits, such as EMP12345. They are issued by Human Resources when an employee joins the company and are printed on every badge, payslip and internal directory entry. Contractor numbers follow the same pattern but begin with the letters CON.";
             Locale                = "en-US";
-            Name                  = "MyTestSIT";
+            Name                  = "Contoso Employee ID";
             TenantId              = $TenantId;
         }
     }

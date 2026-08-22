@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADNetworkAccessSettingConditionalAccess "AADNetworkAccessSettingConditionalAccess"
+        AADNetworkAccessSettingConditionalAccess "AADNetworkAccessSettingConditionalAccess-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

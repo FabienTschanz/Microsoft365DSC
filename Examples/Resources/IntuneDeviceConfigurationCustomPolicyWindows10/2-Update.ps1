@@ -24,32 +24,32 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationCustomPolicyWindows10 'Example'
+        IntuneDeviceConfigurationCustomPolicyWindows10 'IntuneDeviceConfigurationCustomPolicyWindows10-Example'
         {
-            Assignments          = @(
+            Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
-            DisplayName          = "custom";
-            Ensure               = "Present";
-            OmaSettings          = @(
+            DisplayName           = "custom";
+            Ensure                = "Present";
+            OmaSettings           = @(
                 MSFT_MicrosoftGraphomaSetting{
-                    Description = 'custom'
-                    OmaUri = '/oma/custom'
-                    odataType = '#microsoft.graph.omaSettingString'
+                    Description            = 'custom'
+                    OmaUri                 = '/oma/custom'
+                    odataType              = '#microsoft.graph.omaSettingString'
                     SecretReferenceValueId = '5b0e1dba-4523-455e-9fdd-e36c833b57bf_e072d616-12bc-4ea3-9171-ab080e4c120d_1f958162-15d4-42ba-92c4-17c2544b2179'
-                    Value = '****'
-                    IsEncrypted = $True
-                    DisplayName = 'oma'
+                    Value                  = '****'
+                    IsEncrypted            = $True
+                    DisplayName            = 'oma'
                 }
                 MSFT_MicrosoftGraphomaSetting{ # Updated Property
                     Description = 'custom 3'
-                    OmaUri = '/oma/custom3'
-                    odataType = '#microsoft.graph.omaSettingInteger'
-                    Value = 2
-                    IsReadOnly = $False
+                    OmaUri      = '/oma/custom3'
+                    odataType   = '#microsoft.graph.omaSettingInteger'
+                    Value       = 2
+                    IsReadOnly  = $False
                     IsEncrypted = $False
                     DisplayName = 'custom 3'
                 }

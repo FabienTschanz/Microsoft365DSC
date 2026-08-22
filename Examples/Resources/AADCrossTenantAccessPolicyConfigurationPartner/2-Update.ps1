@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADCrossTenantAccessPolicyConfigurationPartner "AADCrossTenantAccessPolicyConfigurationPartner"
+        AADCrossTenantAccessPolicyConfigurationPartner "AADCrossTenantAccessPolicyConfigurationPartner-Example"
         {
-            PartnerTenantId              = "e7a80bcf-696e-40ca-8775-a7f85fbb3ebc"; # O365DSC.onmicrosoft.com
+            PartnerTenantId              = "e7a80bcf-696e-40ca-8775-a7f85fbb3ebc"; # fabrikam.onmicrosoft.com
             AutomaticUserConsentSettings = MSFT_AADCrossTenantAccessPolicyAutomaticUserConsentSettings {
-                InboundAllowed           = $False # Updated Property
-                OutboundAllowed          = $True
+                InboundAllowed  = $False # Updated Property
+                OutboundAllowed = $True
             };
             B2BCollaborationOutbound     = MSFT_AADCrossTenantAccessPolicyB2BSetting {
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'allowed'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -52,7 +52,7 @@ Configuration Example
                 }
             };
             B2BCollaborationInbound      = MSFT_AADCrossTenantAccessPolicyB2BSetting{
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'allowed'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -72,7 +72,7 @@ Configuration Example
                 }
             };
             B2BDirectConnectInbound      = MSFT_AADCrossTenantAccessPolicyB2BSetting{
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'blocked'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -92,7 +92,7 @@ Configuration Example
                 }
             };
             B2BDirectConnectOutbound     = MSFT_AADCrossTenantAccessPolicyB2BSetting{
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'blocked'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -115,7 +115,7 @@ Configuration Example
                 GroupSyncInbound = MSFT_AADCrossTenantGroupSyncInbound{
                     IsSyncAllowed = $False
                 }
-                UserSyncInbound = MSFT_AADCrossTenantUserSyncInbound{
+                UserSyncInbound  = MSFT_AADCrossTenantUserSyncInbound{
                     IsSyncAllowed = $False
                 }
             };
@@ -124,9 +124,9 @@ Configuration Example
                 IsHybridAzureADJoinedDeviceAccepted = $True
                 IsMfaAccepted                       = $True
             };
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                = $ApplicationId
+            TenantId                     = $TenantId
+            CertificateThumbprint        = $CertificateThumbprint
             Ensure                       = "Present";
         }
     }

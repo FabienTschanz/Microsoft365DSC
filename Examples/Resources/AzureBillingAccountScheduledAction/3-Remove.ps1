@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureBillingAccountScheduledAction "AzureBillingAccountScheduledAction-MyAction"
+        AzureBillingAccountScheduledAction "AzureBillingAccountScheduledAction-Example"
         {
             ApplicationId         = $ApplicationId;
             BillingAccount        = "1e5b9e50-a1ea-581e-fb3a-778b93a06854:6487d5cf-0a7b-42e6-9549-23cavvvvvvv_2019-05-31";

@@ -24,13 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSharingPolicy 'ConfigureSharingPolicy'
+        EXOSharingPolicy 'EXOSharingPolicy-Example'
         {
-            Name       = "Integration Sharing Policy"
-            Default    = $False # Updated Property
-            Domains    = @("Anonymous:CalendarSharingFreeBusyReviewer", "*:CalendarSharingFreeBusySimple")
-            Enabled    = $True
-            Ensure     = "Absent"
+            Name                  = "External Calendar Sharing"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

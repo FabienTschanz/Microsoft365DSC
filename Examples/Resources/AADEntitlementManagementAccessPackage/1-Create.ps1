@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackage 'myAccessPackage'
+        AADEntitlementManagementAccessPackage 'AADEntitlementManagementAccessPackage-Example'
         {
             AccessPackagesIncompatibleWith = @();
             CatalogId                      = "General";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
-            Description                    = "Integration Tests";
-            DisplayName                    = "Integration Package";
+            ApplicationId                  = $ApplicationId
+            TenantId                       = $TenantId
+            CertificateThumbprint          = $CertificateThumbprint
+            Description                    = "Grants access to the finance reporting toolset";
+            DisplayName                    = "Finance Reporting Access";
             Ensure                         = "Present";
             IsHidden                       = $False;
             IsRoleScopesVisible            = $True;

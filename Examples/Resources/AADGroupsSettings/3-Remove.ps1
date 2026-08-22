@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupsSettings 'GeneralGroupsSettings'
+        AADGroupsSettings 'AADGroupsSettings-Example'
         {
-            IsSingleInstance              = "Yes"
-            Ensure                        = "Absent"
+            IsSingleInstance      = "Yes"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

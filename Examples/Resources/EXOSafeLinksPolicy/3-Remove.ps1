@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeLinksPolicy 'ConfigureSafeLinksPolicy'
+        EXOSafeLinksPolicy 'EXOSafeLinksPolicy-Example'
         {
-            Identity                      = 'Marketing Block URL'
-            Ensure                        = 'Absent'
+            Identity              = 'Marketing Block URL'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

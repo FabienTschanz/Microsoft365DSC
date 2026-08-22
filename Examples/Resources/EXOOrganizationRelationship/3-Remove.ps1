@@ -24,10 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        EXOOrganizationRelationship 'ConfigureOrganizationRelationship'
+        EXOOrganizationRelationship 'EXOOrganizationRelationship-Example'
         {
             Name                  = "Contoso"
-            Enabled               = $True
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

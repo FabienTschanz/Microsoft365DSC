@@ -24,11 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedOutboundSpamFilterRule 'ConfigureHostedOutboundSpamFilterRule'
+        EXOHostedOutboundSpamFilterRule 'EXOHostedOutboundSpamFilterRule-Example'
         {
             Identity                       = "Contoso Executives"
-            Enabled                        = $False # Updated Property
-            HostedOutboundSpamFilterPolicy = "Integration SFP"
+            HostedOutboundSpamFilterPolicy = "Outbound Spam Limits"
             Ensure                         = "Absent"
             Credential                     = $Credscredential
         }

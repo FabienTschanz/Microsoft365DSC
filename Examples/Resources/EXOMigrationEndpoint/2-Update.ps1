@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMigrationEndpoint "EXOMigrationEndpoint-testIMAP"
+        EXOMigrationEndpoint "EXOMigrationEndpoint-Example"
         {
             AcceptUntrustedCertificates   = $True;
             Authentication                = "Basic";
@@ -37,10 +37,9 @@ Configuration Example
             MailboxPermission             = "Admin";
             MaxConcurrentIncrementalSyncs = "10";
             MaxConcurrentMigrations       = "20";
-            Port                          = 993;
+            Port                          = "993";
             RemoteServer                  = "gmail.com";
-            # value for security updated from Tls to None
-            Security                      = "None";
+            Security                      = "None"; # Updated Property
         }
     }
 }

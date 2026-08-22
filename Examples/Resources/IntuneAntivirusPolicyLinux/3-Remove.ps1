@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyLinux 'myIntuneAntivirusPolicyLinux'
+        IntuneAntivirusPolicyLinux 'IntuneAntivirusPolicyLinux-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Linux Servers - Microsoft Defender Antivirus'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

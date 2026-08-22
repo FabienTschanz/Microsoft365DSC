@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADB2BManagementPolicy "AADB2BManagementPolicy"
+        AADB2BManagementPolicy "AADB2BManagementPolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

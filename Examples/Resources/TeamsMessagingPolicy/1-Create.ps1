@@ -15,10 +15,10 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMessagingPolicy 'ConfigureMessagingPolicy'
+        TeamsMessagingPolicy 'TeamsMessagingPolicy-Example'
         {
-            Identity                = "TestPolicy"
-            Description             = "My sample policy"
+            Identity                = "CorporateMessaging"
+            Description             = "Messaging defaults for corporate staff"
             ReadReceiptsEnabledType = "UserPreference"
             AllowImmersiveReader    = $True
             AllowGiphy              = $True

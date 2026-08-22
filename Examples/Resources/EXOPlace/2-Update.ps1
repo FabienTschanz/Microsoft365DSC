@@ -24,21 +24,31 @@ Configuration Example
 
     Node localhost
     {
-        EXOPlace 'TestPlace'
+        EXOPlace 'EXOPlace-Example'
         {
             AudioDeviceName        = "MyAudioDevice";
+            Building               = "Studio B";
             Capacity               = 16; # Updated Property
-            City                   = "";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            City                   = "Redmond";
+            CountryOrRegion        = "US";
+            ApplicationId          = $ApplicationId
+            TenantId               = $TenantId
+            CertificateThumbprint  = $CertificateThumbprint
             DisplayDeviceName      = "DisplayDeviceName";
+            DisplayName            = "Hood";
             Ensure                 = 'Present'
+            Floor                  = "3";
+            FloorLabel             = "Third Floor";
+            GeoCoordinates         = "47.644125;-122.132537";
             Identity               = "Hood@$TenantId";
             IsWheelChairAccessible = $True;
+            Label                  = "Hood";
             MTREnabled             = $False;
             ParentType             = "None";
             Phone                  = "555-555-5555";
+            PostalCode             = "98052";
+            State                  = "WA";
+            Street                 = "1 Microsoft Way";
             Tags                   = @("Tag1", "Tag2");
             VideoDeviceName        = "VideoDevice";
         }

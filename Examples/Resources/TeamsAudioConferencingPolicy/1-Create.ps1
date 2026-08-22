@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsAudioConferencingPolicy 'Example'
+        TeamsAudioConferencingPolicy 'TeamsAudioConferencingPolicy-Example'
         {
             AllowTollFreeDialin       = $True
             Credential                = $Credscredential

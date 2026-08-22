@@ -16,14 +16,14 @@ Configuration Example
 
     Node localhost
     {
-        O365SearchAndIntelligenceConfigurations 'SearchAndIntelligenceConfigurations'
+        O365SearchAndIntelligenceConfigurations 'O365SearchAndIntelligenceConfigurations-Example'
         {
-            Credential                               = $Credscredential;
-            IsSingleInstance                         = "Yes";
-            ItemInsightsIsEnabledInOrganization      = $False;
-            MeetingInsightsIsEnabledInOrganization   = $True;
-            ItemInsightsDisabledForGroup             = "TestGroup"
-            PersonInsightsIsEnabledInOrganization    = $True;
+            Credential                             = $Credscredential;
+            IsSingleInstance                       = "Yes";
+            ItemInsightsIsEnabledInOrganization    = $False;
+            MeetingInsightsIsEnabledInOrganization = $True;
+            ItemInsightsDisabledForGroup           = "Executives"
+            PersonInsightsIsEnabledInOrganization  = $True;
         }
     }
 }

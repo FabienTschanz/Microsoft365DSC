@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        AADConnectorGroupApplicationProxy "AADConnectorGroupApplicationProxy-testgroup"
+        AADConnectorGroupApplicationProxy "AADConnectorGroupApplicationProxy-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
             Ensure                = "Present";
             Id                    = "4984dcf7-d9e9-4663-90b4-5db09f92a669";
-            Name                  = "testgroup";
+            Name                  = "Amsterdam Connector Group";
             Region                = "nam";
         }
     }

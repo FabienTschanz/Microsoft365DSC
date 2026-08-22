@@ -15,10 +15,10 @@ Configuration Example
 
     Node localhost
     {
-        TeamsVoiceRoute 'ConfigureVoiceRoute'
+        TeamsVoiceRoute 'TeamsVoiceRoute-Example'
         {
             Identity              = 'NewVoiceRoute'
-            Description           = 'This is a sample Voice Route'
+            Description           = 'Routes North American numbers to the primary SBC pair'
             NumberPattern         = '^\+1(425|206)(\d{7})'
             OnlinePstnGatewayList = @('sbc1.litwareinc.com', 'sbc2.litwareinc.com')
             OnlinePstnUsages      = @('Long Distance', 'Local', 'Internal')

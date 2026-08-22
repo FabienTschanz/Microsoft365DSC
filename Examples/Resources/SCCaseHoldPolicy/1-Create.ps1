@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        SCCaseHoldPolicy 'CaseHoldPolicy'
+        SCCaseHoldPolicy 'SCCaseHoldPolicy-Example'
         {
-            Case                  = 'Test Case'
-            ExchangeLocation      = 'DemoGroup@contoso.onmicrosoft.com'
-            Name                  = 'Demo Hold'
+            Case                  = 'Contoso Litigation 2026'
+            ExchangeLocation      = 'legal@contoso.onmicrosoft.com'
+            Name                  = 'Litigation Hold 2026'
             PublicFolderLocation  = 'All'
-            Comment               = 'This is a demo'
+            Comment               = 'Preserves content for the pending litigation'
             Enabled               = $True
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId

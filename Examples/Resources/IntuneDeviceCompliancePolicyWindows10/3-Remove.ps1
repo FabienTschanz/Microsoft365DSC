@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyWindows10 'ConfigureDeviceCompliancePolicyWindows10'
+        IntuneDeviceCompliancePolicyWindows10 'IntuneDeviceCompliancePolicyWindows10-Example'
         {
-            DisplayName                                 = 'Windows 10 DSC Policy'
-            Ensure                                      = 'Absent'
+            DisplayName           = 'Windows 10 Device Compliance'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

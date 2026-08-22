@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        AADTokenIssuancePolicy "AADTokenIssuancePolicy-Demo"
+        AADTokenIssuancePolicy "AADTokenIssuancePolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "DemoPolicy";
+            DisplayName           = "ExpenseReportingSamlPolicy";
             Ensure                = "Absent";
             TenantId              = $TenantId;
         }

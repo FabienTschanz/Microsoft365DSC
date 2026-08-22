@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineHoloLens2Standard 'mySecurityBaselineHoloLens2Standard'
+        IntuneSecurityBaselineHoloLens2Standard 'IntuneSecurityBaselineHoloLens2Standard-Example'
         {
-            DisplayName                           = 'test'
+            DisplayName                           = 'HoloLens 2 Standard Baseline'
             AADGroupMembershipCacheValidityInDays = 7;
             PasswordManagerEnabled                = "0";
             VideoPowerDownTimeOutAC_2             = "1";

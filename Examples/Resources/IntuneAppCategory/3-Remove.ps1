@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppCategory "IntuneAppCategory-Data Management"
+        IntuneAppCategory "IntuneAppCategory-Example"
         {
-            Id                   = "a1fc9fe2-728d-4867-9a72-a61e18f8c606";
-            DisplayName          = "Custom Data Management";
-            Ensure               = "Absent";
+            Id                    = "a1fc9fe2-728d-4867-9a72-a61e18f8c606";
+            DisplayName           = "Custom Data Management";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

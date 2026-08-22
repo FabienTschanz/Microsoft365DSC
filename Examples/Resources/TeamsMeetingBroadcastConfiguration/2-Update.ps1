@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMeetingBroadcastConfiguration 'MeetingBroadcastConfiguration'
+        TeamsMeetingBroadcastConfiguration 'TeamsMeetingBroadcastConfiguration-Example'
         {
             IsSingleInstance                    = 'Yes'
             AllowSdnProviderForBroadcastMeeting = $True

@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        EXODnssecForVerifiedDomain "EXODnssecForVerifiedDomain-nik-charlebois.com"
+        EXODnssecForVerifiedDomain "EXODnssecForVerifiedDomain-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DnssecFeatureStatus   = "Enabled";
+            DnssecFeatureStatus   = "Disabled"; # Updated Property
             DomainName            = "nik-charlebois.com";
         }
     }

@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCategory 'ConfigureDeviceCategory'
+        IntuneDeviceCategory 'IntuneDeviceCategory-Example'
         {
-            DisplayName = 'Contoso'
-            Ensure      = 'Absent'
+            DisplayName           = 'Contoso'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

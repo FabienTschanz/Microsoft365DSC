@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        EXOOwaMailboxPolicy 'ConfigureOwaMailboxPolicy'
+        EXOOwaMailboxPolicy 'EXOOwaMailboxPolicy-Example'
         {
-            Name                                                 = "OwaMailboxPolicy-Integration"
+            Name                                                 = "OwaMailboxPolicy-Restricted"
             ActionForUnknownFileAndMIMETypes                     = "ForceSave"
             ActiveSyncIntegrationEnabled                         = $True
             AdditionalStorageProvidersAvailable                  = $True
@@ -100,9 +100,9 @@ Configuration Example
             WeatherEnabled                                       = $True
             WebPartsFrameOptionsType                             = "SameOrigin"
             Ensure                                               = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                                        = $ApplicationId
+            TenantId                                             = $TenantId
+            CertificateThumbprint                                = $CertificateThumbprint
         }
     }
 }

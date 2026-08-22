@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOIRMConfiguration 'ConfigureIRMConfiguration'
+        EXOIRMConfiguration 'EXOIRMConfiguration-Example'
         {
             IsSingleInstance                           = 'Yes'
             AutomaticServiceUpdateEnabled              = $True
@@ -41,9 +41,9 @@ Configuration Example
             SimplifiedClientAccessEncryptOnlyDisabled  = $True
             TransportDecryptionSetting                 = 'Mandatory'
             Ensure                                     = 'Present'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                              = $ApplicationId
+            TenantId                                   = $TenantId
+            CertificateThumbprint                      = $CertificateThumbprint
         }
     }
 }

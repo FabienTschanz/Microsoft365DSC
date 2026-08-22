@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOTenantSettings 'ConfigureTenantSettings'
+        SPOTenantSettings 'SPOTenantSettings-Example'
         {
             IsSingleInstance                              = 'Yes'
             MinCompatibilityLevel                         = 16

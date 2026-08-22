@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        SCDeviceConfigurationRule "MyDeviceConfigurationRule"
+        SCDeviceConfigurationRule "SCDeviceConfigurationRule-Example"
         {
             AllowAppStore             = $True;
             AllowAssistantWhileLocked = $True;

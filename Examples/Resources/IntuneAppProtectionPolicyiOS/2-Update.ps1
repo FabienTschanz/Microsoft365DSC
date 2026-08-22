@@ -23,9 +23,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppProtectionPolicyiOS 'MyCustomiOSPolicy'
+        IntuneAppProtectionPolicyiOS 'IntuneAppProtectionPolicyiOS-Example'
         {
-            DisplayName                             = 'My DSC iOS App Protection Policy'
+            DisplayName                             = 'iOS App Protection - Corporate'
             AllowedDataStorageLocations             = @('sharePoint')
             AllowedInboundDataTransferSources       = 'managedApps'
             AllowedOutboundClipboardSharingLevel    = 'managedAppsWithPasteIn'
@@ -50,9 +50,9 @@ Configuration Example
             SaveAsBlocked                           = $True
             SimplePinBlocked                        = $False
             Ensure                                  = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                           = $ApplicationId;
+            TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

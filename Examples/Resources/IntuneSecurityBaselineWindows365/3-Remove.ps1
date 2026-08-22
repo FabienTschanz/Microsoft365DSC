@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineWindows365 'mySecurityBaselineWindows365'
+        IntuneSecurityBaselineWindows365 'IntuneSecurityBaselineWindows365-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Windows 365 Security Baseline'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

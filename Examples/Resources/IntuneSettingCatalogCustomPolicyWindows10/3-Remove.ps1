@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSettingCatalogCustomPolicyWindows10 'Example'
+        IntuneSettingCatalogCustomPolicyWindows10 'IntuneSettingCatalogCustomPolicyWindows10-Example'
         {
             Ensure                = "Absent";
-            Name                  = "Setting Catalog Raw - DSC";
+            Name                  = "Windows 11 Device Lockdown";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

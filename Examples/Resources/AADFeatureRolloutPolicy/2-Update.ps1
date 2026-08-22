@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFeatureRolloutPolicy "AADFeatureRolloutPolicy-CertificateBasedAuthentication rollout policy"
+        AADFeatureRolloutPolicy "AADFeatureRolloutPolicy-Example"
         {
             ApplicationId           = $ApplicationId
             AppliesTo               = @("AADGroup_1")

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOAvailabilityConfig 'ConfigureAvailabilityConfig'
+        EXOAvailabilityConfig 'EXOAvailabilityConfig-Example'
         {
             IsSingleInstance      = "Yes"
             AllowedTenantIds      = @()

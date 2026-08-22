@@ -24,39 +24,39 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyMacOS 'myIntuneAntivirusPolicyMacOS'
+        IntuneAntivirusPolicyMacOS 'IntuneAntivirusPolicyMacOS-Example'
         {
-            allowedThreats                     = @("Threat 1");
-            Assignments                        = @();
-            Description                        = "";
-            disallowedThreatActions            = @("Disallowed Thread Action 1");
-            DisplayName                        = "Test";
-            enabled                            = "true";
-            Ensure                             = "Present";
-            exclusions                         = @(
+            allowedThreats          = @("Trojan:Win32/Casdet!rfn");
+            Assignments             = @();
+            Description             = "";
+            disallowedThreatActions = @("allow");
+            DisplayName             = "Mac Endpoints - Microsoft Defender Antivirus";
+            enabled                 = "true";
+            Ensure                  = "Present";
+            exclusions              = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions{
                     Exclusions_item_extension = '.dmg'
-                    Exclusions_item_type = 'excludedFileExtension'
+                    Exclusions_item_type      = 'excludedFileExtension'
                 }
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions{
                     Exclusions_item_name = 'process1'
                     Exclusions_item_type = 'excludedFileName'
                 }
             );
-            RoleScopeTagIds                    = @("0");
-            threatTypeSettings                 = @(
+            RoleScopeTagIds         = @("0");
+            threatTypeSettings      = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogThreatTypeSettings{
-                    ThreatTypeSettings_item_key = 'potentially_unwanted_application'
+                    ThreatTypeSettings_item_key   = 'potentially_unwanted_application'
                     ThreatTypeSettings_item_value = 'audit'
                 }
                 MSFT_MicrosoftGraphIntuneSettingsCatalogThreatTypeSettings{
-                    ThreatTypeSettings_item_key = 'archive_bomb'
+                    ThreatTypeSettings_item_key   = 'archive_bomb'
                     ThreatTypeSettings_item_value = 'block'
                 }
             );
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId           = $ApplicationId;
+            TenantId                = $TenantId;
+            CertificateThumbprint   = $CertificateThumbprint;
         }
     }
 }

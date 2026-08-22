@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SCFilePlanPropertyAuthority 'FilePlanPropertyAuthority'
+        SCFilePlanPropertyAuthority 'SCFilePlanPropertyAuthority-Example'
         {
             Name       = 'My Authority'
             Ensure     = 'Present'

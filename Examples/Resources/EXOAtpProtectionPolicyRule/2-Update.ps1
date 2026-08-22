@@ -24,19 +24,25 @@ Configuration Example
 
     Node localhost
     {
-        EXOATPProtectionPolicyRule "EXOATPProtectionPolicyRule-Strict Preset Security Policy"
+        EXOATPProtectionPolicyRule "EXOATPProtectionPolicyRule-Example"
         {
-            Comments                = "Built-in Strict Preset Security Policy with comments"; # Changed value
-            Enabled                 = $True; # Changed value
-            Identity                = "Strict Preset Security Policy";
-            Name                    = "Strict Preset Security Policy";
-            Priority                = 0;
-            SafeAttachmentPolicy    = "Strict Preset Security Policy1725468967835";
-            SafeLinksPolicy         = "Strict Preset Security Policy1725468969412";
-            Ensure                  = "Present"
-            ApplicationId           = $ApplicationId
-            TenantId                = $TenantId
-            CertificateThumbprint   = $CertificateThumbprint
+            Comments                  = "Built-in Strict Preset Security Policy with comments"; # Updated Property
+            Enabled                   = $True; # Updated Property
+            Identity                  = "Strict Preset Security Policy";
+            Name                      = "Strict Preset Security Policy";
+            Priority                  = 0;
+            RecipientDomainIs         = @("contoso.com");
+            SentTo                    = @("AdeleV@$TenantId");
+            SentToMemberOf            = @("LegalTeam@$TenantId");
+            ExceptIfRecipientDomainIs = @("fabrikam.com");
+            ExceptIfSentTo            = @("AlexW@$TenantId");
+            ExceptIfSentToMemberOf    = @("Executives@$TenantId");
+            SafeAttachmentPolicy      = "Strict Preset Security Policy1725468967835";
+            SafeLinksPolicy           = "Strict Preset Security Policy1725468969412";
+            Ensure                    = "Present"
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

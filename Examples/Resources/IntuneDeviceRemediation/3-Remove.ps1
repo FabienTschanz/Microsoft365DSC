@@ -23,11 +23,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceRemediation 'ConfigureDeviceRemediation'
+        IntuneDeviceRemediation 'IntuneDeviceRemediation-Example'
         {
-            Id          = '00000000-0000-0000-0000-000000000000'
-            DisplayName = 'Device remediation'
-            Ensure      = 'Absent'
+            Id                    = '00000000-0000-0000-0000-000000000000'
+            DisplayName           = 'Device remediation'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

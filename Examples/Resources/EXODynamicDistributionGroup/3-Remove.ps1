@@ -24,15 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXODynamicDistributionGroup "EXODynamicDistributionGroup-EXODynamicDistributionGroup_1"
+        EXODynamicDistributionGroup "EXODynamicDistributionGroup-Example"
         {
-            ApplicationId                        = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint                = $ConfigurationData.NonNodeData.CertificateThumbprint;
-            DisplayName                          = "EXODynamicDistributionGroup_1";
-            Ensure                               = "Absent";
-            Identity                             = "EXODynamicDistributionGroup_1";
-            Name                                 = "EXODynamicDistributionGroup_1";
-            TenantId                             = $OrganizationName;
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
+            Ensure                = "Absent";
+            Identity              = "EXODynamicDistributionGroup_1";
+            TenantId              = $OrganizationName;
         }
     }
 }

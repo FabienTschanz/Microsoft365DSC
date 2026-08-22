@@ -24,11 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOPolicyTipConfig 'ConfigurePolicyTipConfig'
+        EXOPolicyTipConfig 'EXOPolicyTipConfig-Example'
         {
-            Name                 = "en\NotifyOnly"
-            Value                = "This message contains content that is restricted by Contoso company policy. Updated" # Updated Property
-            Ensure               = "Absent"
+            Name                  = "en\NotifyOnly"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

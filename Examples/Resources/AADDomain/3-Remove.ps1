@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADDomain "AADDomain-Mail"
+        AADDomain "AADDomain-Example"
         {
-            ApplicationId                    = $ApplicationId;
-            CertificateThumbprint            = $CertificateThumbprint;
-            Ensure                           = "Absent";
-            Id                               = "M365x73318397.mail.onmicrosoft.com";
-            TenantId                         = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            Id                    = "M365x73318397.mail.onmicrosoft.com";
+            TenantId              = $TenantId;
         }
     }
 }

@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationKioskPolicyWindows10 'Example'
+        IntuneDeviceConfigurationKioskPolicyWindows10 'IntuneDeviceConfigurationKioskPolicyWindows10-Example'
         {
             Assignments                         = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             DisplayName                         = "kiosk";
@@ -48,17 +48,17 @@ Configuration Example
                             odataType = '#microsoft.graph.windowsKioskAutologon'
                         }
                     )
-                    ProfileName = 'profile'
-                    AppConfiguration = MSFT_MicrosoftGraphWindowsKioskAppConfiguration{
-                        Win32App = MSFT_MicrosoftGraphWindowsKioskWin32App{
-                            EdgeNoFirstRun = $True
-                            EdgeKiosk = 'https://domain.com'
-                            ClassicAppPath = 'msedge.exe'
-                            AutoLaunch = $False
+                    ProfileName               = 'profile'
+                    AppConfiguration          = MSFT_MicrosoftGraphWindowsKioskAppConfiguration{
+                        Win32App  = MSFT_MicrosoftGraphWindowsKioskWin32App{
+                            EdgeNoFirstRun      = $True
+                            EdgeKiosk           = 'https://domain.com'
+                            ClassicAppPath      = 'msedge.exe'
+                            AutoLaunch          = $False
                             StartLayoutTileSize = 'hidden'
-                            AppType = 'unknown'
-                            EdgeKioskType = 'publicBrowsing'
-                            odataType = '#microsoft.graph.windowsKioskWin32App'
+                            AppType             = 'unknown'
+                            EdgeKioskType       = 'publicBrowsing'
+                            odataType           = '#microsoft.graph.windowsKioskWin32App'
                         }
                         odataType = '#microsoft.graph.windowsKioskSingleWin32App'
                     }
@@ -66,14 +66,14 @@ Configuration Example
             );
             WindowsKioskForceUpdateSchedule     = MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule{
                 RunImmediatelyIfAfterStartDateTime = $False
-                StartDateTime = '2023-04-15T23:00:00.0000000+00:00'
-                DayofMonth = 1
-                Recurrence = 'daily'
-                DayofWeek = 'sunday'
+                StartDateTime                      = '2023-04-15T23:00:00.0000000+00:00'
+                DayofMonth                         = 1
+                Recurrence                         = 'daily'
+                DayofWeek                          = 'sunday'
             };
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                       = $ApplicationId;
+            TenantId                            = $TenantId;
+            CertificateThumbprint               = $CertificateThumbprint;
         }
     }
 }

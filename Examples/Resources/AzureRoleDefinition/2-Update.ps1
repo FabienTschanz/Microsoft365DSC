@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleDefinition "AzureRoleDefinition-CustomRoleName"
+        AzureRoleDefinition "AzureRoleDefinition-Example"
         {
             Actions               = @("Microsoft.Compute/virtualMachines/read","Microsoft.Compute/virtualMachines/start/action","Microsoft.Compute/virtualMachines/restart/action","Microsoft.Compute/virtualMachines/deallocate/action");
             ApplicationId         = $ApplicationId;
-            AssignableScopes      = @("/subscriptions/00000000-0000-0000-0000-000000000000");
+            AssignableScopes      = @("<subscription-scope>");
             CertificateThumbprint = $CertificateThumbprint;
             CustomRoleName        = "My Custom Role";
             Description           = "An updated custom role for managing virtual machines."; #Drift

@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SCRoleGroupMember 'InformationProtectionAnalysts'
+        SCRoleGroupMember 'SCRoleGroupMember-Example'
         {
             Description = 'Access and manage DLP alerts and activity explorer. View-only access to DLP policies, sensitivity labels and their policies, and all classifier types.'
             Ensure      = 'Present'

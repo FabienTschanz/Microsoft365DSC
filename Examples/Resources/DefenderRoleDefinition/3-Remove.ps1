@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        DefenderRoleDefinition "DefenderRoleDefinitionExample"
+        DefenderRoleDefinition "DefenderRoleDefinition-Example"
         {
             DisplayName           = "MyNewDefinition";
             Ensure                = "Absent";

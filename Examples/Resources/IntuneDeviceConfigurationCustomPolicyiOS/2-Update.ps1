@@ -23,17 +23,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationCustomPolicyiOS "ConfigureIntuneDeviceConfigurationCustomPolicyiOS"
+        IntuneDeviceConfigurationCustomPolicyiOS "IntuneDeviceConfigurationCustomPolicyiOS-Example"
         {
-            Description            = "IntuneDeviceConfigurationCustomPolicyiOS Description - NEW VALUE";
-            DisplayName            = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
-            Ensure                 = "Present";
-            Payload                = "PHJvb3Q+PC9yb290Pg==";
-            PayloadFileName        = "simple.xml";
-            PayloadName            = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
-            ApplicationId          = $ApplicationId;
-            TenantId               = $TenantId;
-            CertificateThumbprint  = $CertificateThumbprint;
+            Description           = "IntuneDeviceConfigurationCustomPolicyiOS Description - NEW VALUE";
+            DisplayName           = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
+            Ensure                = "Present";
+            Payload               = "PHJvb3Q+PC9yb290Pg==";
+            PayloadFileName       = "simple.xml";
+            PayloadName           = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

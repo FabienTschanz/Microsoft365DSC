@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyMacOS 'myMacOSDevicePolicy'
+        IntuneDeviceConfigurationPolicyMacOS 'IntuneDeviceConfigurationPolicyMacOS-Example'
         {
             DisplayName                                     = 'MacOS device restriction'
             AddingGameCenterFriendsBlocked                  = $True
@@ -86,10 +86,10 @@ Configuration Example
             PasswordRequiredType                            = 'deviceDefault'
             PrivacyAccessControls                           = @(
                 MSFT_MicrosoftGraphmacosprivacyaccesscontrolitem {
-                    displayName                  = 'test'
-                    identifier                   = 'test45'
+                    displayName                  = 'Contoso Support Agent'
+                    identifier                   = '/Applications/Contoso Support.app'
                     identifierType               = 'path'
-                    codeRequirement              = 'test'
+                    codeRequirement              = 'anchor apple generic and identifier "com.contoso.supportagent"'
                     blockCamera                  = $True
                     speechRecognition            = 'notConfigured'
                     accessibility                = 'notConfigured'
@@ -119,9 +119,9 @@ Configuration Example
             UpdateDelayPolicy                               = @('delayOSUpdateVisibility', 'delayAppUpdateVisibility', 'delayMajorOsUpdateVisibility')
             WallpaperModificationBlocked                    = $False
             Ensure                                          = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                   = $ApplicationId;
+            TenantId                                        = $TenantId;
+            CertificateThumbprint                           = $CertificateThumbprint;
         }
     }
 }

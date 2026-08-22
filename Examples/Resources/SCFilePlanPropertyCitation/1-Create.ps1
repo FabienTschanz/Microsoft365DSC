@@ -16,9 +16,9 @@ Configuration Example
 
     Node localhost
     {
-        SCFilePlanPropertyCitation 'FilePlanPropertyCitation'
+        SCFilePlanPropertyCitation 'SCFilePlanPropertyCitation-Example'
         {
-            Name                 = "Demo Citation"
+            Name                 = "Sarbanes-Oxley Act"
             CitationURL          = "https://contoso.com"
             CitationJurisdiction = "Federal"
             Ensure               = "Present"

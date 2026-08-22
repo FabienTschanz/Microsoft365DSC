@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        SCDLPSensitiveInformationTypeRulePackage "SCDLPSensitiveInformationTypeRulePackage"
+        SCDLPSensitiveInformationTypeRulePackage "SCDLPSensitiveInformationTypeRulePackage-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
-            Name                  = "MyTestSIT";
+            Name                  = "Contoso Employee ID";
             TenantId              = $TenantId;
         }
     }

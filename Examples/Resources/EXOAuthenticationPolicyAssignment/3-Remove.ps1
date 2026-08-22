@@ -24,11 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAuthenticationPolicyAssignment 'ConfigureAuthenticationPolicyAssignment'
+        EXOAuthenticationPolicyAssignment 'EXOAuthenticationPolicyAssignment-Example'
         {
-            UserName                 = "AdeleV@$TenantId"
-            AuthenticationPolicyName = "Test Policy"
-            Ensure                   = "Absent"
+            UserName              = "AdeleV@$TenantId"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

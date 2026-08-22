@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner 'myWifiConfigAndroidDeviceOwnerPolicy'
+        IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner 'IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner-Example'
         {
-            DisplayName                    = 'Wifi - androidForWork'
-            Ensure                         = 'Absent'
+            DisplayName           = 'Wifi - androidForWork'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,11 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAcceptedDomain 'O365DSCDomain'
+        EXOAcceptedDomain 'EXOAcceptedDomain-Example'
         {
-            Identity     = $TenantId
-            DomainType   = "Authoritative"
-            Ensure       = "Absent"
+            Identity              = $TenantId
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

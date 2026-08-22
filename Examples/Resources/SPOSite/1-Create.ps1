@@ -16,14 +16,14 @@ Configuration Example
 
     Node localhost
     {
-        SPOSite 'ConfigureTestSite'
+        SPOSite 'SPOSite-Example'
         {
-            Url                            = "https://contoso.sharepoint.com/sites/testsite1"
+            Url                            = "https://contoso.sharepoint.com/sites/marketing"
             StorageMaximumLevel            = 26214400
             LocaleId                       = 1033
             Template                       = "STS#3"
             Owner                          = "admin@contoso.onmicrosoft.com"
-            Title                          = "TestSite"
+            Title                          = "Contoso Team Site"
             TimeZoneId                     = 13
             StorageWarningLevel            = 25574400
             SharingCapability              = "Disabled"

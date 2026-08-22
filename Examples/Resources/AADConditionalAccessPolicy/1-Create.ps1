@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADConditionalAccessPolicy 'ConditionalAccessPolicy'
+        AADConditionalAccessPolicy 'AADConditionalAccessPolicy-Example'
         {
             BuiltInControls                          = @("mfa");
             ClientAppTypes                           = @("all");
             ExcludeApplications                      = @("Office365");
             IncludeUsers                             = @("AdeleV@$TenantId");
-            IncludeGroups                            = @("DSCGroup");
+            IncludeGroups                            = @("Marketing Team");
             ExcludeRoles                             = @("Global Administrator");
             IncludeGuestOrExternalUserTypes          = @("b2bCollaborationGuest", "b2bCollaborationMember");
             IncludeExternalTenantsMembershipKind     = "all";
@@ -55,12 +55,12 @@ Configuration Example
             PersistentBrowserIsEnabled               = $true;
             PersistentBrowserMode                    = "Never";
             DisableResilienceDefaultsIsEnabled       = $false;
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                            = $ApplicationId
+            TenantId                                 = $TenantId
+            CertificateThumbprint                    = $CertificateThumbprint
             DeviceFilterMode                         = "exclude";
             DeviceFilterRule                         = "device.trustType -eq `"AzureAD`" -or device.trustType -eq `"ServerAD`" -or device.trustType -eq `"Workplace`"";
-            DisplayName                              = "Example CAP";
+            DisplayName                              = "Require MFA for Mobile Devices";
             Ensure                                   = "Present";
             ExcludeUsers                             = @("admin@$TenantId");
             GrantControlOperator                     = "OR";

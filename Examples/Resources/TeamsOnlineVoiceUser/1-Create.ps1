@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsOnlineVOiceUser 'AssignVoiceUser'
+        TeamsOnlineVOiceUser 'TeamsOnlineVOiceUser-Example'
         {
             Identity        = 'John.Smith@Contoso.com'
             TelephoneNumber = "1800-555-1234"

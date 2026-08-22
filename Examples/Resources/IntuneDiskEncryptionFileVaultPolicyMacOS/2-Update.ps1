@@ -24,19 +24,19 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiskEncryptionFileVaultPolicyMacOS "IntuneDiskEncryptionFileVaultPolicyMacOS-IntuneDiskEncryptionFileVaultPolicyMacOS_1"
+        IntuneDiskEncryptionFileVaultPolicyMacOS "IntuneDiskEncryptionFileVaultPolicyMacOS-Example"
         {
             ApplicationId                          = $ApplicationId;
             Assignments                            = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = "none"
-                    groupDisplayName = "Exclude"
-                    dataType = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName                           = "Exclude"
+                    dataType                                   = "#microsoft.graph.exclusionGroupAssignmentTarget"
                 }
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = "none"
-                    groupDisplayName = "Include"
-                    dataType = "#microsoft.graph.groupAssignmentTarget"
+                    groupDisplayName                           = "Include"
+                    dataType                                   = "#microsoft.graph.groupAssignmentTarget"
                 }
             );
             CertificateThumbprint                  = $CertificateThumbprint;
@@ -46,7 +46,7 @@ Configuration Example
             Description                            = "";
             Enable                                 = "Off"; # Updated property
             Ensure                                 = "Present";
-            Location                               = "Sample Location";
+            Location                               = "Contoso IT Service Desk";
             DisplayName                            = "IntuneDiskEncryptionFileVaultPolicyMacOS_1";
             RecoveryKeyRotationInMonths            = 12; # Updated property
             RoleScopeTagIds                        = @("0");

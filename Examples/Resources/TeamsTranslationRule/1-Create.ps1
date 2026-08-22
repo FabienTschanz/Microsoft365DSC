@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTranslationRule 'Example'
+        TeamsTranslationRule 'TeamsTranslationRule-Example'
         {
-            Credential           = $Credscredential;
-            Ensure               = "Present";
-            Identity             = "AddPlus1";
-            Pattern              = "^(\d{10})$";
-            Translation          = "+1$1";
+            Credential  = $Credscredential;
+            Ensure      = "Present";
+            Identity    = "AddPlus1";
+            Pattern     = "^(\d{10})$";
+            Translation = "+1$1";
         }
     }
 }

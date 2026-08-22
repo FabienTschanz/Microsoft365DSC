@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAppManagementPolicy "MyAppManagementPolicy"
+        AADAppManagementPolicy "AADAppManagementPolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
@@ -36,25 +36,25 @@ Configuration Example
                 passwordCredentials = @(
                     MSFT_AADAppManagementPolicyRestrictionsCredential{
                         restrictForAppsCreatedAfterDateTime = "01/01/0001 00:00:00"
-                        restrictionType = "passwordAddition"
-                        state = "disabled" # Drift
+                        restrictionType                     = "passwordAddition"
+                        state                               = "disabled" # Drift
                     }
                     MSFT_AADAppManagementPolicyRestrictionsCredential{
-                        maxLifetime = "P90DT0H0M0S"
+                        maxLifetime                         = "P90DT0H0M0S"
                         restrictForAppsCreatedAfterDateTime = "01/01/0001 00:00:00"
-                        restrictionType = "passwordLifetime"
-                        state = "enabled"
+                        restrictionType                     = "passwordLifetime"
+                        state                               = "enabled"
                     }
                     MSFT_AADAppManagementPolicyRestrictionsCredential{
                         restrictForAppsCreatedAfterDateTime = "01/01/0001 00:00:00"
-                        restrictionType = "symmetricKeyAddition"
-                        state = "enabled"
+                        restrictionType                     = "symmetricKeyAddition"
+                        state                               = "enabled"
                     }
                     MSFT_AADAppManagementPolicyRestrictionsCredential{
-                        maxLifetime = "P90DT0H0M0S"
+                        maxLifetime                         = "P90DT0H0M0S"
                         restrictForAppsCreatedAfterDateTime = "01/01/0001 00:00:00"
-                        restrictionType = "symmetricKeyLifetime"
-                        state = "enabled"
+                        restrictionType                     = "symmetricKeyLifetime"
+                        state                               = "enabled"
                     }
                 )
             };

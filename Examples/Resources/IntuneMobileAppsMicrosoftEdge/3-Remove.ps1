@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsMicrosoftEdge "IntuneMobileAppsMicrosoftEdge-Edge Windows App"
+        IntuneMobileAppsMicrosoftEdge "IntuneMobileAppsMicrosoftEdge-Example"
         {
             DisplayName           = "Edge Windows App";
             TargetPlatform        = "windows";

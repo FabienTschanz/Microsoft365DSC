@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10 'Example'
+        IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10 'IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10-Example'
         {
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             Bluetooth                      = "notConfigured";
@@ -55,9 +55,9 @@ Configuration Example
             WiFi                           = "notConfigured";
             WindowsPlatformBinaryTable     = "enabled";
             WirelessWideAreaNetwork        = "notConfigured";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

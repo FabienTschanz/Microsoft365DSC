@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupsNamingPolicy 'GroupsNamingPolicy'
+        AADGroupsNamingPolicy 'AADGroupsNamingPolicy-Example'
         {
             IsSingleInstance              = "Yes"
             CustomBlockedWordsList        = @("CEO", "President")
-            PrefixSuffixNamingRequirement = "[Title]Test[Company][GroupName][Office]Redmond"
+            PrefixSuffixNamingRequirement = "[Title]-[Company][GroupName][Office]Redmond"
             Ensure                        = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsAutopilotDeploymentProfileAzureADJoined 'Example'
+        IntuneWindowsAutopilotDeploymentProfileAzureADJoined 'IntuneWindowsAutopilotDeploymentProfileAzureADJoined-Example'
         {
-            DisplayName                = "AAD";
-            Ensure                     = "Absent";
+            DisplayName           = "AAD";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

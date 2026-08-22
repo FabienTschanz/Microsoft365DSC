@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationDomainJoinPolicyWindows10 'Example'
+        IntuneDeviceConfigurationDomainJoinPolicyWindows10 'IntuneDeviceConfigurationDomainJoinPolicyWindows10-Example'
         {
             ActiveDirectoryDomainName         = "domain.com";
             Assignments                       = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             ComputerNameStaticPrefix          = "WK-";
@@ -38,9 +38,9 @@ Configuration Example
             DisplayName                       = "Domain Join";
             Ensure                            = "Present";
             OrganizationalUnit                = "OU=workstation,CN=domain,CN=com";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                     = $ApplicationId;
+            TenantId                          = $TenantId;
+            CertificateThumbprint             = $CertificateThumbprint;
         }
     }
 }

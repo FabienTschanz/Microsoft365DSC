@@ -24,21 +24,29 @@ Configuration Example
 
     Node localhost
     {
-        EXOInboundConnector 'ConfigureInboundConnector'
+        EXOInboundConnector 'EXOInboundConnector-Example'
         {
-            Identity                     = "Integration Inbound Connector"
+            Identity                     = "Partner Mail Gateway"
+            AssociatedAcceptedDomains    = @("$TenantId")
             CloudServicesMailEnabled     = $False
-            Comment                      = "Inbound connector for Integration"
+            Comment                      = "Accepts mail relayed by the partner gateway"
             ConnectorSource              = "Default"
             ConnectorType                = "Partner"
+            EFSkipIPs                    = @("203.0.113.10")
+            EFSkipLastIP                 = $False
+            EFUsers                      = @("AdeleV@$TenantId")
             Enabled                      = $True
             RequireTls                   = $True
+            RestrictDomainsToCertificate = $True
+            RestrictDomainsToIPAddresses = $False
             SenderDomains                = "*.contoso.com"
+            SenderIPAddresses            = @("203.0.113.10")
             TlsSenderCertificateName     = "contoso.com"
+            TreatMessagesAsInternal      = $False
             Ensure                       = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                = $ApplicationId
+            TenantId                     = $TenantId
+            CertificateThumbprint        = $CertificateThumbprint
         }
     }
 }

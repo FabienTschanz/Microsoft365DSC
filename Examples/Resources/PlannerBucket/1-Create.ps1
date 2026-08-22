@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        PlannerBucket 'ContosoPlannerBucket'
+        PlannerBucket 'PlannerBucket-Example'
         {
             PlanId                = "1234567890"
             Name                  = "Contoso Bucket"

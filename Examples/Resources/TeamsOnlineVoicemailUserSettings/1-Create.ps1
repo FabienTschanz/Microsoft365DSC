@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsOnlineVoicemailUserSettings 'AssignOnlineVoicemailUserSettings'
+        TeamsOnlineVoicemailUserSettings 'TeamsOnlineVoicemailUserSettings-Example'
         {
             CallAnswerRule                           = "RegularVoicemail";
             Credential                               = $credsCredential;

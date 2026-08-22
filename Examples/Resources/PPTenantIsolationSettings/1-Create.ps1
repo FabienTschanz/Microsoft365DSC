@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        PPTenantIsolationSettings 'PowerPlatformTenantSettings'
+        PPTenantIsolationSettings 'PPTenantIsolationSettings-Example'
         {
             IsSingleInstance = 'Yes'
             Enabled          = $true

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOActiveSyncMailboxPolicy 'TestActiveSyncMailboxPolicy'
+        EXOActiveSyncMailboxPolicy 'EXOActiveSyncMailboxPolicy-Example'
         {
             AllowApplePushNotifications              = $True;
             AllowBluetooth                           = "Allow";
@@ -58,7 +58,7 @@ Configuration Example
             PasswordExpiration                       = "Unlimited";
             PasswordHistory                          = 0;
             DevicePolicyRefreshInterval              = "Unlimited";
-            Identity                                 = "Test";
+            Identity                                 = "Corporate Mobile Devices";
             IrmEnabled                               = $True;
             IsDefault                                = $True;
             IsDefaultPolicy                          = $True;
@@ -71,7 +71,7 @@ Configuration Example
             MaxInactivityTimeLock                    = "Unlimited";
             MinPasswordComplexCharacters             = 1;
             MinPasswordLength                        = 1;
-            Name                                     = "Test";
+            Name                                     = "Corporate Mobile Devices";
             PasswordRecoveryEnabled                  = $False;
             RequireDeviceEncryption                  = $False;
             RequireEncryptedSMIMEMessages            = $False;
@@ -83,10 +83,10 @@ Configuration Example
             UnapprovedInROMApplicationList           = @();
             UNCAccessEnabled                         = $True;
             WSSAccessEnabled                         = $True;
-            Ensure               = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Ensure                                   = "Present"
+            ApplicationId                            = $ApplicationId
+            TenantId                                 = $TenantId
+            CertificateThumbprint                    = $CertificateThumbprint
         }
     }
 }

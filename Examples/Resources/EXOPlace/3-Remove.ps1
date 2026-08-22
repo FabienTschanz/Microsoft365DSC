@@ -24,15 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOPlace 'TestPlace'
+        EXOPlace 'EXOPlace-Example'
         {
-            AudioDeviceName        = "MyAudioDevice";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DisplayDeviceName      = "DisplayDeviceName";
-            Ensure                 = 'Absent'
-            Identity               = "Hood@$TenantId";
+            Ensure                = 'Absent'
+            Identity              = "Hood@$TenantId";
         }
     }
 }

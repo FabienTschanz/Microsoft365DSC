@@ -23,9 +23,9 @@ Configuration Example
 
     Node localhost
     {
-        AADAgreement 'CompanyTermsOfUse'
+        AADAgreement 'AADAgreement-Example'
         {
-            DisplayName = "Company Terms of Use"
+            DisplayName           = "Company Terms of Use"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

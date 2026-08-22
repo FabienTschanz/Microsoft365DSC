@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 'Example'
+        IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 'IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10-Example'
         {
             AccountManagerPolicy         = MSFT_MicrosoftGraphsharedPCAccountManagerPolicy{
-                CacheAccountsAboveDiskFreePercentage = 60 # Updated Property
-                AccountDeletionPolicy = 'diskSpaceThreshold'
+                CacheAccountsAboveDiskFreePercentage  = 60 # Updated Property
+                AccountDeletionPolicy                 = 'diskSpaceThreshold'
                 RemoveAccountsBelowDiskFreePercentage = 20
             };
             AllowedAccounts              = @("guest","domain");
@@ -36,7 +36,7 @@ Configuration Example
             Assignments                  = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             DisableAccountManager        = $False;
@@ -54,9 +54,9 @@ Configuration Example
             SetEduPolicies               = "enabled";
             SetPowerPolicies             = "enabled";
             SignInOnResume               = "enabled";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                = $ApplicationId;
+            TenantId                     = $TenantId;
+            CertificateThumbprint        = $CertificateThumbprint;
         }
     }
 }

@@ -24,22 +24,22 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSettingCatalogASRRulesPolicyWindows10 'myASRRulesPolicy'
+        IntuneSettingCatalogASRRulesPolicyWindows10 'IntuneSettingCatalogASRRulesPolicyWindows10-Example'
         {
-            DisplayName                                                                = 'asr 2'
+            DisplayName                                                                = 'Attack Surface Reduction Rules'
             Assignments                                                                = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments {
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 })
-            attacksurfacereductiononlyexclusions                                       = @('Test 10', 'Test2', 'Test3')
+            attacksurfacereductiononlyexclusions                                       = @('C:\Program Files\Contoso\Ledger', 'C:\ProgramData\Contoso\Cache', 'D:\LineOfBusiness')
             blockabuseofexploitedvulnerablesigneddrivers                               = 'block'
             blockexecutablefilesrunningunlesstheymeetprevalenceagetrustedlistcriterion = 'audit'
-            Description                                                                = 'Post'
+            Description                                                                = 'Attack surface reduction rules for corporate Windows devices'
             Ensure                                                                     = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                                              = $ApplicationId;
+            TenantId                                                                   = $TenantId;
+            CertificateThumbprint                                                      = $CertificateThumbprint;
         }
     }
 }

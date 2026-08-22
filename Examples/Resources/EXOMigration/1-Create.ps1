@@ -24,19 +24,19 @@ Configuration Example
 
     Node localhost
     {
-        EXOMigration "EXOMigration-test"
+        EXOMigration "EXOMigration-Example"
         {
-            AddUsers             = $False;
-            BadItemLimit         = "";
-            CompleteAfter        = "12/31/9999 11:59:59 PM";
-            Ensure               = "Present";
-            Identity             = "test";
-            LargeItemLimit       = "";
-            MoveOptions          = @();
-            NotificationEmails   = @("eac_admin@bellred.org");
-            SkipMerging          = @();
-            Status               = "Completed";
-            Update               = $False;
+            AddUsers              = $False;
+            BadItemLimit          = "";
+            CompleteAfter         = "12/31/9999 11:59:59 PM";
+            Ensure                = "Present";
+            Identity              = "Mailbox Batch 1";
+            LargeItemLimit        = "";
+            MoveOptions           = @();
+            NotificationEmails    = @("eac_admin@bellred.org");
+            SkipMerging           = @();
+            Status                = "Completed";
+            Update                = $False;
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationDomainJoinPolicyWindows10 'Example'
+        IntuneDeviceConfigurationDomainJoinPolicyWindows10 'IntuneDeviceConfigurationDomainJoinPolicyWindows10-Example'
         {
-            DisplayName                       = "Domain Join";
-            Ensure                            = "Absent";
+            DisplayName           = "Domain Join";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADPIMGroupSetting "AADPIMGroupSetting-test-group_owner"
+        AADPIMGroupSetting "AADPIMGroupSetting-Example"
         {
             ActivateApprover                                          = @();
             ActivationMaxDuration                                     = "PT8H";
@@ -34,7 +34,7 @@ Configuration Example
             ActiveAlertNotificationAdditionalRecipient                = @();
             ActiveAlertNotificationDefaultRecipient                   = $True;
             ActiveAlertNotificationOnlyCritical                       = $False;
-            ActiveApproveNotificationAdditionalRecipient              = @("testuser@test.com");
+            ActiveApproveNotificationAdditionalRecipient              = @("pim-approvers@contoso.com");
             ActiveApproveNotificationDefaultRecipient                 = $True;
             ActiveApproveNotificationOnlyCritical                     = $False;
             ActiveAssigneeNotificationAdditionalRecipient             = @();
@@ -45,7 +45,7 @@ Configuration Example
             AssignmentReqMFA                                          = $False;
             AuthenticationContextId                                   = "";
             AuthenticationContextRequired                             = $false;
-            DisplayName                                               = "test-group";
+            DisplayName                                               = "Finance Approvers";
             EligibilityAssignmentReqJustification                     = $False;
             EligibilityAssignmentReqMFA                               = $False;
             EligibleAlertNotificationAdditionalRecipient              = @();
@@ -68,9 +68,9 @@ Configuration Example
             PermanentActiveAssignmentisExpirationRequired             = $False;
             PermanentEligibleAssignmentisExpirationRequired           = $False;
             RoleDefinitionId                                          = "owner";
-            ApplicationId                 = $ApplicationId
-            TenantId                      = $TenantId
-            CertificateThumbprint         = $CertificateThumbprint
+            ApplicationId                                             = $ApplicationId
+            TenantId                                                  = $TenantId
+            CertificateThumbprint                                     = $CertificateThumbprint
             Ensure                                                    = "Present";
         }
     }

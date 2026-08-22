@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTenantNetworkSite 'Example'
+        TeamsTenantNetworkSite 'TeamsTenantNetworkSite-Example'
         {
             Credential                 = $Credscredential;
             EnableLocationBasedRouting = $False;

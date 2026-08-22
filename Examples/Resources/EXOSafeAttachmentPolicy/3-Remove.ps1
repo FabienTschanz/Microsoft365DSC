@@ -24,11 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeAttachmentPolicy 'ConfigureSafeAttachmentPolicy'
+        EXOSafeAttachmentPolicy 'EXOSafeAttachmentPolicy-Example'
         {
-            Identity             = "Marketing Block Attachments"
-            Enable               = $False # Updated Property
-            Ensure               = "Absent"
+            Identity              = "Marketing Block Attachments"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

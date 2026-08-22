@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyMacOS 'ConfigureDeviceCompliancePolicyMacOS'
+        IntuneDeviceCompliancePolicyMacOS 'IntuneDeviceCompliancePolicyMacOS-Example'
         {
-            DisplayName                                 = 'MacOS DSC Policy'
-            Ensure                                      = 'Absent'
+            DisplayName           = 'macOS Device Compliance'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

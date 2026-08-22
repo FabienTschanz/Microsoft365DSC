@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupEligibilitySchedule 'Example'
+        AADGroupEligibilitySchedule 'AADGroupEligibilitySchedule-Example'
         {
             AccessId              = "member";
             ApplicationId         = $ApplicationId

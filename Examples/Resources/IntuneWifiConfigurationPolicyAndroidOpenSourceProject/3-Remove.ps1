@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyAndroidOpenSourceProject 'myWifiConfigAndroidOpensourcePolicy'
+        IntuneWifiConfigurationPolicyAndroidOpenSourceProject 'IntuneWifiConfigurationPolicyAndroidOpenSourceProject-Example'
         {
-            DisplayName                    = 'wifi aosp'
-            Ensure                         = 'Absent'
+            DisplayName           = 'wifi aosp'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

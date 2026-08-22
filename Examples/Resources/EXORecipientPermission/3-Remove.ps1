@@ -25,12 +25,12 @@ Configuration Example
 
     Node localhost
     {
-        EXORecipientPermission 'AddSendAs'
+        EXORecipientPermission 'EXORecipientPermission-Example'
         {
 
-            Identity     = 'AdeleV@$Domain'
-            Trustee      = "admin@$TenantId"
-            Ensure       = 'Absent'
+            Identity              = "AlexW@$TenantId"
+            Trustee               = "admin@$TenantId"
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

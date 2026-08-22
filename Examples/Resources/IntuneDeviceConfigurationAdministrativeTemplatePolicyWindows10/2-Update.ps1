@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 'IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10-Example'
         {
             Assignments                      = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments
@@ -147,9 +147,9 @@ Configuration Example
             DisplayName                      = 'admin template'
             Ensure                           = 'Present'
             PolicyConfigurationIngestionType = 'builtIn' # Updated Property
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                    = $ApplicationId;
+            TenantId                         = $TenantId;
+            CertificateThumbprint            = $CertificateThumbprint;
         }
     }
 }

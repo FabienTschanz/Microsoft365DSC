@@ -23,26 +23,26 @@ Configuration Example
 
     Node localhost
     {
-        IntuneFirewallRulesPolicyWindows10 'myIntuneFirewallRulesPolicyWindows10'
+        IntuneFirewallRulesPolicyWindows10 'IntuneFirewallRulesPolicyWindows10-Example'
         {
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '11111111-1111-1111-1111-111111111111'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '11111111-1111-1111-1111-111111111111'
                 }
             );
-            FirewallRuleName = @(
+            FirewallRuleName      = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName{
-                    Direction = 'out'
-                    InterfaceTypes = @('lan')
+                    Direction        = 'out'
+                    InterfaceTypes   = @('lan')
                     RemotePortRanges = @('0-100')
-                    Name = 'Rule1'
-                    FilePath = 'C:\Temp'
-                    Protocol = 80
-                    ServiceName = 'mysvc'
-                    Enabled = '1'
-                    Type = '1'
+                    Name             = 'Rule1'
+                    FilePath         = 'C:\Temp'
+                    Protocol         = 80
+                    ServiceName      = 'mysvc'
+                    Enabled          = '1'
+                    Type             = '1'
                 }
             )
             Description           = 'Description'

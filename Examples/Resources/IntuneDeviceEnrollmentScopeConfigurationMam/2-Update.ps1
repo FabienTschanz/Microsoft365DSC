@@ -16,15 +16,15 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceEnrollmentScopeConfigurationMam "Example"
+        IntuneDeviceEnrollmentScopeConfigurationMam "IntuneDeviceEnrollmentScopeConfigurationMam-Example"
         {
-            AppliesTo            = "selected";
-            ComplianceUrl        = "";
-            Credential           = $Credential;
-            DiscoveryUrl         = "https://wip.mam.manage.microsoft.com/Enroll";
-            IncludedGroups       = @("AADGroup_1","AADGroup_3"); # Updated property
-            IsSingleInstance     = "Yes";
-            TermsOfUseUrl        = "";
+            AppliesTo        = "selected";
+            ComplianceUrl    = "";
+            Credential       = $Credential;
+            DiscoveryUrl     = "https://wip.mam.manage.microsoft.com/Enroll";
+            IncludedGroups   = @("AADGroup_1","AADGroup_3"); # Updated property
+            IsSingleInstance = "Yes";
+            TermsOfUseUrl    = "";
         }
     }
 }

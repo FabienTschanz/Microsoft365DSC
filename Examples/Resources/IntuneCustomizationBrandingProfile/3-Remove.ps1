@@ -16,14 +16,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneCustomizationBrandingProfile "IntuneCustomizationBrandingProfile-Company"
+        IntuneCustomizationBrandingProfile "IntuneCustomizationBrandingProfile-Example"
         {
-            ApplicationId                  = $ApplicationId;
-            CertificateThumbprint          = $CertificateThumbprint;
-            DisplayName                    = "Company";
-            ProfileName                    = "IntuneCustomizationBrandingProfile_1";
-            Ensure                         = "Absent";
-            TenantId                       = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName           = "Company";
+            ProfileName           = "IntuneCustomizationBrandingProfile_1";
+            Ensure                = "Absent";
+            TenantId              = $TenantId;
         }
     }
 }

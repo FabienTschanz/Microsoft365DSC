@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 'IntuneDeviceConfigurationSCEPCertificatePolicyWindows10-Example'
         {
-            DisplayName                    = "SCEP";
-            Ensure                         = "Absent";
+            DisplayName           = "SCEP";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

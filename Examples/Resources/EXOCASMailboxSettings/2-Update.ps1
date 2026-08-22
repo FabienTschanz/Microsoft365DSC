@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOCASMailboxSettings 'AdeleVCasMailboxSettings'
+        EXOCASMailboxSettings 'EXOCASMailboxSettings-Example'
         {
             ActiveSyncAllowedDeviceIDs              = @()
             ActiveSyncBlockedDeviceIDs              = @()
@@ -44,7 +44,7 @@ Configuration Example
             OutlookMobileEnabled                    = $True
             OWAEnabled                              = $True
             OWAforDevicesEnabled                    = $True
-            OwaMailboxPolicy                        = 'OwaMailboxPolicy-Integration'
+            OwaMailboxPolicy                        = 'OwaMailboxPolicy-Restricted'
             PopEnabled                              = $False
             PopForceICalForCalendarRetrievalOption  = $True
             PopMessagesRetrievalMimeFormat          = 'BestBodyFormat'
@@ -54,9 +54,9 @@ Configuration Example
             ShowGalAsDefaultView                    = $True
             UniversalOutlookEnabled                 = $True
             Ensure                                  = 'Present'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                           = $ApplicationId
+            TenantId                                = $TenantId
+            CertificateThumbprint                   = $CertificateThumbprint
         }
     }
 }

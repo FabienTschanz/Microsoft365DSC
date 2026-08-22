@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPkcsCertificatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationPkcsCertificatePolicyWindows10 'IntuneDeviceConfigurationPkcsCertificatePolicyWindows10-Example'
         {
-            DisplayName                    = "PKCS";
-            Ensure                         = "Absent";
+            DisplayName           = "PKCS";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

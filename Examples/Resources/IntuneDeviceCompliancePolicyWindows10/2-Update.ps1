@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyWindows10 'ConfigureDeviceCompliancePolicyWindows10'
+        IntuneDeviceCompliancePolicyWindows10 'IntuneDeviceCompliancePolicyWindows10-Example'
         {
-            DisplayName                                 = 'Windows 10 DSC Policy'
-            Description                                 = 'Test policy'
+            DisplayName                                 = 'Windows 10 Device Compliance'
+            Description                                 = 'Baseline compliance requirements for corporate Windows 10 devices'
             PasswordRequired                            = $False
             PasswordBlockSimple                         = $False
             PasswordRequiredToUnlockFromIdle            = $True
@@ -62,14 +62,14 @@ Configuration Example
             ScheduledActionsForRule                     = @(
                 MSFT_MicrosoftGraphDeviceComplianceScheduledActionsForRuleConfiguration
                 {
-                    ActionType         = 'block'
-                    GracePeriodHours   = 0
+                    ActionType       = 'block'
+                    GracePeriodHours = 0
                 }
             )
             Ensure                                      = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                               = $ApplicationId;
+            TenantId                                    = $TenantId;
+            CertificateThumbprint                       = $CertificateThumbprint;
         }
     }
 }

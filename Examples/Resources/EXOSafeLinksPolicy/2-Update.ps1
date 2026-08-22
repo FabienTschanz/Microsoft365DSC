@@ -24,19 +24,27 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeLinksPolicy 'ConfigureSafeLinksPolicy'
+        EXOSafeLinksPolicy 'EXOSafeLinksPolicy-Example'
         {
             Identity                      = 'Marketing Block URL'
             AdminDisplayName              = 'Marketing Block URL'
+            AllowClickThrough             = $False
             CustomNotificationText        = 'Blocked URLs for Marketing'
             DeliverMessageAfterScan       = $True
+            DisableUrlRewrite             = $False
+            DoNotRewriteUrls              = @("https://contoso.com/*")
+            EnableForInternalSenders      = $True
             EnableOrganizationBranding    = $False # Updated Property
+            EnableSafeLinksForEmail       = $True
+            EnableSafeLinksForOffice      = $True
             EnableSafeLinksForTeams       = $True
             ScanUrls                      = $True
+            TrackClicks                   = $True
+            UseTranslatedNotificationText = $True
             Ensure                        = 'Present'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

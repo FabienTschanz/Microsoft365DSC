@@ -16,10 +16,10 @@ Configuration Example
 
     Node localhost
     {
-        SCLabelPolicy 'ConfigureLabelPolicy'
+        SCLabelPolicy 'SCLabelPolicy-Example'
         {
-            Name             = "DemoLabelPolicy"
-            Comment          = "Demo Label policy comment"
+            Name             = "Contoso Label Policy"
+            Comment          = "Publishes the Personal and General labels to all users"
             Labels           = @("Personal", "General")
             ExchangeLocation = @("All")
             AdvancedSettings = @(

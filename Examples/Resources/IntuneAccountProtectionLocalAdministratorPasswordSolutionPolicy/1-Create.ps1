@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy "My Account Protection LAPS Policy"
+        IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy "IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy-Example"
         {
             DisplayName              = "Account Protection LAPS Policy";
             Description              = "My revised description";
@@ -32,16 +32,16 @@ Configuration Example
             Assignments              = @(
                 MSFT_IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             BackupDirectory          = "1";
             passwordagedays_aad      = 10;
             AdministratorAccountName = "Administrator";
             PasswordAgeDays          = 20;
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId            = $ApplicationId;
+            TenantId                 = $TenantId;
+            CertificateThumbprint    = $CertificateThumbprint;
         }
     }
 }

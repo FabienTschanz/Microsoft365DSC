@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceManagementDeviceDiagnosticSettings 'DeviceManagementDeviceDiagnosticSettings'
+        IntuneDeviceManagementDeviceDiagnosticSettings 'IntuneDeviceManagementDeviceDiagnosticSettings-Example'
         {
             IsSingleInstance           = "Yes";
             EnableLogCollection        = $true;

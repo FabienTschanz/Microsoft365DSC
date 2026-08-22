@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled 'Example'
+        IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled 'IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled-Example'
         {
             DisplayName                            = 'WIP'
             AzureRightsManagementServicesAllowed   = $False
-            Description                            = 'DSC'
+            Description                            = 'Protects corporate data on managed Windows 10 devices'
             EnforcementLevel                       = 'encryptAndAuditOnly'
             EnterpriseDomain                       = 'domain.co.uk'
             EnterpriseIPRanges                     = @(
@@ -60,9 +60,9 @@ Configuration Example
             ProtectionUnderLockConfigRequired      = $False
             RevokeOnUnenrollDisabled               = $False
             Ensure                                 = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                          = $ApplicationId;
+            TenantId                               = $TenantId;
+            CertificateThumbprint                  = $CertificateThumbprint;
         }
     }
 }

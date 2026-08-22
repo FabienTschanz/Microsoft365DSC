@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        AADFilteringPolicy "AADFilteringPolicy-MyPolicy"
+        AADFilteringPolicy "AADFilteringPolicy-Example"
         {
             Action                = "block";
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "This is a demo policy";
+            Description           = "Blocks access to high-risk web destinations";
             Ensure                = "Present";
             Name                  = "MyPolicy";
             TenantId              = $TenantId;

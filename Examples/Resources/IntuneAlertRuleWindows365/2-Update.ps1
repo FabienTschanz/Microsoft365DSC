@@ -24,16 +24,16 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAlertRuleWindows365 "IntuneAlertRuleWindows365-cloudPcProvisionScenario"
+        IntuneAlertRuleWindows365 "IntuneAlertRuleWindows365-Example"
         {
             AlertRuleTemplate     = "cloudPcProvisionScenario";
             Conditions            = @(
                 MSFT_IntuneAlertRuleCondition{
-                    Aggregation = "affectedCloudPcCount"
+                    Aggregation       = "affectedCloudPcCount"
                     ConditionCategory = "provisionFailures"
-                    ThresholdValue = "1"
-                    RelationshipType = "or"
-                    Operator = "greaterOrEqual"
+                    ThresholdValue    = "1"
+                    RelationshipType  = "or"
+                    Operator          = "greaterOrEqual"
                 }
             );
             Enabled               = $True; # Updated property

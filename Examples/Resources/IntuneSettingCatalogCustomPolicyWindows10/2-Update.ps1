@@ -24,72 +24,72 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSettingCatalogCustomPolicyWindows10 'Example'
+        IntuneSettingCatalogCustomPolicyWindows10 'IntuneSettingCatalogCustomPolicyWindows10-Example'
         {
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             Description           = "Updated Description"; # Updated Property
             Ensure                = "Present";
-            Name                  = "Setting Catalog Raw - DSC";
+            Name                  = "Windows 11 Device Lockdown";
             Platforms             = "windows10";
             Settings              = @(
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
-                        choiceSettingValue = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
+                        choiceSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
                             Value = 'device_vendor_msft_policy_config_abovelock_allowcortanaabovelock_1'
                         }
                         SettingDefinitionId = 'device_vendor_msft_policy_config_abovelock_allowcortanaabovelock'
-                        odataType = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
                     }
                 }
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
                         SettingDefinitionId = 'device_vendor_msft_policy_config_applicationdefaults_defaultassociationsconfiguration'
-                        simpleSettingValue = MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue{
-                            odataType = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                        simpleSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue{
+                            odataType   = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
                             StringValue = ''
                         }
-                        odataType = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
                     }
                 }
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
-                        choiceSettingValue = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
+                        choiceSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
                             Value = 'device_vendor_msft_policy_config_applicationdefaults_enableappurihandlers_1'
                         }
                         SettingDefinitionId = 'device_vendor_msft_policy_config_applicationdefaults_enableappurihandlers'
-                        odataType = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
                     }
                 }
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
-                        choiceSettingValue = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
+                        choiceSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
                             Value = 'device_vendor_msft_policy_config_defender_allowarchivescanning_1'
                         }
                         SettingDefinitionId = 'device_vendor_msft_policy_config_defender_allowarchivescanning'
-                        odataType = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
                     }
                 }
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
-                        choiceSettingValue = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
+                        choiceSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
                             Value = 'device_vendor_msft_policy_config_defender_allowbehaviormonitoring_1'
                         }
                         SettingDefinitionId = 'device_vendor_msft_policy_config_defender_allowbehaviormonitoring'
-                        odataType = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
                     }
                 }
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
-                        choiceSettingValue = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
+                        choiceSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
                             Value = 'device_vendor_msft_policy_config_defender_allowcloudprotection_1'
                         }
                         SettingDefinitionId = 'device_vendor_msft_policy_config_defender_allowcloudprotection'
-                        odataType = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
                     }
                 }
             );

@@ -15,14 +15,14 @@ Configuration Example
 
     Node localhost
     {
-        TeamsEventsPolicy 'ConfigureEventsPolicy'
+        TeamsEventsPolicy 'TeamsEventsPolicy-Example'
         {
-            Identity             = "My Events Policy";
-            Description          = "This is a my Events Policy";
-            AllowWebinars        = "Disabled";
-            EventAccessType      = "EveryoneInCompanyExcludingGuests";
-            Credential           = $credsTeamsAdmin
-            Ensure               = "Present";
+            Identity        = "My Events Policy";
+            Description     = "This is a my Events Policy";
+            AllowWebinars   = "Disabled";
+            EventAccessType = "EveryoneInCompanyExcludingGuests";
+            Credential      = $credsTeamsAdmin
+            Ensure          = "Present";
         }
     }
 }

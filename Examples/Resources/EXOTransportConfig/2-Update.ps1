@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOTransportConfig  'EXOTransportConfig '
+        EXOTransportConfig 'EXOTransportConfig-Example'
         {
             IsSingleInstance                        = "Yes";
             AddressBookPolicyRoutingEnabled         = $True;
@@ -48,9 +48,9 @@ Configuration Example
             ReplyAllStormProtectionEnabled          = $True;
             Rfc2231EncodingEnabled                  = $False;
             SmtpClientAuthenticationDisabled        = $True;
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                           = $ApplicationId
+            TenantId                                = $TenantId
+            CertificateThumbprint                   = $CertificateThumbprint
         }
     }
 }

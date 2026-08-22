@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceEnrollmentPlatformRestriction 'DeviceEnrollmentPlatformRestriction'
+        IntuneDeviceEnrollmentPlatformRestriction 'IntuneDeviceEnrollmentPlatformRestriction-Example'
         {
             DisplayName                       = "Removed Policy";
             Ensure                            = "Absent";
@@ -36,9 +36,9 @@ Configuration Example
                 PersonalDeviceEnrollmentBlocked = $False
             };
             Priority                          = 1;
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                     = $ApplicationId;
+            TenantId                          = $TenantId;
+            CertificateThumbprint             = $CertificateThumbprint;
         }
     }
 }

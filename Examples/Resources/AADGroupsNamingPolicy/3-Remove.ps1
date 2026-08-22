@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupsNamingPolicy 'GroupsNamingPolicy'
+        AADGroupsNamingPolicy 'AADGroupsNamingPolicy-Example'
         {
-            IsSingleInstance              = "Yes"
-            Ensure                        = "Absent"
+            IsSingleInstance      = "Yes"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

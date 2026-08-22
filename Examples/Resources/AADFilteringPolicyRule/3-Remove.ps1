@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFilteringPolicyRule "AADFilteringPolicyRule-FQDN"
+        AADFilteringPolicyRule "AADFilteringPolicyRule-Example1"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
@@ -33,7 +33,7 @@ Configuration Example
             Policy                = "MyPolicy";
             TenantId              = $TenantId;
         }
-        AADFilteringPolicyRule "AADFilteringPolicyRule-Web"
+        AADFilteringPolicyRule "AADFilteringPolicyRule-Example2"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

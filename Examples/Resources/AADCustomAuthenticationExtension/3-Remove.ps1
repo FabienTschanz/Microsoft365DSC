@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADCustomAuthenticationExtension "AADCustomAuthenticationExtension1"
+        AADCustomAuthenticationExtension "AADCustomAuthenticationExtension-Example"
         {
-            DisplayName               = "DSCTestExtension"
-            Ensure                    = "Absent"
+            DisplayName           = "TokenEnrichmentExtension"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

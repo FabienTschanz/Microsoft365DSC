@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyQRCodeImage "AADAuthenticationMethodPolicyQRCodeImage-QRCodePin"
+        AADAuthenticationMethodPolicyQRCodeImage "AADAuthenticationMethodPolicyQRCodeImage-Example"
         {
             ApplicationId                = $ApplicationId;
             CertificateThumbprint        = $CertificateThumbprint;
@@ -32,7 +32,7 @@ Configuration Example
             Id                           = "QRCodePin";
             IncludeTargets               = @(
                 MSFT_AADAuthenticationMethodPolicyQRCodeImageIncludeTarget{
-                    Id = "all_users"
+                    Id         = "all_users"
                     TargetType = "group"
                 }
             );

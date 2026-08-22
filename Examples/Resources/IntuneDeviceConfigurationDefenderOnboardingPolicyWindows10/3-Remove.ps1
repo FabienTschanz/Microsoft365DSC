@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10 'Example'
+        IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10 'IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10-Example'
         {
-            DisplayName                                        = "MDE onboarding Legacy";
-            Ensure                                             = "Absent";
+            DisplayName           = "MDE onboarding Legacy";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

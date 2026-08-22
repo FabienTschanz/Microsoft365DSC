@@ -24,15 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxIRMAccess "EXOMailboxIRMAccess-qwe@testorg.onmicrosoft.com"
+        EXOMailboxIRMAccess "EXOMailboxIRMAccess-Example"
         {
-            AccessLevel            = "Block";
-            ApplicationId          = $ApplicationId
-            TenantId               = $TenantId
-            CertificateThumbprint  = $CertificateThumbprint
-            Ensure                 = "Absent";
-            Identity               = "qwe@$OrganizationName";
-            User                   = "admin@$OrganizationName";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            Ensure                = "Absent";
+            Identity              = "qwe@$OrganizationName";
+            User                  = "admin@$OrganizationName";
         }
     }
 }

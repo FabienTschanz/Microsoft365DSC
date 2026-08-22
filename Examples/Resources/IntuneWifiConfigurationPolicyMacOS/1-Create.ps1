@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyMacOS 'myWifiConfigMacOSPolicy'
+        IntuneWifiConfigurationPolicyMacOS 'IntuneWifiConfigurationPolicyMacOS-Example'
         {
             DisplayName                    = 'macos wifi'
             Assignments                    = @(
@@ -41,9 +41,9 @@ Configuration Example
             Ssid                           = 'aaaaaaaaaaaaa'
             WiFiSecurityType               = 'wpaPersonal'
             Ensure                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

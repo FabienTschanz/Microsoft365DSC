@@ -25,10 +25,10 @@ Configuration Example
     {
         IntuneAppConfigurationDevicePolicy "IntuneAppConfigurationDevicePolicy-Example"
         {
-            Description = "";
-            DisplayName = "Example";
-            Ensure      = "Present";
-            Id          = "0000000-0000-0000-0000-000000000000";
+            Description           = "";
+            DisplayName           = "Outlook for Android - Managed Configuration";
+            Ensure                = "Present";
+            Id                    = "0000000-0000-0000-0000-000000000000";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

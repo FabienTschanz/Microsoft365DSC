@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAppManagementPolicy "MyAppManagementPolicy"
+        AADAppManagementPolicy "AADAppManagementPolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

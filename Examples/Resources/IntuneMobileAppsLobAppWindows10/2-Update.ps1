@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsLobAppWindows10 "IntuneMobileAppsLobAppWindows10-Appx App"
+        IntuneMobileAppsLobAppWindows10 "IntuneMobileAppsLobAppWindows10-Example"
         {
             Description           = "Appx App Description";
             Developer             = "Contoso";
@@ -37,21 +37,21 @@ Configuration Example
             Owner                 = "";
             PrivacyInformationUrl = "";
             Publisher             = "Contoso";
-            Assignments          = @(
+            Assignments           = @(
                 MSFT_DeviceManagementAppxMobileAppAssignment {
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
-                    assignmentSettings = MSFT_DeviceManagementAppxMobileAppAssignmentSettings{
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
+                    assignmentSettings                         = MSFT_DeviceManagementAppxMobileAppAssignmentSettings{
                         useDeviceContext = $true
-                        odataType = "#microsoft.graph.windowsUniversalAppXAppAssignmentSettings"
+                        odataType        = "#microsoft.graph.windowsUniversalAppXAppAssignmentSettings"
                     }
                 }
             );
-            Categories             = @(
+            Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
+                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
                     DisplayName = "App Category 1"
                 }
             );

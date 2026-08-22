@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        AADClaimsMappingPolicy "AADClaimsMappingPolicy-Test1234"
+        AADClaimsMappingPolicy "AADClaimsMappingPolicy-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DisplayName           = "Test1234";
+            DisplayName           = "Expense Reporting Claims";
             Ensure                = "Absent";
         }
     }

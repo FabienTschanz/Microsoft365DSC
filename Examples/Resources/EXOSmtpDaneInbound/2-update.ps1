@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSmtpDaneInbound 'SmtpDaneInbound-mydomain.com'
+        EXOSmtpDaneInbound 'EXOSmtpDaneInbound-Example'
         {
-            DomainName           = "mydomain.com"
-            Ensure               = "Present"                 # note: DNSSEC for the domain must be enabled. See resource EXODnssecForVerifiedDomain
+            DomainName            = "mydomain.com"
+            Ensure                = "Present"                 # note: DNSSEC for the domain must be enabled. See resource EXODnssecForVerifiedDomain
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

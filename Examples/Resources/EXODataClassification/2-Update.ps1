@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXODataClassification 'ConfigureDataClassification'
+        EXODataClassification 'EXODataClassification-Example'
         {
-            Description          = "Detects formatted and unformatted Canadian social insurance number.";
-            Ensure               = "Present";
-            Identity             = "a2f29c85-ecb8-4514-a610-364790c0773e";
-            IsDefault            = $True;
-            Locale               = "en-US";
-            Name                 = "Canada Social Insurance Number";
+            Description           = "Detects formatted and unformatted Canadian social insurance number.";
+            Ensure                = "Present";
+            Identity              = "a2f29c85-ecb8-4514-a610-364790c0773e";
+            IsDefault             = $True;
+            Locale                = "en-US";
+            Name                  = "Canada Social Insurance Number";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -15,16 +15,16 @@ Configuration Example
 
     Node localhost
     {
-        PPPowerAppsEnvironment 'PowerAppsDemoEnvironment'
+        PPPowerAppsEnvironment 'PPPowerAppsEnvironment-Example'
         {
-            DisplayName        = "My Demo Environment"
-            EnvironmentSKU     = "Production"
-            Location           = "canada"
-            ProvisionDatabase  = $true
-            LanguageName       = 1033;
-            CurrencyName       = "CAD";
-            Ensure             = "Absent"
-            Credential         = $Credscredential
+            DisplayName       = "Contoso Production"
+            EnvironmentSKU    = "Production"
+            Location          = "canada"
+            ProvisionDatabase = $true
+            LanguageName      = 1033;
+            CurrencyName      = "CAD";
+            Ensure            = "Absent"
+            Credential        = $Credscredential
         }
     }
 }

@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxPermission "TestPermission"
+        EXOMailboxPermission "EXOMailboxPermission-Example"
         {
-            AccessRights         = @("FullAccess","ReadPermission");
-            Deny                 = $True; # Updated Property
-            Ensure               = "Present";
-            Identity             = "AlexW@$TenantId";
-            InheritanceType      = "All";
-            User                 = "NT AUTHORITY\SELF";
+            AccessRights          = @("FullAccess","ReadPermission");
+            Deny                  = $True; # Updated Property
+            Ensure                = "Present";
+            Identity              = "AlexW@$TenantId";
+            InheritanceType       = "All";
+            User                  = "NT AUTHORITY\SELF";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

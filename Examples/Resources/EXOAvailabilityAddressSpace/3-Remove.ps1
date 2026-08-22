@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOAvailabilityAddressSpace 'ConfigureAvailabilityAddressSpace'
+        EXOAvailabilityAddressSpace 'EXOAvailabilityAddressSpace-Example'
         {
             Identity              = 'Contoso.com'
             Ensure                = 'Absent'

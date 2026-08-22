@@ -24,34 +24,34 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 'Example'
+        IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 'IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10-Example'
         {
             Assignments                   = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             DisplayName                   = "network boundary";
             Ensure                        = "Present";
             WindowsNetworkIsolationPolicy = MSFT_MicrosoftGraphwindowsNetworkIsolationPolicy{
-                EnterpriseProxyServers = @()
-                EnterpriseInternalProxyServers = @()
-                EnterpriseIPRangesAreAuthoritative = $True
+                EnterpriseProxyServers                 = @()
+                EnterpriseInternalProxyServers         = @()
+                EnterpriseIPRangesAreAuthoritative     = $True
                 EnterpriseProxyServersAreAuthoritative = $True
-                EnterpriseNetworkDomainNames = @('domain.com')
-                EnterpriseIPRanges = @(
+                EnterpriseNetworkDomainNames           = @('domain.com')
+                EnterpriseIPRanges                     = @(
                     MSFT_MicrosoftGraphIpRange1{
                         UpperAddress = '1.1.1.255'
                         LowerAddress = '1.1.1.0'
-                        odataType = '#microsoft.graph.iPv4Range'
+                        odataType    = '#microsoft.graph.iPv4Range'
                     }
                 )
-                NeutralDomainResources = @()
+                NeutralDomainResources                 = @()
             };
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                 = $ApplicationId;
+            TenantId                      = $TenantId;
+            CertificateThumbprint         = $CertificateThumbprint;
         }
     }
 }

@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCRetentionComplianceRule 'RetentionComplianceRule'
+        SCRetentionComplianceRule 'SCRetentionComplianceRule-Example'
         {
-            Name                      = "DemoRule2"
+            Name                      = "Keep Finance Content"
             Policy                    = "ContosoPolicy"
-            Comment                   = "This is a Demo Rule"
+            Comment                   = "Keeps content in the finance site indefinitely"
             RetentionComplianceAction = "Keep"
             RetentionDuration         = "Unlimited"
             Ensure                    = "Present"

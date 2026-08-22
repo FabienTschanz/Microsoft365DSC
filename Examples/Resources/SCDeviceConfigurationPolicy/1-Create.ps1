@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        SCDeviceConfigurationPolicy 'ConfigureDeviceConfigurationPolicy'
+        SCDeviceConfigurationPolicy 'SCDeviceConfigurationPolicy-Example'
         {
-            Name                 = "Human Resources"
-            Comment              = "Device Configuration Policy for Human Resources department"
-            Enabled              = $True
-            Ensure               = "Present"
-            Credential           = $Credscredential
+            Name       = "Human Resources"
+            Comment    = "Device Configuration Policy for Human Resources department"
+            Enabled    = $True
+            Ensure     = "Present"
+            Credential = $Credscredential
         }
     }
 }

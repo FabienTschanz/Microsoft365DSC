@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        SCFilePlanPropertySubCategory 'FilePlanPropertySubCategory'
+        SCFilePlanPropertySubCategory 'SCFilePlanPropertySubCategory-Example'
         {
             Name       = "My Sub-Category"
             Category   = "My Category"

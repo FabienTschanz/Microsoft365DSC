@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOCASMailboxPlan 'ConfigureCASMailboxPlan'
+        EXOCASMailboxPlan 'EXOCASMailboxPlan-Example'
         {
-            ActiveSyncEnabled = $True
-            OwaMailboxPolicy  = "OwaMailboxPolicy-Default"
-            PopEnabled        = $False # Updated Property
-            Identity          = 'ExchangeOnlineEnterprise'
-            ImapEnabled       = $True
-            Ensure            = "Present"
+            ActiveSyncEnabled     = $True
+            OwaMailboxPolicy      = "OwaMailboxPolicy-Default"
+            PopEnabled            = $False # Updated Property
+            Identity              = 'ExchangeOnlineEnterprise'
+            ImapEnabled           = $True
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

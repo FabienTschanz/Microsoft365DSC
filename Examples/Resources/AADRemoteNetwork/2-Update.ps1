@@ -24,30 +24,30 @@ Configuration Example
 
     Node localhost
     {
-        AADRemoteNetwork "AADRemoteNetwork-Test Remote Network"
+        AADRemoteNetwork "AADRemoteNetwork-Example"
         {
             Ensure                = "Present";
             ForwardingProfiles    = @(); #creating drift here
             Id                    = "c60c41bb-e512-48e3-8134-c312439a5343";
-            Name                  = "Test Remote Network";
+            Name                  = "Sydney Branch Network";
             Region                = "australiaSouthEast";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
             DeviceLinks           = @(
                 MSFT_AADRemoteNetworkDeviceLink {
-                    Name                    = 'Test Link Random' # creating drift here
+                    Name                    = 'Sydney Secondary Link' # creating drift here
                     IPAddress               = '1.1.1.1'
                     BandwidthCapacityInMbps = 'mbps500'
                     DeviceVendor            = 'ciscoCatalyst'
                     BgpConfiguration        = MSFT_AADRemoteNetworkDeviceLinkbgpConfiguration {
-                        Asn                 = 82
-                        LocalIPAddress      = '1.1.1.87'
-                        PeerIPAddress       = '1.1.1.2'
+                        Asn            = 82
+                        LocalIPAddress = '1.1.1.87'
+                        PeerIPAddress  = '1.1.1.2'
                     }
                     RedundancyConfiguration = MSFT_AADRemoteNetworkDeviceLinkRedundancyConfiguration {
-                        RedundancyTier      = 'zoneRedundancy'
-                        ZoneLocalIPAddress  = '1.1.1.8'
+                        RedundancyTier     = 'zoneRedundancy'
+                        ZoneLocalIPAddress = '1.1.1.8'
                     }
                     TunnelConfiguration     = MSFT_AADRemoteNetworkDeviceLinkTunnelConfiguration {
                         PreSharedKey               = 'blah'

@@ -24,20 +24,20 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyWindows10SettingCatalog 'myAVWindows10Policy'
+        IntuneAntivirusPolicyWindows10SettingCatalog 'IntuneAntivirusPolicyWindows10SettingCatalog-Example'
         {
-            DisplayName        = 'av exclusions'
-            Assignments        = @(
+            DisplayName           = 'av exclusions'
+            Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments {
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 })
-            Description        = ''
-            excludedextensions = @('.exe')
-            excludedpaths      = @('c:\folders\', 'c:\folders2\')
-            excludedprocesses  = @('processes.exe', 'process2.exe')
-            templateId         = '45fea5e9-280d-4da1-9792-fb5736da0ca9_1'
-            Ensure             = 'Present'
+            Description           = ''
+            excludedextensions    = @('.exe')
+            excludedpaths         = @('c:\folders\', 'c:\folders2\')
+            excludedprocesses     = @('processes.exe', 'process2.exe')
+            templateId            = '45fea5e9-280d-4da1-9792-fb5736da0ca9_1'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

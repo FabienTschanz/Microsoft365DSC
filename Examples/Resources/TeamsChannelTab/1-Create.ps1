@@ -10,18 +10,18 @@ Configuration Example
 
     Node localhost
     {
-        TeamsChannelTab 'ConfigureChannelTab'
+        TeamsChannelTab 'TeamsChannelTab-Example'
         {
             ChannelName           = "General"
             ContentUrl            = "https://contoso.com"
-            DisplayName           = "TestTab"
+            DisplayName           = "Project Plan"
             SortOrderIndex        = "10100"
             TeamName              = "Contoso Team"
             TeamsApp              = "com.microsoft.teamspace.tab.web"
             WebSiteUrl            = "https://contoso.com"
             Ensure                = "Present"
             ApplicationId         = "12345"
-            CertificateThumbprint = "ABCDEF1234567890"
+            CertificateThumbprint = "<certificate-thumbprint>"
             TenantId              = "contoso.onmicrosoft.com"
         }
     }

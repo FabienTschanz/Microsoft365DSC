@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsMicrosoft365SuiteMacOS "IntuneMobileAppsMicrosoft365SuiteMacOS-Office"
+        IntuneMobileAppsMicrosoft365SuiteMacOS "IntuneMobileAppsMicrosoft365SuiteMacOS-Example"
         {
             DisplayName           = "Office";
             Ensure                = "Absent";

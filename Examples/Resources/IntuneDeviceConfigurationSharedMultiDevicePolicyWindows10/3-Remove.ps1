@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 'Example'
+        IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 'IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10-Example'
         {
-            DisplayName                  = "Shared Multi device";
-            Ensure                       = "Absent";
+            DisplayName           = "Shared Multi device";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

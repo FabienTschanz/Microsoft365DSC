@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXODkimSigningConfig 'ConfigureDKIMSigning'
+        EXODkimSigningConfig 'EXODkimSigningConfig-Example'
         {
-            Identity               = $TenantId
-            Ensure                 = "Absent"
+            Identity              = $TenantId
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

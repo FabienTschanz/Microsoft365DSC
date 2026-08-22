@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADMultiTenantOrganizationIdentitySyncPolicyTemplate "AADMultiTenantOrganizationIdentitySyncPolicyTemplate"
+        AADMultiTenantOrganizationIdentitySyncPolicyTemplate "AADMultiTenantOrganizationIdentitySyncPolicyTemplate-Example"
         {
             ApplicationId            = $ApplicationId;
             CertificateThumbprint    = $CertificateThumbprint;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementSettings "AADEntitlementManagementSettings"
+        AADEntitlementManagementSettings "AADEntitlementManagementSettings-Example"
         {
             ApplicationId                            = $ApplicationId;
             CertificateThumbprint                    = $CertificateThumbprint;

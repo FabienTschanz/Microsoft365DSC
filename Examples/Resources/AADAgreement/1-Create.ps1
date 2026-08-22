@@ -23,20 +23,20 @@ Configuration Example
 
     Node localhost
     {
-        AADAgreement 'CompanyTermsOfUse'
+        AADAgreement 'AADAgreement-Example'
         {
-            DisplayName                          = "Company Terms of Use"
-            IsViewingBeforeAcceptanceRequired    = $true
-            IsPerDeviceAcceptanceRequired        = $false
-            UserReacceptRequiredFrequency        = "P90D"
-            AcceptanceStatement                  = "I accept the terms of use"
-            FileData                             = "<h1>Company Terms of Use</h1><p>These are the terms and conditions for using our company resources...</p>"
-            FileName                             = "CompanyToU.html"
-            Language                             = "en-US"
-            Ensure                               = "Present"
-            ApplicationId                    = $ApplicationId
-            TenantId                         = $TenantId
-            CertificateThumbprint            = $CertificateThumbprint
+            DisplayName                       = "Company Terms of Use"
+            IsViewingBeforeAcceptanceRequired = $true
+            IsPerDeviceAcceptanceRequired     = $false
+            UserReacceptRequiredFrequency     = "P90D"
+            AcceptanceStatement               = "I accept the terms of use"
+            FileData                          = "<h1>Company Terms of Use</h1><p>These are the terms and conditions for using our company resources...</p>"
+            FileName                          = "CompanyToU.html"
+            Language                          = "en-US"
+            Ensure                            = "Present"
+            ApplicationId                     = $ApplicationId
+            TenantId                          = $TenantId
+            CertificateThumbprint             = $CertificateThumbprint
         }
     }
 }

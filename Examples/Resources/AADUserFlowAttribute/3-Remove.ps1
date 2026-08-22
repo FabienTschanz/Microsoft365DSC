@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        AADUserFlowAttribute 'SaiTest'
+        AADUserFlowAttribute 'AADUserFlowAttribute-Example'
         {
-            DisplayName           = "saitest"
+            DisplayName           = "Cost Centre"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

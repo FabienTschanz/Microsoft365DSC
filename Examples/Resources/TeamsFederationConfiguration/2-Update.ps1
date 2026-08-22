@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsFederationConfiguration 'FederationConfiguration'
+        TeamsFederationConfiguration 'TeamsFederationConfiguration-Example'
         {
             IsSingleInstance                            = 'Yes';
             AllowedDomains                              = @();

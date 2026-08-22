@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsOnlineVoicemailPolicy 'NewOnlineVoicemailPolicy'
+        TeamsOnlineVoicemailPolicy 'TeamsOnlineVoicemailPolicy-Example'
         {
             Credential                          = $credsCredential;
             EnableEditingCallAnswerRulesSetting = $True;

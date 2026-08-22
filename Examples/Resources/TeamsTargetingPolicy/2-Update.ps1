@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTargetingPolicy 'Example'
+        TeamsTargetingPolicy 'TeamsTargetingPolicy-Example'
         {
             ApplicationId                      = $ApplicationId;
             CertificateThumbprint              = $CertificateThumbprint;

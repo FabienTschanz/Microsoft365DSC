@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADConditionalAccessPolicy 'ConditionalAccessPolicy'
+        AADConditionalAccessPolicy 'AADConditionalAccessPolicy-Example'
         {
-            DisplayName                          = 'Example CAP'
-            Ensure                               = 'Absent'
+            DisplayName           = 'Require MFA for Mobile Devices'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

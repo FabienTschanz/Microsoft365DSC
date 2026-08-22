@@ -24,24 +24,24 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPkcsCertificatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationPkcsCertificatePolicyWindows10 'IntuneDeviceConfigurationPkcsCertificatePolicyWindows10-Example'
         {
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             CertificateStore               = "user";
-            CertificateTemplateName        = "Template DSC";
+            CertificateTemplateName        = "ContosoUserAuthentication";
             CertificateValidityPeriodScale = "years";
             CertificateValidityPeriodValue = 1;
-            CertificationAuthority         = "CA=Name";
-            CertificationAuthorityName     = "Test";
+            CertificationAuthority         = "ca01.contoso.com\Contoso Issuing CA 01";
+            CertificationAuthorityName     = "Contoso Issuing CA 01";
             CustomSubjectAlternativeNames  = @(
                 MSFT_MicrosoftGraphcustomSubjectAlternativeName{
                     SanType = 'domainNameService'
-                    Name = 'certificate.com'
+                    Name    = 'contoso.com'
                 }
             );
             DisplayName                    = "PKCS";
@@ -51,9 +51,9 @@ Configuration Example
             SubjectAlternativeNameType     = "none";
             SubjectNameFormat              = "custom";
             SubjectNameFormatString        = "CN={{UserName}},E={{EmailAddress}}";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

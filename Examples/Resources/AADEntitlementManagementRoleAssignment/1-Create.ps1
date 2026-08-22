@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementRoleAssignment "AADEntitlementManagementRoleAssignment-Create"
+        AADEntitlementManagementRoleAssignment "AADEntitlementManagementRoleAssignment-Example"
         {
-            AppScopeId      = "/";
+            AppScopeId            = "/";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure          = "Present";
-            Principal       = "AdeleV@$TenantId";
-            RoleDefinition  = "Catalog creator";
+            Ensure                = "Present";
+            Principal             = "AdeleV@$TenantId";
+            RoleDefinition        = "Catalog creator";
         }
     }
 }

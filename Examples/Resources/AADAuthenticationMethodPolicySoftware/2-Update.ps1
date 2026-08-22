@@ -24,30 +24,30 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicySoftware "AADAuthenticationMethodPolicySoftware-SoftwareOath"
+        AADAuthenticationMethodPolicySoftware "AADAuthenticationMethodPolicySoftware-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure               = "Present";
-            ExcludeTargets       = @(
+            Ensure                = "Present";
+            ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicySoftwareExcludeTarget{
-                    Id = 'Executives'
+                    Id         = 'Executives'
                     TargetType = 'group'
                 }
                 MSFT_AADAuthenticationMethodPolicySoftwareExcludeTarget{
-                    Id = 'Paralegals'
+                    Id         = 'Paralegals'
                     TargetType = 'group'
                 }
             );
-            Id                   = "SoftwareOath";
-            IncludeTargets       = @(
+            Id                    = "SoftwareOath";
+            IncludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicySoftwareIncludeTarget{
-                    Id = 'Legal Team'
+                    Id         = 'Legal Team'
                     TargetType = 'group'
                 }
             );
-            State                = "enabled"; # Updated Property
+            State                 = "enabled"; # Updated Property
         }
     }
 }

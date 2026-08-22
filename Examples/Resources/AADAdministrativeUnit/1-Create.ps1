@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADAdministrativeUnit 'TestUnit'
+        AADAdministrativeUnit 'AADAdministrativeUnit-Example'
         {
-            DisplayName                   = 'Test-Unit'
-            Description                   = 'Test Description'
+            DisplayName                   = 'Amsterdam Office'
+            Description                   = 'Users and devices based in the Amsterdam office'
             MembershipRule                = "(user.country -eq `"Canada`")"
             MembershipRuleProcessingState = 'On'
             MembershipType                = 'Dynamic'
@@ -43,9 +43,9 @@ Configuration Example
                     }
                 }
             )
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

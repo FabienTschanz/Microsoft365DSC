@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsLobAppiOS "IntuneMobileAppsLobAppiOS-IPA iOS App"
+        IntuneMobileAppsLobAppiOS "IntuneMobileAppsLobAppiOS-Example"
         {
-            DisplayName           = "Example IPA iOS App";
+            DisplayName           = "Contoso Field Service";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

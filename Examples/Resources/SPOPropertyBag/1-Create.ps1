@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOPropertyBag 'ConfigurePropertyBag'
+        SPOPropertyBag 'SPOPropertyBag-Example'
         {
             Url        = "https://contoso.sharepoint.com/sites/Marketing"
             Key        = "MyKey"

@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        SCFilePlanPropertyDepartment 'FilePlanPropertyDepartment'
+        SCFilePlanPropertyDepartment 'SCFilePlanPropertyDepartment-Example'
         {
-            Name               = "Demo Department"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            Name       = "Finance"
+            Ensure     = "Present"
+            Credential = $Credscredential
         }
     }
 }

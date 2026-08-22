@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPlatformScriptWindows 'Example'
+        IntuneDeviceConfigurationPlatformScriptWindows 'IntuneDeviceConfigurationPlatformScriptWindows-Example'
         {
-            Assignments          = @(
+            Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             DisplayName           = "custom";

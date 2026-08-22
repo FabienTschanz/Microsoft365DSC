@@ -24,21 +24,21 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationHealthMonitoringPolicyWindows10 'Example'
+        IntuneDeviceConfigurationHealthMonitoringPolicyWindows10 'IntuneDeviceConfigurationHealthMonitoringPolicyWindows10-Example'
         {
             AllowDeviceHealthMonitoring       = "enabled";
             Assignments                       = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             ConfigDeviceHealthMonitoringScope = @("bootPerformance","windowsUpdates");
             DisplayName                       = "Health Monitoring Configuration";
             Ensure                            = "Present";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                     = $ApplicationId;
+            TenantId                          = $TenantId;
+            CertificateThumbprint             = $CertificateThumbprint;
         }
     }
 }

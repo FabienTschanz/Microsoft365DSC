@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyX509 "AADAuthenticationMethodPolicyX509-X509Certificate"
+        AADAuthenticationMethodPolicyX509 "AADAuthenticationMethodPolicyX509-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                          = "Absent";
-            Id                              = "X509Certificate";
+            Ensure                = "Absent";
+            Id                    = "X509Certificate";
         }
     }
 }

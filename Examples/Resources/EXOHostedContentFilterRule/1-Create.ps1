@@ -24,18 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        EXOHostedContentFilterRule 'ConfigureHostedContentFilterRule'
+        EXOHostedContentFilterRule 'EXOHostedContentFilterRule-Example'
         {
-            Identity                  = "Integration CFR"
+            Identity                  = "Standard Spam Filter Rule"
             Comments                  = "Applies to all users, except when member of HR group"
             Enabled                   = $True
+            Priority                  = 0
+            SentTo                    = @("AdeleV@$TenantId")
+            SentToMemberOf            = @("Executives@$TenantId")
+            ExceptIfRecipientDomainIs = @("fabrikam.com")
+            ExceptIfSentTo            = @("AlexW@$TenantId")
             ExceptIfSentToMemberOf    = "LegalTeam@$TenantId"
             RecipientDomainIs         = @('contoso.com')
-            HostedContentFilterPolicy = "Integration CFP"
+            HostedContentFilterPolicy = "Standard Spam Filter"
             Ensure                    = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

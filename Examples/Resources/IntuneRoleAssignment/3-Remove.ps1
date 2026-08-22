@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneRoleAssignment 'IntuneRoleAssignment'
+        IntuneRoleAssignment 'IntuneRoleAssignment-Example'
         {
-            DisplayName                = 'test2'
-            Ensure                     = 'Absent'
+            DisplayName           = 'Amsterdam Helpdesk Operators'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

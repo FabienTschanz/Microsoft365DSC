@@ -24,9 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        EXODataEncryptionPolicy 'ConfigureDataEncryptionPolicy'
+        EXODataEncryptionPolicy 'EXODataEncryptionPolicy-Example'
         {
             Identity              = 'US Mailboxes'
+            Name                  = 'US Mailboxes'
+            Description           = 'Customer key policy for mailboxes hosted in the United States'
+            AzureKeyIDs           = @("<key-vault-key-uri>")
             Enabled               = $true
             Ensure                = "Present"
             ApplicationId         = $ApplicationId

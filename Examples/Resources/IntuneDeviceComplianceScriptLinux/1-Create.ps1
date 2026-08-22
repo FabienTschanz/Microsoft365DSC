@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceComplianceScriptLinux 'Example'
+        IntuneDeviceComplianceScriptLinux 'IntuneDeviceComplianceScriptLinux-Example'
         {
-            Id                     = "12345678-1234-1234-1234-123456789012"
-            Description            = "custom compliance script for Linux";
-            DisplayName            = "custom";
-            Ensure                 = "Present";
-            DiscoveryScript        = "#!/bin/bash
+            Id                    = "12345678-1234-1234-1234-123456789012"
+            Description           = "custom compliance script for Linux";
+            DisplayName           = "custom";
+            Ensure                = "Present";
+            DiscoveryScript       = "#!/bin/bash
 echo true";
-            ApplicationId          = $ApplicationId;
-            TenantId               = $TenantId;
-            CertificateThumbprint  = $CertificateThumbprint;
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

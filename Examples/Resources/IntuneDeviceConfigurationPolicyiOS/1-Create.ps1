@@ -23,9 +23,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyiOS 'ConfigureDeviceConfigurationPolicyiOS'
+        IntuneDeviceConfigurationPolicyiOS 'IntuneDeviceConfigurationPolicyiOS-Example'
         {
-            DisplayName                                    = 'iOS DSC Policy'
+            DisplayName                                    = 'iOS Device Restrictions'
             AccountBlockModification                       = $False
             ActivationLockAllowWhenSupervised              = $False
             AirDropBlocked                                 = $False
@@ -134,9 +134,9 @@ Configuration Example
             VoiceDialingBlocked                            = $False
             WallpaperBlockModification                     = $False
             Ensure                                         = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                  = $ApplicationId;
+            TenantId                                       = $TenantId;
+            CertificateThumbprint                          = $CertificateThumbprint;
         }
     }
 }

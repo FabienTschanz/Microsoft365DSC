@@ -24,19 +24,19 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackageAssignmentPolicy "myAssignments"
+        AADEntitlementManagementAccessPackageAssignmentPolicy "AADEntitlementManagementAccessPackageAssignmentPolicy-Example"
         {
-            AccessPackageId         = "Integration Package";
+            AccessPackageId         = "Finance Reporting Access";
             AccessReviewSettings    = MSFT_MicrosoftGraphassignmentreviewsettings{
-                IsEnabled = $True
-                StartDateTime = '12/17/2032 23:59:59'
-                IsAccessRecommendationEnabled = $True
-                AccessReviewTimeoutBehavior = 'keepAccess'
+                IsEnabled                       = $True
+                StartDateTime                   = '12/17/2032 23:59:59'
+                IsAccessRecommendationEnabled   = $True
+                AccessReviewTimeoutBehavior     = 'keepAccess'
                 IsApprovalJustificationRequired = $True
-                ReviewerType = 'Self'
-                RecurrenceType = 'quarterly'
-                Reviewers = @()
-                DurationInDays = 25
+                ReviewerType                    = 'Self'
+                RecurrenceType                  = 'quarterly'
+                Reviewers                       = @()
+                DurationInDays                  = 25
             };
             CanExtend               = $False;
             Description             = "Assignment Policy for access packages";
@@ -65,15 +65,15 @@ Configuration Example
                 ScopeType      = "NoSubjects"
             };
             RequestApprovalSettings = MSFT_MicrosoftGraphapprovalsettings{
-                ApprovalMode = 'NoApproval'
+                ApprovalMode                     = 'NoApproval'
                 IsRequestorJustificationRequired = $False
-                IsApprovalRequired = $False
-                IsApprovalRequiredForExtension = $False
+                IsApprovalRequired               = $False
+                IsApprovalRequiredForExtension   = $False
             };
-            Ensure                     = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Ensure                  = "Present"
+            ApplicationId           = $ApplicationId
+            TenantId                = $TenantId
+            CertificateThumbprint   = $CertificateThumbprint
         }
     }
 }

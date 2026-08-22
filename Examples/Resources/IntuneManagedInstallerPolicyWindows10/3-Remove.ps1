@@ -23,13 +23,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneManagedInstallerPolicyWindows10 "IntuneManagedInstallerPolicyWindows10-SideCar ManagedInstaller Script"
+        IntuneManagedInstallerPolicyWindows10 "IntuneManagedInstallerPolicyWindows10-Example"
         {
-            DisplayName              = "SideCar ManagedInstaller Script";
-            Ensure                   = "Absent";
-            ApplicationId            = $ApplicationId;
-            CertificateThumbprint    = $CertificateThumbprint;
-            TenantId                 = $OrganizationName;
+            DisplayName           = "SideCar ManagedInstaller Script";
+            Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            TenantId              = $OrganizationName;
         }
     }
 }

@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        EXOOnPremisesOrganization 'ConfigureOnPremisesOrganization'
+        EXOOnPremisesOrganization 'EXOOnPremisesOrganization-Example'
         {
-            Identity          = 'Contoso'
+            Identity              = 'Contoso HQ'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

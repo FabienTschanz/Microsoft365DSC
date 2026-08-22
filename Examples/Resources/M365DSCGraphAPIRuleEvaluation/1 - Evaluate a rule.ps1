@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        M365DSCGraphAPIRuleEvaluation 'AllowAnonymousUsersToJoinMeetingAllPolicies'
+        M365DSCGraphAPIRuleEvaluation 'M365DSCGraphAPIRuleEvaluation-Example'
         {
             APIUrl              = 'https://graph.microsoft.com/beta/serviceprincipals'
             InstancesProperty   = 'value'

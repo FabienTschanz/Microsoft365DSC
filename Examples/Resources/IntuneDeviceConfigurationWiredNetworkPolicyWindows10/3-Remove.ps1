@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationWiredNetworkPolicyWindows10 'Example'
+        IntuneDeviceConfigurationWiredNetworkPolicyWindows10 'IntuneDeviceConfigurationWiredNetworkPolicyWindows10-Example'
         {
-            DisplayName                                           = 'Wired Network'
-            Ensure                                                = 'Present'
+            DisplayName           = 'Wired Network'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

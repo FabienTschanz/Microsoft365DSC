@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADDomain "AADDomain-Mail"
+        AADDomain "AADDomain-Example"
         {
             ApplicationId                    = $ApplicationId;
             AuthenticationType               = "Managed";

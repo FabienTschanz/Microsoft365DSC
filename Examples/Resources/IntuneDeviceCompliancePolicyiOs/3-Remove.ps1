@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyiOs 'ConfigureDeviceCompliancePolicyiOS'
+        IntuneDeviceCompliancePolicyiOs 'IntuneDeviceCompliancePolicyiOs-Example'
         {
-            DisplayName                                 = 'Test iOS Device Compliance Policy'
-            Ensure                                      = 'Absent'
+            DisplayName           = 'iOS Device Compliance'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

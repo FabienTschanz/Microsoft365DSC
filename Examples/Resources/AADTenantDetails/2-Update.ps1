@@ -23,16 +23,16 @@ Configuration Example {
 
     Node Localhost
     {
-        AADTenantDetails 'ConfigureTenantDetails'
+        AADTenantDetails 'AADTenantDetails-Example'
         {
             IsSingleInstance                     = 'Yes'
-            TechnicalNotificationMails           = "example@contoso.com"
-            MarketingNotificationEmails          = "example@contoso.com"
+            TechnicalNotificationMails           = "it-operations@contoso.com"
+            MarketingNotificationEmails          = "marketing@contoso.com"
             SecurityComplianceNotificationMails  = @("security@contoso.com", "compliance@contoso.com")
             SecurityComplianceNotificationPhones = @("+1 425 555 0101")
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                        = $ApplicationId
+            TenantId                             = $TenantId
+            CertificateThumbprint                = $CertificateThumbprint
         }
     }
 }

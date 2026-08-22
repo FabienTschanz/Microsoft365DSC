@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationWiredNetworkPolicyWindows10 'Example'
+        IntuneDeviceConfigurationWiredNetworkPolicyWindows10 'IntuneDeviceConfigurationWiredNetworkPolicyWindows10-Example'
         {
             Assignments                                           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments
@@ -50,9 +50,9 @@ Configuration Example
             TrustedServerCertificateNames                         = @('srv.domain.com')
             RootCertificatesForServerValidationIds                = @('a485d322-13cd-43ef-beda-733f656f48ea', '169bf4fc-5914-40f4-ad33-48c225396183')
             SecondaryIdentityCertificateForClientAuthenticationId = '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                         = $ApplicationId;
+            TenantId                                              = $TenantId;
+            CertificateThumbprint                                 = $CertificateThumbprint;
         }
     }
 }

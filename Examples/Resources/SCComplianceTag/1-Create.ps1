@@ -16,21 +16,21 @@ Configuration Example
 
     Node localhost
     {
-        SCComplianceTag 'ConfigureComplianceTag'
+        SCComplianceTag 'SCComplianceTag-Example'
         {
-            Name              = "DemoTag"
-            Comment           = "This is a Demo Tag"
+            Name              = "Financial Records"
+            Comment           = "Keeps financial records for 1025 days after modification"
             RetentionAction   = "Keep"
             RetentionDuration = "1025"
             RetentionType     = "ModificationAgeInDays"
             FilePlanProperty  = MSFT_SCFilePlanProperty
             {
-                FilePlanPropertyDepartment  = "DemoDept"
-                FilePlanPropertyCitation    = "DemoCit"
-                FilePlanPropertyReferenceId = "DemoRef"
-                FilePlanPropertyAuthority   = "DemoAuth"
-                FilePlanPropertyCategory    = "DemoCat"
-                FilePlanPropertySubcategory = "DemoSub"
+                FilePlanPropertyDepartment  = "Finance"
+                FilePlanPropertyCitation    = "Sarbanes-Oxley Act"
+                FilePlanPropertyReferenceId = "FIN-1025"
+                FilePlanPropertyAuthority   = "Regulatory"
+                FilePlanPropertyCategory    = "Financial Reporting"
+                FilePlanPropertySubcategory = "Annual Statements"
             }
             Ensure            = "Present"
             Credential        = $Credscredential

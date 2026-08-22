@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADTokenLifetimePolicy 'SetTokenLifetimePolicy'
+        AADTokenLifetimePolicy 'AADTokenLifetimePolicy-Example'
         {
             DisplayName           = "PolicyDisplayName"
-            Description           = "Limits the access token lifetime for the DSC demo application."
+            Description           = "Limits the access token lifetime for the expense reporting application."
             Definition            = @("{`"TokenLifetimePolicy`":{`"Version`":1,`"AccessTokenLifetime`":`"02:00:00`"}}");
             IsOrganizationDefault = $true # Updated Property
             Ensure                = "Present"

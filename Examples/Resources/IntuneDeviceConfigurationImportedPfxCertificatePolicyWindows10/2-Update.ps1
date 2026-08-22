@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationImportedPfxCertificatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationImportedPfxCertificatePolicyWindows10 'IntuneDeviceConfigurationImportedPfxCertificatePolicyWindows10-Example'
         {
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             CertificateValidityPeriodScale = "years";
@@ -41,9 +41,9 @@ Configuration Example
             RenewalThresholdPercentage     = 60; # Updated Property
             SubjectAlternativeNameType     = "emailAddress";
             SubjectNameFormat              = "commonName";
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

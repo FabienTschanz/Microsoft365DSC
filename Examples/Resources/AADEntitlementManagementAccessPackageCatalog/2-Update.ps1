@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackageCatalog 'myAccessPackageCatalog'
+        AADEntitlementManagementAccessPackageCatalog 'AADEntitlementManagementAccessPackageCatalog-Example'
         {
-            DisplayName         = 'My Catalog'
-            CatalogStatus       = 'Published'
-            CatalogType         = 'UserManaged'
-            Description         = 'Built-in catalog.'
-            IsExternallyVisible = $False # Updated Property
-            ManagedIdentity     = $False
-            Ensure              = 'Present'
+            DisplayName           = 'My Catalog'
+            CatalogStatus         = 'Published'
+            CatalogType           = 'UserManaged'
+            Description           = 'Built-in catalog.'
+            IsExternallyVisible   = $False # Updated Property
+            ManagedIdentity       = $False
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

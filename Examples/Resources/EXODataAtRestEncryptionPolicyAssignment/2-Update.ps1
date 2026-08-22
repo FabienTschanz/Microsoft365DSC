@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXODataAtRestEncryptionPolicyAssignment "M365DataAtRestEncryptionPolicyAssignment"
+        EXODataAtRestEncryptionPolicyAssignment "EXODataAtRestEncryptionPolicyAssignment-Example"
         {
-            DataEncryptionPolicy          = "Riyansh_Policy"
-            IsSingleInstance              = "Yes";
-            ApplicationId                 = $ApplicationId
-            TenantId                      = $TenantId
-            CertificateThumbprint         = $CertificateThumbprint
+            DataEncryptionPolicy  = "Riyansh_Policy"
+            IsSingleInstance      = "Yes";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
 
     }

@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupEligibilitySchedule 'Example'
+        AADGroupEligibilitySchedule 'AADGroupEligibilitySchedule-Example'
         {
             AccessId              = "member";
             ApplicationId         = $ApplicationId
@@ -29,9 +29,9 @@ Configuration Example
             PrincipalType         = "group";
             ScheduleInfo          = MSFT_MicrosoftGraphrequestSchedule{
                 StartDateTime = '2032-12-23T08:59:28.1200000+00:00'
-                Expiration = MSFT_MicrosoftGraphExpirationPattern{
+                Expiration    = MSFT_MicrosoftGraphExpirationPattern{
                     EndDateTime = '12/23/2032 8:59:00 AM +00:00'
-                    Type = 'afterDateTime'
+                    Type        = 'afterDateTime'
                 }
             };
         }

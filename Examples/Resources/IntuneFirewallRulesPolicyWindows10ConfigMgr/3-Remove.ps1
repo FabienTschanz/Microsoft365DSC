@@ -23,11 +23,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneFirewallRulesPolicyWindows10ConfigMgr 'myIntuneFirewallRulesPolicyWindows10ConfigMgr'
+        IntuneFirewallRulesPolicyWindows10ConfigMgr 'IntuneFirewallRulesPolicyWindows10ConfigMgr-Example'
         {
-            Id          = '00000000-0000-0000-0000-000000000000'
-            DisplayName = 'Intune Firewall Rules Policy Windows10 ConfigMgr'
-            Ensure      = 'Absent'
+            Id                    = '00000000-0000-0000-0000-000000000000'
+            DisplayName           = 'Intune Firewall Rules Policy Windows10 ConfigMgr'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

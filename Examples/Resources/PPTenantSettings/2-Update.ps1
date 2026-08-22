@@ -15,7 +15,7 @@ Configuration Example
 
   Node localhost
   {
-    PPTenantSettings 'PowerPlatformTenantSettings'
+    PPTenantSettings "PPTenantSettings-Example"
     {
       IsSingleInstance                               = 'Yes'
       WalkMeOptOut                                   = $false

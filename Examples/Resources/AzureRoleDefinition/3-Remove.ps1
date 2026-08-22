@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleDefinition "AzureRoleDefinition-CustomRoleName"
+        AzureRoleDefinition "AzureRoleDefinition-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

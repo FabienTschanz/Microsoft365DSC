@@ -24,23 +24,23 @@ Configuration Example
 
     Node localhost
     {
-        AzureDiagnosticSettingsCustomSecurityAttribute "AzureDiagnosticSettingsCustomSecurityAttribute-MyAttribute"
+        AzureDiagnosticSettingsCustomSecurityAttribute "AzureDiagnosticSettingsCustomSecurityAttribute-Example"
         {
             ApplicationId               = $ApplicationId;
             Categories                  = @(
                 MSFT_AzureDiagnosticSettingsCustomSecurityAttributeCategory{
                     category = 'CustomSecurityAttributeAuditLogs'
-                    enabled = $True
+                    enabled  = $True
                 }
             );
             CertificateThumbprint       = $CertificateThumbprint;
             Ensure                      = "Present";
-            EventHubAuthorizationRuleId = "/subscriptions/f854132c-570e-4c98-a4c9-3cd902de77dd/resourceGroups/TBD/providers/Microsoft.EventHub/namespaces/myhub/authorizationrules/RootManageSharedAccessKey";
+            EventHubAuthorizationRuleId = "<event-hub-authorization-rule-id>";
             EventHubName                = "";
             Name                        = "MyAttribute";
-            StorageAccountId            = "/subscriptions/f854132c-570e-4c98-a4c9-3cd902de77dd/resourceGroups/TBD/providers/Microsoft.Storage/storageAccounts/demostore";
+            StorageAccountId            = "<storage-account-resource-id>";
             TenantId                    = $TenantId;
-            WorkspaceId                 = "/subscriptions/f854132c-570e-4c98-a4c9-3cd902de77dd/resourceGroups/TBD/providers/Microsoft.OperationalInsights/workspaces/MySentinelWorkspace";
+            WorkspaceId                 = "<log-analytics-workspace-resource-id>";
         }
     }
 }

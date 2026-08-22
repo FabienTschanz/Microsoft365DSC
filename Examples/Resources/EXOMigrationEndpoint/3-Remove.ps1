@@ -24,22 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOMigrationEndpoint "EXOMigrationEndpoint-testIMAP"
+        EXOMigrationEndpoint "EXOMigrationEndpoint-Example"
         {
-            AcceptUntrustedCertificates   = $True;
-            Authentication                = "Basic";
-            ApplicationId                 = $ApplicationId
-            TenantId                      = $TenantId
-            CertificateThumbprint         = $CertificateThumbprint
-            EndpointType                  = "IMAP";
-            Ensure                        = "Absent";
-            Identity                      = "testIMAP";
-            MailboxPermission             = "Admin";
-            MaxConcurrentIncrementalSyncs = "10";
-            MaxConcurrentMigrations       = "20";
-            Port                          = 993;
-            RemoteServer                  = "gmail.com";
-            Security                      = "None";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
+            Ensure                = "Absent";
+            Identity              = "testIMAP";
         }
     }
 }

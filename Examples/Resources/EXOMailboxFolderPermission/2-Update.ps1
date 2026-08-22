@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxFolderPermission "EXOMailboxFolderPermission-admin:\Calendar"
+        EXOMailboxFolderPermission "EXOMailboxFolderPermission-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
@@ -33,12 +33,12 @@ Configuration Example
             Identity              = "admin:\Calendar";
             UserPermissions       = @(
                 MSFT_EXOMailboxFolderUserPermission {
-                    User                   = 'Default'
-                    AccessRights           = 'AvailabilityOnly'
+                    User         = 'Default'
+                    AccessRights = 'AvailabilityOnly'
                 }
                 MSFT_EXOMailboxFolderUserPermission {
-                    User                   = 'Anonymous'
-                    AccessRights           = 'AvailabilityOnly'
+                    User         = 'Anonymous'
+                    AccessRights = 'AvailabilityOnly'
                 }
                 MSFT_EXOMailboxFolderUserPermission {
                     User                   = 'AlexW'

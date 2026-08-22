@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsEnhancedEncryptionPolicy 'Example'
+        TeamsEnhancedEncryptionPolicy 'TeamsEnhancedEncryptionPolicy-Example'
         {
             CallingEndtoEndEncryptionEnabledType = 'Disabled'
             Credential                           = $Credscredential

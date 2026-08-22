@@ -24,40 +24,40 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsLobAppiOS "IntuneMobileAppsLobAppiOS-IPA iOS App"
+        IntuneMobileAppsLobAppiOS "IntuneMobileAppsLobAppiOS-Example"
         {
             ApplicableDeviceType            = MSFT_MicrosoftGraphIosDeviceType{
-                IPad = $True
+                IPad          = $True
                 IPhoneAndIPod = $True
             };
             ApplicationId                   = $ApplicationId;
             Assignments                     = @(
                 MSFT_DeviceManagementLobAppiOSAssignment{
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
                 }
             );
             BuildNumber                     = "1";
-            BundleId                        = "com.microsoft.azureauthenticator";
+            BundleId                        = "com.contoso.fieldservice";
             Categories                      = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
+                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
                     DisplayName = "App Category 1"
                 }
             );
             CertificateThumbprint           = $CertificateThumbprint;
-            Description                     = "Example IPA iOS App";
+            Description                     = "Line-of-business iOS application";
             Developer                       = "";
-            DisplayName                     = "Example IPA iOS App";
+            DisplayName                     = "Contoso Field Service";
             Ensure                          = "Present";
-            FileName                        = "Example.ipa";
+            FileName                        = "ContosoFieldService.ipa";
             Id                              = "63271b78-0fa4-46b8-9ac0-d4b777555dde";
             IsFeatured                      = $False;
             MinimumSupportedOperatingSystem = MSFT_MicrosoftGraphIosMinimumOperatingSystem{
-                V8_0 = $False
-                V9_0 = $False
+                V8_0  = $False
+                V9_0  = $False
                 V10_0 = $False
                 V11_0 = $False
                 V12_0 = $False
@@ -70,7 +70,7 @@ Configuration Example
             };
             Notes                           = "";
             Owner                           = "";
-            Publisher                       = "Microsoft";
+            Publisher                       = "Contoso";
             RoleScopeTagIds                 = @("0");
             TenantId                        = $TenantId;
             VersionNumber                   = "6.8.26";

@@ -16,29 +16,29 @@ Configuration Example
 
     Node localhost
     {
-        SCSensitivityLabel 'ConfigureSensitivityLabel'
+        SCSensitivityLabel 'SCSensitivityLabel-Example'
         {
-            Name                                           = 'DemoLabel'
-            Comment                                        = 'Demo Label comment'
-            ToolTip                                        = 'Demo tool tip'
-            DisplayName                                    = 'Demo Label'
+            Name                                           = 'Confidential'
+            Comment                                        = 'Applied to internal business documents'
+            ToolTip                                        = 'Use for information that must stay inside the company'
+            DisplayName                                    = 'Confidential'
             ApplyContentMarkingFooterAlignment             = 'Center'
             ApplyContentMarkingFooterEnabled               = $true
             ApplyContentMarkingFooterFontColor             = '#FF0000'
             ApplyContentMarkingFooterFontSize              = 10
             ApplyContentMarkingFooterMargin                = 5
-            ApplyContentMarkingFooterText                  = 'Demo footer text'
+            ApplyContentMarkingFooterText                  = 'Contoso Confidential'
             ApplyContentMarkingHeaderAlignment             = 'Center'
             ApplyContentMarkingHeaderEnabled               = $true
             ApplyContentMarkingHeaderFontColor             = '#FF0000'
             ApplyContentMarkingHeaderFontSize              = 10
             ApplyContentMarkingHeaderMargin                = 5
-            ApplyContentMarkingHeaderText                  = 'demo header text'
+            ApplyContentMarkingHeaderText                  = 'Confidential - Do Not Distribute'
             ApplyWaterMarkingEnabled                       = $true
             ApplyWaterMarkingFontColor                     = '#FF0000'
             ApplyWaterMarkingFontSize                      = 10
             ApplyWaterMarkingLayout                        = 'Diagonal'
-            ApplyWaterMarkingText                          = 'demo watermark'
+            ApplyWaterMarkingText                          = 'Confidential'
             SiteAndGroupProtectionAllowAccessToGuestUsers  = $true
             SiteAndGroupProtectionAllowEmailFromGuestUsers = $true
             SiteAndGroupProtectionAllowFullAccess          = $true
@@ -96,7 +96,7 @@ Configuration Example
             {
                 Operator      = 'And'
                 AutoApplyType = 'Recommend'
-                PolicyTip     = 'My Perfect Test Tip!'
+                PolicyTip     = 'This document contains financial data and will be labelled Confidential.'
                 Groups        = @(
                     MSFT_SCSLSensitiveInformationGroup
                     {

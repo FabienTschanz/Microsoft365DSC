@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackageCatalogResource 'myAccessPackageCatalogResource'
+        AADEntitlementManagementAccessPackageCatalogResource 'AADEntitlementManagementAccessPackageCatalogResource-Example'
         {
             ApplicationId         = $ApplicationId;
             CatalogId             = "My Catalog";
@@ -34,7 +34,7 @@ Configuration Example
             OriginId              = '849b3661-61a8-44a8-92e7-fcc91d296235'
             AddedBy               = "admin@$TenantId";
             AddedOn               = "2026-01-01T00:00:00.0000000Z";
-            Description           = "Microsoft DSC Group";
+            Description           = "Collaboration group for the project management office";
             ResourceType          = "O365 Group";
             Url                   = "https://portal.azure.com/Microsoft_AAD_IAM/GroupDetailsMenuBlade/Overview/groupId/849b3661-61a8-44a8-92e7-fcc91d296235";
             Ensure                = "Present";

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADSocialIdentityProvider "AADSocialIdentityProvider-Google"
+        AADSocialIdentityProvider "AADSocialIdentityProvider-Example"
         {
             ClientId              = "Google-OAUTH";
             ApplicationId         = $ApplicationId

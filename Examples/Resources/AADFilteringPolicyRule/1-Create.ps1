@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADFilteringPolicyRule "AADFilteringPolicyRule-FQDN"
+        AADFilteringPolicyRule "AADFilteringPolicyRule-Example1"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Destinations          = @(
                 MSFT_AADFilteringPolicyRuleDestination{
-                    value = 'Microsoft365DSC.com'
+                    value = 'fabrikam.com'
                 }
             );
             Ensure                = "Present";
@@ -39,7 +39,7 @@ Configuration Example
             RuleType              = "fqdn";
             TenantId              = $TenantId;
         }
-        AADFilteringPolicyRule "AADFilteringPolicyRule-Web"
+        AADFilteringPolicyRule "AADFilteringPolicyRule-Example2"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

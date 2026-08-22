@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFilteringPolicy "AADFilteringPolicy-MyPolicy"
+        AADFilteringPolicy "AADFilteringPolicy-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADGroupsSettings 'GeneralGroupsSettings'
+        AADGroupsSettings 'AADGroupsSettings-Example'
         {
             IsSingleInstance              = "Yes"
             AllowGuestsToAccessGroups     = $True
@@ -35,9 +35,9 @@ Configuration Example
             GuestUsageGuidelinesUrl       = "https://contoso.com/guestusage"
             UsageGuidelinesUrl            = "https://contoso.com/usage"
             Ensure                        = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

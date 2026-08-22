@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        AzureRoleAssignmentScheduleRequest "RootManagementGroupOwnerAssignment"
+        AzureRoleAssignmentScheduleRequest "AzureRoleAssignmentScheduleRequest-Example"
         {
             Principal             = "AdeleV@contoso.onmicrosoft.com"
             RoleDefinition        = "Owner"
@@ -26,7 +26,7 @@ Configuration Example
                 startDateTime = '2024-01-15T08:00:00Z'
                 expiration    = MSFT_AzureRoleAssignmentScheduleRequestScheduleExpiration
                 {
-                    type        = 'noExpiration'
+                    type = 'noExpiration'
                 }
             }
             ApplicationId         = $ApplicationId

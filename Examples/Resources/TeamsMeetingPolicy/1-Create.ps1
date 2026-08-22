@@ -15,9 +15,9 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMeetingPolicy 'ConfigureMeetingPolicy'
+        TeamsMeetingPolicy 'TeamsMeetingPolicy-Example'
         {
-            Identity                                   = "Demo Policy"
+            Identity                                   = "Corporate Meeting Policy"
             AllowAnonymousUsersToStartMeeting          = $False
             AllowChannelMeetingScheduling              = $True
             AllowCloudRecording                        = $True
@@ -32,7 +32,7 @@ Configuration Example
             AllowTranscription                         = $False
             AllowWhiteboard                            = $True
             AutoAdmittedUsers                          = "Everyone"
-            Description                                = "My Demo Meeting Policy"
+            Description                                = "Meeting defaults for corporate staff"
             MediaBitRateKb                             = 50000
             ScreenSharingMode                          = "EntireScreen"
             Ensure                                     = "Present"

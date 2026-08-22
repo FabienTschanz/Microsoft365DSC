@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyAndroidWorkProfile 'ConfigureAndroidDeviceCompliancePolicyWorkProfile'
+        IntuneDeviceCompliancePolicyAndroidWorkProfile 'IntuneDeviceCompliancePolicyAndroidWorkProfile-Example'
         {
-            DisplayName                                        = 'Test Policy'
-            Ensure                                             = 'Absent'
+            DisplayName           = 'Android Work Profile Compliance'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

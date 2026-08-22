@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDefenderGlobalExclusionsPolicyLinux 'myIntuneDefenderGlobalExclusionsPolicyLinux'
+        IntuneDefenderGlobalExclusionsPolicyLinux 'IntuneDefenderGlobalExclusionsPolicyLinux-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Linux Servers - Defender Global Exclusions'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

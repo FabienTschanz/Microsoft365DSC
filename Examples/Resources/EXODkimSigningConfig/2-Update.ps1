@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXODkimSigningConfig 'ConfigureDKIMSigning'
+        EXODkimSigningConfig 'EXODkimSigningConfig-Example'
         {
             KeySize                = 1024
             Identity               = $TenantId
@@ -33,9 +33,9 @@ Configuration Example
             BodyCanonicalization   = "Relaxed"
             AdminDisplayName       = ""
             Ensure                 = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId          = $ApplicationId
+            TenantId               = $TenantId
+            CertificateThumbprint  = $CertificateThumbprint
         }
     }
 }

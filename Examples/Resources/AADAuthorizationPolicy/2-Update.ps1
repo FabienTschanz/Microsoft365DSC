@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthorizationPolicy 'AADAuthPol'
+        AADAuthorizationPolicy 'AADAuthorizationPolicy-Example'
         {
             IsSingleInstance                                  = 'Yes'
             DisplayName                                       = 'Authorization Policy'
@@ -40,9 +40,9 @@ Configuration Example
             GuestUserRole                                     = 'Guest'
             PermissionGrantPolicyIdsAssignedToDefaultUserRole = @()
             Ensure                                            = 'Present'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                                     = $ApplicationId
+            TenantId                                          = $TenantId
+            CertificateThumbprint                             = $CertificateThumbprint
         }
     }
 }

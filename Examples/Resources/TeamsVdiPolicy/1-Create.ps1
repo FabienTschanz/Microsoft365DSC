@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsVdiPolicy 'Example'
+        TeamsVdiPolicy 'TeamsVdiPolicy-Example'
         {
             Credential                          = $Credscredential;
             DisableAudioVideoInCallsAndMeetings = $False;

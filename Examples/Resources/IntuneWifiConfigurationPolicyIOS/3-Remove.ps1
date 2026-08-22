@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyIOS 'myWifiConfigIOSPolicy'
+        IntuneWifiConfigurationPolicyIOS 'IntuneWifiConfigurationPolicyIOS-Example'
         {
-            DisplayName                    = 'ios wifi'
-            Ensure                         = 'Absent'
+            DisplayName           = 'ios wifi'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

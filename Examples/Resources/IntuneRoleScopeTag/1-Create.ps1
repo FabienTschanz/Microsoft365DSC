@@ -16,10 +16,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneRoleScopeTag 'Example'
+        IntuneRoleScopeTag 'IntuneRoleScopeTag-Example'
         {
-            DisplayName           = "MyNewTag"
-            Description           = "My Example Tag"
+            DisplayName           = "Amsterdam Service Desk"
+            Description           = "Devices managed by the Amsterdam service desk"
             Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

@@ -16,11 +16,11 @@ Configuration Example
 
     Node localhost
     {
-        TeamsAppSetupPolicy "TeamsAppSetupPolicy-TestPolicy"
+        TeamsAppSetupPolicy "TeamsAppSetupPolicy-Example"
         {
-            Credential           = $Credscredential;
-            Ensure               = "Absent";
-            Identity             = "Test Policy";
+            Credential = $Credscredential;
+            Ensure     = "Absent";
+            Identity   = "Frontline App Setup";
         }
     }
 }

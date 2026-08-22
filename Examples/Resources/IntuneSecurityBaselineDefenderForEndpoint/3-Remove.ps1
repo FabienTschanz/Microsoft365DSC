@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineDefenderForEndpoint 'mySecurityBaselineDefenderForEndpoint'
+        IntuneSecurityBaselineDefenderForEndpoint 'IntuneSecurityBaselineDefenderForEndpoint-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Defender for Endpoint Baseline'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

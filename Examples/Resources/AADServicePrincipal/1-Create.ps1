@@ -24,35 +24,35 @@ Configuration Example
 
     Node localhost
     {
-        AADServicePrincipal 'AADServicePrincipal'
+        AADServicePrincipal 'AADServicePrincipal-Example'
         {
-            AppId                         = 'AppDisplayName'
-            DisplayName                   = "AppDisplayName"
-            AlternativeNames              = "AlternativeName1","AlternativeName2"
-            AccountEnabled                = $true
-            AppRoleAssignmentRequired     = $false
-            Homepage                      = "https://$TenantId"
-            LogoutUrl                     = "https://$TenantId/logout"
-            ReplyURLs                     = "https://$TenantId"
-            ServicePrincipalType          = "Application"
-            Tags                          = "{WindowsAzureActiveDirectoryIntegratedApp}"
-            ErrorUrl                      = "https://$TenantId/error"
-            Notes                         = "Service principal used by the Microsoft365DSC sample application."
-            PublisherName                 = "Contoso"
-            Owners                        = @("admin@$TenantId")
-            PreferredSingleSignOnMode     = "notSupported"
-            SamlMetadataUrl               = "https://$TenantId/saml/metadata"
-            PasswordCredentials           = @(
+            AppId                     = "<application-id>"
+            DisplayName               = "AppDisplayName"
+            AlternativeNames          = "AlternativeName1","AlternativeName2"
+            AccountEnabled            = $true
+            AppRoleAssignmentRequired = $false
+            Homepage                  = "https://$TenantId"
+            LogoutUrl                 = "https://$TenantId/logout"
+            ReplyURLs                 = "https://$TenantId"
+            ServicePrincipalType      = "Application"
+            Tags                      = "{WindowsAzureActiveDirectoryIntegratedApp}"
+            ErrorUrl                  = "https://$TenantId/error"
+            Notes                     = "Service principal used by the expense reporting application."
+            PublisherName             = "Contoso"
+            Owners                    = @("admin@$TenantId")
+            PreferredSingleSignOnMode = "notSupported"
+            SamlMetadataUrl           = "https://$TenantId/saml/metadata"
+            PasswordCredentials       = @(
                 MSFT_MicrosoftGraphpasswordCredential{
-                    DisplayName = "DSC Client Secret"
+                    DisplayName   = "Expense Reporting Secret"
                     StartDateTime = "2026-01-01T00:00:00.0000000Z"
-                    EndDateTime = "2027-01-01T00:00:00.0000000Z"
+                    EndDateTime   = "2027-01-01T00:00:00.0000000Z"
                 }
             )
-            Ensure                        = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Ensure                    = "Present"
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

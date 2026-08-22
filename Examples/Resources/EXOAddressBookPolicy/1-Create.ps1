@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOAddressBookPolicy 'ConfigureAddressBookPolicy'
+        EXOAddressBookPolicy 'EXOAddressBookPolicy-Example'
         {
-            Name                 = "All Fabrikam ABP"
-            AddressLists         = "\All Distribution Lists"
-            RoomList             = "\All Rooms"
-            OfflineAddressBook   = "\Default Offline Address Book"
-            GlobalAddressList    = "\Default Global Address List"
-            Ensure               = "Present"
+            Name                  = "All Fabrikam ABP"
+            AddressLists          = "\All Distribution Lists"
+            RoomList              = "\All Rooms"
+            OfflineAddressBook    = "\Default Offline Address Book"
+            GlobalAddressList     = "\Default Global Address List"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

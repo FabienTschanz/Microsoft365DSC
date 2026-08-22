@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsUpgradePolicy 'ConfigureIslandsPolicy'
+        TeamsUpgradePolicy 'TeamsUpgradePolicy-Example'
         {
             Identity               = 'Islands'
             MigrateMeetingsToTeams = $true

@@ -16,15 +16,15 @@ Configuration Example
 
     Node localhost
     {
-        SCCaseHoldRule 'ConfigureCaseHoldRule'
+        SCCaseHoldRule 'SCCaseHoldRule-Example'
         {
-            Name               = "My Rule"
-            Policy             = "My Policy"
-            Comment            = "This is a demo rule"
-            Disabled           = $false
-            ContentMatchQuery  = "filename:2016 budget filetype:xlsx"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            Name              = "My Rule"
+            Policy            = "My Policy"
+            Comment           = "Limits the hold to budget spreadsheets"
+            Disabled          = $false
+            ContentMatchQuery = "filename:2016 budget filetype:xlsx"
+            Ensure            = "Present"
+            Credential        = $Credscredential
         }
     }
 }

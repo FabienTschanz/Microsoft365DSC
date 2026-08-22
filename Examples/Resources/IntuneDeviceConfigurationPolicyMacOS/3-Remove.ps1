@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyMacOS 'myMacOSDevicePolicy'
+        IntuneDeviceConfigurationPolicyMacOS 'IntuneDeviceConfigurationPolicyMacOS-Example'
         {
-            DisplayName                                     = 'MacOS device restriction'
-            Ensure                                          = 'Absent'
+            DisplayName           = 'MacOS device restriction'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

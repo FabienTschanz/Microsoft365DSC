@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceCompliancePolicyiOs 'ConfigureDeviceCompliancePolicyiOS'
+        IntuneDeviceCompliancePolicyiOs 'IntuneDeviceCompliancePolicyiOs-Example'
         {
-            DisplayName                                 = 'Test iOS Device Compliance Policy'
-            Description                                 = 'Test iOS Device Compliance Policy Description'
+            DisplayName                                 = 'iOS Device Compliance'
+            Description                                 = 'Baseline compliance requirements for corporate iPhones and iPads'
             PasscodeBlockSimple                         = $True
             PasscodeExpirationDays                      = 365
             PasscodeMinimumLength                       = 6
@@ -42,9 +42,9 @@ Configuration Example
             DeviceThreatProtectionRequiredSecurityLevel = 'medium'
             ManagedEmailProfileRequired                 = $True
             Ensure                                      = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                               = $ApplicationId;
+            TenantId                                    = $TenantId;
+            CertificateThumbprint                       = $CertificateThumbprint;
         }
     }
 }

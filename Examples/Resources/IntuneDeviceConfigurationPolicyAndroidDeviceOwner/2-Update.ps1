@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyAndroidDeviceOwner 'myAndroidDeviceOwnerPolicy'
+        IntuneDeviceConfigurationPolicyAndroidDeviceOwner 'IntuneDeviceConfigurationPolicyAndroidDeviceOwner-Example'
         {
             DisplayName                           = 'general confi - AndroidDeviceOwner'
             Assignments                           = @()
@@ -68,9 +68,9 @@ Configuration Example
             WorkProfilePasswordRequiredType       = 'deviceDefault'
             WorkProfilePasswordRequireUnlock      = 'deviceDefault'
             Ensure                                = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                         = $ApplicationId;
+            TenantId                              = $TenantId;
+            CertificateThumbprint                 = $CertificateThumbprint;
         }
     }
 }

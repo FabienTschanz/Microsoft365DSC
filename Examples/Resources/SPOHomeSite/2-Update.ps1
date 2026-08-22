@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOHomeSite 'SetMarketingSiteCollectionAsHomeSite'
+        SPOHomeSite 'SPOHomeSite-Example'
         {
             IsSingleInstance = "Yes"
             Url              = "https://contoso.sharepoint.com/sites/Marketing"

@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        EXOOwaMailboxPolicy 'ConfigureOwaMailboxPolicy'
+        EXOOwaMailboxPolicy 'EXOOwaMailboxPolicy-Example'
         {
-            Name                  = "OwaMailboxPolicy-Integration"
+            Name                  = "OwaMailboxPolicy-Restricted"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

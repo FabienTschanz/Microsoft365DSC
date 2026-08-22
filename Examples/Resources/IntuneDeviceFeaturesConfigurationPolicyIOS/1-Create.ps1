@@ -22,44 +22,44 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceFeaturesConfigurationPolicyIOS "IntuneDeviceFeaturesConfigurationPolicyIOS-FakeStringValue"
+        IntuneDeviceFeaturesConfigurationPolicyIOS "IntuneDeviceFeaturesConfigurationPolicyIOS-Example"
         {
             ApplicationId            = $ApplicationId;
             TenantId                 = $TenantId;
             CertificateThumbprint    = $CertificateThumbprint;
             AirPrintDestinations     = @(
                 MSFT_airPrintDestination{
-                    port = 0
+                    port         = 0
                     resourcePath = 'printers/xerox_Phase'
-                    forceTls = $False
-                    ipAddress = '1.0.0.1'
+                    forceTls     = $False
+                    ipAddress    = '1.0.0.1'
                 }
             );
             Assignments              = @();
             ContentFilterSettings    = @(
                 MSFT_iosWebContentFilterSpecificWebsitesAccess{
                     allowedUrls = @('www.allowed.com')
-                    dataType = '#microsoft.graph.iosWebContentFilterAutoFilter'
+                    dataType    = '#microsoft.graph.iosWebContentFilterAutoFilter'
                     blockedUrls = @('www.blocked.com')
                 }
             );
-            Description              = "FakeStringValue";
-            DisplayName              = "FakeStringValue";
+            Description              = "Corporate iOS device features";
+            DisplayName              = "Corporate iOS Device Features";
             Ensure                   = "Present";
             HomeScreenDockIcons      = @(
                 MSFT_iosHomeScreenApp{
-                    bundleID = 'com.apple.store.Jolly'
+                    bundleID    = 'com.apple.store.Jolly'
                     displayName = 'Apple Store'
-                    isWebClip = $False
+                    isWebClip   = $False
                 }
             );
             HomeScreenPages          = @(
                 MSFT_iosHomeScreenItem{
                     icons = @(
                         MSFT_iosHomeScreenApp{
-                            bundleID = 'com.apple.AppStore'
+                            bundleID    = 'com.apple.AppStore'
                             displayName = 'App Store'
-                            isWebClip = $False
+                            isWebClip   = $False
                         }
                     )
 
@@ -69,37 +69,37 @@ Configuration Example
             IosSingleSignOnExtension = @(
                 MSFT_iosSingleSignOnExtension{
                     extensionIdentifier = 'com.example.sso.credential'
-                    dataType = '#microsoft.graph.iosCredentialSingleSignOnExtension'
-                    domains = @('example.com')
-                    teamIdentifier = '4HMSJJRMAD'
-                    realm = 'EXAMPLE.COM'
+                    dataType            = '#microsoft.graph.iosCredentialSingleSignOnExtension'
+                    domains             = @('example.com')
+                    teamIdentifier      = '4HMSJJRMAD'
+                    realm               = 'EXAMPLE.COM'
                 }
             );
             NotificationSettings     = @(
                 MSFT_iosNotificationSettings{
-                    alertType = 'banner'
-                    enabled = $True
-                    showOnLockScreen = $True
-                    badgesEnabled = $True
-                    soundsEnabled = $True
-                    publisher = 'fakepublisher'
-                    bundleID = 'app.id'
+                    alertType                = 'banner'
+                    enabled                  = $True
+                    showOnLockScreen         = $True
+                    badgesEnabled            = $True
+                    soundsEnabled            = $True
+                    publisher                = 'fakepublisher'
+                    bundleID                 = 'app.id'
                     showInNotificationCenter = $True
-                    previewVisibility = 'hideWhenLocked'
-                    appName = 'fakeapp'
+                    previewVisibility        = 'hideWhenLocked'
+                    appName                  = 'fakeapp'
                 }
             );
             SingleSignOnSettings     = @(
                 MSFT_iosSingleSignOnSettings{
-                    allowedAppsList = @(
+                    allowedAppsList       = @(
                         MSFT_appListItem{
                             appId = 'com.microsoft.companyportal'
-                            name = 'Intune Company Portal'
+                            name  = 'Intune Company Portal'
                         }
                     )
-                    allowedUrls = @('https://www.fakeurl.com')
-                    kerberosRealm = 'fakerealm.com'
-                    displayName = 'FakeStringValue'
+                    allowedUrls           = @('https://sso.contoso.com')
+                    kerberosRealm         = 'CONTOSO.COM'
+                    displayName           = 'Contoso Single Sign-On'
                     kerberosPrincipalName = 'userPrincipalName'
                 }
             );

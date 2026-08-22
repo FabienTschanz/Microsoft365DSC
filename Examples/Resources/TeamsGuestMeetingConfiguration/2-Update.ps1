@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsGuestMeetingConfiguration 'TeamsGuestMeetingConfiguration'
+        TeamsGuestMeetingConfiguration 'TeamsGuestMeetingConfiguration-Example'
         {
             IsSingleInstance        = 'Yes'
             AllowIPVideo            = $true

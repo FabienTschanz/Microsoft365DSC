@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADCrossTenantAccessPolicy "AADCrossTenantAccessPolicy"
+        AADCrossTenantAccessPolicy "AADCrossTenantAccessPolicy-Example"
         {
             AllowedCloudEndpoints = @("microsoftonline.us");
             ApplicationId         = $ApplicationId

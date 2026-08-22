@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAvailabilityConfig 'ConfigureAvailabilityConfig'
+        EXOAvailabilityConfig 'EXOAvailabilityConfig-Example'
         {
             IsSingleInstance      = "Yes"
-            Ensure               = "Absent"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxCalendarConfiguration "EXOMailboxCalendarConfiguration-Test"
+        EXOMailboxCalendarConfiguration "EXOMailboxCalendarConfiguration-Example"
         {
             AgendaMailIntroductionEnabled            = $True;
             AutoDeclineWhenBusy                      = $False;

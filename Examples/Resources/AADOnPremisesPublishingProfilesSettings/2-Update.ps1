@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADOnPremisesPublishingProfilesSettings "AADOnPremisesPublishingProfilesSettings"
+        AADOnPremisesPublishingProfilesSettings "AADOnPremisesPublishingProfilesSettings-Example"
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

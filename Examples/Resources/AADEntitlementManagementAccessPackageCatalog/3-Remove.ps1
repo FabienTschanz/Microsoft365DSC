@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackageCatalog 'myAccessPackageCatalog'
+        AADEntitlementManagementAccessPackageCatalog 'AADEntitlementManagementAccessPackageCatalog-Example'
         {
-            DisplayName         = 'My Catalog'
-            Ensure              = 'Absent'
+            DisplayName           = 'My Catalog'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

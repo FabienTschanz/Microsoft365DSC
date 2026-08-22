@@ -16,14 +16,14 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTenantNetworkSubnet 'Example'
+        TeamsTenantNetworkSubnet 'TeamsTenantNetworkSubnet-Example'
         {
-            Credential           = $Credscredential
-            Description          = "Nik Test";
-            Ensure               = "Present";
-            Identity             = "192.168.0.0";
-            MaskBits             = 24;
-            NetworkSiteID        = "Nik";
+            Credential    = $Credscredential
+            Description   = "Amsterdam office subnet";
+            Ensure        = "Present";
+            Identity      = "192.168.0.0";
+            MaskBits      = 24;
+            NetworkSiteID = "Amsterdam";
         }
     }
 }

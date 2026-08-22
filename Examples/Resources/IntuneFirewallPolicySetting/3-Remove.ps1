@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneFirewallPolicySetting "IntuneFirewallPolicySetting-IntuneFirewallPolicySetting_1"
+        IntuneFirewallPolicySetting "IntuneFirewallPolicySetting-Example"
         {
             DisplayName           = "IntuneFirewallPolicySetting_1";
             Ensure                = "Absent";

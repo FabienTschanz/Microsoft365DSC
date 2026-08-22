@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADNamedLocationPolicy 'CompanyNetwork'
+        AADNamedLocationPolicy 'AADNamedLocationPolicy-Example'
         {
-            DisplayName = "Company Network"
-            Ensure      = "Absent"
+            DisplayName           = "Company Network"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

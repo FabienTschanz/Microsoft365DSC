@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADAdministrativeUnit 'TestUnit'
+        AADAdministrativeUnit 'AADAdministrativeUnit-Example'
         {
-            DisplayName                   = 'Test-Unit'
-            Ensure                        = 'Absent'
+            DisplayName           = 'Amsterdam Office'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOQuarantinePolicy 'ConfigureQuarantinePolicy'
+        EXOQuarantinePolicy 'EXOQuarantinePolicy-Example'
         {
-            Identity                          = "$TenantId\IntegrationPolicy";
-            Ensure                            = "Absent"
+            Identity              = "$TenantId\CorporateQuarantinePolicy";
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

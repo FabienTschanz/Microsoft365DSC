@@ -24,11 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOTransportRule 'ConfigureTransportRule'
+        EXOTransportRule 'EXOTransportRule-Example'
         {
-            Name                                          = "Ethical Wall - Sales and Brokerage Departments"
-            Enabled                                       = $True
-            Ensure                                        = "Absent"
+            Name                  = "Ethical Wall - Sales and Executives Departments"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

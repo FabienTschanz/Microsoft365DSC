@@ -23,11 +23,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppConfigurationPolicy 'AddAppConfigPolicy'
+        IntuneAppConfigurationPolicy 'IntuneAppConfigurationPolicy-Example'
         {
-            DisplayName = 'ContosoNew'
-            Description = 'New Contoso Policy'
-            Ensure      = 'Absent'
+            DisplayName           = 'ContosoNew'
+            Description           = 'New Contoso Policy'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,29 +24,29 @@ Configuration Example
 
     Node localhost
     {
-        AADGroup 'MyGroups'
+        AADGroup 'AADGroup-Example'
         {
-            DisplayName      = "DSCGroup"
-            Description      = "Microsoft DSC Group Updated" # Updated Property
-            SecurityEnabled  = $True
-            MailEnabled      = $True
-            GroupTypes       = @("Unified")
-            MailNickname     = "M365DSC"
-            Members          = @("AdeleV@$TenantId") # Updated Property
-            Visibility       = "Private"
-            Owners           = @("admin@$TenantId", "AdeleV@$TenantId")
-            AssignedLicenses = @(
+            DisplayName                         = "Marketing Team"
+            Description                         = "Collaboration group for the marketing and communications departments" # Updated Property
+            SecurityEnabled                     = $True
+            MailEnabled                         = $True
+            GroupTypes                          = @("Unified")
+            MailNickname                        = "MarketingTeam"
+            Members                             = @("AdeleV@$TenantId") # Updated Property
+            Visibility                          = "Private"
+            Owners                              = @("admin@$TenantId", "AdeleV@$TenantId")
+            AssignedLicenses                    = @(
                 MSFT_AADGroupLicense {
-                    SkuId          = 'AAD_PREMIUM_P2'
+                    SkuId = 'AAD_PREMIUM_P2'
                 }
             )
-            AssignedToRole  = @()
-            IsAssignableToRole = $false
+            AssignedToRole                      = @()
+            IsAssignableToRole                  = $false
             GroupLifecyclePolicySelectedEnabled = $false
-            Ensure           = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Ensure                              = "Present"
+            ApplicationId                       = $ApplicationId
+            TenantId                            = $TenantId
+            CertificateThumbprint               = $CertificateThumbprint
         }
     }
 }

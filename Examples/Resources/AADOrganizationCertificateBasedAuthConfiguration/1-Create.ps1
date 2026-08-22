@@ -24,22 +24,22 @@ Configuration Example
 
     Node localhost
     {
-        AADOrganizationCertificateBasedAuthConfiguration "AADOrganizationCertificateBasedAuthConfiguration-58b6e58e-10d1-4b8c-845d-d6aefaaecba2"
+        AADOrganizationCertificateBasedAuthConfiguration "AADOrganizationCertificateBasedAuthConfiguration-Example"
         {
-            ApplicationId             = $ApplicationId
-            TenantId                  = $TenantId
-            CertificateThumbprint     = $CertificateThumbprint
+            ApplicationId          = $ApplicationId
+            TenantId               = $TenantId
+            CertificateThumbprint  = $CertificateThumbprint
             CertificateAuthorities = @(
                 MSFT_MicrosoftGraphcertificateAuthority{
-                    IsRootAuthority = $True
+                    IsRootAuthority                   = $True
                     DeltaCertificateRevocationListUrl = 'pqr.com'
-                    Certificate = '<Base64 encoded cert>'
+                    Certificate                       = '<base64-encoded-certificate>'
                 }
                 MSFT_MicrosoftGraphcertificateAuthority{
-                    IsRootAuthority = $True
-                    CertificateRevocationListUrl = 'xyz.com'
+                    IsRootAuthority                   = $True
+                    CertificateRevocationListUrl      = 'xyz.com'
                     DeltaCertificateRevocationListUrl = 'pqr.com'
-                    Certificate = '<Base64 encoded cert 2>'
+                    Certificate                       = '<base64-encoded-certificate-2>'
                 }
             );
             Ensure                 = "Present";

@@ -23,14 +23,14 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsDataProcessingSettings 'WindowsDataProcessingSettings'
+        IntuneWindowsDataProcessingSettings 'IntuneWindowsDataProcessingSettings-Example'
         {
-            IsSingleInstance           = "Yes";
+            IsSingleInstance                                 = "Yes";
             AreDataProcessorServiceForWindowsFeaturesEnabled = $true;
-            HasValidWindowsLicense     = $true;
-            ApplicationId              = $ApplicationId;
-            TenantId                   = $TenantId;
-            CertificateThumbprint      = $CertificateThumbprint;
+            HasValidWindowsLicense                           = $true;
+            ApplicationId                                    = $ApplicationId;
+            TenantId                                         = $TenantId;
+            CertificateThumbprint                            = $CertificateThumbprint;
         }
     }
 }

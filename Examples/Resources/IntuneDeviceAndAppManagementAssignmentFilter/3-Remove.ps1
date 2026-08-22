@@ -23,10 +23,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceAndAppManagementAssignmentFilter 'AssignmentFilter'
+        IntuneDeviceAndAppManagementAssignmentFilter 'IntuneDeviceAndAppManagementAssignmentFilter-Example'
         {
-            DisplayName = 'Test Device Filter'
-            Ensure      = 'Absent'
+            DisplayName           = 'Corporate Windows Devices'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

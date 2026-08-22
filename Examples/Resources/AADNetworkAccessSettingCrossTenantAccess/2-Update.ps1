@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADNetworkAccessSettingCrossTenantAccess "AADNetworkAccessSettingCrossTenantAccess"
+        AADNetworkAccessSettingCrossTenantAccess "AADNetworkAccessSettingCrossTenantAccess-Example"
         {
             ApplicationId              = $ApplicationId;
             CertificateThumbprint      = $CertificateThumbprint;

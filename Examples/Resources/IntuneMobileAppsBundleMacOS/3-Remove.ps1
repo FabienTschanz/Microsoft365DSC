@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsBundleMacOS "IntuneMobileAppsBundleMacOS-Pkg App"
+        IntuneMobileAppsBundleMacOS "IntuneMobileAppsBundleMacOS-Example"
         {
             DisplayName           = "macOS Pkg App";
             PackageFileType       = "Pkg";

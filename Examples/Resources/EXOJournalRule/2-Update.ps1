@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOJournalRule 'CreateJournalRule'
+        EXOJournalRule 'EXOJournalRule-Example'
         {
-            Enabled              = $False # Updated Property
-            JournalEmailAddress  = "AdeleV@$TenantId"
-            Name                 = "Send to Adele"
-            RuleScope            = "Global"
-            Ensure               = "Present"
+            Enabled               = $False # Updated Property
+            JournalEmailAddress   = "AdeleV@$TenantId"
+            Name                  = "Send to Adele"
+            RuleScope             = "Global"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceManagementEnrollmentAndroidGooglePlay "RemoveAndroidGooglePlayEnrollment"
+        IntuneDeviceManagementEnrollmentAndroidGooglePlay "IntuneDeviceManagementEnrollmentAndroidGooglePlay-Example"
         {
             Id                    = "androidManagedStoreAccountEnterpriseSettings"
             Ensure                = "Absent"

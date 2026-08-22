@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADPasswordRuleSettings 'GeneralPasswordRuleSettings'
+        AADPasswordRuleSettings 'AADPasswordRuleSettings-Example'
         {
             IsSingleInstance                    = "Yes"
             LockoutThreshold                    = 6

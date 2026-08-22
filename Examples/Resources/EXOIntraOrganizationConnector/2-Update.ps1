@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        EXOIntraOrganizationConnector 'ConfigureIntraOrganizationConnector'
+        EXOIntraOrganizationConnector 'EXOIntraOrganizationConnector-Example'
         {
-            Identity             = "MainCloudConnector"
-            DiscoveryEndpoint    = "https://ExternalDiscovery.Contoso.com/"
-            TargetAddressDomains = "Cloud1.contoso.com","Cloud2.contoso.com"
-            Enabled              = $False # Updated Property
-            Ensure               = "Present"
+            Identity              = "MainCloudConnector"
+            DiscoveryEndpoint     = "https://ExternalDiscovery.Contoso.com/"
+            TargetAddressDomains  = "Cloud1.contoso.com","Cloud2.contoso.com"
+            Enabled               = $False # Updated Property
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

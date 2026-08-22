@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppleMDMPushNotificationCertificate "IntuneAppleMDMPushNotificationCertificate-66f4ec83-754f-4a59-a73d-e3182cc636a5"
+        IntuneAppleMDMPushNotificationCertificate "IntuneAppleMDMPushNotificationCertificate-Example"
         {
-            AppleIdentifier       = "AppleID";
+            AppleIdentifier       = "mdm@contoso.com";
             Certificate           = "";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;

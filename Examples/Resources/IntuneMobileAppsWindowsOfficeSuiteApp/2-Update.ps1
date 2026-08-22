@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsWindowsOfficeSuiteApp "IntuneMobileAppsWindowsOfficeSuiteApp-Microsoft 365 Apps for Windows 10 and later"
+        IntuneMobileAppsWindowsOfficeSuiteApp "IntuneMobileAppsWindowsOfficeSuiteApp-Example"
         {
             Id                    = "8e683524-4ec1-4813-bb3e-6256b2f293d"
             Description           = "Microsoft 365 Apps for Windows 10 and laterr"
@@ -35,17 +35,17 @@ Configuration Example
             Notes                 = ""
             PrivacyInformationUrl = ""
             RoleScopeTagIds       = @()
-            Assignments          = @(
+            Assignments           = @(
                 MSFT_DeviceManagementMobileAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '42c02b60-f28c-4eef-b3e1-973184cc4a6c'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '42c02b60-f28c-4eef-b3e1-973184cc4a6c'
+                    intent                                     = 'required'
                 }
             );
-            Categories           = @(
+            Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory {
-                    Id  = '8e683524-4ec1-4813-bb3e-6256b2f293d8'
+                    Id          = '8e683524-4ec1-4813-bb3e-6256b2f293d8'
                     DisplayName = 'Productivity'
                 });
             ApplicationId         = $ApplicationId

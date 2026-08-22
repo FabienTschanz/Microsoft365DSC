@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOPerimeterConfiguration 'ConfigurePerimeterConfiguration'
+        EXOPerimeterConfiguration 'EXOPerimeterConfiguration-Example'
         {
-            IsSingleInstance   = 'Yes'
-            #GatewayIPAddresses = '123.0.0.1'
-            Ensure             = 'Present'
+            IsSingleInstance      = 'Yes'
+            GatewayIPAddresses    = @("192.0.2.10", "192.0.2.11")
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

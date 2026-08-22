@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        EXOEmailAddressPolicy 'ConfigureEmailAddressPolicy'
+        EXOEmailAddressPolicy 'EXOEmailAddressPolicy-Example'
         {
-            Name                              = "Integration Policy"
+            Name                              = "Standard Address Format"
             EnabledEmailAddressTemplates      = @("SMTP:@$TenantId")
             EnabledPrimarySMTPAddressTemplate = "@$TenantId"
             ManagedByFilter                   = ""
             Priority                          = 1
             Ensure                            = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                     = $ApplicationId
+            TenantId                          = $TenantId
+            CertificateThumbprint             = $CertificateThumbprint
         }
     }
 }

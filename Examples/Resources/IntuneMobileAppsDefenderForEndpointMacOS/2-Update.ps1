@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsDefenderForEndpointMacOS "IntuneMobileAppsDefenderForEndpointMacOS-Defender App"
+        IntuneMobileAppsDefenderForEndpointMacOS "IntuneMobileAppsDefenderForEndpointMacOS-Example"
         {
             DisplayName           = "Defender App";
             Description           = "Defender App Description";
@@ -36,17 +36,17 @@ Configuration Example
             Owner                 = "";
             PrivacyInformationUrl = "";
             Publisher             = "Contoso";
-            Assignments          = @(
+            Assignments           = @(
                 MSFT_DeviceManagementMobileAppAssignment {
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
                 }
             );
-            Categories             = @(
+            Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
+                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
                     DisplayName = "App Category 1"
                 }
             );

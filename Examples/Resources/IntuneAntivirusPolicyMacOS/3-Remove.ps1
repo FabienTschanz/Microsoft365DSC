@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAntivirusPolicyMacOS 'myIntuneAntivirusPolicyMacOS'
+        IntuneAntivirusPolicyMacOS 'IntuneAntivirusPolicyMacOS-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Mac Endpoints - Microsoft Defender Antivirus'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

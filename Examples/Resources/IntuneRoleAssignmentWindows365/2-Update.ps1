@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneRoleAssignmentWindows365 "IntuneRoleAssignmentWindows365_1"
+        IntuneRoleAssignmentWindows365 "IntuneRoleAssignmentWindows365-Example"
         {
             AppScopeIds           = @("0");
             Description           = "";

@@ -24,43 +24,43 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicy "AADAuthenticationMethodPolicy-Authentication Methods Policy"
+        AADAuthenticationMethodPolicy "AADAuthenticationMethodPolicy-Example"
         {
-            RegistrationEnforcement = MSFT_MicrosoftGraphregistrationEnforcement{
+            RegistrationEnforcement          = MSFT_MicrosoftGraphregistrationEnforcement{
                 AuthenticationMethodsRegistrationCampaign = MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaign{
                     SnoozeDurationInDays = (Get-Random -Minimum 1 -Maximum 14)
-                    IncludeTargets = @(
+                    IncludeTargets       = @(
                         MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget{
                             TargetedAuthenticationMethod = 'microsoftAuthenticator'
-                            TargetType = 'group'
-                            Id = 'all_users'
+                            TargetType                   = 'group'
+                            Id                           = 'all_users'
                         }
                     )
-                    State = 'default'
+                    State                = 'default'
                 }
             };
             ReportSuspiciousActivitySettings = MSFT_MicrosoftGraphreportSuspiciousActivitySettings{
                 VoiceReportingCode = 0
-                IncludeTarget = MSFT_AADAuthenticationMethodPolicyIncludeTarget{
-                    Id = 'all_users'
+                IncludeTarget      = MSFT_AADAuthenticationMethodPolicyIncludeTarget{
+                    Id         = 'all_users'
                     TargetType = 'group'
                 }
-                State = 'default'
+                State              = 'default'
             };
-            SystemCredentialPreferences = MSFT_MicrosoftGraphsystemCredentialPreferences{
+            SystemCredentialPreferences      = MSFT_MicrosoftGraphsystemCredentialPreferences{
                 IncludeTargets = @(
                     MSFT_AADAuthenticationMethodPolicyIncludeTarget{
-                        Id = 'all_users'
+                        Id         = 'all_users'
                         TargetType = 'group'
                     }
                 )
-                State = 'default'
+                State          = 'default'
             };
-            ReconfirmationInDays  = 180
-            IsSingleInstance      = 'Yes'
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ReconfirmationInDays             = 180
+            IsSingleInstance                 = 'Yes'
+            ApplicationId                    = $ApplicationId
+            TenantId                         = $TenantId
+            CertificateThumbprint            = $CertificateThumbprint
         }
     }
 }

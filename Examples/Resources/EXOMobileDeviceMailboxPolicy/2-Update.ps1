@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMobileDeviceMailboxPolicy 'ConfigureMobileDeviceMailboxPolicy'
+        EXOMobileDeviceMailboxPolicy 'EXOMobileDeviceMailboxPolicy-Example'
         {
             Name                                     = "Default"
             AllowApplePushNotifications              = $True
@@ -81,9 +81,9 @@ Configuration Example
             UNCAccessEnabled                         = $True
             WSSAccessEnabled                         = $True
             Ensure                                   = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId                            = $ApplicationId
+            TenantId                                 = $TenantId
+            CertificateThumbprint                    = $CertificateThumbprint
         }
     }
 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADVerifiedIdAuthority 'AADVerifiedIdAuthority-Contoso'
+        AADVerifiedIdAuthority 'AADVerifiedIdAuthority-Example'
         {
             Ensure                = "Absent";
             LinkedDomainUrl       = "https://nik-charlebois.com/";

@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWifiConfigurationPolicyMacOS 'myWifiConfigMacOSPolicy'
+        IntuneWifiConfigurationPolicyMacOS 'IntuneWifiConfigurationPolicyMacOS-Example'
         {
-            DisplayName                    = 'macos wifi'
-            Ensure                         = 'Absent'
+            DisplayName           = 'macos wifi'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

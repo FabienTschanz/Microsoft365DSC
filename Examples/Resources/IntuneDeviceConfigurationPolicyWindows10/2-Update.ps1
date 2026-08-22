@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPolicyWindows10 'Example'
+        IntuneDeviceConfigurationPolicyWindows10 'IntuneDeviceConfigurationPolicyWindows10-Example'
         {
             AccountsBlockAddingNonMicrosoftAccountEmail          = $False;
             ActivateAppsWithVoice                                = "notConfigured";
@@ -37,7 +37,7 @@ Configuration Example
             Assignments                                          = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
             );
             AuthenticationAllowSecondaryDevice                   = $False;
@@ -159,8 +159,8 @@ Configuration Example
             NetworkProxyDisableAutoDetect                        = $True;
             NetworkProxyServer                                   = MSFT_MicrosoftGraphwindows10NetworkProxyServer{
                 UseForLocalAddresses = $True
-                Exceptions = @('*.domain2.com')
-                Address = 'proxy.domain.com:8080'
+                Exceptions           = @('*.domain2.com')
+                Address              = 'proxy.domain.com:8080'
             };
             NfcBlocked                                           = $False;
             OneDriveDisableFileSync                              = $False;
@@ -275,9 +275,9 @@ Configuration Example
             WirelessDisplayBlockProjectionToThisDevice           = $False;
             WirelessDisplayBlockUserInputFromReceiver            = $False;
             WirelessDisplayRequirePinForPairing                  = $False;
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                        = $ApplicationId;
+            TenantId                                             = $TenantId;
+            CertificateThumbprint                                = $CertificateThumbprint;
         }
     }
 }

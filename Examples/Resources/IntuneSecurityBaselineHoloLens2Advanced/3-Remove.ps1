@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneSecurityBaselineHoloLens2Advanced 'mySecurityBaselineAdvanced'
+        IntuneSecurityBaselineHoloLens2Advanced 'IntuneSecurityBaselineHoloLens2Advanced-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'HoloLens 2 Advanced Baseline'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

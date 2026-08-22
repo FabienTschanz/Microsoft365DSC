@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADUserFlowAttribute 'SaiTest'
+        AADUserFlowAttribute 'AADUserFlowAttribute-Example'
         {
-            Id                 = "testIdSai"
-            DisplayName        = "saitest"
-            Description        = "sai test description"
-            DataType           = "string"
-            Ensure             = "Present"
+            Id                    = "costCentre"
+            DisplayName           = "Cost Centre"
+            Description           = "Cost centre supplied by the user"
+            DataType              = "string"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

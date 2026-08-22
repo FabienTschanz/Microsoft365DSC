@@ -24,13 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOSweepRule 'MyRule'
+        EXOSweepRule 'EXOSweepRule-Example'
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Enabled               = $True;
             Ensure                = "Absent";
-            Mailbox               = "Test2";
             Name                  = "From Michelle";
             TenantId              = $TenantId;
         }

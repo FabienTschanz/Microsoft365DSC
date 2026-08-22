@@ -24,17 +24,17 @@ Configuration Example
 
     Node localhost
     {
-        EXOEmailTenantSettings "EXOEmailTenantSettings-Test"
+        EXOEmailTenantSettings "EXOEmailTenantSettings-Example"
         {
-            IsSingleInstance                         = "Yes"
-            EnablePriorityAccountProtection          = $True;
-            Identity                                 = $TenantId;
-            IsValid                                  = $True;
-            ObjectState                              = "Unchanged"
-            Name                                     = "Default"
-            TenantId                                 = $TenantId
-            CertificateThumbprint                    = $CertificateThumbprint
-            ApplicationId                            = $ApplicationId
+            IsSingleInstance                = "Yes"
+            EnablePriorityAccountProtection = $True;
+            Identity                        = $TenantId;
+            IsValid                         = $True;
+            ObjectState                     = "Unchanged"
+            Name                            = "Default"
+            TenantId                        = $TenantId
+            CertificateThumbprint           = $CertificateThumbprint
+            ApplicationId                   = $ApplicationId
         }
     }
 }

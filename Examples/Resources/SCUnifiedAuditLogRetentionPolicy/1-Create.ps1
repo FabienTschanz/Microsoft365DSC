@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        SCUnifiedAuditLogRetentionPolicy 'Example'
+        SCUnifiedAuditLogRetentionPolicy 'SCUnifiedAuditLogRetentionPolicy-Example'
         {
             Credential            = $Credentials
             Ensure                = 'Present'
-            Name                  = 'Test Policy'
+            Name                  = 'Seven Day Audit Retention'
             Priority              = 1
             RetentionDuration     = 'SevenDays'
             ApplicationId         = $ApplicationId

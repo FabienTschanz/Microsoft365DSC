@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackageAssignmentPolicy "myAssignmentPolicyWithAccessReviewsSettings"
+        AADEntitlementManagementAccessPackageAssignmentPolicy "AADEntitlementManagementAccessPackageAssignmentPolicy-Example"
         {
-            DisplayName                = "External tenant";
-            Ensure                     = "Absent"
+            DisplayName           = "External tenant";
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

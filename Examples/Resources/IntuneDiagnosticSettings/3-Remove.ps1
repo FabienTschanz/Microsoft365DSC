@@ -24,13 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDiagnosticSettings "IntuneDiagnosticSettings-TestDiag"
+        IntuneDiagnosticSettings "IntuneDiagnosticSettings-Example"
         {
-            ApplicationId               = $ApplicationId;
-            CertificateThumbprint       = $CertificateThumbprint;
-            Ensure                      = "Absent";
-            Name                        = "TestDiag";
-            TenantId                    = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            Name                  = "PlatformDiagnostics";
+            TenantId              = $TenantId;
         }
     }
 }

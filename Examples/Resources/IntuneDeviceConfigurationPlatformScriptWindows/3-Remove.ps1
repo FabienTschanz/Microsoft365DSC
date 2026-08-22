@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationPlatformScriptWindows 'Example'
+        IntuneDeviceConfigurationPlatformScriptWindows 'IntuneDeviceConfigurationPlatformScriptWindows-Example'
         {
             DisplayName           = "custom";
             Ensure                = "Absent";

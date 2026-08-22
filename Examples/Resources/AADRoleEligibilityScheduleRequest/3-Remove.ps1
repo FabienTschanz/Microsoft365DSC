@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        AADRoleEligibilityScheduleRequest "MyRequest"
+        AADRoleEligibilityScheduleRequest "AADRoleEligibilityScheduleRequest-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

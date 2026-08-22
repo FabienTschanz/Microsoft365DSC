@@ -23,43 +23,43 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceControlPolicyWindows10 'ConfigureDeviceControlPolicy'
+        IntuneDeviceControlPolicyWindows10 'IntuneDeviceControlPolicyWindows10-Example'
         {
-            AllowStorageCard      = "1";
-            Assignments           = @(
+            AllowStorageCard             = "1";
+            Assignments                  = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '11111111-1111-1111-1111-111111111111'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '11111111-1111-1111-1111-111111111111'
                 }
             );
-            Description           = 'Description'
-            DisplayName           = "Device Control";
+            Description                  = 'Description'
+            DisplayName                  = "Device Control";
             DeviceInstall_IDs_Allow      = "1";
             DeviceInstall_IDs_Allow_List = @("1234");
             PolicyRule                   = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogPolicyRule{
-                    Name = 'asdf'
+                    Name  = 'asdf'
                     Entry = @(
                         MSFT_MicrosoftGraphIntuneSettingsCatalogPolicyRuleEntry{
-                            AccessMask = @(
+                            AccessMask  = @(
                                 '1'
                                 '2'
                             )
-                            Sid = '1234'
+                            Sid         = '1234'
                             ComputerSid = '1234'
-                            Type = 'deny' # Updated property
-                            Options = '4'
+                            Type        = 'deny' # Updated property
+                            Options     = '4'
                         }
                     )
                 }
             );
-            Ensure                = "Present";
-            Id                    = '00000000-0000-0000-0000-000000000000'
-            RoleScopeTagIds       = @("0");
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                       = "Present";
+            Id                           = '00000000-0000-0000-0000-000000000000'
+            RoleScopeTagIds              = @("0");
+            ApplicationId                = $ApplicationId;
+            TenantId                     = $TenantId;
+            CertificateThumbprint        = $CertificateThumbprint;
         }
     }
 }

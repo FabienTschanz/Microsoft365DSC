@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementConnectedOrganization 'MyConnectedOrganization'
+        AADEntitlementManagementConnectedOrganization 'AADEntitlementManagementConnectedOrganization-Example'
         {
-            DisplayName           = "Test Tenant - DSC";
+            DisplayName           = "Fabrikam Suppliers";
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

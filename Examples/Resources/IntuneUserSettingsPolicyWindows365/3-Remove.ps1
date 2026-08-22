@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneUserSettingsPolicyWindows365 "My User Settings Policy for Windows 365"
+        IntuneUserSettingsPolicyWindows365 "IntuneUserSettingsPolicyWindows365-Example"
         {
             DisplayName           = "User Settings Policy W365";
             Ensure                = "Absent";

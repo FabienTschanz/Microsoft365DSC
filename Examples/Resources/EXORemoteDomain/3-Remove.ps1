@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXORemoteDomain 583b0b70-b45d-401f-98a6-0e7fa8434946
+        EXORemoteDomain "EXORemoteDomain-Example"
         {
-            Identity                             = "Integration"
-            Ensure                               = "Absent"
+            Identity              = "Fabrikam"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

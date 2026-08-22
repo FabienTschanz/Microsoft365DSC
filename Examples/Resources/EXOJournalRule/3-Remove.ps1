@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOJournalRule 'CreateJournalRule'
+        EXOJournalRule 'EXOJournalRule-Example'
         {
-            JournalEmailAddress  = "AdeleV@$TenantId"
-            Name                 = "Send to Adele"
-            Ensure               = "Absent"
+            JournalEmailAddress   = "AdeleV@$TenantId"
+            Name                  = "Send to Adele"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

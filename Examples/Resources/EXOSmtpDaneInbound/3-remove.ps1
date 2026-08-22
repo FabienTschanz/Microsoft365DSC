@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOSmtpDaneInbound 'SmtpDaneInbound-mydomain.com'
+        EXOSmtpDaneInbound 'EXOSmtpDaneInbound-Example'
         {
-            DomainName           = "mydomain.com"
-            Ensure               = "Absent"
+            DomainName            = "mydomain.com"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

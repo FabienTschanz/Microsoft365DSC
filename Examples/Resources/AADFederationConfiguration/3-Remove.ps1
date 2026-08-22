@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADFederationConfiguration "MyFederation"
+        AADFederationConfiguration "AADFederationConfiguration-Example"
         {
             DisplayName           = 'contoso display name'
             Ensure                = 'Absent'

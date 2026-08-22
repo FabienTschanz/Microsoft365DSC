@@ -180,6 +180,9 @@
     line, and a blank line before `Import-DscResource` and the `Node` block.
   * Fixed keys that differed between the create, update and remove example of a resource, which
     had the update and remove steps target an object the create step never made.
+  * Expanded examples to configure as much of each resource as is simultaneously
+    valid, stripped the remove examples back to keys, mandatory properties, authentication and
+    `Ensure`, and gave every update example a drift.
   * Fixed the example emitter of the Dynamic Resource Generator, which dropped mandatory
     properties from the remove example - making it uncompilable, since `[DscProperty(Mandatory)]`
     becomes `Required` in the MOF - drifted every property in the update example instead of one,

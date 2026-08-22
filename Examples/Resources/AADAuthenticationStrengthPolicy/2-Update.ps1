@@ -26,10 +26,10 @@ Configuration Example
     {
         AADAuthenticationStrengthPolicy "AADAuthenticationStrengthPolicy-Example"
         {
-            AllowedCombinations  = @("windowsHelloForBusiness","fido2","deviceBasedPush"); # Updated Property
-            Description          = "This is an example";
-            DisplayName          = "Example";
-            Ensure               = "Present";
+            AllowedCombinations   = @("windowsHelloForBusiness","fido2","deviceBasedPush"); # Updated Property
+            Description           = "Requires phishing-resistant methods for privileged access";
+            DisplayName           = "Phishing-Resistant MFA";
+            Ensure                = "Present";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

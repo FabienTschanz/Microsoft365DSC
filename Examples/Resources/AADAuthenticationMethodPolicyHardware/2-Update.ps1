@@ -24,30 +24,30 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyHardware "AADAuthenticationMethodPolicyHardware-HardwareOath"
+        AADAuthenticationMethodPolicyHardware "AADAuthenticationMethodPolicyHardware-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure               = "Present";
-            ExcludeTargets       = @(
+            Ensure                = "Present";
+            ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyHardwareExcludeTarget{
-                    Id = 'Executives'
+                    Id         = 'Executives'
                     TargetType = 'group'
                 }
                 MSFT_AADAuthenticationMethodPolicyHardwareExcludeTarget{
-                    Id = 'Paralegals'
+                    Id         = 'Paralegals'
                     TargetType = 'group'
                 }
             );
-            Id                   = "HardwareOath";
-            IncludeTargets       = @(
+            Id                    = "HardwareOath";
+            IncludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyHardwareIncludeTarget{
-                    Id = 'Legal Team'
+                    Id         = 'Legal Team'
                     TargetType = 'group'
                 }
             );
-            State                = "enabled"; # Updated Property
+            State                 = "enabled"; # Updated Property
         }
     }
 }

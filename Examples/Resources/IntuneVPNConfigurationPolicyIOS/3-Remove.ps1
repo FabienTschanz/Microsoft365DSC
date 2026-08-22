@@ -29,8 +29,8 @@ Configuration Example
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            DisplayName            = "IntuneVPNConfigurationPolicyIOS-Example";
-            Ensure                 = "Absent";
+            DisplayName           = "Corporate VPN - iOS";
+            Ensure                = "Absent";
         }
     }
 }

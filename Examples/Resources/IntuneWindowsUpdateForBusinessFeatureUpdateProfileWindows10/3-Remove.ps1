@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 'Example'
+        IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessFeatureUpdateProfileWindows10-Example'
         {
-            DisplayName          = 'WUfB Feature -dsc'
-            Ensure               = 'Absent'
+            DisplayName           = 'Feature Updates - Windows 10 22H2'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

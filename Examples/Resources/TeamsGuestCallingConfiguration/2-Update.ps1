@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsGuestCallingConfiguration 'ConfigureGuestCalling'
+        TeamsGuestCallingConfiguration 'TeamsGuestCallingConfiguration-Example'
         {
             IsSingleInstance    = 'Yes';
             AllowPrivateCalling = $True

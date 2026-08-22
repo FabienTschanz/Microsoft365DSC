@@ -24,24 +24,24 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicyTemporary "AADAuthenticationMethodPolicyTemporary-TemporaryAccessPass"
+        AADAuthenticationMethodPolicyTemporary "AADAuthenticationMethodPolicyTemporary-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
             DefaultLength            = 9; # Updated Property
             DefaultLifetimeInMinutes = 60;
             Ensure                   = "Present";
             ExcludeTargets           = @(
                 MSFT_AADAuthenticationMethodPolicyTemporaryExcludeTarget{
-                    Id = 'All Company'
+                    Id         = 'All Company'
                     TargetType = 'group'
                 }
             );
             Id                       = "TemporaryAccessPass";
             IncludeTargets           = @(
                 MSFT_AADAuthenticationMethodPolicyTemporaryIncludeTarget{
-                    Id = 'Executives'
+                    Id         = 'Executives'
                     TargetType = 'group'
                 }
             );

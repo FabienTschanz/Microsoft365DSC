@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        SPOSiteDesignRights 'ConfigureSiteDesignRights'
+        SPOSiteDesignRights 'SPOSiteDesignRights-Example'
         {
             SiteDesignTitle = "Customer List"
             UserPrincipals  = "jdoe@contoso.onmicrosoft.com"

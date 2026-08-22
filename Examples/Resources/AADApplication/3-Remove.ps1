@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADApplication 'AADApp1'
+        AADApplication 'AADApplication-Example'
         {
             DisplayName           = "AppDisplayName"
             Ensure                = "Absent"

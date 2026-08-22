@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAndroidManagedStoreAppConfiguration "ConfigureIntuneAndroidManagedStoreAppConfiguration"
+        IntuneAndroidManagedStoreAppConfiguration "IntuneAndroidManagedStoreAppConfiguration-Example"
         {
             Description           = "IntuneAndroidManagedStoreAppConfiguration Description";
             DisplayName           = "IntuneAndroidManagedStoreAppConfiguration DisplayName";

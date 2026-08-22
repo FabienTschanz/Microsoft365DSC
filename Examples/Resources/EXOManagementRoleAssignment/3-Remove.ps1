@@ -24,12 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOManagementRoleAssignment 'AssignManagementRole'
+        EXOManagementRoleAssignment 'EXOManagementRoleAssignment-Example'
         {
-            Ensure               = "Absent";
-            Name                 = "MyManagementRoleAssignment";
-            Role                 = "UserApplication";
-            User                 = "AlexW@$TenantId"; # Updated Property
+            Ensure                = "Absent";
+            Name                  = "MyManagementRoleAssignment";
+            Role                  = "UserApplication";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

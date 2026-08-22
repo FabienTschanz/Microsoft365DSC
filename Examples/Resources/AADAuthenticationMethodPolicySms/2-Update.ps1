@@ -24,26 +24,26 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationMethodPolicySms "AADAuthenticationMethodPolicySms-Sms"
+        AADAuthenticationMethodPolicySms "AADAuthenticationMethodPolicySms-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure               = "Present";
-            ExcludeTargets       = @(
+            Ensure                = "Present";
+            ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicySmsExcludeTarget{
-                    Id = 'All Employees'
+                    Id         = 'All Employees'
                     TargetType = 'group'
                 }
             );
-            Id                   = "Sms";
-            IncludeTargets       = @(
+            Id                    = "Sms";
+            IncludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicySmsIncludeTarget{
-                    Id = 'all_users'
+                    Id         = 'all_users'
                     TargetType = 'group'
                 }
             );
-            State                = "enabled"; # Updated Property
+            State                 = "enabled"; # Updated Property
         }
     }
 }

@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADApplicationFederatedIdentityCredential 'AADApplicationFederatedIdentityCredential'
+        AADApplicationFederatedIdentityCredential 'AADApplicationFederatedIdentityCredential-Example'
         {
             ApplicationDisplayName = 'AppDisplayName'
             Name                   = 'GitHubActionsMain'

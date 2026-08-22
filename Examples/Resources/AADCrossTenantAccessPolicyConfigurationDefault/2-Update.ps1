@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADCrossTenantAccessPolicyConfigurationDefault "AADCrossTenantAccessPolicyConfigurationDefault"
+        AADCrossTenantAccessPolicyConfigurationDefault "AADCrossTenantAccessPolicyConfigurationDefault-Example"
         {
             B2BCollaborationInbound  = MSFT_AADCrossTenantAccessPolicyB2BSetting {
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'allowed'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -47,7 +47,7 @@ Configuration Example
                 }
             }
             B2BCollaborationOutbound = MSFT_AADCrossTenantAccessPolicyB2BSetting {
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'allowed'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -67,7 +67,7 @@ Configuration Example
                 }
             }
             B2BDirectConnectInbound  = MSFT_AADCrossTenantAccessPolicyB2BSetting {
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'blocked'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -87,7 +87,7 @@ Configuration Example
                 }
             }
             B2BDirectConnectOutbound = MSFT_AADCrossTenantAccessPolicyB2BSetting {
-                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                Applications   = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
                     AccessType = 'blocked'
                     Targets    = @(
                         MSFT_AADCrossTenantAccessPolicyTarget{
@@ -106,16 +106,16 @@ Configuration Example
                     )
                 }
             }
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
             Ensure                   = "Present";
             InboundTrust             = MSFT_AADCrossTenantAccessPolicyInboundTrust {
                 IsCompliantDeviceAccepted           = $False
                 IsHybridAzureADJoinedDeviceAccepted = $False
                 IsMfaAccepted                       = $False
             }
-            IsSingleInstance                        = "Yes";
+            IsSingleInstance         = "Yes";
         }
     }
 }

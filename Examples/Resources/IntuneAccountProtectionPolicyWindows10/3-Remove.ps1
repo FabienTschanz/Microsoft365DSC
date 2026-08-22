@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAccountProtectionPolicyWindows10 'myAccountProtectionPolicy'
+        IntuneAccountProtectionPolicyWindows10 'IntuneAccountProtectionPolicyWindows10-Example'
         {
-            DisplayName           = 'test'
+            DisplayName           = 'Windows Hello for Business - Corporate'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

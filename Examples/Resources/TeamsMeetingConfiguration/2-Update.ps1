@@ -15,7 +15,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsMeetingConfiguration 'MeetingConfiguration'
+        TeamsMeetingConfiguration 'TeamsMeetingConfiguration-Example'
         {
             IsSingleInstance            = 'Yes'
             ClientAppSharingPort        = 50040
@@ -28,9 +28,9 @@ Configuration Example
             CustomFooterText            = "This is some custom footer text"
             DisableAnonymousJoin        = $False
             EnableQoS                   = $False
-            HelpURL                     = "https://github.com/Microsoft/Microsoft365DSC/Help"
-            LegalURL                    = "https://github.com/Microsoft/Microsoft365DSC/Legal"
-            LogoURL                     = "https://github.com/Microsoft/Microsoft365DSC/Logo.png"
+            HelpURL                     = "https://contoso.com/teams/help"
+            LegalURL                    = "https://contoso.com/teams/legal"
+            LogoURL                     = "https://contoso.com/teams/logo.png"
             Credential                  = $Credscredential
         }
     }

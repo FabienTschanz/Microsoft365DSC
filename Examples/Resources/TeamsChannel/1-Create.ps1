@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsChannel 'ConfigureChannel'
+        TeamsChannel 'TeamsChannel-Example'
         {
             TeamName              = 'SuperSecretTeam'
             DisplayName           = 'SP2013 Review teams group'

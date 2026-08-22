@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsWorkloadPolicy 'Example'
+        TeamsWorkloadPolicy 'TeamsWorkloadPolicy-Example'
         {
             AllowCalling         = $True;
             AllowCallingPinned   = $True;

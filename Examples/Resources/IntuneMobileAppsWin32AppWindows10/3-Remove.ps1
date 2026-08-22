@@ -24,9 +24,9 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsWin32AppWindows10 "IntuneMobileAppsWin32AppWindows10-Win32 App - IntuneWinAppUtil.exe"
+        IntuneMobileAppsWin32AppWindows10 "IntuneMobileAppsWin32AppWindows10-Example"
         {
-            DisplayName           = "Store App";
+            DisplayName           = "Win32 App - IntuneWinAppUtil.exe";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

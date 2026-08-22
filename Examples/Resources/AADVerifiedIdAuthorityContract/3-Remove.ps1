@@ -24,11 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        AADVerifiedIdAuthorityContract 'AADVerifiedIdAuthorityContract-Sample Custom Verified Credentials'
+        AADVerifiedIdAuthorityContract 'AADVerifiedIdAuthorityContract-Example'
         {
             Ensure                = "Absent";
             linkedDomainUrl       = "https://$OrganizationName/";
-            name                  = "Sample Custom Verified Credentials";
+            name                  = "Verified Credential Expert Card";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

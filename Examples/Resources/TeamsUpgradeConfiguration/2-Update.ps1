@@ -16,7 +16,7 @@ Configuration Example
 
     Node localhost
     {
-        TeamsUpgradeConfiguration 'ConfigureUpgradeConfig'
+        TeamsUpgradeConfiguration 'TeamsUpgradeConfiguration-Example'
         {
             IsSingleInstance = "Yes"
             DownloadTeams    = $True

@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneWindowsHelloForBusinessGlobalPolicy 'WindowsHelloForBusinessGlobalPolicy'
+        IntuneWindowsHelloForBusinessGlobalPolicy 'IntuneWindowsHelloForBusinessGlobalPolicy-Example'
         {
             EnhancedBiometricsState     = "notConfigured";
             EnhancedSignInSecurity      = 0;

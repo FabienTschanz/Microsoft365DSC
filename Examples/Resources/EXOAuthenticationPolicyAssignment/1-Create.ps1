@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        EXOAuthenticationPolicyAssignment 'ConfigureAuthenticationPolicyAssignment'
+        EXOAuthenticationPolicyAssignment 'EXOAuthenticationPolicyAssignment-Example'
         {
             UserName                 = "AdeleV@$TenantId"
             AuthenticationPolicyName = "Block Basic Auth"
             Ensure                   = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
         }
     }
 }

@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        TeamsTeam 'ConfigureTeam'
+        TeamsTeam 'TeamsTeam-Example'
         {
-            DisplayName                       = 'Sample3'
-            Description                       = 'Sample'
+            DisplayName                       = 'Marketing Campaigns'
+            Description                       = 'Collaboration space for the marketing campaign team'
             Visibility                        = 'Private'
-            MailNickName                      = 'DSCTeam2'
+            MailNickName                      = 'MarketingCampaigns'
             AllowUserEditMessages             = $false
             AllowUserDeleteMessages           = $false
             AllowOwnerDeleteMessages          = $false

@@ -24,12 +24,12 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationIdentityProtectionPolicyWindows10 'Example'
+        IntuneDeviceConfigurationIdentityProtectionPolicyWindows10 'IntuneDeviceConfigurationIdentityProtectionPolicyWindows10-Example'
         {
             Assignments                                  = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
             );
             DisplayName                                  = "identity protection";
@@ -48,9 +48,9 @@ Configuration Example
             UseCertificatesForOnPremisesAuthEnabled      = $True;
             UseSecurityKeyForSignin                      = $True;
             WindowsHelloForBusinessBlocked               = $False;
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                                = $ApplicationId;
+            TenantId                                     = $TenantId;
+            CertificateThumbprint                        = $CertificateThumbprint;
         }
     }
 }

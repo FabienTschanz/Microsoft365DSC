@@ -25,15 +25,15 @@ Configuration Example
     Node localhost
     {
 
-        AADRoleManagementPolicyRule "AADRoleManagementPolicyRule-Expiration_Admin_Eligibility"
+        AADRoleManagementPolicyRule "AADRoleManagementPolicyRule-Example"
         {
-            ExpirationRule       = MSFT_AADRoleManagementPolicyExpirationRule{
+            ExpirationRule        = MSFT_AADRoleManagementPolicyExpirationRule{
                 isExpirationRequired = $False
-                maximumDuration = 'P180D'
+                maximumDuration      = 'P180D'
             };
-            Id                   = "Expiration_Admin_Eligibility";
-            RoleDisplayName      = "Global Administrator";
-            RuleType             = "#microsoft.graph.unifiedRoleManagementPolicyExpirationRule";
+            Id                    = "Expiration_Admin_Eligibility";
+            RoleDisplayName       = "Global Administrator";
+            RuleType              = "#microsoft.graph.unifiedRoleManagementPolicyExpirationRule";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

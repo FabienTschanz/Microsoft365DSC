@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationTrustedCertificatePolicyWindows10 'Example'
+        IntuneDeviceConfigurationTrustedCertificatePolicyWindows10 'IntuneDeviceConfigurationTrustedCertificatePolicyWindows10-Example'
         {
-            DisplayName            = "Trusted Cert";
-            Ensure                 = "Absent";
+            DisplayName           = "Trusted Cert";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

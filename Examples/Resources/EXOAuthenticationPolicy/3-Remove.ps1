@@ -24,22 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        EXOAuthenticationPolicy 'ConfigureAuthenticationPolicy'
+        EXOAuthenticationPolicy 'EXOAuthenticationPolicy-Example'
         {
-            Identity                            = "Block Basic Auth"
-            AllowBasicAuthActiveSync            = $False
-            AllowBasicAuthAutodiscover          = $False
-            AllowBasicAuthImap                  = $False
-            AllowBasicAuthMapi                  = $True # Updated Property
-            AllowBasicAuthOfflineAddressBook    = $False
-            AllowBasicAuthOutlookService        = $False
-            AllowBasicAuthPop                   = $False
-            AllowBasicAuthPowerShell            = $False
-            AllowBasicAuthReportingWebServices  = $False
-            AllowBasicAuthRpc                   = $False
-            AllowBasicAuthSmtp                  = $False
-            AllowBasicAuthWebServices           = $False
-            Ensure                              = "Present"
+            Identity              = "Block Basic Auth"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

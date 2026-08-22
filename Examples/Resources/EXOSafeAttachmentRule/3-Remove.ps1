@@ -24,14 +24,11 @@ Configuration Example
 
     Node localhost
     {
-        EXOSafeAttachmentRule 'ConfigureSafeAttachmentRule'
+        EXOSafeAttachmentRule 'EXOSafeAttachmentRule-Example'
         {
-            Identity                  = "Research Department Attachment Rule"
-            Enabled                   = $False # Updated Property
-            ExceptIfSentToMemberOf    = "Research Department Managers"
-            SafeAttachmentPolicy      = "Marketing Block Attachments"
-            SentToMemberOf            = "Research Department"
-            Ensure                    = "Absent"
+            Identity              = "Research Department Attachment Rule"
+            SafeAttachmentPolicy  = "Marketing Block Attachments"
+            Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

@@ -16,10 +16,10 @@ Configuration Example
 
     Node localhost
     {
-        SCRetentionEventType 'RetentionEventType'
+        SCRetentionEventType 'SCRetentionEventType-Example'
         {
-            Name       = "DemoEventType"
-            Comment    = "Demo event comment"
+            Name       = "Employee Termination"
+            Comment    = "Starts retention when an employee leaves the company"
             Ensure     = "Present"
             Credential = $Credscredential
         }

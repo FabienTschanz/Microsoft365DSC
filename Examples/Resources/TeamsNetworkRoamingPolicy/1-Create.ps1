@@ -16,13 +16,13 @@ Configuration Example
 
     Node localhost
     {
-        TeamsNetworkRoamingPolicy 'Example'
+        TeamsNetworkRoamingPolicy 'TeamsNetworkRoamingPolicy-Example'
         {
-            AllowIPVideo         = $True;
-            Credential           = $Credscredential;
-            Ensure               = "Present";
-            Identity             = "Global";
-            MediaBitRateKb       = 50000;
+            AllowIPVideo   = $True;
+            Credential     = $Credscredential;
+            Ensure         = "Present";
+            Identity       = "Global";
+            MediaBitRateKb = 50000;
         }
     }
 }

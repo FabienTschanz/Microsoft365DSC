@@ -23,7 +23,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneTrustedRootCertificateIOS "ConfigureIntuneTrustedRootCertificateIOS"
+        IntuneTrustedRootCertificateIOS "IntuneTrustedRootCertificateIOS-Example"
         {
             Description            = "IntuneTrustedRootCertificateIOS Description";
             DisplayName            = "IntuneTrustedRootCertificateIOS DisplayName";

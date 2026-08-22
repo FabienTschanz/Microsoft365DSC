@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADCrossTenantIdentitySyncPolicyPartner "AADCrossTenantIdentitySyncPolicyPartner-Fabrikam"
+        AADCrossTenantIdentitySyncPolicyPartner "AADCrossTenantIdentitySyncPolicyPartner-Example"
         {
             ApplicationId                                       = $ApplicationId;
             CertificateThumbprint                               = $CertificateThumbprint;

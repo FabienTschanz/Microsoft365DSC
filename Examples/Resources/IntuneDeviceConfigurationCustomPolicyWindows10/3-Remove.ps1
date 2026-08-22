@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        IntuneDeviceConfigurationCustomPolicyWindows10 'Example'
+        IntuneDeviceConfigurationCustomPolicyWindows10 'IntuneDeviceConfigurationCustomPolicyWindows10-Example'
         {
-            DisplayName          = "custom";
-            Ensure               = "Absent";
+            DisplayName           = "custom";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        SCDeviceConfigurationRule "MyDeviceConfigurationRule"
+        SCDeviceConfigurationRule "SCDeviceConfigurationRule-Example"
         {
-            ApplicationId             = $ApplicationId;
-            CertificateThumbprint     = $CertificateThumbprint;
-            Ensure                    = "Absent";
-            Name                      = "MyDeviceConfigurationPolicy{2b18}";
-            Policy                    = "MyDeviceConfigurationPolicy";
-            TenantId                  = $TenantId;
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            Ensure                = "Absent";
+            Name                  = "MyDeviceConfigurationPolicy{2b18}";
+            Policy                = "MyDeviceConfigurationPolicy";
+            TenantId              = $TenantId;
         }
     }
 }

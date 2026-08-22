@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Test"
+        AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Example"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

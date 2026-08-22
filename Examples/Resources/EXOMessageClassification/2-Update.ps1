@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOMessageClassification 'ConfigureMessageClassification'
+        EXOMessageClassification 'EXOMessageClassification-Example'
         {
             Identity                    = "Contoso Message Classification"
             Name                        = "Contoso Message Classification"
@@ -35,9 +35,9 @@ Configuration Example
             SenderDescription           = "Shown to senders"
             RetainClassificationEnabled = $False # Updated Property
             Ensure                      = "Present"
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            ApplicationId               = $ApplicationId
+            TenantId                    = $TenantId
+            CertificateThumbprint       = $CertificateThumbprint
         }
     }
 }

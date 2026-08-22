@@ -24,15 +24,15 @@ Configuration Example
 
     Node localhost
     {
-        EXOMailboxCalendarFolder "JohnCalendarFolder"
+        EXOMailboxCalendarFolder "EXOMailboxCalendarFolder-Example"
         {
-            DetailLevel          = "AvailabilityOnly";
-            Ensure               = "Present";
-            Identity             = "AlexW@$TenantId" + ":\Calendar";
-            PublishDateRangeFrom = "ThreeMonths";
-            PublishDateRangeTo   = "ThreeMonths";
-            PublishEnabled       = $True; # Updated Property
-            SearchableUrlEnabled = $False;
+            DetailLevel           = "AvailabilityOnly";
+            Ensure                = "Present";
+            Identity              = "AlexW@$TenantId" + ":\Calendar";
+            PublishDateRangeFrom  = "ThreeMonths";
+            PublishDateRangeTo    = "ThreeMonths";
+            PublishEnabled        = $True; # Updated Property
+            SearchableUrlEnabled  = $False;
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

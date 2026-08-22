@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        ADOOrganizationOwner "MyOrgOwner"
+        ADOOrganizationOwner "ADOOrganizationOwner-Example"
         {
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId

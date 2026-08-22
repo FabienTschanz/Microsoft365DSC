@@ -24,22 +24,22 @@ Configuration Example
 
     Node localhost
     {
-        EXOOnPremisesOrganization 'ConfigureOnPremisesOrganization'
+        EXOOnPremisesOrganization 'EXOOnPremisesOrganization-Example'
         {
-            Identity          = 'Integration'
-            Comment           = 'Mail for Contoso'
-            HybridDomains     = 'o365dsc.onmicrosoft.com'
-            InboundConnector  = 'Integration Inbound Connector'
-            OrganizationGuid  = 'e7a80bcf-696e-40ca-8775-a7f85fbb3ebc'
-            OrganizationName  = 'O365DSC'
-            OutboundConnector = 'Contoso Outbound Connector'
-            Ensure            = 'Present'
+            Identity              = 'Contoso HQ'
+            Comment               = 'Mail for Contoso'
+            HybridDomains         = 'contoso.onmicrosoft.com'
+            InboundConnector      = 'Partner Mail Gateway'
+            OrganizationGuid      = 'e7a80bcf-696e-40ca-8775-a7f85fbb3ebc'
+            OrganizationName      = 'Contoso'
+            OutboundConnector     = 'Contoso Outbound Connector'
+            Ensure                = 'Present'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DependsOn         = "[EXOOutboundConnector]OutboundDependency"
+            DependsOn             = "[EXOOutboundConnector]EXOOutboundConnector-Example"
         }
-        EXOOutboundConnector 'OutboundDependency'
+        EXOOutboundConnector 'EXOOutboundConnector-Example'
         {
             Identity                      = "Contoso Outbound Connector"
             AllAcceptedDomains            = $False

@@ -24,39 +24,39 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsMacOSLobApp "IntuneMobileAppsMacOSLobApp-TeamsForBusinessInstaller"
+        IntuneMobileAppsMacOSLobApp "IntuneMobileAppsMacOSLobApp-Example"
         {
-            Id                    = "8d027f94-0682-431e-97c1-827d1879fa79";
-            Description           = "TeamsForBusinessInstaller";
-            Developer             = "Contoso drift"; #drift
-            DisplayName           = "TeamsForBusinessInstaller";
-            Ensure                = "Present";
-            InformationUrl        = "";
-            IsFeatured            = $False;
+            Id                              = "8d027f94-0682-431e-97c1-827d1879fa79";
+            Description                     = "TeamsForBusinessInstaller";
+            Developer                       = "Contoso drift"; #drift
+            DisplayName                     = "TeamsForBusinessInstaller";
+            Ensure                          = "Present";
+            InformationUrl                  = "";
+            IsFeatured                      = $False;
             MinimumSupportedOperatingSystem = MSFT_DeviceManagementMinimumOperatingSystem{
                 v11_0 = $true
             }
-            Notes                 = "";
-            Owner                 = "";
-            PrivacyInformationUrl = "";
-            Publisher             = "Contoso";
-            Assignments           = @(
+            Notes                           = "";
+            Owner                           = "";
+            PrivacyInformationUrl           = "";
+            Publisher                       = "Contoso";
+            Assignments                     = @(
                 MSFT_DeviceManagementMacOSLobAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.groupAssignmentTarget'
-                    groupId = '57b5e81c-85bb-4644-a4fd-33b03e451c89'
-                    intent = 'required'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '57b5e81c-85bb-4644-a4fd-33b03e451c89'
+                    intent                                     = 'required'
                 }
             );
-            Categories           = @(
+            Categories                      = @(
                 MSFT_DeviceManagementMobileAppCategory {
-                    Id  = '1bff2652-03ec-4a48-941c-152e93736515'
+                    Id          = '1bff2652-03ec-4a48-941c-152e93736515'
                     DisplayName = 'Kajal 3'
                 }
             );
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId                   = $ApplicationId;
+            TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

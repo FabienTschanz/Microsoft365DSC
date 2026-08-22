@@ -24,10 +24,10 @@ Configuration Example
 
     Node localhost
     {
-        AADEntitlementManagementAccessPackage 'myAccessPackage'
+        AADEntitlementManagementAccessPackage 'AADEntitlementManagementAccessPackage-Example'
         {
-            DisplayName                     = 'Integration Package'
-            Ensure                          = 'Absent'
+            DisplayName           = 'Finance Reporting Access'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

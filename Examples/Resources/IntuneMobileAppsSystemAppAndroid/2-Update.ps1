@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        IntuneMobileAppsSystemAppAndroid "IntuneMobileAppsSystemAppAndroid-Office"
+        IntuneMobileAppsSystemAppAndroid "IntuneMobileAppsSystemAppAndroid-Example"
         {
             DisplayName           = "Office";
             Ensure                = "Present";
@@ -33,14 +33,14 @@ Configuration Example
             RoleScopeTagIds       = @("0")
             Assignments           = @(
                 MSFT_DeviceManagementSystemMobileAppAssignment {
-                    groupDisplayName = 'All devices'
+                    groupDisplayName                           = 'All devices'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType = '#microsoft.graph.allDevicesAssignmentTarget'
-                    intent = 'required'
-                    assignmentSettings = MSFT_DeviceManagementSystemMobileAppAssignmentSettings{
-                        odataType = "#microsoft.graph.androidManagedStoreAppAssignmentSettings"
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    intent                                     = 'required'
+                    assignmentSettings                         = MSFT_DeviceManagementSystemMobileAppAssignmentSettings{
+                        odataType                      = "#microsoft.graph.androidManagedStoreAppAssignmentSettings"
                         androidManagedStoreAppTrackIds = @()
-                        autoUpdateMode = "default"
+                        autoUpdateMode                 = "default"
                     }
                 }
             );

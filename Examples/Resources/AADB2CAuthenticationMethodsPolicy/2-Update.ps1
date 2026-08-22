@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        AADB2CAuthenticationMethodsPolicy "AADB2CAuthenticationMethodsPolicy"
+        AADB2CAuthenticationMethodsPolicy "AADB2CAuthenticationMethodsPolicy-Example"
         {
             ApplicationId                               = $ApplicationId;
             CertificateThumbprint                       = $CertificateThumbprint;

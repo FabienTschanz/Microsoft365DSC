@@ -23,11 +23,11 @@ Configuration Example
 
     Node localhost
     {
-        IntuneAppAndBrowserIsolationPolicyWindows10 'ConfigureAppAndBrowserIsolationPolicyWindows10'
+        IntuneAppAndBrowserIsolationPolicyWindows10 'IntuneAppAndBrowserIsolationPolicyWindows10-Example'
         {
-            Id          = '00000000-0000-0000-0000-000000000000'
-            DisplayName = 'App and Browser Isolation'
-            Ensure      = 'Absent'
+            Id                    = '00000000-0000-0000-0000-000000000000'
+            DisplayName           = 'App and Browser Isolation'
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
