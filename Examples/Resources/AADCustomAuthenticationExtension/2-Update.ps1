@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,8 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
-    node localhost
+
+    Node localhost
     {
         AADCustomAuthenticationExtension "AADCustomAuthenticationExtension1"
         {
@@ -36,7 +39,7 @@ Configuration Example
             ClientConfigurationMaximumRetries      = 1
             ClientConfigurationTimeoutMilliseconds = 2000
             CustomAuthenticationExtensionType      = "#microsoft.graph.onTokenIssuanceStartCustomExtension"
-            Description                            = "DSC Testing 1"
+            Description                            = "DSC Testing 2" # Updated Property
             DisplayName                            = "DSCTestExtension"
             EndPointConfiguration                  = MSFT_AADCustomAuthenticationExtensionEndPointConfiguration{
                 EndpointType = '#microsoft.graph.httpRequestEndpoint'

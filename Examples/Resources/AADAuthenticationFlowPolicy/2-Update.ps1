@@ -4,7 +4,8 @@ It is not meant to use as a production baseline.
 #>
 
 Configuration Example {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,

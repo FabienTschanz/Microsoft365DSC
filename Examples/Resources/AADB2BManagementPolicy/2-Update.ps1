@@ -22,7 +22,7 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADB2BManagementPolicy "AADB2BManagementPolicy"
         {

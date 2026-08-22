@@ -4,7 +4,8 @@ This example updates an existing Azure AD Permission Grant Policy by modifying i
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -20,7 +21,7 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADPermissionGrantPolicy 'CustomConsentPolicy'
         {

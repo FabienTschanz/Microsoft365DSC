@@ -4,14 +4,16 @@ This example adds a new Teams Events Policy.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $credsTeamsAdmin
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsEventsPolicy 'ConfigureEventsPolicy'
         {

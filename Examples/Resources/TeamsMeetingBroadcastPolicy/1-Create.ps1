@@ -4,14 +4,16 @@ This examples create a new Teams Meeting Broadcast Policy.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsMeetingBroadcastPolicy 'ConfigureMeetingBroadcastPolicy'
         {

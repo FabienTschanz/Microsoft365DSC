@@ -22,7 +22,7 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         IntuneAppProtectionPolicyWindows10 "IntuneAppProtectionPolicyWindows10-IntuneAppProtectionPolicyWindows10_1"
         {

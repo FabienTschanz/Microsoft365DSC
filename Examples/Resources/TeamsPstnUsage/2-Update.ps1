@@ -4,14 +4,16 @@ This example adds a new Teams PSTN Usage.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsPstnUsage 'ConfigurePstnUsage'
         {

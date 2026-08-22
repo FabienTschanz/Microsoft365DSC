@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,6 +19,7 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
     Node localhost
@@ -48,6 +50,79 @@ Configuration Example
                         }
                     )
                 }
+            };
+            B2BCollaborationInbound      = MSFT_AADCrossTenantAccessPolicyB2BSetting{
+                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                    AccessType = 'allowed'
+                    Targets    = @(
+                        MSFT_AADCrossTenantAccessPolicyTarget{
+                            Target     = 'AllApplications'
+                            TargetType = 'application'
+                        }
+                    )
+                }
+                UsersAndGroups = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                    AccessType = 'allowed'
+                    Targets    = @(
+                        MSFT_AADCrossTenantAccessPolicyTarget{
+                            Target     = '68bafe64-f86b-4c4e-b33b-9d3eaa11544b'
+                            TargetType = 'user'
+                        }
+                    )
+                }
+            };
+            B2BDirectConnectInbound      = MSFT_AADCrossTenantAccessPolicyB2BSetting{
+                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                    AccessType = 'blocked'
+                    Targets    = @(
+                        MSFT_AADCrossTenantAccessPolicyTarget{
+                            Target     = 'AllApplications'
+                            TargetType = 'application'
+                        }
+                    )
+                }
+                UsersAndGroups = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                    AccessType = 'blocked'
+                    Targets    = @(
+                        MSFT_AADCrossTenantAccessPolicyTarget{
+                            Target     = 'AllUsers'
+                            TargetType = 'user'
+                        }
+                    )
+                }
+            };
+            B2BDirectConnectOutbound     = MSFT_AADCrossTenantAccessPolicyB2BSetting{
+                Applications = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                    AccessType = 'blocked'
+                    Targets    = @(
+                        MSFT_AADCrossTenantAccessPolicyTarget{
+                            Target     = 'AllApplications'
+                            TargetType = 'application'
+                        }
+                    )
+                }
+                UsersAndGroups = MSFT_AADCrossTenantAccessPolicyTargetConfiguration{
+                    AccessType = 'blocked'
+                    Targets    = @(
+                        MSFT_AADCrossTenantAccessPolicyTarget{
+                            Target     = 'AllUsers'
+                            TargetType = 'user'
+                        }
+                    )
+                }
+            };
+            IdentitySynchronization      = MSFT_AADCrossTenantIdentitySyncPolicyPartnerInbound{
+                GroupSyncInbound = MSFT_AADCrossTenantGroupSyncInbound{
+                    IsSyncAllowed = $False
+                }
+                UserSyncInbound = MSFT_AADCrossTenantUserSyncInbound{
+                    IsSyncAllowed = $False
+                }
+            };
+            InboundTrust                 = MSFT_AADCrossTenantAccessPolicyInboundTrust{
+                IsCompliantDeviceAccepted           = $True
+                IsHybridAzureADJoinedDeviceAccepted = $True
+                IsMfaAccepted                       = $True
             };
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

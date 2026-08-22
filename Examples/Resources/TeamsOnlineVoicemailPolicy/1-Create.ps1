@@ -4,14 +4,16 @@ This example adds a new Teams Meeting Policy.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $credsCredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsOnlineVoicemailPolicy 'NewOnlineVoicemailPolicy'
         {

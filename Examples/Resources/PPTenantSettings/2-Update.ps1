@@ -4,14 +4,16 @@ This example sets Power Platform tenant settings.
 
 Configuration Example
 {
-  param(
+  param
+  (
     [Parameter(Mandatory = $true)]
     [PSCredential]
     $Credscredential
   )
+
   Import-DscResource -ModuleName Microsoft365DSC
 
-  node localhost
+  Node localhost
   {
     PPTenantSettings 'PowerPlatformTenantSettings'
     {

@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -20,7 +21,8 @@ Configuration Example
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
-    node localhost
+
+    Node localhost
     {
         EXOPhishSimOverrideRule "EXOPhishSimOverrideRule-_Exe:PhishSimOverr:d779965e-ab14-4dd8-b3f5-0876a99f988b"
         {

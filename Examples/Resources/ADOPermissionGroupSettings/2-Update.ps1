@@ -5,13 +5,16 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [PSCredential]
         $Credential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
-    node localhost
+
+    Node localhost
     {
         ADOPermissionGroupSettings "ADOPermissionGroupSettings-O365DSC-DEV"
         {

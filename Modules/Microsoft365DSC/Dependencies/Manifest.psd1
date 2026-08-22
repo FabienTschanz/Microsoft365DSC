@@ -39,7 +39,7 @@
         },
         @{
             ModuleName      = 'M365DSC.PSDesiredStateConfiguration'
-            RequiredVersion = '3.1.0'
+            RequiredVersion = '3.1.3'
         },
         @{
             ModuleName      = 'Microsoft.Graph.Authentication'

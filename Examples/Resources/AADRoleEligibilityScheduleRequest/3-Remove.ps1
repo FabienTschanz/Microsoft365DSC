@@ -14,25 +14,17 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADRoleEligibilityScheduleRequest "MyRequest"
         {
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DirectoryScopeId     = "/";
-            Ensure               = "Absent";
-            Principal            = "AdeleV@$TenantId";
-            RoleDefinition       = "Teams Communications Administrator";
-            ScheduleInfo         = MSFT_AADRoleEligibilityScheduleRequestSchedule {
-                startDateTime             = '2023-09-01T02:40:44Z'
-                expiration                = MSFT_AADRoleEligibilityScheduleRequestScheduleExpiration
-                    {
-                        endDateTime = '2025-10-31T02:40:09Z'
-                        type        = 'afterDateTime'
-                    }
-            };
+            DirectoryScopeId      = "/";
+            Ensure                = "Absent";
+            Principal             = "AdeleV@$TenantId";
+            RoleDefinition        = "Teams Communications Administrator";
         }
     }
 }

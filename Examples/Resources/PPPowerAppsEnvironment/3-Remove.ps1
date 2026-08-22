@@ -4,14 +4,16 @@ This example creates a new PowerApps environment in production.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         PPPowerAppsEnvironment 'PowerAppsDemoEnvironment'
         {

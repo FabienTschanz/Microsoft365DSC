@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,6 +19,7 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
     Node localhost
@@ -27,7 +29,7 @@ Configuration Example
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            AppId                 = "e35c54ff-bd24-4c52-921a-4b90a35808eb";
+            AppId                 = "c1a3d8f2-5b47-4e19-9f0a-2d6b8e4c7a35"; # Updated Property
             DisplayName           = "Cisco Duo";
             Ensure                = "Present";
             ExcludeTargets        = @(

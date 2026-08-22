@@ -4,14 +4,16 @@ This example configures the Teams Dial In Conferencing Tenant Settings.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $credsCredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsDialInConferencingTenantSettings 'TenantSettings'
         {

@@ -4,7 +4,8 @@ This example creates a Terms of Use Agreement that requires re-acceptance every 
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -17,13 +18,14 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADAgreement 'MonthlyDeviceTermsOfUse'
         {
-            DisplayName                          = "Monthly Device Terms of Use"
+            DisplayName                          = "Company Terms of Use"
             IsViewingBeforeAcceptanceRequired    = $true
             IsPerDeviceAcceptanceRequired        = $true
             UserReacceptRequiredFrequency        = "P30D"

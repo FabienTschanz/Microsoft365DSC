@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,9 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADGroup 'MyGroups'
         {
@@ -33,6 +35,14 @@ Configuration Example
             Members         = @("admin@$TenantId", "AdeleV@$TenantId")
             Visibility      = "Private"
             Owners          = @("admin@$TenantId", "AdeleV@$TenantId")
+            AssignedLicenses = @(
+                MSFT_AADGroupLicense {
+                    SkuId          = 'AAD_PREMIUM_P2'
+                }
+            )
+            AssignedToRole  = @()
+            IsAssignableToRole = $false
+            GroupLifecyclePolicySelectedEnabled = $false
             Ensure          = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

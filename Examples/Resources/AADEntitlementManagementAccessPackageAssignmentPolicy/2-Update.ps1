@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,9 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADEntitlementManagementAccessPackageAssignmentPolicy "myAssignments"
         {
@@ -37,9 +39,31 @@ Configuration Example
                 DurationInDays = 25
             };
             CanExtend               = $False;
-            Description             = "";
+            Description             = "Assignment Policy for access packages";
             DisplayName             = "External tenant";
             DurationInDays          = 180; # Updated Property
+            Questions               = @(
+                MSFT_MicrosoftGraphaccesspackagequestion{
+                    odataType            = "#microsoft.graph.accessPackageTextInputQuestion"
+                    IsRequired           = $true
+                    IsAnswerEditable     = $true
+                    IsSingleLineQuestion = $true
+                    SequencePosition     = 1
+                    QuestionText         = MSFT_MicrosoftGraphaccessPackageLocalizedContent{
+                        DefaultText    = "Which project requires this access?"
+                        LocalizedTexts = @(
+                            MSFT_MicrosoftGraphaccessPackageLocalizedText{
+                                Text         = "Which project requires this access?"
+                                LanguageCode = "en-GB"
+                            }
+                        )
+                    }
+                }
+            );
+            RequestorSettings       = MSFT_MicrosoftGraphrequestorsettings{
+                AcceptRequests = $false
+                ScopeType      = "NoSubjects"
+            };
             RequestApprovalSettings = MSFT_MicrosoftGraphapprovalsettings{
                 ApprovalMode = 'NoApproval'
                 IsRequestorJustificationRequired = $False

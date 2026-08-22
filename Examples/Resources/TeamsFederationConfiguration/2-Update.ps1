@@ -4,14 +4,16 @@ This examples sets the Teams Federation Configuration.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsFederationConfiguration 'FederationConfiguration'
         {

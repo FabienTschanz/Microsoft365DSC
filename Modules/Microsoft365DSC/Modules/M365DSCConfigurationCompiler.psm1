@@ -9,7 +9,7 @@ function Get-M365DSCDscEngineManifest
     param ()
 
     $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
-        $_.Version -ge [Version]'3.1.0' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
+        $_.Version -ge [Version]'3.1.3' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1
     if ($installed)
     {
@@ -36,7 +36,7 @@ function Import-M365DSCDscEngine
     $manifest = Get-M365DSCDscEngineManifest
     if (-not $manifest)
     {
-        throw 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.0 or later) was found.'
+        throw 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.3 or later) was found.'
     }
 
     $manifestBase = Split-Path -Path $manifest -Parent
@@ -65,6 +65,14 @@ function Import-M365DSCDscEngine
 .PARAMETER ConfigurationDataPath
     Path to the configuration data .psd1. Defaults to ConfigurationData.psd1
     next to the configuration script when present.
+
+.PARAMETER ConfigurationData
+    Configuration data as an in-memory hashtable, for callers that do not have it on disk.
+    Takes precedence over ConfigurationDataPath.
+
+.PARAMETER ConfigurationName
+    Name of the configuration to compile. Required when the script only declares a configuration
+    instead of invoking one.
 
 .PARAMETER Credential
     Credential forwarded to the configuration's -Credential parameter.
@@ -99,6 +107,14 @@ function Invoke-M365DSCConfigurationBuild
         $ConfigurationDataPath,
 
         [Parameter()]
+        [System.Object]
+        $ConfigurationData,
+
+        [Parameter()]
+        [System.String]
+        $ConfigurationName,
+
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         $Credential,
 
@@ -121,7 +137,7 @@ function Invoke-M365DSCConfigurationBuild
     )
 
     $Path = (Resolve-Path -Path $Path).ProviderPath
-    if (-not $ConfigurationDataPath)
+    if (-not $ConfigurationDataPath -and $null -eq $ConfigurationData)
     {
         $candidate = Join-Path -Path (Split-Path -Path $Path -Parent) -ChildPath 'ConfigurationData.psd1'
         if (Test-Path -Path $candidate)
@@ -178,7 +194,15 @@ function Invoke-M365DSCConfigurationBuild
         $fastArguments = @{
             Path = $Path
         }
-        if ($ConfigurationDataPath)
+        if ($ConfigurationName)
+        {
+            $fastArguments['ConfigurationName'] = $ConfigurationName
+        }
+        if ($null -ne $ConfigurationData)
+        {
+            $fastArguments['ConfigurationData'] = $ConfigurationData
+        }
+        elseif ($ConfigurationDataPath)
         {
             $fastArguments['ConfigurationData'] = $ConfigurationDataPath
         }
@@ -202,7 +226,44 @@ function Invoke-M365DSCConfigurationBuild
         Push-Location -Path $scriptDirectory
         try
         {
-            & $Path @invokeParameters
+            if (-not $ConfigurationName)
+            {
+                return (& $Path @invokeParameters)
+            }
+
+            # The script only declares the configuration, so dot-source and invoke it.
+            . $Path
+            try
+            {
+                if ($OutputPath)
+                {
+                    $invokeParameters['OutputPath'] = $OutputPath
+                }
+
+                $data = if ($null -ne $ConfigurationData)
+                {
+                    $ConfigurationData
+                }
+                elseif ($ConfigurationDataPath)
+                {
+                    Import-PowerShellDataFile -Path $ConfigurationDataPath
+                }
+                else
+                {
+                    $null
+                }
+
+                if ($null -ne $data)
+                {
+                    $invokeParameters['ConfigurationData'] = $data
+                }
+
+                return (& $ConfigurationName @invokeParameters)
+            }
+            finally
+            {
+                Remove-Item -Path "function:$ConfigurationName" -Force -Recurse -ErrorAction 'SilentlyContinue'
+            }
         }
         finally
         {

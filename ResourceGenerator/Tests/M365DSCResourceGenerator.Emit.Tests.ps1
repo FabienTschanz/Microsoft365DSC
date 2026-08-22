@@ -35,6 +35,7 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             New-M365DSCPropertyModel -Name 'Id' -Type 'Edm.String' -Description 'The unique identifier.'
             New-M365DSCPropertyModel -Name 'DisplayName' -Type 'Edm.String' -Description 'The display name.'
             New-M365DSCPropertyModel -Name 'IsEnabled' -Type 'Edm.Boolean' -Description 'Whether enabled.'
+            New-M365DSCPropertyModel -Name 'RequiredSetting' -Type 'Edm.String' -IsMandatory $true -Description 'A mandatory property.'
             New-M365DSCPropertyModel -Name 'StartDate' -Type 'Edm.DateTimeOffset' -Description 'The start date.'
             New-M365DSCPropertyModel -Name 'Level' -EnumValues @('low', 'medium', 'high') -Description 'The level.'
             New-M365DSCPropertyModel -Name 'Tags' -Type 'Edm.String' -IsArray $true -Description 'The tags.'
@@ -170,9 +171,33 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
 
             $createContent | Should -Not -Be $updateContent
             $createContent | Should -Match "Ensure\s+= `"Present`";"
-            $updateContent | Should -Match 'FakeStringValueDrift'
             $removeContent | Should -Match "Ensure\s+= `"Absent`";"
             $removeContent | Should -Not -Match 'IsEnabled'
+        }
+
+        It 'names the string placeholder after its property instead of reusing one word' {
+            $createContent = Get-Content -Path (Join-Path $script:exampleFolder '1-Create.ps1') -Raw
+
+            $createContent | Should -Match 'M365DSC-DisplayName'
+            $createContent | Should -Not -Match 'FakeStringValue'
+        }
+
+        It 'drifts exactly one property in the update example and marks it' {
+            $createContent = Get-Content -Path (Join-Path $script:exampleFolder '1-Create.ps1') -Raw
+            $updateContent = Get-Content -Path (Join-Path $script:exampleFolder '2-Update.ps1') -Raw
+            $removeContent = Get-Content -Path (Join-Path $script:exampleFolder '3-Remove.ps1') -Raw
+
+            @([regex]::Matches($updateContent, '# Updated Property')).Count | Should -Be 1
+            $createContent | Should -Not -Match '# Updated Property'
+            $removeContent | Should -Not -Match '# Updated Property'
+        }
+
+        It 'keeps the mandatory properties in the remove example' {
+            # [DscProperty(Mandatory)] compiles to Required in the MOF, so a keys-only remove
+            # example does not compile.
+            $removeContent = Get-Content -Path (Join-Path $script:exampleFolder '3-Remove.ps1') -Raw
+
+            $removeContent | Should -Match 'RequiredSetting'
         }
 
         It 'produces parseable configurations with CIM instance blocks' {
@@ -180,8 +205,9 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             {
                 $parseErrors = $null
                 $null = [System.Management.Automation.Language.Parser]::ParseFile($exampleFile.FullName, [ref] $null, [ref] $parseErrors)
-                # ResourceNotDefined is expected: the resource is not built/installed yet.
-                $realErrors = @($parseErrors | Where-Object { $_.ErrorId -ne 'ResourceNotDefined' })
+                $realErrors = @($parseErrors | Where-Object {
+                        $_.ErrorId -notin @('ResourceNotDefined', 'MultipleModuleEntriesFoundDuringParse')
+                    })
                 $realErrors.Count | Should -Be 0 -Because "$($exampleFile.Name) must parse"
             }
 

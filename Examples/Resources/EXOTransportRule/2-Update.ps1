@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,9 +19,10 @@ configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         EXOTransportRule 'ConfigureTransportRule'
         {

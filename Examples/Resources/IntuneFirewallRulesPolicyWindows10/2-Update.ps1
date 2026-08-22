@@ -4,7 +4,8 @@ This example updates a Intune Firewall Policy for Windows10.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -17,9 +18,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         IntuneFirewallRulesPolicyWindows10 'myIntuneFirewallRulesPolicyWindows10'
         {

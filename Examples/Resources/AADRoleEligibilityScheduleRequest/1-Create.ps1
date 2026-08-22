@@ -14,7 +14,7 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADRoleEligibilityScheduleRequest "MyRequest"
         {
@@ -24,7 +24,9 @@ Configuration Example
             DirectoryScopeId     = "/";
             Ensure               = "Present";
             Principal            = "AdeleV@$TenantId";
+            PrincipalType        = "User";
             RoleDefinition       = "Teams Communications Administrator";
+            Justification        = "Making the principal eligible for the Teams Communications Administrator role";
             ScheduleInfo         = MSFT_AADRoleEligibilityScheduleRequestSchedule {
                 startDateTime             = '2023-09-01T02:40:44Z'
                 expiration                = MSFT_AADRoleEligibilityScheduleRequestScheduleExpiration

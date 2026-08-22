@@ -4,14 +4,16 @@ This example shows how to create a new File Plan Property Sub-Category.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         SCFilePlanPropertySubCategory 'FilePlanPropertySubCategory'
         {

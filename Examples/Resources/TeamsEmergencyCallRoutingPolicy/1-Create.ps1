@@ -4,14 +4,16 @@ This example adds a new Teams Emergency Call Routing Policy.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsEmergencyCallRoutingPolicy 'EmergencyCallRoutingPolicyExample'
         {

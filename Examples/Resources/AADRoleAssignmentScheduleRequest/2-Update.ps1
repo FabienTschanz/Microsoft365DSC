@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,8 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
-    node localhost
+
+    Node localhost
     {
         AADRoleAssignmentScheduleRequest "MyRequest"
         {
@@ -29,7 +32,9 @@ Configuration Example
             DirectoryScopeId     = "/";
             Ensure               = "Present";
             Principal            = "AdeleV@$TenantId";
+            PrincipalType        = "User";
             RoleDefinition       = "Teams Communications Administrator";
+            Justification        = "Assigning the Teams Communications Administrator role";
             ScheduleInfo         = MSFT_AADRoleAssignmentScheduleRequestSchedule {
                 startDateTime             = '2023-09-01T02:45:44Z' # Updated Property
                 expiration                = MSFT_AADRoleAssignmentScheduleRequestScheduleExpiration

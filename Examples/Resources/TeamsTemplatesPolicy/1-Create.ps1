@@ -4,14 +4,16 @@ This example adds a new Teams Calling Policy.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $credsTeamsAdmin
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsTemplatesPolicy "TeamsTemplatesPolicy-Example"
         {

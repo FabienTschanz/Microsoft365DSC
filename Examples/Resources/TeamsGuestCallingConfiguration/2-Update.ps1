@@ -4,14 +4,16 @@ This example configures the Teams Guest Calling Configuration.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsGuestCallingConfiguration 'ConfigureGuestCalling'
         {

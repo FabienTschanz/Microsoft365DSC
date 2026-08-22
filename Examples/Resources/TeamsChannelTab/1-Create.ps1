@@ -5,9 +5,10 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsChannelTab 'ConfigureChannelTab'
         {

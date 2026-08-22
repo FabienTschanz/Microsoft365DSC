@@ -13,7 +13,7 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AzureRoleEligibilityScheduleRequest "ManagementGroupReaderEligibility"
         {

@@ -4,7 +4,8 @@ This example creates a new Device Enrollment Status Page.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -20,7 +21,7 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         IntuneDeviceComplianceNotificationMessageTemplate 'IntuneDeviceComplianceNotificationMessageTemplate-Test'
         {

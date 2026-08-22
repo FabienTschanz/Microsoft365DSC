@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,14 +19,42 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADConditionalAccessPolicy 'ConditionalAccessPolicy'
         {
             BuiltInControls                          = @("mfa");
             ClientAppTypes                           = @("all");
+            ExcludeApplications                      = @("Office365");
+            IncludeUsers                             = @("AdeleV@$TenantId");
+            IncludeGroups                            = @("DSCGroup");
+            ExcludeRoles                             = @("Global Administrator");
+            IncludeGuestOrExternalUserTypes          = @("b2bCollaborationGuest", "b2bCollaborationMember");
+            IncludeExternalTenantsMembershipKind     = "all";
+            IncludeExternalTenantsMembers            = @();
+            ExcludeGuestOrExternalUserTypes          = @("serviceProvider");
+            ExcludeExternalTenantsMembershipKind     = "enumerated";
+            ExcludeExternalTenantsMembers            = @("11111111-1111-1111-1111-111111111111");
+            IncludePlatforms                         = @("Android", "IOS");
+            ExcludePlatforms                         = @("Windows", "MacOS");
+            IncludeLocations                         = @("All");
+            ExcludeLocations                         = @("AllTrusted");
+            UserRiskLevels                           = @("High");
+            SignInRiskLevels                         = @("High", "Medium");
+            InsiderRiskLevels                        = @("elevated");
+            TransferMethods                          = "deviceCodeFlow";
+            ProtocolFlows                            = @("deviceCodeFlow");
+            ApplicationEnforcedRestrictionsIsEnabled = $false;
+            CloudAppSecurityIsEnabled                = $true;
+            CloudAppSecurityType                     = "MonitorOnly";
+            ContinuousAccessEvaluationMode           = "disabled";
+            SecureSignInSessionIsEnabled             = $false;
+            PersistentBrowserIsEnabled               = $true;
+            PersistentBrowserMode                    = "Never";
+            DisableResilienceDefaultsIsEnabled       = $false;
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
@@ -33,14 +62,14 @@ Configuration Example
             DeviceFilterRule                         = "device.trustType -eq `"AzureAD`" -or device.trustType -eq `"ServerAD`" -or device.trustType -eq `"Workplace`"";
             DisplayName                              = "Example CAP";
             Ensure                                   = "Present";
-            ExcludeUsers                             = @("admin@$Domain");
+            ExcludeUsers                             = @("admin@$TenantId");
             GrantControlOperator                     = "OR";
             IncludeApplications                      = @("All");
             IncludeRoles                             = @("Attack Payload Author");
             SignInFrequencyInterval                  = "timeBased";
             SignInFrequencyIsEnabled                 = $True;
             SignInFrequencyType                      = "hours";
-            SignInFrequencyValue                     = 2; # Updated Porperty
+            SignInFrequencyValue                     = 2; # Updated Property
             State                                    = "disabled";
         }
     }

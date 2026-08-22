@@ -4,14 +4,16 @@ This example is used to configure the tenant's Guest Messaging settings for Team
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsGuestMessagingConfiguration 'TeamsGuestMessagingConfig'
         {

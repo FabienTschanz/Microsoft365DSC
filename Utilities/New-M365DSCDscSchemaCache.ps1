@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Resolves the M365DSC.PSDesiredStateConfiguration-capable DSC engine (PSData tag
-    M365DSCFastHost, version 3.1.0+), stages the built Microsoft365DSC module under a
+    M365DSCFastHost, version 3.1.3+), stages the built Microsoft365DSC module under a
     version folder, and runs Export-DscSchemaCache in a child process so the one-time
     class discovery does not pollute the calling session. The resulting cache ships in
     the module package and lets Invoke-DscFastCompile compile tenant configurations
@@ -68,7 +68,7 @@ function Resolve-M365DSCDscEngineManifest
     }
 
     $installed = Get-Module -ListAvailable -Name M365DSC.PSDesiredStateConfiguration | Where-Object {
-        $_.Version -ge [Version]'3.1.0' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
+        $_.Version -ge [Version]'3.1.3' -and $_.PrivateData.PSData.Tags -contains 'M365DSCFastHost'
     } | Sort-Object -Property Version -Descending | Select-Object -First 1
     if ($installed)
     {
@@ -87,7 +87,7 @@ function Resolve-M365DSCDscEngineManifest
 $engineManifest = Resolve-M365DSCDscEngineManifest -ExplicitPath $EnginePath -RepoRoot $RepoRoot -ModuleRoot $moduleRoot
 if (-not $engineManifest)
 {
-    $message = 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.0+) was found. DscSchemaCache.json was not generated.'
+    $message = 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine (3.1.3+) was found. DscSchemaCache.json was not generated.'
     if ($WarnOnly)
     {
         Write-Warning -Message $message

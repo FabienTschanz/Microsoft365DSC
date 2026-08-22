@@ -4,14 +4,16 @@ This example adds a new Teams Channels Policy.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $credsCredential
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         TeamsUserCallingSettings 'AssignCallingSettings'
         {

@@ -157,6 +157,7 @@
   * Moved `Get-M365DSCResourceKey` and other conversion logic entirely to C#.
 * DEPENDENCIES
   * Added `Mgx` with version 2.0.4.
+  * Added `M365DSC.PSDesiredStateConfiguration` with version 3.1.3.
   * Updated `DSCParser` to version 3.1.0.3.
   * Updated `MSCloudLoginAssistant` to version 1.2.4.
   * Updated `PnP.PowerShell` to version 3.3.0.
@@ -165,6 +166,28 @@
 * MISC
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.
+  * Added `Utilities/Measure-M365DSCExampleCoverage.ps1`, which reports how much of each
+    resource's schema its examples configure, whether the update example drifts from the create
+    example, and what the remove example carries beyond keys, mandatory properties,
+    authentication and `Ensure`.
+  * Added `ConfigurationName` and `ConfigurationData` parameters to
+    `Invoke-M365DSCConfigurationBuild` so it can compile a script that only declares a
+    configuration instead of invoking one.
+  * Updated the examples QA test to compile through `Invoke-M365DSCConfigurationBuild` and the
+    fast compile host, and gave it `Workload` and `ResourceName` container parameters so a single
+    batch of examples can be verified on its own. The whole example set now compiles in minutes
+    rather than hours.
+  * Fixed several issues with formatting and parameters of the example files.
+  * Aligned the layout of every example with the generator template: `Node`, `param` on its own
+    line, and a blank line before `Import-DscResource` and the `Node` block.
+  * Fixed keys that differed between the create, update and remove example of a resource, which
+    had the update and remove steps target an object the create step never made.
+  * Fixed the example emitter of the Dynamic Resource Generator, which dropped mandatory
+    properties from the remove example - making it uncompilable, since `[DscProperty(Mandatory)]`
+    becomes `Required` in the MOF - drifted every property in the update example instead of one,
+    and placed `IsSingleInstance` last although it is the key.
+  * Updated the example emitter to name string placeholders after the property they belong to,
+    instead of writing `FakeStringValue` into every string property of a published example.
   * Added many new relations between resources to improve dependency handling during export.
   * Added QA new test to check for unreferenced classes in the schema file.
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)

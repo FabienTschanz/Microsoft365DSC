@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,9 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADVerifiedIdAuthorityContract 'AADVerifiedIdAuthorityContract-Sample Custom Verified Credentials'
         {
@@ -28,7 +30,7 @@ Configuration Example
                 MSFT_AADVerifiedIdAuthorityContractDisplayModel{
                     consent = MSFT_AADVerifiedIdAuthorityContractDisplayConsent{
                         instructions = 'Sign in with your account to get your card.'
-                        title = 'Do you want to get your sample Verified Credential?' #drift
+                        title = 'Do you want to get your sample Verified Credential?' # Updated Property
                     }
                     card = MSFT_AADVerifiedIdAuthorityContractDisplayCard{
                         description = 'Use your verified credential to prove to anyone that you know all about verifiable credentials.'

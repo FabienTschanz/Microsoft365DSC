@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -20,12 +21,19 @@ Configuration Example
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
-    node localhost
+
+    Node localhost
     {
 
         AADAccessReviewDefinition "AADAccessReviewDefinition-Example"
         {
-            DescriptionForAdmins    = "Drift";
+            AdditionalNotificationRecipients = @(
+                MSFT_AADAccessReviewDefinitionReviewer{
+                    DisplayName = "Alex Wilber"
+                    Type = "User"
+                }
+            );
+            DescriptionForAdmins    = "Drift"; # Updated Property
             DescriptionForReviewers = "";
             DisplayName             = "Review guest access across Microsoft 365 groups";
             Ensure                  = "Present";
@@ -35,6 +43,10 @@ Configuration Example
                     Type = "User"
                 }
             );
+            InstanceEnumerationScope = MSFT_MicrosoftGraphAccessReviewScope2{
+                Query = "/groups?`$filter=(groupTypes/any(c:c+eq+'Unified'))&`$count=true"
+                QueryType = "MicrosoftGraph"
+            };
             Reviewers               = @(
                 MSFT_AADAccessReviewDefinitionReviewer{
                     Type = "Owner"

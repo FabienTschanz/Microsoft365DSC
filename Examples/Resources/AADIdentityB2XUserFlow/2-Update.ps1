@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,9 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADIdentityB2XUserFlow "AADIdentityB2XUserFlow-B2X_1_TestFlow"
         {
@@ -35,7 +37,7 @@ Configuration Example
             Credential                = $Credscredential;
             Ensure                    = "Present";
             Id                        = "B2X_1_TestFlow";
-            IdentityProviders         = @("MSASignup-OAUTH","EmailOtpSignup-OAUTH");
+            IdentityProviders         = @("EmailOtpSignup-OAUTH"); # Updated Property
             UserAttributeAssignments  = @(
                 MSFT_MicrosoftGraphuserFlowUserAttributeAssignment
                 {

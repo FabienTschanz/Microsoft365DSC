@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter()]
         [System.String]
         $ApplicationId,
@@ -18,9 +19,10 @@ Configuration Example
         [System.String]
         $CertificateThumbprint
     )
+
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         AADServicePrincipal 'AADServicePrincipal'
         {
@@ -34,6 +36,19 @@ Configuration Example
             ReplyURLs                     = "https://$TenantId"
             ServicePrincipalType          = "Application"
             Tags                          = "{WindowsAzureActiveDirectoryIntegratedApp}"
+            ErrorUrl                      = "https://$TenantId/error"
+            Notes                         = "Service principal used by the Microsoft365DSC sample application."
+            PublisherName                 = "Contoso"
+            Owners                        = @("admin@$TenantId")
+            PreferredSingleSignOnMode     = "notSupported"
+            SamlMetadataUrl               = "https://$TenantId/saml/metadata"
+            PasswordCredentials           = @(
+                MSFT_MicrosoftGraphpasswordCredential{
+                    DisplayName = "DSC Client Secret"
+                    StartDateTime = "2026-01-01T00:00:00.0000000Z"
+                    EndDateTime = "2027-01-01T00:00:00.0000000Z"
+                }
+            )
             Ensure                        = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

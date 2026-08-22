@@ -5,7 +5,8 @@ It is not meant to use as a production baseline.
 
 Configuration Example
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [PSCredential]
         $Credscredential
@@ -13,12 +14,11 @@ Configuration Example
 
     Import-DscResource -ModuleName Microsoft365DSC
 
-    node localhost
+    Node localhost
     {
         O365OrgCustomizationSetting 'O365OrgCustomizationSetting'
         {
             IsSingleInstance = "Yes"
-            Ensure           = "Present"
             Credential       = $Credscredential
         }
     }

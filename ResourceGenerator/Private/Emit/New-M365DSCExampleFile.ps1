@@ -4,9 +4,10 @@
 
 .DESCRIPTION
     Unlike the old generator - which wrote the same placeholder into all three files - the
-    examples are genuinely distinct: Create uses the fake desired-state values, Update drifts
-    them, and Remove keeps only the key properties with Ensure = 'Absent'. Complex properties
-    render as DSC CIM instance blocks (MSFT_Xyz { ... }).
+    examples are genuinely distinct: Create uses the desired-state values, Update drifts exactly
+    one of them and marks the line with '# Updated Property', and Remove keeps the keys and the
+    mandatory properties with Ensure = 'Absent'. Complex properties render as DSC CIM instance
+    blocks (MSFT_Xyz { ... }).
 
 .PARAMETER ResourceModel
     Specifies the resource model.
@@ -55,6 +56,77 @@ function New-M365DSCExampleFile
 
 <#
 .SYNOPSIS
+    Turns the generic string placeholder into one that names the property it belongs to.
+
+.DESCRIPTION
+    Recurses into arrays and into the members of a complex value.
+
+.PARAMETER Property
+    Specifies the property model the value belongs to.
+
+.PARAMETER Value
+    Specifies the value produced by Get-M365DSCFakeValue.
+#>
+function ConvertTo-M365DSCExampleStringValue
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Property,
+
+        [Parameter()]
+        [System.Object]
+        $Value
+    )
+
+    if ($Value -is [System.Collections.IDictionary])
+    {
+        $result = @{}
+        foreach ($key in @($Value.Keys))
+        {
+            $member = $Property.Members | Where-Object -FilterScript { $_.Name -eq $key } | Select-Object -First 1
+            $result[$key] = if ($null -eq $member)
+            {
+                $Value[$key]
+            }
+            else
+            {
+                ConvertTo-M365DSCExampleStringValue -Property $member -Value $Value[$key]
+            }
+        }
+
+        return $result
+    }
+
+    if ($Value -is [System.Array])
+    {
+        return @($Value | ForEach-Object { ConvertTo-M365DSCExampleStringValue -Property $Property -Value $_ })
+    }
+
+    if ($Value -isnot [System.String])
+    {
+        return $Value
+    }
+
+    if ($Value -match '^FakeString(Array)?Value(?<drift>Drift)?(?<index>\d*)$')
+    {
+        $suffix = ''
+        if ($Matches['drift'])
+        {
+            $suffix = '-Updated'
+        }
+
+        return "M365DSC-$($Property.Name)$suffix$($Matches['index'])"
+    }
+
+    return $Value
+}
+
+<#
+.SYNOPSIS
     Renders the property assignments of one example resource block.
 #>
 function New-M365DSCExampleValueBlock
@@ -83,22 +155,43 @@ function New-M365DSCExampleValueBlock
     $indent = ' ' * 12
     $entries = [ordered]@{}
 
+    $driftedName = $null
+    if ($Drift)
+    {
+        $candidates = @($ResourceModel.SchemaProperties | Where-Object -FilterScript {
+                -not $_.IsKey -and -not $_.IsMandatory -and -not $_.IsComplex -and
+                $_.Name -ne $ResourceModel.AlternativeKey -and $null -ne $_.DriftValue
+            })
+
+        $drifted = $candidates | Where-Object -FilterScript { $_.FakeKind -eq 'String' -and -not $_.IsArray } | Select-Object -First 1
+        if ($null -eq $drifted)
+        {
+            $drifted = $candidates | Where-Object -FilterScript { -not $_.IsArray } | Select-Object -First 1
+        }
+        if ($null -eq $drifted)
+        {
+            $drifted = $candidates | Select-Object -First 1
+        }
+
+        if ($null -ne $drifted)
+        {
+            $driftedName = $drifted.Name
+        }
+    }
+
     foreach ($property in $ResourceModel.SchemaProperties)
     {
-        if ($KeysOnly -and -not $property.IsKey -and $property.Name -ne $ResourceModel.AlternativeKey)
+        # Mandatory becomes Required in the MOF, but a keys-only remove example does not compile.
+        if ($KeysOnly -and -not $property.IsKey -and -not $property.IsMandatory -and
+            $property.Name -ne $ResourceModel.AlternativeKey)
         {
             continue
         }
 
-        # Keys must stay stable between the create, update and remove examples.
         $value = $property.FakeValue
-        if ($Drift -and -not $property.IsKey)
+        if ($property.Name -eq $driftedName)
         {
-            $driftValue = $property.DriftValue
-            if ($null -ne $driftValue)
-            {
-                $value = $driftValue
-            }
+            $value = $property.DriftValue
         }
 
         if ($null -eq $value)
@@ -106,6 +199,7 @@ function New-M365DSCExampleValueBlock
             continue
         }
 
+        $value = ConvertTo-M365DSCExampleStringValue -Property $property -Value $value
         $entries[$property.Name] = ConvertTo-M365DSCExampleValue -Property $property -Value $value -IndentCount 12
     }
 
@@ -115,7 +209,13 @@ function New-M365DSCExampleValueBlock
     }
     else
     {
-        $entries['IsSingleInstance'] = '"Yes"'
+        $reordered = [ordered]@{ IsSingleInstance = '"Yes"' }
+        foreach ($entryName in $entries.Keys)
+        {
+            $reordered[$entryName] = $entries[$entryName]
+        }
+
+        $entries = $reordered
     }
 
     $entries['ApplicationId'] = '$ApplicationId'
@@ -131,6 +231,11 @@ function New-M365DSCExampleValueBlock
         # Every property line ends with a semicolon - including the closing line of a CIM
         # instance value, but never the lines inside one.
         $null = $builder.Append("$indent$entryName$padding = $($entries[$entryName]);")
+
+        if ($entryName -eq $driftedName)
+        {
+            $null = $builder.Append(' # Updated Property')
+        }
     }
 
     return $builder.ToString()
