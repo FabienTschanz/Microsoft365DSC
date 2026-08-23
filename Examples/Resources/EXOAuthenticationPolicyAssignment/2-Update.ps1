@@ -24,7 +24,7 @@ Configuration Example
 
     Node localhost
     {
-        EXOAuthenticationPolicy 'EXOAuthenticationPolicy-Example'
+        EXOAuthenticationPolicy 'EXOAuthenticationPolicy-Assignment'
         {
             Identity                           = "My Assigned Policy"
             AllowBasicAuthActiveSync           = $False

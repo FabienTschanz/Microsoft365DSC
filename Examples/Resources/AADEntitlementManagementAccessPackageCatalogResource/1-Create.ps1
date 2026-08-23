@@ -24,14 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        AADGroup 'AADGroup-Example'
+        AADGroup 'AADGroup-CatalogResource'
         {
-            DisplayName           = "MyGroup"
+            DisplayName           = "Project Management Office"
             Description           = "Collaboration group for the project management office"
             SecurityEnabled       = $True
             MailEnabled           = $True
             GroupTypes            = @("Unified")
-            MailNickname          = "MyGroup"
+            MailNickname          = "projectmanagementoffice"
             Visibility            = "Private"
             Ensure                = "Present"
             ApplicationId         = $ApplicationId
@@ -41,9 +41,9 @@ Configuration Example
         AADEntitlementManagementAccessPackageCatalogResource 'AADEntitlementManagementAccessPackageCatalogResource-Example'
         {
             CatalogId             = "My Catalog";
-            DisplayName           = "MyGroup";
+            DisplayName           = "Project Management Office";
             OriginSystem          = "AADGroup";
-            OriginId              = 'MyGroup'
+            OriginId              = 'Project Management Office'
             AddedBy               = "admin@$TenantId";
             AddedOn               = "2026-01-01T00:00:00.0000000Z";
             Description           = "Collaboration group for the project management office";

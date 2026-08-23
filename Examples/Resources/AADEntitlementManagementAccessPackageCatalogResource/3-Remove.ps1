@@ -26,7 +26,7 @@ Configuration Example
     {
         AADEntitlementManagementAccessPackageCatalogResource 'AADEntitlementManagementAccessPackageCatalogResource-Example'
         {
-            DisplayName           = 'MyGroup'
+            DisplayName           = 'Project Management Office'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

@@ -27,7 +27,7 @@ Configuration Example
         AADEntitlementManagementAccessPackageCatalogResource 'AADEntitlementManagementAccessPackageCatalogResource-Example'
         {
             CatalogId             = "My Catalog";
-            DisplayName           = "MyGroup";
+            DisplayName           = "Project Management Office";
             OriginSystem          = "AADGroup";
             OriginId              = '849b3661-61a8-44a8-92e7-fcc91d296235'
             AddedBy               = "admin@$TenantId";
