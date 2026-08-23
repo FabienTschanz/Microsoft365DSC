@@ -35,7 +35,7 @@ Configuration Example
                 ResourceGroup  = 'TBD'
             };
             LinkedDomainUrl       = "https://nik-charlebois.com/";
-            Name                  = "Contoso 2"; # drift
+            Name                  = "Contoso 2"; # Updated Property
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

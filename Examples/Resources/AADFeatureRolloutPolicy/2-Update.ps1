@@ -34,7 +34,7 @@ Configuration Example
             DisplayName             = "certificateBasedAuthentication rollout policy";
             Ensure                  = "Present";
             IsAppliedToOrganization = $False;
-            IsEnabled               = $False; # Updated property
+            IsEnabled               = $False; # Updated Property
         }
     }
 }

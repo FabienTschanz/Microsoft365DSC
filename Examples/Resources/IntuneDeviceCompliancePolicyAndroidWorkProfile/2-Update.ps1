@@ -26,24 +26,59 @@ Configuration Example
         IntuneDeviceCompliancePolicyAndroidWorkProfile 'IntuneDeviceCompliancePolicyAndroidWorkProfile-Example'
         {
             DisplayName                                        = 'Android Work Profile Compliance'
-            Description                                        = ''
+            Description                                        = 'Compliance baseline for Android Enterprise work profile devices'
+            AdvancedThreatProtectionRequiredSecurityLevel      = 'unavailable'
+            Assignments                                        = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    deviceAndAppManagementAssignmentFilterType = 'none'
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    deviceAndAppManagementAssignmentFilterType = 'none'
+                    groupDisplayName                           = 'Android Compliance Exclusions'
+                }
+            )
             DeviceThreatProtectionEnabled                      = $False
             DeviceThreatProtectionRequiredSecurityLevel        = 'unavailable'
+            MinAndroidSecurityPatchLevel                       = '2025-06-01'
+            OsMaximumVersion                                   = '15'
+            OsMinimumVersion                                   = '11'
             PasswordExpirationDays                             = 90
             PasswordMinimumLength                              = 8 # Updated Property
             PasswordMinutesOfInactivityBeforeLock              = 5
+            PasswordPreviousPasswordBlockCount                 = 5
             PasswordRequired                                   = $True
             PasswordRequiredType                               = 'numericComplex'
+            PasswordSignInFailureCountBeforeFactoryReset       = 10
+            RequiredPasswordComplexity                         = 'medium'
+            RestrictedApps                                     = @('com.facebook.katana', 'com.snapchat.android')
+            RoleScopeTagIds                                    = @('0')
+            ScheduledActionsForRule                            = @(
+                MSFT_ScheduledActionConfigurations{
+                    actionType       = 'block'
+                    gracePeriodHours = 24
+                }
+            )
+            SecurityBlockDeviceAdministratorManagedDevices     = $True
             SecurityBlockJailbrokenDevices                     = $True
-            SecurityDisableUsbDebugging                        = $False
-            SecurityPreventInstallAppsFromUnknownSources       = $False
-            SecurityRequireCompanyPortalAppIntegrity           = $False
-            SecurityRequireGooglePlayServices                  = $False
-            SecurityRequireSafetyNetAttestationBasicIntegrity  = $False
-            SecurityRequireSafetyNetAttestationCertifiedDevice = $False
-            SecurityRequireUpToDateSecurityProviders           = $False
-            SecurityRequireVerifyApps                          = $False
+            SecurityDisableUsbDebugging                        = $True
+            SecurityPreventInstallAppsFromUnknownSources       = $True
+            SecurityRequireCompanyPortalAppIntegrity           = $True
+            SecurityRequireGooglePlayServices                  = $True
+            SecurityRequiredAndroidSafetyNetEvaluationType     = 'basic'
+            SecurityRequireSafetyNetAttestationBasicIntegrity  = $True
+            SecurityRequireSafetyNetAttestationCertifiedDevice = $True
+            SecurityRequireUpToDateSecurityProviders           = $True
+            SecurityRequireVerifyApps                          = $True
             StorageRequireEncryption                           = $True
+            WorkProfileInactiveBeforeScreenLockInMinutes       = 5
+            WorkProfilePasswordExpirationInDays                = 90
+            WorkProfilePasswordMinimumLength                   = 6
+            WorkProfilePasswordRequiredType                    = 'alphanumericWithSymbols'
+            WorkProfilePreviousPasswordBlockCount              = 5
+            WorkProfileRequiredPasswordComplexity              = 'Medium'
+            WorkProfileRequirePassword                         = $True
             Ensure                                             = 'Present'
             ApplicationId                                      = $ApplicationId;
             TenantId                                           = $TenantId;

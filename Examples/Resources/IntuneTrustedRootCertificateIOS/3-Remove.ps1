@@ -25,8 +25,7 @@ Configuration Example
     {
         IntuneTrustedRootCertificateIOS "IntuneTrustedRootCertificateIOS-Example"
         {
-            Description           = "IntuneTrustedRootCertificateIOS Description";
-            DisplayName           = "IntuneTrustedRootCertificateIOS DisplayName";
+            DisplayName           = "Contoso Root CA (iOS)";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -155,7 +155,7 @@ Configuration Example
             SpoSyncDownload                               = $False;
             TeamsChannelFileSharedExternal                = $False;
             TeamsChannelMemberAddedExternal               = $False;
-            TeamsChatFileSharedExternal                   = $True; # Drift
+            TeamsChatFileSharedExternal                   = $True; # Updated Property
             TeamsFileDownload                             = $False;
             TeamsFolderSharedExternal                     = $False;
             TeamsMemberAddedExternal                      = $False;

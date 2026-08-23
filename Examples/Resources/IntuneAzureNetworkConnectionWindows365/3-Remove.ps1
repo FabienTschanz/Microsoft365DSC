@@ -26,13 +26,8 @@ Configuration Example
     {
         IntuneAzureNetworkConnectionWindows365 "IntuneAzureNetworkConnectionWindows365-Example1"
         {
-            AdDomainName          = "contoso.com";
-            AdDomainUsername      = "username@contoso.com";
-            AdDomainPassword      = "securePassword";
-            ConnectionType        = "hybridAzureADJoin";
             DisplayName           = "IntuneWindows365AzureNetworkConnection_Hybrid";
             Ensure                = "Absent";
-            OrganizationalUnit    = "OU=CloudPCs,OU=Devices,DC=contoso,DC=com";
             ResourceGroupId       = "/subscriptions/subscription-name/resourceGroups/resource-group-name";
             SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name/subnets/default";
             SubscriptionName      = "subscription-name";

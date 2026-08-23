@@ -37,7 +37,7 @@ Configuration Example
                     MSFT_AADAppManagementPolicyRestrictionsCredential{
                         restrictForAppsCreatedAfterDateTime = "01/01/0001 00:00:00"
                         restrictionType                     = "passwordAddition"
-                        state                               = "disabled" # Drift
+                        state                               = "disabled" # Updated Property
                     }
                     MSFT_AADAppManagementPolicyRestrictionsCredential{
                         maxLifetime                         = "P90DT0H0M0S"

@@ -26,11 +26,21 @@ Configuration Example
     {
         IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10-Example'
         {
-            DisplayName           = 'Driver Updates - Manual Approval'
-            Assignments           = @()
-            Description           = 'Manually approved driver updates for all managed Windows devices' # Updated property
-            approvalType          = 'manual'
-            Ensure                = 'Present'
+            DisplayName           = "Driver Updates - Manual Approval";
+            ApprovalType          = "manual";
+            Assignments           = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Driver Update Pilot Devices"
+                }
+            );
+            Description           = "Manually approved driver updates for all managed Windows devices"; # Updated Property
+            RoleScopeTagIds       = @("0");
+            Ensure                = "Present";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

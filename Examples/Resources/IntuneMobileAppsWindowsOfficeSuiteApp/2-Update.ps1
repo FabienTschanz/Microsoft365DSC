@@ -26,16 +26,43 @@ Configuration Example
     {
         IntuneMobileAppsWindowsOfficeSuiteApp "IntuneMobileAppsWindowsOfficeSuiteApp-Example"
         {
-            Id                    = "8e683524-4ec1-4813-bb3e-6256b2f293d"
-            Description           = "Microsoft 365 Apps for Windows 10 and laterr"
-            DisplayName           = "Microsoft 365 Apps for Windows 10 and later"
-            Ensure                = "Present";
-            InformationUrl        = "";
-            IsFeatured            = $False;
-            Notes                 = ""
-            PrivacyInformationUrl = ""
-            RoleScopeTagIds       = @()
-            Assignments           = @(
+            Description                          = "Microsoft 365 desktop applications for Windows laptops and desktops"; # Updated Property
+            DisplayName                          = "Microsoft 365 Apps for Windows 10 and later";
+            Ensure                               = "Present";
+            InformationUrl                       = "https://intranet.contoso.com/apps/microsoft-365-apps";
+            IsFeatured                           = $true;
+            Notes                                = "Reviewed annually by the workplace services team";
+            PrivacyInformationUrl                = "https://www.contoso.com/privacy";
+            RoleScopeTagIds                      = @("0");
+            AutoAcceptEula                       = $true;
+            ProductIds                           = @("o365ProPlusRetail");
+            UseSharedComputerActivation          = $false;
+            UpdateChannel                        = "current";
+            OfficeSuiteAppDefaultFileFormat      = "officeOpenXMLFormat";
+            OfficePlatformArchitecture           = "x64";
+            LocalesToInstall                     = @("en-us", "fr-fr");
+            InstallProgressDisplayLevel          = "none";
+            ShouldUninstallOlderVersionsOfOffice = $true;
+            TargetVersion                        = "16.0.17928.20216";
+            UpdateVersion                        = "16.0.17928.20216";
+            ExcludedApps                         = MSFT_DeviceManagementMobileAppExcludedApp{
+                Access             = $true
+                Bing               = $true
+                Excel              = $false
+                Groove             = $true
+                InfoPath           = $true
+                Lync               = $true
+                OneDrive           = $false
+                OneNote            = $false
+                Outlook            = $false
+                PowerPoint         = $false
+                Publisher          = $true
+                SharePointDesigner = $true
+                Teams              = $true
+                Visio              = $true
+                Word               = $false
+            };
+            Assignments                          = @(
                 MSFT_DeviceManagementMobileAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.groupAssignmentTarget'
@@ -43,14 +70,14 @@ Configuration Example
                     intent                                     = 'required'
                 }
             );
-            Categories            = @(
-                MSFT_DeviceManagementMobileAppCategory {
-                    Id          = '8e683524-4ec1-4813-bb3e-6256b2f293d8'
-                    DisplayName = 'Productivity'
-                });
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
+            Categories                           = @(
+                MSFT_DeviceManagementMobileAppCategory{
+                    DisplayName = "Productivity"
+                }
+            );
+            ApplicationId                        = $ApplicationId;
+            TenantId                             = $TenantId;
+            CertificateThumbprint                = $CertificateThumbprint;
         }
     }
 }

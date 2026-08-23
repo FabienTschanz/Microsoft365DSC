@@ -26,7 +26,7 @@ Configuration Example
     {
         EXOTenantAllowBlockListSpoofItems "EXOTenantAllowBlockListSpoofItems-Example"
         {
-            Action                = "Block"; #Drift
+            Action                = "Block"; # Updated Property
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";

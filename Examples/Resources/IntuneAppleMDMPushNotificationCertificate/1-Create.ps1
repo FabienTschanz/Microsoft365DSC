@@ -28,7 +28,7 @@ Configuration Example
         {
             AppleIdentifier          = "mdm@contoso.com";
             Certificate              = "<apple-push-certificate>"
-            DataSharingConsetGranted = $True;
+            DataSharingConsetGranted = $true;
             Ensure                   = "Present";
             ApplicationId            = $ApplicationId;
             TenantId                 = $TenantId;

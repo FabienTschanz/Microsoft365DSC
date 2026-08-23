@@ -26,7 +26,7 @@ Configuration Example
     {
         AADIdentityProtectionPolicySettings "AADIdentityProtectionPolicySettings-Example"
         {
-            IsUserRiskClearedOnPasswordReset = $false; #drift
+            IsUserRiskClearedOnPasswordReset = $false; # Updated Property
             IsSingleInstance                 = "Yes";
             ApplicationId                    = $ApplicationId
             TenantId                         = $TenantId

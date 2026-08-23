@@ -26,27 +26,47 @@ Configuration Example
     {
         IntuneWifiConfigurationPolicyWindows10 'IntuneWifiConfigurationPolicyWindows10-Example'
         {
-            DisplayName                    = 'win10 wifi - revised'
-            Assignments                    = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments {
-                    deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+            DisplayName                                = "win10 wifi - revised";
+            Description                                = "Corporate wireless network for managed Windows laptops";
+            ConnectAutomatically                       = $true;
+            ConnectToPreferredNetwork                  = $false; # Updated Property
+            ConnectWhenNetworkNameIsHidden             = $true;
+            DeviceManagementApplicabilityRuleOsEdition = MSFT_DeviceManagementApplicabilityRuleOsEdition{
+                Name           = "Enterprise and Professional editions only"
+                OsEditionTypes = @("windows10Enterprise", "windows10Professional")
+                RuleType       = "include"
+            };
+            DeviceManagementApplicabilityRuleOsVersion = MSFT_DeviceManagementApplicabilityRuleOsVersion{
+                Name         = "Windows 11 22H2 or later"
+                MinOSVersion = "10.0.22621.0"
+                MaxOSVersion = "10.0.26100.9999"
+                RuleType     = "include"
+            };
+            ForceFIPSCompliance                        = $true;
+            ForcePreSharedKeyUpdate                    = $true;
+            MeteredConnectionLimit                     = "fixed";
+            NetworkName                                = "Contoso Corporate Wi-Fi";
+            PreSharedKey                               = "<wifi-pre-shared-key>";
+            ProxyManualAddress                         = "proxy.contoso.com";
+            ProxyManualPort                            = 8080;
+            ProxySetting                               = "manual";
+            RoleScopeTagIds                            = @("0");
+            Ssid                                       = "CONTOSO-CORP";
+            WifiSecurityType                           = "wpa2Personal";
+            Assignments                                = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
                 }
-            )
-            ConnectAutomatically           = $True
-            ConnectToPreferredNetwork      = $False # Updated Property
-            ConnectWhenNetworkNameIsHidden = $True
-            ForceFIPSCompliance            = $True
-            MeteredConnectionLimit         = 'fixed'
-            NetworkName                    = 'MyWifi'
-            ProxyAutomaticConfigurationUrl = 'https://proxy.contoso.com'
-            ProxySetting                   = 'automatic'
-            Ssid                           = 'ssid'
-            WifiSecurityType               = 'wpa2Personal'
-            Ensure                         = 'Present'
-            ApplicationId                  = $ApplicationId;
-            TenantId                       = $TenantId;
-            CertificateThumbprint          = $CertificateThumbprint;
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Wireless Onboarding Exclusions"
+                }
+            );
+            Ensure                                     = "Present";
+            ApplicationId                              = $ApplicationId;
+            TenantId                                   = $TenantId;
+            CertificateThumbprint                      = $CertificateThumbprint;
         }
     }
 }

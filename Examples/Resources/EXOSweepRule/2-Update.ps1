@@ -31,7 +31,7 @@ Configuration Example
             DestinationFolder     = "AdeleV:\Deleted Items";
             Enabled               = $True;
             Ensure                = "Present";
-            KeepLatest            = 13; # Drift
+            KeepLatest            = 13; # Updated Property
             Mailbox               = "AdeleV";
             Name                  = "From Michelle";
             Provider              = "Exchange16";

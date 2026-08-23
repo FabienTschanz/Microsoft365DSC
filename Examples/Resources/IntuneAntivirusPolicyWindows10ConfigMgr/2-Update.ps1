@@ -38,7 +38,7 @@ Configuration Example
             AllowRealtimeMonitoring             = "1";
             AllowScanningNetworkFiles           = "1";
             AllowScriptScanning                 = "1";
-            AllowUserUIAccess                   = "0"; # Updated property
+            AllowUserUIAccess                   = "0"; # Updated Property
             ApplicationId                       = $ApplicationId;
             Assignments                         = @();
             AvgCPULoadFactor                    = 50;

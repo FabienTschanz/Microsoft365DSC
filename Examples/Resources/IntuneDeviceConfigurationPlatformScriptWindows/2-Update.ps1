@@ -31,13 +31,17 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             DisplayName           = "custom";
             Ensure                = "Present";
             EnforceSignatureCheck = $False;
             FileName              = "script.ps1";
             Id                    = "00000000-0000-0000-0000-000000000000";
-            RunAs32Bit            = $False; # Updated property
+            RunAs32Bit            = $False; # Updated Property
             RunAsAccount          = "system";
             ScriptContent         = "Base64 encoded script content";
             ApplicationId         = $ApplicationId;

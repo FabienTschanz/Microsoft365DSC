@@ -37,7 +37,7 @@ Configuration Example
             AllowScreenshot           = $True;
             AllowSimplePassword       = $True;
             AllowVideoConferencing    = $True;
-            AllowVoiceAssistant       = $False; # Drift
+            AllowVoiceAssistant       = $False; # Updated Property
             AllowVoiceDialing         = $True;
             ApplicationId             = $ApplicationId;
             BluetoothEnabled          = $True;

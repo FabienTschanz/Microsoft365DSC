@@ -25,7 +25,6 @@ Configuration Example
     {
         IntuneAndroidManagedStoreAppConfiguration "IntuneAndroidManagedStoreAppConfiguration-Example"
         {
-            Description           = "IntuneAndroidManagedStoreAppConfiguration Description";
             DisplayName           = "IntuneAndroidManagedStoreAppConfiguration DisplayName";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;

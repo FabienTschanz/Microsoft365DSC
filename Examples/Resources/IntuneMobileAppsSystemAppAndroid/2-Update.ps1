@@ -29,7 +29,7 @@ Configuration Example
             DisplayName           = "Office";
             Ensure                = "Present";
             AppIdentifier         = "com.microsoft.office";
-            Publisher             = "Company"; # Drift
+            Publisher             = "Company"; # Updated Property
             RoleScopeTagIds       = @("0")
             Assignments           = @(
                 MSFT_DeviceManagementSystemMobileAppAssignment {
@@ -42,6 +42,10 @@ Configuration Example
                         androidManagedStoreAppTrackIds = @()
                         autoUpdateMode                 = "default"
                     }
+                }
+                MSFT_DeviceManagementSystemMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             ApplicationId         = $ApplicationId;

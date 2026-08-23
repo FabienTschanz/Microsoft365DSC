@@ -26,7 +26,7 @@ Configuration Example
     {
         EXOMigration "EXOMigration-Example"
         {
-            AddUsers              = $True;  #Updated Property
+            AddUsers              = $True; # Updated Property
             BadItemLimit          = "";
             CompleteAfter         = "12/31/9999 11:59:59 PM";
             Ensure                = "Present";

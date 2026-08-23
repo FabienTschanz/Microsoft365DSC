@@ -32,7 +32,7 @@ Configuration Example
             DisplayName           = "ProjectAdministrators";
             Ensure                = "Present";
             Level                 = "Organization";
-            Members               = @("AdeleV@$TenantId", "admin@$TenantId"); #Drift
+            Members               = @("AdeleV@$TenantId", "admin@$TenantId"); # Updated Property
             OrganizationName      = "Contoso-Dev";
             PrincipalName         = "[CONTOSO-DEV]\ProjectAdministrators";
             TenantId              = $TenantId;

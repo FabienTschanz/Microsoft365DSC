@@ -27,7 +27,7 @@ Configuration Example
         EXORoleAssignmentPolicy 'EXORoleAssignmentPolicy-Example'
         {
             Name                  = "Limited Mailbox Permissions"
-            Description           = "Updated Description"  # Updated Property
+            Description           = "Updated Description" # Updated Property
             IsDefault             = $True
             Roles                 = @("My Marketplace Apps","MyVoiceMail","MyDistributionGroups","MyRetentionPolicies","MyContactInformation","MyBaseOptions","MyTextMessaging","MyDistributionGroupMembership","MyProfileInformation","My Custom Apps","My ReadWriteMailbox Apps")
             Ensure                = "Present"

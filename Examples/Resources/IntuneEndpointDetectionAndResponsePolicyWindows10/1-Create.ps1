@@ -33,7 +33,7 @@ Configuration Example
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            ConfigurationBlob     = "Blob"
+            ConfigurationBlob     = "<onboarding-blob>"
             ConfigurationType     = "onboard"
             SampleSharing         = 1
         }

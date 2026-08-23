@@ -34,7 +34,7 @@ Configuration Example
             IsAdminManaged                   = $True;
             IsDefault                        = $True;
             IsRoot                           = $True;
-            IsVerified                       = $False; #Drift
+            IsVerified                       = $False; # Updated Property
             PasswordNotificationWindowInDays = 14;
             PasswordValidityPeriodInDays     = 2147483647;
             TenantId                         = $TenantId;

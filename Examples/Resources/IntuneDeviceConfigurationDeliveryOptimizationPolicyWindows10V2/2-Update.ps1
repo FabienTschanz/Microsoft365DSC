@@ -31,6 +31,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             ApplicationId                                  = $ApplicationId;
             CertificateThumbprint                          = $CertificateThumbprint;
@@ -59,7 +63,7 @@ Configuration Example
             DOMinRAMAllowedToPeer                          = 15000;
             DOModifyCacheDrive                             = "%SystemDrive%\";
             DOMonthlyUploadDataCap                         = 67890;
-            DOPercentageMaxBackgroundBandwidth             = 20; # Updated property
+            DOPercentageMaxBackgroundBandwidth             = 20; # Updated Property
             DOPercentageMaxForegroundBandwidth             = 10;
             DORestrictPeerSelectionBy                      = "1";
             DOVpnKeywords                                  = @("vpn 1","vpn 2");

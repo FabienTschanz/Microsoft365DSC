@@ -37,6 +37,10 @@ Configuration Example
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
                 }
+                MSFT_DeviceManagementManagedGooglePlayMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

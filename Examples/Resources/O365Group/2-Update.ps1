@@ -22,7 +22,7 @@ Configuration Example
             MailNickName = "OttawaEmployees"
             Description  = "This is only for employees of the Ottawa Office"
             ManagedBy    = "TenantAdmin@contoso.onmicrosoft.com"
-            Members      = @("John.Smith") # Updated property
+            Members      = @("John.Smith") # Updated Property
             Ensure       = "Present"
             Credential   = $Credscredential
         }

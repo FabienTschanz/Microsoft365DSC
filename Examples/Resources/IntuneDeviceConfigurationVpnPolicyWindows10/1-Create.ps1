@@ -31,11 +31,26 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
+            );
+            AssociatedApps                             = @(
+                MSFT_MicrosoftGraphwindows10AssociatedApps{
+                    AppType    = "desktop"
+                    Identifier = "C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE"
+                }
+                MSFT_MicrosoftGraphwindows10AssociatedApps{
+                    AppType    = "universal"
+                    Identifier = "Microsoft.CompanyPortal_8wekyb3d8bbwe"
+                }
             );
             AuthenticationMethod                       = "usernameAndPassword";
             ConnectionName                             = "Cisco VPN";
             ConnectionType                             = "ciscoAnyConnect";
-            CustomXml                                  = "";
+            CustomXml                                  = "<Config><Version>1</Version><DeviceSetup><ConnectionEntry><HostName>vpn.contoso.com</HostName></ConnectionEntry></DeviceSetup></Config>";
+            Description                                = "Always-on connection to the corporate network for staff working remotely";
             DisplayName                                = "VPN";
             DnsRules                                   = @(
                 MSFT_MicrosoftGraphvpnDnsRule{
@@ -52,6 +67,7 @@ Configuration Example
             EnableSingleSignOnWithAlternateCertificate = $False;
             EnableSplitTunneling                       = $False;
             Ensure                                     = "Present";
+            OnlyAssociatedAppsCanUseConnection         = $False;
             ProfileTarget                              = "user";
             ProxyServer                                = MSFT_MicrosoftGraphwindows10VpnProxyServer{
                 Port                             = 8081
@@ -60,6 +76,17 @@ Configuration Example
                 Address                          = '10.0.10.100'
             };
             RememberUserCredentials                    = $True;
+            RoleScopeTagIds                            = @("0");
+            Routes                                     = @(
+                MSFT_MicrosoftGraphvpnRoute{
+                    DestinationPrefix = "10.20.0.0"
+                    PrefixSize        = 16
+                }
+                MSFT_MicrosoftGraphvpnRoute{
+                    DestinationPrefix = "172.16.0.0"
+                    PrefixSize        = 12
+                }
+            );
             ServerCollection                           = @(
                 MSFT_MicrosoftGraphvpnServer{
                     IsDefaultServer = $True
@@ -67,6 +94,11 @@ Configuration Example
                     Address         = '10.0.1.10'
                 }
             );
+            SingleSignOnEku                            = MSFT_MicrosoftGraphextendedKeyUsage{
+                Name             = "Client Authentication"
+                ObjectIdentifier = "1.3.6.1.5.5.7.3.2"
+            };
+            SingleSignOnIssuerHash                     = "<issuing-ca-certificate-hash>";
             TrafficRules                               = @(
                 MSFT_MicrosoftGraphvpnTrafficRule{
                     Name                = 'VPN rule'
@@ -81,7 +113,8 @@ Configuration Example
                     VpnTrafficDirection = 'outbound'
                 }
             );
-            TrustedNetworkDomains                      = @();
+            TrustedNetworkDomains                      = @("corp.contoso.com");
+            WindowsInformationProtectionDomain         = "contoso.com";
             ApplicationId                              = $ApplicationId;
             TenantId                                   = $TenantId;
             CertificateThumbprint                      = $CertificateThumbprint;

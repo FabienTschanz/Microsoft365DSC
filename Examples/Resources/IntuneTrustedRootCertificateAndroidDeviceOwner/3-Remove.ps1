@@ -25,8 +25,7 @@ Configuration Example
     {
         IntuneTrustedRootCertificateAndroidDeviceOwner "IntuneTrustedRootCertificateAndroidDeviceOwner-Example"
         {
-            Description           = "IntuneTrustedRootCertificateAndroidDeviceOwner Description";
-            DisplayName           = "IntuneTrustedRootCertificateAndroidDeviceOwner DisplayName";
+            DisplayName           = "Contoso Root CA (Android Device Owner)";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

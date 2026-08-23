@@ -26,8 +26,7 @@ Configuration Example
     {
         IntuneDeviceComplianceScriptLinux 'IntuneDeviceComplianceScriptLinux-Example'
         {
-            Id                    = "12345678-1234-1234-1234-123456789012"
-            DisplayName           = "custom";
+            DisplayName           = "Linux Patch Level Check";
             Ensure                = "Present";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

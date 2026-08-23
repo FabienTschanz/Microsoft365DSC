@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 'IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10-Example'
         {
-            DisplayName           = "network boundary";
+            DisplayName           = "Corporate Network Boundary";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

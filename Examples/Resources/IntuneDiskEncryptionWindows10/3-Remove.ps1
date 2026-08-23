@@ -27,7 +27,6 @@ Configuration Example
         IntuneDiskEncryptionWindows10 'IntuneDiskEncryptionWindows10-Example'
         {
             DisplayName           = 'Disk Encryption'
-            Description           = ''
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager 'IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager-Example'
         {
-            DisplayName           = 'asr ConfigMgr'
+            DisplayName           = 'Attack Surface Reduction (ConfigMgr)'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

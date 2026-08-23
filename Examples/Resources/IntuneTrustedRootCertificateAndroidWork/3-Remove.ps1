@@ -25,8 +25,7 @@ Configuration Example
     {
         IntuneTrustedRootCertificateAndroidWork "IntuneTrustedRootCertificateAndroidWork-Example"
         {
-            Description           = "IntuneTrustedRootCertificateAndroidWork Description";
-            DisplayName           = "IntuneTrustedRootCertificateAndroidWork DisplayName";
+            DisplayName           = "Contoso Root CA (Android Work Profile)";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

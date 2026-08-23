@@ -19,8 +19,6 @@ Configuration Example
         IntuneRoleScopeTag 'IntuneRoleScopeTag-Example'
         {
             DisplayName           = "Amsterdam Service Desk"
-            Id                    = "5"
-            Description           = "Devices managed by the Amsterdam service desk"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

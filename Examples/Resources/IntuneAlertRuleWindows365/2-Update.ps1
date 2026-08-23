@@ -36,7 +36,7 @@ Configuration Example
                     Operator          = "greaterOrEqual"
                 }
             );
-            Enabled               = $True; # Updated property
+            Enabled               = $True; # Updated Property
             NotificationChannels  = @(
                 MSFT_IntuneAlertRuleNotificationChannel{
                     NotificationChannelType = "portal"

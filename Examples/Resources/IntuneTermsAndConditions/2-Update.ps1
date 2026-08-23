@@ -36,7 +36,7 @@ Configuration Example
                     groupId                                    = "56ae142c-f960-4436-a445-6b371fc8338b"
                 }
             );
-            BodyText              = "Some Terms and Conditions - With new updates"; # Updated property
+            BodyText              = "Some Terms and Conditions - With new updates"; # Updated Property
             CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             Description           = "";
             DisplayName           = "IntuneTermsAndConditions_1";

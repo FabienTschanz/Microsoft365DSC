@@ -26,22 +26,38 @@ Configuration Example
     {
         IntuneDeviceConfigurationPolicyAndroidOpenSourceProject 'IntuneDeviceConfigurationPolicyAndroidOpenSourceProject-Example'
         {
-            DisplayName               = 'aosp'
-            Assignments               = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments {
-                    deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+            DisplayName                                    = 'AOSP Device Restrictions'
+            Description                                    = "Baseline restrictions for AOSP handheld scanners in the warehouse"
+            RoleScopeTagIds                                = @("0")
+            AppsBlockInstallFromUnknownSources             = $true
+            BluetoothBlockConfiguration                    = $true
+            BluetoothBlocked                               = $false
+            CameraBlocked                                  = $true # Updated Property
+            FactoryResetBlocked                            = $true
+            PasswordMinimumLength                          = 6
+            PasswordMinutesOfInactivityBeforeScreenTimeout = 5
+            PasswordRequiredType                           = "numericComplex"
+            PasswordSignInFailureCountBeforeFactoryReset   = 10
+            ScreenCaptureBlocked                           = $true
+            SecurityAllowDebuggingFeatures                 = $false
+            StorageBlockExternalMedia                      = $true
+            StorageBlockUsbFileTransfer                    = $true
+            WifiBlockEditConfigurations                    = $true
+            Assignments                                    = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                    groupDisplayName                           = "Exclude"
                 }
             )
-            CameraBlocked             = $True # Updated Property
-            FactoryResetBlocked       = $True
-            PasswordRequiredType      = 'deviceDefault'
-            ScreenCaptureBlocked      = $True
-            StorageBlockExternalMedia = $True
-            Ensure                    = 'Present'
-            ApplicationId             = $ApplicationId;
-            TenantId                  = $TenantId;
-            CertificateThumbprint     = $CertificateThumbprint;
+            Ensure                                         = "Present"
+            ApplicationId                                  = $ApplicationId;
+            TenantId                                       = $TenantId;
+            CertificateThumbprint                          = $CertificateThumbprint;
         }
     }
 }

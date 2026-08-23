@@ -45,7 +45,7 @@ Configuration Example
                     State        = 'enabled'
                 }
             );
-            Priority              = 140; #Drift
+            Priority              = 140; # Updated Property
             State                 = "enabled";
             TenantId              = $TenantId;
         }

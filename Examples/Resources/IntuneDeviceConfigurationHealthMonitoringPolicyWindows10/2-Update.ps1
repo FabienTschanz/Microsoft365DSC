@@ -26,19 +26,26 @@ Configuration Example
     {
         IntuneDeviceConfigurationHealthMonitoringPolicyWindows10 'IntuneDeviceConfigurationHealthMonitoringPolicyWindows10-Example'
         {
-            AllowDeviceHealthMonitoring       = "enabled";
-            Assignments                       = @(
+            AllowDeviceHealthMonitoring             = "enabled";
+            Assignments                             = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
-            ConfigDeviceHealthMonitoringScope = @("bootPerformance","windowsUpdates");
-            DisplayName                       = "Health Monitoring Configuration";
-            Ensure                            = "Present";
-            ApplicationId                     = $ApplicationId;
-            TenantId                          = $TenantId;
-            CertificateThumbprint             = $CertificateThumbprint;
+            ConfigDeviceHealthMonitoringCustomScope = "healthMonitoring,privilegeManagement";
+            ConfigDeviceHealthMonitoringScope       = @("bootPerformance","windowsUpdates");
+            Description                             = "Collects boot performance, Windows Update and privilege management health data from managed laptops"; # Updated Property
+            DisplayName                             = "Health Monitoring Configuration";
+            Ensure                                  = "Present";
+            RoleScopeTagIds                         = @("0");
+            ApplicationId                           = $ApplicationId;
+            TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

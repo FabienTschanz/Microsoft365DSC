@@ -28,32 +28,45 @@ Configuration Example
         {
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    groupDisplayName                           = 'Corporate Windows Devices'
                 }
             );
-            DisplayName           = "custom";
+            Description           = "Hardens Bluetooth and trusts the internal certificate authority through OMA-URI settings";
+            DisplayName           = "Windows OMA-URI Baseline";
             Ensure                = "Present";
             OmaSettings           = @(
                 MSFT_MicrosoftGraphomaSetting{
-                    Description            = 'custom'
-                    OmaUri                 = '/oma/custom'
-                    odataType              = '#microsoft.graph.omaSettingString'
-                    SecretReferenceValueId = '5b0e1dba-4523-455e-9fdd-e36c833b57bf_e072d616-12bc-4ea3-9171-ab080e4c120d_1f958162-15d4-42ba-92c4-17c2544b2179'
-                    Value                  = '****'
-                    IsEncrypted            = $True
-                    DisplayName            = 'oma'
+                    Description = 'Limits Bluetooth to the audio and human interface services'
+                    DisplayName = 'Bluetooth services allowed list'
+                    IsEncrypted = $false
+                    IsReadOnly  = $false
+                    OmaUri      = './Device/Vendor/MSFT/Policy/Config/Bluetooth/ServicesAllowedList'
+                    Value       = '{0000110b-0000-1000-8000-00805f9b34fb};{00001812-0000-1000-8000-00805f9b34fb}'
+                    odataType   = '#microsoft.graph.omaSettingString'
                 }
-                MSFT_MicrosoftGraphomaSetting{ # Updated Property
-                    Description = 'custom 3'
-                    OmaUri      = '/oma/custom3'
+                MSFT_MicrosoftGraphomaSetting{
+                    Description = 'Prevents laptops and tablets from being discoverable over Bluetooth' # Updated Property
+                    DisplayName = 'Bluetooth discoverable mode'
+                    IsEncrypted = $false
+                    IsReadOnly  = $false
+                    OmaUri      = './Device/Vendor/MSFT/Policy/Config/Bluetooth/AllowDiscoverableMode'
+                    Value       = 0
                     odataType   = '#microsoft.graph.omaSettingInteger'
-                    Value       = 2
-                    IsReadOnly  = $False
-                    IsEncrypted = $False
-                    DisplayName = 'custom 3'
+                }
+                MSFT_MicrosoftGraphomaSetting{
+                    Description = 'Installs the internal issuing certificate authority in the device root store'
+                    DisplayName = 'Internal root certificate'
+                    FileName    = 'contoso-root-ca.cer'
+                    IsEncrypted = $false
+                    IsReadOnly  = $false
+                    OmaUri      = './Device/Vendor/MSFT/RootCATrustedCertificates/Root/8f43288ad272f3103b6fb1428485ea3014c0bcfe/EncodedCertificate'
+                    Value       = '<base64-encoded-root-certificate>'
+                    odataType   = '#microsoft.graph.omaSettingBase64'
                 }
             );
+            RoleScopeTagIds       = @("0");
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

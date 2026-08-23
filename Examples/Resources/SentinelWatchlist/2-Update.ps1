@@ -35,7 +35,7 @@ Configuration Example
             Ensure                = "Present";
             ItemsSearchKey        = "IPAddress";
             Name                  = "MyWatchList";
-            NumberOfLinesToSkip   = 0; # Drift
+            NumberOfLinesToSkip   = 0; # Updated Property
             RawContent            = 'MyContent'
             ResourceGroupName     = "MyResourceGroup";
             SourceType            = "Local";

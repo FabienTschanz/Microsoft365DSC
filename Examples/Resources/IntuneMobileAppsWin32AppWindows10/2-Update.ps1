@@ -88,7 +88,7 @@ Configuration Example
             InstallExperience              = MSFT_MicrosoftGraphWin32LobAppInstallExperience{
                 DeviceRestartBehavior = "suppress"
                 RunAsAccount          = "system"
-                MaxRunTimeInMinutes   = 120 # Drift
+                MaxRunTimeInMinutes   = 120 # Updated Property
             };
             IsFeatured                     = $False;
             MinimumCpuSpeedInMHz           = 2500;

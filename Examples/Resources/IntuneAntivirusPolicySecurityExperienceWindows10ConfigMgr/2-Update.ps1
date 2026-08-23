@@ -32,7 +32,7 @@ Configuration Example
             CompanyName                                = "contoso";
             Description                                = "";
             DisableAccountProtectionUI                 = "0";
-            DisableAppBrowserUI                        = "1"; # Updated property
+            DisableAppBrowserUI                        = "1"; # Updated Property
             DisableClearTpmButton                      = "0";
             DisableDeviceSecurityUI                    = "0";
             DisableEnhancedNotifications               = "0";

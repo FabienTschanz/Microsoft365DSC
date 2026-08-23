@@ -31,23 +31,35 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
-            DisplayName                   = "network boundary";
+            Description                   = "Marks the corporate network, cloud resources and proxies as enterprise boundaries for Windows Information Protection";
+            DisplayName                   = "Corporate Network Boundary";
             Ensure                        = "Present";
+            RoleScopeTagIds               = @("0");
             WindowsNetworkIsolationPolicy = MSFT_MicrosoftGraphwindowsNetworkIsolationPolicy{
-                EnterpriseProxyServers                 = @()
-                EnterpriseInternalProxyServers         = @()
+                EnterpriseCloudResources               = @(
+                    MSFT_MicrosoftGraphProxiedDomain1{
+                        IpAddressOrFQDN = "contoso.sharepoint.com"
+                        Proxy           = "10.20.30.41:8080"
+                    }
+                )
+                EnterpriseProxyServers                 = @("10.20.30.40:8080")
+                EnterpriseInternalProxyServers         = @("10.20.30.41:8080")
                 EnterpriseIPRangesAreAuthoritative     = $True
                 EnterpriseProxyServersAreAuthoritative = $True
-                EnterpriseNetworkDomainNames           = @('domain.com')
+                EnterpriseNetworkDomainNames           = @("contoso.com")
                 EnterpriseIPRanges                     = @(
                     MSFT_MicrosoftGraphIpRange1{
-                        UpperAddress = '1.1.1.255'
-                        LowerAddress = '1.1.1.0'
+                        UpperAddress = "10.10.255.255"
+                        LowerAddress = "10.10.0.0"
                         odataType    = '#microsoft.graph.iPv4Range'
                     }
                 )
-                NeutralDomainResources                 = @()
+                NeutralDomainResources                 = @("sts.contoso.com", "login.microsoftonline.com")
             };
             ApplicationId                 = $ApplicationId;
             TenantId                      = $TenantId;

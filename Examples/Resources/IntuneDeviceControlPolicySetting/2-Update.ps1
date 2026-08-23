@@ -34,7 +34,7 @@ Configuration Example
                     FriendlyNameId      = "Printer\FriendlyNameId"
                     Name                = "PrinterReusableSetting"
                     VID_PID             = "0000_1111"
-                    PrinterConnectionId = 1 # Updated property
+                    PrinterConnectionId = 1 # Updated Property
                     PrimaryId           = 0
                 }
             );

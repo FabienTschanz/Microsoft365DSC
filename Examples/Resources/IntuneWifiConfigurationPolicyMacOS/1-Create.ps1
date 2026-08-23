@@ -27,18 +27,28 @@ Configuration Example
         IntuneWifiConfigurationPolicyMacOS 'IntuneWifiConfigurationPolicyMacOS-Example'
         {
             DisplayName                    = 'macos wifi'
+            Description                    = 'Corporate Wi-Fi for managed Mac devices'
             Assignments                    = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments {
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Mac Developer Workstations'
+                }
             )
-            ConnectAutomatically           = $True
-            ConnectWhenNetworkNameIsHidden = $True
-            NetworkName                    = 'ea1cf5d7-8d3e-40ca-9cb8-b8c8a4c6170b'
-            ProxyAutomaticConfigurationUrl = 'AZ500PrivateEndpoint22'
-            ProxySettings                  = 'automatic'
-            Ssid                           = 'aaaaaaaaaaaaa'
+            ConnectAutomatically           = $true
+            ConnectWhenNetworkNameIsHidden = $true
+            DeploymentChannel              = 'deviceChannel'
+            ForcePreSharedKeyUpdate        = $false
+            NetworkName                    = 'Design Studio Wi-Fi'
+            PreSharedKey                   = '<wifi-pre-shared-key>'
+            ProxyManualAddress             = 'proxy.contoso.com'
+            ProxyManualPort                = 8080
+            ProxySettings                  = 'manual'
+            RoleScopeTagIds                = @('0')
+            Ssid                           = 'Contoso-Mac'
             WiFiSecurityType               = 'wpaPersonal'
             Ensure                         = 'Present'
             ApplicationId                  = $ApplicationId;

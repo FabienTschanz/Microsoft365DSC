@@ -38,7 +38,7 @@ Configuration Example
             Description             = ''
             ExpeditedUpdateSettings = MSFT_MicrosoftGraphexpeditedWindowsQualityUpdateSettings{
                 QualityUpdateRelease  = '2024-06-11T00:00:00Z'
-                DaysUntilForcedReboot = 1 # Updated property
+                DaysUntilForcedReboot = 1 # Updated Property
             }
             RoleScopeTagIds         = @("0")
             Ensure                  = 'Present'

@@ -63,7 +63,7 @@ Configuration Example
                 MSFT_MicrosoftGraphvpnServer{
                     isDefaultServer = $True
                     description     = 'Primary VPN gateway'
-                    address         = 'vpn2.contoso.com:8080' #CHANGED VALUE
+                    address         = 'vpn2.contoso.com:8080' # Updated Property
                 }
             );
             targetedMobileApps    = @(

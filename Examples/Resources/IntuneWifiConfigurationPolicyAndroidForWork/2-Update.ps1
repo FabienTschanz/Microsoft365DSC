@@ -27,20 +27,22 @@ Configuration Example
         IntuneWifiConfigurationPolicyAndroidForWork 'IntuneWifiConfigurationPolicyAndroidForWork-Example'
         {
             DisplayName                    = 'AndroindForWork'
-            Description                    = 'Corporate Wi-Fi for Android work profile devices'
+            Description                    = 'Corporate Wi-Fi for Android work profile devices in branch offices' # Updated Property
             Assignments                    = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments {
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
-                    deviceAndAppManagementAssignmentFilterType = 'include'
-                    deviceAndAppManagementAssignmentFilterId   = '17cb2318-cd4f-4a66-b742-6b79d4966ac7'
-                    groupId                                    = 'b9b732df-9f18-4c5f-99d1-682e151ec62b'
-                    collectionId                               = '2a8ea71f-039a-4ec8-8e41-5fba3ef9efba'
+                    deviceAndAppManagementAssignmentFilterType = 'none'
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Android Personally Owned Devices'
                 }
             )
-            ConnectAutomatically           = $true # Updated Property
+            ConnectAutomatically           = $true
             ConnectWhenNetworkNameIsHidden = $true
             NetworkName                    = 'CorpNet'
-            Ssid                           = 'WiFi'
+            RoleScopeTagIds                = @('0')
+            Ssid                           = 'Contoso-Work'
             WiFiSecurityType               = 'wpa2Enterprise'
             Ensure                         = 'Present'
             ApplicationId                  = $ApplicationId;

@@ -32,8 +32,8 @@ Configuration Example
             Ensure                       = "Present";
             EnablePersonalDataEncryption = "1";
             ProtectDesktop               = "0";
-            ProtectDocuments             = "1"; # Updated property
-            ProtectPictures              = "1"; # Updated property
+            ProtectDocuments             = "1"; # Updated Property
+            ProtectPictures              = "1"; # Updated Property
             RoleScopeTagIds              = @("0");
             ApplicationId                = $ApplicationId;
             TenantId                     = $TenantId;

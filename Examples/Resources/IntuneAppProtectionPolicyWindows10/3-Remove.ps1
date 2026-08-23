@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneAppProtectionPolicyWindows10 "IntuneAppProtectionPolicyWindows10-Example"
         {
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
-            DisplayName           = "IntuneAppProtectionPolicyWindows10_1";
+            ApplicationId         = $ApplicationId;
+            CertificateThumbprint = $CertificateThumbprint;
+            DisplayName           = "Windows App Protection Baseline";
             Ensure                = "Absent";
-            TenantId              = $OrganizationName;
+            TenantId              = $TenantId;
         }
     }
 }

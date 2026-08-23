@@ -39,7 +39,7 @@ Configuration Example
                     groupDisplayName                           = "Include"
                 }
             );
-            AssignmentTarget      = "Exclude"; # Updated property
+            AssignmentTarget      = "Exclude"; # Updated Property
             CertificateThumbprint = $CertificateThumbprint;
             CustomErrorMessage    = "Contact your organization’s support person for help.";
             DeploymentMode        = "0";

@@ -31,7 +31,7 @@ Configuration Example
             PolicySettings        = @(
                 MSFT_ReusableFirewallPolicySetting{
                     Keyword     = "ReusableSetting1"
-                    AutoResolve = $True # Updated property
+                    AutoResolve = $True # Updated Property
                 }
             );
             ApplicationId         = $ApplicationId;

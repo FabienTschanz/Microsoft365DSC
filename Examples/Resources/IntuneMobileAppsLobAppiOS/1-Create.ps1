@@ -38,6 +38,10 @@ Configuration Example
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
                 }
+                MSFT_DeviceManagementLobAppiOSAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             BuildNumber                     = "1";
             BundleId                        = "com.contoso.fieldservice";

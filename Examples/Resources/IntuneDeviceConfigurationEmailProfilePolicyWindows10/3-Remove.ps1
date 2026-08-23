@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationEmailProfilePolicyWindows10 'IntuneDeviceConfigurationEmailProfilePolicyWindows10-Example'
         {
-            DisplayName           = "email";
+            DisplayName           = "Corporate Mail Profile";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

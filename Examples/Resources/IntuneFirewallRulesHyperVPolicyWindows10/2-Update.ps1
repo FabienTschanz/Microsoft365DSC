@@ -34,7 +34,7 @@ Configuration Example
             );
             FirewallRuleName      = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName_IntuneFirewallRulesHyperVPolicyWindows10{
-                    Direction        = 'in' # Updated property
+                    Direction        = 'in' # Updated Property
                     RemotePortRanges = @('0-100')
                     Name             = 'Rule1'
                     Protocol         = 80

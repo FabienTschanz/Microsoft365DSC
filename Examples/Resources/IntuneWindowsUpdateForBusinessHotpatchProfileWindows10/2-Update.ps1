@@ -26,9 +26,19 @@ Configuration Example
         IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 'IntuneWindowsUpdateForBusinessHotpatchProfileWindows10-Example'
         {
             DisplayName           = "Hotpatch - Windows 11 Enterprise";
-            Description           = "";
-            HotpatchEnabled       = $False; # Updated property
+            Description           = "Enables hotpatch quality updates so security fixes apply without a restart";
+            HotpatchEnabled       = $False; # Updated Property
             RoleScopeTagIds       = @("0");
+            Assignments           = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Hotpatch Exclusions"
+                }
+            );
             Ensure                = 'Present';
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -26,20 +26,36 @@ Configuration Example
     {
         IntuneMobileAppsMacOSLobApp "IntuneMobileAppsMacOSLobApp-Example"
         {
-            Id                              = "8d027f94-0682-431e-97c1-827d1879fa79";
-            Description                     = "TeamsForBusinessInstaller";
-            Developer                       = "Contoso drift"; #drift
+            Description                     = "Collaboration client for managed Mac computers";
+            Developer                       = "Contoso Workplace Engineering"; # Updated Property
             DisplayName                     = "TeamsForBusinessInstaller";
             Ensure                          = "Present";
-            InformationUrl                  = "";
-            IsFeatured                      = $False;
+            InformationUrl                  = "https://intranet.contoso.com/apps/collaboration-client";
+            IsFeatured                      = $true;
             MinimumSupportedOperatingSystem = MSFT_DeviceManagementMinimumOperatingSystem{
                 v11_0 = $true
-            }
-            Notes                           = "";
-            Owner                           = "";
-            PrivacyInformationUrl           = "";
+            };
+            Notes                           = "Reviewed annually by the mobility team";
+            Owner                           = "Workplace Services";
+            PrivacyInformationUrl           = "https://www.contoso.com/privacy";
             Publisher                       = "Contoso";
+            BundleId                        = "com.contoso.collaborationclient";
+            BuildNumber                     = "2026.0815.1";
+            VersionNumber                   = "1.6.0";
+            IgnoreVersionDetection          = $false;
+            InstallAsManaged                = $true;
+            LargeIcon                       = MSFT_DeviceManagementMimeContent{
+                Type  = "image/png"
+                Value = "<base64-encoded-app-icon>"
+            };
+            RoleScopeTagIds                 = @("0");
+            ChildApps                       = @(
+                MSFT_DeviceManagementMobileAppChildApp{
+                    BundleId      = "com.contoso.collaborationclient.helper"
+                    BuildNumber   = "2026.0815.1"
+                    VersionNumber = "1.6.0"
+                }
+            );
             Assignments                     = @(
                 MSFT_DeviceManagementMacOSLobAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
@@ -49,9 +65,8 @@ Configuration Example
                 }
             );
             Categories                      = @(
-                MSFT_DeviceManagementMobileAppCategory {
-                    Id          = '1bff2652-03ec-4a48-941c-152e93736515'
-                    DisplayName = 'Kajal 3'
+                MSFT_DeviceManagementMobileAppCategory{
+                    DisplayName = "Productivity"
                 }
             );
             ApplicationId                   = $ApplicationId;

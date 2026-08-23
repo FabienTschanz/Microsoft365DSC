@@ -25,11 +25,22 @@ Configuration Example
     {
         IntuneTrustedRootCertificateAndroidWork "IntuneTrustedRootCertificateAndroidWork-Example"
         {
-            Description            = "IntuneTrustedRootCertificateAndroidWork Description";
-            DisplayName            = "IntuneTrustedRootCertificateAndroidWork DisplayName";
+            Description            = "Deploys the Contoso issuing root certificate to Android Enterprise work profiles";
+            DisplayName            = "Contoso Root CA (Android Work Profile)";
+            RoleScopeTagIds        = @("0");
             Ensure                 = "Present";
-            certFileName           = "fakename.cer";
-            trustedRootCertificate = "insertValidBase64StringHere";
+            certFileName           = "ContosoRootCA.cer";
+            trustedRootCertificate = "<base64-encoded-root-certificate>";
+            Assignments            = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allLicensedUsersAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Field Service Contractors"
+                }
+            );
             ApplicationId          = $ApplicationId;
             TenantId               = $TenantId;
             CertificateThumbprint  = $CertificateThumbprint;

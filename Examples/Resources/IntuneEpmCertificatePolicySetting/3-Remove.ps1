@@ -25,7 +25,7 @@ Configuration Example
     {
         IntuneEpmCertificatePolicySetting "IntuneEpmCertificatePolicySetting-Example"
         {
-            DisplayName           = "IntuneEpmCertificatePolicySetting_1";
+            DisplayName           = "Contoso Elevation Signing Certificate";
             CertificateFile       = "<base64-encoded-certificate>";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;

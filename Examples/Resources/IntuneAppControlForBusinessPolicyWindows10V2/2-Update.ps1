@@ -40,7 +40,7 @@ Configuration Example
                 }
             );
             CertificateThumbprint                                     = $CertificateThumbprint;
-            ConfigureApplicationControlOptions                        = "0"; # Updated property
+            ConfigureApplicationControlOptions                        = "0"; # Updated Property
             ConfigureApplicationControlsAuditMode                     = "1";
             ConfigureApplicationControlsTrustAppsFromManagedInstaller = "1";
             ConfigureApplicationControlsTrustAppsWithGoodReputation   = "1";

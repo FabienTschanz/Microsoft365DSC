@@ -37,27 +37,29 @@ Configuration Example
             );
             Categories                      = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
-                    DisplayName = "App Category 1"
+                    DisplayName = "Business"
                 }
             );
             CertificateThumbprint           = $CertificateThumbprint;
-            Description                     = "Line-of-business Android application";
-            Developer                       = "";
+            Description                     = "Contoso field service application for Android phones and tablets"; # Updated Property
+            Developer                       = "Contoso Application Development";
             DisplayName                     = "Apk App";
             MinimumSupportedOperatingSystem = MSFT_MicrosoftGraphAndroidMinimumOperatingSystem{
-                V10_0 = $True
+                V10_0 = $true
             };
             PackageId                       = "com.contoso.lineofbusiness";
             TargetedPlatforms               = "androidDeviceAdministrator";
-            InformationUrl                  = "";
-            PrivacyInformationUrl           = "";
+            InformationUrl                  = "https://intranet.contoso.com/apps/field-service";
+            PrivacyInformationUrl           = "https://www.contoso.com/privacy";
             Ensure                          = "Present";
             FileName                        = "ContosoLineOfBusiness.apk";
-            Id                              = "63271b78-0fa4-46b8-9ac0-d4b777555dde";
-            IsFeatured                      = $False;
-            Notes                           = "";
-            Owner                           = "";
+            IsFeatured                      = $true;
+            LargeIcon                       = MSFT_DeviceManagementMimeContent{
+                Type  = "image/png"
+                Value = "<base64-encoded-app-icon>"
+            };
+            Notes                           = "Reviewed annually by the mobility team";
+            Owner                           = "Field Operations";
             Publisher                       = "Contoso";
             RoleScopeTagIds                 = @("0");
             TenantId                        = $TenantId;

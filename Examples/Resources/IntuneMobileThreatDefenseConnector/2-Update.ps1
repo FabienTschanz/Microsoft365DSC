@@ -29,7 +29,7 @@ Configuration Example
             AllowPartnerToCollectIosApplicationMetadata         = $False;
             AllowPartnerToCollectIosPersonalApplicationMetadata = $False;
             AndroidDeviceBlockedOnMissingPartnerData            = $False;
-            AndroidEnabled                                      = $True; #drift
+            AndroidEnabled                                      = $True; # Updated Property
             AndroidMobileApplicationManagementEnabled           = $False;
             DisplayName                                         = "Microsoft Defender for Endpoint";
             Id                                                  = "fc780465-2017-40d4-a0c5-307022471b92";

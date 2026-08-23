@@ -29,7 +29,7 @@ Configuration Example
             ApplicationId               = $ApplicationId;
             AssociatedTenantId          = "7a575036-2dac-4713-8e23-2963cc2c5f37";
             BillingAccount              = "Contoso Enterprise Agreement";
-            BillingManagementState      = "NotAllowed"; # Drift
+            BillingManagementState      = "NotAllowed"; # Updated Property
             CertificateThumbprint       = $CertificateThumbprint;
             DisplayName                 = "Contoso Manufacturing";
             Ensure                      = "Present";

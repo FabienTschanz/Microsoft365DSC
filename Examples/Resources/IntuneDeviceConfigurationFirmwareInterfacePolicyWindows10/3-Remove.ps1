@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10 'IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10-Example'
         {
-            DisplayName           = "firmware";
+            DisplayName           = "Device Firmware Interface";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

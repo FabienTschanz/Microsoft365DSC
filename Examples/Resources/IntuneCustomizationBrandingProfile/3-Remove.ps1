@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -20,8 +28,8 @@ Configuration Example
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "Company";
-            ProfileName           = "IntuneCustomizationBrandingProfile_1";
+            DisplayName           = "Contoso";
+            ProfileName           = "Contoso Company Portal";
             Ensure                = "Absent";
             TenantId              = $TenantId;
         }

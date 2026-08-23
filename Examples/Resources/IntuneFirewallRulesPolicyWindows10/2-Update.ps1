@@ -34,7 +34,7 @@ Configuration Example
             );
             FirewallRuleName      = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogFirewallRuleName{
-                    Direction        = 'in' # Updated property
+                    Direction        = 'in' # Updated Property
                     InterfaceTypes   = @('lan')
                     RemotePortRanges = @('0-100')
                     Name             = 'Rule1'

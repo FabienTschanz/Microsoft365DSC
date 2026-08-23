@@ -26,31 +26,46 @@ Configuration Example
     {
         IntuneWindowsAutopilotDeploymentProfileAzureADJoined 'IntuneWindowsAutopilotDeploymentProfileAzureADJoined-Example'
         {
-            Assignments                = @(
+            Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
-                    deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Autopilot Provisioning Exclusions"
                 }
             );
-            Description                = "";
-            DeviceNameTemplate         = "CONTOSO-%RAND:6%";
-            DeviceType                 = "windowsPc";
-            DisplayName                = "AAD";
-            EnableWhiteGlove           = $False; # Updated Property
-            Ensure                     = "Present";
-            ExtractHardwareHash        = $True;
-            Language                   = "";
-            OutOfBoxExperienceSettings = MSFT_MicrosoftGraphoutOfBoxExperienceSettings1{
-                HideEULA                  = $False
-                HideEscapeLink            = $True
-                HidePrivacySettings       = $True
-                DeviceUsageType           = 'singleUser'
-                SkipKeyboardSelectionPage = $True
-                UserType                  = 'administrator'
+            Description                    = "User-driven provisioning for Entra joined laptops";
+            DeviceNameTemplate             = "CONTOSO-%RAND:6%";
+            DeviceType                     = "windowsPc";
+            DisplayName                    = "AAD";
+            EnableWhiteGlove               = $false; # Updated Property
+            EnrollmentStatusScreenSettings = MSFT_MicrosoftGraphwindowsEnrollmentStatusScreenSettings1{
+                AllowDeviceUseBeforeProfileAndAppInstallComplete = $false
+                AllowDeviceUseOnInstallFailure                   = $true
+                AllowLogCollectionOnInstallFailure               = $true
+                BlockDeviceSetupRetryByUser                      = $false
+                CustomErrorMessage                               = "Setup could not be completed. Please contact the service desk on extension 4500."
+                HideInstallationProgress                         = $false
+                InstallProgressTimeoutInMinutes                  = 60
             };
-            ApplicationId              = $ApplicationId;
-            TenantId                   = $TenantId;
-            CertificateThumbprint      = $CertificateThumbprint;
+            Ensure                         = "Present";
+            ExtractHardwareHash            = $true;
+            Language                       = "en-US";
+            ManagementServiceAppId         = "<application-id>";
+            OutOfBoxExperienceSettings     = MSFT_MicrosoftGraphoutOfBoxExperienceSettings1{
+                DeviceUsageType           = "singleUser"
+                HideEULA                  = $false
+                HideEscapeLink            = $true
+                HidePrivacySettings       = $true
+                SkipKeyboardSelectionPage = $true
+                UserType                  = "administrator"
+            };
+            RoleScopeTagIds                = @("0");
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

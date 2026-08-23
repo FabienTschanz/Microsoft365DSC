@@ -34,7 +34,7 @@ Configuration Example
             DisplayName                     = "Builtin Store App";
             Ensure                          = "Present";
             InformationUrl                  = "";
-            IsFeatured                      = $True; # Drift
+            IsFeatured                      = $True; # Updated Property
             Notes                           = "";
             Owner                           = "";
             PrivacyInformationUrl           = "";
@@ -67,6 +67,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
+                }
+                MSFT_DeviceManagementBuiltInStoreAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             Categories                      = @(

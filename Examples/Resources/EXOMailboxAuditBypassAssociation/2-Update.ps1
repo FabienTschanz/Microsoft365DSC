@@ -26,7 +26,7 @@ Configuration Example
     {
         EXOMailboxAuditBypassAssociation "EXOMailboxAuditBypassAssociation-Example"
         {
-            AuditBypassEnabled    = $True;  #Updated Property
+            AuditBypassEnabled    = $True; # Updated Property
             Identity              = "AdeleV";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -27,19 +27,29 @@ Configuration Example
         IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner 'IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner-Example'
         {
             DisplayName                    = 'Wifi - androidForWork'
+            Description                    = 'Corporate Wi-Fi for company-owned Android devices'
             Assignments                    = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments
-                {
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Android Loaner Devices'
+                }
             )
-            ConnectAutomatically           = $False
-            ConnectWhenNetworkNameIsHidden = $False
-            NetworkName                    = 'myNetwork'
-            PreSharedKeyIsSet              = $True
-            ProxySettings                  = 'none'
-            Ssid                           = 'MySSID - 3'
+            ConnectAutomatically           = $false
+            ConnectWhenNetworkNameIsHidden = $false
+            NetworkName                    = 'Contoso Corporate Wi-Fi'
+            PreSharedKey                   = '<wifi-pre-shared-key>'
+            PreSharedKeyIsSet              = $true
+            ProxyExclusionList             = 'intranet.contoso.com,*.contoso.local'
+            ProxyManualAddress             = 'proxy.contoso.com'
+            ProxyManualPort                = 8080
+            ProxySettings                  = 'manual'
+            RoleScopeTagIds                = @('0')
+            Ssid                           = 'Contoso-Corp'
+            WiFiSecurityType               = 'wpaPersonal'
             Ensure                         = 'Present'
             ApplicationId                  = $ApplicationId;
             TenantId                       = $TenantId;

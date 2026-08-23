@@ -25,7 +25,6 @@ Configuration Example
     {
         IntuneFirewallPolicyWindows10 'IntuneFirewallPolicyWindows10-Example'
         {
-            Id                    = '00000000-0000-0000-0000-000000000000'
             DisplayName           = 'Intune Firewall Policy Windows10'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;

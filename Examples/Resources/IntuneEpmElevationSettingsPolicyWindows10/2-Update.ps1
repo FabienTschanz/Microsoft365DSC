@@ -29,17 +29,18 @@ Configuration Example
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.groupAssignmentTarget'
-                    groupId                                    = '11111111-1111-1111-1111-111111111111'
+                    groupDisplayName                           = 'Engineering Workstations'
                 }
             );
-            Description                 = 'Description'
-            DefaultElevationResponse    = "0";
-            DisplayName                 = "IntuneEpmElevationSettingsPolicyWindows10_1";
+            Description                 = 'Elevation rules for engineering and design workstations' # Updated Property
+            AllowElevationDetection     = "0";
+            DefaultBehaviorValidation   = @("1", "2");
+            DefaultElevationResponse    = "1";
+            DisplayName                 = "Endpoint Privilege Management Defaults";
             EndpointPrivilegeManagement = "1";
             ReportingScope              = "1";
             SendDataToMicrosoft         = "1";
             Ensure                      = "Present";
-            Id                          = '00000000-0000-0000-0000-000000000000'
             RoleScopeTagIds             = @("0");
             ApplicationId               = $ApplicationId;
             TenantId                    = $TenantId;

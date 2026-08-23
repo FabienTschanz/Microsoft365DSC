@@ -27,7 +27,7 @@ Configuration Example
         O365ExternalConnection "O365ExternalConnection-Example"
         {
             ApplicationId         = $ApplicationId;
-            AuthorizedAppIds      = @("MyApp", "MySecondApp"); # Drift
+            AuthorizedAppIds      = @("MyApp", "MySecondApp"); # Updated Property
             CertificateThumbprint = $CertificateThumbprint;
             Description           = "Connection to index Contoso HR system";
             Ensure                = "Present";

@@ -86,7 +86,7 @@ Configuration Example
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'RemoteNetworkHealthLogs'
-                    enabled  = $False #Drift
+                    enabled  = $False # Updated Property
                 }
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'NetworkAccessAlerts'

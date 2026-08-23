@@ -28,7 +28,7 @@ Configuration Example
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "Detects internal employee and contractor identification numbers"; #drift
+            Description           = "Detects internal employee and contractor identification numbers"; # Updated Property
             Ensure                = "Present";
             FileData              = "Employee identification numbers at Contoso consist of the letters EMP followed by five digits, such as EMP12345. They are issued by Human Resources when an employee joins the company and are printed on every badge, payslip and internal directory entry. Contractor numbers follow the same pattern but begin with the letters CON.";
             Locale                = "en-US";

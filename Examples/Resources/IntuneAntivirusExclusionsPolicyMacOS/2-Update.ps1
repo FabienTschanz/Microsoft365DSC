@@ -32,7 +32,7 @@ Configuration Example
             Ensure                = "Present";
             Exclusions            = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions{
-                    Exclusions_item_extension = '.xcode' # Updated property
+                    Exclusions_item_extension = '.xcode' # Updated Property
                     Exclusions_item_type      = 'excludedFileExtension'
                 }
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusions{

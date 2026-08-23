@@ -31,6 +31,12 @@
             Properties = @('AppId')
         }
         @{
+            Name       = '<base64-encoded-app-icon>'
+            Meaning    = 'Base64 icon shown for an app in Company Portal.'
+            Sample     = 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwY...'
+            Properties = @('LargeIcon')
+        }
+        @{
             Name       = '<base64-encoded-certificate>'
             Meaning    = 'Base64 public certificate.'
             Sample     = 'MIIDPzCCAiegAwIBAgIQPbcHnHzTkKtCj4d0eOR7QDANBgkqhkiG9w0BAQsFADAg...'
@@ -55,16 +61,58 @@
             Properties = @('NextSigningCertificate')
         }
         @{
+            Name       = '<base64-encoded-default-associations>'
+            Meaning    = 'Base64 of the Windows default application associations XML a policy deploys.'
+            Sample     = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RGVmYXVsdEFzc29jaWF0aW9ucz4...'
+            Properties = @('Settings')
+        }
+        @{
+            Name       = '<base64-encoded-landing-page-image>'
+            Meaning    = 'Base64 hero image shown on the Company Portal apps landing page.'
+            Sample     = '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBk...'
+            Properties = @('LandingPageCustomizedImage')
+        }
+        @{
+            Name       = '<base64-encoded-light-background-logo>'
+            Meaning    = 'Base64 logo shown in Company Portal on a light background.'
+            Sample     = 'iVBORw0KGgoAAAANSUhEUgAAAZAAAABkCAYAAACaeFuKAAAACXBIWXMAAAsTAAALEwE...'
+            Properties = @('LightBackgroundLogo')
+        }
+        @{
+            Name       = '<base64-encoded-mobileconfig>'
+            Meaning    = 'Base64 of the .mobileconfig or .xml payload file a custom policy deploys.'
+            Sample     = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgcGxpc3Q...'
+            Properties = @('Payload')
+        }
+        @{
+            Name       = '<base64-encoded-wallpaper-image>'
+            Meaning    = 'Base64 wallpaper image pushed to supervised devices.'
+            Sample     = 'iVBORw0KGgoAAAANSUhEUgAABAAAAAcACAYAAAD3JBRuAAAACXBIWXMAAAsTAAALEwEAmpwY...'
+            Properties = @('WallpaperImage')
+        }
+        @{
+            Name       = '<base64-encoded-theme-color-logo>'
+            Meaning    = 'Base64 logo shown in Company Portal on the theme-colour background.'
+            Sample     = 'iVBORw0KGgoAAAANSUhEUgAAAZAAAABkCAYAAACaeFuKAAAACXBIWXMAAAsTAAALEwG...'
+            Properties = @('ThemeColorLogo')
+        }
+        @{
             Name       = '<base64-encoded-root-certificate>'
             Meaning    = 'Base64 trusted root certificate.'
             Sample     = 'MIIEEjCCAvqgAwIBAgIPAMEAizw8iBHRPvZj7N9AMA0GCSqGSIb3DQEBBAUAMHAx...'
-            Properties = @('TrustedRootCertificate')
+            Properties = @('TrustedRootCertificate', 'trustedRootCertificate')
+        }
+        @{
+            Name       = '<base64-encoded-root-certificate-updated>'
+            Meaning    = 'Renewed trusted root certificate, so the update example differs from the create example.'
+            Sample     = 'MIIEEjCCAvqgAwIBAgIPAJ2rQmT4XkNbLc8Vd1HpMA0GCSqGSIb3DQEBBAUAMHAx...'
+            Properties = @('trustedRootCertificate')
         }
         @{
             Name       = '<certificate-thumbprint>'
             Meaning    = 'Thumbprint of a certificate installed on the machine running the configuration.'
             Sample     = 'ABCDEF1234567890ABCDEF1234567890ABCDEF12'
-            Properties = @('CertificateThumbprint')
+            Properties = @('CertificateThumbprint', 'CertificateThumbprints')
         }
         @{
             Name       = '<client-id>'
@@ -85,10 +133,22 @@
             Properties = @('ClientSecret')
         }
         @{
+            Name       = '<domain-join-password>'
+            Meaning    = 'Password of the account used to join devices to the on-premises domain.'
+            Sample     = 'J0inD0m@in!2026'
+            Properties = @('AdDomainPassword')
+        }
+        @{
             Name       = '<event-hub-authorization-rule-id>'
             Meaning    = 'Resource ID of the Event Hub authorization rule that receives the diagnostic stream.'
             Sample     = '/subscriptions/63e62ab2-fd92-46ce-a393-2cb338039cc7/resourceGroups/monitoring/providers/Microsoft.EventHub/namespaces/contoso-hub/authorizationRules/RootManageSharedAccessKey'
             Properties = @('EventHubAuthorizationRuleId')
+        }
+        @{
+            Name       = '<issuing-ca-certificate-hash>'
+            Meaning    = 'Thumbprint of the certification authority certificate that issues the single sign-on certificates.'
+            Sample     = '9F2B4C7D1E8A0356BD4F71C29A6E3D80B5471FEC'
+            Properties = @('SingleSignOnIssuerHash')
         }
         @{
             Name       = '<key-vault-key-uri>'
@@ -97,10 +157,28 @@
             Properties = @('AzureKeyIDs')
         }
         @{
+            Name       = '<kiosk-mode-exit-code>'
+            Meaning    = 'PIN an administrator enters to pause kiosk mode on a dedicated device.'
+            Sample     = '135791'
+            Properties = @('KioskModeExitCode')
+        }
+        @{
             Name       = '<key-vault-uri>'
             Meaning    = 'Base URI of an Azure Key Vault.'
             Sample     = 'https://contoso-eastus-kv.vault.azure.net/'
             Properties = @('ResourceUrl')
+        }
+        @{
+            Name       = '<log-analytics-workspace-id>'
+            Meaning    = 'ID of the Log Analytics workspace a device reports to.'
+            Sample     = '4d7f2a91-6c38-4b5e-9f10-2ab8c7d6e504'
+            Properties = @('AzureOperationalInsightsWorkspaceId')
+        }
+        @{
+            Name       = '<log-analytics-workspace-key>'
+            Meaning    = 'Primary key of that Log Analytics workspace.'
+            Sample     = 'k9Ql3ZzR7mXpT2vNbF8sJd1WqYhC6uAoE4gK0iLxRt5cP7nMwB3eS2yUvHj9Fa=='
+            Properties = @('AzureOperationalInsightsWorkspaceKey')
         }
         @{
             Name       = '<log-analytics-workspace-resource-id>'
@@ -118,13 +196,37 @@
             Name       = '<onboarding-blob>'
             Meaning    = 'Defender for Endpoint onboarding blob, taken from the Defender portal.'
             Sample     = '<EncryptedMessage xmlns="http://schemas.datacontract.org/2004/07/Microsoft.Management.Services.Common.Cryptography">...</EncryptedMessage>'
-            Properties = @('AdvancedThreatProtectionOnboardingBlob')
+            Properties = @('AdvancedThreatProtectionOnboardingBlob', 'ConfigurationBlob')
+        }
+        @{
+            Name       = '<offboarding-blob>'
+            Meaning    = 'Defender for Endpoint offboarding blob, taken from the Defender portal.'
+            Sample     = '<EncryptedMessage xmlns="http://schemas.datacontract.org/2004/07/Microsoft.Management.Services.Common.Cryptography">...</EncryptedMessage>'
+            Properties = @('AdvancedThreatProtectionOffboardingBlob')
+        }
+        @{
+            Name       = '<rms-template-id>'
+            Meaning    = 'ID of the Azure Rights Management template used to encrypt protected files, which exists only in the tenant that created it.'
+            Sample     = 'f7a2c1d4-9b83-4e56-a0cf-3d81b26e4f90'
+            Properties = @('RightsManagementServicesTemplateId')
+        }
+        @{
+            Name       = '<root-certificate-thumbprint>'
+            Meaning    = 'Thumbprint of a root certificate present on the managed device, not on the machine running the configuration.'
+            Sample     = 'a5f3c1d97b26e480f5c3a1b98d7e6f04c2b3a591'
+            Properties = @('ApplicationGuardCertificateThumbprints')
         }
         @{
             Name       = '<storage-account-resource-id>'
             Meaning    = 'Resource ID of the storage account that receives the diagnostic stream.'
             Sample     = '/subscriptions/63e62ab2-fd92-46ce-a393-2cb338039cc7/resourceGroups/monitoring/providers/Microsoft.Storage/storageAccounts/contosodiagnostics'
             Properties = @('StorageAccountId')
+        }
+        @{
+            Name       = '<wifi-pre-shared-key>'
+            Meaning    = 'Pre-shared key of a WPA-Personal Wi-Fi network.'
+            Sample     = 'Contoso!Corp2026Wifi'
+            Properties = @('PreSharedKey')
         }
         @{
             Name       = '<subscription-id>'

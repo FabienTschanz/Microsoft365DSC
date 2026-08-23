@@ -28,7 +28,7 @@ Configuration Example
         {
             ApplicationId             = $ApplicationId;
             CertificateThumbprint     = $CertificateThumbprint;
-            Comment                   = "This is my modified tag"; #Drift
+            Comment                   = "This is my modified tag"; # Updated Property
             Ensure                    = "Present";
             Identity                  = "MyTag";
             MessageClass              = "*";

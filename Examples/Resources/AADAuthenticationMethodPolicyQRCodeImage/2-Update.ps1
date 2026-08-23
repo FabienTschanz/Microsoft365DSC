@@ -36,7 +36,7 @@ Configuration Example
                     TargetType = "group"
                 }
             );
-            PinLength                    = 9; # Drift
+            PinLength                    = 9; # Updated Property
             StandardQRCodeLifetimeInDays = 365;
             State                        = "disabled";
             TenantId                     = $TenantId;

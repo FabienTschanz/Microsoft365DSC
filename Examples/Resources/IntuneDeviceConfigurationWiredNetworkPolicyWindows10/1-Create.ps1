@@ -26,33 +26,41 @@ Configuration Example
     {
         IntuneDeviceConfigurationWiredNetworkPolicyWindows10 'IntuneDeviceConfigurationWiredNetworkPolicyWindows10-Example'
         {
-            Assignments                                           = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments
-                {
+            Assignments                             = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             )
-            AuthenticationBlockPeriodInMinutes                    = 5
-            AuthenticationMethod                                  = 'usernameAndPassword'
-            AuthenticationPeriodInSeconds                         = 60
-            AuthenticationRetryDelayPeriodInSeconds               = 5
-            AuthenticationType                                    = 'machine'
-            CacheCredentials                                      = $True
-            DisplayName                                           = 'Wired Network'
-            EapolStartPeriodInSeconds                             = 5
-            EapType                                               = 'teap'
-            Enforce8021X                                          = $True
-            Ensure                                                = 'Present'
-            MaximumAuthenticationFailures                         = 5
-            MaximumEAPOLStartMessages                             = 5
-            SecondaryAuthenticationMethod                         = 'certificate'
-            TrustedServerCertificateNames                         = @('srv.domain.com')
-            RootCertificatesForServerValidationIds                = @('a485d322-13cd-43ef-beda-733f656f48ea', '169bf4fc-5914-40f4-ad33-48c225396183')
-            SecondaryIdentityCertificateForClientAuthenticationId = '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
-            ApplicationId                                         = $ApplicationId;
-            TenantId                                              = $TenantId;
-            CertificateThumbprint                                 = $CertificateThumbprint;
+            AuthenticationBlockPeriodInMinutes      = 5
+            AuthenticationMethod                    = 'usernameAndPassword'
+            AuthenticationPeriodInSeconds           = 60
+            AuthenticationRetryDelayPeriodInSeconds = 5
+            AuthenticationType                      = 'machine'
+            CacheCredentials                        = $True
+            Description                             = '802.1X authentication for the workstations on the corporate wired network'
+            DisableUserPromptForServerValidation    = $True
+            DisplayName                             = 'Wired Network'
+            EapolStartPeriodInSeconds               = 5
+            EapType                                 = 'peap'
+            Enforce8021X                            = $True
+            Ensure                                  = 'Present'
+            ForceFIPSCompliance                     = $False
+            MaximumAuthenticationFailures           = 5
+            MaximumEAPOLStartMessages               = 5
+            OuterIdentityPrivacyTemporaryValue      = 'anonymous'
+            PerformServerValidation                 = $True
+            RequireCryptographicBinding             = $True
+            RoleScopeTagIds                         = @('0')
+            SecondaryAuthenticationMethod           = 'certificate'
+            TrustedServerCertificateNames           = @('nps.contoso.com')
+            ApplicationId                           = $ApplicationId;
+            TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

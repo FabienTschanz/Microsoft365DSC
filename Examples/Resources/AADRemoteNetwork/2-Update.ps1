@@ -27,7 +27,7 @@ Configuration Example
         AADRemoteNetwork "AADRemoteNetwork-Example"
         {
             Ensure                = "Present";
-            ForwardingProfiles    = @(); #creating drift here
+            ForwardingProfiles    = @(); # Updated Property
             Id                    = "c60c41bb-e512-48e3-8134-c312439a5343";
             Name                  = "Sydney Branch Network";
             Region                = "australiaSouthEast";
@@ -36,7 +36,7 @@ Configuration Example
             CertificateThumbprint = $CertificateThumbprint
             DeviceLinks           = @(
                 MSFT_AADRemoteNetworkDeviceLink {
-                    Name                    = 'Sydney Secondary Link' # creating drift here
+                    Name                    = 'Sydney Secondary Link' # Updated Property
                     IPAddress               = '1.1.1.1'
                     BandwidthCapacityInMbps = 'mbps500'
                     DeviceVendor            = 'ciscoCatalyst'

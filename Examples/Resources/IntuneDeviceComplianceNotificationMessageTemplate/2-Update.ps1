@@ -29,13 +29,13 @@ Configuration Example
             LocalizedNotificationMessages = @(
                 MSFT_DeviceManagementNotificationMessageTemplate{
                     MessageTemplate = "Ihr Gerät erfüllt die Sicherheitsrichtlinien von Contoso nicht. Bitte wenden Sie sich an den Service Desk."
-                    IsDefault       = $False # Updated property
+                    IsDefault       = $False # Updated Property
                     Subject         = "Ihr Gerät ist nicht konform"
                     Locale          = "de-de"
                 }
                 MSFT_DeviceManagementNotificationMessageTemplate{
                     MessageTemplate = "Your device does not meet the Contoso security policy. Please contact the Service Desk."
-                    IsDefault       = $True # Updated property
+                    IsDefault       = $True # Updated Property
                     Subject         = "Your device is not compliant"
                     Locale          = "en-us"
                 }

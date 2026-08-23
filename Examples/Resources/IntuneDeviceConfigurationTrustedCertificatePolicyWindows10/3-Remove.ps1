@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationTrustedCertificatePolicyWindows10 'IntuneDeviceConfigurationTrustedCertificatePolicyWindows10-Example'
         {
-            DisplayName           = "Trusted Cert";
+            DisplayName           = "Contoso Root CA Trust";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

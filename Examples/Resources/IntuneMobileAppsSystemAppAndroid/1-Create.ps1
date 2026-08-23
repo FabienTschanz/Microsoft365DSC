@@ -43,6 +43,10 @@ Configuration Example
                         autoUpdateMode                 = "default"
                     }
                 }
+                MSFT_DeviceManagementSystemMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

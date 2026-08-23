@@ -25,31 +25,69 @@ Configuration Example
     {
         IntuneDeviceConfigurationPolicyAndroidWorkProfile "IntuneDeviceConfigurationPolicyAndroidWorkProfile-Example"
         {
-            DisplayName                                    = 'Android Work Profile - Device Restrictions - Standard'
-            PasswordBlockFingerprintUnlock                 = $False
-            PasswordBlockTrustAgents                       = $False
-            PasswordMinimumLength                          = 6
-            PasswordMinutesOfInactivityBeforeScreenTimeout = 15
-            PasswordRequiredType                           = 'atLeastNumeric'
-            SecurityRequireVerifyApps                      = $True
-            WorkProfileBlockAddingAccounts                 = $True
-            WorkProfileBlockCamera                         = $False
-            WorkProfileBlockCrossProfileCallerId           = $False
-            WorkProfileBlockCrossProfileContactsSearch     = $False
-            WorkProfileBlockCrossProfileCopyPaste          = $True
-            WorkProfileBlockNotificationsWhileDeviceLocked = $True
-            WorkProfileBlockScreenCapture                  = $True
-            WorkProfileBluetoothEnableContactSharing       = $False
-            WorkProfileDataSharingType                     = 'allowPersonalToWork'
-            WorkProfileDefaultAppPermissionPolicy          = 'deviceDefault'
-            WorkProfilePasswordBlockFingerprintUnlock      = $False
-            WorkProfilePasswordBlockTrustAgents            = $False
-            WorkProfilePasswordRequiredType                = 'deviceDefault'
-            WorkProfileRequirePassword                     = $False
-            Ensure                                         = 'Present'
-            ApplicationId                                  = $ApplicationId;
-            TenantId                                       = $TenantId;
-            CertificateThumbprint                          = $CertificateThumbprint;
+            DisplayName                                               = 'Android Work Profile - Device Restrictions - Standard'
+            Description                                               = "Work profile restrictions for personally owned Android phones"
+            RoleScopeTagIds                                           = @("0")
+            PasswordBlockFaceUnlock                                   = $true
+            PasswordBlockFingerprintUnlock                            = $false
+            PasswordBlockIrisUnlock                                   = $true
+            PasswordBlockTrustAgents                                  = $false
+            PasswordExpirationDays                                    = 365
+            PasswordMinimumLength                                     = 6
+            PasswordMinutesOfInactivityBeforeScreenTimeout            = 15
+            PasswordPreviousPasswordBlockCount                        = 5
+            PasswordSignInFailureCountBeforeFactoryReset              = 10
+            PasswordRequiredType                                      = "atLeastNumeric"
+            RequiredPasswordComplexity                                = "medium"
+            SecurityRequireVerifyApps                                 = $true
+            VpnAlwaysOnPackageIdentifier                              = "com.microsoft.scmx"
+            VpnEnableAlwaysOnLockdownMode                             = $false
+            WorkProfileAllowAppInstallsFromUnknownSources             = $false
+            WorkProfileAllowWidgets                                   = $true
+            WorkProfileBlockAddingAccounts                            = $true
+            WorkProfileBlockCamera                                    = $false
+            WorkProfileBlockCrossProfileCallerId                      = $false
+            WorkProfileBlockCrossProfileContactsSearch                = $false
+            WorkProfileBlockCrossProfileCopyPaste                     = $true
+            WorkProfileBlockNotificationsWhileDeviceLocked            = $true
+            WorkProfileBlockPersonalAppInstallsFromUnknownSources     = $true
+            WorkProfileBlockScreenCapture                             = $true
+            WorkProfileBluetoothEnableContactSharing                  = $false
+            WorkProfileDataSharingType                                = "allowPersonalToWork"
+            WorkProfileDefaultAppPermissionPolicy                     = "prompt"
+            WorkProfilePasswordBlockFaceUnlock                        = $true
+            WorkProfilePasswordBlockFingerprintUnlock                 = $false
+            WorkProfilePasswordBlockIrisUnlock                        = $true
+            WorkProfilePasswordBlockTrustAgents                       = $false
+            WorkProfilePasswordExpirationDays                         = 365
+            WorkProfilePasswordMinimumLength                          = 8
+            WorkProfilePasswordMinLetterCharacters                    = 2
+            WorkProfilePasswordMinLowerCaseCharacters                 = 1
+            WorkProfilePasswordMinNonLetterCharacters                 = 2
+            WorkProfilePasswordMinNumericCharacters                   = 1
+            WorkProfilePasswordMinSymbolCharacters                    = 1
+            WorkProfilePasswordMinUpperCaseCharacters                 = 1
+            WorkProfilePasswordMinutesOfInactivityBeforeScreenTimeout = 15
+            WorkProfilePasswordPreviousPasswordBlockCount             = 5
+            WorkProfilePasswordRequiredType                           = "alphanumericWithSymbols"
+            WorkProfilePasswordSignInFailureCountBeforeFactoryReset   = 10
+            WorkProfileRequirePassword                                = $true
+            WorkProfileRequiredPasswordComplexity                     = "high"
+            Assignments                                               = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allLicensedUsersAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                    groupDisplayName                           = "Exclude"
+                }
+            )
+            Ensure                                                    = "Present"
+            ApplicationId                                             = $ApplicationId;
+            TenantId                                                  = $TenantId;
+            CertificateThumbprint                                     = $CertificateThumbprint;
         }
     }
 }

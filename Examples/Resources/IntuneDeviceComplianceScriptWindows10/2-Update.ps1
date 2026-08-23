@@ -30,7 +30,7 @@ Configuration Example
             Ensure                 = "Present";
             EnforceSignatureCheck  = $False;
             Id                     = "00000000-0000-0000-0000-000000000000";
-            RunAs32Bit             = $False; # Updated property
+            RunAs32Bit             = $False; # Updated Property
             RunAsAccount           = "system";
             DetectionScriptContent = "Write-Output `$true";
             Publisher              = "";

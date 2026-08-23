@@ -38,7 +38,7 @@ Configuration Example
             CrossRegionDisasterRecoverySetting = MSFT_MicrosoftGraphcloudPcCrossRegionDisasterRecoverySetting{
                 MaintainCrossRegionRestorePointEnabled = $True
                 DisasterRecoveryNetworkSetting         = MSFT_MicrosoftGraphCloudPcDisasterRecoveryNetworkSetting{
-                    RegionName  = "switzerlandnorth" # Updated property
+                    RegionName  = "switzerlandnorth" # Updated Property
                     RegionGroup = "switzerland"
                     odataType   = "#microsoft.graph.cloudPcDisasterRecoveryMicrosoftHostedNetworkSetting"
                 }

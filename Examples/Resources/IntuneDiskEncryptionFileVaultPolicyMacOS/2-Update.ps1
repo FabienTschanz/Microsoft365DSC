@@ -44,11 +44,11 @@ Configuration Example
             DeferDontAskAtUserLogout               = "false";
             DeferForceAtUserLoginMaxBypassAttempts = 5;
             Description                            = "";
-            Enable                                 = "Off"; # Updated property
+            Enable                                 = "Off"; # Updated Property
             Ensure                                 = "Present";
             Location                               = "Contoso IT Service Desk";
             DisplayName                            = "IntuneDiskEncryptionFileVaultPolicyMacOS_1";
-            RecoveryKeyRotationInMonths            = 12; # Updated property
+            RecoveryKeyRotationInMonths            = 12; # Updated Property
             RoleScopeTagIds                        = @("0");
             TenantId                               = $TenantId;
             UseRecoveryKey                         = "true";

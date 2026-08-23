@@ -31,7 +31,7 @@ Configuration Example
             Description           = "Executable file types monitored for insider risk";
             DisplayName           = "MyFileType";
             Ensure                = "Present";
-            FileTypes             = @(".exe",".txt",".bat"); # Drfit
+            FileTypes             = @(".exe",".txt",".bat"); # Updated Property
             Keywords              = @();
             ListType              = "CustomFileTypeLists";
             Name                  = "MyFileTypeList";

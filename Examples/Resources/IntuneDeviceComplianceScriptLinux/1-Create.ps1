@@ -26,12 +26,15 @@ Configuration Example
     {
         IntuneDeviceComplianceScriptLinux 'IntuneDeviceComplianceScriptLinux-Example'
         {
-            Id                    = "12345678-1234-1234-1234-123456789012"
-            Description           = "custom compliance script for Linux";
-            DisplayName           = "custom";
+            Description           = "Reports whether SSH root login is disabled on Linux endpoints";
+            DisplayName           = "Linux Patch Level Check";
             Ensure                = "Present";
             DiscoveryScript       = "#!/bin/bash
-echo true";
+if grep -q '^PermitRootLogin no' /etc/ssh/sshd_config; then
+    echo '{`"SshRootLoginDisabled`":`"true`"}'
+else
+    echo '{`"SshRootLoginDisabled`":`"false`"}'
+fi";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

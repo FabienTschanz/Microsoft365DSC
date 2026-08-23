@@ -28,14 +28,21 @@ Configuration Example
         {
             Assignments            = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
-                    deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    dataType                                   = "#microsoft.graph.allLicensedUsersAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                    groupDisplayName                           = "Exclude"
                 }
             );
             CertFileName           = "RootCA.cer";
+            Description            = "Distributes the Contoso enterprise root certification authority to Windows devices";
             DestinationStore       = "computerCertStoreRoot";
-            DisplayName            = "Trusted Cert";
+            DisplayName            = "Contoso Root CA Trust";
             Ensure                 = "Present";
+            RoleScopeTagIds        = @("0");
             TrustedRootCertificate = "<base64-encoded-root-certificate>"
             ApplicationId          = $ApplicationId;
             TenantId               = $TenantId;

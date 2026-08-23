@@ -44,7 +44,7 @@ Configuration Example
                     Type           = "azureADJoin"
                     RegionName     = "automatic"
                     DomainJoinType = "azureADJoin"
-                    RegionGroup    = "europe" # Updated property
+                    RegionGroup    = "europe" # Updated Property
                 }
             );
             EnableSingleSignOn       = $True;

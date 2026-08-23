@@ -33,7 +33,7 @@ Configuration Example
             InstallExperience     = MSFT_MicrosoftGraphWinGetAppInstallExperience{
                 RunAsAccount = "system"
             };
-            IsFeatured            = $True; # Drift
+            IsFeatured            = $True; # Updated Property
             Notes                 = "";
             Owner                 = "";
             PackageIdentifier     = "9MZ1SNWT0N5D";
@@ -45,6 +45,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
+                }
+                MSFT_DeviceManagementWingetMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             Categories            = @(

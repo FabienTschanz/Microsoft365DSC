@@ -31,11 +31,16 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Device Lockdown Exclusions'
+                }
             );
-            Description           = "";
+            Description           = "Baseline lockdown settings for shared Windows 11 devices";
             Ensure                = "Present";
             Name                  = "Windows 11 Device Lockdown";
             Platforms             = "windows10";
+            RoleScopeTagIds       = @("0");
             Settings              = @(
                 MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
                     SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
@@ -51,7 +56,7 @@ Configuration Example
                         SettingDefinitionId = 'device_vendor_msft_policy_config_applicationdefaults_defaultassociationsconfiguration'
                         simpleSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue{
                             odataType   = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
-                            StringValue = ''
+                            StringValue = '<base64-encoded-default-associations>'
                         }
                         odataType           = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
                     }
@@ -92,8 +97,36 @@ Configuration Example
                         odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
                     }
                 }
+                MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
+                    SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
+                        SettingDefinitionId          = 'device_vendor_msft_policy_config_defender_excludedpaths'
+                        simpleSettingCollectionValue = @(
+                            MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue{
+                                odataType   = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                StringValue = 'C:\Program Files\Contoso\Ledger'
+                            }
+                            MSFT_MicrosoftGraphDeviceManagementConfigurationSimpleSettingValue{
+                                odataType   = '#microsoft.graph.deviceManagementConfigurationStringSettingValue'
+                                StringValue = 'D:\LineOfBusiness'
+                            }
+                        )
+                        odataType                    = '#microsoft.graph.deviceManagementConfigurationSimpleSettingCollectionInstance'
+                    }
+                }
+                MSFT_MicrosoftGraphdeviceManagementConfigurationSetting{
+                    SettingInstance = MSFT_MicrosoftGraphDeviceManagementConfigurationSettingInstance{
+                        choiceSettingValue  = MSFT_MicrosoftGraphDeviceManagementConfigurationChoiceSettingValue{
+                            Value = 'device_vendor_msft_policy_config_defender_submitsamplesconsent_3'
+                        }
+                        SettingDefinitionId = 'device_vendor_msft_policy_config_defender_submitsamplesconsent'
+                        odataType           = '#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance'
+                    }
+                }
             );
             Technologies          = "mdm";
+            TemplateReference     = MSFT_MicrosoftGraphdeviceManagementConfigurationPolicyTemplateReference{
+                TemplateFamily = 'none'
+            };
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

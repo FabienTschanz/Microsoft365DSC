@@ -31,9 +31,16 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             AzureOperationalInsightsBlockTelemetry = $False; # Updated Property
+            AzureOperationalInsightsWorkspaceId    = "<log-analytics-workspace-id>";
+            AzureOperationalInsightsWorkspaceKey   = "<log-analytics-workspace-key>";
             ConnectAppBlockAutoLaunch              = $True;
+            Description                            = "Meeting room restrictions applied to the Surface Hub devices in shared spaces";
             DisplayName                            = "Device restrictions (Windows 10 Team)";
             Ensure                                 = "Present";
             MaintenanceWindowBlocked               = $False;
@@ -42,9 +49,15 @@ Configuration Example
             MiracastBlocked                        = $True;
             MiracastChannel                        = "oneHundredFortyNine";
             MiracastRequirePin                     = $True;
+            RoleScopeTagIds                        = @("0");
             SettingsBlockMyMeetingsAndFiles        = $True;
             SettingsBlockSessionResume             = $True;
             SettingsBlockSigninSuggestions         = $True;
+            SettingsDefaultVolume                  = 45;
+            SettingsScreenTimeoutInMinutes         = 10;
+            SettingsSessionTimeoutInMinutes        = 5;
+            SettingsSleepTimeoutInMinutes          = 20;
+            WelcomeScreenBackgroundImageUrl        = "https://www.contoso.com/branding/meeting-room-welcome.png";
             WelcomeScreenBlockAutomaticWakeUp      = $True;
             WelcomeScreenMeetingInformation        = "showOrganizerAndTimeOnly";
             ApplicationId                          = $ApplicationId;

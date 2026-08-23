@@ -27,28 +27,34 @@ Configuration Example
         IntuneMobileAppsWebLink "IntuneMobileAppsWebLink-Example"
         {
             TargetType            = "webApp";
-            Description           = "Web App Description";
+            AppUrl                = "https://selfservice.contoso.com";
+            UseManagedBrowser     = $true;
+            Description           = "Contoso employee self-service portal";
             Developer             = "Contoso";
             DisplayName           = "Web App";
             Ensure                = "Present";
-            InformationUrl        = "";
-            IsFeatured            = $True; # Drift
-            Notes                 = "";
-            Owner                 = "";
-            PrivacyInformationUrl = "";
+            InformationUrl        = "https://intranet.contoso.com/apps/self-service";
+            IsFeatured            = $true; # Updated Property
+            LargeIcon             = MSFT_MicrosoftGraphmimeContent{
+                Type  = "image/png"
+                Value = "<base64-encoded-app-icon>"
+            };
+            Notes                 = "Reviewed annually by the mobility team";
+            Owner                 = "Human Resources";
+            PrivacyInformationUrl = "https://www.contoso.com/privacy";
             Publisher             = "Contoso";
+            RoleScopeTagIds       = @("0");
             Assignments           = @(
-                MSFT_DeviceManagementMobileAppAssignment {
-                    groupDisplayName                           = 'All devices'
+                MSFT_DeviceManagementMobileAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
+                    groupId                                    = '57b5e81c-85bb-4644-a4fd-33b03e451c89'
                     intent                                     = 'required'
                 }
             );
             Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory{
-                    Id          = "2185c6bf-1b3d-4daa-a0bc-79cb4fad9c87"
-                    DisplayName = "App Category 1"
+                    DisplayName = "Business"
                 }
             );
             ApplicationId         = $ApplicationId;

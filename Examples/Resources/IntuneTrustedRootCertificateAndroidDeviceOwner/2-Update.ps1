@@ -25,11 +25,22 @@ Configuration Example
     {
         IntuneTrustedRootCertificateAndroidDeviceOwner "IntuneTrustedRootCertificateAndroidDeviceOwner-Example"
         {
-            Description            = "IntuneTrustedRootCertificateAndroidDeviceOwner Description";
-            DisplayName            = "IntuneTrustedRootCertificateAndroidDeviceOwner DisplayName";
+            Description            = "Deploys the Contoso issuing root certificate to Android Enterprise fully managed devices";
+            DisplayName            = "Contoso Root CA (Android Device Owner)";
+            RoleScopeTagIds        = @("0");
             Ensure                 = "Present";
-            certFileName           = "newfakename.cer"; #changed value
-            trustedRootCertificate = "insertValidBase64StringHereForAnotherCert" #changed value
+            certFileName           = "ContosoRootCA-2027.cer"; # Updated Property
+            trustedRootCertificate = "<base64-encoded-root-certificate-updated>"; # Updated Property
+            Assignments            = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.allDevicesAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Android Warehouse Scanners"
+                }
+            );
             ApplicationId          = $ApplicationId;
             TenantId               = $TenantId;
             CertificateThumbprint  = $CertificateThumbprint;

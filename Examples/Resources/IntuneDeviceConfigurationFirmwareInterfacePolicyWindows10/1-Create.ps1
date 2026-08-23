@@ -31,13 +31,18 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             Bluetooth                      = "notConfigured";
             BootFromBuiltInNetworkAdapters = "notConfigured";
             BootFromExternalMedia          = "notConfigured";
             Cameras                        = "enabled";
             ChangeUefiSettingsPermission   = "notConfiguredOnly";
-            DisplayName                    = "firmware";
+            Description                    = "Locks the firmware interface on corporate laptops so users cannot boot from external media";
+            DisplayName                    = "Device Firmware Interface";
             Ensure                         = "Present";
             FrontCamera                    = "enabled";
             InfraredCamera                 = "enabled";
@@ -46,6 +51,7 @@ Configuration Example
             NearFieldCommunication         = "notConfigured";
             Radios                         = "enabled";
             RearCamera                     = "enabled";
+            RoleScopeTagIds                = @("0");
             SdCard                         = "notConfigured";
             SimultaneousMultiThreading     = "enabled";
             UsbTypeAPort                   = "notConfigured";

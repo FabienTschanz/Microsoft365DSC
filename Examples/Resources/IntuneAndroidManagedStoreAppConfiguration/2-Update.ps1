@@ -29,7 +29,7 @@ Configuration Example
             DisplayName           = "IntuneAndroidManagedStoreAppConfiguration DisplayName";
             Ensure                = "Present";
             appSupportsOemConfig  = $False;
-            connectedAppsEnabled  = $True; #updated value
+            connectedAppsEnabled  = $True; # Updated Property
             packageId             = "app:org.mozilla.firefox";
             payloadJson           = "";
             permissionActions     = @(

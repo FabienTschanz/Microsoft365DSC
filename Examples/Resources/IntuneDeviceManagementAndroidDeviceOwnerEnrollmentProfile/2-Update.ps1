@@ -39,7 +39,7 @@ Configuration Example
             RoleScopeTagIds         = @("0");
             TenantId                = $TenantId;
             TokenExpirationDateTime = "10/31/2024 3:59:59 AM";
-            WifiHidden              = $True; #Drift
+            WifiHidden              = $True; # Updated Property
             WifiSecurityType        = "none";
         }
     }

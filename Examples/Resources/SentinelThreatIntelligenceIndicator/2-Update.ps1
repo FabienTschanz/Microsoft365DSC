@@ -30,7 +30,7 @@ Configuration Example
             CertificateThumbprint  = $CertificateThumbprint;
             DisplayName            = "MyIndicator";
             Ensure                 = "Present";
-            Labels                 = @("Tag1", "Tag2", "Tag3"); #Drift
+            Labels                 = @("Tag1", "Tag2", "Tag3"); # Updated Property
             Pattern                = "[ipv6-addr:value = '2607:fa49:d340:f600:c8d5:6961:247f:a238']";
             PatternType            = "ipv6-addr";
             ResourceGroupName      = "MyResourceGroup";

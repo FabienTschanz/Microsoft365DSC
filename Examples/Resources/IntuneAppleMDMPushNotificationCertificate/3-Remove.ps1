@@ -27,7 +27,6 @@ Configuration Example
         IntuneAppleMDMPushNotificationCertificate "IntuneAppleMDMPushNotificationCertificate-Example"
         {
             AppleIdentifier       = "mdm@contoso.com";
-            Certificate           = "";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

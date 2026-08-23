@@ -32,7 +32,7 @@ Configuration Example
             Ensure                = "Present";
             FileName              = "Contoso.Appx_1.0.0.0_x64__contoso.appx";
             InformationUrl        = "";
-            IsFeatured            = $True; # Drift
+            IsFeatured            = $True; # Updated Property
             Notes                 = "";
             Owner                 = "";
             PrivacyInformationUrl = "";
@@ -47,6 +47,10 @@ Configuration Example
                         useDeviceContext = $true
                         odataType        = "#microsoft.graph.windowsUniversalAppXAppAssignmentSettings"
                     }
+                }
+                MSFT_DeviceManagementAppxMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             Categories            = @(

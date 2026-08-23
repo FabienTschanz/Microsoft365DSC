@@ -25,9 +25,8 @@ Configuration Example
     {
         IntuneEpmElevationSettingsPolicyWindows10 'IntuneEpmElevationSettingsPolicyWindows10-Example'
         {
-            DisplayName           = "IntuneEpmElevationSettingsPolicyWindows10_1";
+            DisplayName           = "Endpoint Privilege Management Defaults";
             Ensure                = "Absent";
-            Id                    = '00000000-0000-0000-0000-000000000000'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

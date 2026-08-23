@@ -45,7 +45,7 @@ Configuration Example
                 dayOfMonth = 0
                 hourOfDay  = 13
             };
-            Status                = "Disabled"; # Drift
+            Status                = "Disabled"; # Updated Property
             TenantId              = $TenantId;
             View                  = "/providers/Microsoft.Billing/billingAccounts/xxxxx:xxxxx_xxxxx/providers/Microsoft.CostManagement/views/ms:AccumulatedCosts";
         }

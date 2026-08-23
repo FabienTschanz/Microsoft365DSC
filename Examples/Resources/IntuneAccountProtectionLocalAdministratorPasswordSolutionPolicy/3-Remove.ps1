@@ -27,7 +27,6 @@ Configuration Example
         IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy "IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy-Example"
         {
             DisplayName           = "Account Protection LAPS Policy";
-            Description           = "My revised description";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

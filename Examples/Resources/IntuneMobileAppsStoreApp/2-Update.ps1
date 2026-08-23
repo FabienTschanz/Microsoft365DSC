@@ -38,7 +38,7 @@ Configuration Example
             DisplayName                     = "Store App";
             Ensure                          = "Present";
             InformationUrl                  = "";
-            IsFeatured                      = $True; # Drift
+            IsFeatured                      = $True; # Updated Property
             MinimumSupportedOperatingSystem = MSFT_MicrosoftGraphMinimumOperatingSystem{
                 V4_0   = $False
                 V4_0_3 = $False
@@ -77,6 +77,10 @@ Configuration Example
                         isRemovable              = $True
                         preventManagedAppBackup  = $True
                     }
+                }
+                MSFT_DeviceManagementStoreMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             Categories                      = @(

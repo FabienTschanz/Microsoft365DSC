@@ -27,7 +27,6 @@ Configuration Example
         IntuneMobileAppsBundleMacOS "IntuneMobileAppsBundleMacOS-Example"
         {
             DisplayName           = "macOS Pkg App";
-            PackageFileType       = "Pkg";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

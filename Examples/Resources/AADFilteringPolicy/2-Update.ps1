@@ -26,7 +26,7 @@ Configuration Example
     {
         AADFilteringPolicy "AADFilteringPolicy-Example"
         {
-            Action                = "allow"; #drift
+            Action                = "allow"; # Updated Property
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Description           = "Blocks access to high-risk web destinations";

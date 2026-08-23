@@ -43,14 +43,14 @@ Configuration Example
                 }
             );
             Description              = 'Description'
-            DetectionScriptContent   = "Base64 encoded script content 2"; # Updated property
+            DetectionScriptContent   = "Base64 encoded script content 2"; # Updated Property
             DeviceHealthScriptType   = "deviceHealthScript";
             DisplayName              = "Device remediation";
             EnforceSignatureCheck    = $False;
             Ensure                   = "Present";
             Id                       = '00000000-0000-0000-0000-000000000000' # Optional
             Publisher                = "Some Publisher";
-            RemediationScriptContent = "Base64 encoded script content 2"; # Updated property
+            RemediationScriptContent = "Base64 encoded script content 2"; # Updated Property
             RoleScopeTagIds          = @("0");
             RunAs32Bit               = $True;
             RunAsAccount             = "system";

@@ -19,8 +19,14 @@ Configuration Example
         IntuneRoleScopeTag 'IntuneRoleScopeTag-Example'
         {
             DisplayName           = "Amsterdam Service Desk"
-            Id                    = "5"
-            Description           = "Devices and applications managed by the Amsterdam service desk"
+            Description           = "Devices and applications managed by the Amsterdam service desk" # Updated Property
+            Assignments           = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.groupAssignmentTarget"
+                    groupDisplayName                           = "Amsterdam Desktop Support"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+            )
             Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

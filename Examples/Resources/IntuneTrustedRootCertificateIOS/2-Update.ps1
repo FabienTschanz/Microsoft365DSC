@@ -25,11 +25,23 @@ Configuration Example
     {
         IntuneTrustedRootCertificateIOS "IntuneTrustedRootCertificateIOS-Example"
         {
-            Description            = "IntuneTrustedRootCertificateIOS Description";
-            DisplayName            = "IntuneTrustedRootCertificateIOS DisplayName";
+            Description            = "Deploys the Contoso issuing root certificate to corporate iPhones and iPads";
+            DisplayName            = "Contoso Root CA (iOS)";
+            RoleScopeTagIds        = @("0");
             Ensure                 = "Present";
-            certFileName           = "newfakename.cer"; #changed value
-            trustedRootCertificate = "insertValidBase64StringHereForAnotherCert" #changed value
+            certFileName           = "ContosoRootCA-2027.cer"; # Updated Property
+            trustedRootCertificate = "<base64-encoded-root-certificate-updated>"; # Updated Property
+            Assignments            = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.groupAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                    groupDisplayName                           = "Corporate iOS Devices"
+                }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "iOS Retail Loaner Devices"
+                }
+            );
             ApplicationId          = $ApplicationId;
             TenantId               = $TenantId;
             CertificateThumbprint  = $CertificateThumbprint;

@@ -79,5 +79,9 @@ Configuration Example
             TenantId                          = $TenantId;
             CertificateThumbprint             = $CertificateThumbprint;
         }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
     }
 }

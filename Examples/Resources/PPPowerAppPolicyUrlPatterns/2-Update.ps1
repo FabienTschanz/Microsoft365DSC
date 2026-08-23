@@ -38,7 +38,7 @@ Configuration Example
                     order                             = 1
                 }
                 MSFT_PPPowerAPpPolicyUrlPatternsRule{
-                    pattern                           = 'https://tailspintoys.com' # drift
+                    pattern                           = 'https://tailspintoys.com' # Updated Property
                     customConnectorRuleClassification = 'General'
                     order                             = 2
                 }

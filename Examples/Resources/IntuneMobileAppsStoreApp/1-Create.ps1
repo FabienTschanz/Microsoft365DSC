@@ -78,6 +78,10 @@ Configuration Example
                         preventManagedAppBackup  = $True
                     }
                 }
+                MSFT_DeviceManagementStoreMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             Categories                      = @(
                 MSFT_DeviceManagementMobileAppCategory{

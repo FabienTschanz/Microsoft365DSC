@@ -32,14 +32,14 @@ Configuration Example
             DisplayName                           = "Contoso Federation - Updated";
             DomainId                              = "contoso.com";
             Ensure                                = "Present";
-            FederatedIdpMfaBehavior               = "enforceMfaByFederatedIdp"; # Changed from acceptIfMfaDoneByFederatedIdp
+            FederatedIdpMfaBehavior               = "enforceMfaByFederatedIdp"; # Updated Property
             IssuerUri                             = "http://contoso.com/adfs/services/trust";
-            IsSignedAuthenticationRequestRequired = $False; # Changed from True
+            IsSignedAuthenticationRequestRequired = $False; # Updated Property
             MetadataExchangeUri                   = "https://adfs.contoso.com/FederationMetadata/2007-06/FederationMetadata.xml";
             NextSigningCertificate                = "<base64-encoded-next-signing-certificate>" # New certificate being staged for rollover
             PasswordResetUri                      = "https://adfs.contoso.com/adfs/portal/updatepassword/";
             PassiveSignInUri                      = "https://adfs.contoso.com/adfs/ls/";
-            PreferredAuthenticationProtocol       = "saml"; # Changed from wsFed
+            PreferredAuthenticationProtocol       = "saml"; # Updated Property
             SigningCertificate                    = "<base64-encoded-signing-certificate>"
             SignOutUri                            = "https://adfs.contoso.com/adfs/ls/?wa=wsignout1.0";
             TenantId                              = $TenantId;

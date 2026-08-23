@@ -27,7 +27,7 @@ Configuration Example
         EXODataAtRestEncryptionPolicy "EXODataAtRestEncryptionPolicy-Example"
         {
             AzureKeyIDs           = @("<key-vault-key-uri>")
-            Description           = "Tenant default policy 2"; # drift
+            Description           = "Tenant default policy 2"; # Updated Property
             Enabled               = $True;
             Ensure                = "Present";
             Identity              = "Riyansh_Policy";

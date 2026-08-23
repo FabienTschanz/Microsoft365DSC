@@ -29,7 +29,7 @@ Configuration Example
             ApplicationId            = $ApplicationId;
             CertificateThumbprint    = $CertificateThumbprint;
             Ensure                   = "Present";
-            IntervalInHours          = 24; # Drift
+            IntervalInHours          = 24; # Updated Property
             IsActive                 = $True;
             Name                     = "MyScan";
             ScanAuthenticationParams = MSFT_DefenderDeviceAuthenticatedScanDefinitionAuthenticationParams{

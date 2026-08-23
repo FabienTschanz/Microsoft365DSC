@@ -21,12 +21,12 @@ Configuration Example {
     Node localhost {
         IntuneDerivedCredential "IntuneDerivedCredential-Example"
         {
-            DisplayName      = "K5";
-            HelpUrl          = "http://www.ff.com/";
-            Id               = "a409d85f-2a49-440d-884a-80fb52a557ab";
-            Issuer           = "purebred";
-            NotificationType = "email";
-            Ensure           = "Present";
+            DisplayName                = "Entrust Derived Credential";
+            HelpUrl                    = "https://intranet.contoso.com/mobility/derived-credentials";
+            Issuer                     = "purebred";
+            NotificationType           = "companyPortal,email";
+            RenewalThresholdPercentage = 20;
+            Ensure                     = "Present";
         }
     }
 }

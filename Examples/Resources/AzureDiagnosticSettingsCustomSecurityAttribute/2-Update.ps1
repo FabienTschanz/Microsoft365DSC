@@ -30,7 +30,7 @@ Configuration Example
             Categories                  = @(
                 MSFT_AzureDiagnosticSettingsCustomSecurityAttributeCategory{
                     category = 'CustomSecurityAttributeAuditLogs'
-                    enabled  = $False # Drift
+                    enabled  = $False # Updated Property
                 }
             );
             CertificateThumbprint       = $CertificateThumbprint;

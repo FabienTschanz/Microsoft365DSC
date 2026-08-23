@@ -40,7 +40,7 @@ Configuration Example
                 )
             }
             Credential                          = $Credscredential
-            Disabled                            = $True # Updated property
+            Disabled                            = $True # Updated Property
             DocumentIsPasswordProtected         = $False
             DocumentIsUnsupported               = $False
             Ensure                              = 'Present'

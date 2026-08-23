@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneAntivirusPolicyWindows10SettingCatalog 'IntuneAntivirusPolicyWindows10SettingCatalog-Example'
         {
-            DisplayName           = 'av exclusions'
+            DisplayName           = 'Defender Antivirus Baseline'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

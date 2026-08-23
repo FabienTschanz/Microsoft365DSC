@@ -19,7 +19,7 @@ Configuration Example
         TeamsAppPermissionPolicy "TeamsAppPermissionPolicy-Example"
         {
             Credential             = $Credscredential;
-            DefaultCatalogApps     = "com.microsoft.teamspace.tab.web"; # Updated property
+            DefaultCatalogApps     = "com.microsoft.teamspace.tab.web"; # Updated Property
             DefaultCatalogAppsType = "AllowedAppList";
             Description            = "Restricts apps for the sales department";
             Ensure                 = "Present";

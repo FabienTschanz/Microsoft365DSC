@@ -31,6 +31,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             DisplayName                 = "custom";
             Ensure                      = "Present";
@@ -39,7 +43,7 @@ Configuration Example
             ExecutionFrequency          = "00:00:00";
             FileName                    = "shellscript.sh";
             Id                          = "00000000-0000-0000-0000-000000000000";
-            RetryCount                  = 1; # Updated property
+            RetryCount                  = 1; # Updated Property
             RoleScopeTagIds             = @("0");
             RunAsAccount                = "user";
             ScriptContent               = "Base64 encoded script content";

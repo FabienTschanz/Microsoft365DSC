@@ -39,8 +39,8 @@ Configuration Example
                 V10_10 = $False
                 V10_11 = $False
                 V10_12 = $False
-                V10_13 = $False # Drift
-                V10_14 = $True # Drift
+                V10_13 = $False # Updated Property
+                V10_14 = $True # Updated Property
                 V10_15 = $False
                 V11_0  = $False
                 V12_0  = $False
@@ -58,6 +58,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
+                }
+                MSFT_DeviceManagementMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             Categories                      = @(

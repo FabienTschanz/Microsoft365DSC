@@ -26,23 +26,29 @@ Configuration Example
     {
         IntuneDeviceConfigurationEmailProfilePolicyWindows10 'IntuneDeviceConfigurationEmailProfilePolicyWindows10-Example'
         {
-            AccountName           = "Corp email2";
+            AccountName           = "Contoso Mail";
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    groupDisplayName                           = 'Corporate Mailbox Users'
                 }
             );
-            DisplayName           = "email";
+            Description           = "Configures the built-in Windows mail app for Exchange Online mailboxes"; # Updated Property
+            DisplayName           = "Corporate Mail Profile";
             DurationOfEmailToSync = "unlimited";
             EmailAddressSource    = "primarySmtpAddress";
             EmailSyncSchedule     = "fifteenMinutes";
             Ensure                = "Present";
             HostName              = "outlook.office365.com";
-            RequireSsl            = $False; # Updated Property
-            SyncCalendar          = $True;
-            SyncContacts          = $True;
-            SyncTasks             = $True;
+            RequireSsl            = $true;
+            RoleScopeTagIds       = @("0");
+            SyncCalendar          = $true;
+            SyncContacts          = $true;
+            SyncTasks             = $true;
+            UserDomainNameSource  = "fullDomainName";
+            UsernameAADSource     = "userPrincipalName";
+            UsernameSource        = "userPrincipalName";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

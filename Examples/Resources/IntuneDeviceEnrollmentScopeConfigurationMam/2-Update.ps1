@@ -22,7 +22,7 @@ Configuration Example
             ComplianceUrl    = "";
             Credential       = $Credential;
             DiscoveryUrl     = "https://wip.mam.manage.microsoft.com/Enroll";
-            IncludedGroups   = @("AADGroup_1","AADGroup_3"); # Updated property
+            IncludedGroups   = @("AADGroup_1","AADGroup_3"); # Updated Property
             IsSingleInstance = "Yes";
             TermsOfUseUrl    = "";
         }

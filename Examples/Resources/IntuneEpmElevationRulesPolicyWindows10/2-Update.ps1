@@ -60,7 +60,7 @@ Configuration Example
                     ChildProcessBehavior                  = "allowrunelevatedrulerequired"
                     CertificateType                       = "issuingauthority"
                     Elevationtype                         = "automatic"
-                    FileName                              = "file.exe" # Updated property
+                    FileName                              = "file.exe" # Updated Property
                     Name                                  = "Rule 2"
                     CertificatePayloadWithReusableSetting = "IntuneEpmCertificatePolicySetting_1"
                     AppliesTo                             = "allusers"

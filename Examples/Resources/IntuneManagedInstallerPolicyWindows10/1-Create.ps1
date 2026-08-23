@@ -32,6 +32,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterId   = "00000000-0000-0000-0000-000000000000"
                     groupDisplayName                           = "All devices"
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = "#microsoft.graph.exclusionGroupAssignmentTarget"
+                    groupDisplayName = "Policy Exclusions"
+                }
             );
             Description              = "This script is used to set SideCar as ManagedInstaller";
             DisplayName              = "SideCar ManagedInstaller Script";

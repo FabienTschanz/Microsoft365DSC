@@ -30,7 +30,7 @@ Configuration Example
             CertificateThumbprint = $CertificateThumbprint;
             Destinations          = @(
                 MSFT_AADFilteringPolicyRuleDestination{
-                    value = 'contoso.com' #Drift
+                    value = 'contoso.com' # Updated Property
                 }
             );
             Ensure                = "Present";

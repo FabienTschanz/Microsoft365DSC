@@ -20,6 +20,13 @@ Configuration Example
         {
             DisplayName           = "Amsterdam Service Desk"
             Description           = "Devices managed by the Amsterdam service desk"
+            Assignments           = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.groupAssignmentTarget"
+                    groupDisplayName                           = "Amsterdam Desktop Support"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                }
+            )
             Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

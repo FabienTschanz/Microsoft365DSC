@@ -34,6 +34,10 @@ Configuration Example
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
                 }
+                MSFT_DeviceManagementMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             Categories             = @(
                 MSFT_DeviceManagementMobileAppCategory{
@@ -49,7 +53,7 @@ Configuration Example
             FileName               = "MSIApp.msi";
             CommandLine            = "-arg1 -arg2";
             IgnoreVersionDetection = $True;
-            IsFeatured             = $True; # Updated property
+            IsFeatured             = $True; # Updated Property
             Notes                  = "";
             Owner                  = "";
             Publisher              = "Microsoft";

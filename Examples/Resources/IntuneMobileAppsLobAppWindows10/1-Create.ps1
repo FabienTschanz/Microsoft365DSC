@@ -48,6 +48,10 @@ Configuration Example
                         odataType        = "#microsoft.graph.windowsUniversalAppXAppAssignmentSettings"
                     }
                 }
+                MSFT_DeviceManagementAppxMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory{

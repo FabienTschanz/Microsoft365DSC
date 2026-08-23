@@ -25,12 +25,20 @@ Configuration Example
     {
         IntuneDeviceConfigurationCustomPolicyiOS "IntuneDeviceConfigurationCustomPolicyiOS-Example"
         {
-            Description           = "IntuneDeviceConfigurationCustomPolicyiOS Description";
-            DisplayName           = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
+            Assignments           = @(
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = "#microsoft.graph.groupAssignmentTarget"
+                    deviceAndAppManagementAssignmentFilterType = "none"
+                    groupDisplayName                           = "Corporate iPhones"
+                }
+            );
+            Description           = "Delivers the corporate Wi-Fi profile to company owned iPhones";
+            DisplayName           = "iOS Wi-Fi Payload";
             Ensure                = "Present";
-            Payload               = "PHJvb3Q+PC9yb290Pg==";
-            PayloadFileName       = "simple.xml";
-            PayloadName           = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
+            Payload               = "<base64-encoded-mobileconfig>";
+            PayloadFileName       = "corporate-wifi.mobileconfig";
+            PayloadName           = "Corporate Wi-Fi";
+            RoleScopeTagIds       = @("0");
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

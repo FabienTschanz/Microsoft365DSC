@@ -26,54 +26,63 @@ Configuration Example
     {
         IntuneDeviceConfigurationKioskPolicyWindows10 'IntuneDeviceConfigurationKioskPolicyWindows10-Example'
         {
-            Assignments                         = @(
+            Assignments                            = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
-            DisplayName                         = "kiosk";
-            EdgeKioskEnablePublicBrowsing       = $False; # Updated Property
-            Ensure                              = "Present";
-            KioskBrowserBlockedUrlExceptions    = @();
-            KioskBrowserBlockedURLs             = @();
-            KioskBrowserDefaultUrl              = "http://bing.com";
-            KioskBrowserEnableEndSessionButton  = $False;
-            KioskBrowserEnableHomeButton        = $True;
-            KioskBrowserEnableNavigationButtons = $False;
-            KioskProfiles                       = @(
+            Description                            = "Locks shared reception and meeting room PCs to the visitor sign-in portal in Microsoft Edge"; # Updated Property
+            DisplayName                            = "Shared Reception Kiosk";
+            EdgeKioskEnablePublicBrowsing          = $False;
+            Ensure                                 = "Present";
+            KioskBrowserBlockedUrlExceptions       = @("https://visitors.contoso.com/*");
+            KioskBrowserBlockedURLs                = @("*");
+            KioskBrowserDefaultUrl                 = "https://visitors.contoso.com";
+            KioskBrowserEnableEndSessionButton     = $False;
+            KioskBrowserEnableHomeButton           = $True;
+            KioskBrowserEnableNavigationButtons    = $False;
+            KioskBrowserRestartOnIdleTimeInMinutes = 10;
+            KioskProfiles                          = @(
                 MSFT_MicrosoftGraphwindowsKioskProfile{
                     UserAccountsConfiguration = @(
                         MSFT_MicrosoftGraphWindowsKioskUser{
                             odataType = '#microsoft.graph.windowsKioskAutologon'
                         }
                     )
-                    ProfileName               = 'profile'
+                    ProfileName               = "Reception kiosk"
                     AppConfiguration          = MSFT_MicrosoftGraphWindowsKioskAppConfiguration{
                         Win32App  = MSFT_MicrosoftGraphWindowsKioskWin32App{
-                            EdgeNoFirstRun      = $True
-                            EdgeKiosk           = 'https://domain.com'
-                            ClassicAppPath      = 'msedge.exe'
-                            AutoLaunch          = $False
-                            StartLayoutTileSize = 'hidden'
-                            AppType             = 'unknown'
-                            EdgeKioskType       = 'publicBrowsing'
-                            odataType           = '#microsoft.graph.windowsKioskWin32App'
+                            EdgeNoFirstRun              = $True
+                            EdgeKiosk                   = "https://visitors.contoso.com"
+                            ClassicAppPath              = 'msedge.exe'
+                            AutoLaunch                  = $False
+                            StartLayoutTileSize         = 'hidden'
+                            AppType                     = 'unknown'
+                            EdgeKioskIdleTimeoutMinutes = 5
+                            EdgeKioskType               = 'publicBrowsing'
+                            Name                        = "Visitor sign-in"
+                            odataType                   = '#microsoft.graph.windowsKioskWin32App'
                         }
                         odataType = '#microsoft.graph.windowsKioskSingleWin32App'
                     }
                 }
             );
-            WindowsKioskForceUpdateSchedule     = MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule{
+            RoleScopeTagIds                        = @("0");
+            WindowsKioskForceUpdateSchedule        = MSFT_MicrosoftGraphwindowsKioskForceUpdateSchedule{
                 RunImmediatelyIfAfterStartDateTime = $False
                 StartDateTime                      = '2023-04-15T23:00:00.0000000+00:00'
                 DayofMonth                         = 1
                 Recurrence                         = 'daily'
                 DayofWeek                          = 'sunday'
             };
-            ApplicationId                       = $ApplicationId;
-            TenantId                            = $TenantId;
-            CertificateThumbprint               = $CertificateThumbprint;
+            ApplicationId                          = $ApplicationId;
+            TenantId                               = $TenantId;
+            CertificateThumbprint                  = $CertificateThumbprint;
         }
     }
 }

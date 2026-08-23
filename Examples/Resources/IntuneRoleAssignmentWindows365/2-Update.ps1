@@ -30,7 +30,7 @@ Configuration Example
             DirectoryScopes       = @("AADGroup_1");
             DisplayName           = "IntuneRoleAssignmentWindows365_1";
             Ensure                = "Present";
-            Principals            = @("AADGroup_2"); # Updated property
+            Principals            = @("AADGroup_2"); # Updated Property
             RoleDefinition        = "IntuneRoleDefinitionWindows365_1";
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;

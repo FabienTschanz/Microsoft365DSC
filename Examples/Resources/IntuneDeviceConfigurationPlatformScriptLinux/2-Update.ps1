@@ -31,11 +31,15 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             CustomConfig_Script            = "#!/bin/sh
 
 echo true";
-            CustomConfigExecutionContext   = "root"; # Updated property
+            CustomConfigExecutionContext   = "root"; # Updated Property
             CustomConfigExecutionFrequency = 15;
             CustomConfigExecutionRetries   = 2;
             DisplayName                    = "IntuneDeviceConfigurationPlatformScriptLinux_1";

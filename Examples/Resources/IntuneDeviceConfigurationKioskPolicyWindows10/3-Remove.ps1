@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationKioskPolicyWindows10 'IntuneDeviceConfigurationKioskPolicyWindows10-Example'
         {
-            DisplayName           = "kiosk";
+            DisplayName           = "Shared Reception Kiosk";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

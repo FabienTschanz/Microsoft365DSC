@@ -28,16 +28,16 @@ Configuration Example
         {
             AdDomainName          = "contoso.com";
             AdDomainUsername      = "username@contoso.com";
-            AdDomainPassword      = "securePassword";
+            AdDomainPassword      = "<domain-join-password>";
             ConnectionType        = "hybridAzureADJoin";
             DisplayName           = "IntuneWindows365AzureNetworkConnection_Hybrid";
             Ensure                = "Present";
             OrganizationalUnit    = "OU=CloudPCs,OU=Devices,DC=contoso,DC=com";
             ResourceGroupId       = "/subscriptions/subscription-name/resourceGroups/resource-group-name";
             RoleScopeTagIds       = @("0");
-            SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2/subnets/default"; # Updated property
+            SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2/subnets/default"; # Updated Property
             SubscriptionName      = "subscription-name";
-            VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2"; # Updated property
+            VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2"; # Updated Property
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
@@ -49,9 +49,9 @@ Configuration Example
             Ensure                = "Present";
             ResourceGroupId       = "/subscriptions/subscription-name/resourceGroups/resource-group-name";
             RoleScopeTagIds       = @("0");
-            SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2/subnets/default"; # Updated property
+            SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2/subnets/default"; # Updated Property
             SubscriptionName      = "subscription-name";
-            VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2"; # Updated property
+            VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name-2"; # Updated Property
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;

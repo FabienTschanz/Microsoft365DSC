@@ -28,7 +28,7 @@ Configuration Example
         {
             DisplayName           = "Office";
             PackageId             = "com.microsoft.office";
-            RoleScopeTagIds       = @("1"); # Drift
+            RoleScopeTagIds       = @("1"); # Updated Property
             Ensure                = "Present";
             Assignments           = @(
                 MSFT_DeviceManagementManagedGooglePlayMobileAppAssignment{
@@ -36,6 +36,10 @@ Configuration Example
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
+                }
+                MSFT_DeviceManagementManagedGooglePlayMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
                 }
             );
             ApplicationId         = $ApplicationId;

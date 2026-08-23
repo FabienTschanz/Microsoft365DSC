@@ -45,6 +45,10 @@ Configuration Example
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                     intent                                     = 'required'
                 }
+                MSFT_DeviceManagementMobileAppAssignment{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Policy Exclusions'
+                }
             );
             Categories            = @(
                 MSFT_DeviceManagementMobileAppCategory{

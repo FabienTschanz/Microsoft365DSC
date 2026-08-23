@@ -52,7 +52,7 @@ Configuration Example
             PasswordRequired          = $False;
             PhoneMemoryEncrypted      = $False;
             Policy                    = "MyPolicy";
-            RequireEmailProfile       = $True; #Drift
+            RequireEmailProfile       = $True; # Updated Property
             SmartScreenEnabled        = $False;
             SystemSecurityTLS         = $False;
             TargetGroups              = @("Communications");

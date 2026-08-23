@@ -31,7 +31,7 @@ Configuration Example
             DisplayName           = "SuperTest";
             Ensure                = "Present";
             Environments          = "Default-e91d4e0e-d5a5-4e3a-be14-2192592a59af";
-            FilterType            = "include"; # Drift
+            FilterType            = "include"; # Updated Property
             TenantId              = $TenantId;
         }
     }

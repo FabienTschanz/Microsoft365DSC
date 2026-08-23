@@ -29,7 +29,7 @@ Configuration Example
             ApplicationId             = $ApplicationId;
             CertificateThumbprint     = $CertificateThumbprint;
             IsSingleInstance          = "Yes";
-            SuggestedFeedsEnabledType = "EnabledUserOverride"; # Updated property
+            SuggestedFeedsEnabledType = "EnabledUserOverride"; # Updated Property
             TenantId                  = $TenantId;
             TrendingFeedsEnabledType  = "EnabledUserOverride";
         }

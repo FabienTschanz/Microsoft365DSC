@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationCustomPolicyWindows10 'IntuneDeviceConfigurationCustomPolicyWindows10-Example'
         {
-            DisplayName           = "custom";
+            DisplayName           = "Windows OMA-URI Baseline";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

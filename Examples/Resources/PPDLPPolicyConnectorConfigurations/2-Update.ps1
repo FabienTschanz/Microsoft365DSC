@@ -33,7 +33,7 @@ Configuration Example
                     actionRules                        = @(
                         MSFT_PPDLPPolicyConnectorConfigurationsActionRules{
                             actionId = 'CreateInvitation'
-                            behavior = 'Block' #drift
+                            behavior = 'Block' # Updated Property
                         }
                     )
                     connectorId                        = '/providers/Microsoft.PowerApps/apis/shared_aadinvitationmanager'

@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationPolicyAndroidDeviceOwner 'IntuneDeviceConfigurationPolicyAndroidDeviceOwner-Example'
         {
-            DisplayName           = 'general confi - AndroidDeviceOwner'
+            DisplayName           = 'Corporate Android Device Restrictions'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

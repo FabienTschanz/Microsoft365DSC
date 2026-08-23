@@ -26,18 +26,23 @@ Configuration Example
     {
         IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10 'IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10-Example'
         {
-            AdvancedThreatProtectionAutoPopulateOnboardingBlob = $True; # Updated Property
+            AdvancedThreatProtectionAutoPopulateOnboardingBlob = $true; # Updated Property
+            AdvancedThreatProtectionOffboardingBlob            = "<offboarding-blob>";
+            AdvancedThreatProtectionOffboardingFilename        = "WindowsDefenderATP.offboarding";
             AdvancedThreatProtectionOnboardingFilename         = "WindowsDefenderATP.onboarding";
-            AllowSampleSharing                                 = $True;
+            AllowSampleSharing                                 = $true;
             Assignments                                        = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
+                    groupDisplayName                           = 'Corporate Windows Devices'
                 }
             );
+            Description                                        = "Onboards corporate Windows endpoints to Microsoft Defender for Endpoint";
             DisplayName                                        = "MDE onboarding Legacy";
-            EnableExpeditedTelemetryReporting                  = $True;
+            EnableExpeditedTelemetryReporting                  = $true;
             Ensure                                             = "Present";
+            RoleScopeTagIds                                    = @("0");
             ApplicationId                                      = $ApplicationId;
             TenantId                                           = $TenantId;
             CertificateThumbprint                              = $CertificateThumbprint;

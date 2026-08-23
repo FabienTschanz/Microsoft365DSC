@@ -27,7 +27,6 @@ Configuration Example
         IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 'IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10-Example'
         {
             DisplayName           = 'Driver Updates - Manual Approval'
-            Description           = 'Manually approved driver updates for corporate laptops'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

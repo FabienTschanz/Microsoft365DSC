@@ -36,7 +36,7 @@ Configuration Example
                 MaximumRetries        = 1
                 TimeoutInMilliseconds = 1000
             };
-            Description           = "My Drifted Description"; # Drift
+            Description           = "My Drifted Description"; # Updated Property
             DisplayName           = "My Custom Extension";
             EndpointConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionEndpointConfiguration{
                 SubscriptionId       = '<subscription-id>'

@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationPolicyAndroidOpenSourceProject 'IntuneDeviceConfigurationPolicyAndroidOpenSourceProject-Example'
         {
-            DisplayName           = 'aosp'
+            DisplayName           = 'AOSP Device Restrictions'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

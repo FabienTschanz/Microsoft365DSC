@@ -27,17 +27,24 @@ Configuration Example
         IntuneWifiConfigurationPolicyAndroidOpenSourceProject 'IntuneWifiConfigurationPolicyAndroidOpenSourceProject-Example'
         {
             DisplayName                    = 'wifi aosp'
+            Description                    = 'Wi-Fi for shared warehouse scanning devices'
             Assignments                    = @(
-                MSFT_DeviceManagementConfigurationPolicyAssignments {
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = 'none'
                     dataType                                   = '#microsoft.graph.allDevicesAssignmentTarget'
                 }
+                MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType         = '#microsoft.graph.exclusionGroupAssignmentTarget'
+                    groupDisplayName = 'Warehouse Kiosk Tablets'
+                }
             )
-            ConnectAutomatically           = $False
-            ConnectWhenNetworkNameIsHidden = $True
-            NetworkName                    = 'Updated Network' # Updated Property
-            PreSharedKeyIsSet              = $True
-            Ssid                           = 'aaaaa'
+            ConnectAutomatically           = $false
+            ConnectWhenNetworkNameIsHidden = $true
+            NetworkName                    = 'Warehouse Scanner Wi-Fi - Building B' # Updated Property
+            PreSharedKey                   = '<wifi-pre-shared-key>'
+            PreSharedKeyIsSet              = $true
+            RoleScopeTagIds                = @('0')
+            Ssid                           = 'Contoso-Scanners'
             WiFiSecurityType               = 'wpaPersonal'
             Ensure                         = 'Present'
             ApplicationId                  = $ApplicationId;

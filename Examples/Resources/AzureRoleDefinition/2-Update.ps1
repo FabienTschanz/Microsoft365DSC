@@ -31,7 +31,7 @@ Configuration Example
             AssignableScopes      = @("<subscription-scope>");
             CertificateThumbprint = $CertificateThumbprint;
             CustomRoleName        = "My Custom Role";
-            Description           = "An updated custom role for managing virtual machines."; #Drift
+            Description           = "An updated custom role for managing virtual machines."; # Updated Property
             Ensure                = "Present";
             TenantId              = $TenantId;
         }

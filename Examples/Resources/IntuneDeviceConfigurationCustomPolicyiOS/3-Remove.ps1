@@ -25,8 +25,7 @@ Configuration Example
     {
         IntuneDeviceConfigurationCustomPolicyiOS "IntuneDeviceConfigurationCustomPolicyiOS-Example"
         {
-            Description           = "IntuneDeviceConfigurationCustomPolicyiOS Description";
-            DisplayName           = "IntuneDeviceConfigurationCustomPolicyiOS DisplayName";
+            DisplayName           = "iOS Wi-Fi Payload";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

@@ -25,8 +25,7 @@ Configuration Example
     {
         IntuneAppAndBrowserIsolationPolicyWindows10ConfigMgr 'IntuneAppAndBrowserIsolationPolicyWindows10ConfigMgr-Example'
         {
-            Id                    = '00000000-0000-0000-0000-000000000000'
-            DisplayName           = 'App and Browser Isolation'
+            DisplayName           = 'App and Browser Isolation (ConfigMgr)'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

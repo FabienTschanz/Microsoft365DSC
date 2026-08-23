@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneMobileAppsWindowsOfficeSuiteApp "IntuneMobileAppsWindowsOfficeSuiteApp-Example"
         {
-            Id                    = "8e683524-4ec1-4813-bb3e-6256b2f293d8";
             DisplayName           = "Microsoft 365 Apps for Windows 10 and later";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId

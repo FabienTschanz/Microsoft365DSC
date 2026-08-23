@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneAppCategory "IntuneAppCategory-Example"
         {
-            Id                    = "a1fc9fe2-728d-4867-9a72-a61e18f8c606";
             DisplayName           = "Custom Data Management";
             Ensure                = "Present";
             ApplicationId         = $ApplicationId;

@@ -28,7 +28,7 @@ Configuration Example
         {
             AdDomainName          = "contoso.com";
             AdDomainUsername      = "username@contoso.com";
-            AdDomainPassword      = "securePassword";
+            AdDomainPassword      = "<domain-join-password>";
             ConnectionType        = "hybridAzureADJoin";
             DisplayName           = "IntuneWindows365AzureNetworkConnection_Hybrid";
             Ensure                = "Present";

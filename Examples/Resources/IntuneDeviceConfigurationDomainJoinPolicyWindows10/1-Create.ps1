@@ -26,18 +26,21 @@ Configuration Example
     {
         IntuneDeviceConfigurationDomainJoinPolicyWindows10 'IntuneDeviceConfigurationDomainJoinPolicyWindows10-Example'
         {
-            ActiveDirectoryDomainName         = "domain.com";
+            ActiveDirectoryDomainName         = "corp.contoso.com";
             Assignments                       = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
+                    dataType                                   = '#microsoft.graph.groupAssignmentTarget'
                     deviceAndAppManagementAssignmentFilterType = 'none'
-                    dataType                                   = '#microsoft.graph.allLicensedUsersAssignmentTarget'
+                    groupDisplayName                           = 'Autopilot Hybrid Join Devices'
                 }
             );
-            ComputerNameStaticPrefix          = "WK-";
-            ComputerNameSuffixRandomCharCount = 12;
+            ComputerNameStaticPrefix          = "WKS";
+            ComputerNameSuffixRandomCharCount = 11;
+            Description                       = "Joins newly provisioned workstations to the corporate Active Directory domain";
             DisplayName                       = "Domain Join";
             Ensure                            = "Present";
-            OrganizationalUnit                = "OU=workstation,CN=domain,CN=com";
+            OrganizationalUnit                = "OU=Workstations,OU=Contoso,DC=corp,DC=contoso,DC=com";
+            RoleScopeTagIds                   = @("0");
             ApplicationId                     = $ApplicationId;
             TenantId                          = $TenantId;
             CertificateThumbprint             = $CertificateThumbprint;

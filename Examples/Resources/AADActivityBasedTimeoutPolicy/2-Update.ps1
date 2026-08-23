@@ -27,7 +27,7 @@ Configuration Example
         AADActivityBasedTimeoutPolicy "AADActivityBasedTimeoutPolicy-Example"
         {
             AzurePortalTimeOut    = "02:00:00";
-            DefaultTimeOut        = "04:00:00"; # Updated property
+            DefaultTimeOut        = "04:00:00"; # Updated Property
             DisplayName           = "displayName-value";
             Ensure                = "Present";
             Id                    = "000000-0000-0000-0000-000000000000";

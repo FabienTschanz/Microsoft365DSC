@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -22,9 +30,9 @@ Configuration Example
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = "#microsoft.graph.groupAssignmentTarget"
-                    groupId                                    = "00000000-0000-0000-0000-000000000000"
+                    groupId                                    = "6b2c9d84-3f15-4a70-9e28-5c1b7d0a4f36"
                     deviceAndAppManagementAssignmentFilterType = "none"
-                    groupDisplayName                           = "Include"
+                    groupDisplayName                           = "All Enrolled Employees"
                 }
             );
             CertificateThumbprint          = $CertificateThumbprint;
@@ -41,29 +49,29 @@ Configuration Example
             ContactITPhoneNumber           = "+1 425 555 0134";
             CustomCanSeePrivacyMessage     = "**What Contoso IT can see** Device model, serial number and the apps installed by IT. Read the full [privacy notice](https://privacy.contoso.com).";
             CustomCantSeePrivacyMessage    = "**What Contoso IT cannot see** Your photos, browsing history, text messages and personal files. Read the full [privacy notice](https://privacy.contoso.com).";
-            DisableDeviceCategorySelection = $False;
-            DisplayName                    = "Company";
+            DisableDeviceCategorySelection = $false;
+            DisplayName                    = "Contoso";
             EnrollmentAvailability         = "availableWithPrompts";
             Ensure                         = "Present";
             LandingPageCustomizedImage     = MSFT_MicrosoftGraphMimeContent{
                 Type  = "image/jpeg"
-                Value = "Base64EncodedString"
+                Value = "<base64-encoded-landing-page-image>"
             };
             LightBackgroundLogo            = MSFT_MicrosoftGraphMimeContent{
                 Type  = "image/png"
-                Value = "Base64EncodedString"
+                Value = "<base64-encoded-light-background-logo>"
             };
             OnlineSupportSiteName          = "Contoso Support";
             OnlineSupportSiteUrl           = "https://support.contoso.com";
-            PrivacyUrl                     = "https://www.example.com";
-            ProfileDescription             = "";
-            ProfileName                    = "IntuneCustomizationBrandingProfile_1";
+            PrivacyUrl                     = "https://privacy.contoso.com";
+            ProfileDescription             = "Company Portal branding shown to employees, refreshed for the 2026 brand guidelines"; # Updated Property
+            ProfileName                    = "Contoso Company Portal";
             RoleScopeTagIds                = @("0");
-            ShowAzureADEnterpriseApps      = $True;
-            ShowConfigurationManagerApps   = $True;
-            ShowDisplayNameNextToLogo      = $True;
-            ShowLogo                       = $True;
-            ShowOfficeWebApps              = $True;
+            ShowAzureADEnterpriseApps      = $true;
+            ShowConfigurationManagerApps   = $true;
+            ShowDisplayNameNextToLogo      = $true;
+            ShowLogo                       = $true;
+            ShowOfficeWebApps              = $true;
             TenantId                       = $TenantId;
             ThemeColor                     = MSFT_MicrosoftGraphRgbColor{
                 B = 198
@@ -72,7 +80,7 @@ Configuration Example
             };
             ThemeColorLogo                 = MSFT_MicrosoftGraphMimeContent{
                 Type  = "image/png"
-                Value = "Base64EncodedString"
+                Value = "<base64-encoded-theme-color-logo>"
             };
         }
     }

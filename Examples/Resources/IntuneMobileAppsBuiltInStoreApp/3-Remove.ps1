@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneMobileAppsBuiltInStoreApp "IntuneMobileAppsBuiltInStoreApp-Example"
         {
-            Id                    = "8d027f94-0682-431e-97c1-827d1879fa79";
             DisplayName           = "Builtin Store App";
             TargetPlatform        = "Android";
             Ensure                = "Absent";

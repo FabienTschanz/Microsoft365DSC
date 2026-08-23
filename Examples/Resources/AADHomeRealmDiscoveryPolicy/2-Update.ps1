@@ -29,7 +29,7 @@ Configuration Example
             Definition            = @(
                 MSFT_AADHomeRealDiscoveryPolicyDefinition {
                     PreferredDomain             = 'federated.example.com'
-                    AccelerateToFederatedDomain = $True # updating here
+                    AccelerateToFederatedDomain = $True # Updated Property
                     AlternateIdLogin            = MSFT_AADHomeRealDiscoveryPolicyDefinitionAlternateIdLogin {
                         Enabled = $True
                     }

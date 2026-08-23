@@ -25,8 +25,7 @@ Configuration Example
     {
         IntuneAppConfigurationPolicy 'IntuneAppConfigurationPolicy-Example'
         {
-            DisplayName           = 'ContosoNew'
-            Description           = 'New Contoso Policy'
+            DisplayName           = 'Mobile Workforce App Settings'
             Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;

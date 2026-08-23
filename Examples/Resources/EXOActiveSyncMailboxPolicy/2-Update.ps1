@@ -29,7 +29,7 @@ Configuration Example
             AllowApplePushNotifications              = $True;
             AllowBluetooth                           = "Allow";
             AllowBrowser                             = $True;
-            AllowCamera                              = $False; # Drift
+            AllowCamera                              = $False; # Updated Property
             AllowConsumerEmail                       = $True;
             AllowDesktopSync                         = $True;
             AllowExternalDeviceManagement            = $False;

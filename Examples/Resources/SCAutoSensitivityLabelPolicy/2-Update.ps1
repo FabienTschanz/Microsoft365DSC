@@ -19,7 +19,7 @@ Configuration Example
         SCAutoSensitivityLabelPolicy 'SCAutoSensitivityLabelPolicy-Example'
         {
             ApplySensitivityLabel = "TopSecret";
-            Comment               = "Applies the Top Secret label to Exchange and SharePoint content automatically"; # Updated property
+            Comment               = "Applies the Top Secret label to Exchange and SharePoint content automatically"; # Updated Property
             Credential            = $Credscredential;
             Ensure                = "Present";
             ExchangeLocation      = @("All");

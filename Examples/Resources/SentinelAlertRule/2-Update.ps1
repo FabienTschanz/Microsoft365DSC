@@ -66,7 +66,7 @@ Configuration Example
             };
             Query                 = "ThreatIntelIndicators";
             ResourceGroupName     = "ResourceGroupName";
-            Severity              = "High"; #Drift
+            Severity              = "High"; # Updated Property
             SubscriptionId        = "<subscription-id>";
             SuppressionDuration   = "PT5H";
             Tactics               = @();

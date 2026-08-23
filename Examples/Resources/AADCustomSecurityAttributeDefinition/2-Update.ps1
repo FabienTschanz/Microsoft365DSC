@@ -43,7 +43,7 @@ Configuration Example
             TenantId                = $TenantId;
             Type                    = "String";
             UsePreDefinedValuesOnly = $False;
-            Description             = "What size of shoe is the person wearing? Drifted" # Drift
+            Description             = "What size of shoe is the person wearing? Drifted" # Updated Property
         }
     }
 }

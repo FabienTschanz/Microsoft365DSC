@@ -26,7 +26,7 @@ Configuration Example
     {
         IntuneWindowsAutopilotDevicePreparationAutomaticPolicy 'IntuneWindowsAutopilotDevicePreparationAutomaticPolicy-Example'
         {
-            AllowedApplications   = @("IntuneMobileAppsWindowsOfficeSuiteApp_1"); # Updated property
+            AllowedApplications   = @("IntuneMobileAppsWindowsOfficeSuiteApp_1"); # Updated Property
             AllowedScripts        = @("IntuneDeviceConfigurationPlatformScriptWindows_1");
             ApplicationId         = $ApplicationId;
             AssignmentTarget      = "Include";

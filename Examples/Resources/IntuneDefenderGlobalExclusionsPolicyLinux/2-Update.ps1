@@ -32,7 +32,7 @@ Configuration Example
             Ensure                = "Present";
             Exclusions            = @(
                 MSFT_MicrosoftGraphIntuneSettingsCatalogExclusionsV2{
-                    exclusions_item_path        = '/path/to/otherDirectory' # Updated property
+                    exclusions_item_path        = '/path/to/otherDirectory' # Updated Property
                     exclusions_item_isDirectory = 'true'
                     exclusions_item_type        = 'excludedPath'
                 }
