@@ -119,7 +119,6 @@ jobs:
       - name: Run Test Harness
         shell: pwsh
         run: |
-          # Add a symbolic link for the Module to appear in Program Files
           New-Item -Type SymbolicLink -Path "C:\Program Files\WindowsPowerShell\Modules\Microsoft365DSC" -Target (Join-Path -Path . -ChildPath 'Modules/Microsoft365DSC' -Resolve)
           Import-Module './Tests/TestHarness.psm1' -Force;
           $MaximumFunctionCount = 32767
