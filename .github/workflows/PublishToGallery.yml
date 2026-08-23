@@ -14,46 +14,34 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - name: Install Dependencies
-        shell: powershell
-        run: |
-          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
-          $manifest = Import-PowerShellDataFile "./Modules/Microsoft365DSC/Microsoft365DSC.psd1"
-          $dependencies = $manifest.RequiredModules
-          foreach ($dependency in $dependencies)
-          {
-              Write-Verbose -Message "Installing Module {$($dependency.ModuleName)} Version {$($dependency.RequiredVersion)}"
-              Install-Module $dependency.ModuleName -RequiredVersion $dependency.RequiredVersion -Force -SkipPublisherCheck -AllowClobber -Scope AllUsers -Verbose
-              try
-              {
-                  Import-Module $dependency.ModuleName -Force
-              }
-              catch
-              {
-                  Write-Verbose -Message $_
-              }
-          }
+
       - name: Build Class Modules
         shell: pwsh
         run: |
           & ./Utilities/Build-Microsoft365DSC.ps1 -SkipSchemaCache
+
       - name: Build Dll Files
         shell: pwsh
         run: |
           & ./Utilities/Build-DllFiles.ps1 -Configuration Release
+
       - name: Trim Build-Only Sources
         shell: pwsh
         run: |
           & ./Utilities/Remove-M365DSCBuildOnlySource.ps1 -Confirm:$false
+
       - name: Generate Schema Cache
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $dependencies = (Import-PowerShellDataFile ./Modules/Microsoft365DSC/Dependencies/Manifest.psd1).Dependencies
           $engine = $dependencies | Where-Object ModuleName -EQ 'M365DSC.PSDesiredStateConfiguration'
-          if (-not $engine) { throw 'M365DSC.PSDesiredStateConfiguration is missing from Dependencies/Manifest.psd1.' }
-          Install-Module -Name $engine.ModuleName -RequiredVersion $engine.RequiredVersion -Force -Scope CurrentUser -AllowClobber
+          if ($null -eq $engine) {
+              throw 'M365DSC.PSDesiredStateConfiguration is missing from Dependencies/Manifest.psd1.'
+          }
+          Install-PSResource -Name $engine.ModuleName -Version $engine.RequiredVersion -Scope AllUsers -Reinstall -TrustRepository
           & ./Utilities/New-M365DSCDscSchemaCache.ps1
+
       - name: Publish
         shell: powershell
         env:

@@ -3,7 +3,6 @@ on: pull_request
 
 jobs:
   quality-test:
-    # The type of runner that the job will run on
     runs-on: windows-latest
 
     permissions: write-all
@@ -11,36 +10,48 @@ jobs:
     # Only when run from the main repo
     if: github.repository == 'Microsoft365DSC/Microsoft365DSC'
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout Repository
         uses: actions/checkout@v6
 
       - name: Install Modules
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
+          $dependencies = (Import-PowerShellDataFile ./Modules/Microsoft365DSC/Dependencies/Manifest.psd1).Dependencies
+
+          foreach ($name in @('M365DSC.PSDesiredStateConfiguration', 'DSCParser'))
+          {
+            $dependency = $dependencies | Where-Object ModuleName -EQ $name
+            if ($null -eq $dependency) {
+                throw "$name is missing from Dependencies/Manifest.psd1."
+            }
+            Install-PSResource -Name $dependency.ModuleName -Version $dependency.RequiredVersion -Scope AllUsers -TrustRepository
+          }
+
           Install-PSResource -Name ReverseDSC -Scope AllUsers -TrustRepository
-          Install-PSResource -Name DSCParser -Scope AllUsers -TrustRepository
-          Install-PSResource -Name PSDesiredStateConfiguration -Scope AllUsers -TrustRepository
           Install-PSResource -Name Pester -Scope AllUsers -TrustRepository -Version 6.0.0
           [System.Environment]::SetEnvironmentVariable('M365DSCTelemetryEnabled', $false, [System.EnvironmentVariableTarget]::Machine);
 
       - name: Build Class Modules
         shell: pwsh
         run: |
-          & ./Utilities/Build-Microsoft365DSC.ps1
+          & ./Utilities/Build-Microsoft365DSC.ps1 -SkipSchemaCache
 
       - name: Build Dll Files
         shell: pwsh
         run: |
           & ./Utilities/Build-DllFiles.ps1 -Configuration Release
 
+      - name: Generate Schema Cache
+        shell: pwsh
+        run: |
+          & ./Utilities/New-M365DSCDscSchemaCache.ps1
+
       - name: Run Quality Checks
         shell: pwsh
         run: |
-          # Add the module to the PSModulePath so that it can be imported
-          $env:PSModulePath = $env:PSModulePath + [System.IO.Path]::PathSeparator + (Join-Path -Path . -ChildPath 'Modules/Microsoft365DSC')
+          New-Item -Type SymbolicLink -Path "C:\Program Files\WindowsPowerShell\Modules\Microsoft365DSC" -Target (Join-Path -Path . -ChildPath 'Modules/Microsoft365DSC' -Resolve)
           Import-Module './Tests/TestHarness.psm1' -Force;
           $MaximumFunctionCount = 32767
 
@@ -60,7 +71,6 @@ jobs:
           }
 
   unit-test:
-    # The type of runner that the job will run on
     runs-on: windows-latest
 
     permissions: write-all
@@ -68,30 +78,43 @@ jobs:
     # Only when run from the main repo
     if: github.repository == 'Microsoft365DSC/Microsoft365DSC'
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout Repository
         uses: actions/checkout@v6
 
       - name: Install Modules
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
+          $dependencies = (Import-PowerShellDataFile ./Modules/Microsoft365DSC/Dependencies/Manifest.psd1).Dependencies
+
+          foreach ($name in @('M365DSC.PSDesiredStateConfiguration', 'DSCParser'))
+          {
+            $dependency = $dependencies | Where-Object ModuleName -EQ $name
+            if ($null -eq $dependency) {
+                throw "$name is missing from Dependencies/Manifest.psd1."
+            }
+            Install-PSResource -Name $dependency.ModuleName -Version $dependency.RequiredVersion -Scope AllUsers -TrustRepository
+          }
+
           Install-PSResource -Name ReverseDSC -Scope AllUsers -TrustRepository
-          Install-PSResource -Name DSCParser -Scope AllUsers -TrustRepository
-          Install-PSResource -Name PSDesiredStateConfiguration -Scope AllUsers -TrustRepository
           Install-PSResource -Name Pester -Scope AllUsers -TrustRepository -Version 6.0.0
           [System.Environment]::SetEnvironmentVariable('M365DSCTelemetryEnabled', $false, [System.EnvironmentVariableTarget]::Machine);
 
       - name: Build Class Modules
         shell: pwsh
         run: |
-          & ./Utilities/Build-Microsoft365DSC.ps1
+          & ./Utilities/Build-Microsoft365DSC.ps1 -SkipSchemaCache
 
       - name: Build Dll Files
         shell: pwsh
         run: |
           & ./Utilities/Build-DllFiles.ps1 -Configuration Release
+
+      - name: Generate Schema Cache
+        shell: pwsh
+        run: |
+          & ./Utilities/New-M365DSCDscSchemaCache.ps1
 
       - name: Run Test Harness
         shell: pwsh

@@ -18,6 +18,35 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
+      - name: Ensure No MOF Schema Files Remain
+        shell: pwsh
+        run: |
+          $schemaFiles = @(Get-ChildItem './Modules/Microsoft365DSC/DscResources' -Filter '*.schema.mof' -File -Recurse)
+
+          if ($schemaFiles.Count -gt 0)
+          {
+            $names = ($schemaFiles.Name -join ', ')
+            throw "Class-based resources do not ship a MOF schema. Remove: $names"
+          }
+
+      - name: Ensure Every Resource Is Class-Based
+        shell: pwsh
+        run: |
+          $resources = Get-ChildItem './Modules/Microsoft365DSC/DscResources' -Filter 'MSFT_*.psm1' -File -Recurse
+
+          foreach ($resource in $resources)
+          {
+            $content = Get-Content $resource.FullName -Raw
+            if ($content -notmatch '(?m)^\s*\[DscResource\(\)\]')
+            {
+              throw "Resource {$($resource.Name)} does not declare a [DscResource()] class."
+            }
+            if ($content -match '(?m)^\s*function\s+(Get|Set|Test|Export)-TargetResource\b')
+            {
+              throw "Resource {$($resource.Name)} still declares *-TargetResource functions. Use class methods instead."
+            }
+          }
+
       - name: Ensure No Hardcoded Graph Endpoints
         shell: pwsh
         run: |

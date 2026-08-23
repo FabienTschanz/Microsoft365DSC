@@ -5,9 +5,9 @@
     Regenerates SchemaDefinition.json by reflecting over the built class-based resources.
 
 .DESCRIPTION
-    Replacement for New-M365DSCSchemaDefinition (Modules/M365DSCSchemaHandler.psm1), which walks
-    *.schema.mof with regular expressions. Once resources are classes there are no .mof files to
-    walk, and the class metadata is richer and cannot drift from the code.
+    Replaced the MOF-based generator, which walked *.schema.mof with regular expressions. Once
+    resources are classes there are no .mof files to walk, and the class metadata is richer and
+    cannot drift from the code.
 
     The output shape is unchanged, because it is consumed at runtime:
 
