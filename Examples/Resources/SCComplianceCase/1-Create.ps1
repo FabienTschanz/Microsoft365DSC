@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SCComplianceCase 'SCComplianceCase-Example'
         {
-            Name        = "Contoso Litigation 2026"
-            Description = "MyPolicy"
-            Status      = "Active"
-            Ensure      = "Present"
-            Credential  = $Credscredential
+            Name                  = "Contoso Litigation 2026"
+            Description           = "MyPolicy"
+            Status                = "Active"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

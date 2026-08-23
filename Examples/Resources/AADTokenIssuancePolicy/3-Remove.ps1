@@ -26,11 +26,11 @@ Configuration Example
     {
         AADTokenIssuancePolicy "AADTokenIssuancePolicy-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "ExpenseReportingSamlPolicy";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -28,8 +28,8 @@ Configuration Example
             DisplayName           = "SideCar ManagedInstaller Script";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            TenantId              = $OrganizationName;
         }
     }
 }

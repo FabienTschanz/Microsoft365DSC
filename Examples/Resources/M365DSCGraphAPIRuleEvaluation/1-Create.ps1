@@ -24,10 +24,14 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Example"
+        M365DSCGraphAPIRuleEvaluation 'M365DSCGraphAPIRuleEvaluation-Example'
         {
-            Ensure                = "Absent";
-            Id                    = "c3";
+            APIUrl                = 'https://graph.microsoft.com/beta/serviceprincipals'
+            InstancesProperty     = 'value'
+            InstanceIdentifier    = 'displayName'
+            RuleDefinition        = "`$_.appCategory -eq 'mdm'"
+            RuleName              = "Only approved device management applications are registered"
+            AfterRuleCountQuery   = '-eq 4'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

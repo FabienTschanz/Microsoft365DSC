@@ -26,17 +26,15 @@ Configuration Example
     {
         AADFilteringPolicyRule "AADFilteringPolicyRule-Example1"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "MyFQDN";
             Policy                = "MyPolicy";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
         AADFilteringPolicyRule "AADFilteringPolicyRule-Example2"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Destinations          = @(
                 MSFT_AADFilteringPolicyRuleDestination{
                     name = 'ChildAbuseImages'
@@ -46,7 +44,9 @@ Configuration Example
             Name                  = "MyWebContentRule";
             Policy                = "MyPolicy";
             RuleType              = "webCategory";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

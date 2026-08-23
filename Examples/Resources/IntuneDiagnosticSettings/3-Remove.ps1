@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneDiagnosticSettings "IntuneDiagnosticSettings-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "PlatformDiagnostics";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -26,9 +26,6 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyIOS "IntuneVPNConfigurationPolicyIOS-Example"
         {
-            ApplicationId                  = $ApplicationId;
-            TenantId                       = $TenantId;
-            CertificateThumbprint          = $CertificateThumbprint;
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = "#microsoft.graph.groupAssignmentTarget"
@@ -105,6 +102,9 @@ Configuration Example
                     appId       = "com.microsoft.Office.Outlook"
                 }
             );
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

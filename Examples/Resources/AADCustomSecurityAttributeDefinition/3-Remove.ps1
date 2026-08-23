@@ -26,12 +26,12 @@ Configuration Example
     {
         AADCustomSecurityAttributeDefinition "AADCustomSecurityAttributeDefinition-Example"
         {
-            ApplicationId         = $ApplicationId;
             AttributeSet          = "Engineering";
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "ShoeSize";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

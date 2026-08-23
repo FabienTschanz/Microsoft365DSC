@@ -223,6 +223,12 @@ class SentinelWatchlist : M365DSCResourceBase
             $tenantIdValue = $this.Credential.UserName.Split('@')[1]
         }
 
+        $aliasValue = $this.Alias
+        if ([System.String]::IsNullOrEmpty($aliasValue))
+        {
+            $aliasValue = $this.Name
+        }
+
         $body = @{
             properties = @{
                 displayName         = $this.DisplayName
@@ -232,7 +238,7 @@ class SentinelWatchlist : M365DSCResourceBase
                 description         = $this.Description
                 defaultDuration     = $this.defaultDuration
                 numberOfLinesToSkip = $this.NumberOfLinesToSkip
-                watchListAlias      = $this.Alias
+                watchListAlias      = $aliasValue
             }
         }
 
@@ -247,13 +253,13 @@ class SentinelWatchlist : M365DSCResourceBase
         if ($this.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Configuring watchlist {$($this.Name)}"
-            $this.SetWatchlist($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $this.Alias, $body, $tenantIdValue)
+            $this.SetWatchlist($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $aliasValue, $body, $tenantIdValue)
         }
         # REMOVE
         elseif ($this.Ensure -eq 'Absent')
         {
             Write-Verbose -Message "Removing watchlist {$($this.Name)}"
-            $this.RemoveWatchlist($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $this.Alias, $tenantIdValue)
+            $this.RemoveWatchlist($this.SubscriptionId, $this.ResourceGroupName, $this.WorkspaceName, $aliasValue, $tenantIdValue)
         }
     }
 

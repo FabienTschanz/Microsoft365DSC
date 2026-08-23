@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -22,7 +30,6 @@ Configuration Example
             AlertBy                         = @("User");
             Category                        = "ThreatManagement";
             Comment                         = "Notifies the security operations team when a user repeatedly sends suspicious messages outside the organisation";
-            Credential                      = $Credscredential;
             Disabled                        = $false;
             Ensure                          = "Present";
             Filter                          = "Activity.Operation -eq 'CompromisedWarningAccount'";
@@ -40,6 +47,9 @@ Configuration Example
             Threshold                       = 5;
             TimeWindow                      = 120;
             VolumeThreshold                 = 100;
+            ApplicationId                   = $ApplicationId;
+            TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

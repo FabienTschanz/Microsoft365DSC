@@ -27,9 +27,6 @@ Configuration Example
         AADNetworkAccessForwardingProfile "AADNetworkAccessForwardingProfile-Example"
         {
 
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Name                  = "Internet traffic forwarding profile";
             Policies              = @(
                 MSFT_MicrosoftGraphNetworkaccessPolicyLink {
@@ -49,6 +46,9 @@ Configuration Example
                 }
             );
             State                 = "disabled";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

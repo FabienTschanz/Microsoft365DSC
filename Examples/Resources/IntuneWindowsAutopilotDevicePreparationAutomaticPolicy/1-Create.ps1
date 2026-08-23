@@ -28,14 +28,14 @@ Configuration Example
         {
             AllowedApplications   = @("IntuneMobileAppsWindowsOfficeSuiteApp_1","IntuneMobileAppsMicrosoftEdge_Windows");
             AllowedScripts        = @("IntuneDeviceConfigurationPlatformScriptWindows_1");
-            ApplicationId         = $ApplicationId;
             AssignmentTarget      = "Include";
-            CertificateThumbprint = $CertificateThumbprint;
             Description           = "";
             DisplayName           = "IntuneWindowsAutopilotDevicePreparationPolicy_1";
             Ensure                = "Present";
             RoleScopeTagIds       = @("0");
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

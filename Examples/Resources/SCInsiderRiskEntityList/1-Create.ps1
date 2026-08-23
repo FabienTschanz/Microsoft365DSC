@@ -26,8 +26,6 @@ Configuration Example
     {
         SCInsiderRiskEntityList "SCInsiderRiskEntityList-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Description           = "High risk file types monitored when data is copied to removable media";
             DisplayName           = "High risk file types";
             Ensure                = "Present";
@@ -35,7 +33,9 @@ Configuration Example
             Keywords              = @();
             ListType              = "CustomFileTypeLists";
             Name                  = "Restricted File Types";
-            TenantId              = $OrganizationName;
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

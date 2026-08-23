@@ -26,12 +26,12 @@ Configuration Example
     {
         SCInsiderRiskEntityList "SCInsiderRiskEntityList-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             ListType              = "CustomFileTypeLists";
             Name                  = "Restricted File Types";
-            TenantId              = $OrganizationName;
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

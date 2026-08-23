@@ -26,11 +26,11 @@ Configuration Example
     {
         AADNetworkAccessSettingConditionalAccess "AADNetworkAccessSettingConditionalAccess-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             IsSingleInstance      = "Yes";
             SignalingStatus       = "disabled";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

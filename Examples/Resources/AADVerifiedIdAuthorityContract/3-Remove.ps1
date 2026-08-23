@@ -27,7 +27,7 @@ Configuration Example
         AADVerifiedIdAuthorityContract 'AADVerifiedIdAuthorityContract-Example'
         {
             Ensure                = "Absent";
-            linkedDomainUrl       = "https://$OrganizationName/";
+            linkedDomainUrl       = "https://$TenantId/";
             name                  = "Verified Credential Expert Card";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

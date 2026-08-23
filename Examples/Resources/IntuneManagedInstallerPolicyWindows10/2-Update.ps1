@@ -43,8 +43,8 @@ Configuration Example
             IsIntuneManagedInstaller = $False; # Updated Property
             RoleScopeTagIds          = @("0");
             ApplicationId            = $ApplicationId;
+            TenantId                 = $TenantId;
             CertificateThumbprint    = $CertificateThumbprint;
-            TenantId                 = $OrganizationName;
         }
     }
 }

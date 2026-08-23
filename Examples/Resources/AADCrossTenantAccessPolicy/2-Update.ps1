@@ -27,12 +27,12 @@ Configuration Example
         AADCrossTenantAccessPolicy "AADCrossTenantAccessPolicy-Example"
         {
             AllowedCloudEndpoints = @("microsoftonline.us");
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             DisplayName           = "MyXTAPPolicy";
             Ensure                = "Present";
             IsSingleInstance      = "Yes";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

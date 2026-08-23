@@ -26,11 +26,11 @@ Configuration Example
     {
         AADFeatureRolloutPolicy "AADFeatureRolloutPolicy-Example"
         {
+            DisplayName           = "certificateBasedAuthentication rollout policy";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DisplayName           = "certificateBasedAuthentication rollout policy";
-            Ensure                = "Absent";
         }
     }
 }

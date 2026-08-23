@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr "IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "Windows ConfigMgr - Windows Security experience";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,17 +26,17 @@ Configuration Example
     {
         AADGroupEligibilityScheduleSettings 'AADGroupEligibilityScheduleSettings-Example'
         {
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             expirationRule        = MSFT_AADRoleManagementPolicyExpirationRule{
                 isExpirationRequired = $False
                 maximumDuration      = "PT8H"
             };
-            groupDisplayName      = "MyPIMGroup";
+            groupDisplayName      = "sg-Retail";
             id                    = "Expiration_EndUser_Assignment";
             PIMGroupRole          = "member";
             ruleType              = "#microsoft.graph.unifiedRoleManagementPolicyExpirationRule";
-            TenantId              = $OrganizationName;
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,14 +26,16 @@ Configuration Example
     {
         SPOStorageEntity 'SPOStorageEntity-Example'
         {
-            Key         = "ContosoHelpDeskUrl"
-            Value       = "https://contoso.sharepoint.com/sites/helpdesk"
-            EntityScope = "Tenant"
-            Description = "Link to the corporate help desk site"
-            Comment     = "Maintained by the intranet team"
-            SiteUrl     = "https://contoso-admin.sharepoint.com"
-            Ensure      = "Present"
-            Credential  = $Credscredential
+            Key                   = "ContosoHelpDeskUrl"
+            Value                 = "https://contoso.sharepoint.com/sites/helpdesk"
+            EntityScope           = "Tenant"
+            Description           = "Link to the corporate help desk site"
+            Comment               = "Maintained by the intranet team"
+            SiteUrl               = "https://contoso-admin.sharepoint.com"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

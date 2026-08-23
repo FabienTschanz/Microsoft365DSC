@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneTermsAndConditions "IntuneTermsAndConditions-Example"
         {
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             DisplayName           = "IntuneTermsAndConditions_1";
             Ensure                = "Absent";
-            TenantId              = $OrganizationName;
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
         }
     }
 }

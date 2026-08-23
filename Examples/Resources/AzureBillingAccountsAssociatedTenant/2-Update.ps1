@@ -26,15 +26,16 @@ Configuration Example
     {
         AzureBillingAccountsAssociatedTenant "AzureBillingAccountsAssociatedTenant-Example"
         {
-            ApplicationId               = $ApplicationId;
             AssociatedTenantId          = "7a575036-2dac-4713-8e23-2963cc2c5f37";
             BillingAccount              = "Contoso Enterprise Agreement";
             BillingManagementState      = "NotAllowed"; # Updated Property
-            CertificateThumbprint       = $CertificateThumbprint;
             DisplayName                 = "Contoso Manufacturing";
             Ensure                      = "Present";
             ProvisioningManagementState = "Pending";
+            SubscriptionId              = "<subscription-id>";
+            ApplicationId               = $ApplicationId;
             TenantId                    = $TenantId;
+            CertificateThumbprint       = $CertificateThumbprint;
         }
     }
 }

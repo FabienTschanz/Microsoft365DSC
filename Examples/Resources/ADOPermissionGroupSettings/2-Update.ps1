@@ -8,8 +8,16 @@ Configuration Example
     param
     (
         [Parameter()]
-        [PSCredential]
-        $Credential
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,7 +26,7 @@ Configuration Example
     {
         ADOPermissionGroupSettings "ADOPermissionGroupSettings-Example"
         {
-            AllowPermissions = @(
+            AllowPermissions      = @(
                 MSFT_ADOPermission {
                     NamespaceId = '5a27515b-ccd7-42c9-84f1-54c998f03866'
                     DisplayName = 'Edit identity information'
@@ -26,11 +34,13 @@ Configuration Example
                     Token       = 'f6492b10-7ae8-4641-8208-ff5c364a6154\dbe6034e-8fbe-4d6e-a7f3-07a7e70816c9'
                 }
             );
-            Credential       = $Credential;
-            DenyPermissions  = @();
-            Descriptor       = "vssgp.Uy0xLTktMTU1MTM3NDI0NS0yNzEyNzI0MzgtMzkwMDMyNjIxNC0yMTgxNjI3NzQwLTkxMDg0NDI0NC0xLTgyODcyNzAzNC0yOTkzNjA0MTcxLTI5MjUwMjk4ODgtNTY0MDg1OTcy";
-            GroupName        = "[Contoso]\Release Managers";
-            OrganizationName = "Contoso";
+            DenyPermissions       = @();
+            Descriptor            = "vssgp.Uy0xLTktMTU1MTM3NDI0NS0yNzEyNzI0MzgtMzkwMDMyNjIxNC0yMTgxNjI3NzQwLTkxMDg0NDI0NC0xLTgyODcyNzAzNC0yOTkzNjA0MTcxLTI5MjUwMjk4ODgtNTY0MDg1OTcy";
+            GroupName             = "[Contoso]\Release Managers";
+            OrganizationName      = "Contoso";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

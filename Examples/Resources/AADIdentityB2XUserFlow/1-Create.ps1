@@ -26,15 +26,11 @@ Configuration Example
     {
         AADIdentityB2XUserFlow "AADIdentityB2XUserFlow-Example"
         {
-            ApplicationId             = $ApplicationId
-            TenantId                  = $TenantId
-            CertificateThumbprint     = $CertificateThumbprint
             ApiConnectorConfiguration = MSFT_MicrosoftGraphuserFlowApiConnectorConfiguration
             {
                 postAttributeCollectionConnectorName = 'RestApi_f6e8e73d-6b17-433e-948f-f578f12bd57c'
                 postFederationSignupConnectorName    = 'RestApi_beeb7152-673c-48b3-b143-9975949a93ca'
             };
-            Credential                = $Credscredential;
             Ensure                    = "Present";
             Id                        = "B2X_1_ContractorSignup";
             IdentityProviders         = @("MSASignup-OAUTH","EmailOtpSignup-OAUTH");
@@ -76,6 +72,9 @@ Configuration Example
 
                 }
             );
+            ApplicationId             = $ApplicationId
+            TenantId                  = $TenantId
+            CertificateThumbprint     = $CertificateThumbprint
         }
     }
 }

@@ -31,9 +31,6 @@ Configuration Example
             Capacity               = 15;
             City                   = "Redmond";
             CountryOrRegion        = "US";
-            ApplicationId          = $ApplicationId
-            TenantId               = $TenantId
-            CertificateThumbprint  = $CertificateThumbprint
             DisplayDeviceName      = "DisplayDeviceName";
             DisplayName            = "Hood";
             Ensure                 = 'Present'
@@ -51,6 +48,9 @@ Configuration Example
             Street                 = "1 Microsoft Way";
             Tags                   = @("Tag1", "Tag2");
             VideoDeviceName        = "VideoDevice";
+            ApplicationId          = $ApplicationId
+            TenantId               = $TenantId
+            CertificateThumbprint  = $CertificateThumbprint
         }
     }
 }

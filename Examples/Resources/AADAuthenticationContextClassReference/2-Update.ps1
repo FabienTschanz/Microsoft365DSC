@@ -26,14 +26,14 @@ Configuration Example
     {
         AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Description           = "Requires step-up authentication for finance and payroll applications"; # Updated Property
             DisplayName           = "My Context";
             Ensure                = "Present";
             Id                    = "c3";
             IsAvailable           = $False;
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

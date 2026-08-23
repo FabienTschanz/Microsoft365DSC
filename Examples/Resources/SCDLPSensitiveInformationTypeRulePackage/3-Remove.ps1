@@ -26,11 +26,11 @@ Configuration Example
     {
         SCDLPSensitiveInformationTypeRulePackage "SCDLPSensitiveInformationTypeRulePackage-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "Contoso Employee ID";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

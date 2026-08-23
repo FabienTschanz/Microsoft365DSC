@@ -26,9 +26,6 @@ Configuration Example
     {
         EXOMailboxFolderPermission "EXOMailboxFolderPermission-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Ensure                = "Present";
             Identity              = "admin:\Calendar";
             UserPermissions       = @(
@@ -46,6 +43,9 @@ Configuration Example
                     SharingPermissionFlags = 'Delegate'
                 }
             );
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

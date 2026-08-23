@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $credsCredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -21,13 +29,15 @@ Configuration Example
             AutomaticallyMigrateUserMeetings = $True;
             AutomaticallyReplaceAcpProvider  = $False;
             AutomaticallySendEmailsToUsers   = $True;
-            Credential                       = $credsCredential;
             EnableDialOutJoinConfirmation    = $False;
             EnableEntryExitNotifications     = $True;
             EntryExitAnnouncementsType       = "ToneOnly";
             IsSingleInstance                 = "Yes";
             MaskPstnNumbersType              = "MaskedForExternalUsers";
             PinLength                        = 8;
+            ApplicationId                    = $ApplicationId;
+            TenantId                         = $TenantId;
+            CertificateThumbprint            = $CertificateThumbprint;
         }
     }
 }

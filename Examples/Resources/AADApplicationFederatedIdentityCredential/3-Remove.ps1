@@ -26,7 +26,7 @@ Configuration Example
     {
         AADApplicationFederatedIdentityCredential 'AADApplicationFederatedIdentityCredential-Example'
         {
-            ApplicationDisplayName = 'AppDisplayName'
+            ApplicationDisplayName = 'Payroll Integration Service'
             Name                   = 'GitHubActionsMain'
             Ensure                 = 'Absent'
             ApplicationId          = $ApplicationId

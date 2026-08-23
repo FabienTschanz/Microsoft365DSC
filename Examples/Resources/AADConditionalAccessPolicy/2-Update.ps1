@@ -55,9 +55,6 @@ Configuration Example
             PersistentBrowserIsEnabled               = $true;
             PersistentBrowserMode                    = "Never";
             DisableResilienceDefaultsIsEnabled       = $false;
-            ApplicationId                            = $ApplicationId
-            TenantId                                 = $TenantId
-            CertificateThumbprint                    = $CertificateThumbprint
             DeviceFilterMode                         = "exclude";
             DeviceFilterRule                         = "device.trustType -eq `"AzureAD`" -or device.trustType -eq `"ServerAD`" -or device.trustType -eq `"Workplace`"";
             DisplayName                              = "Require MFA for Mobile Devices";
@@ -71,6 +68,9 @@ Configuration Example
             SignInFrequencyType                      = "hours";
             SignInFrequencyValue                     = 2; # Updated Property
             State                                    = "disabled";
+            ApplicationId                            = $ApplicationId
+            TenantId                                 = $TenantId
+            CertificateThumbprint                    = $CertificateThumbprint
         }
     }
 }

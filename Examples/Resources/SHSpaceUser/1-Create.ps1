@@ -26,13 +26,13 @@ Configuration Example
     {
         SHSpaceUser "SHSpaceUser-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Email                 = "john.smith@contoso.com";
             Ensure                = "Present";
             Roles                 = @("TrainingPermissionRole","HealthPermissionRole");
             SpaceName             = "Contoso Workspace";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

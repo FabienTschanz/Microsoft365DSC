@@ -26,12 +26,12 @@ Configuration Example
     {
         AADEntitlementManagementSettings "AADEntitlementManagementSettings-Example"
         {
-            ApplicationId                            = $ApplicationId;
-            CertificateThumbprint                    = $CertificateThumbprint;
             DaysUntilExternalUserDeletedAfterBlocked = 30;
             ExternalUserLifecycleAction              = "blockSignInAndDelete";
             IsSingleInstance                         = "Yes";
+            ApplicationId                            = $ApplicationId;
             TenantId                                 = $TenantId;
+            CertificateThumbprint                    = $CertificateThumbprint;
         }
     }
 }

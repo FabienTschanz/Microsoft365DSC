@@ -26,15 +26,16 @@ Configuration Example
     {
         AzureBillingAccountsRoleAssignment "AzureBillingAccountsRoleAssignment-Example"
         {
-            ApplicationId         = $ApplicationId;
             BillingAccount        = "Contoso Billing Account";
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
-            PrincipalName         = "John.Smith@contoso.onmicrosoft.com";
+            PrincipalName         = "John.Smith@$TenantId";
             PrincipalType         = "User";
-            PrincipalTenantId     = '9c888910-6b3b-4c17-8cff-844fefb026d4'
+            PrincipalTenantId     = "9c888910-6b3b-4c17-8cff-844fefb026d4";
             RoleDefinition        = "Billing account owner";
+            SubscriptionId        = "<subscription-id>";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         AzureRoleDefinition "AzureRoleDefinition-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            CustomRoleName        = "My Custom Role";
+            CustomRoleName        = "Virtual Machine Operator";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

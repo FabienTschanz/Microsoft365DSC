@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneAntivirusPolicyWindows10ConfigMgr "IntuneAntivirusPolicyWindows10ConfigMgr-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "Windows ConfigMgr - Microsoft Defender Antivirus";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

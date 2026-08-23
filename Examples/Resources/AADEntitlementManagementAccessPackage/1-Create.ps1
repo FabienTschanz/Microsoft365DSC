@@ -28,9 +28,6 @@ Configuration Example
         {
             AccessPackagesIncompatibleWith = @();
             CatalogId                      = "General";
-            ApplicationId                  = $ApplicationId
-            TenantId                       = $TenantId
-            CertificateThumbprint          = $CertificateThumbprint
             Description                    = "Grants access to the finance reporting toolset";
             DisplayName                    = "Finance Reporting Access";
             Ensure                         = "Present";
@@ -38,6 +35,9 @@ Configuration Example
             IsRoleScopesVisible            = $True;
             IncompatibleAccessPackages     = @();
             IncompatibleGroups             = @();
+            ApplicationId                  = $ApplicationId
+            TenantId                       = $TenantId
+            CertificateThumbprint          = $CertificateThumbprint
         }
     }
 }

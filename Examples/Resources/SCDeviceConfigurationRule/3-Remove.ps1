@@ -26,11 +26,11 @@ Configuration Example
     {
         SCDeviceConfigurationRule "SCDeviceConfigurationRule-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "Human Resources{2b18}";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

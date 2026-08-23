@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $credsCredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -19,7 +27,6 @@ Configuration Example
         {
             CallGroupOrder            = "Simultaneous";
             CallGroupTargets          = @("megan.bowen@contoso.com", "alex.wilber@contoso.com");
-            Credential                = $credsCredential;
             Ensure                    = "Present";
             ForwardingTarget          = "alex.wilber@contoso.com";
             ForwardingTargetType      = "SingleTarget";
@@ -31,6 +38,9 @@ Configuration Example
             UnansweredDelay           = "00:00:20";
             UnansweredTarget          = "megan.bowen@contoso.com";
             UnansweredTargetType      = "SingleTarget";
+            ApplicationId             = $ApplicationId;
+            TenantId                  = $TenantId;
+            CertificateThumbprint     = $CertificateThumbprint;
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,12 +26,14 @@ Configuration Example
     {
         TeamsTenantNetworkSubnet 'TeamsTenantNetworkSubnet-Example'
         {
-            Credential    = $Credscredential
-            Description   = "Amsterdam office subnet";
-            Ensure        = "Present";
-            Identity      = "192.168.0.0";
-            MaskBits      = 24;
-            NetworkSiteID = "Amsterdam";
+            Description           = "Amsterdam office subnet";
+            Ensure                = "Present";
+            Identity              = "192.168.0.0";
+            MaskBits              = 24;
+            NetworkSiteID         = "Amsterdam";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

@@ -26,12 +26,12 @@ Configuration Example
     {
         AADAppManagementPolicy "AADAppManagementPolicy-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Description           = "Cred policy";
             DisplayName           = "AppManagementPolicy";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -28,7 +28,7 @@ Configuration Example
         {
             Identity              = 'Contoso HQ'
             Comment               = 'Mail for Contoso - Updated' # Updated Property
-            HybridDomains         = 'contoso.onmicrosoft.com'
+            HybridDomains         = "$TenantId"
             InboundConnector      = 'Partner Mail Gateway'
             OrganizationGuid      = 'e7a80bcf-696e-40ca-8775-a7f85fbb3ebc'
             OrganizationName      = 'Contoso'

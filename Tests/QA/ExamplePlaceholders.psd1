@@ -37,6 +37,12 @@
             Properties = @('AudioFileId')
         }
         @{
+            Name       = '<billing-account-id>'
+            Meaning    = 'ID of the Azure billing account, as it appears in the billingAccounts segment of a resource ID.'
+            Sample     = '1e5b9e50-a1ea-581e-fb3a-778b93a06854:6487d5cf-0a7b-42e6-9549-23ca1b2c3d4e_2019-05-31'
+            Properties = @('BillingAccount', 'View')
+        }
+        @{
             Name       = '<base64-encoded-app-icon>'
             Meaning    = 'Base64 icon shown for an app in Company Portal.'
             Sample     = 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwY...'
@@ -139,6 +145,18 @@
             Properties = @('ClientSecret')
         }
         @{
+            Name       = '<defender-machine-id>'
+            Meaning    = 'Defender for Endpoint device ID of a machine already onboarded in the tenant.'
+            Sample     = '55c636a37ff1a21a3241437eb6ce158812a4f9c1'
+            Properties = @('machineId')
+        }
+        @{
+            Name       = '<defender-scan-agent-id>'
+            Meaning    = 'ID of a registered Defender authenticated-scan agent.'
+            Sample     = 'c819dc6d-f9fe-4d05-8022-88a34766442d_55c636a37ff1a21a3241437eb6ce158812a4f9c1'
+            Properties = @('id')
+        }
+        @{
             Name       = '<domain-join-password>'
             Meaning    = 'Password of the account used to join devices to the on-premises domain.'
             Sample     = 'J0inD0m@in!2026'
@@ -149,6 +167,12 @@
             Meaning    = 'Resource ID of the Event Hub authorization rule that receives the diagnostic stream.'
             Sample     = '/subscriptions/63e62ab2-fd92-46ce-a393-2cb338039cc7/resourceGroups/monitoring/providers/Microsoft.EventHub/namespaces/contoso-hub/authorizationRules/RootManageSharedAccessKey'
             Properties = @('EventHubAuthorizationRuleId')
+        }
+        @{
+            Name       = '<invoice-section-id>'
+            Meaning    = 'Resource ID of the billing invoice section a subscription is created under.'
+            Sample     = '/providers/Microsoft.Billing/billingAccounts/0b32abd9-f0e6-4fc9-8b2f-404350313179:0b32abd9-f0e6-4fc9-8b2f-404350313179_2019-05-31/billingProfiles/OHZY-JSSA-BG7-M77W-XXX/invoiceSections/E6RO-KYS7-P2D-MAOR-SGB'
+            Properties = @('InvoiceSectionId')
         }
         @{
             Name       = '<issuing-ca-certificate-hash>'
@@ -187,6 +211,12 @@
             Properties = @('AzureOperationalInsightsWorkspaceKey')
         }
         @{
+            Name       = '<log-analytics-workspace-name>'
+            Meaning    = 'Name of the Log Analytics workspace Microsoft Sentinel is enabled on.'
+            Sample     = 'contoso-sentinel-eastus'
+            Properties = @('WorkspaceName')
+        }
+        @{
             Name       = '<log-analytics-workspace-resource-id>'
             Meaning    = 'Resource ID of the Log Analytics workspace that receives the diagnostic stream.'
             Sample     = '/subscriptions/63e62ab2-fd92-46ce-a393-2cb338039cc7/resourceGroups/monitoring/providers/Microsoft.OperationalInsights/workspaces/contoso-logs'
@@ -211,6 +241,30 @@
             Properties = @('AdvancedThreatProtectionOffboardingBlob')
         }
         @{
+            Name       = '<planner-plan-id>'
+            Meaning    = 'Graph ID of a Planner plan; buckets and tasks can only address a plan by this ID.'
+            Sample     = 'xqQg5FS2LkCp935s-FIFm2QAFkHM'
+            Properties = @('PlanId')
+        }
+        @{
+            Name       = '<power-platform-environment-name>'
+            Meaning    = 'Internal name of a Power Platform environment, not its display name.'
+            Sample     = 'Default-e91d4e0e-d5a5-4e3a-be14-2192592a59af'
+            Properties = @('Environments')
+        }
+        @{
+            Name       = '<power-platform-environment-name-2>'
+            Meaning    = 'Second Power Platform environment name, where an example scopes to more than one.'
+            Sample     = '8a6f3c21-47bd-4e0f-9a12-5c7d3b8e1f04'
+            Properties = @('Environments')
+        }
+        @{
+            Name       = '<resource-group-name>'
+            Meaning    = 'Name of the Azure resource group holding the resource the example targets.'
+            Sample     = 'rg-security-eastus'
+            Properties = @('ResourceGroupName')
+        }
+        @{
             Name       = '<rms-template-id>'
             Meaning    = 'ID of the Azure Rights Management template used to encrypt protected files, which exists only in the tenant that created it.'
             Sample     = 'f7a2c1d4-9b83-4e56-a0cf-3d81b26e4f90'
@@ -233,6 +287,24 @@
             Meaning    = 'Thumbprint of a root certificate present on the managed device, not on the machine running the configuration.'
             Sample     = 'a5f3c1d97b26e480f5c3a1b98d7e6f04c2b3a591'
             Properties = @('ApplicationGuardCertificateThumbprints')
+        }
+        @{
+            Name       = '<service-bus-rule-id>'
+            Meaning    = 'Resource ID of the Service Bus authorization rule that receives the diagnostic stream.'
+            Sample     = '/subscriptions/63e62ab2-fd92-46ce-a393-2cb338039cc7/resourceGroups/monitoring/providers/Microsoft.ServiceBus/namespaces/contoso-bus/authorizationRules/RootManageSharedAccessKey'
+            Properties = @('ServiceBusRuleId')
+        }
+        @{
+            Name       = '<snmp-auth-password>'
+            Meaning    = 'SNMPv3 authentication password used by a network scanner.'
+            Sample     = 'Sn0mpAuth!2026'
+            Properties = @('AuthPassword')
+        }
+        @{
+            Name       = '<snmp-priv-password>'
+            Meaning    = 'SNMPv3 privacy password used by a network scanner.'
+            Sample     = 'Sn0mpPriv!2026'
+            Properties = @('PrivPassword')
         }
         @{
             Name       = '<storage-account-resource-id>'

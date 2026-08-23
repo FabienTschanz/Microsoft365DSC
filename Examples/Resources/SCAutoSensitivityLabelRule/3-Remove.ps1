@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SCAutoSensitivityLabelRule 'SCAutoSensitivityLabelRule-Example'
         {
-            Credential = $Credscredential
-            Ensure     = 'Absent'
-            Name       = 'Credit Card Numbers in Exchange'
-            Policy     = 'Top Secret Auto-labeling'
-            Workload   = 'Exchange'
+            Ensure                = 'Absent'
+            Name                  = 'Credit Card Numbers in Exchange'
+            Policy                = 'Top Secret Auto-labeling'
+            Workload              = 'Exchange'
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

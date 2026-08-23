@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -21,11 +29,13 @@ Configuration Example
             AllowEmailCollection      = $False;
             AllowLogCollection        = $False;
             AllowScreenshotCollection = $False;
-            Credential                = $Credscredential;
             Ensure                    = "Present";
             Identity                  = "Global";
             ReceiveSurveysMode        = "EnabledUserOverride";
             UserInitiatedMode         = "Enabled";
+            ApplicationId             = $ApplicationId;
+            TenantId                  = $TenantId;
+            CertificateThumbprint     = $CertificateThumbprint;
         }
     }
 }

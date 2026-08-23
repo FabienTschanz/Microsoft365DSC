@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -43,7 +51,6 @@ Configuration Example
                 )
             }
             ContentExtensionMatchesWords                 = 'xlsx'
-            Credential                                   = $Credscredential
             Disabled                                     = $False
             DocumentIsPasswordProtected                  = $False
             DocumentIsUnsupported                        = $False
@@ -97,6 +104,9 @@ Configuration Example
             SentToMemberOf                               = @('finance-team@contoso.com')
             SubjectMatchesPatterns                       = 'Invoice'
             Workload                                     = 'Exchange'
+            ApplicationId                                = $ApplicationId
+            TenantId                                     = $TenantId
+            CertificateThumbprint                        = $CertificateThumbprint
         }
     }
 }

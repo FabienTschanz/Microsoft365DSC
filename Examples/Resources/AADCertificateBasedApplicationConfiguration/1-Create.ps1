@@ -25,12 +25,9 @@ Configuration Example
     {
         AADCertificateBasedApplicationConfiguration "AADCertificateBasedApplicationConfiguration-Example"
         {
-            ApplicationId                 = $ApplicationId;
-            CertificateThumbprint         = $CertificateThumbprint;
             Description                   = "Trusted certificate authorities from Contoso";
             DisplayName                   = "Contoso Root CA Configuration";
             Ensure                        = "Present";
-            TenantId                      = $TenantId;
             TrustedCertificateAuthorities = @(
                 MSFT_AADCertificateBasedApplicationConfigurationTrustedCertificateAuthority{
                     Certificate                = "<base64-encoded-certificate>"
@@ -39,6 +36,9 @@ Configuration Example
                     IssuerSubjectKeyIdentifier = "1234567890ABCDEF"
                 }
             );
+            ApplicationId                 = $ApplicationId;
+            TenantId                      = $TenantId;
+            CertificateThumbprint         = $CertificateThumbprint;
         }
     }
 }

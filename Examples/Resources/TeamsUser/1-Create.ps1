@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         TeamsUser 'TeamsUser-Example'
         {
-            TeamName   = "SuperSecretTeam"
-            User       = "jdoe@contoso.com"
-            Role       = "Member"
-            Ensure     = "Present"
-            Credential = $Credscredential
+            TeamName              = "SuperSecretTeam"
+            User                  = "jdoe@contoso.com"
+            Role                  = "Member"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

@@ -26,16 +26,11 @@ Configuration Example
     {
         SentinelAlertRule "SentinelAlertRule-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            Description           = "Raises an incident when a cloud application is accessed from an unrecognised location";
-            DisplayName           = "MyNRTRule";
+            DisplayName           = "Unfamiliar cloud application access";
             Ensure                = "Absent";
-            ResourceGroupName     = "ResourceGroupName";
-            Severity              = "Medium";
-            SubscriptionId        = "<subscription-id>";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
-            WorkspaceName         = "SentinelWorkspace";
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

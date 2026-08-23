@@ -26,9 +26,6 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyAndroidDeviceOwner "IntuneVPNConfigurationPolicyAndroidDeviceOwner-Example"
         {
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
             Assignments           = @();
             alwaysOn              = $False;
             authenticationMethod  = "azureAD";
@@ -73,6 +70,9 @@ Configuration Example
                     appId     = 'com.microsoft.emmx'
                 }
             );
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

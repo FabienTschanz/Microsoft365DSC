@@ -26,8 +26,6 @@ Configuration Example
     {
         PPDLPPolicyConnectorConfigurations "PPDLPPolicyConnectorConfigurations-Example"
         {
-            ApplicationId                 = $ApplicationId;
-            CertificateThumbprint         = $CertificateThumbprint;
             ConnectorActionConfigurations = @(
                 MSFT_PPDLPPolicyConnectorConfigurationsAction{
                     actionRules                        = @(
@@ -43,7 +41,9 @@ Configuration Example
             Ensure                        = "Present";
             PolicyName                    = "Contoso Data Policy";
             PPTenantId                    = "e91d4e0e-d5a5-4e3a-be14-2192592a59af";
+            ApplicationId                 = $ApplicationId;
             TenantId                      = $TenantId;
+            CertificateThumbprint         = $CertificateThumbprint;
         }
     }
 }

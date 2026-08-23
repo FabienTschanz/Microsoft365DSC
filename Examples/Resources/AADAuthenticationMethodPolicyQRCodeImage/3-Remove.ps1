@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyQRCodeImage "AADAuthenticationMethodPolicyQRCodeImage-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Id                    = "QRCodePin";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

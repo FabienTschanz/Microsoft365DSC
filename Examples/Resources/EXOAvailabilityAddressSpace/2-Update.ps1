@@ -30,7 +30,7 @@ Configuration Example
             AccessMethod          = 'OrgWideFBToken'
             ForestName            = 'freebusy.contoso.com'
             TargetServiceEpr      = 'https://contoso.com/autodiscover/autodiscover.xml'
-            TargetTenantId        = 'contoso.onmicrosoft.com' # Updated Property
+            TargetTenantId        = "$TenantId" # Updated Property
             Ensure                = 'Present'
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

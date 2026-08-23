@@ -26,11 +26,13 @@ Configuration Example
     {
         PPAdminDLPPolicy "PPAdminDLPPolicy-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "SuperTest";
+            DisplayName           = "Contoso Connector Governance";
             Ensure                = "Present";
+            Environments          = @("<power-platform-environment-name>");
+            FilterType            = "include";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

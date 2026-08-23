@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $credsCredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,7 +26,6 @@ Configuration Example
         TeamsOnlineVoicemailUserSettings 'TeamsOnlineVoicemailUserSettings-Example'
         {
             CallAnswerRule                           = "RegularVoicemail";
-            Credential                               = $credsCredential;
             DefaultGreetingPromptOverwrite           = "Hellow World!";
             Ensure                                   = "Present";
             Identity                                 = "John.Smith@contoso.com";
@@ -27,6 +34,9 @@ Configuration Example
             PromptLanguage                           = "en-US";
             ShareData                                = $False;
             VoicemailEnabled                         = $True;
+            ApplicationId                            = $ApplicationId;
+            TenantId                                 = $TenantId;
+            CertificateThumbprint                    = $CertificateThumbprint;
         }
     }
 }

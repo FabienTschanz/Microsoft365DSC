@@ -26,11 +26,11 @@ Configuration Example
     {
         AADClaimsMappingPolicy "AADClaimsMappingPolicy-Example"
         {
+            DisplayName           = "Expense Reporting Claims";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DisplayName           = "Expense Reporting Claims";
-            Ensure                = "Absent";
         }
     }
 }

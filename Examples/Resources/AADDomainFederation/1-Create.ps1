@@ -27,8 +27,6 @@ Configuration Example
         AADDomainFederation "AADDomainFederation-Example"
         {
             ActiveSignInUri                       = "https://adfs.contoso.com/adfs/services/trust/2005/usernamemixed";
-            ApplicationId                         = $ApplicationId;
-            CertificateThumbprint                 = $CertificateThumbprint;
             DisplayName                           = "Contoso Federation";
             DomainId                              = "contoso.com";
             Ensure                                = "Present";
@@ -40,7 +38,9 @@ Configuration Example
             PreferredAuthenticationProtocol       = "wsFed";
             SigningCertificate                    = "<base64-encoded-signing-certificate>"
             SignOutUri                            = "https://adfs.contoso.com/adfs/ls/?wa=wsignout1.0";
+            ApplicationId                         = $ApplicationId;
             TenantId                              = $TenantId;
+            CertificateThumbprint                 = $CertificateThumbprint;
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -22,7 +30,9 @@ Configuration Example
             CortanaVoiceInvocationMode = "WakeWordPushToTalkUserOverride"
             Description                = "Lets shop floor staff call Cortana hands-free on shared devices"
             Ensure                     = "Present"
-            Credential                 = $Credscredential
+            ApplicationId              = $ApplicationId
+            TenantId                   = $TenantId
+            CertificateThumbprint      = $CertificateThumbprint
         }
     }
 }

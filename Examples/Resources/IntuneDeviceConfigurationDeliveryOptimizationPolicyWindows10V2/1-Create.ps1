@@ -36,8 +36,6 @@ Configuration Example
                     groupDisplayName = 'Policy Exclusions'
                 }
             );
-            ApplicationId                                  = $ApplicationId;
-            CertificateThumbprint                          = $CertificateThumbprint;
             Description                                    = "";
             DisplayName                                    = "IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2_1";
             DOAbsoluteMaxCacheSize                         = 4;
@@ -79,7 +77,9 @@ Configuration Example
             SetHoursToLimitForegroundDownloadBandwidthIn   = 10;
             SetHoursToLimitForegroundDownloadBandwidthOut  = 31;
             SetHoursToLimitForegroundDownloadBandwidthTo   = "17";
+            ApplicationId                                  = $ApplicationId;
             TenantId                                       = $TenantId;
+            CertificateThumbprint                          = $CertificateThumbprint;
         }
     }
 }

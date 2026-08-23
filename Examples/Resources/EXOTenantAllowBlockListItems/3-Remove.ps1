@@ -26,13 +26,13 @@ Configuration Example
     {
         EXOTenantAllowBlockListItems "EXOTenantAllowBlockListItems-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            TenantId              = $TenantId;
             Action                = "Block";
             Ensure                = "Absent";
             ListType              = "Sender";
             Value                 = "example.com";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

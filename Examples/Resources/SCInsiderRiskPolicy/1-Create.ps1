@@ -54,7 +54,6 @@ Configuration Example
             AnalyticsNewInsightEnabled                            = $false;
             AnalyticsTurnedOffEnabled                             = $false;
             AnomalyDetections                                     = $false;
-            ApplicationId                                         = $ApplicationId;
             AWSS3BlockPublicAccessDisabled                        = $false;
             AWSS3BucketDeleted                                    = $false;
             AWSS3PublicAccessEnabled                              = $false;
@@ -76,7 +75,6 @@ Configuration Example
             CCProtectedMaterialDetection                          = $false;
             CCSensitiveInformationType                            = $true;
             CCSupervisionRuleMatch                                = $false;
-            CertificateThumbprint                                 = $CertificateThumbprint;
             CompromisedSignInAlerts                               = $true;
             CompromisedUserAlerts                                 = $true;
             ConnectedAIAppRiskyPrompt                             = $false;
@@ -216,9 +214,11 @@ Configuration Example
             TeamsFolderSharedExternal                             = $false;
             TeamsMemberAddedExternal                              = $false;
             TeamsSensitiveMessage                                 = $false;
-            TenantId                                              = $TenantId;
             UserAnalyticsSettingsEnabled                          = $true;
             UserHistory                                           = $false;
+            ApplicationId                                         = $ApplicationId;
+            TenantId                                              = $TenantId;
+            CertificateThumbprint                                 = $CertificateThumbprint;
         }
     }
 }

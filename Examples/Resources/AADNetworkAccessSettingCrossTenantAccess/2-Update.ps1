@@ -26,11 +26,11 @@ Configuration Example
     {
         AADNetworkAccessSettingCrossTenantAccess "AADNetworkAccessSettingCrossTenantAccess-Example"
         {
-            ApplicationId              = $ApplicationId;
-            CertificateThumbprint      = $CertificateThumbprint;
             IsSingleInstance           = "Yes";
             NetworkPacketTaggingStatus = "enabled";
+            ApplicationId              = $ApplicationId;
             TenantId                   = $TenantId;
+            CertificateThumbprint      = $CertificateThumbprint;
         }
     }
 }

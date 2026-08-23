@@ -26,11 +26,11 @@ Configuration Example
     {
         EXOPlace 'EXOPlace-Example'
         {
+            Ensure                = 'Absent'
+            Identity              = "Hood@$TenantId";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = 'Absent'
-            Identity              = "Hood@$TenantId";
         }
     }
 }

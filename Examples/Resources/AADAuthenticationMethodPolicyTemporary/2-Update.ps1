@@ -26,9 +26,6 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyTemporary "AADAuthenticationMethodPolicyTemporary-Example"
         {
-            ApplicationId            = $ApplicationId
-            TenantId                 = $TenantId
-            CertificateThumbprint    = $CertificateThumbprint
             DefaultLength            = 9; # Updated Property
             DefaultLifetimeInMinutes = 60;
             Ensure                   = "Present";
@@ -49,6 +46,9 @@ Configuration Example
             MaximumLifetimeInMinutes = 480;
             MinimumLifetimeInMinutes = 60;
             State                    = "enabled";
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
         }
     }
 }

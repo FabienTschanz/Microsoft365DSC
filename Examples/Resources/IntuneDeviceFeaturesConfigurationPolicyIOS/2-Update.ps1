@@ -24,9 +24,6 @@ Configuration Example
     {
         IntuneDeviceFeaturesConfigurationPolicyIOS "IntuneDeviceFeaturesConfigurationPolicyIOS-Example"
         {
-            ApplicationId                              = $ApplicationId;
-            TenantId                                   = $TenantId;
-            CertificateThumbprint                      = $CertificateThumbprint;
             AirPrintDestinations                       = @(
                 MSFT_airPrintDestination{
                     port         = 631
@@ -132,6 +129,9 @@ Configuration Example
                     value = @("<base64-encoded-wallpaper-image>")
                 }
             );
+            ApplicationId                              = $ApplicationId;
+            TenantId                                   = $TenantId;
+            CertificateThumbprint                      = $CertificateThumbprint;
         }
     }
 }

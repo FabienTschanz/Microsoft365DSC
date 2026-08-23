@@ -27,9 +27,6 @@ Configuration Example
         AADAuthenticationMethodPolicyEmail "AADAuthenticationMethodPolicyEmail-Example"
         {
             AllowExternalIdToUseEmailOtp = "enabled";
-            ApplicationId                = $ApplicationId
-            TenantId                     = $TenantId
-            CertificateThumbprint        = $CertificateThumbprint
             Ensure                       = "Present";
             ExcludeTargets               = @(
                 MSFT_AADAuthenticationMethodPolicyEmailExcludeTarget{
@@ -49,6 +46,9 @@ Configuration Example
                 }
             );
             State                        = "enabled"; # Updated Property
+            ApplicationId                = $ApplicationId
+            TenantId                     = $TenantId
+            CertificateThumbprint        = $CertificateThumbprint
         }
     }
 }

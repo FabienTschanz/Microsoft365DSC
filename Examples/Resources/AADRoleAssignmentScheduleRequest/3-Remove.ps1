@@ -26,13 +26,13 @@ Configuration Example
     {
         AADRoleAssignmentScheduleRequest "AADRoleAssignmentScheduleRequest-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             DirectoryScopeId      = "/";
             Ensure                = "Absent";
             Principal             = "AdeleV@$TenantId";
             RoleDefinition        = "Teams Communications Administrator";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

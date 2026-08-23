@@ -26,12 +26,12 @@ Configuration Example
     {
         EXOMailboxIRMAccess "EXOMailboxIRMAccess-Example"
         {
+            Ensure                = "Absent";
+            Identity              = "qwe@$TenantId";
+            User                  = "admin@$TenantId";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Identity              = "qwe@$OrganizationName";
-            User                  = "admin@$OrganizationName";
         }
     }
 }

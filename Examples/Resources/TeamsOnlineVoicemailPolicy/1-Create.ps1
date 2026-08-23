@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $credsCredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -17,7 +25,6 @@ Configuration Example
     {
         TeamsOnlineVoicemailPolicy 'TeamsOnlineVoicemailPolicy-Example'
         {
-            Credential                          = $credsCredential;
             EnableEditingCallAnswerRulesSetting = $true;
             EnableTranscription                 = $true;
             EnableTranscriptionProfanityMasking = $false;
@@ -29,6 +36,9 @@ Configuration Example
             PrimarySystemPromptLanguage         = "en-US";
             SecondarySystemPromptLanguage       = "fr-FR";
             ShareData                           = "Defer";
+            ApplicationId                       = $ApplicationId;
+            TenantId                            = $TenantId;
+            CertificateThumbprint               = $CertificateThumbprint;
         }
     }
 }

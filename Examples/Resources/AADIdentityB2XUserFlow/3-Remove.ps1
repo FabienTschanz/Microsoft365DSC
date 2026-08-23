@@ -26,10 +26,10 @@ Configuration Example
     {
         AADIdentityB2XUserFlow "AADIdentityB2XUserFlow-Example"
         {
+            Id                    = "B2X_1_ContractorSignup";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Id                    = "B2X_1_ContractorSignup";
         }
     }
 }

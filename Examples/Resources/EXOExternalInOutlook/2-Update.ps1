@@ -27,7 +27,7 @@ Configuration Example
         EXOExternalInOutlook "EXOExternalInOutlook-Example"
         {
             Identity              = "ExternalInOutlook";
-            AllowList             = @("mobile01@contoso.onmicrosoft.com","*contoso.onmicrosoft.com","contoso.com");
+            AllowList             = @("mobile01@$TenantId","*$TenantId","contoso.com");
             Enabled               = $False;
             Ensure                = "Present";
             ApplicationId         = $ApplicationId

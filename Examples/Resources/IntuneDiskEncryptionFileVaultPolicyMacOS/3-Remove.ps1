@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneDiskEncryptionFileVaultPolicyMacOS "IntuneDiskEncryptionFileVaultPolicyMacOS-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             DisplayName           = "IntuneDiskEncryptionFileVaultPolicyMacOS_1";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

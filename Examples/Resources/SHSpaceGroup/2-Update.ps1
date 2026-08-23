@@ -26,13 +26,13 @@ Configuration Example
     {
         SHSpaceGroup "SHSpaceGroup-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
             GroupName             = "ApplicationOwners";
-            Roles                 = @("CustomerActivityPagePermissionRole","InviteUsersPermissionRole");
+            Roles                 = @("CustomerActivityPagePermissionRole","InviteUsersPermissionRole"); # Updated Property
             SpaceName             = "Contoso Workspace";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

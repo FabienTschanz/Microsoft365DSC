@@ -26,7 +26,6 @@ Configuration Example
     {
         AADCustomSecurityAttributeDefinition "AADCustomSecurityAttributeDefinition-Example"
         {
-            ApplicationId           = $ApplicationId;
             AllowedValues           = @(
                 MSFT_CustomSecurityAttributeAllowedValue{
                     IsActive = $True
@@ -34,16 +33,17 @@ Configuration Example
                 }
             );
             AttributeSet            = "Engineering";
-            CertificateThumbprint   = $CertificateThumbprint;
             Ensure                  = "Present";
             IsCollection            = $False;
             IsSearchable            = $True;
             Name                    = "ShoeSize";
             Status                  = "Available";
-            TenantId                = $TenantId;
             Type                    = "String";
             UsePreDefinedValuesOnly = $False;
             Description             = "What size of shoe is the person wearing?"
+            ApplicationId           = $ApplicationId;
+            TenantId                = $TenantId;
+            CertificateThumbprint   = $CertificateThumbprint;
         }
     }
 }

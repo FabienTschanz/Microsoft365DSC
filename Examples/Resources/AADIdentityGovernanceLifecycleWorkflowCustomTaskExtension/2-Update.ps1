@@ -26,8 +26,6 @@ Configuration Example
     {
         AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             CallbackConfiguration = MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConfiguration{
                 TimeoutDuration = 'PT34M'
                 AuthorizedApps  = @('Lifecycle Workflow Connector')
@@ -45,7 +43,9 @@ Configuration Example
                 url                  = 'https://prod-35.eastus.logic.azure.com:443/workflows/xxxxxxxxxxx/triggers/manual/paths/invoke?api-version=2016-10-01'
             };
             Ensure                = "Present";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

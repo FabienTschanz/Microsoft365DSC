@@ -30,7 +30,6 @@ Configuration Example
             AllowedOutboundClipboardSharingLevel    = "anyDestinationAnySource";
             AllowedOutboundDataTransferDestinations = "allApps";
             AppActionIfUnableToAuthenticateUser     = "wipe";
-            ApplicationId                           = $ApplicationId;
             Apps                                    = @("com.microsoft.edge");
             Assignments                             = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
@@ -46,7 +45,6 @@ Configuration Example
                     groupId                                    = "258a1749-8408-4dd0-8028-fab6208a28d7"
                 }
             );
-            CertificateThumbprint                   = $CertificateThumbprint;
             Description                             = "Protects company data in the Windows apps used on personally owned laptops";
             DisplayName                             = "Windows App Protection Baseline";
             Ensure                                  = "Present";
@@ -67,7 +65,9 @@ Configuration Example
             PeriodOfflineBeforeWipeIsEnforced       = "P180D"; # Updated Property
             PrintBlocked                            = $false;
             RoleScopeTagIds                         = @("0");
+            ApplicationId                           = $ApplicationId;
             TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

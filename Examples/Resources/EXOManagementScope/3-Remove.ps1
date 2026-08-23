@@ -26,11 +26,11 @@ Configuration Example
     {
         EXOManagementScope "EXOManagementScope-Example"
         {
+            Ensure                = "Absent";
+            Identity              = "New Distribution Groups";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Identity              = "New Distribution Groups";
         }
 
     }

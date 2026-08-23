@@ -26,12 +26,12 @@ Configuration Example
     {
         SCInsiderRiskPolicy "SCInsiderRiskPolicy-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             InsiderRiskScenario   = "TenantSetting";
             Name                  = "IRM_Tenant_Setting";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

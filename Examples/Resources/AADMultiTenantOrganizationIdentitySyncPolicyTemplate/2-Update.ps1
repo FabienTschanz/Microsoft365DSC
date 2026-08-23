@@ -26,15 +26,15 @@ Configuration Example
     {
         AADMultiTenantOrganizationIdentitySyncPolicyTemplate "AADMultiTenantOrganizationIdentitySyncPolicyTemplate-Example"
         {
-            ApplicationId            = $ApplicationId;
-            CertificateThumbprint    = $CertificateThumbprint;
             Ensure                   = "Present";
             IsSingleInstance         = "Yes";
             TemplateApplicationLevel = "newPartners,existingPartners";
-            TenantId                 = $TenantId;
             UserSyncInbound          = MSFT_AADMultiTenantOrganizationIdentitySyncPolicyTemplateUserSyncInbound{
                 isSyncAllowed = $True
             };
+            ApplicationId            = $ApplicationId;
+            TenantId                 = $TenantId;
+            CertificateThumbprint    = $CertificateThumbprint;
         }
     }
 }

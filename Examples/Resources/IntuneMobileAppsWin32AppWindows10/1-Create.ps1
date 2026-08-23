@@ -28,7 +28,6 @@ Configuration Example
         {
             AllowAvailableUninstall        = $True;
             AllowedArchitectures           = @("x86","x64","arm64");
-            ApplicationId                  = $ApplicationId;
             Assignments                    = @();
             Categories                     = @(
                 MSFT_DeviceManagementMobileAppCategory{
@@ -36,7 +35,6 @@ Configuration Example
                     DisplayName = "App Category 1"
                 }
             );
-            CertificateThumbprint          = $CertificateThumbprint;
             Description                    = "IntuneWinAppUtil.exe";
             Rules                          = @(
                 MSFT_MicrosoftGraphWin32LobAppRule{
@@ -123,8 +121,10 @@ Configuration Example
             );
             RoleScopeTagIds                = @("0");
             SetupFilePath                  = "IntuneWinAppUtil.exe";
-            TenantId                       = $TenantId;
             UninstallCommandLine           = "IntuneWinAppUtil.exe -t -s 0";
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

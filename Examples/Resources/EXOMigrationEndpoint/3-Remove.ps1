@@ -26,11 +26,11 @@ Configuration Example
     {
         EXOMigrationEndpoint "EXOMigrationEndpoint-Example"
         {
+            Ensure                = "Absent";
+            Identity              = "Gmail IMAP Migration";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Identity              = "testIMAP";
         }
     }
 }

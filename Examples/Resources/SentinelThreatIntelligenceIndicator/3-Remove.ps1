@@ -26,21 +26,11 @@ Configuration Example
     {
         SentinelThreatIntelligenceIndicator "SentinelThreatIntelligenceIndicator-Example"
         {
-            ApplicationId          = $ApplicationId;
-            CertificateThumbprint  = $CertificateThumbprint;
-            DisplayName            = "MyIndicator";
-            Ensure                 = "Absent";
-            Labels                 = @("Tag1", "Tag2");
-            Pattern                = "[ipv6-addr:value = '2607:fa49:d340:f600:c8d5:6961:247f:a238']";
-            PatternType            = "ipv6-addr";
-            ResourceGroupName      = "MyResourceGroup";
-            Source                 = "Microsoft Sentinel";
-            SubscriptionId         = "<subscription-id>";
-            TenantId               = $TenantId;
-            ThreatIntelligenceTags = @();
-            ValidFrom              = "2024-10-21T19:03:57.24Z";
-            ValidUntil             = "2024-10-21T19:03:57.24Z";
-            WorkspaceName          = "SentinelWorkspace";
+            DisplayName           = "Known phishing domain";
+            Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

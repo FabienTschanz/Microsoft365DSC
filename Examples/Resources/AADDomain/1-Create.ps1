@@ -26,9 +26,7 @@ Configuration Example
     {
         AADDomain "AADDomain-Example"
         {
-            ApplicationId                    = $ApplicationId;
             AuthenticationType               = "Managed";
-            CertificateThumbprint            = $CertificateThumbprint;
             Ensure                           = "Present";
             Id                               = "M365x73318397.mail.onmicrosoft.com";
             IsAdminManaged                   = $True;
@@ -37,7 +35,9 @@ Configuration Example
             IsVerified                       = $True;
             PasswordNotificationWindowInDays = 14;
             PasswordValidityPeriodInDays     = 2147483647;
+            ApplicationId                    = $ApplicationId;
             TenantId                         = $TenantId;
+            CertificateThumbprint            = $CertificateThumbprint;
         }
     }
 }

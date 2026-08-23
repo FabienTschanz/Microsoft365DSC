@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneAppControlForBusinessPolicyWindows10V2 'IntuneAppControlForBusinessPolicyWindows10V2-Example'
         {
-            ApplicationId                                             = $ApplicationId;
             Assignments                                               = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = "#microsoft.graph.exclusionGroupAssignmentTarget"
@@ -39,7 +38,6 @@ Configuration Example
                     groupDisplayName                           = "Include"
                 }
             );
-            CertificateThumbprint                                     = $CertificateThumbprint;
             ConfigureApplicationControlOptions                        = "0"; # Updated Property
             ConfigureApplicationControlsAuditMode                     = "1";
             ConfigureApplicationControlsTrustAppsFromManagedInstaller = "1";
@@ -48,7 +46,9 @@ Configuration Example
             DisplayName                                               = "App Control for Business - Audit Mode";
             Ensure                                                    = "Present";
             RoleScopeTagIds                                           = @("0");
+            ApplicationId                                             = $ApplicationId;
             TenantId                                                  = $TenantId;
+            CertificateThumbprint                                     = $CertificateThumbprint;
         }
     }
 }

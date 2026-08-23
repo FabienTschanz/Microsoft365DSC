@@ -25,10 +25,10 @@ Configuration Example
         IntuneDeviceFeaturesConfigurationPolicyIOS "IntuneDeviceFeaturesConfigurationPolicyIOS-Example"
         {
             DisplayName           = "Corporate iOS Device Features";
+            Ensure                = 'Absent'
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            Ensure                = 'Absent'
         }
     }
 }

@@ -26,14 +26,14 @@ Configuration Example
     {
         AADB2CAuthenticationMethodsPolicy "AADB2CAuthenticationMethodsPolicy-Example"
         {
-            ApplicationId                               = $ApplicationId;
-            CertificateThumbprint                       = $CertificateThumbprint;
             Ensure                                      = "Present";
             IsEmailPasswordAuthenticationEnabled        = $True;
             IsPhoneOneTimePasswordAuthenticationEnabled = $True;
             IsSingleInstance                            = "Yes";
             IsUserNameAuthenticationEnabled             = $False;
+            ApplicationId                               = $ApplicationId;
             TenantId                                    = $TenantId;
+            CertificateThumbprint                       = $CertificateThumbprint;
         }
     }
 }

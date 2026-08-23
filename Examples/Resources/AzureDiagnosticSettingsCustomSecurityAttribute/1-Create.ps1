@@ -26,21 +26,23 @@ Configuration Example
     {
         AzureDiagnosticSettingsCustomSecurityAttribute "AzureDiagnosticSettingsCustomSecurityAttribute-Example"
         {
-            ApplicationId               = $ApplicationId;
             Categories                  = @(
                 MSFT_AzureDiagnosticSettingsCustomSecurityAttributeCategory{
                     category = 'CustomSecurityAttributeAuditLogs'
                     enabled  = $True
                 }
             );
-            CertificateThumbprint       = $CertificateThumbprint;
             Ensure                      = "Present";
             EventHubAuthorizationRuleId = "<event-hub-authorization-rule-id>";
-            EventHubName                = "";
-            Name                        = "MyAttribute";
+            EventHubName                = "custom-security-attribute-audit";
+            Name                        = "Data Classification";
+            ServiceBusRuleId            = "<service-bus-rule-id>";
             StorageAccountId            = "<storage-account-resource-id>";
-            TenantId                    = $TenantId;
+            SubscriptionId              = "<subscription-id>";
             WorkspaceId                 = "<log-analytics-workspace-resource-id>";
+            ApplicationId               = $ApplicationId;
+            TenantId                    = $TenantId;
+            CertificateThumbprint       = $CertificateThumbprint;
         }
     }
 }

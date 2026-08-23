@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneCloudProvisioningPolicyWindows365 "IntuneCloudProvisioningPolicyWindows365-Example"
         {
-            ApplicationId         = $ApplicationId;
             DisplayName           = "IntuneCloudProvisioningPolicyWindows365_1";
             Ensure                = "Absent";
-            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

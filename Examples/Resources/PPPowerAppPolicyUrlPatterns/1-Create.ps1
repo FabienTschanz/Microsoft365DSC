@@ -26,8 +26,6 @@ Configuration Example
     {
         PPPowerAppPolicyUrlPatterns "PPPowerAppPolicyUrlPatterns-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
             PolicyName            = "Contoso Data Policy";
             PPTenantId            = "e91d4e0e-d5a5-4e3a-be14-2192592a59af";
@@ -48,7 +46,9 @@ Configuration Example
                     order                             = 3
                 }
             );
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

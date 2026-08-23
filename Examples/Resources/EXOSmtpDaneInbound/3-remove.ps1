@@ -26,7 +26,7 @@ Configuration Example
     {
         EXOSmtpDaneInbound 'EXOSmtpDaneInbound-Example'
         {
-            DomainName            = "mydomain.com"
+            DomainName            = "contoso.com"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

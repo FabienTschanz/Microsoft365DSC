@@ -65,10 +65,10 @@ Configuration Example
             ExpireEligibleAssignment                                  = "P365D";
             PermanentActiveAssignmentisExpirationRequired             = $False;
             PermanentEligibleAssignmentisExpirationRequired           = $False;
+            Ensure                                                    = 'Present'
             ApplicationId                                             = $ApplicationId
             TenantId                                                  = $TenantId
             CertificateThumbprint                                     = $CertificateThumbprint
-            Ensure                                                    = 'Present'
         }
     }
 }

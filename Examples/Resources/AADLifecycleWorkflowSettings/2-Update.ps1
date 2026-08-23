@@ -26,13 +26,13 @@ Configuration Example
     {
         AADLifecycleWorkflowSettings "AADLifecycleWorkflowSettings-Example"
         {
-            ApplicationId                   = $ApplicationId;
-            CertificateThumbprint           = $CertificateThumbprint;
             IsSingleInstance                = "Yes";
             SenderDomain                    = "microsoft.com";
-            TenantId                        = $TenantId;
             UseCompanyBranding              = $True;
             WorkflowScheduleIntervalInHours = 10;
+            ApplicationId                   = $ApplicationId;
+            TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

@@ -26,8 +26,6 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyQRCodeImage "AADAuthenticationMethodPolicyQRCodeImage-Example"
         {
-            ApplicationId                = $ApplicationId;
-            CertificateThumbprint        = $CertificateThumbprint;
             Ensure                       = "Present";
             Id                           = "QRCodePin";
             IncludeTargets               = @(
@@ -39,7 +37,9 @@ Configuration Example
             PinLength                    = 9; # Updated Property
             StandardQRCodeLifetimeInDays = 365;
             State                        = "disabled";
+            ApplicationId                = $ApplicationId;
             TenantId                     = $TenantId;
+            CertificateThumbprint        = $CertificateThumbprint;
         }
     }
 }

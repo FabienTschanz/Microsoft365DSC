@@ -244,7 +244,7 @@ class SentinelThreatIntelligenceIndicator : M365DSCResourceBase
             {
                 $values += @{
                     killChainName = 'lockheed-martin-cyber-kill-chain'
-                    phaseName     = $phase.phaseName
+                    phaseName     = $phase
                 }
             }
             $instanceParameters.properties.Add('KillChainPhases', $values)

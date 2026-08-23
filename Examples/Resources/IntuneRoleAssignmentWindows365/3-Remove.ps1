@@ -29,8 +29,8 @@ Configuration Example
             RoleDefinition        = "IntuneRoleDefinitionWindows365_1";
             Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

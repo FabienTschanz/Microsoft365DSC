@@ -33,8 +33,8 @@ Configuration Example
             Principals            = @("AADGroup_2"); # Updated Property
             RoleDefinition        = "IntuneRoleDefinitionWindows365_1";
             ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

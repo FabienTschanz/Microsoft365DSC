@@ -26,11 +26,11 @@ Configuration Example
     {
         AADDomainFederation "AADDomainFederation-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DomainId              = "contoso.com";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

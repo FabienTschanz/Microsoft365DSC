@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneAppProtectionPolicyWindows10 "IntuneAppProtectionPolicyWindows10-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "Windows App Protection Baseline";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

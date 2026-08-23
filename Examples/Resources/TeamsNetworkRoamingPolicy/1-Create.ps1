@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,12 +26,14 @@ Configuration Example
     {
         TeamsNetworkRoamingPolicy 'TeamsNetworkRoamingPolicy-Example'
         {
-            AllowIPVideo   = $true;
-            Credential     = $Credscredential;
-            Ensure         = "Present";
-            Description    = "Video and media limits for staff roaming outside the office";
-            Identity       = "Amsterdam Roaming";
-            MediaBitRateKb = 50000;
+            AllowIPVideo          = $true;
+            Ensure                = "Present";
+            Description           = "Video and media limits for staff roaming outside the office";
+            Identity              = "Amsterdam Roaming";
+            MediaBitRateKb        = 50000;
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

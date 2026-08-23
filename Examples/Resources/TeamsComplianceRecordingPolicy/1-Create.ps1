@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,7 +26,6 @@ Configuration Example
     {
         TeamsComplianceRecordingPolicy "TeamsComplianceRecordingPolicy-Example"
         {
-            Credential                                          = $credsCredential;
             ComplianceRecordingApplications                     = @(
                 MSFT_TeamsComplianceRecordingApplication{
                     Id                                    = '00000000-0000-0000-0000-000000000000'
@@ -45,6 +52,9 @@ Configuration Example
             Ensure                                              = "Present";
             Identity                                            = "Tag:MyTeamsComplianceRecordingPolicy";
             WarnUserOnRemoval                                   = $True;
+            ApplicationId                                       = $ApplicationId;
+            TenantId                                            = $TenantId;
+            CertificateThumbprint                               = $CertificateThumbprint;
         }
     }
 }

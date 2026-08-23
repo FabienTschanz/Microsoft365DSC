@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $credsCredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,9 +26,11 @@ Configuration Example
     {
         TeamsOrgWideAppSettings "TeamsOrgWideAppSettings-Example"
         {
-            Credential                         = $credsCredential;
             IsSideloadedAppsInteractionEnabled = $False;
             IsSingleInstance                   = "Yes";
+            ApplicationId                      = $ApplicationId;
+            TenantId                           = $TenantId;
+            CertificateThumbprint              = $CertificateThumbprint;
         }
     }
 }

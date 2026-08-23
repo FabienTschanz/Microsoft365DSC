@@ -26,7 +26,7 @@ Configuration Example
     {
         EXOSmtpDaneInbound 'EXOSmtpDaneInbound-Example'
         {
-            DomainName            = "mydomain.com"
+            DomainName            = "contoso.com"
             Ensure                = "Present"                 # note: DNSSEC for the domain must be enabled. See resource EXODnssecForVerifiedDomain
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

@@ -26,13 +26,13 @@ Configuration Example
     {
         AADAttributeSet "AADAttributeSet-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Description           = "Attribute set with 420 attributes";
             Ensure                = "Present";
             Id                    = "Engineering";
             MaxAttributesPerSet   = 300; # Updated Property
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

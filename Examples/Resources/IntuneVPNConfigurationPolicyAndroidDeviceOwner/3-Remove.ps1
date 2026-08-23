@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyAndroidDeviceOwner "IntuneVPNConfigurationPolicyAndroidDeviceOwner-Example"
         {
+            DisplayName           = "IntuneVPNConfigurationPolicyAndroidDeviceOwner DisplayName";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "IntuneVPNConfigurationPolicyAndroidDeviceOwner DisplayName";
-            Ensure                = "Absent";
         }
     }
 }

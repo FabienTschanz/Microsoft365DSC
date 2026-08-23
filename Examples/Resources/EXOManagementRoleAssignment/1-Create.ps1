@@ -27,7 +27,7 @@ Configuration Example
         EXOManagementRoleAssignment 'EXOManagementRoleAssignment-Example'
         {
             Ensure                      = "Present";
-            Name                        = "MyManagementRoleAssignment";
+            Name                        = "Contoso Helpdesk User Application";
             Role                        = "UserApplication";
             User                        = "AdeleV@$TenantId";
             RecipientRelativeWriteScope = "Organization";

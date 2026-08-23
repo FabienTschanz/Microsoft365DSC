@@ -31,9 +31,6 @@ Configuration Example
             Id                    = "c60c41bb-e512-48e3-8134-c312439a5343";
             Name                  = "Sydney Branch Network";
             Region                = "australiaSouthEast";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             DeviceLinks           = @(
                 MSFT_AADRemoteNetworkDeviceLink {
                     Name                    = 'Sydney Secondary Link' # Updated Property
@@ -63,6 +60,9 @@ Configuration Example
                     }
                 }
             );
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

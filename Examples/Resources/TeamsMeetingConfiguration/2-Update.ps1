@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -31,7 +39,9 @@ Configuration Example
             HelpURL                     = "https://contoso.com/teams/help"
             LegalURL                    = "https://contoso.com/teams/legal"
             LogoURL                     = "https://contoso.com/teams/logo.png"
-            Credential                  = $Credscredential
+            ApplicationId               = $ApplicationId
+            TenantId                    = $TenantId
+            CertificateThumbprint       = $CertificateThumbprint
         }
     }
 }

@@ -30,12 +30,12 @@ Configuration Example
             Assignments           = @()
             Description           = 'My updated description' # Updated Property
             Ensure                = 'Present'
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
             ConfigurationBlob     = "<onboarding-blob>"
             ConfigurationType     = "onboard"
             SampleSharing         = 1
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

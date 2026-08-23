@@ -27,6 +27,9 @@ Configuration Example {
             NotificationType           = "companyPortal,email";
             RenewalThresholdPercentage = 20;
             Ensure                     = "Present";
+            ApplicationId              = $ApplicationId;
+            TenantId                   = $TenantId;
+            CertificateThumbprint      = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicySms "AADAuthenticationMethodPolicySms-Example"
         {
+            Ensure                = "Absent";
+            Id                    = "Sms";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Id                    = "Sms";
         }
     }
 }

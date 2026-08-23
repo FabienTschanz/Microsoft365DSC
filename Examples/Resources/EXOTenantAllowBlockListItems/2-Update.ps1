@@ -26,9 +26,6 @@ Configuration Example
     {
         EXOTenantAllowBlockListItems "EXOTenantAllowBlockListItems-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            TenantId              = $TenantId;
             Action                = "Block";
             Ensure                = "Present";
             ExpirationDate        = "10/11/2024 9:00:00 PM";
@@ -36,6 +33,9 @@ Configuration Example
             ListType              = "Sender";
             Notes                 = "Blocked sender confirmed by the security team";
             Value                 = "example.com";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

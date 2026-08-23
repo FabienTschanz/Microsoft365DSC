@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyExternal "AADAuthenticationMethodPolicyExternal-Example"
         {
+            DisplayName           = "Cisco Duo";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DisplayName           = "Cisco Duo";
-            Ensure                = "Absent";
         }
     }
 }

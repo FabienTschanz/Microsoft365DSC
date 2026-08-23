@@ -26,11 +26,11 @@ Configuration Example
     {
         EXOTenantAllowBlockListSpoofItems "EXOTenantAllowBlockListSpoofItems-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             SpoofedUser           = "contoso.com";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         EXODynamicDistributionGroup "EXODynamicDistributionGroup-Example"
         {
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             Ensure                = "Absent";
-            Identity              = "EXODynamicDistributionGroup_1";
-            TenantId              = $OrganizationName;
+            Identity              = "Field Sales and Marketing";
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
         }
     }
 }

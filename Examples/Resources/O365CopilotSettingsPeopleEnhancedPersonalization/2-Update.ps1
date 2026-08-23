@@ -26,12 +26,12 @@ Configuration Example
     {
         O365CopilotSettingsPeopleEnhancedPersonalization "O365CopilotSettingsPeopleEnhancedPersonalization-Example"
         {
-            ApplicationId           = $ApplicationId;
-            CertificateThumbprint   = $CertificateThumbprint;
             isEnabledInOrganization = $False;
             disabledForGroup        = "";
             IsSingleInstance        = "Yes";
+            ApplicationId           = $ApplicationId;
             TenantId                = $TenantId;
+            CertificateThumbprint   = $CertificateThumbprint;
         }
     }
 }

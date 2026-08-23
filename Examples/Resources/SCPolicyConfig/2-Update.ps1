@@ -27,7 +27,6 @@ Configuration Example
         SCPolicyConfig "SCPolicyConfig-Example"
         {
             AdvancedClassificationEnabled           = $True;
-            ApplicationId                           = $ApplicationId;
             AuditFileActivity                       = $False;
             BandwidthLimitEnabled                   = $False;
             BusinessJustificationList               = @(
@@ -62,7 +61,6 @@ Configuration Example
                     justificationText = 'default:Take It'
                 }
             );
-            CertificateThumbprint                   = $CertificateThumbprint;
             CloudAppMode                            = "Block";
             CloudAppRestrictionList                 = @("contoso.net","contoso.com");
             CustomBusinessJustificationNotification = 3;
@@ -187,7 +185,6 @@ Configuration Example
                     )
                 }
             );
-            TenantId                                = $TenantId;
             UnallowedApp                            = @(
                 MSFT_PolicyConfigApp
                 {
@@ -237,6 +234,9 @@ Configuration Example
                 }
             );
             VPNSettings                             = @("MyVPNAddress","MySecondVPNAddress");
+            ApplicationId                           = $ApplicationId;
+            TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

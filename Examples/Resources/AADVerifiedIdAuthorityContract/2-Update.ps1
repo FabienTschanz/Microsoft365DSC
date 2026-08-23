@@ -59,7 +59,7 @@ Configuration Example
                 }
             );
             Ensure                = "Present";
-            linkedDomainUrl       = "https://$OrganizationName/";
+            linkedDomainUrl       = "https://$TenantId/";
             name                  = "Verified Credential Expert Card";
             rules                 = MSFT_AADVerifiedIdAuthorityContractRulesModel{
                 validityInterval = 2592000

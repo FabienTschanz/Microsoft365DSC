@@ -68,10 +68,10 @@ Configuration Example
             PermanentActiveAssignmentisExpirationRequired             = $False;
             PermanentEligibleAssignmentisExpirationRequired           = $False;
             RoleDefinitionId                                          = "owner";
+            Ensure                                                    = "Present";
             ApplicationId                                             = $ApplicationId
             TenantId                                                  = $TenantId
             CertificateThumbprint                                     = $CertificateThumbprint
-            Ensure                                                    = "Present";
         }
     }
 }

@@ -26,9 +26,6 @@ Configuration Example
     {
         AADRoleAssignmentScheduleRequest "AADRoleAssignmentScheduleRequest-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             DirectoryScopeId      = "/";
             Ensure                = "Present";
             Principal             = "AdeleV@$TenantId";
@@ -43,6 +40,9 @@ Configuration Example
                         type        = 'afterDateTime'
                     }
             };
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

@@ -26,15 +26,15 @@ Configuration Example
     {
         AzureVerifiedIdFaceCheck "AzureVerifiedIdFaceCheck-Example"
         {
-            ApplicationId               = $ApplicationId;
-            CertificateThumbprint       = $CertificateThumbprint;
             Ensure                      = "Present";
             FaceCheckEnabled            = $True;
             ResourceGroupName           = "website";
             SubscriptionId              = "<subscription-id>";
-            TenantId                    = $TenantId;
             VerifiedIdAuthorityId       = "30961e04-9c35-42db-b80f-c1b6515eb4b2";
             VerifiedIdAuthorityLocation = "westus2";
+            ApplicationId               = $ApplicationId;
+            TenantId                    = $TenantId;
+            CertificateThumbprint       = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         AADConnectorGroupApplicationProxy "AADConnectorGroupApplicationProxy-Example"
         {
+            Ensure                = "Absent";
+            Name                  = "Amsterdam Connector Group";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Name                  = "Amsterdam Connector Group";
         }
     }
 }

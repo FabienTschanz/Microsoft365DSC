@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneDiagnosticSettings "IntuneDiagnosticSettings-Example"
         {
-            ApplicationId               = $ApplicationId;
             Categories                  = @(
                 MSFT_AzureDiagnosticSettingsCategory{
                     category = 'AuditLogs'
@@ -97,14 +96,15 @@ Configuration Example
                     enabled  = $False
                 }
             );
-            CertificateThumbprint       = $CertificateThumbprint;
             Ensure                      = "Present";
             EventHubAuthorizationRuleId = "<event-hub-authorization-rule-id>";
             EventHubName                = "";
             Name                        = "PlatformDiagnostics";
             StorageAccountId            = "<storage-account-resource-id>";
-            TenantId                    = $TenantId;
             WorkspaceId                 = "<log-analytics-workspace-resource-id>";
+            ApplicationId               = $ApplicationId;
+            TenantId                    = $TenantId;
+            CertificateThumbprint       = $CertificateThumbprint;
         }
     }
 }

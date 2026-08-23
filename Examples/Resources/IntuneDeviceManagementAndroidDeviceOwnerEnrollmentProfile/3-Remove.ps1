@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneDeviceManagementAndroidDeviceOwnerEnrollmentProfile "IntuneDeviceManagementAndroidDeviceOwnerEnrollmentProfile-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "Corporate Android Enrollment";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

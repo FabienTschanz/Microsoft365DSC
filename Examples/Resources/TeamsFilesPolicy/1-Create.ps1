@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,13 +26,15 @@ Configuration Example
     {
         TeamsFilesPolicy 'TeamsFilesPolicy-Example'
         {
-            Credential                          = $Credscredential;
             DefaultFileUploadAppId              = "<teams-app-id>";
             Ensure                              = "Present";
             FileSharingInChatswithExternalUsers = "Enabled";
             Identity                            = "Retail Store Files";
             NativeFileEntryPoints               = "Enabled";
             SPChannelFilesTab                   = "Enabled";
+            ApplicationId                       = $ApplicationId;
+            TenantId                            = $TenantId;
+            CertificateThumbprint               = $CertificateThumbprint;
         }
     }
 }

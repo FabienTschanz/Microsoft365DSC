@@ -26,9 +26,6 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyAndroidWork "IntuneVPNConfigurationPolicyAndroidWork-Example"
         {
-            ApplicationId         = $ApplicationId;
-            TenantId              = $TenantId;
-            CertificateThumbprint = $CertificateThumbprint;
             alwaysOn              = $true;
             alwaysOnLockdown      = $false;
             Assignments           = @(
@@ -86,6 +83,9 @@ Configuration Example
                 }
             );
             targetedPackageIds    = @("com.microsoft.office.outlook", "com.microsoft.sharepoint");
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         EXODnssecForVerifiedDomain "EXODnssecForVerifiedDomain-Example"
         {
+            DnssecFeatureStatus   = "Disabled"; # Updated Property
+            DomainName            = "nik-charlebois.com";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DnssecFeatureStatus   = "Disabled"; # Updated Property
-            DomainName            = "nik-charlebois.com";
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationRequirement "AADAuthenticationRequirement-Example"
         {
+            PerUserMfaState       = "disabled";
+            UserPrincipalName     = "AdeleV@$TenantId";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            PerUserMfaState       = "disabled";
-            UserPrincipalName     = "AdeleV@$OrganizationName";
         }
     }
 }

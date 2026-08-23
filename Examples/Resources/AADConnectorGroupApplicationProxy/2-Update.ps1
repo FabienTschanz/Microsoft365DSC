@@ -26,13 +26,13 @@ Configuration Example
     {
         AADConnectorGroupApplicationProxy "AADConnectorGroupApplicationProxy-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Ensure                = "Present";
             Id                    = "4984dcf7-d9e9-4663-90b4-5db09f92a669";
             Name                  = "Amsterdam Connector Group";
             Region                = "eur"; # Updated Property
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

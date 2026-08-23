@@ -40,9 +40,7 @@ Configuration Example
         }
         AADEntitlementManagementAccessPackageCatalogResource 'AADEntitlementManagementAccessPackageCatalogResource-Example'
         {
-            ApplicationId         = $ApplicationId;
             CatalogId             = "My Catalog";
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "MyGroup";
             OriginSystem          = "AADGroup";
             OriginId              = 'MyGroup'
@@ -53,7 +51,9 @@ Configuration Example
             Url                   = "https://portal.azure.com/Microsoft_AAD_IAM/GroupDetailsMenuBlade/Overview/groupId/849b3661-61a8-44a8-92e7-fcc91d296235";
             Ensure                = "Present";
             IsPendingOnboarding   = $False;
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

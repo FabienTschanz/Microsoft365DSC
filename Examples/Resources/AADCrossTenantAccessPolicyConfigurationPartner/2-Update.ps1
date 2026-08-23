@@ -124,10 +124,10 @@ Configuration Example
                 IsHybridAzureADJoinedDeviceAccepted = $True
                 IsMfaAccepted                       = $True
             };
+            Ensure                       = "Present";
             ApplicationId                = $ApplicationId
             TenantId                     = $TenantId
             CertificateThumbprint        = $CertificateThumbprint
-            Ensure                       = "Present";
         }
     }
 }

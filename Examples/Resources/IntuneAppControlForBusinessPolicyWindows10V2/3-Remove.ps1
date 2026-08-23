@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneAppControlForBusinessPolicyWindows10V2 'IntuneAppControlForBusinessPolicyWindows10V2-Example'
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "App Control for Business - Audit Mode";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

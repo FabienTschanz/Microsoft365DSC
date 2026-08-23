@@ -26,8 +26,6 @@ Configuration Example
     {
         TeamsTargetingPolicy 'TeamsTargetingPolicy-Example'
         {
-            ApplicationId                      = $ApplicationId;
-            CertificateThumbprint              = $CertificateThumbprint;
             CustomTagsMode                     = "Disabled";
             Description                        = "Limits tags to the preset roles used on the retail floor";
             IsSingleInstance                   = "Yes";
@@ -35,7 +33,9 @@ Configuration Example
             ShiftBackedTagsMode                = "Disabled";
             SuggestedPresetTags                = "Manager,Cashier,Pharmacist";
             TeamOwnersEditWhoCanManageTagsMode = "Enabled";
+            ApplicationId                      = $ApplicationId;
             TenantId                           = $TenantId;
+            CertificateThumbprint              = $CertificateThumbprint;
         }
     }
 }

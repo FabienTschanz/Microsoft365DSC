@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SPOSiteDesignRights 'SPOSiteDesignRights-Example'
         {
-            SiteDesignTitle = "Customer List"
-            UserPrincipals  = "jdoe@contoso.onmicrosoft.com"
-            Rights          = "View"
-            Ensure          = "Present"
-            Credential      = $Credscredential
+            SiteDesignTitle       = "Customer List"
+            UserPrincipals        = "jdoe@$TenantId"
+            Rights                = "View"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SCDeviceConditionalAccessPolicy 'SCDeviceConditionalAccessPolicy-Example'
         {
-            Name       = "Human Resources"
-            Comment    = "Device Conditional Access Policy for Human Resources department"
-            Enabled    = $True
-            Ensure     = "Present"
-            Credential = $Credscredential
+            Name                  = "Human Resources"
+            Comment               = "Device Conditional Access Policy for Human Resources department"
+            Enabled               = $True
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

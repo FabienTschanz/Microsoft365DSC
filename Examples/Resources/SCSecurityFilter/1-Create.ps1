@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,14 +26,16 @@ Configuration Example
     {
         SCSecurityFilter 'SCSecurityFilter-Example'
         {
-            FilterName  = "My Filter Name"
-            Action      = "All"
-            Users       = @("jonh.doe@1234.onmicrosoft.com")
-            Description = "Limits eDiscovery searches to Australian mailboxes"
-            Filters     = @("Mailbox_CountryCode -eq '124'")
-            Region      = "AUS"
-            Ensure      = "Present"
-            Credential  = $Credscredential
+            FilterName            = "My Filter Name"
+            Action                = "All"
+            Users                 = @("jonh.doe@1234.onmicrosoft.com")
+            Description           = "Limits eDiscovery searches to Australian mailboxes"
+            Filters               = @("Mailbox_CountryCode -eq '124'")
+            Region                = "AUS"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

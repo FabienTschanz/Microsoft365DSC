@@ -27,12 +27,12 @@ Configuration Example
         AADFilteringPolicy "AADFilteringPolicy-Example"
         {
             Action                = "block";
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Description           = "Blocks access to high-risk web destinations";
             Ensure                = "Present";
             Name                  = "MyPolicy";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneCustomizationBrandingProfile "IntuneCustomizationBrandingProfile-Example"
         {
-            ApplicationId                  = $ApplicationId;
             Assignments                    = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = "#microsoft.graph.groupAssignmentTarget"
@@ -35,7 +34,6 @@ Configuration Example
                     groupDisplayName                           = "All Enrolled Employees"
                 }
             );
-            CertificateThumbprint          = $CertificateThumbprint;
             CompanyPortalBlockedActions    = @(
                 MSFT_MicrosoftGraphcompanyPortalBlockedAction{
                     Action    = "remove"
@@ -72,7 +70,6 @@ Configuration Example
             ShowDisplayNameNextToLogo      = $true;
             ShowLogo                       = $true;
             ShowOfficeWebApps              = $true;
-            TenantId                       = $TenantId;
             ThemeColor                     = MSFT_MicrosoftGraphRgbColor{
                 B = 198
                 G = 114
@@ -82,6 +79,9 @@ Configuration Example
                 Type  = "image/png"
                 Value = "<base64-encoded-theme-color-logo>"
             };
+            ApplicationId                  = $ApplicationId;
+            TenantId                       = $TenantId;
+            CertificateThumbprint          = $CertificateThumbprint;
         }
     }
 }

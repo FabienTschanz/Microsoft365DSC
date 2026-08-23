@@ -26,14 +26,14 @@ Configuration Example
     {
         EXOManagementScope "EXOManagementScope-Example"
         {
-            ApplicationId              = $ApplicationId
-            TenantId                   = $TenantId
-            CertificateThumbprint      = $CertificateThumbprint
             Ensure                     = "Present";
             Exclusive                  = $False;
             Identity                   = "New Distribution Groups";
             Name                       = "New Distribution Groups";
             RecipientRestrictionFilter = "Name -like 'Sales*'";
+            ApplicationId              = $ApplicationId
+            TenantId                   = $TenantId
+            CertificateThumbprint      = $CertificateThumbprint
         }
     }
 }

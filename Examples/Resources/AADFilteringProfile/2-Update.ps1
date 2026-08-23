@@ -26,8 +26,6 @@ Configuration Example
     {
         AADFilteringProfile "AADFilteringProfile-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Description           = "Description of profile";
             Ensure                = "Present";
             Name                  = "My PRofile";
@@ -47,7 +45,9 @@ Configuration Example
             );
             Priority              = 140; # Updated Property
             State                 = "enabled";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

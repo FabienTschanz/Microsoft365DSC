@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneDiskEncryptionFileVaultPolicyMacOS "IntuneDiskEncryptionFileVaultPolicyMacOS-Example"
         {
-            ApplicationId                          = $ApplicationId;
             Assignments                            = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     deviceAndAppManagementAssignmentFilterType = "none"
@@ -39,7 +38,6 @@ Configuration Example
                     dataType                                   = "#microsoft.graph.groupAssignmentTarget"
                 }
             );
-            CertificateThumbprint                  = $CertificateThumbprint;
             Defer                                  = "true";
             DeferDontAskAtUserLogout               = "false";
             DeferForceAtUserLoginMaxBypassAttempts = 5;
@@ -50,8 +48,10 @@ Configuration Example
             DisplayName                            = "IntuneDiskEncryptionFileVaultPolicyMacOS_1";
             RecoveryKeyRotationInMonths            = 12; # Updated Property
             RoleScopeTagIds                        = @("0");
-            TenantId                               = $TenantId;
             UseRecoveryKey                         = "true";
+            ApplicationId                          = $ApplicationId;
+            TenantId                               = $TenantId;
+            CertificateThumbprint                  = $CertificateThumbprint;
         }
     }
 }

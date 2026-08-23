@@ -27,7 +27,6 @@ Configuration Example
         IntuneTermsAndConditions "IntuneTermsAndConditions-Example"
         {
             AcceptanceStatement   = "Summary of Terms and Conditions";
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = "#microsoft.graph.groupAssignmentTarget"
@@ -37,13 +36,14 @@ Configuration Example
                 }
             );
             BodyText              = "Some Terms and Conditions";
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             Description           = "";
             DisplayName           = "IntuneTermsAndConditions_1";
             Ensure                = "Present";
             RoleScopeTagIds       = @("0");
-            TenantId              = $OrganizationName;
             Title                 = "IntuneTermsAndConditions_1";
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
         }
     }
 }

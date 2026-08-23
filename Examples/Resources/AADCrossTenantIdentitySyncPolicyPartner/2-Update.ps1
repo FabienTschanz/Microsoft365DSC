@@ -26,13 +26,13 @@ Configuration Example
     {
         AADCrossTenantIdentitySyncPolicyPartner "AADCrossTenantIdentitySyncPolicyPartner-Example"
         {
-            ApplicationId                                       = $ApplicationId;
-            CertificateThumbprint                               = $CertificateThumbprint;
             CrossTenantAccessPolicyConfigurationPartnerTenantId = "e7a80bcf-696e-40ca-8775-a7f85fbb3ebc";
             DisplayName                                         = "IdentitySync";
             Ensure                                              = "Present";
             IsSyncAllowed                                       = $False;
+            ApplicationId                                       = $ApplicationId;
             TenantId                                            = $TenantId;
+            CertificateThumbprint                               = $CertificateThumbprint;
         }
     }
 }

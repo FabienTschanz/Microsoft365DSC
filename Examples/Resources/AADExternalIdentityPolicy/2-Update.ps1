@@ -28,10 +28,10 @@ Configuration Example
         {
             AllowDeletedIdentitiesDataRemoval = $False;
             AllowExternalIdentitiesToLeave    = $True;
+            IsSingleInstance                  = "Yes";
             ApplicationId                     = $ApplicationId
             TenantId                          = $TenantId
             CertificateThumbprint             = $CertificateThumbprint
-            IsSingleInstance                  = "Yes";
         }
     }
 }

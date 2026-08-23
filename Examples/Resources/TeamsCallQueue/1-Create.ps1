@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -87,7 +95,9 @@ Configuration Example
             ChannelId                                            = "19:Y6MG7XdME2Cf9IRmU8PUXNfA1OtqmjyBgCmCGBN2tzY1@thread.tacv2"
             ChannelUserObjectId                                  = "9abce74d-d108-475f-a2cb-bbb82f484982"
             Ensure                                               = "Present"
-            Credential                                           = $Credscredential
+            ApplicationId                                        = $ApplicationId
+            TenantId                                             = $TenantId
+            CertificateThumbprint                                = $CertificateThumbprint
         }
     }
 }

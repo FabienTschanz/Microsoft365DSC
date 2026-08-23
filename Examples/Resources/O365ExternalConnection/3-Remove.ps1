@@ -26,14 +26,11 @@ Configuration Example
     {
         O365ExternalConnection "O365ExternalConnection-Example"
         {
-            ApplicationId         = $ApplicationId;
-            AuthorizedAppIds      = @("MyApp");
-            CertificateThumbprint = $CertificateThumbprint;
-            Description           = "Connection to index Contoso HR system";
             Ensure                = "Absent";
-            Id                    = "contosohr";
-            Name                  = "Contoso HR Nik";
+            Name                  = "Contoso HR";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

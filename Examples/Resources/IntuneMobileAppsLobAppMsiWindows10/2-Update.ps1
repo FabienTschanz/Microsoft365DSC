@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneMobileAppsLobAppMsiWindows10 "IntuneMobileAppsLobAppMsiWindows10-Example"
         {
-            ApplicationId          = $ApplicationId;
             Assignments            = @(
                 MSFT_DeviceManagementMobileAppAssignment {
                     groupDisplayName                           = 'All devices'
@@ -45,7 +44,6 @@ Configuration Example
                     DisplayName = "App Category 1"
                 }
             );
-            CertificateThumbprint  = $CertificateThumbprint;
             Description            = "MSI App Description";
             Developer              = "";
             DisplayName            = "MSI App";
@@ -58,7 +56,9 @@ Configuration Example
             Owner                  = "";
             Publisher              = "Microsoft";
             RoleScopeTagIds        = @("0");
+            ApplicationId          = $ApplicationId;
             TenantId               = $TenantId;
+            CertificateThumbprint  = $CertificateThumbprint;
         }
     }
 }

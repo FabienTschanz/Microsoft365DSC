@@ -27,13 +27,13 @@ Configuration Example
         EXOTenantAllowBlockListSpoofItems "EXOTenantAllowBlockListSpoofItems-Example"
         {
             Action                = "Allow";
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
             SendingInfrastructure = "121.0.0.7";
             SpoofedUser           = "contoso.com";
             SpoofType             = "Internal";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         AADDomain "AADDomain-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Id                    = "M365x73318397.mail.onmicrosoft.com";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -31,7 +31,6 @@ Configuration Example
             AllowedApplications   = @("IntuneMobileAppsMicrosoftEdge_Windows","IntuneMobileAppsWindowsOfficeSuiteApp_1");
             AllowedScripts        = @("IntuneDeviceConfigurationPlatformScriptWindows_1");
             AllowSkip             = "true";
-            ApplicationId         = $ApplicationId;
             Assignments           = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType                                   = "#microsoft.graph.groupAssignmentTarget"
@@ -40,7 +39,6 @@ Configuration Example
                 }
             );
             AssignmentTarget      = "Include";
-            CertificateThumbprint = $CertificateThumbprint;
             CustomErrorMessage    = "Contact your organization’s support person for help.";
             DeploymentMode        = "0";
             DeploymentType        = "0";
@@ -49,8 +47,10 @@ Configuration Example
             Ensure                = "Present";
             JoinType              = "0";
             RoleScopeTagIds       = @("0");
-            TenantId              = $TenantId;
             Timeout               = 60;
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

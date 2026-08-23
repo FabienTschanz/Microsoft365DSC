@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyTemporary "AADAuthenticationMethodPolicyTemporary-Example"
         {
+            Ensure                = "Absent";
+            Id                    = "TemporaryAccessPass";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Id                    = "TemporaryAccessPass";
         }
     }
 }

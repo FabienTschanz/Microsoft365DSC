@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,12 @@ Configuration Example
     {
         SPOApp 'SPOApp-Example'
         {
-            Identity   = "ContosoIntranet.sppkg"
-            Path       = "C:\Packages\ContosoIntranet.sppkg"
-            Publish    = $true
-            Ensure     = "Absent"
-            Credential = $Credscredential
+            Identity              = "ContosoIntranet.sppkg"
+            Path                  = "C:\Packages\ContosoIntranet.sppkg"
+            Ensure                = "Absent"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

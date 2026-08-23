@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,13 +26,15 @@ Configuration Example
     {
         O365Group 'O365Group-Example'
         {
-            DisplayName  = "Ottawa Employees"
-            MailNickName = "OttawaEmployees"
-            Description  = "This is only for employees of the Ottawa Office"
-            ManagedBy    = "TenantAdmin@contoso.onmicrosoft.com"
-            Members      = @("John.Smith") # Updated Property
-            Ensure       = "Present"
-            Credential   = $Credscredential
+            DisplayName           = "Ottawa Employees"
+            MailNickName          = "OttawaEmployees"
+            Description           = "This is only for employees of the Ottawa Office"
+            ManagedBy             = @("megan.bowen@$TenantId")
+            Members               = @("alex.wilber@$TenantId") # Updated Property
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

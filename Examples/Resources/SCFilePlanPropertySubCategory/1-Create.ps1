@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -17,10 +25,12 @@ Configuration Example
     {
         SCFilePlanPropertySubCategory 'SCFilePlanPropertySubCategory-Example'
         {
-            Name       = "My Sub-Category"
-            Category   = "My Category"
-            Ensure     = "Present"
-            Credential = $Credscredential
+            Name                  = "My Sub-Category"
+            Category              = "My Category"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

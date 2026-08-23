@@ -27,12 +27,12 @@ Configuration Example
         EXOMailboxIRMAccess "EXOMailboxIRMAccess-Example"
         {
             AccessLevel           = "Block";
+            Ensure                = "Present";
+            Identity              = "qwe@$TenantId";
+            User                  = "admin@$TenantId";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Present";
-            Identity              = "qwe@$OrganizationName";
-            User                  = "admin@$OrganizationName";
         }
     }
 }

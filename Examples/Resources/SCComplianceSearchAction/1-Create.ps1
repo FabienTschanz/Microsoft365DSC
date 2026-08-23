@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -27,7 +35,9 @@ Configuration Example
             RetryOnError                        = $False
             SearchName                          = "Budget Mailbox Search"
             Ensure                              = "Present"
-            Credential                          = $Credscredential
+            ApplicationId                       = $ApplicationId
+            TenantId                            = $TenantId
+            CertificateThumbprint               = $CertificateThumbprint
         }
 
         SCComplianceSearchAction 'SCComplianceSearchAction-Example2'
@@ -37,7 +47,9 @@ Configuration Example
             RetryOnError      = $False
             SearchName        = "Budget Mailbox Search"
             Ensure            = "Present"
-            Credential        = $Credscredential
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
 
         SCComplianceSearchAction 'SCComplianceSearchAction-Example3'
@@ -51,7 +63,9 @@ Configuration Example
             RetryOnError                        = $False
             SearchName                          = "Budget Mailbox Search"
             Ensure                              = "Present"
-            Credential                          = $Credscredential
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

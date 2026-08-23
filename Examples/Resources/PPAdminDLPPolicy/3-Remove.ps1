@@ -26,11 +26,11 @@ Configuration Example
     {
         PPAdminDLPPolicy "PPAdminDLPPolicy-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "SuperTest";
+            DisplayName           = "Contoso Connector Governance";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

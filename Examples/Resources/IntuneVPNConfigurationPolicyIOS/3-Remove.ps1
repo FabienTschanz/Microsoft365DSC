@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyIOS "IntuneVPNConfigurationPolicyIOS-Example"
         {
+            DisplayName           = "Corporate VPN - iOS";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "Corporate VPN - iOS";
-            Ensure                = "Absent";
         }
     }
 }

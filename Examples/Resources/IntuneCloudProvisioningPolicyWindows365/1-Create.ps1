@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneCloudProvisioningPolicyWindows365 "IntuneCloudProvisioningPolicyWindows365-Example"
         {
-            ApplicationId            = $ApplicationId;
             Assignments              = @(
                 MSFT_DeviceManagementConfigurationPolicyAssignments{
                     dataType = "#microsoft.graph.cloudPcManagementGroupAssignmentTarget"
@@ -60,8 +59,9 @@ Configuration Example
             WindowsSettings          = MSFT_MicrosoftGraphCloudPcWindowsSettings{
                 Language = "en-US"
             };
-            CertificateThumbprint    = $CertificateThumbprint;
+            ApplicationId            = $ApplicationId;
             TenantId                 = $TenantId;
+            CertificateThumbprint    = $CertificateThumbprint;
         }
     }
 }

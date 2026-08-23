@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SCRoleGroup 'SCRoleGroup-Example'
         {
-            Name        = "Contoso Role Group"
-            Description = "Address Lists Role for Purview Administrators - Modified"
-            Roles       = @("Address Lists")
-            Ensure      = "Present"
-            Credential  = $Credscredential
+            Name                  = "Contoso Role Group"
+            Description           = "Address Lists Role for Purview Administrators - Modified"
+            Roles                 = @("Address Lists")
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

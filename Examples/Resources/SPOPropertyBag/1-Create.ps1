@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SPOPropertyBag 'SPOPropertyBag-Example'
         {
-            Url        = "https://contoso.sharepoint.com/sites/Marketing"
-            Key        = "MyKey"
-            Value      = "MyValue"
-            Ensure     = "Present"
-            Credential = $Credscredential
+            Url                   = "https://contoso.sharepoint.com/sites/Marketing"
+            Key                   = "MyKey"
+            Value                 = "MyValue"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

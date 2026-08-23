@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,37 @@ Configuration Example
     {
         O365OrgSettings 'O365OrgSettings-Example'
         {
-            AdminCenterReportDisplayConcealedNames     = $True;
-            Credential                                 = $Credscredential;
-            IsSingleInstance                           = "Yes";
-            M365WebEnableUsersToOpenFilesFrom3PStorage = $False;
-            PlannerAllowCalendarSharing                = $False
+            AdminCenterReportDisplayConcealedNames                = $true;
+            AllowPlannerCopilot                                   = $true;
+            AppsAndServicesIsAppAndServicesTrialEnabled           = $false;
+            AppsAndServicesIsOfficeStoreEnabled                   = $false;
+            CortanaEnabled                                        = $false;
+            DynamicsCustomerVoiceIsInOrgFormsPhishingScanEnabled  = $true;
+            DynamicsCustomerVoiceIsRecordIdentityByDefaultEnabled = $true;
+            DynamicsCustomerVoiceIsRestrictedSurveyAccessEnabled  = $true;
+            FormsIsBingImageSearchEnabled                         = $false;
+            FormsIsExternalSendFormEnabled                        = $false;
+            FormsIsExternalShareCollaborationEnabled              = $false;
+            FormsIsExternalShareResultEnabled                     = $false;
+            FormsIsExternalShareTemplateEnabled                   = $false;
+            FormsIsInOrgFormsPhishingScanEnabled                  = $true;
+            FormsIsRecordIdentityByDefaultEnabled                 = $true;
+            InstallationOptionsAppsForMac                         = @("isMicrosoft365AppsEnabled");
+            InstallationOptionsAppsForWindows                     = @("isVisioEnabled", "isProjectEnabled", "isMicrosoft365AppsEnabled");
+            InstallationOptionsUpdateChannel                      = "monthlyEnterprise";
+            IsSingleInstance                                      = "Yes";
+            M365WebEnableUsersToOpenFilesFrom3PStorage            = $false;
+            PlannerAllowCalendarSharing                           = $false;
+            ToDoIsExternalJoinEnabled                             = $false;
+            ToDoIsExternalShareEnabled                            = $false;
+            ToDoIsPushNotificationEnabled                         = $true;
+            VivaInsightsDigestEmail                               = $true;
+            VivaInsightsOutlookAddInAndInlineSuggestions          = $true;
+            VivaInsightsScheduleSendSuggestions                   = $true;
+            VivaInsightsWebExperience                             = $true
+            ApplicationId                                         = $ApplicationId;
+            TenantId                                              = $TenantId;
+            CertificateThumbprint                                 = $CertificateThumbprint;
         }
     }
 }

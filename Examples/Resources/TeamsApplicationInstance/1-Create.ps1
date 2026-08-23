@@ -26,13 +26,13 @@ Configuration Example
     {
         TeamsApplicationInstance "TeamsApplicationInstance-Example"
         {
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             DisplayName           = "JohnRA";
             Ensure                = "Present";
             ResourceAccountType   = "AutoAttendant";
-            TenantId              = $OrganizationName;
             UserPrincipalName     = "John.Smith@M365x73318397.mail.onmicrosoft.com";
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
         }
     }
 }

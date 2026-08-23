@@ -28,18 +28,18 @@ Configuration Example
         {
             AcceptUntrustedCertificates   = $True;
             Authentication                = "Basic";
-            ApplicationId                 = $ApplicationId
-            TenantId                      = $TenantId
-            CertificateThumbprint         = $CertificateThumbprint
             EndpointType                  = "IMAP";
             Ensure                        = "Present";
-            Identity                      = "testIMAP";
+            Identity                      = "Gmail IMAP Migration";
             MailboxPermission             = "Admin";
             MaxConcurrentIncrementalSyncs = "10";
             MaxConcurrentMigrations       = "20";
             Port                          = "993";
-            RemoteServer                  = "gmail.com";
-            Security                      = "None"; # Updated Property
+            RemoteServer                  = "imap.gmail.com";
+            Security                      = "Tls"; # Updated Property
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

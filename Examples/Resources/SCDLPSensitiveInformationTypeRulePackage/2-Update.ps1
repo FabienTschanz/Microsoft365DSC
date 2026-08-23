@@ -26,12 +26,12 @@ Configuration Example
     {
         SCDLPSensitiveInformationTypeRulePackage "SCDLPSensitiveInformationTypeRulePackage-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
             XmlFileData           = "<rule-package-xml-updated>"; # Updated Property
             Name                  = "Contoso Employee ID";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

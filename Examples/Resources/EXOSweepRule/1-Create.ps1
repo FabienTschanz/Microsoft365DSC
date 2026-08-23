@@ -26,8 +26,6 @@ Configuration Example
     {
         EXOSweepRule 'EXOSweepRule-Example'
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DestinationFolder     = "AdeleV:\Deleted Items";
             Enabled               = $True;
             Ensure                = "Present";
@@ -37,7 +35,9 @@ Configuration Example
             Provider              = "Exchange16";
             SenderName            = "michelle@fabrikam.com";
             SourceFolder          = "AdeleV:\Inbox";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

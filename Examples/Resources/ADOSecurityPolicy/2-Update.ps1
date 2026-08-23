@@ -29,16 +29,16 @@ Configuration Example
             AllowAnonymousAccess                    = $True;
             AllowRequestAccessToken                 = $False;
             AllowTeamAdminsInvitationsAccessToken   = $True;
-            ApplicationId                           = $ApplicationId;
             ArtifactsExternalPackageProtectionToken = $False;
-            CertificateThumbprint                   = $CertificateThumbprint;
             DisallowAadGuestUserAccess              = $True;
             DisallowOAuthAuthentication             = $True;
             DisallowSecureShell                     = $False;
             EnforceAADConditionalAccess             = $False;
             LogAuditEvents                          = $True;
             OrganizationName                        = "Contoso-Dev";
+            ApplicationId                           = $ApplicationId;
             TenantId                                = $TenantId;
+            CertificateThumbprint                   = $CertificateThumbprint;
         }
     }
 }

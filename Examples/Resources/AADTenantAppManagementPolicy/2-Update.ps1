@@ -26,7 +26,6 @@ Configuration Example
     {
         AADTenantAppManagementPolicy "AADTenantAppManagementPolicy-Example"
         {
-            ApplicationId           = $ApplicationId;
             ApplicationRestrictions = MSFT_AADTenantAppManagementPolicyRestrictions{
                 passwordCredentials = @(
                     MSFT_AADTenantAppManagementPolicyRestrictionsCredential{
@@ -66,12 +65,13 @@ Configuration Example
                     }
                 )
             };
-            CertificateThumbprint   = $CertificateThumbprint;
             Description             = "Default tenant policy that enforces app management restrictions on applications and service principals. To apply policy to targeted resources, create a new policy under appManagementPolicies collection.";
             DisplayName             = "Default app management tenant policy";
             IsSingleInstance        = 'Yes';
             IsEnabled               = $True;
+            ApplicationId           = $ApplicationId;
             TenantId                = $TenantId;
+            CertificateThumbprint   = $CertificateThumbprint;
         }
     }
 }

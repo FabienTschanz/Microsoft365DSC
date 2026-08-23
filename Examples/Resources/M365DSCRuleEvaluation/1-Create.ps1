@@ -24,10 +24,13 @@ Configuration Example
 
     Node localhost
     {
-        AADAuthenticationContextClassReference "AADAuthenticationContextClassReference-Example"
+        M365DSCRuleEvaluation 'M365DSCRuleEvaluation-Example'
         {
-            Ensure                = "Absent";
-            Id                    = "c3";
+            ResourceTypeName      = 'TeamsMeetingPolicy'
+            RuleDefinition        = "`$_.AllowAnonymousUsersToJoinMeeting -eq `$true"
+            RuleName              = "Meeting policies must block anonymous participants"
+            AfterRuleCountQuery   = "-eq 0"
+            Filter                = "Tag:*"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

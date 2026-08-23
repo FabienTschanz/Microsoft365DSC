@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,17 +26,22 @@ Configuration Example
     {
         SPOAccessControlSettings 'SPOAccessControlSettings-Example'
         {
-            IsSingleInstance             = "Yes"
-            DisplayStartASiteOption      = $false
-            StartASiteFormUrl            = "https://contoso.sharepoint.com"
-            IPAddressEnforcement         = $false
-            IPAddressWACTokenLifetime    = 15
-            DisallowInfectedFileDownload = $false
-            ExternalServicesEnabled      = $true
-            EmailAttestationRequired     = $false
-            EmailAttestationReAuthDays   = 30
-            Ensure                       = "Present"
-            Credential                   = $Credscredential
+            IsSingleInstance              = "Yes"
+            DisplayStartASiteOption       = $false
+            StartASiteFormUrl             = "https://contoso.sharepoint.com"
+            IPAddressEnforcement          = $false
+            IPAddressAllowList            = "10.20.0.0/16, 2001:db8:4a2f::/48"
+            IPAddressWACTokenLifetime     = 15
+            DisallowInfectedFileDownload  = $true
+            ExternalServicesEnabled       = $true
+            EmailAttestationRequired      = $false
+            EmailAttestationReAuthDays    = 30
+            EnableRestrictedAccessControl = $false
+            RestrictResourceAccountAccess = $false
+            ConditionalAccessPolicy       = "AllowFullAccess"
+            ApplicationId                 = $ApplicationId
+            TenantId                      = $TenantId
+            CertificateThumbprint         = $CertificateThumbprint
         }
     }
 }

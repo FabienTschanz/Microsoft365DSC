@@ -26,7 +26,6 @@ Configuration Example
     {
         IntuneMobileAppsLobAppAndroid "IntuneMobileAppsLobAppAndroid-Example"
         {
-            ApplicationId                   = $ApplicationId;
             Assignments                     = @(
                 MSFT_DeviceManagementMobileAppAssignment{
                     deviceAndAppManagementAssignmentFilterType = 'none'
@@ -40,7 +39,6 @@ Configuration Example
                     DisplayName = "Business"
                 }
             );
-            CertificateThumbprint           = $CertificateThumbprint;
             Description                     = "Contoso field service application for Android devices";
             Developer                       = "Contoso Application Development";
             DisplayName                     = "Apk App";
@@ -62,7 +60,9 @@ Configuration Example
             Owner                           = "Field Operations";
             Publisher                       = "Contoso";
             RoleScopeTagIds                 = @("0");
+            ApplicationId                   = $ApplicationId;
             TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

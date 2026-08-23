@@ -27,10 +27,10 @@ Configuration Example
         AADSocialIdentityProvider "AADSocialIdentityProvider-Example"
         {
             ClientId              = "Google-OAUTH";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
         }
     }
 }

@@ -26,9 +26,6 @@ Configuration Example
     {
         AADClaimsMappingPolicy "AADClaimsMappingPolicy-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Definition            = @(
                 MSFT_AADClaimsMappingPolicyDefinition{
                     ClaimsMappingPolicy = MSFT_AADClaimsMappingPolicyDefinitionMappingPolicy{
@@ -89,6 +86,9 @@ Configuration Example
             Ensure                = "Present";
             Id                    = "fd0dc3f3-cfdf-4d56-bb03-e18161a5ac93";
             IsOrganizationDefault = $False;
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

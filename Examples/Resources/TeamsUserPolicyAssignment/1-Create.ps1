@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $credsCredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -17,7 +25,6 @@ Configuration Example
     {
         TeamsUserPolicyAssignment 'TeamsUserPolicyAssignment-Example'
         {
-            Credential                      = $Credscredential
             CallingLineIdentity             = "CorporateCallerID";
             ExternalAccessPolicy            = "CorporateFederation";
             OnlineVoicemailPolicy           = "CorporateVoicemail";
@@ -41,6 +48,9 @@ Configuration Example
             TeamsUpgradePolicy              = "UpgradeToTeams";
             TenantDialPlan                  = "AmsterdamPlan";
             User                            = "john.smith@contoso.com";
+            ApplicationId                   = $ApplicationId
+            TenantId                        = $TenantId
+            CertificateThumbprint           = $CertificateThumbprint
         }
     }
 }

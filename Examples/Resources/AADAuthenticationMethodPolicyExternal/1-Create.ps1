@@ -26,9 +26,6 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyExternal "AADAuthenticationMethodPolicyExternal-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             AppId                 = "<application-id>";
             DisplayName           = "Cisco Duo";
             Ensure                = "Present";
@@ -49,6 +46,9 @@ Configuration Example
                 clientId     = '<client-id>'
             };
             State                 = "disabled";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

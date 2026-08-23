@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy 'IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy-Example'
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "IntuneWindowsAutopilotDevicePreparationPolicy_1";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

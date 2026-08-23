@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,10 +26,12 @@ Configuration Example
     {
         TeamsUpgradeConfiguration 'TeamsUpgradeConfiguration-Example'
         {
-            IsSingleInstance = "Yes"
-            DownloadTeams    = $True
-            SfBMeetingJoinUx = "NativeLimitedClient"
-            Credential       = $Credscredential
+            IsSingleInstance      = "Yes"
+            DownloadTeams         = $True
+            SfBMeetingJoinUx      = "NativeLimitedClient"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

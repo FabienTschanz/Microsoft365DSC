@@ -25,11 +25,8 @@ Configuration Example
     {
         PlannerTask 'PlannerTask-Example'
         {
-            PlanId                = "1234567890"
+            PlanId                = "<planner-plan-id>"
             Title                 = "Contoso Task"
-            StartDateTime         = "2020-06-09"
-            Priority              = 7
-            PercentComplete       = 75
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

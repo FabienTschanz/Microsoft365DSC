@@ -26,22 +26,11 @@ Configuration Example
     {
         SentinelWatchlist "SentinelWatchlist-Example"
         {
-            Alias                 = "MyAlias";
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            DefaultDuration       = "P1DT3H";
-            Description           = "My description";
-            DisplayName           = "My Display Name";
             Ensure                = "Absent";
-            ItemsSearchKey        = "IPAddress";
-            Name                  = "MyWatchList";
-            NumberOfLinesToSkip   = 1;
-            RawContent            = 'MyContent'
-            ResourceGroupName     = "MyResourceGroup";
-            SourceType            = "Local";
-            SubscriptionId        = "<subscription-id>";
+            Name                  = "High Value Assets";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
-            WorkspaceName         = "MyWorkspace";
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

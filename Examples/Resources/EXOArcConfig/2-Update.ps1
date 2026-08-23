@@ -28,9 +28,9 @@ Configuration Example
         {
             ArcTrustedSealers     = "contoso.com";
             IsSingleInstance      = "Yes";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            ApplicationId         = $ApplicationId;
         }
     }
 }

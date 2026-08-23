@@ -27,12 +27,12 @@ Configuration Example
         AADEntitlementManagementRoleAssignment "AADEntitlementManagementRoleAssignment-Example"
         {
             AppScopeId            = "/";
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Ensure                = "Present";
             Principal             = "AdeleV@$TenantId";
             RoleDefinition        = "Catalog creator";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

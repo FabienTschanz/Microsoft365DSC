@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,9 +26,11 @@ Configuration Example
     {
         TeamsAppPermissionPolicy "TeamsAppPermissionPolicy-Example"
         {
-            Credential = $Credscredential;
-            Ensure     = "Present";
-            Identity   = "SalesAppPermissions";
+            Ensure                = "Present";
+            Identity              = "SalesAppPermissions";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

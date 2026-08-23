@@ -26,11 +26,11 @@ Configuration Example
     {
         IntuneVPNConfigurationPolicyAndroidWork "IntuneVPNConfigurationPolicyAndroidWork-Example"
         {
+            DisplayName           = "IntuneVPNConfigurationPolicyAndroidWork DisplayName";
+            Ensure                = "Absent";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;
-            DisplayName           = "IntuneVPNConfigurationPolicyAndroidWork DisplayName";
-            Ensure                = "Absent";
         }
     }
 }

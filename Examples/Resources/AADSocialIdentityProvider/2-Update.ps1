@@ -28,12 +28,12 @@ Configuration Example
         {
             ClientId              = "Google-OAUTH";
             ClientSecret          = "<client-secret-updated>"; # Updated Property
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             DisplayName           = "My Google Provider";
             Ensure                = "Present";
             IdentityProviderType  = "Google";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

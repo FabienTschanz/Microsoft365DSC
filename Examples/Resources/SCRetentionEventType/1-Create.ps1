@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,10 +26,12 @@ Configuration Example
     {
         SCRetentionEventType 'SCRetentionEventType-Example'
         {
-            Name       = "Employee Termination"
-            Comment    = "Starts retention when an employee leaves the company"
-            Ensure     = "Present"
-            Credential = $Credscredential
+            Name                  = "Employee Termination"
+            Comment               = "Starts retention when an employee leaves the company"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

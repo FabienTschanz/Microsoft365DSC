@@ -26,11 +26,11 @@ Configuration Example
     {
         AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "My Custom Extension";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

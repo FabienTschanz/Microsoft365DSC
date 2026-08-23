@@ -26,9 +26,7 @@ Configuration Example
     {
         IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr "IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr-Example"
         {
-            ApplicationId                              = $ApplicationId;
             Assignments                                = @();
-            CertificateThumbprint                      = $CertificateThumbprint;
             CompanyName                                = "contoso";
             Description                                = "";
             DisableAccountProtectionUI                 = "0";
@@ -50,8 +48,10 @@ Configuration Example
             Phone                                      = "+1 425 555 0134";
             RoleScopeTagIds                            = @("0");
             TamperProtection                           = "1";
-            TenantId                                   = $TenantId;
             URL                                        = "https://support.contoso.com";
+            ApplicationId                              = $ApplicationId;
+            TenantId                                   = $TenantId;
+            CertificateThumbprint                      = $CertificateThumbprint;
         }
     }
 }

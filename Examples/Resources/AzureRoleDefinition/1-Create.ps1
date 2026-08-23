@@ -27,13 +27,17 @@ Configuration Example
         AzureRoleDefinition "AzureRoleDefinition-Example"
         {
             Actions               = @("Microsoft.Compute/virtualMachines/read","Microsoft.Compute/virtualMachines/start/action","Microsoft.Compute/virtualMachines/restart/action");
-            ApplicationId         = $ApplicationId;
             AssignableScopes      = @("<subscription-scope>");
-            CertificateThumbprint = $CertificateThumbprint;
-            CustomRoleName        = "My Custom Role";
-            Description           = "A custom role for managing virtual machines.";
+            CustomRoleName        = "Virtual Machine Operator";
+            DataActions           = @("Microsoft.Compute/virtualMachines/login/action");
+            Description           = "Allows the platform team to start and restart virtual machines.";
             Ensure                = "Present";
+            NotActions            = @("Microsoft.Compute/virtualMachines/delete", "Microsoft.Compute/virtualMachines/write");
+            NotDataActions        = @("Microsoft.Compute/virtualMachines/loginAsAdmin/action");
+            SubscriptionId        = "<subscription-id>";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

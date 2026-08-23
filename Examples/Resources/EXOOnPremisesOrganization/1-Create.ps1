@@ -28,16 +28,16 @@ Configuration Example
         {
             Identity              = 'Contoso HQ'
             Comment               = 'Mail for Contoso'
-            HybridDomains         = 'contoso.onmicrosoft.com'
+            HybridDomains         = "$TenantId"
             InboundConnector      = 'Partner Mail Gateway'
             OrganizationGuid      = 'e7a80bcf-696e-40ca-8775-a7f85fbb3ebc'
             OrganizationName      = 'Contoso'
             OutboundConnector     = 'Contoso Outbound Connector'
             Ensure                = 'Present'
+            DependsOn             = "[EXOOutboundConnector]EXOOutboundConnector-Example"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            DependsOn             = "[EXOOutboundConnector]EXOOutboundConnector-Example"
         }
         EXOOutboundConnector 'EXOOutboundConnector-Example'
         {

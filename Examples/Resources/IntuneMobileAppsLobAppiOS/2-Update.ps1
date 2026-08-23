@@ -30,7 +30,6 @@ Configuration Example
                 IPad          = $True
                 IPhoneAndIPod = $True
             };
-            ApplicationId                   = $ApplicationId;
             Assignments                     = @(
                 MSFT_DeviceManagementLobAppiOSAssignment{
                     groupDisplayName                           = 'All devices'
@@ -51,7 +50,6 @@ Configuration Example
                     DisplayName = "App Category 1"
                 }
             );
-            CertificateThumbprint           = $CertificateThumbprint;
             Description                     = "Line-of-business iOS application";
             Developer                       = "";
             DisplayName                     = "Contoso Field Service";
@@ -76,8 +74,10 @@ Configuration Example
             Owner                           = "";
             Publisher                       = "Contoso";
             RoleScopeTagIds                 = @("0");
-            TenantId                        = $TenantId;
             VersionNumber                   = "6.8.26";
+            ApplicationId                   = $ApplicationId;
+            TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,12 +26,14 @@ Configuration Example
     {
         TeamsVdiPolicy 'TeamsVdiPolicy-Example'
         {
-            Credential                          = $Credscredential;
             DisableAudioVideoInCallsAndMeetings = $False;
             DisableCallsAndMeetings             = $False;
             Ensure                              = "Present";
             Identity                            = "Global";
             VDI2Optimization                    = "Enabled";
+            ApplicationId                       = $ApplicationId;
+            TenantId                            = $TenantId;
+            CertificateThumbprint               = $CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         ADOOrganizationOwner "ADOOrganizationOwner-Example"
         {
+            OrganizationName      = "MyOrg";
+            Owner                 = "john.smith@$TenantId";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            OrganizationName      = "MyOrg";
-            Owner                 = "john.smith@$TenantId";
         }
     }
 }

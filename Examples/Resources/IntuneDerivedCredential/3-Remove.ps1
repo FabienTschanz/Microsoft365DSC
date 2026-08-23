@@ -21,8 +21,11 @@ Configuration Example {
     Node localhost {
         IntuneDerivedCredential "IntuneDerivedCredential-Example"
         {
-            DisplayName = "Entrust Derived Credential";
-            Ensure      = "Absent";
+            DisplayName           = "Entrust Derived Credential";
+            Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

@@ -47,9 +47,6 @@ Configuration Example
                     X509CertificateField = 'SubjectKeyIdentifier'
                 }
             );
-            ApplicationId                   = $ApplicationId
-            TenantId                        = $TenantId
-            CertificateThumbprint           = $CertificateThumbprint
             Ensure                          = "Present";
             ExcludeTargets                  = @(
                 MSFT_AADAuthenticationMethodPolicyX509ExcludeTarget{
@@ -65,6 +62,9 @@ Configuration Example
                 }
             );
             State                           = "enabled";
+            ApplicationId                   = $ApplicationId
+            TenantId                        = $TenantId
+            CertificateThumbprint           = $CertificateThumbprint
         }
     }
 }

@@ -26,13 +26,13 @@ Configuration Example
     {
         CommerceSelfServicePurchase "CommerceSelfServicePurchase-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
             PolicyValue           = "Enabled";
             ProductId             = "CFQ7TTC0LH2H";
             ProductName           = "Power Apps per user";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

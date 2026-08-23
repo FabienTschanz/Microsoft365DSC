@@ -43,12 +43,10 @@ Configuration Example
             AllowVoiceDialing             = $true;
             AntiVirusSignatureStatus      = 1;
             AntiVirusStatus               = 1;
-            ApplicationId                 = $ApplicationId;
             AppsRating                    = "Rating9plus";
             AutoUpdateStatus              = "AutomaticDownloadUpdates";
             BluetoothEnabled              = $true;
             CameraEnabled                 = $true;
-            CertificateThumbprint         = $CertificateThumbprint;
             EmailAddress                  = "mobile.access@contoso.com";
             EnableRemovableStorage        = $true;
             Ensure                        = "Present";
@@ -75,11 +73,13 @@ Configuration Example
             SmartScreenEnabled            = $false;
             SystemSecurityTLS             = $false;
             TargetGroups                  = @("All Company");
-            TenantId                      = $TenantId;
             TVShowsRating                 = "USRatingTVPG";
             UserAccountControlStatus      = "NotifyAppChanges";
             WLANEnabled                   = $true;
             WorkFoldersSyncUrl            = "https://workfolders.contoso.com";
+            ApplicationId                 = $ApplicationId;
+            TenantId                      = $TenantId;
+            CertificateThumbprint         = $CertificateThumbprint;
         }
     }
 }

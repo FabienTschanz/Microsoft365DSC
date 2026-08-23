@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,11 @@ Configuration Example
     {
         TeamsAIPolicy "TeamsAIPolicy-Example"
         {
-            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
-            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
             Ensure                = "Absent";
             Identity              = "AIEnabled";
-            TenantId              = $OrganizationName;
+            ApplicationId         = $ConfigurationData.NonNodeData.ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $ConfigurationData.NonNodeData.CertificateThumbprint;
         }
     }
 }

@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyHardware "AADAuthenticationMethodPolicyHardware-Example"
         {
+            Ensure                = "Absent";
+            Id                    = "HardwareOath";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Id                    = "HardwareOath";
         }
     }
 }

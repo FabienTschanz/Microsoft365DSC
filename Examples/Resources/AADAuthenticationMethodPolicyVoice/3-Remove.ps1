@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyVoice "AADAuthenticationMethodPolicyVoice-Example"
         {
+            Ensure                = "Absent";
+            Id                    = "Voice";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Id                    = "Voice";
         }
     }
 }

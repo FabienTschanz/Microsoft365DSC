@@ -27,7 +27,7 @@ Configuration Example
         EXOManagementRoleAssignment 'EXOManagementRoleAssignment-Example'
         {
             Ensure                = "Absent";
-            Name                  = "MyManagementRoleAssignment";
+            Name                  = "Contoso Helpdesk User Application";
             Role                  = "UserApplication";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId

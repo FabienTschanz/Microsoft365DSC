@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         TeamsTenantNetworkRegion 'TeamsTenantNetworkRegion-Example'
         {
-            CentralSite = "Amsterdam";
-            Credential  = $Credscredential;
-            Description = "European offices served by the Amsterdam central site";
-            Ensure      = "Present";
-            Identity    = "Europe";
+            CentralSite           = "Amsterdam";
+            Description           = "European offices served by the Amsterdam central site";
+            Ensure                = "Present";
+            Identity              = "Europe";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

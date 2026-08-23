@@ -26,13 +26,13 @@ Configuration Example
     {
         EXOManagementRoleEntry "EXOManagementRoleEntry-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Identity              = "Information Rights Management\Get-BookingMailbox"
             Parameters            = @("ANR","RecipientTypeDetails", "ResultSize")
             Type                  = "Cmdlet"
             Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

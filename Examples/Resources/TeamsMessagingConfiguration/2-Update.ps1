@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -27,8 +35,10 @@ Configuration Example
             MessagingNotes                    = "Enabled";
             ReportIncorrectSecurityDetections = "Disabled";
             Storyline                         = "Enabled";
-            Credential                        = $Credscredential;
             UrlReputationCheck                = "Disabled";
+            ApplicationId                     = $ApplicationId;
+            TenantId                          = $TenantId;
+            CertificateThumbprint             = $CertificateThumbprint;
         }
     }
 }

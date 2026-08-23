@@ -26,7 +26,7 @@ Configuration Example
     {
         AADApplicationFederatedIdentityCredential 'AADApplicationFederatedIdentityCredential-Example'
         {
-            ApplicationDisplayName = 'AppDisplayName'
+            ApplicationDisplayName = 'Payroll Integration Service'
             Name                   = 'GitHubActionsMain'
             Issuer                 = 'https://token.actions.githubusercontent.com'
             Subject                = 'repo:contoso/app:ref:refs/heads/main'

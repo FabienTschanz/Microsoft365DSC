@@ -6,9 +6,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -17,11 +25,13 @@ Configuration Example
     {
         TeamsVoiceRoutingPolicy 'TeamsVoiceRoutingPolicy-Example'
         {
-            Identity         = 'NewVoiceRoutingPolicy'
-            OnlinePstnUsages = @('Long Distance', 'Local', 'Internal')
-            Description      = 'Grants long distance and local calling to corporate users'
-            Ensure           = 'Present'
-            Credential       = $Credscredential
+            Identity              = 'NewVoiceRoutingPolicy'
+            OnlinePstnUsages      = @('Long Distance', 'Local', 'Internal')
+            Description           = 'Grants long distance and local calling to corporate users'
+            Ensure                = 'Present'
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

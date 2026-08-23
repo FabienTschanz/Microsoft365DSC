@@ -26,27 +26,27 @@ Configuration Example
     {
         VivaEngagementRoleMember "VivaEngagementRoleMember-Example1"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            Members               = @("admin@contoso.com");
+            Members               = @();
             Role                  = "Network Admin";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
         VivaEngagementRoleMember "VivaEngagementRoleMember-Example2"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            Members               = @("admin@contoso.com","NestorW@M365x73318397.OnMicrosoft.com");
+            Members               = @();
             Role                  = "Verified Admin";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
         VivaEngagementRoleMember "VivaEngagementRoleMember-Example3"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            Members               = @("NestorW@contoso.com"); #Removed Allan
+            Members               = @();
             Role                  = "Corporate Communicator";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

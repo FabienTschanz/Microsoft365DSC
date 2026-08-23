@@ -26,9 +26,6 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyFido2 "AADAuthenticationMethodPolicyFido2-Example"
         {
-            ApplicationId                    = $ApplicationId
-            TenantId                         = $TenantId
-            CertificateThumbprint            = $CertificateThumbprint
             Ensure                           = "Present";
             ExcludeTargets                   = @(
                 MSFT_AADAuthenticationMethodPolicyFido2ExcludeTarget{
@@ -85,6 +82,9 @@ Configuration Example
                 }
             );
             State                            = "enabled"; # Updated Property
+            ApplicationId                    = $ApplicationId
+            TenantId                         = $TenantId
+            CertificateThumbprint            = $CertificateThumbprint
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         SCFilePlanPropertyCitation 'SCFilePlanPropertyCitation-Example'
         {
-            Name                 = "Sarbanes-Oxley Act"
-            CitationURL          = "https://contoso.com"
-            CitationJurisdiction = "Federal"
-            Ensure               = "Present"
-            Credential           = $Credscredential
+            Name                  = "Sarbanes-Oxley Act"
+            CitationURL           = "https://contoso.com"
+            CitationJurisdiction  = "Federal"
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

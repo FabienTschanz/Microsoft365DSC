@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,15 +26,17 @@ Configuration Example
     {
         TeamsWorkloadPolicy 'TeamsWorkloadPolicy-Example'
         {
-            AllowCalling         = $True;
-            AllowCallingPinned   = $True;
-            AllowMeeting         = $True;
-            AllowMeetingPinned   = $True;
-            AllowMessaging       = $True;
-            AllowMessagingPinned = $True;
-            Credential           = $Credscredential;
-            Ensure               = "Present";
-            Identity             = "Global";
+            AllowCalling          = $True;
+            AllowCallingPinned    = $True;
+            AllowMeeting          = $True;
+            AllowMeetingPinned    = $True;
+            AllowMessaging        = $True;
+            AllowMessagingPinned  = $True;
+            Ensure                = "Present";
+            Identity              = "Global";
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

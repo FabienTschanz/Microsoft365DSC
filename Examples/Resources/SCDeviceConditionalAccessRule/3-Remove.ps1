@@ -26,11 +26,11 @@ Configuration Example
     {
         SCDeviceConditionalAccessRule "SCDeviceConditionalAccessRule-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Name                  = "Human Resources{394b}";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

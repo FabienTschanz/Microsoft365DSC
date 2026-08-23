@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,11 +26,13 @@ Configuration Example
     {
         TeamsTenantTrustedIPAddress 'TeamsTenantTrustedIPAddress-Example'
         {
-            Credential  = $Credscredential;
-            Description = "Head office internet egress address";
-            Ensure      = "Present";
-            Identity    = "10.2.34.3";
-            MaskBits    = 32;
+            Description           = "Head office internet egress address";
+            Ensure                = "Present";
+            Identity              = "10.2.34.3";
+            MaskBits              = 32;
+            ApplicationId         = $ApplicationId;
+            TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

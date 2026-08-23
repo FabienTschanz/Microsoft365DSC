@@ -27,7 +27,7 @@ Configuration Example
         AADNamedLocationPolicy 'AADNamedLocationPolicy-Example'
         {
             DisplayName           = "Company Network"
-            IpRanges              = @("2.1.1.1/32") # Updated Property
+            IpRanges              = @("198.51.100.0/24") # Updated Property
             IsTrusted             = $False
             OdataType             = "#microsoft.graph.ipNamedLocation"
             Ensure                = "Present"

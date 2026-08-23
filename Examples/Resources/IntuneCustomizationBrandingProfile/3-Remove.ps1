@@ -26,12 +26,12 @@ Configuration Example
     {
         IntuneCustomizationBrandingProfile "IntuneCustomizationBrandingProfile-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "Contoso";
             ProfileName           = "Contoso Company Portal";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

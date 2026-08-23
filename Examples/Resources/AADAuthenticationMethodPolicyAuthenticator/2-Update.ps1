@@ -26,9 +26,6 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyAuthenticator "AADAuthenticationMethodPolicyAuthenticator-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Ensure                = "Present";
             ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyAuthenticatorExcludeTarget{
@@ -72,6 +69,9 @@ Configuration Example
             );
             IsSoftwareOathEnabled = $False;
             State                 = "enabled";
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

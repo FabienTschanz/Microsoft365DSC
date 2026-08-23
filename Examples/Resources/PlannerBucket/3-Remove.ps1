@@ -25,7 +25,7 @@ Configuration Example
     {
         PlannerBucket 'PlannerBucket-Example'
         {
-            PlanId                = "1234567890"
+            PlanId                = "<planner-plan-id>"
             Name                  = "Contoso Bucket"
             Ensure                = "Absent"
             ApplicationId         = $ApplicationId

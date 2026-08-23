@@ -26,11 +26,11 @@ Configuration Example
     {
         EXORetentionPolicyTag "EXORetentionPolicyTag-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
             Identity              = "MyTag";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

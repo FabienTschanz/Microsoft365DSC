@@ -39,10 +39,8 @@ Configuration Example
             AllowScanningNetworkFiles           = "1";
             AllowScriptScanning                 = "1";
             AllowUserUIAccess                   = "1";
-            ApplicationId                       = $ApplicationId;
             Assignments                         = @();
             AvgCPULoadFactor                    = 50;
-            CertificateThumbprint               = $CertificateThumbprint;
             CheckForSignaturesBeforeRunningScan = "1";
             CloudBlockLevel                     = "2";
             CloudExtendedTimeout                = 30;
@@ -75,7 +73,9 @@ Configuration Example
             SignatureUpdateFileSharesSources    = @("asdf");
             SignatureUpdateInterval             = 8;
             SubmitSamplesConsent                = "1";
+            ApplicationId                       = $ApplicationId;
             TenantId                            = $TenantId;
+            CertificateThumbprint               = $CertificateThumbprint;
         }
     }
 }

@@ -32,9 +32,9 @@ Configuration Example
             IsValid                         = $True;
             ObjectState                     = "Unchanged"
             Name                            = "Default"
+            ApplicationId                   = $ApplicationId
             TenantId                        = $TenantId
             CertificateThumbprint           = $CertificateThumbprint
-            ApplicationId                   = $ApplicationId
         }
     }
 }

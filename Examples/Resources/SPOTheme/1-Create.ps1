@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,9 +26,9 @@ Configuration Example
     {
         SPOTheme 'SPOTheme-Example'
         {
-            Name       = "PSTheme1"
-            IsInverted = $false
-            Palette    = @(
+            Name                  = "PSTheme1"
+            IsInverted            = $false
+            Palette               = @(
                 MSFT_SPOThemePaletteProperty
                 {
                     Property = "themePrimary"
@@ -32,8 +40,10 @@ Configuration Example
                     Value    = "#eff6fc"
                 }
             )
-            Ensure     = "Present"
-            Credential = $Credscredential
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

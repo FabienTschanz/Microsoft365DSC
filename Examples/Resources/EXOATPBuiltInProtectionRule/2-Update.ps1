@@ -26,15 +26,15 @@ Configuration Example
     {
         EXOATPBuiltInProtectionRule "EXOATPBuiltInProtectionRule-Example"
         {
-            ApplicationId             = $ApplicationId;
-            CertificateThumbprint     = $CertificateThumbprint;
             Comments                  = "Excludes the security awareness team and partner domains from built-in protection";
             Ensure                    = "Present";
             ExceptIfRecipientDomainIs = @("contoso.com","fabrikam.com");
             ExceptIfSentTo            = @("AlexW@$TenantId");
             ExceptIfSentToMemberOf    = @("Executives@$TenantId");
             Identity                  = "ATP Built-In Protection Rule";
+            ApplicationId             = $ApplicationId;
             TenantId                  = $TenantId;
+            CertificateThumbprint     = $CertificateThumbprint;
         }
     }
 }

@@ -26,9 +26,6 @@ Configuration Example
     {
         AADAuthenticationMethodPolicyHardware "AADAuthenticationMethodPolicyHardware-Example"
         {
-            ApplicationId         = $ApplicationId
-            TenantId              = $TenantId
-            CertificateThumbprint = $CertificateThumbprint
             Ensure                = "Present";
             ExcludeTargets        = @(
                 MSFT_AADAuthenticationMethodPolicyHardwareExcludeTarget{
@@ -48,6 +45,9 @@ Configuration Example
                 }
             );
             State                 = "enabled"; # Updated Property
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

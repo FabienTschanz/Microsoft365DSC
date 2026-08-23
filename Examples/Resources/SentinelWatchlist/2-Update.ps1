@@ -26,22 +26,22 @@ Configuration Example
     {
         SentinelWatchlist "SentinelWatchlist-Example"
         {
-            Alias                 = "MyAlias";
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
+            Alias                 = "HighValueAssets";
             DefaultDuration       = "P1DT3H";
-            Description           = "My description";
-            DisplayName           = "My Display Name";
+            Description           = "Servers and service accounts that require elevated monitoring and quarterly access review"; # Updated Property
+            DisplayName           = "High Value Assets";
             Ensure                = "Present";
             ItemsSearchKey        = "IPAddress";
-            Name                  = "MyWatchList";
-            NumberOfLinesToSkip   = 0; # Updated Property
-            RawContent            = 'MyContent'
-            ResourceGroupName     = "MyResourceGroup";
-            SourceType            = "Local";
+            Name                  = "High Value Assets";
+            NumberOfLinesToSkip   = 1;
+            RawContent            = "High value assets reviewed by the security operations team`nIPAddress,AssetName,Owner`n10.10.20.15,Finance database server,Finance Operations`n10.10.20.16,Payroll application server,Human Resources";
+            ResourceGroupName     = "<resource-group-name>";
+            SourceType            = "Local file";
             SubscriptionId        = "<subscription-id>";
+            WorkspaceName         = "<log-analytics-workspace-name>";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
-            WorkspaceName         = "MyWorkspace";
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

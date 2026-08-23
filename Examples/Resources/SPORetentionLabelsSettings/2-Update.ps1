@@ -29,11 +29,11 @@ Configuration Example
             AdvancedRecordVersioningDisabled      = $True;
             AllowFilesWithKeepLabelToBeDeletedODB = $false;
             AllowFilesWithKeepLabelToBeDeletedSPO = $false;
-            ApplicationId                         = $ApplicationId;
-            CertificateThumbprint                 = $CertificateThumbprint;
             IsSingleInstance                      = "Yes";
             MetadataEditBlockingEnabled           = $true;
+            ApplicationId                         = $ApplicationId;
             TenantId                              = $TenantId;
+            CertificateThumbprint                 = $CertificateThumbprint;
         }
     }
 }

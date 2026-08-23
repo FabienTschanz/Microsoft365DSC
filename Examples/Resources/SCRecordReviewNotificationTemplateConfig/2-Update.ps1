@@ -26,14 +26,14 @@ Configuration Example
     {
         SCRecordReviewNotificationTemplateConfig "SCRecordReviewNotificationTemplateConfig-Example"
         {
-            ApplicationId                    = $ApplicationId;
-            CertificateThumbprint            = $CertificateThumbprint;
             CustomizedNotificationDataString = "This is my Notification Message";
             CustomizedReminderDataString     = "This is my reminder message";
             IsCustomizedNotificationTemplate = $True;
             IsCustomizedReminderTemplate     = $True;
             IsSingleInstance                 = "Yes";
+            ApplicationId                    = $ApplicationId;
             TenantId                         = $TenantId;
+            CertificateThumbprint            = $CertificateThumbprint;
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,7 +26,6 @@ Configuration Example
     {
         TeamsMobilityPolicy 'TeamsMobilityPolicy-Example'
         {
-            Credential             = $Credscredential;
             Description            = "Mobile calling defaults for field engineers";
             Ensure                 = "Present";
             Identity               = "Field Engineer Mobility";
@@ -26,6 +33,9 @@ Configuration Example
             IPVideoMobileMode      = "AllNetworks";
             LinksInTeams           = "OfferBrowserOptions";
             MobileDialerPreference = "Teams";
+            ApplicationId          = $ApplicationId;
+            TenantId               = $TenantId;
+            CertificateThumbprint  = $CertificateThumbprint;
         }
     }
 }

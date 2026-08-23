@@ -26,16 +26,16 @@ Configuration Example
     {
         ADOPermissionGroup "ADOPermissionGroup-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
-            Description           = "My Description";
+            Description           = "Members can create and administer projects across the engineering organization.";
             DisplayName           = "ProjectAdministrators";
             Ensure                = "Present";
             Level                 = "Organization";
             Members               = @("AdeleV@$TenantId");
             OrganizationName      = "Contoso-Dev";
             PrincipalName         = "[CONTOSO-DEV]\ProjectAdministrators";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

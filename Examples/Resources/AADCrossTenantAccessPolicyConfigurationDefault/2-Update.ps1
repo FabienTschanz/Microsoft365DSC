@@ -106,9 +106,6 @@ Configuration Example
                     )
                 }
             }
-            ApplicationId            = $ApplicationId
-            TenantId                 = $TenantId
-            CertificateThumbprint    = $CertificateThumbprint
             Ensure                   = "Present";
             InboundTrust             = MSFT_AADCrossTenantAccessPolicyInboundTrust {
                 IsCompliantDeviceAccepted           = $False
@@ -116,6 +113,9 @@ Configuration Example
                 IsMfaAccepted                       = $False
             }
             IsSingleInstance         = "Yes";
+            ApplicationId            = $ApplicationId
+            TenantId                 = $TenantId
+            CertificateThumbprint    = $CertificateThumbprint
         }
     }
 }

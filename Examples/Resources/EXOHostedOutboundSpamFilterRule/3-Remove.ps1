@@ -29,7 +29,9 @@ Configuration Example
             Identity                       = "Contoso Executives"
             HostedOutboundSpamFilterPolicy = "Outbound Spam Limits"
             Ensure                         = "Absent"
-            Credential                     = $Credscredential
+            ApplicationId                  = $ApplicationId
+            TenantId                       = $TenantId
+            CertificateThumbprint          = $CertificateThumbprint
         }
     }
 }

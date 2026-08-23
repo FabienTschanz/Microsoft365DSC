@@ -26,8 +26,6 @@ Configuration Example
     {
         AADFilteringPolicyRule "AADFilteringPolicyRule-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             Destinations          = @(
                 MSFT_AADFilteringPolicyRuleDestination{
                     value = 'contoso.com' # Updated Property
@@ -37,7 +35,9 @@ Configuration Example
             Name                  = "MyFQDN";
             Policy                = "MyPolicy";
             RuleType              = "fqdn";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

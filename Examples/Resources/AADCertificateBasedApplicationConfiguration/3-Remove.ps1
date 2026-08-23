@@ -25,11 +25,11 @@ Configuration Example
     {
         AADCertificateBasedApplicationConfiguration "AADCertificateBasedApplicationConfiguration-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             DisplayName           = "Contoso Root CA Configuration";
             Ensure                = "Absent";
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

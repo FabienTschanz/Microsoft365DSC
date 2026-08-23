@@ -26,8 +26,6 @@ Configuration Example
     {
         AADAdminConsentRequestPolicy "AADAdminConsentRequestPolicy-Example"
         {
-            ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             IsEnabled             = $True;
             IsSingleInstance      = "Yes";
             NotifyReviewers       = $False;
@@ -51,7 +49,9 @@ Configuration Example
                      ReviewerId   = 'Attack Simulation Administrator'
                 }
                 );
+            ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }

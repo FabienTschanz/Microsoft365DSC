@@ -26,11 +26,11 @@ Configuration Example
     {
         AADAuthenticationMethodPolicySoftware "AADAuthenticationMethodPolicySoftware-Example"
         {
+            Ensure                = "Absent";
+            Id                    = "SoftwareOath";
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint
-            Ensure                = "Absent";
-            Id                    = "SoftwareOath";
         }
     }
 }

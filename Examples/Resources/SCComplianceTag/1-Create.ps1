@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -18,14 +26,14 @@ Configuration Example
     {
         SCComplianceTag 'SCComplianceTag-Example'
         {
-            Name              = "Financial Records"
-            Comment           = "Keeps financial records for 1025 days after modification"
-            IsRecordLabel     = $False
-            Notes             = "Reviewed annually by the records management team"
-            RetentionAction   = "Keep"
-            RetentionDuration = "1025"
-            RetentionType     = "ModificationAgeInDays"
-            FilePlanProperty  = MSFT_SCFilePlanProperty{
+            Name                  = "Financial Records"
+            Comment               = "Keeps financial records for 1025 days after modification"
+            IsRecordLabel         = $False
+            Notes                 = "Reviewed annually by the records management team"
+            RetentionAction       = "Keep"
+            RetentionDuration     = "1025"
+            RetentionType         = "ModificationAgeInDays"
+            FilePlanProperty      = MSFT_SCFilePlanProperty{
                 FilePlanPropertyDepartment  = "Finance"
                 FilePlanPropertyCitation    = "Sarbanes-Oxley Act"
                 FilePlanPropertyReferenceId = "FIN-1025"
@@ -33,8 +41,10 @@ Configuration Example
                 FilePlanPropertyCategory    = "Financial Reporting"
                 FilePlanPropertySubCategory = "Annual Statements"
             }
-            Ensure            = "Present"
-            Credential        = $Credscredential
+            Ensure                = "Present"
+            ApplicationId         = $ApplicationId
+            TenantId              = $TenantId
+            CertificateThumbprint = $CertificateThumbprint
         }
     }
 }

@@ -7,9 +7,17 @@ Configuration Example
 {
     param
     (
-        [Parameter(Mandatory = $true)]
-        [PSCredential]
-        $Credscredential
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint
     )
 
     Import-DscResource -ModuleName Microsoft365DSC
@@ -20,7 +28,6 @@ Configuration Example
         {
             ApplySensitivityLabel           = "Confidential";
             Comment                         = "Applies the Top Secret label to finance content and is reviewed quarterly by the compliance team"; # Updated Property
-            Credential                      = $Credscredential;
             Ensure                          = "Present";
             ExchangeLocation                = @("All");
             ExchangeSender                  = @("finance.director@contoso.com");
@@ -34,6 +41,9 @@ Configuration Example
             Priority                        = 0;
             SharePointLocation              = @("All");
             SharePointLocationException     = @("https://contoso.sharepoint.com/sites/PublicRelations");
+            ApplicationId                   = $ApplicationId;
+            TenantId                        = $TenantId;
+            CertificateThumbprint           = $CertificateThumbprint;
         }
     }
 }

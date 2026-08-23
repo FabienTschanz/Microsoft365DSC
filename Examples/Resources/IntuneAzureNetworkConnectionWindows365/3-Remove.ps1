@@ -33,8 +33,8 @@ Configuration Example
             SubscriptionName      = "subscription-name";
             VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name";
             ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
         IntuneAzureNetworkConnectionWindows365 "IntuneAzureNetworkConnectionWindows365-Example2"
         {
@@ -46,8 +46,8 @@ Configuration Example
             SubscriptionName      = "subscription-name";
             VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name";
             ApplicationId         = $ApplicationId;
-            CertificateThumbprint = $CertificateThumbprint;
             TenantId              = $TenantId;
+            CertificateThumbprint = $CertificateThumbprint;
         }
     }
 }
