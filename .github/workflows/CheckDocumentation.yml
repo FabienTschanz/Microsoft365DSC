@@ -27,9 +27,6 @@ jobs:
             Install-PSResource -Name $dependency.ModuleName -Version $dependency.RequiredVersion -Scope AllUsers -TrustRepository
           }
 
-          Install-PSResource -Name ReverseDSC -Scope AllUsers -TrustRepository
-          [System.Environment]::SetEnvironmentVariable('M365DSCTelemetryEnabled', $false, [System.EnvironmentVariableTarget]::Machine);
-
       - name: Build Class Modules
         shell: pwsh
         run: |
