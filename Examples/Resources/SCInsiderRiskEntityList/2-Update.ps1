@@ -28,13 +28,13 @@ Configuration Example
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "Executable file types monitored for insider risk";
-            DisplayName           = "MyFileType";
+            Description           = "High risk file types monitored when data is copied to removable media";
+            DisplayName           = "High risk file types";
             Ensure                = "Present";
             FileTypes             = @(".exe",".txt",".bat"); # Updated Property
             Keywords              = @();
             ListType              = "CustomFileTypeLists";
-            Name                  = "MyFileTypeList";
+            Name                  = "Restricted File Types";
             TenantId              = $OrganizationName;
         }
     }

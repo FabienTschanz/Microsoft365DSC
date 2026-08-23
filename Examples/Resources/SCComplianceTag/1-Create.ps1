@@ -20,17 +20,18 @@ Configuration Example
         {
             Name              = "Financial Records"
             Comment           = "Keeps financial records for 1025 days after modification"
+            IsRecordLabel     = $False
+            Notes             = "Reviewed annually by the records management team"
             RetentionAction   = "Keep"
             RetentionDuration = "1025"
             RetentionType     = "ModificationAgeInDays"
-            FilePlanProperty  = MSFT_SCFilePlanProperty
-            {
+            FilePlanProperty  = MSFT_SCFilePlanProperty{
                 FilePlanPropertyDepartment  = "Finance"
                 FilePlanPropertyCitation    = "Sarbanes-Oxley Act"
                 FilePlanPropertyReferenceId = "FIN-1025"
                 FilePlanPropertyAuthority   = "Regulatory"
                 FilePlanPropertyCategory    = "Financial Reporting"
-                FilePlanPropertySubcategory = "Annual Statements"
+                FilePlanPropertySubCategory = "Annual Statements"
             }
             Ensure            = "Present"
             Credential        = $Credscredential

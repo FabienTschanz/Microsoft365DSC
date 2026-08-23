@@ -18,10 +18,11 @@ Configuration Example
     {
         TeamsTenantNetworkRegion 'TeamsTenantNetworkRegion-Example'
         {
-            CentralSite = "Nik";
+            CentralSite = "Amsterdam";
             Credential  = $Credscredential;
+            Description = "European offices served by the Amsterdam central site";
             Ensure      = "Present";
-            Identity    = "Nik";
+            Identity    = "Europe";
         }
     }
 }

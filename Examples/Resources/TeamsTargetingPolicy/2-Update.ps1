@@ -29,9 +29,11 @@ Configuration Example
             ApplicationId                      = $ApplicationId;
             CertificateThumbprint              = $CertificateThumbprint;
             CustomTagsMode                     = "Disabled";
+            Description                        = "Limits tags to the preset roles used on the retail floor";
             IsSingleInstance                   = "Yes";
             ManageTagsPermissionMode           = "MicrosoftDefault";
             ShiftBackedTagsMode                = "Disabled";
+            SuggestedPresetTags                = "Manager,Cashier,Pharmacist";
             TeamOwnersEditWhoCanManageTagsMode = "Enabled";
             TenantId                           = $TenantId;
         }

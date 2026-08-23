@@ -21,9 +21,16 @@ Configuration Example
             Case                                  = "Contoso Litigation 2026"
             HoldNames                             = @()
             Name                                  = "Budget Mailbox Search"
-            Language                              = "iv"
+            Language                              = "en-US"
             AllowNotFoundExchangeLocationsEnabled = $False
+            ContentMatchQuery                     = "(subject:Budget) AND (sent>=2026-01-01)"
+            Description                           = "Locates mail and documents related to the annual budget review"
+            ExchangeLocation                      = @("All")
+            ExchangeLocationExclusion             = @("servicedesk@contoso.com")
+            IncludeUserAppContent                 = $False
+            PublicFolderLocation                  = @("All")
             SharePointLocation                    = @("All")
+            SharePointLocationExclusion           = @("https://contoso.sharepoint.com/sites/PublicRelations")
             Credential                            = $Credscredential
             Ensure                                = "Present"
         }

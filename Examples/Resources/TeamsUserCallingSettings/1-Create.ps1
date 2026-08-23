@@ -17,11 +17,20 @@ Configuration Example
     {
         TeamsUserCallingSettings 'TeamsUserCallingSettings-Example'
         {
-            CallGroupOrder  = "Simultaneous";
-            Credential      = $credsCredential;
-            Ensure          = "Present";
-            Identity        = "John.Smith@contoso.com";
-            UnansweredDelay = "00:00:20";
+            CallGroupOrder            = "Simultaneous";
+            CallGroupTargets          = @("megan.bowen@contoso.com", "alex.wilber@contoso.com");
+            Credential                = $credsCredential;
+            Ensure                    = "Present";
+            ForwardingTarget          = "alex.wilber@contoso.com";
+            ForwardingTargetType      = "SingleTarget";
+            ForwardingType            = "Simultaneous";
+            GroupNotificationOverride = "Ring";
+            Identity                  = "John.Smith@contoso.com";
+            IsForwardingEnabled       = $true;
+            IsUnansweredEnabled       = $true;
+            UnansweredDelay           = "00:00:20";
+            UnansweredTarget          = "megan.bowen@contoso.com";
+            UnansweredTargetType      = "SingleTarget";
         }
     }
 }

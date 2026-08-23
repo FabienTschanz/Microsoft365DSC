@@ -18,11 +18,22 @@ Configuration Example
     {
         SCRetentionCompliancePolicy 'SCRetentionCompliancePolicy-Example'
         {
-            Name               = "MyPolicy"
-            Comment            = "Retains finance site content indefinitely"
-            SharePointLocation = "https://contoso.sharepoint.com/sites/finance"
-            Ensure             = "Present"
-            Credential         = $Credscredential
+            Name                         = "Finance Records Retention"
+            Comment                      = "Keeps finance records available for the seven year statutory period"
+            Enabled                      = $true
+            ExchangeLocation             = @("All")
+            ExchangeLocationException    = @("meetingroom.oslo@contoso.com")
+            ModernGroupLocation          = @("All")
+            ModernGroupLocationException = @("socialclub@contoso.com")
+            OneDriveLocation             = @("All")
+            OneDriveLocationException    = @("https://contoso-my.sharepoint.com/personal/lee_gu_contoso_com")
+            PublicFolderLocation         = @("All")
+            RestrictiveRetention         = $false
+            SharePointLocation           = @("All")
+            SharePointLocationException  = @("https://contoso.sharepoint.com/sites/pressroom")
+            SkypeLocation                = @("adele.vance@contoso.com")
+            Ensure                       = "Present"
+            Credential                   = $Credscredential
         }
     }
 }

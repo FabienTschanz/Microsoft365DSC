@@ -18,14 +18,9 @@ Configuration Example
     {
         TeamsAppPermissionPolicy "TeamsAppPermissionPolicy-Example"
         {
-            Credential             = $Credscredential;
-            DefaultCatalogApps     = "com.microsoft.teamspace.tab.vsts";
-            DefaultCatalogAppsType = "AllowedAppList";
-            Description            = "Restricts apps for the sales department";
-            Ensure                 = "Present";
-            GlobalCatalogAppsType  = "BlockedAppList";
-            Identity               = "SalesAppPermissions";
-            PrivateCatalogAppsType = "BlockedAppList";
+            Credential = $Credscredential;
+            Ensure     = "Present";
+            Identity   = "SalesAppPermissions";
         }
     }
 }

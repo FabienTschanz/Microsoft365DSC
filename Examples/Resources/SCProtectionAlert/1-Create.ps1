@@ -18,18 +18,28 @@ Configuration Example
     {
         SCProtectionAlert 'SCProtectionAlert-Example'
         {
-            AggregationType         = "None";
-            Category                = "ThreatManagement";
-            Comment                 = "User has been detected as sending suspicious messages outside the organization and will be restricted if this activity continues. -V1.0.0.1";
-            Credential              = $Credscredential;
-            Disabled                = $False;
-            Ensure                  = "Present";
-            Name                    = "Custom Suspicious email sending patterns detected";
-            NotificationEnabled     = $True;
-            NotifyUser              = @("admin@contoso.com");
-            NotifyUserOnFilterMatch = $False;
-            Operation               = @("CompromisedWarningAccount");
-            Severity                = "Medium";
+            AggregationType                 = "SimpleAggregation";
+            AlertBy                         = @("User");
+            Category                        = "ThreatManagement";
+            Comment                         = "Notifies the security operations team when a user repeatedly sends suspicious messages outside the organisation";
+            Credential                      = $Credscredential;
+            Disabled                        = $false;
+            Ensure                          = "Present";
+            Filter                          = "Activity.Operation -eq 'CompromisedWarningAccount'";
+            Name                            = "Custom Suspicious email sending patterns detected";
+            NotificationCulture             = "en-US";
+            NotificationEnabled             = $true;
+            NotifyUser                      = @("securityoperations@contoso.com");
+            NotifyUserOnFilterMatch         = $false;
+            NotifyUserSuppressionExpiryDate = "2026-12-31T00:00:00.0000000Z";
+            NotifyUserThrottleThreshold     = 10;
+            NotifyUserThrottleWindow        = 60;
+            Operation                       = @("CompromisedWarningAccount");
+            Severity                        = "Medium";
+            ThreatType                      = "Activity";
+            Threshold                       = 5;
+            TimeWindow                      = 120;
+            VolumeThreshold                 = 100;
         }
     }
 }

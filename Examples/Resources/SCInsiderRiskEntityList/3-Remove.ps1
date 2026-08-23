@@ -28,13 +28,9 @@ Configuration Example
         {
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
-            Description           = "Executable file types monitored for insider risk";
-            DisplayName           = "MyFileType";
             Ensure                = "Absent";
-            FileTypes             = @(".exe",".cmd",".bat");
-            Keywords              = @();
             ListType              = "CustomFileTypeLists";
-            Name                  = "MyFileTypeList";
+            Name                  = "Restricted File Types";
             TenantId              = $OrganizationName;
         }
     }

@@ -17,7 +17,7 @@ Configuration Example
     {
         TeamsUserPolicyAssignment 'TeamsUserPolicyAssignment-Example'
         {
-            Credential                      = $Credential
+            Credential                      = $Credscredential
             CallingLineIdentity             = "CorporateCallerID";
             ExternalAccessPolicy            = "CorporateFederation";
             OnlineVoicemailPolicy           = "CorporateVoicemail";

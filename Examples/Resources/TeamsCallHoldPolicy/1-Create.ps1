@@ -26,8 +26,10 @@ Configuration Example
     {
         TeamsCallHoldPolicy 'TeamsCallHoldPolicy-Example'
         {
-            Identity              = 'Global'
-            Ensure                = 'Present'
+            Identity              = "Customer Support Hold Music"
+            AudioFileId           = "<audio-file-id>"
+            Description           = "Plays the corporate hold music for the customer support queue"
+            Ensure                = "Present"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

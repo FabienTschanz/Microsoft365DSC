@@ -31,6 +31,12 @@
             Properties = @('AppId')
         }
         @{
+            Name       = '<audio-file-id>'
+            Meaning    = 'ID returned by Import-CsOnlineAudioFile for a file uploaded to the tenant.'
+            Sample     = '3c1e1b0a-9f47-4b8a-bb2c-6d0e5a7c9142'
+            Properties = @('AudioFileId')
+        }
+        @{
             Name       = '<base64-encoded-app-icon>'
             Meaning    = 'Base64 icon shown for an app in Company Portal.'
             Sample     = 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwY...'
@@ -211,6 +217,18 @@
             Properties = @('RightsManagementServicesTemplateId')
         }
         @{
+            Name       = '<rule-package-xml>'
+            Meaning    = 'XML rule-package definition for a custom sensitive information type, authored by the administrator.'
+            Sample     = '<RulePackage xmlns="http://schemas.microsoft.com/office/2011/mce"><RulePack id="a8b9c0d1-4e2f-4a51-9c83-7b6d5e4f3a21"><Version major="1" minor="0" build="0" revision="0"/>...</RulePack></RulePackage>'
+            Properties = @('XmlFileData')
+        }
+        @{
+            Name       = '<rule-package-xml-updated>'
+            Meaning    = 'Revised rule-package XML, so the update example differs from the create example.'
+            Sample     = '<RulePackage xmlns="http://schemas.microsoft.com/office/2011/mce"><RulePack id="a8b9c0d1-4e2f-4a51-9c83-7b6d5e4f3a21"><Version major="1" minor="1" build="0" revision="0"/>...</RulePack></RulePackage>'
+            Properties = @('XmlFileData')
+        }
+        @{
             Name       = '<root-certificate-thumbprint>'
             Meaning    = 'Thumbprint of a root certificate present on the managed device, not on the machine running the configuration.'
             Sample     = 'a5f3c1d97b26e480f5c3a1b98d7e6f04c2b3a591'
@@ -221,6 +239,12 @@
             Meaning    = 'Resource ID of the storage account that receives the diagnostic stream.'
             Sample     = '/subscriptions/63e62ab2-fd92-46ce-a393-2cb338039cc7/resourceGroups/monitoring/providers/Microsoft.Storage/storageAccounts/contosodiagnostics'
             Properties = @('StorageAccountId')
+        }
+        @{
+            Name       = '<teams-app-id>'
+            Meaning    = 'ID of a third-party Teams app, which exists only in the tenant that published it.'
+            Sample     = 'd9f4c1b7-3a26-4e58-b0d3-6e91f2a75c48'
+            Properties = @('DefaultFileUploadAppId')
         }
         @{
             Name       = '<wifi-pre-shared-key>'

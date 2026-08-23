@@ -19,13 +19,17 @@ Configuration Example
         {
             IsSingleInstance                            = 'Yes';
             AllowedDomains                              = @();
+            AllowedTrialTenantDomains                   = @("northwindtraders.onmicrosoft.com");
             BlockedDomains                              = @();
-            AllowFederatedUsers                         = $True;
-            AllowTeamsConsumer                          = $True;
-            AllowTeamsConsumerInbound                   = $True;
-            RestrictTeamsConsumerToExternalUserProfiles = $False;
-            SharedSipAddressSpace                       = $False;
-            TreatDiscoveredPartnersAsUnverified         = $False;
+            BlockAllSubdomains                          = $false;
+            AllowFederatedUsers                         = $true;
+            AllowTeamsConsumer                          = $true;
+            AllowTeamsConsumerInbound                   = $true;
+            DomainBlockingForMDOAdminsInTeams           = "Enabled";
+            ExternalAccessWithTrialTenants              = "Blocked";
+            RestrictTeamsConsumerToExternalUserProfiles = $false;
+            SharedSipAddressSpace                       = $false;
+            TreatDiscoveredPartnersAsUnverified         = $false;
             Credential                                  = $Credscredential
         }
     }

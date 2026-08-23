@@ -28,6 +28,7 @@ Configuration Example
         {
             ApplicationId             = $ApplicationId;
             CertificateThumbprint     = $CertificateThumbprint;
+            Description               = "Keeps activity feed suggestions available with a user opt-out";
             IsSingleInstance          = "Yes";
             SuggestedFeedsEnabledType = "EnabledUserOverride"; # Updated Property
             TenantId                  = $TenantId;

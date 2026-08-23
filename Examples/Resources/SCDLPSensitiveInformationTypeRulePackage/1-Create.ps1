@@ -29,7 +29,7 @@ Configuration Example
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Present";
-            XmlFileData           = "File Data - Must be valid xml";
+            XmlFileData           = "<rule-package-xml>";
             Name                  = "Contoso Employee ID";
             TenantId              = $TenantId;
         }

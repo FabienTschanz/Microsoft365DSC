@@ -29,8 +29,7 @@ Configuration Example
             ApplicationId         = $ApplicationId;
             CertificateThumbprint = $CertificateThumbprint;
             Ensure                = "Absent";
-            Name                  = "MyPolicy{394b}";
-            Policy                = "MyPolicy";
+            Name                  = "Human Resources{394b}";
             TenantId              = $TenantId;
         }
     }

@@ -26,11 +26,14 @@ Configuration Example
     {
         SCUnifiedAuditLogRetentionPolicy 'SCUnifiedAuditLogRetentionPolicy-Example'
         {
-            Credential            = $Credentials
-            Ensure                = 'Present'
-            Name                  = 'Seven Day Audit Retention'
+            Ensure                = "Present"
+            Name                  = "Seven Day Audit Retention"
+            Description           = "Retains mailbox permission changes made for the finance leadership team"
+            Operations            = @("Add-MailboxPermission", "Remove-MailboxPermission")
+            RecordTypes           = @("ExchangeAdmin")
+            UserIds               = @("finance.director@contoso.com", "payroll.admin@contoso.com")
             Priority              = 1
-            RetentionDuration     = 'SevenDays'
+            RetentionDuration     = "SevenDays"
             ApplicationId         = $ApplicationId
             TenantId              = $TenantId
             CertificateThumbprint = $CertificateThumbprint

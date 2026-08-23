@@ -19,10 +19,12 @@ Configuration Example
         TeamsMobilityPolicy 'TeamsMobilityPolicy-Example'
         {
             Credential             = $Credscredential;
+            Description            = "Mobile calling defaults for field engineers";
             Ensure                 = "Present";
-            Identity               = "Global";
+            Identity               = "Field Engineer Mobility";
             IPAudioMobileMode      = "AllNetworks";
             IPVideoMobileMode      = "AllNetworks";
+            LinksInTeams           = "OfferBrowserOptions";
             MobileDialerPreference = "Teams";
         }
     }

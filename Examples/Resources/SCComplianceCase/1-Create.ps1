@@ -18,7 +18,7 @@ Configuration Example
     {
         SCComplianceCase 'SCComplianceCase-Example'
         {
-            Name        = "MyCase"
+            Name        = "Contoso Litigation 2026"
             Description = "MyPolicy"
             Status      = "Active"
             Ensure      = "Present"

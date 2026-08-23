@@ -18,11 +18,13 @@ Configuration Example
     {
         TeamsFilesPolicy 'TeamsFilesPolicy-Example'
         {
-            Credential            = $Credscredential;
-            Ensure                = "Present";
-            Identity              = "Global";
-            NativeFileEntryPoints = "Enabled";
-            SPChannelFilesTab     = "Enabled";
+            Credential                          = $Credscredential;
+            DefaultFileUploadAppId              = "<teams-app-id>";
+            Ensure                              = "Present";
+            FileSharingInChatswithExternalUsers = "Enabled";
+            Identity                            = "Retail Store Files";
+            NativeFileEntryPoints               = "Enabled";
+            SPChannelFilesTab                   = "Enabled";
         }
     }
 }

@@ -18,24 +18,25 @@ Configuration Example
     {
         SCLabelPolicy 'SCLabelPolicy-Example'
         {
-            Name             = "Contoso Label Policy"
-            Comment          = "Publishes the Personal and General labels to all users"
-            Labels           = @("Personal", "General")
-            ExchangeLocation = @("All")
-            AdvancedSettings = @(
-                MSFT_SCLabelSetting
-                {
-                    Key   = "AllowedLevel"
-                    Value = @("Sensitive", "Classified")
+            Name                         = "Contoso Label Policy"
+            Comment                      = "Publishes the Personal and General labels to all users"
+            Labels                       = @("Personal", "General")
+            ExchangeLocation             = @("All")
+            ExchangeLocationException    = @("shared.reception@contoso.com")
+            ModernGroupLocation          = @("All")
+            ModernGroupLocationException = @("boardroom@contoso.com")
+            AdvancedSettings             = @(
+                MSFT_SCLabelSetting{
+                    Key   = "RequireDowngradeJustification"
+                    Value = "True"
                 }
-                MSFT_SCLabelSetting
-                {
-                    Key   = "LabelStatus"
-                    Value = "Enabled"
+                MSFT_SCLabelSetting{
+                    Key   = "AttachmentAction"
+                    Value = "Automatic"
                 }
             )
-            Ensure           = "Present"
-            Credential       = $Credscredential
+            Ensure                       = "Present"
+            Credential                   = $Credscredential
         }
     }
 }

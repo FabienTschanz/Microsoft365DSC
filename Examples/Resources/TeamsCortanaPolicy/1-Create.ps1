@@ -18,10 +18,11 @@ Configuration Example
     {
         TeamsCortanaPolicy 'TeamsCortanaPolicy-Example'
         {
-            CortanaVoiceInvocationMode = "WakeWordPushToTalkUserOverride";
-            Credential                 = $Credscredential;
-            Ensure                     = "Present";
-            Identity                   = "Global";
+            Identity                   = "Frontline Workers Cortana Policy"
+            CortanaVoiceInvocationMode = "WakeWordPushToTalkUserOverride"
+            Description                = "Lets shop floor staff call Cortana hands-free on shared devices"
+            Ensure                     = "Present"
+            Credential                 = $Credscredential
         }
     }
 }

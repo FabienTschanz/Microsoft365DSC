@@ -18,10 +18,11 @@ Configuration Example
     {
         TeamsNetworkRoamingPolicy 'TeamsNetworkRoamingPolicy-Example'
         {
-            AllowIPVideo   = $True;
+            AllowIPVideo   = $true;
             Credential     = $Credscredential;
             Ensure         = "Present";
-            Identity       = "Global";
+            Description    = "Video and media limits for staff roaming outside the office";
+            Identity       = "Amsterdam Roaming";
             MediaBitRateKb = 50000;
         }
     }

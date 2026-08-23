@@ -18,14 +18,22 @@ Configuration Example
     {
         SCAutoSensitivityLabelPolicy 'SCAutoSensitivityLabelPolicy-Example'
         {
-            ApplySensitivityLabel = "TopSecret";
-            Comment               = "Applies the Top Secret label to Exchange content automatically";
-            Credential            = $Credscredential;
-            Ensure                = "Present";
-            ExchangeLocation      = @("All");
-            Mode                  = "Enable";
-            Name                  = "Top Secret Auto-labeling";
-            Priority              = 0;
+            ApplySensitivityLabel           = "Confidential";
+            Comment                         = "Applies the Top Secret label to finance content in Exchange, SharePoint and OneDrive";
+            Credential                      = $Credscredential;
+            Ensure                          = "Present";
+            ExchangeLocation                = @("All");
+            ExchangeSender                  = @("finance.director@contoso.com");
+            ExchangeSenderException         = @("newsletters@contoso.com");
+            ExchangeSenderMemberOf          = @("finance-team@contoso.com");
+            ExchangeSenderMemberOfException = @("finance-contractors@contoso.com");
+            Mode                            = "TestWithoutNotifications";
+            Name                            = "Top Secret Auto-labeling";
+            OneDriveLocation                = @("All");
+            OneDriveLocationException       = @("https://contoso-my.sharepoint.com/personal/reporting_service_contoso_com");
+            Priority                        = 0;
+            SharePointLocation              = @("All");
+            SharePointLocationException     = @("https://contoso.sharepoint.com/sites/PublicRelations");
         }
     }
 }

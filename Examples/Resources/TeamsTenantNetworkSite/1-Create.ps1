@@ -19,9 +19,14 @@ Configuration Example
         TeamsTenantNetworkSite 'TeamsTenantNetworkSite-Example'
         {
             Credential                 = $Credscredential;
-            EnableLocationBasedRouting = $False;
+            Description                = "Amsterdam office network site";
+            EmergencyCallingPolicy     = "Headquarters Emergency Calling Policy";
+            EmergencyCallRoutingPolicy = "Amsterdam Office";
+            EnableLocationBasedRouting = $false;
             Ensure                     = "Present";
-            Identity                   = "Nik";
+            Identity                   = "Amsterdam";
+            NetworkRegionID            = "Europe";
+            NetworkRoamingPolicy       = "Amsterdam Roaming";
         }
     }
 }

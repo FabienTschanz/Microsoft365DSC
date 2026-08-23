@@ -18,14 +18,9 @@ Configuration Example
     {
         SCAutoSensitivityLabelPolicy 'SCAutoSensitivityLabelPolicy-Example'
         {
-            ApplySensitivityLabel = "TopSecret";
-            Comment               = "Applies the Top Secret label to Exchange content automatically";
-            Credential            = $Credscredential;
-            Ensure                = "Absent";
-            ExchangeLocation      = @("All");
-            Mode                  = "Enable";
-            Name                  = "Top Secret Auto-labeling";
-            Priority              = 0;
+            Credential = $Credscredential;
+            Ensure     = "Absent";
+            Name       = "Top Secret Auto-labeling";
         }
     }
 }

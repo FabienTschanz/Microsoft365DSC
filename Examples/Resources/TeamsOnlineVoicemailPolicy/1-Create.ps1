@@ -18,13 +18,16 @@ Configuration Example
         TeamsOnlineVoicemailPolicy 'TeamsOnlineVoicemailPolicy-Example'
         {
             Credential                          = $credsCredential;
-            EnableEditingCallAnswerRulesSetting = $True;
-            EnableTranscription                 = $True;
-            EnableTranscriptionProfanityMasking = $False;
-            EnableTranscriptionTranslation      = $True;
+            EnableEditingCallAnswerRulesSetting = $true;
+            EnableTranscription                 = $true;
+            EnableTranscriptionProfanityMasking = $false;
+            EnableTranscriptionTranslation      = $true;
             Ensure                              = "Present";
-            Identity                            = "MyPolicy";
+            Identity                            = "CorporateVoicemail";
             MaximumRecordingLength              = 600;
+            PreamblePostambleMandatory          = $false;
+            PrimarySystemPromptLanguage         = "en-US";
+            SecondarySystemPromptLanguage       = "fr-FR";
             ShareData                           = "Defer";
         }
     }

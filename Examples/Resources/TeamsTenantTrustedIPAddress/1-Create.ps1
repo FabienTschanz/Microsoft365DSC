@@ -18,10 +18,11 @@ Configuration Example
     {
         TeamsTenantTrustedIPAddress 'TeamsTenantTrustedIPAddress-Example'
         {
-            Credential = $Credscredential;
-            Ensure     = "Present";
-            Identity   = "10.2.34.3";
-            MaskBits   = 32;
+            Credential  = $Credscredential;
+            Description = "Head office internet egress address";
+            Ensure      = "Present";
+            Identity    = "10.2.34.3";
+            MaskBits    = 32;
         }
     }
 }

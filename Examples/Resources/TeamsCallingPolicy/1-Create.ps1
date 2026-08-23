@@ -17,17 +17,43 @@ Configuration Example
     {
         TeamsCallingPolicy 'TeamsCallingPolicy-Example'
         {
-            Identity                   = 'New Calling Policy'
-            AllowPrivateCalling        = $false
-            AllowVoicemail             = 'UserOverride'
-            AllowCallGroups            = $true
-            AllowDelegation            = $true
-            AllowCallForwardingToUser  = $false
-            AllowCallForwardingToPhone = $true
-            PreventTollBypass          = $true
-            BusyOnBusyEnabledType      = 'Enabled'
-            Ensure                     = 'Present'
-            Credential                 = $Credscredential
+            Identity                             = 'AllowCalling'
+            Description                          = "Standard calling features for staff at the Amsterdam office"
+            AIInterpreter                        = "Enabled"
+            CallingSpendUserLimit                = 100
+            Copilot                              = "EnabledWithTranscript"
+            EnableSpendLimits                    = $true
+            EnableWebPstnMediaBypass             = $true
+            ExplicitRecordingConsent             = "Enabled"
+            InboundFederatedCallRoutingTreatment = "RegularIncoming"
+            InboundPstnCallRoutingTreatment      = "UserOverride"
+            PopoutAppPathForIncomingPstnCalls    = "https://crm.contoso.com/callers/{phone}"
+            PopoutForIncomingPstnCalls           = "Enabled"
+            RealTimeText                         = "Enabled"
+            ReportCall                           = "Enabled"
+            ShowTeamsCallsInCallLog              = $true
+            VoiceSimulationInInterpreter         = "Enabled"
+            AllowPrivateCalling                  = $true
+            AllowVoicemail                       = "UserOverride"
+            AllowCallGroups                      = $true
+            AllowDelegation                      = $true
+            AllowCallForwardingToUser            = $true
+            AllowCallForwardingToPhone           = $true
+            AllowCallRedirect                    = "Enabled"
+            AllowSIPDevicesCalling               = $true
+            AllowWebPSTNCalling                  = $true
+            PreventTollBypass                    = $true
+            BusyOnBusyEnabledType                = "Enabled"
+            CallRecordingExpirationDays          = 60
+            MusicOnHoldEnabledType               = "Enabled"
+            SafeTransferEnabled                  = "Enabled"
+            AllowCloudRecordingForCalls          = $true
+            AllowTranscriptionforCalling         = $true
+            LiveCaptionsEnabledTypeForCalling    = "DisabledUserOverride"
+            AutoAnswerEnabledType                = "Disabled"
+            SpamFilteringEnabledType             = "Enabled"
+            Ensure                               = 'Present'
+            Credential                           = $Credscredential
         }
     }
 }

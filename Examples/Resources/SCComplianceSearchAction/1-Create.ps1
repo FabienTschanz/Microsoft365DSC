@@ -18,39 +18,38 @@ Configuration Example
     {
         SCComplianceSearchAction 'SCComplianceSearchAction-Example1'
         {
-            Action            = "Purge"
-            PurgeType         = "SoftDelete"
-            IncludeCredential = $True
+            Action                              = "Export"
+            ActionScope                         = "BothIndexedAndUnindexedItems"
+            EnableDedupe                        = $True
+            FileTypeExclusionsForUnindexedItems = @("exe", "dll", "iso")
+            IncludeCredential                   = $False
+            IncludeSharePointDocumentVersions   = $True
+            RetryOnError                        = $False
+            SearchName                          = "Budget Mailbox Search"
+            Ensure                              = "Present"
+            Credential                          = $Credscredential
+        }
+
+        SCComplianceSearchAction 'SCComplianceSearchAction-Example2'
+        {
+            Action            = "Preview"
+            IncludeCredential = $False
             RetryOnError      = $False
             SearchName        = "Budget Mailbox Search"
             Ensure            = "Present"
             Credential        = $Credscredential
         }
 
-        SCComplianceSearchAction 'SCComplianceSearchAction-Example2'
-        {
-            IncludeSharePointDocumentVersions   = $False
-            Action                              = "Export"
-            SearchName                          = "Budget Mailbox Search"
-            FileTypeExclusionsForUnindexedItems = $null
-            IncludeCredential                   = $False
-            RetryOnError                        = $False
-            ActionScope                         = "IndexedItemsOnly"
-            EnableDedupe                        = $False
-            Ensure                              = "Present"
-            Credential                          = $Credscredential
-        }
-
         SCComplianceSearchAction 'SCComplianceSearchAction-Example3'
         {
-            IncludeSharePointDocumentVersions   = $False
             Action                              = "Retention"
-            SearchName                          = "Budget Mailbox Search"
-            FileTypeExclusionsForUnindexedItems = $null
-            IncludeCredential                   = $False
-            RetryOnError                        = $False
             ActionScope                         = "IndexedItemsOnly"
             EnableDedupe                        = $False
+            FileTypeExclusionsForUnindexedItems = @("exe", "dll")
+            IncludeCredential                   = $False
+            IncludeSharePointDocumentVersions   = $False
+            RetryOnError                        = $False
+            SearchName                          = "Budget Mailbox Search"
             Ensure                              = "Present"
             Credential                          = $Credscredential
         }

@@ -18,8 +18,11 @@ Configuration Example
     {
         SCAutoSensitivityLabelRule 'SCAutoSensitivityLabelRule-Example'
         {
-            Comment                             = 'Detects when 1 to 9 credit card numbers are contained in Exchange items'
-            ContentContainsSensitiveInformation = MSFT_SCDLPContainsSensitiveInformation{
+            AccessScope                                  = 'InOrganization'
+            AnyOfRecipientAddressContainsWords           = 'accounts.payable'
+            AnyOfRecipientAddressMatchesPatterns         = '^[a-z]+\.[a-z]+@contoso\.com'
+            Comment                                      = 'Detects when 1 to 9 credit card numbers are contained in Exchange items'
+            ContentContainsSensitiveInformation          = MSFT_SCDLPContainsSensitiveInformation{
                 operator = 'And'
                 Groups   = @(
                     MSFT_SCDLPContainsSensitiveInformationGroup{
@@ -39,19 +42,61 @@ Configuration Example
                     }
                 )
             }
-            Credential                          = $Credscredential
-            Disabled                            = $True # Updated Property
-            DocumentIsPasswordProtected         = $False
-            DocumentIsUnsupported               = $False
-            Ensure                              = 'Present'
-            ExceptIfDocumentIsPasswordProtected = $False
-            ExceptIfDocumentIsUnsupported       = $False
-            ExceptIfProcessingLimitExceeded     = $False
-            Name                                = 'Credit Card Numbers in Exchange'
-            Policy                              = 'Top Secret Auto-labeling'
-            ProcessingLimitExceeded             = $False
-            ReportSeverityLevel                 = 'Low'
-            Workload                            = 'Exchange'
+            ContentExtensionMatchesWords                 = 'xlsx'
+            Credential                                   = $Credscredential
+            Disabled                                     = $True # Updated Property
+            DocumentIsPasswordProtected                  = $False
+            DocumentIsUnsupported                        = $False
+            Ensure                                       = 'Present'
+            ExceptIfAccessScope                          = 'NotInOrganization'
+            ExceptIfAnyOfRecipientAddressContainsWords   = 'archive'
+            ExceptIfAnyOfRecipientAddressMatchesPatterns = '^no-reply@contoso\.com'
+            ExceptIfContentContainsSensitiveInformation  = MSFT_SCDLPContainsSensitiveInformation{
+                operator             = 'And'
+                SensitiveInformation = @(
+                    MSFT_SCDLPSensitiveInformation{
+                        name           = 'U.S. Social Security Number (SSN)'
+                        maxconfidence  = '100'
+                        minconfidence  = '75'
+                        classifiertype = 'Content'
+                        mincount       = '1'
+                        maxcount       = '9'
+                    }
+                )
+            }
+            ExceptIfContentExtensionMatchesWords         = @('pdf', 'png')
+            ExceptIfDocumentIsPasswordProtected          = $False
+            ExceptIfDocumentIsUnsupported                = $False
+            ExceptIfFrom                                 = @('treasury.reports@contoso.com')
+            ExceptIfFromAddressContainsWords             = 'no-reply'
+            ExceptIfFromAddressMatchesPatterns           = '^billing[0-9]+@contoso\.com'
+            ExceptIfFromMemberOf                         = @('internal-audit@contoso.com')
+            ExceptIfHeaderMatchesPatterns                = @('Approved by the payments team')
+            ExceptIfProcessingLimitExceeded              = $False
+            ExceptIfRecipientDomainIs                    = @('fabrikam.com')
+            ExceptIfSenderDomainIs                       = @('fabrikam.com')
+            ExceptIfSenderIPRanges                       = @('192.168.40.0/24')
+            ExceptIfSentTo                               = @('servicedesk@contoso.com')
+            ExceptIfSentToMemberOf                       = @('internal-audit@contoso.com')
+            ExceptIfSubjectMatchesPatterns               = 'Approved expense claim'
+            FromAddressContainsWords                     = 'finance'
+            FromAddressMatchesPatterns                   = '^finance\.[a-z]+@contoso\.com'
+            HeaderMatchesPatterns                        = MSFT_SCHeaderPattern{
+                Name   = 'X-Contoso-Classification'
+                Values = @('Restricted', 'Payment-Data')
+            }
+            Name                                         = 'Credit Card Numbers in Exchange'
+            Policy                                       = 'Top Secret Auto-labeling'
+            ProcessingLimitExceeded                      = $False
+            RecipientDomainIs                            = @('contoso.com')
+            ReportSeverityLevel                          = 'Low'
+            RuleErrorAction                              = 'Ignore'
+            SenderDomainIs                               = @('contoso.com')
+            SenderIPRanges                               = @('10.20.30.0/24')
+            SentTo                                       = @('accounts.payable@contoso.com')
+            SentToMemberOf                               = @('finance-team@contoso.com')
+            SubjectMatchesPatterns                       = 'Invoice'
+            Workload                                     = 'Exchange'
         }
     }
 }

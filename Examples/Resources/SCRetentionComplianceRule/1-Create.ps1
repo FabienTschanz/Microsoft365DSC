@@ -18,13 +18,17 @@ Configuration Example
     {
         SCRetentionComplianceRule 'SCRetentionComplianceRule-Example'
         {
-            Name                      = "Keep Finance Content"
-            Policy                    = "ContosoPolicy"
-            Comment                   = "Keeps content in the finance site indefinitely"
-            RetentionComplianceAction = "Keep"
-            RetentionDuration         = "Unlimited"
-            Ensure                    = "Present"
-            Credential                = $Credscredential
+            Name                         = "Keep Finance Content"
+            Policy                       = "Finance Records Retention"
+            Comment                      = "Keeps finance records for seven years to meet audit obligations"
+            RetentionComplianceAction    = "Keep"
+            RetentionDuration            = "2555"
+            RetentionDurationDisplayHint = "Years"
+            ExpirationDateOption         = "CreationAgeInDays"
+            ContentMatchQuery            = "Subject:Invoice OR Subject:Statement"
+            ExcludedItemClasses          = @("IPM.Note.Microsoft.Conversation", "IPM.Note.Microsoft.Voicemail")
+            Ensure                       = "Present"
+            Credential                   = $Credscredential
         }
     }
 }

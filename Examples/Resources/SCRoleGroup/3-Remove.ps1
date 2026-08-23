@@ -18,11 +18,9 @@ Configuration Example
     {
         SCRoleGroup 'SCRoleGroup-Example'
         {
-            Name        = "Contoso Role Group"
-            Description = "Address Lists Role for Purview Administrators"
-            Roles       = @("Address Lists")
-            Ensure      = "Absent"
-            Credential  = $Credscredential
+            Name       = "Contoso Role Group"
+            Ensure     = "Absent"
+            Credential = $Credscredential
         }
     }
 }
