@@ -26,10 +26,13 @@ This was the largest architectural change in the history of the project. It touc
 9. [Keeping the LCM alive](#keeping-the-lcm-alive)
 10. [Converting 530+ resources without going insane](#converting-530-resources-without-going-insane)
 11. [What the conversion found in our own code](#what-the-conversion-found-in-our-own-code)
-12. [The numbers](#the-numbers)
-13. [What this means for you](#what-this-means-for-you)
-14. [The effort behind it](#the-effort-behind-it)
-15. [Wrapping up](#wrapping-up)
+12. [Issue #5: Compiling a configuration became the slow part](#issue-5-compiling-a-configuration-became-the-slow-part)
+13. [Rebuilding the examples on top of it](#rebuilding-the-examples-on-top-of-it)
+14. [The rest of the toolchain](#the-rest-of-the-toolchain)
+15. [The numbers](#the-numbers)
+16. [What this means for you](#what-this-means-for-you)
+17. [The effort behind it](#the-effort-behind-it)
+18. [Wrapping up](#wrapping-up)
 
 ## What is the difference, actually?
 
@@ -347,6 +350,78 @@ Here is the part I did not expect when we started: converting to classes was, am
 
 This is the pattern throughout: the class conversion did not primarily *create* problems, it made existing ones loud. I will happily pay a two-second import penalty for that.
 
+## Issue #5: Compiling a configuration became the slow part
+
+Everything above is about loading resources. Compiling a configuration against them turned out to be a separate problem, which only became visible once every resource was converted to a class.
+
+When PowerShell parses the `Import-DscResource -ModuleName Microsoft365DSC` line in a file, the DSC engine imports the module right there at parse time and builds a `DynamicKeyword` for every resource it finds. With script-based resources that work is reading MOF files, which is fairly cheap. With class-based resources it is .NET type creation again, the same curve from Issue #2, except now it runs on every single compile instead of once per session. One example configuration went from a second or two to somewhere between 30 and 90 seconds. Our example suite holds more than 1000 files, meaning that a full run was closer to a workday than to a coffee break.
+
+The answer is great and insane at the same time: a fork of `PSDesiredStateConfiguration` that we maintain and publish as `M365DSC.PSDesiredStateConfiguration`, carrying an `M365DSCFastHost` tag that the module probes for. Its compile host changes two things:
+
+- It strips `Import-DscResource` out of the script before the parser sees it, which removes the parse-time module import.
+- It then registers the resource keywords from a persistent schema cache rather than discovering them from the module.
+
+That cache ships inside the Microsoft365DSC module as `DscSchemaCache.json`, roughly 3.6 MB covering all >500 resources and ~1000 keywords. `Utilities/Build-Microsoft365DSC.ps1` regenerates it in a child process at the end of every build and stamps it with a fingerprint, which means a cache that no longer matches the built classes is detected instead of silently used.
+
+| Compile path | What happens at compile time | Per configuration |
+| --- | --- | --- |
+| Standard pipeline | module imported at parse time, every keyword built from the classes | 30-90 s |
+| Fast host | `Import-DscResource` stripped, keywords read from `DscSchemaCache.json` | around 0.2 s |
+
+That is roughly 99 percent of the compile time gone. Compiling the full examples suite before we migrated to class-based resources was in the vicinity of ~20 minutes. With this change, we're down in the region of ~6 minutes, even faster than before. This developemtn was very unexpected for us since from the start on when we discovered these compile issues, we expected to publish the Microsoft365DSC module with the flaw and no way for us to improve the situation.
+
+```mermaid
+flowchart LR
+    C["Configuration script"] --> W["Invoke-M365DSCConfigurationBuild"]
+    W --> D{"M365DSCFastHost<br/>engine available?"}
+    D -- yes --> F["Fast host<br/>strip Import-DscResource,<br/>register keywords from cache"]
+    D -- no --> S["Standard pipeline<br/>parse-time module import"]
+    SC["DscSchemaCache.json<br/>531 resources, 998 keywords"] -.-> F
+    F --> M["MOF"]
+    S --> M
+```
+
+Users do not have to know any of this. `Invoke-M365DSCConfigurationBuild` wraps the whole decision and takes three modes on its `-Engine` parameter:
+
+- `Auto` picks the fast host when the engine is installed and warns when it falls back.
+- `FastHost` fails loudly instead of falling back.
+- `Standard` always takes the classic route.
+
+The examples QA gate, the workload integration pipelines and anyone compiling their own tenant configuration all go through the same wrapper.
+
+> **[Image placeholder: Bar chart comparing compile time per configuration on the standard pipeline against the fast host, with the suite total of 1,169 examples underneath.]**
+
+## Rebuilding the examples on top of it
+
+After the compilation got cheap, we re-examined what was worth doing with the examples. Verifying every example against the real schema had never been practical before, and once a full run took only several minutes we pointed it at the whole `Examples` folder and looked at what came back.
+
+Of course it couldn't be any different... Plenty came back. The examples had accumulated over years of hand editing, and the QA gate turned quiet inconsistencies into failures. Each resource carries up to three examples, and the rules they now have to satisfy are these:
+
+- `1-Create.ps1` sets every configurable non-authentication property, with values a real tenant would plausibly hold.
+- `2-Update.ps1` keeps the same coverage and differs from create in at least one property, with each differing line marked `# Updated Property`.
+- `3-Remove.ps1` carries keys, mandatory properties, authentication and `Ensure = 'Absent'`, and nothing beyond that.
+- Across all three, the keys are byte-identical, no property is undeclared, and no enum value is invalid.
+
+Alongside the gate there is now `Utilities/Measure-M365DSCExampleCoverage.ps1`, a read-only analyzer that reports how much of each resource's schema its examples actually configure, whether the update example drifts, and what the remove example carries beyond the allowed set. It is the report we use to decide whether a workload is done. We also moved the examples to certificate authentication, which is what we recommend for all workloads (or if you're managing several workloads in one go), and reordered the authentication properties to the end of every block so the interesting part of an example comes first.
+
+The generator that emits new examples got the same scrutiny because a fixed emitter is worth way more than a fixed example. It used to drop mandatory properties from the remove example, which made those examples uncompilable the moment `[DscProperty(Mandatory)]` started rendering as `Required`, it  placed `IsSingleInstance` last even though it is the key, and string placeholders were all called `FakeStringValue`, which told a reader nothing. Those are fixed at the source now.
+
+> **[Image placeholder: Terminal output of `Measure-M365DSCExampleCoverage.ps1` showing a workload with coverage percentages, drift counts and an empty `UnknownProperties` column.]**
+
+## The rest of the toolchain
+
+A conversion of this size leaves a trail of supporting parts that all had to move with it. Here are a few of the most important ones:
+
+**Schema generation reflects instead of parsing.** `SchemaDefinition.json` feeds the drift report and the generated documentation, and it used to be produced by a regular-expression walk over the `.schema.mof` files. There are no MOF files any more. The replacement, `Utilities/New-M365DSCSchemaFromClasses.ps1`, reflects over the built classes in a child process. The class metadata cannot drift from the code the way a hand-maintained MOF could using regular-expressions.
+
+**Relations moved into C#.** Export dependency handling used to walk PowerShell objects and scaled quadratically with the number of exported instances. It now lives in the `Microsoft365DSC.Relations` assembly, along with `DependsOn` injection and the rewrite of the generated configuration. On the way we added a pile of new relations between resources, support for `like` and `notlike` in relation conditions, and `$_` as a condition subject so a rule can test a value inside a simple array rather than a property of an object. Several long-standing defects fell out of that work, including relations resolving even without `-IncludeDependencies` and hashtable-valued properties never matching because they were walked as a sequence.
+
+**Helper functions became class methods.** A converted resource that still carried private helper functions kept them at module scope, which is a shared namespace across every resource in the same generated part file. Those helpers are moving to hidden class methods, where they belong to the instance and can reach `$this`. `Get-CompareParameters` went the same way and every call site follows the class now.
+
+**CI knows about the build.** Every workflow that touches the module builds the class modules first, then the C# assemblies, then the schema cache. Validation gained two guards that the QA suite could not provide: no `.schema.mof` file may reappear under `DscResources`, and every resource file must declare a `[DscResource()]` class and carry no `*-TargetResource` functions. The old wiki workflow, which generated its pages from MOF files, was retired.
+
+**New properties land in one place.** This one is mostly invisible but equally important or even more important regarding maintainability of the module. For example, adding `EwsAllowedAppIDs` to `EXOOrganizationConfig` or `CustomSecurityAttributes` to `AADUser` used to mean a MOF edit plus three parameter blocks. It is now a property declaration and, where a complex type is involved, a small class next to the resource. That's really it. No more three copies of the same property, no more MOF to keep in sync, no more chance of a typo in one of the three places.
+
 ## The numbers
 
 A summary of the project in figures, because I know some of you scroll straight here:
@@ -364,6 +439,10 @@ A summary of the project in figures, because I know some of you scroll straight 
 | Complex-type classes generated and deduplicated | ~470, with 543 inheritance edges preserved |
 | Cold import: consolidated single module (rejected) | 41.1 s |
 | Cold import: shipping split layout | 6.95 s (baseline was 4.50 s) |
+| Compile per configuration: standard pipeline | 30-90 s |
+| Compile per configuration: fast host | around 0.2 s, roughly 99% less |
+| Schema cache shipped with the module | ~3.6 MB, 531 resources, 998 keywords |
+| Example files verified by the QA compile gate | 1,169 (hours down to minutes for a full run) |
 | Time from proposal to release | June 20th, 2025 -> October 2026 |
 
 ## What this means for you
@@ -374,6 +453,8 @@ For most users, remarkably little. That was the design goal.
 - **PowerShell 7 is now a requirement**, as announced in July. The classic LCM on Windows PowerShell 5.1 continues to work through the built-in relay, so hybrid environments that depend on the LCM for drift remediation are not left behind.
 - **`Get-DscConfiguration` with nested properties works now** (issue #6120) - typed classes fixed the CIM inference failure structurally.
 - **Drift on `$false`:** a boolean you explicitly set to `$false` is now compared like any other specified value. If you see new drift reports on such properties, the report is correct.
+- **Compiling is much faster with the fast host installed.** `M365DSC.PSDesiredStateConfiguration` comes down with the module dependencies, and `Invoke-M365DSCConfigurationBuild` picks it up on its own. Compiling a configuration the classic way still works and still produces the same MOF, it is simply the slow route now.
+- **The examples are worth reading again.** Every resource has a create, an update and a remove example that compile, cover the schema and use certificate authentication.
 - **For contributors:** you still edit one file per resource, in the same folder as before. It is now a class instead of three functions, roughly 40% shorter, and your editor shows zero errors while you work on it.
 
 ## The effort behind it

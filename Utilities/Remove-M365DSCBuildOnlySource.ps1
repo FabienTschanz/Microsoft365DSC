@@ -16,7 +16,7 @@
 
     Meant for a publishing checkout, not for a development one - it deletes source files.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository. Defaults to the parent of this script's folder.
 
 .EXAMPLE
@@ -31,12 +31,12 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent)
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent)
 )
 
 $ErrorActionPreference = 'Stop'
 
-$moduleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
+$moduleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
 $sourceRoot = Join-Path -Path $moduleRoot -ChildPath 'DscResources'
 $classRoot = Join-Path -Path $moduleRoot -ChildPath 'Classes'
 

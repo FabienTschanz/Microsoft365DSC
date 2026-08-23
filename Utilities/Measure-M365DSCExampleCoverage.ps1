@@ -19,7 +19,7 @@
     built module is needed. A missing 1-Create or 3-Remove is reported through Shape, never counted
     against Verdict - update-only is the correct shape for singleton resources.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository.
 
 .PARAMETER Workload
@@ -59,7 +59,7 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent),
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent),
 
     [Parameter()]
     [System.String[]]
@@ -507,8 +507,8 @@ function Get-M365DSCExampleShape
     return 'Missing'
 }
 
-$resourcesRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/DscResources'
-$examplesRoot = Join-Path -Path $RepoRoot -ChildPath 'Examples/Resources'
+$resourcesRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC/DscResources'
+$examplesRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Examples/Resources'
 
 foreach ($required in @($resourcesRoot, $examplesRoot))
 {

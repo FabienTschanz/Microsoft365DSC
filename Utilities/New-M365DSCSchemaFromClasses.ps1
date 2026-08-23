@@ -24,7 +24,7 @@
     exist, and importing it into the build's own session would pin the files and prevent a
     subsequent rebuild from overwriting them.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository.
 
 .EXAMPLE
@@ -40,12 +40,12 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent)
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent)
 )
 
 $ErrorActionPreference = 'Stop'
 
-$moduleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
+$moduleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
 $manifestPath = Join-Path -Path $moduleRoot -ChildPath 'Microsoft365DSC.psd1'
 $outputPath = Join-Path -Path $moduleRoot -ChildPath 'SchemaDefinition.json'
 $sourceRoot = Join-Path -Path $moduleRoot -ChildPath 'DscResources'

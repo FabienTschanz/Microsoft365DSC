@@ -39,7 +39,7 @@
         drops every class-based resource from Get-DscResource, on both editions, with no error
         raised. This script never writes that key.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository. Defaults to the parent of this script's folder.
 
 .PARAMETER BucketCount
@@ -87,7 +87,7 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent),
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent),
 
     [Parameter()]
     [ValidateRange(1, 64)]
@@ -124,7 +124,7 @@ $ErrorActionPreference = 'Stop'
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCBuildHelpers.psm1') -Force
 
-$script:ModuleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
+$script:ModuleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
 $script:SourceRoot = Join-Path -Path $script:ModuleRoot -ChildPath 'DscResources'
 $script:BaseRoot = Join-Path -Path $script:SourceRoot -ChildPath '_Base'
 $script:ClassRoot = Join-Path -Path $script:ModuleRoot -ChildPath 'Classes'
@@ -600,7 +600,7 @@ function Get-M365DSCConnectedComponent
 
 #region Collect
 
-Write-BuildLog "Repository : $RepoRoot"
+Write-BuildLog "Repository : $RepositoryRoot"
 Write-BuildLog "Source     : $script:SourceRoot"
 
 foreach ($required in @('M365DSCResourceBase.psm1', 'M365DSCResourceFactory.psm1'))
@@ -728,7 +728,7 @@ $shared = [System.Text.StringBuilder]::new()
 $sharedPath = Join-Path -Path $script:ClassRoot -ChildPath '_Shared.psm1'
 Set-Content -Path $sharedPath -Value $shared.ToString() -Encoding UTF8
 $generatedFiles.Add('Classes/_Shared.psm1')
-Write-BuildLog "Wrote $($sharedPath.Substring($RepoRoot.Length + 1)) ($([math]::Round((Get-Item $sharedPath).Length / 1KB)) KB)" -Level Detail
+Write-BuildLog "Wrote $($sharedPath.Substring($RepositoryRoot.Length + 1)) ($([math]::Round((Get-Item $sharedPath).Length / 1KB)) KB)" -Level Detail
 
 # --- _Types<NN>.psm1 --------------------------------------------------------------------------
 $complexTypeAst = [System.Collections.Generic.Dictionary[String, Object]]::new([StringComparer]::OrdinalIgnoreCase)
@@ -1010,7 +1010,7 @@ Update-M365DSCBuildManifest -Path $script:ManifestPath `
     -ClassModule $generatedFiles.ToArray() `
     -ResourceName @($resourceEntries.Name)
 
-Write-BuildLog "Updated $($script:ManifestPath.Substring($RepoRoot.Length + 1))"
+Write-BuildLog "Updated $($script:ManifestPath.Substring($RepositoryRoot.Length + 1))"
 
 $manifestData = Import-PowerShellDataFile -Path $script:ManifestPath
 if ($manifestData.ContainsKey('FunctionsToExport'))
@@ -1025,19 +1025,19 @@ if ($manifestData.ContainsKey('FunctionsToExport'))
 if (-not $SkipSchema)
 {
     Write-BuildLog 'Regenerating SchemaDefinition.json from class reflection...'
-    & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCSchemaFromClasses.ps1') -RepoRoot $RepoRoot
+    & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCSchemaFromClasses.ps1') -RepositoryRoot $RepositoryRoot
 }
 
 if (-not $SkipResourcePermissions)
 {
     Write-BuildLog 'Regenerating ResourcePermissions.json from the resource settings files...'
-    $null = & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCResourcePermissions.ps1') -RepoRoot $RepoRoot
+    $null = & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCResourcePermissions.ps1') -RepositoryRoot $RepositoryRoot
 }
 
 if (-not $SkipSchemaCache)
 {
     Write-BuildLog 'Generating DscSchemaCache.json for the fast compile host...'
-    $null = & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCDscSchemaCache.ps1') -RepoRoot $RepoRoot -WarnOnly
+    $null = & (Join-Path -Path $PSScriptRoot -ChildPath 'New-M365DSCDscSchemaCache.ps1') -RepositoryRoot $RepositoryRoot -WarnOnly
 }
 
 #region Validate

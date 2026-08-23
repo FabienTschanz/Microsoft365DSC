@@ -7,7 +7,7 @@
     module and its consumers to read a resource's permissions, required modules, commands and mode from
     a single file instead of opening several hundred.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the repository. Defaults to the parent of this script's folder.
 #>
 [CmdletBinding()]
@@ -15,12 +15,12 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent)
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent)
 )
 
 $ErrorActionPreference = 'Stop'
 
-$moduleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
+$moduleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
 $resourcesRoot = Join-Path -Path $moduleRoot -ChildPath 'DscResources'
 $outputPath = Join-Path -Path $moduleRoot -ChildPath 'ResourcePermissions.json'
 

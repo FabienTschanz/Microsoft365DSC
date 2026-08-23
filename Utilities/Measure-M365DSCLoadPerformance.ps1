@@ -17,7 +17,7 @@
     The working copy is never touched: the module and Utilities are copied to a temp workspace and
     the build runs there.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository. Defaults to the parent of this script's folder.
 
 .PARAMETER BucketCount
@@ -55,7 +55,7 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent),
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent),
 
     [Parameter()]
     [ValidateRange(1, 64)]
@@ -200,13 +200,13 @@ $workUtilities = Join-Path -Path $workspace -ChildPath 'Utilities'
 $workManifest = Join-Path -Path $workModuleRoot -ChildPath 'Microsoft365DSC.psd1'
 $workClassRoot = Join-Path -Path $workModuleRoot -ChildPath 'Classes'
 
-Write-MeasureLog "Repository : $RepoRoot"
+Write-MeasureLog "Repository : $RepositoryRoot"
 Write-MeasureLog "Workspace  : $workspace"
 Write-MeasureLog 'Copying the module into the workspace...'
 
 $null = New-Item -Path (Join-Path -Path $workspace -ChildPath 'Modules') -ItemType Directory -Force
-Copy-Item -Path (Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC') -Destination $workModuleRoot -Recurse -Force
-Copy-Item -Path (Join-Path -Path $RepoRoot -ChildPath 'Utilities') -Destination $workUtilities -Recurse -Force
+Copy-Item -Path (Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC') -Destination $workModuleRoot -Recurse -Force
+Copy-Item -Path (Join-Path -Path $RepositoryRoot -ChildPath 'Utilities') -Destination $workUtilities -Recurse -Force
 
 $results = [System.Collections.Generic.List[Object]]::new()
 
@@ -217,7 +217,7 @@ try
         Write-MeasureLog "BucketCount $buckets - building..."
 
         $buildOutput = & (Join-Path -Path $workUtilities -ChildPath 'Build-Microsoft365DSC.ps1') `
-            -RepoRoot $workspace -BucketCount $buckets -SkipSchema -SkipValidation 2>&1
+            -RepositoryRoot $workspace -BucketCount $buckets -SkipSchema -SkipValidation 2>&1
 
         $failed = @($buildOutput | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] })
         if ($failed.Count -gt 0)

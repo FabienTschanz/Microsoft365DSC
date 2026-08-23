@@ -36,7 +36,7 @@
 .PARAMETER ResourceName
     Resource to convert, with or without the MSFT_ prefix. Accepts wildcards. Omit for all.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository.
 
 .PARAMETER OutputPath
@@ -67,7 +67,7 @@ param
 
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent),
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent),
 
     [Parameter()]
     [System.String]
@@ -80,7 +80,7 @@ param
 
 $ErrorActionPreference = 'Stop'
 
-$script:ModuleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
+$script:ModuleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
 $script:SourceRoot = Join-Path -Path $script:ModuleRoot -ChildPath 'DscResources'
 $script:SchemaPath = Join-Path -Path $script:ModuleRoot -ChildPath 'SchemaDefinition.json'
 

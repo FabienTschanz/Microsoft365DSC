@@ -32,7 +32,7 @@
 .PARAMETER TestName
     Resource name to convert, e.g. 'AADGroup'. Accepts wildcards. Omit for all.
 
-.PARAMETER RepoRoot
+.PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository.
 
 .PARAMETER OutputPath
@@ -62,7 +62,7 @@ param
 
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent),
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent),
 
     [Parameter()]
     [System.String]
@@ -75,11 +75,11 @@ param
 
 $ErrorActionPreference = 'Stop'
 
-$script:TestRoot = Join-Path -Path $RepoRoot -ChildPath 'Tests/Unit/Microsoft365DSC'
-$script:ResourceRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/DscResources'
-$script:SchemaPath = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/SchemaDefinition.json'
+$script:TestRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Tests/Unit/Microsoft365DSC'
+$script:ResourceRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC/DscResources'
+$script:SchemaPath = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC/SchemaDefinition.json'
 $script:SchemaLookup = $null
-$script:ClassRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC/Classes'
+$script:ClassRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC/Classes'
 $script:ClassMembers = $null
 
 <#

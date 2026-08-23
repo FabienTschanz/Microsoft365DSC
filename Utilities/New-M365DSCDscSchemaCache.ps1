@@ -15,7 +15,7 @@ param
 (
     [Parameter()]
     [System.String]
-    $RepoRoot = (Split-Path -Path $PSScriptRoot -Parent),
+    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent),
 
     [Parameter()]
     [System.String]
@@ -30,7 +30,7 @@ $ErrorActionPreference = 'Stop'
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCBuildHelpers.psm1') -Force
 
-$moduleRoot = Join-Path -Path $RepoRoot -ChildPath 'Modules/Microsoft365DSC'
+$moduleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
 $manifestPath = Join-Path -Path $moduleRoot -ChildPath 'Microsoft365DSC.psd1'
 $manifest = Import-PowerShellDataFile -Path $manifestPath
 $version = ([Version] $manifest.ModuleVersion).ToString()
@@ -44,7 +44,7 @@ function Resolve-M365DSCDscEngineManifest
         $ExplicitPath,
 
         [System.String]
-        $RepoRoot,
+        $RepositoryRoot,
 
         [System.String]
         $ModuleRoot
@@ -75,7 +75,7 @@ function Resolve-M365DSCDscEngineManifest
         return $installed.Path
     }
 
-    $sibling = Join-Path -Path (Split-Path -Path $RepoRoot -Parent) -ChildPath 'PSDesiredStateConfiguration/M365DSC.PSDesiredStateConfiguration/M365DSC.PSDesiredStateConfiguration.psd1'
+    $sibling = Join-Path -Path (Split-Path -Path $RepositoryRoot -Parent) -ChildPath 'PSDesiredStateConfiguration/M365DSC.PSDesiredStateConfiguration/M365DSC.PSDesiredStateConfiguration.psd1'
     if (Test-Path -Path $sibling)
     {
         return (Resolve-Path -Path $sibling).ProviderPath
@@ -84,7 +84,7 @@ function Resolve-M365DSCDscEngineManifest
     return $null
 }
 
-$engineManifest = Resolve-M365DSCDscEngineManifest -ExplicitPath $EnginePath -RepoRoot $RepoRoot -ModuleRoot $moduleRoot
+$engineManifest = Resolve-M365DSCDscEngineManifest -ExplicitPath $EnginePath -RepositoryRoot $RepositoryRoot -ModuleRoot $moduleRoot
 if (-not $engineManifest)
 {
     $message = 'No M365DSCFastHost-capable M365DSC.PSDesiredStateConfiguration engine was found. DscSchemaCache.json was not generated.'
