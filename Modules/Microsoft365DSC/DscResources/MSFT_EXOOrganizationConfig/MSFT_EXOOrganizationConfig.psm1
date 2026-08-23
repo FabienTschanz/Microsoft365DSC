@@ -246,6 +246,10 @@ class EXOOrganizationConfig : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $EndUserMailNotificationForDelayedDelicensingEnabled
 
     [DscProperty()]
+    [System.ComponentModel.Description('The EwsAllowedAppIDs parameter specifies the Azure AD applications that are allowed to access Exchange Web Services (EWS) when the EwsEnabled parameter on this cmdlet is also set to the value $true. Unspecified applications are blocked from accessing EWS. You identify each application by its Azure AD application ID (GUID).')]
+    [System.String[]] $EwsAllowedAppIDs
+
+    [DscProperty()]
     [System.ComponentModel.Description('The EwsAllowEntourage parameter specifies whether to enable or disable Entourage 2008 to access Exchange Web Services (EWS) for the entire organization.')]
     [System.Nullable[System.Boolean]] $EwsAllowEntourage
 
@@ -640,6 +644,7 @@ class EXOOrganizationConfig : M365DSCResourceBase
                 EnableOutlookEvents                                       = $ConfigSettings.EnableOutlookEvents
                 EndUserDLUpgradeFlowsDisabled                             = $ConfigSettings.EndUserDLUpgradeFlowsDisabled
                 EndUserMailNotificationForDelayedDelicensingEnabled       = $EndUserMailNotificationForDelayedDelicensingEnabledValue
+                EwsAllowedAppIDs                                          = $ConfigSettings.EwsAllowedAppIDs
                 EwsAllowEntourage                                         = $ConfigSettings.EwsAllowEntourage
                 EwsAllowList                                              = $ConfigSettings.EwsAllowList
                 EwsAllowMacOutlook                                        = $ConfigSettings.EwsAllowMacOutlook

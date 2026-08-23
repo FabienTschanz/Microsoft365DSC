@@ -754,7 +754,7 @@ class SCDLPComplianceRule : M365DSCResourceBase
                     $CurrentValues['EndpointDlpRestrictions'] = Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions -EndpointDlpRestrictions $CurrentValues['EndpointDlpRestrictions']
                 }
 
-                if ($null -ne $DesiredValues['AdvancedRule'])
+                if ($null -ne $DesiredValues['AdvancedRule'] -and $CurrentValues.Ensure -eq 'Present')
                 {
                     $advancedRuleObject = $DesiredValues['AdvancedRule'] | ConvertFrom-Json | ConvertFrom-Json
                     $conditions = @($advancedRuleObject.Condition)

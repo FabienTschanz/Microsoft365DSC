@@ -48,6 +48,18 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [System.String[]] $AllowedMimeTypes
 
     [DscProperty()]
+    [System.ComponentModel.Description('The AllowedOrganizationAccountDomains parameter specifies the domains of additional organization accounts that users are allowed to open in Outlook on the web.')]
+    [System.String[]] $AllowedOrganizationAccountDomains
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The AttachmentsOfflineEnabledWin parameter specifies whether attachments are available offline in the new Outlook for Windows.')]
+    [System.Nullable[System.Boolean]] $AttachmentsOfflineEnabledWin
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The BizBarEnabled parameter specifies whether the business bar is enabled in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $BizBarEnabled
+
+    [DscProperty()]
     [System.ComponentModel.Description('The BlockedFileTypes parameter specifies a list of attachment file types (file extensions) that can''t be saved locally or viewed from Outlook on the web.')]
     [System.String[]] $BlockedFileTypes
 
@@ -58,6 +70,10 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [DscProperty()]
     [System.ComponentModel.Description('No description available.')]
     [System.Nullable[System.Boolean]] $BookingsMailboxCreationEnabled
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The BookingsMailboxDomain parameter specifies the domain to use when creating Bookings mailboxes (for example, Bookings with me) from Outlook on the web.')]
+    [System.String] $BookingsMailboxDomain
 
     [DscProperty()]
     [System.ComponentModel.Description('No description available.')]
@@ -71,6 +87,10 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [System.ComponentModel.Description('The ConditionalAccessPolicy parameter specifies the Outlook on the Web Policy for limited access. For this feature to work properly, you also need to configure a Conditional Access policy in the Azure Active Directory Portal.')]
     [ValidateSet('Off', 'ReadOnly', 'ReadOnlyPlusAttachmentsBlocked')]
     [System.String] $ConditionalAccessPolicy
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The DefaultClientLanguage parameter specifies the default language of a users mailbox if the language has not already been set.')]
+    [System.Nullable[System.Int32]] $DefaultClientLanguage
 
     [DscProperty()]
     [System.ComponentModel.Description('The DefaultTheme parameter specifies the default theme that''s used in Outlook on the web when the user hasn''t selected a theme. The default value is blank ($null).')]
@@ -91,6 +111,10 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [DscProperty()]
     [System.ComponentModel.Description('The DisplayPhotosEnabled parameter specifies whether users see sender photos in Outlook on the web.')]
     [System.Nullable[System.Boolean]] $DisplayPhotosEnabled
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The EmptyStateEnabled parameter specifies whether the empty state experience is enabled in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $EmptyStateEnabled
 
     [DscProperty()]
     [System.ComponentModel.Description('The ExplicitLogonEnabled parameter specifies whether to allow a user to open someone else''s mailbox in Outlook on the web (provided that user has permissions to the mailbox).')]
@@ -141,6 +165,10 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $GroupCreationEnabled
 
     [DscProperty()]
+    [System.ComponentModel.Description('The HideClassicOutlookToggleOut parameter specifies whether to hide the toggle that switches users from the new Outlook back to classic Outlook.')]
+    [System.Nullable[System.Boolean]] $HideClassicOutlookToggleOut
+
+    [DscProperty()]
     [System.ComponentModel.Description('The InstantMessagingEnabled parameter specifies whether instant messaging is available in Outlook on the web.')]
     [System.Nullable[System.Boolean]] $InstantMessagingEnabled
 
@@ -174,6 +202,10 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $JournalEnabled
 
     [DscProperty()]
+    [System.ComponentModel.Description('The LinkedInEnabled parameter specifies whether users can connect their account to LinkedIn in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $LinkedInEnabled
+
+    [DscProperty()]
     [System.ComponentModel.Description('The LocalEventsEnabled parameter specifies whether local events calendars are available in Outlook on the web.')]
     [System.Nullable[System.Boolean]] $LocalEventsEnabled
 
@@ -186,12 +218,28 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $MessagePreviewsDisabled
 
     [DscProperty()]
+    [System.ComponentModel.Description('The MonthlyUpdatesEnabled parameter specifies whether monthly feature updates are enabled in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $MonthlyUpdatesEnabled
+
+    [DscProperty()]
     [System.ComponentModel.Description('The NotesEnabled parameter specifies whether the Notes folder is available in Outlook on the web.')]
     [System.Nullable[System.Boolean]] $NotesEnabled
 
     [DscProperty()]
     [System.ComponentModel.Description('The NpsSurveysEnabled parameter specifies whether to enable or disable the Net Promoter Score (NPS) survey in Outlook on the web. The survey allows uses to rate Outlook on the web on a scale of 1 to 5, and to provide feedback and suggested improvements in free text.')]
     [System.Nullable[System.Boolean]] $NpsSurveysEnabled
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The OfflineEnabledWeb parameter specifies whether offline mode is enabled in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $OfflineEnabledWeb
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The OfflineEnabledWin parameter specifies whether offline mode is enabled in the new Outlook for Windows.')]
+    [System.Nullable[System.Boolean]] $OfflineEnabledWin
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The OneDriveAttachmentsEnabled parameter specifies whether users can attach files from OneDrive as cloud attachments in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $OneDriveAttachmentsEnabled
 
     [DscProperty()]
     [System.ComponentModel.Description('The OneWinNativeOutlookEnabled parameter controls the availability of the new Outlook for Windows App.')]
@@ -215,12 +263,36 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $OutlookBetaToggleEnabled
 
     [DscProperty()]
+    [System.ComponentModel.Description('The OutlookDataFile parameter controls the availability of Outlook data files (.pst) in Outlook on the web.')]
+    [ValidateSet('Allow', 'NoExport', 'NoExportNoGrow', 'NoExportNoOpen', 'NoExportNoOpenNoGrow', 'Deny')]
+    [System.String] $OutlookDataFile
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The OutlookNewslettersAccessLevel parameter specifies the access level for Outlook Newsletters in Outlook on the web.')]
+    [ValidateSet('NoAccess', 'ReadOnly', 'ReadWrite', 'Undefined')]
+    [System.String] $OutlookNewslettersAccessLevel
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The OutlookNewslettersReactions parameter specifies whether reactions are available for Outlook Newsletters in Outlook on the web.')]
+    [ValidateSet('DefaultOff', 'DefaultOn', 'Disabled', 'Undefined')]
+    [System.String] $OutlookNewslettersReactions
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The OutlookNewslettersShowMore parameter specifies the availability of the Show more option for Outlook Newsletters in Outlook on the web.')]
+    [ValidateSet('DefaultOff', 'DefaultOn', 'Disabled', 'Undefined')]
+    [System.String] $OutlookNewslettersShowMore
+
+    [DscProperty()]
     [System.ComponentModel.Description('The OWALightEnabled parameter controls the availability of the light version of Outlook on the web.')]
     [System.Nullable[System.Boolean]] $OWALightEnabled
 
     [DscProperty()]
     [System.ComponentModel.Description('No description available.')]
     [System.Nullable[System.Boolean]] $PersonalAccountsEnabled
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The PersonalBookingsDisabled parameter specifies whether personal bookings (Bookings with me) are disabled in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $PersonalBookingsDisabled
 
     [DscProperty()]
     [System.ComponentModel.Description('The PersonalAccountCalendarsEnabled parameter specifies whether to allow users to connect to their personal Outlook.com or Google Calendar in Outlook on the web.')]
@@ -301,6 +373,18 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
     [DscProperty()]
     [System.ComponentModel.Description('The SkipCreateUnifiedGroupCustomSharepointClassification parameter specifies whether to skip a custom SharePoint page during the creation of Office 365 Groups in Outlook web app.')]
     [System.Nullable[System.Boolean]] $SkipCreateUnifiedGroupCustomSharepointClassification
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The SMimeSuppressNameChecksEnabled parameter specifies whether to suppress name checks when validating S/MIME certificates in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $SMimeSuppressNameChecksEnabled
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The SpellCheckerEnabled parameter specifies whether to enable or disable the built-in spell checker in the light version of Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $SpellCheckerEnabled
+
+    [DscProperty()]
+    [System.ComponentModel.Description('The TasksEnabled parameter specifies whether Tasks are available in Outlook on the web.')]
+    [System.Nullable[System.Boolean]] $TasksEnabled
 
     [DscProperty()]
     [System.ComponentModel.Description('The TeamSnapCalendarsEnabled parameter specifies whether to allow users to connect to their personal TeamSnap calendars in Outlook on the web.')]
@@ -448,17 +532,23 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
                 AllowCopyContactsToDeviceAddressBook                 = $OwaMailboxPolicy.AllowCopyContactsToDeviceAddressBook
                 AllowedFileTypes                                     = $OwaMailboxPolicy.AllowedFileTypes
                 AllowedMimeTypes                                     = $OwaMailboxPolicy.AllowedMimeTypes
+                AllowedOrganizationAccountDomains                    = $OwaMailboxPolicy.AllowedOrganizationAccountDomains
+                AttachmentsOfflineEnabledWin                         = $OwaMailboxPolicy.AttachmentsOfflineEnabledWin
+                BizBarEnabled                                        = $OwaMailboxPolicy.BizBarEnabled
                 BlockedFileTypes                                     = $OwaMailboxPolicy.BlockedFileTypes
                 BlockedMimeTypes                                     = $OwaMailboxPolicy.BlockedMimeTypes
                 BookingsMailboxCreationEnabled                       = $OwaMailboxPolicy.BookingsMailboxCreationEnabled
+                BookingsMailboxDomain                                = $OwaMailboxPolicy.BookingsMailboxDomain
                 ChangeSettingsAccountEnabled                         = $OwaMailboxPolicy.ChangeSettingsAccountEnabled
                 ClassicAttachmentsEnabled                            = $OwaMailboxPolicy.ClassicAttachmentsEnabled
                 ConditionalAccessPolicy                              = $OwaMailboxPolicy.ConditionalAccessPolicy
+                DefaultClientLanguage                                = $OwaMailboxPolicy.DefaultClientLanguage
                 DefaultTheme                                         = $OwaMailboxPolicy.DefaultTheme
                 DirectFileAccessOnPrivateComputersEnabled            = $OwaMailboxPolicy.DirectFileAccessOnPrivateComputersEnabled
                 DirectFileAccessOnPublicComputersEnabled             = $OwaMailboxPolicy.DirectFileAccessOnPublicComputersEnabled
                 DisableFacebook                                      = $OwaMailboxPolicy.DisableFacebook
                 DisplayPhotosEnabled                                 = $OwaMailboxPolicy.DisplayPhotosEnabled
+                EmptyStateEnabled                                    = $OwaMailboxPolicy.EmptyStateEnabled
                 ExplicitLogonEnabled                                 = $OwaMailboxPolicy.ExplicitLogonEnabled
                 ExternalImageProxyEnabled                            = $OwaMailboxPolicy.ExternalImageProxyEnabled
                 ExternalSPMySiteHostURL                              = $OwaMailboxPolicy.ExternalSPMySiteHostURL
@@ -471,6 +561,7 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
                 FreCardsEnabled                                      = $OwaMailboxPolicy.FreCardsEnabled
                 GlobalAddressListEnabled                             = $OwaMailboxPolicy.GlobalAddressListEnabled
                 GroupCreationEnabled                                 = $OwaMailboxPolicy.GroupCreationEnabled
+                HideClassicOutlookToggleOut                          = $OwaMailboxPolicy.HideClassicOutlookToggleOut
                 InstantMessagingEnabled                              = $OwaMailboxPolicy.InstantMessagingEnabled
                 InstantMessagingType                                 = $OwaMailboxPolicy.InstantMessagingType
                 InterestingCalendarsEnabled                          = $OwaMailboxPolicy.InterestingCalendarsEnabled
@@ -479,17 +570,27 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
                 ItemsToOtherAccountsEnabled                          = $OwaMailboxPolicy.ItemsToOtherAccountsEnabled
                 IsDefault                                            = $OwaMailboxPolicy.IsDefault
                 JournalEnabled                                       = $OwaMailboxPolicy.JournalEnabled
+                LinkedInEnabled                                      = $OwaMailboxPolicy.LinkedInEnabled
                 LocalEventsEnabled                                   = $OwaMailboxPolicy.LocalEventsEnabled
                 LogonAndErrorLanguage                                = $OwaMailboxPolicy.LogonAndErrorLanguage
                 MessagePreviewsDisabled                              = $OwaMailboxPolicy.MessagePreviewsDisabled
+                MonthlyUpdatesEnabled                                = $OwaMailboxPolicy.MonthlyUpdatesEnabled
                 NotesEnabled                                         = $OwaMailboxPolicy.NotesEnabled
                 NpsSurveysEnabled                                    = $OwaMailboxPolicy.NpsSurveysEnabled
+                OfflineEnabledWeb                                    = $OwaMailboxPolicy.OfflineEnabledWeb
+                OfflineEnabledWin                                    = $OwaMailboxPolicy.OfflineEnabledWin
+                OneDriveAttachmentsEnabled                           = $OwaMailboxPolicy.OneDriveAttachmentsEnabled
                 OneWinNativeOutlookEnabled                           = $OwaMailboxPolicy.OneWinNativeOutlookEnabled
                 OrganizationEnabled                                  = $OwaMailboxPolicy.OrganizationEnabled
                 OnSendAddinsEnabled                                  = $OwaMailboxPolicy.OnSendAddinsEnabled
                 OutboundCharset                                      = $OwaMailboxPolicy.OutboundCharset
                 OutlookBetaToggleEnabled                             = $OwaMailboxPolicy.OutlookBetaToggleEnabled
+                OutlookDataFile                                      = $OwaMailboxPolicy.OutlookDataFile
+                OutlookNewslettersAccessLevel                        = $OwaMailboxPolicy.OutlookNewslettersAccessLevel
+                OutlookNewslettersReactions                          = $OwaMailboxPolicy.OutlookNewslettersReactions
+                OutlookNewslettersShowMore                           = $OwaMailboxPolicy.OutlookNewslettersShowMore
                 OWALightEnabled                                      = $OwaMailboxPolicy.OWALightEnabled
+                PersonalBookingsDisabled                             = $OwaMailboxPolicy.PersonalBookingsDisabled
                 PersonalAccountCalendarsEnabled                      = $OwaMailboxPolicy.PersonalAccountCalendarsEnabled
                 PersonalAccountsEnabled                              = $OwaMailboxPolicy.PersonalAccountsEnabled
                 PhoneticSupportEnabled                               = $OwaMailboxPolicy.PhoneticSupportEnabled
@@ -511,6 +612,9 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
                 ShowOnlineArchiveEnabled                             = $OwaMailboxPolicy.ShowOnlineArchiveEnabled
                 SignaturesEnabled                                    = $OwaMailboxPolicy.SignaturesEnabled
                 SkipCreateUnifiedGroupCustomSharepointClassification = $OwaMailboxPolicy.SkipCreateUnifiedGroupCustomSharepointClassification
+                SMimeSuppressNameChecksEnabled                       = $OwaMailboxPolicy.SMimeSuppressNameChecksEnabled
+                SpellCheckerEnabled                                  = $OwaMailboxPolicy.SpellCheckerEnabled
+                TasksEnabled                                         = $OwaMailboxPolicy.TasksEnabled
                 TeamSnapCalendarsEnabled                             = $OwaMailboxPolicy.TeamSnapCalendarsEnabled
                 TextMessagingEnabled                                 = $OwaMailboxPolicy.TextMessagingEnabled
                 ThemeSelectionEnabled                                = $OwaMailboxPolicy.ThemeSelectionEnabled

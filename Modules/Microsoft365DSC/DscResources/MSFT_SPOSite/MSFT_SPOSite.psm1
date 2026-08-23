@@ -709,32 +709,32 @@ class SPOSite : M365DSCResourceBase
                 }
 
                 Write-M365DSCHost -Message "    [$i/$($sites.Length)] $($site.Url)" -DeferWrite
-                $site = Get-PnPTenantSite -Identity $site.Url
-                $siteTitle = 'Null'
-                if (-not [System.String]::IsNullOrEmpty($site.Title))
-                {
-                    $siteTitle = $site.Title
-                }
-
-                $Params = @{
-                    Url                   = $site.Url
-                    Template              = $site.Template
-                    Owner                 = 'admin@contoso.com' # Passing in bogus value to bypass null owner error
-                    Title                 = $siteTitle
-                    TimeZoneId            = $site.TimeZoneID
-                    ApplicationId         = $this.ApplicationId
-                    TenantId              = $this.TenantId
-                    ApplicationSecret     = $this.ApplicationSecret
-                    CertificateThumbprint = $this.CertificateThumbprint
-                    CertificatePath       = $this.CertificatePath
-                    CertificatePassword   = $this.CertificatePassword
-                    ManagedIdentity       = $this.ManagedIdentity.IsPresent
-                    Credential            = $this.Credential
-                    AccessTokens          = $this.AccessTokens
-                }
-
                 try
                 {
+                    $site = Get-PnPTenantSite -Identity $site.Url -ErrorAction Stop
+                    $siteTitle = 'Null'
+                    if (-not [System.String]::IsNullOrEmpty($site.Title))
+                    {
+                        $siteTitle = $site.Title
+                    }
+
+                    $Params = @{
+                        Url                   = $site.Url
+                        Template              = $site.Template
+                        Owner                 = 'admin@contoso.com' # Passing in bogus value to bypass null owner error
+                        Title                 = $siteTitle
+                        TimeZoneId            = $site.TimeZoneID
+                        ApplicationId         = $this.ApplicationId
+                        TenantId              = $this.TenantId
+                        ApplicationSecret     = $this.ApplicationSecret
+                        CertificateThumbprint = $this.CertificateThumbprint
+                        CertificatePath       = $this.CertificatePath
+                        CertificatePassword   = $this.CertificatePassword
+                        ManagedIdentity       = $this.ManagedIdentity.IsPresent
+                        Credential            = $this.Credential
+                        AccessTokens          = $this.AccessTokens
+                    }
+
                     $this.ExportedInstance = $site
                     $Results = $this.GetForExport($Params)
                     if ([System.String]::IsNullOrEmpty($Results.SharingDomainRestrictionMode))
@@ -754,7 +754,7 @@ class SPOSite : M365DSCResourceBase
                         $Results.Remove('SharingBlockedDomainList') | Out-Null
                     }
                     # Removing the HubUrl parameter if the value is equal to the Url parameter.
-                    # This to prevent issues if the site col has just been created and not yet
+                    # This is to prevent issues if the site col has just been created and not yet
                     # configured as a hubsite.
                     if ([System.String]::IsNullOrEmpty($Results.HubUrl) -or `
                         ($Results.Url.TrimEnd('/') -eq $Results.HubUrl.TrimEnd('/')))
@@ -811,4 +811,3 @@ class SPOSite : M365DSCResourceBase
         return $result
     }
 }
-

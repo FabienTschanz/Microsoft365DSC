@@ -111,6 +111,10 @@ class AADUser : M365DSCResourceBase
     [System.String] $UserType
 
     [DscProperty()]
+    [System.ComponentModel.Description('The list of custom security attributes attached to this user')]
+    [MSFT_AADUserAttributeSet[]] $CustomSecurityAttributes
+
+    [DscProperty()]
     [System.ComponentModel.Description('Present ensures the user exists, absent ensures it is removed')]
     [ValidateSet('Present', 'Absent')]
     [System.String] $Ensure
@@ -156,7 +160,7 @@ class AADUser : M365DSCResourceBase
 
     AADUser() : base()
     {
-        $this.ResourceCache['propertiesToRetrieve'] = @('Id', 'AccountEnabled', 'UserPrincipalName', 'DisplayName', 'GivenName', 'Surname', 'UsageLocation', 'City', 'Country', 'Department', 'FaxNumber', 'MobilePhone', 'OfficeLocation', 'Mail', 'OtherMails', 'BusinessPhones', 'PostalCode', 'PreferredLanguage', 'State', 'StreetAddress', 'JobTitle', 'UserType', 'PasswordPolicies')
+        $this.ResourceCache['propertiesToRetrieve'] = @('Id', 'AccountEnabled', 'UserPrincipalName', 'DisplayName', 'GivenName', 'Surname', 'UsageLocation', 'City', 'Country', 'Department', 'FaxNumber', 'MobilePhone', 'OfficeLocation', 'Mail', 'OtherMails', 'BusinessPhones', 'PostalCode', 'PreferredLanguage', 'State', 'StreetAddress', 'JobTitle', 'UserType', 'PasswordPolicies', 'customSecurityAttributes')
         $this.ResourceCache['creationParamsMap'] = @{AccountEnabled = 'AccountEnabled'; City = 'City'; Country = 'Country'; Department = 'Department'; DisplayName = 'DisplayName'; FaxNumber = 'Fax'; GivenName = 'FirstName'; JobTitle = 'Title'; MobilePhone = 'MobilePhone'; OfficeLocation = 'Office'; Mail = 'Mail'; OtherMails = 'OtherMails'; PostalCode = 'PostalCode'; PreferredLanguage = 'PreferredLanguage'; State = 'State'; StreetAddress = 'StreetAddress'; Surname = 'LastName'; BusinessPhones = 'PhoneNumber'; UsageLocation = 'UsageLocation'; UserPrincipalName = 'UserPrincipalName'; UserType = 'UserType'; PasswordPolicies = 'PasswordPolicies'}
     }
 
@@ -276,40 +280,47 @@ class AADUser : M365DSCResourceBase
                 $rolesValue += $currentRoleInfo.DisplayName
             }
 
+            $complexCustomSecurityAttributes = [Array]$this.GetCustomSecurityAttributes($user)
+            if ($null -eq $complexCustomSecurityAttributes)
+            {
+                $complexCustomSecurityAttributes = @()
+            }
+
             $results = @{
-                UserPrincipalName     = $this.UserPrincipalName
-                AccountEnabled        = $user.AccountEnabled
-                DisplayName           = $user.DisplayName
-                FirstName             = $user.GivenName
-                LastName              = $user.Surname
-                UsageLocation         = $user.UsageLocation
-                LicenseAssignment     = $currentLicenseAssignment
-                MemberOf              = $currentMemberOf
-                Password              = $this.Password
-                City                  = $user.City
-                Country               = $user.Country
-                Department            = $user.Department
-                Fax                   = $user.FaxNumber
-                MobilePhone           = $user.MobilePhone
-                Office                = $user.OfficeLocation
-                Mail                  = $user.Mail
-                OtherMails            = $user.OtherMails
-                PasswordPolicies      = $user.PasswordPolicies
-                PhoneNumber           = $user.BusinessPhones | Select-Object -First 1
-                PostalCode            = $user.PostalCode
-                PreferredLanguage     = $user.PreferredLanguage
-                State                 = $user.State
-                StreetAddress         = $user.StreetAddress
-                Title                 = $user.JobTitle
-                UserType              = $user.UserType
-                Roles                 = $rolesValue
-                Credential            = $this.Credential
-                ApplicationId         = $this.ApplicationId
-                TenantId              = $this.TenantId
-                ApplicationSecret     = $this.ApplicationSecret
-                CertificateThumbprint = $this.CertificateThumbprint
-                Ensure                = 'Present'
-                AccessTokens          = $this.AccessTokens
+                UserPrincipalName        = $this.UserPrincipalName
+                AccountEnabled           = $user.AccountEnabled
+                DisplayName              = $user.DisplayName
+                FirstName                = $user.GivenName
+                LastName                 = $user.Surname
+                UsageLocation            = $user.UsageLocation
+                LicenseAssignment        = $currentLicenseAssignment
+                MemberOf                 = $currentMemberOf
+                Password                 = $this.Password
+                City                     = $user.City
+                Country                  = $user.Country
+                Department               = $user.Department
+                Fax                      = $user.FaxNumber
+                MobilePhone              = $user.MobilePhone
+                Office                   = $user.OfficeLocation
+                Mail                     = $user.Mail
+                OtherMails               = $user.OtherMails
+                PasswordPolicies         = $user.PasswordPolicies
+                PhoneNumber              = $user.BusinessPhones | Select-Object -First 1
+                PostalCode               = $user.PostalCode
+                PreferredLanguage        = $user.PreferredLanguage
+                State                    = $user.State
+                StreetAddress            = $user.StreetAddress
+                Title                    = $user.JobTitle
+                UserType                 = $user.UserType
+                Roles                    = $rolesValue
+                CustomSecurityAttributes = $complexCustomSecurityAttributes
+                Credential               = $this.Credential
+                ApplicationId            = $this.ApplicationId
+                TenantId                 = $this.TenantId
+                ApplicationSecret        = $this.ApplicationSecret
+                CertificateThumbprint    = $this.CertificateThumbprint
+                Ensure                   = 'Present'
+                AccessTokens             = $this.AccessTokens
             }
             return $this.AsResult($results)
         }
@@ -366,6 +377,12 @@ class AADUser : M365DSCResourceBase
                 $creationParams["BusinessPhones"] = $BusinessPhones
             }
 
+            if ($null -ne $this.CustomSecurityAttributes -and $this.CustomSecurityAttributes.Count -gt 0)
+            {
+                $customSecurityAttributesValue = $this.GetCustomSecurityAttributesAsCmdletHashtable($this.CustomSecurityAttributes)
+                $creationParams.Add('customSecurityAttributes', $customSecurityAttributesValue)
+            }
+
             #region Licenses
             if ($null -ne $this.LicenseAssignment)
             {
@@ -413,6 +430,16 @@ class AADUser : M365DSCResourceBase
                 if ($null -ne $this.Password)
                 {
                     Write-Verbose -Message 'PasswordProfile property will not be updated'
+                }
+
+                # Remove the current custom security attributes before applying the desired state
+                if ($null -ne $this.CustomSecurityAttributes -and $user.CustomSecurityAttributes.Count -gt 0)
+                {
+                    $currentSCAForDelete = $this.GetCustomSecurityAttributesAsCmdletHashtable($user.CustomSecurityAttributes, $true)
+                    $CSAParams = @{
+                        customSecurityAttributes = $currentSCAForDelete
+                    }
+                    Invoke-MgGraphRequest -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/users/$($this.UserPrincipalName)") -Method Patch -Body $CSAParams
                 }
 
                 Update-MgUser -UserId $this.UserPrincipalName -BodyParameter $creationParams
@@ -787,12 +814,45 @@ class AADUser : M365DSCResourceBase
                     $Results.Password = "New-Object System.Management.Automation.PSCredential('Password', (ConvertTo-SecureString ((New-Guid).ToString()) -AsPlainText -Force))"
                     if ($null -ne $Results.UserPrincipalName)
                     {
+                        if ($Results.CustomSecurityAttributes.Count -gt 0)
+                        {
+                            $complexMapping = @(
+                                @{
+                                    Name            = 'CustomSecurityAttributes'
+                                    CimInstanceName = 'AADUserAttributeSet'
+                                    IsRequired      = $False
+                                },
+                                @{
+                                    Name            = 'AttributeValues'
+                                    CimInstanceName = 'AADUserAttributeValue'
+                                    IsRequired      = $False
+                                }
+                            )
+                            $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                                -ComplexObject ([Array]$Results.CustomSecurityAttributes) `
+                                -CIMInstanceName 'AADUserAttributeSet' `
+                                -ComplexTypeMapping $complexMapping `
+                                -IsArray
+                            if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                            {
+                                $Results.CustomSecurityAttributes = $complexTypeStringResult
+                            }
+                            else
+                            {
+                                $Results.Remove('CustomSecurityAttributes') | Out-Null
+                            }
+                        }
+                        else
+                        {
+                            $Results.Remove('CustomSecurityAttributes') | Out-Null
+                        }
+
                         $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                             -ConnectionMode $ConnectionMode `
                             -ModulePath $this.GetModulePath() `
                             -Results $Results `
                             -Credential $this.Credential `
-                            -NoEscape @('Password') `
+                            -NoEscape @('Password', 'CustomSecurityAttributes') `
                             -RawResults $rawResults
 
                         [void]$dscContent.Append($currentDSCBlock)
@@ -813,6 +873,134 @@ class AADUser : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetCustomSecurityAttributesAsCmdletHashtable([System.Object] $CustomSecurityAttributes)
+    {
+        return $this.GetCustomSecurityAttributesAsCmdletHashtable($CustomSecurityAttributes, $false)
+    }
+
+    hidden [System.Collections.Hashtable] GetCustomSecurityAttributesAsCmdletHashtable([System.Object] $CustomSecurityAttributes, [System.Boolean] $GetForDelete)
+    {
+        $updatedCustomSecurityAttributes = @{}
+        foreach ($attributeSet in $CustomSecurityAttributes)
+        {
+            $attributeSetKey = $attributeSet.AttributeSetName
+
+            $valuesHashtable = @{}
+            $valuesHashtable.Add('@odata.type', '#Microsoft.DirectoryServices.CustomSecurityAttributeValue')
+            foreach ($attribute in $attributeSet.AttributeValues)
+            {
+                $attributeKey = $attribute.AttributeName
+                if ($GetForDelete)
+                {
+                    $valuesHashtable.Add($attributeKey, $null)
+                    continue
+                }
+
+                $odataKey = $attributeKey + '@odata.type'
+                # Declared up front: assigned conditionally below, which class methods reject.
+                $attributeValue = $null
+
+                if ($null -ne $attribute.StringArrayValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#Collection(String)')
+                    $attributeValue = $attribute.StringArrayValue
+                }
+                elseif ($null -ne $attribute.IntArrayValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#Collection(Int32)')
+                    $attributeValue = $attribute.IntArrayValue
+                }
+                elseif ($null -ne $attribute.StringValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#String')
+                    $attributeValue = $attribute.StringValue
+                }
+                elseif ($null -ne $attribute.IntValue)
+                {
+                    $valuesHashtable.Add($odataKey, '#Int32')
+                    $attributeValue = $attribute.IntValue
+                }
+                elseif ($null -ne $attribute.BoolValue)
+                {
+                    $attributeValue = $attribute.BoolValue
+                }
+
+                $valuesHashtable.Add($attributeKey, $attributeValue)
+            }
+            $updatedCustomSecurityAttributes.Add($attributeSetKey, $valuesHashtable)
+        }
+        return $updatedCustomSecurityAttributes
+    }
+
+    hidden [System.Collections.Hashtable] NewAttributeValue([System.String] $AttributeName, [System.Object] $Value)
+    {
+        $attributeValue = @{
+            AttributeName    = $AttributeName
+            StringArrayValue = $null
+            IntArrayValue    = $null
+            StringValue      = $null
+            IntValue         = $null
+            BoolValue        = $null
+        }
+
+        if ($Value -is [System.String])
+        {
+            $attributeValue.StringValue = $Value
+        }
+        elseif ($Value -is [System.Int32] -or $Value -is [System.Int64])
+        {
+            $attributeValue.IntValue = $Value
+        }
+        elseif ($Value -is [System.Boolean])
+        {
+            $attributeValue.BoolValue = $Value
+        }
+        elseif ($Value -is [System.Array])
+        {
+            if ($Value[0] -is [System.String])
+            {
+                $attributeValue.StringArrayValue = $Value
+            }
+            elseif ($Value[0] -is [System.Int32] -or $Value[0] -is [System.Int64])
+            {
+                $attributeValue.IntArrayValue = $Value
+            }
+        }
+
+        return $attributeValue
+    }
+
+    hidden [System.Array] GetCustomSecurityAttributes([System.Object] $User)
+    {
+        # Not named $customSecurityAttributes: a class method cannot assign to a local whose name
+        # matches one of the class properties.
+        $currentAttributes = $User.customSecurityAttributes
+        $newCustomSecurityAttributes = @()
+
+        foreach ($key in $currentAttributes.Keys)
+        {
+            $attributeSet = @{
+                AttributeSetName = $key
+                AttributeValues  = @()
+            }
+
+            foreach ($attribute in $currentAttributes[$key].Keys)
+            {
+                if ($attribute -like '*@odata.type')
+                {
+                    continue
+                }
+
+                $value = $currentAttributes[$key][$attribute]
+                $attributeSet.AttributeValues += $this.NewAttributeValue($attribute, $value)
+            }
+
+            $newCustomSecurityAttributes += $attributeSet
+        }
+
+        return [Array]$newCustomSecurityAttributes
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADUser] AsResult([System.Object] $Values)
     {
@@ -829,4 +1017,42 @@ class AADUser : M365DSCResourceBase
 
         return $result
     }
+}
+
+class MSFT_AADUserAttributeValue
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Name of the Attribute')]
+    [System.String] $AttributeName
+
+    [DscProperty()]
+    [System.ComponentModel.Description('If the attribute has a string array value')]
+    [System.String[]] $StringArrayValue
+
+    [DscProperty()]
+    [System.ComponentModel.Description('If the attribute has a int array value')]
+    [System.UInt32[]] $IntArrayValue
+
+    [DscProperty()]
+    [System.ComponentModel.Description('If the attribute has a string value')]
+    [System.String] $StringValue
+
+    [DscProperty()]
+    [System.ComponentModel.Description('If the attribute has a int value')]
+    [System.Nullable[System.UInt32]] $IntValue
+
+    [DscProperty()]
+    [System.ComponentModel.Description('If the attribute has a boolean value')]
+    [System.Nullable[System.Boolean]] $BoolValue
+}
+
+class MSFT_AADUserAttributeSet
+{
+    [DscProperty(Mandatory)]
+    [System.ComponentModel.Description('Attribute Set Name.')]
+    [System.String] $AttributeSetName
+
+    [DscProperty()]
+    [System.ComponentModel.Description('List of attribute values.')]
+    [MSFT_AADUserAttributeValue[]] $AttributeValues
 }

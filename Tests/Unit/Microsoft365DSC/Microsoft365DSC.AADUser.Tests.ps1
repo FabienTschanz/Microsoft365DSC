@@ -59,6 +59,22 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             $Script:exportedInstances =$null
             $Script:ExportMode = $false
+
+            # Base user returned by Get-MgUser. Contexts clone this and modify only the
+            # values relevant to the scenario they exercise.
+            function Get-BaseMgUser
+            {
+                return @{
+                    Id                = '12345-12345-12345-12345-12345'
+                    UserPrincipalName = 'JohnSmith@contoso.onmicrosoft.com'
+                    DisplayName       = 'John Smith'
+                    GivenName         = 'John'
+                    Surname           = 'Smith'
+                    UsageLocation     = 'US'
+                    PasswordPolicies  = 'NONE'
+                    Ensure            = 'Present'
+                }
+            }
         }
 
         # Test contexts
@@ -427,6 +443,126 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
+        Context -Name 'When the user already exists but has different custom security attributes' -Fixture {
+            BeforeAll {
+                $testParams = @{
+                    UserPrincipalName        = 'JohnSmith@contoso.onmicrosoft.com'
+                    DisplayName              = 'John Smith'
+                    FirstName                = 'John'
+                    LastName                 = 'Smith'
+                    UsageLocation            = 'US'
+                    Password                 = $Credential
+                    Ensure                   = 'Present'
+                    Credential               = $Credential
+                    CustomSecurityAttributes = @(
+                        ([MSFT_AADUserAttributeSet] @{
+                            AttributeSetName = 'Engineering'
+                            AttributeValues  = @(
+                                ([MSFT_AADUserAttributeValue] @{
+                                    AttributeName    = 'Project'
+                                    StringArrayValue = [string[]]@('Baker', 'Cascade')
+                                })
+                                ([MSFT_AADUserAttributeValue] @{
+                                    AttributeName = 'Datacenter'
+                                    StringValue   = 'Portland'
+                                })
+                            )
+                        })
+                    )
+                }
+
+                Mock -CommandName Get-MgUser -MockWith {
+                    # Datacenter differs from the desired 'Portland' value, so the user drifts.
+                    $user = Get-BaseMgUser
+                    $user.customSecurityAttributes = @{
+                        Engineering = @{
+                            '@odata.type'           = '#Microsoft.DirectoryServices.CustomSecurityAttributeValue'
+                            'Project'               = @('Baker', 'Cascade')
+                            'Project@odata.type'    = '#Collection(String)'
+                            'Datacenter'            = 'Seattle'
+                            'Datacenter@odata.type' = '#String'
+                        }
+                    }
+                    return $user
+                }
+
+                Mock -CommandName Get-MSCloudLoginConnectionProfile -MockWith {
+                    return @{
+                        ResourceUrl = 'https://graph.microsoft.com/'
+                    }
+                }
+
+                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                }
+            }
+
+            It 'Should return present from the Get method' {
+                ((New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
+            }
+
+            It 'Should return the current custom security attributes from the Get method' {
+                $result = (New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Get().ToHashtable()
+                $result.CustomSecurityAttributes.AttributeSetName | Should -Be 'Engineering'
+            }
+
+            It 'Should return false from the Test method' {
+                (New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Test() | Should -Be $false
+            }
+
+            It 'Should remove the existing attributes and update them in the Set method' {
+                (New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Set()
+                Should -Invoke -CommandName 'Invoke-MgGraphRequest' -Exactly 1
+                Should -Invoke -CommandName 'Update-MgUser' -Exactly 1
+            }
+        }
+
+        Context -Name 'When the user already exists and has matching custom security attributes' -Fixture {
+            BeforeAll {
+                $testParams = @{
+                    UserPrincipalName        = 'JohnSmith@contoso.onmicrosoft.com'
+                    DisplayName              = 'John Smith'
+                    FirstName                = 'John'
+                    LastName                 = 'Smith'
+                    UsageLocation            = 'US'
+                    Password                 = $Credential
+                    Ensure                   = 'Present'
+                    Credential               = $Credential
+                    CustomSecurityAttributes = @(
+                        ([MSFT_AADUserAttributeSet] @{
+                            AttributeSetName = 'Engineering'
+                            AttributeValues  = @(
+                                ([MSFT_AADUserAttributeValue] @{
+                                    AttributeName = 'Datacenter'
+                                    StringValue   = 'Seattle'
+                                })
+                            )
+                        })
+                    )
+                }
+
+                Mock -CommandName Get-MgUser -MockWith {
+                    # Matches the desired state exactly, so no drift is reported.
+                    $user = Get-BaseMgUser
+                    $user.customSecurityAttributes = @{
+                        Engineering = @{
+                            '@odata.type'           = '#Microsoft.DirectoryServices.CustomSecurityAttributeValue'
+                            'Datacenter'            = 'Seattle'
+                            'Datacenter@odata.type' = '#String'
+                        }
+                    }
+                    return $user
+                }
+            }
+
+            It 'Should return present from the Get method' {
+                ((New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
+            }
+
+            It 'Should return true from the Test method' {
+                (New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Test() | Should -Be $true
+            }
+        }
+
         Context -Name 'ReverseDSC Tests' -Fixture {
             BeforeAll {
                 $Global:CurrentModeIsExport = $true
@@ -444,6 +580,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         UsageLocation     = 'US'
                         PasswordPolicies  = 'NONE'
                         Ensure            = 'Present'
+                        customSecurityAttributes = @{
+                            Engineering = @{
+                                '@odata.type'           = '#Microsoft.DirectoryServices.CustomSecurityAttributeValue'
+                                'Datacenter'            = 'Seattle'
+                                'Datacenter@odata.type' = '#String'
+                            }
+                        }
                     }
                 }
 

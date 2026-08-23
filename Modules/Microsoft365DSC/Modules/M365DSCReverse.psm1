@@ -482,6 +482,10 @@ function Start-M365DSCConfigurationExtract
                 $organization = $Credential.UserName.Split('@')[1]
             }
         }
+        elseif ($AuthMethods -contains 'AccessTokens')
+        {
+            $organization = $TenantId
+        }
         elseif ($AuthMethods -contains 'ManagedIdentity')
         {
             # If tenantId comes in as a GUID then query to replace with string representation, else use what was provided
@@ -857,7 +861,7 @@ function Start-M365DSCConfigurationExtract
                 # Check if filters for the current resource were specified.
                 $resourceFilter = $null
                 $filterExists = Test-M365DSCResourceProperty -ResourceName $resourceName -PropertyName 'Filter'
-                if ($filterExists -and $null -ne $using:Filters -and ($using:Filters).Keys.Contains($resourceName))
+                if ($filterExists -and $null -ne $using:Filters -and ($using:Filters).Keys.Where({ $_ -eq $resourceName }))
                 {
                     $resourceFilter = ($using:Filters).$resourceName
                     if ($filterExists)

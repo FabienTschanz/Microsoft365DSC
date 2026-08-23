@@ -34,6 +34,21 @@ Configuration Example
             Country               = "Canada"
             Office                = "Ottawa - Queen"
             UsageLocation         = "US"
+            CustomSecurityAttributes = @(
+                MSFT_AADUserAttributeSet{
+                    AttributeSetName = 'Engineering'
+                    AttributeValues  = @(
+                        MSFT_AADUserAttributeValue{
+                            AttributeName    = 'Project'
+                            StringArrayValue = @('Baker', 'Cascade', 'Denali') # Updated
+                        }
+                        MSFT_AADUserAttributeValue{
+                            AttributeName = 'Datacenter'
+                            StringValue   = 'Portland' # Updated
+                        }
+                    )
+                }
+            )
             AccountEnabled        = $true
             Department            = "Human Resources"
             Title                 = "Senior Program Manager"
