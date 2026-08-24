@@ -161,6 +161,7 @@
   * Updated `MSCloudLoginAssistant` to version 1.2.5.
   * Updated `PnP.PowerShell` to version 3.3.0.
     FIXES [#7414](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7414)
+  * Updated `ReverseDSC` to version 2.0.0.37.
 * MISC
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.
