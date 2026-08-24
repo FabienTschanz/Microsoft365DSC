@@ -552,7 +552,6 @@ class SCDeviceConfigurationRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCDeviceConfigurationRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCDeviceConfigurationRule])
@@ -569,4 +568,3 @@ class SCDeviceConfigurationRule : M365DSCResourceBase
         return $result
     }
 }
-

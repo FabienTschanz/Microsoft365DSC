@@ -342,7 +342,6 @@ class AADNetworkAccessForwardingPolicy : M365DSCResourceBase
         return $newPolicyRules
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADNetworkAccessForwardingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADNetworkAccessForwardingPolicy])
@@ -386,4 +385,3 @@ class MSFT_MicrosoftGraphNetworkAccessForwardingPolicyRule
     [System.ComponentModel.Description('List of destinations.')]
     [System.String[]] $Destinations
 }
-

@@ -289,7 +289,6 @@ class AzureBillingAccountPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureBillingAccountPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureBillingAccountPolicy])
@@ -321,4 +320,3 @@ class MSFT_AzureBillingAccountPolicyEnterpriseAgreementPolicy
     [System.ComponentModel.Description('The policy that controls whether department admin can view charges.')]
     [System.String] $departmentAdminViewCharges
 }
-

@@ -294,7 +294,6 @@ class EXOMailboxPlan : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOMailboxPlan] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOMailboxPlan])
@@ -311,4 +310,3 @@ class EXOMailboxPlan : M365DSCResourceBase
         return $result
     }
 }
-

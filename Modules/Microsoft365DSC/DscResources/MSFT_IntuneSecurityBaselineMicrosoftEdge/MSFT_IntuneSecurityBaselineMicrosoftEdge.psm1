@@ -506,7 +506,6 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneSecurityBaselineMicrosoftEdge] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneSecurityBaselineMicrosoftEdge])

@@ -414,7 +414,6 @@ class EXOMailboxCalendarConfiguration : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOMailboxCalendarConfiguration] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOMailboxCalendarConfiguration])
@@ -431,4 +430,3 @@ class EXOMailboxCalendarConfiguration : M365DSCResourceBase
         return $result
     }
 }
-

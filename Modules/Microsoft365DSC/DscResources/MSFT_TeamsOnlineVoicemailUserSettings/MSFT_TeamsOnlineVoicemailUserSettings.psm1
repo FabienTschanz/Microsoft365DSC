@@ -270,7 +270,6 @@ class TeamsOnlineVoicemailUserSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsOnlineVoicemailUserSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsOnlineVoicemailUserSettings])

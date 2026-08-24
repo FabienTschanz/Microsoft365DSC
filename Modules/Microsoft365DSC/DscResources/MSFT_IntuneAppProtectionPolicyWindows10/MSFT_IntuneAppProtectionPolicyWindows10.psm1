@@ -525,7 +525,6 @@ class IntuneAppProtectionPolicyWindows10 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAppProtectionPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAppProtectionPolicyWindows10])
@@ -575,4 +574,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

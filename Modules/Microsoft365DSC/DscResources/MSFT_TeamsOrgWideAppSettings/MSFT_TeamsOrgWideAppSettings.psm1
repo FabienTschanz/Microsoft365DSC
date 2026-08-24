@@ -183,7 +183,6 @@ class TeamsOrgWideAppSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsOrgWideAppSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsOrgWideAppSettings])
@@ -200,4 +199,3 @@ class TeamsOrgWideAppSettings : M365DSCResourceBase
         return $result
     }
 }
-

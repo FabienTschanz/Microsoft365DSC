@@ -369,7 +369,6 @@ class AADAuthenticationMethodPolicySms : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthenticationMethodPolicySms] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthenticationMethodPolicySms])
@@ -410,4 +409,3 @@ class MSFT_AADAuthenticationMethodPolicySmsIncludeTarget
     [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
-

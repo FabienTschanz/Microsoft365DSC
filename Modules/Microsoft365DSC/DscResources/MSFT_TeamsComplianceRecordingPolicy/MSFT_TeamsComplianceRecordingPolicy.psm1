@@ -484,7 +484,6 @@ class TeamsComplianceRecordingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsComplianceRecordingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsComplianceRecordingPolicy])
@@ -532,4 +531,3 @@ class MSFT_TeamsComplianceRecordingApplication
     [System.ComponentModel.Description('Determines the number of invites to send out to the application instance of the policy-based recording application. Can be set to 1 or 2 only.')]
     [System.String] $ConcurrentInvitationCount
 }
-

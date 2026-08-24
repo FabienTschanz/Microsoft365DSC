@@ -531,7 +531,6 @@ class AADRemoteNetwork : M365DSCResourceBase
         return $newDeviceLinks
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADRemoteNetwork] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADRemoteNetwork])

@@ -189,7 +189,6 @@ class AADOnPremisesPublishingProfilesSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADOnPremisesPublishingProfilesSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADOnPremisesPublishingProfilesSettings])
@@ -206,4 +205,3 @@ class AADOnPremisesPublishingProfilesSettings : M365DSCResourceBase
         return $result
     }
 }
-

@@ -265,7 +265,6 @@ class EXOSharingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOSharingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOSharingPolicy])
@@ -282,4 +281,3 @@ class EXOSharingPolicy : M365DSCResourceBase
         return $result
     }
 }
-

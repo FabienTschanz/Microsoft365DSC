@@ -251,7 +251,6 @@ class TeamsTranslationRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTranslationRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTranslationRule])
@@ -268,4 +267,3 @@ class TeamsTranslationRule : M365DSCResourceBase
         return $result
     }
 }
-

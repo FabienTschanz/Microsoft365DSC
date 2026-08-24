@@ -339,7 +339,6 @@ class IntuneRoleDefinitionWindows365 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneRoleDefinitionWindows365] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneRoleDefinitionWindows365])
@@ -363,4 +362,3 @@ class MSFT_MicrosoftGraphunifiedRolePermission
     [System.ComponentModel.Description('Set of tasks that can be performed on a resource.')]
     [System.String[]] $AllowedResourceActions
 }
-

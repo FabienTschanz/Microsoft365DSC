@@ -603,7 +603,6 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADEntitlementManagementConnectedOrganization] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADEntitlementManagementConnectedOrganization])
@@ -648,4 +647,3 @@ class MSFT_AADEntitlementManagementConnectedOrganizationIdentitySource
     [System.ComponentModel.Description('The issuerURI of the incoming federation.')]
     [System.String] $IssuerUri
 }
-

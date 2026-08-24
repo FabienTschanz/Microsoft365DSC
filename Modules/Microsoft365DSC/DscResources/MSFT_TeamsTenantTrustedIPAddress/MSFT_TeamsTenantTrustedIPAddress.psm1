@@ -249,7 +249,6 @@ class TeamsTenantTrustedIPAddress : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTenantTrustedIPAddress] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTenantTrustedIPAddress])
@@ -266,4 +265,3 @@ class TeamsTenantTrustedIPAddress : M365DSCResourceBase
         return $result
     }
 }
-

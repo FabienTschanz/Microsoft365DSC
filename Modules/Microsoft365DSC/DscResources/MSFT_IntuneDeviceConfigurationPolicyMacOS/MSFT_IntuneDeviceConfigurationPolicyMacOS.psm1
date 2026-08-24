@@ -697,12 +697,11 @@ class IntuneDeviceConfigurationPolicyMacOS : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationPolicyMacOS] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationPolicyMacOS])
@@ -920,4 +919,3 @@ class MSFT_MicrosoftGraphmacosappleeventreceiver
     [ValidateSet('bundleID', 'path')]
     [System.String] $identifierType
 }
-

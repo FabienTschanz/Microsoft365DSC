@@ -400,7 +400,6 @@ class AADClaimsMappingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADClaimsMappingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADClaimsMappingPolicy])
@@ -503,4 +502,3 @@ class MSFT_AADClaimsMappingPolicyDefinitionMappingPolicyClaimsTransformationOutp
     [System.ComponentModel.Description('The transformation type of the output claims of the claims transformation in the claims mapping policy.')]
     [System.String] $TransformationClaimType
 }
-

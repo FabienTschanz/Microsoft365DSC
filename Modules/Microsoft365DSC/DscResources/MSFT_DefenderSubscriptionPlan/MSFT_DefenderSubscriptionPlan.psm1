@@ -289,7 +289,6 @@ securityresources | where type == "microsoft.security/pricings" | project Id=id,
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [DefenderSubscriptionPlan] AsResult([System.Object] $Values)
     {
         if ($Values -is [DefenderSubscriptionPlan])
@@ -306,4 +305,3 @@ securityresources | where type == "microsoft.security/pricings" | project Id=id,
         return $result
     }
 }
-

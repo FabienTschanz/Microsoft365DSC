@@ -517,7 +517,6 @@ class AADAuthenticationMethodPolicyFido2 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthenticationMethodPolicyFido2] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthenticationMethodPolicyFido2])
@@ -615,4 +614,3 @@ class MSFT_AADAuthenticationMethodPolicyFido2PasskeyProfile
     [System.ComponentModel.Description('Key restrictions for this passkey profile.')]
     [MSFT_MicrosoftGraphFido2KeyRestrictions] $KeyRestrictions
 }
-

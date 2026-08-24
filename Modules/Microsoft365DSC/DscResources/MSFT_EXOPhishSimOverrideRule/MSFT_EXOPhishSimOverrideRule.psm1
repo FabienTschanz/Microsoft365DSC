@@ -276,7 +276,6 @@ class EXOPhishSimOverrideRule : M365DSCResourceBase
         $setParameters.Remove($propertyName)
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOPhishSimOverrideRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOPhishSimOverrideRule])
@@ -293,4 +292,3 @@ class EXOPhishSimOverrideRule : M365DSCResourceBase
         return $result
     }
 }
-

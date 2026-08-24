@@ -1286,7 +1286,6 @@ class SCPolicyConfig : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCPolicyConfig] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCPolicyConfig])
@@ -1581,4 +1580,3 @@ class MSFT_PolicyConfigIPRange
     [System.ComponentModel.Description('TBD')]
     [System.String] $toAddress
 }
-

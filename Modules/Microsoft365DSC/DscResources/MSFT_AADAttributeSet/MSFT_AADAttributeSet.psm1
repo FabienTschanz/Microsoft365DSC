@@ -262,7 +262,6 @@ class AADAttributeSet : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAttributeSet] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAttributeSet])
@@ -279,4 +278,3 @@ class AADAttributeSet : M365DSCResourceBase
         return $result
     }
 }
-

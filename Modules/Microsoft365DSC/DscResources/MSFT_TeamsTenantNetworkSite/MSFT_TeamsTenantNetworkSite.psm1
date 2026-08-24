@@ -280,7 +280,6 @@ class TeamsTenantNetworkSite : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTenantNetworkSite] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTenantNetworkSite])

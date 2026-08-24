@@ -675,7 +675,6 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         return $true
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADRoleAssignmentScheduleRequest] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADRoleAssignmentScheduleRequest])

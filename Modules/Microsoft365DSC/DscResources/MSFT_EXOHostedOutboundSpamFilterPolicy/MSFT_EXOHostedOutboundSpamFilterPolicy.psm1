@@ -283,7 +283,6 @@ class EXOHostedOutboundSpamFilterPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOHostedOutboundSpamFilterPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOHostedOutboundSpamFilterPolicy])
@@ -300,4 +299,3 @@ class EXOHostedOutboundSpamFilterPolicy : M365DSCResourceBase
         return $result
     }
 }
-

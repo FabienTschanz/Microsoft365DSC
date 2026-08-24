@@ -442,7 +442,6 @@ class TeamsTenantDialPlan : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTenantDialPlan] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTenantDialPlan])
@@ -486,4 +485,3 @@ class MSFT_TeamsVoiceNormalizationRule
     [System.ComponentModel.Description('If True, the result of applying this rule will be a number internal to the organization. If False, applying the rule results in an external number. This value is ignored if the value of the OptimizeDeviceDialing property of the associated dial plan is set to False.')]
     [System.Nullable[System.Boolean]] $IsInternalExtension
 }
-

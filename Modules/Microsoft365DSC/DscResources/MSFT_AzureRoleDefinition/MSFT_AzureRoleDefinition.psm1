@@ -317,7 +317,6 @@ class AzureRoleDefinition : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureRoleDefinition] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureRoleDefinition])
@@ -334,4 +333,3 @@ class AzureRoleDefinition : M365DSCResourceBase
         return $result
     }
 }
-

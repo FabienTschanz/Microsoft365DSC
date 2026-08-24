@@ -226,7 +226,6 @@ class SCDeviceConditionalAccessPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCDeviceConditionalAccessPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCDeviceConditionalAccessPolicy])
@@ -243,4 +242,3 @@ class SCDeviceConditionalAccessPolicy : M365DSCResourceBase
         return $result
     }
 }
-

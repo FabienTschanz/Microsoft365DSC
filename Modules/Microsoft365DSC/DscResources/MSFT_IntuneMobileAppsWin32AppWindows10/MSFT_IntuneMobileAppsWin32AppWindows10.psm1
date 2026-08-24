@@ -808,7 +808,6 @@ class IntuneMobileAppsWin32AppWindows10 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsWin32AppWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsWin32AppWindows10])
@@ -1111,4 +1110,3 @@ class MSFT_DeviceManagementWin32MobileAppAssignmentSettingsRestartSettings
     [System.ComponentModel.Description('The number of minutes to snooze the restart notification dialog when the snooze button is selected.')]
     [System.Nullable[System.Int32]] $restartNotificationSnoozeDurationInMinutes
 }
-

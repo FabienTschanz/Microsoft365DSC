@@ -474,7 +474,6 @@ class AADAuthenticationMethodPolicyX509 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthenticationMethodPolicyX509] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthenticationMethodPolicyX509])
@@ -563,4 +562,3 @@ class MSFT_MicrosoftGraphX509CertificateRule
     [ValidateSet('issuerSubject', 'policyOID', 'unknownFutureValue')]
     [System.String] $X509CertificateRuleType
 }
-

@@ -285,7 +285,6 @@ class AADTokenLifetimePolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADTokenLifetimePolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADTokenLifetimePolicy])
@@ -302,4 +301,3 @@ class AADTokenLifetimePolicy : M365DSCResourceBase
         return $result
     }
 }
-

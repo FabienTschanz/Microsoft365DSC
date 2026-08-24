@@ -278,7 +278,6 @@ class TeamsIPPhonePolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsIPPhonePolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsIPPhonePolicy])
@@ -295,4 +294,3 @@ class TeamsIPPhonePolicy : M365DSCResourceBase
         return $result
     }
 }
-

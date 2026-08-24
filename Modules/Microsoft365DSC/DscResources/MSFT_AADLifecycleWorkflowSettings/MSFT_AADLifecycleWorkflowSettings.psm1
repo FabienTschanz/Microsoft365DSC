@@ -242,12 +242,11 @@ class AADLifecycleWorkflowSettings : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADLifecycleWorkflowSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADLifecycleWorkflowSettings])
@@ -264,4 +263,3 @@ class AADLifecycleWorkflowSettings : M365DSCResourceBase
         return $result
     }
 }
-

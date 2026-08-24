@@ -969,7 +969,6 @@ class SCInsiderRiskEntityList : M365DSCResourceBase
             -RemoveEntities $entitiesToRemove | Out-Null
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCInsiderRiskEntityList] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCInsiderRiskEntityList])
@@ -1012,4 +1011,3 @@ class MSFT_SCInsiderRiskEntityListSite
     [System.ComponentModel.Description('Unique identifier of the site.')]
     [System.String] $Guid
 }
-

@@ -360,7 +360,6 @@ class AADFilteringPolicyRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADFilteringPolicyRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADFilteringPolicyRule])
@@ -388,4 +387,3 @@ class MSFT_AADFilteringPolicyRuleDestination
     [System.ComponentModel.Description('FQDN value for the destination.')]
     [System.String] $value
 }
-

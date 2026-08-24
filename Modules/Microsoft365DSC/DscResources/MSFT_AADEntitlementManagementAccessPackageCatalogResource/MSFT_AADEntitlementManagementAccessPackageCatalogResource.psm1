@@ -552,7 +552,6 @@ class AADEntitlementManagementAccessPackageCatalogResource : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADEntitlementManagementAccessPackageCatalogResource] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADEntitlementManagementAccessPackageCatalogResource])
@@ -689,4 +688,3 @@ class MSFT_MicrosoftGraphaccessPackageLocalizedText
     [System.ComponentModel.Description('The ISO code for the intended language. Required.')]
     [System.String] $LanguageCode
 }
-

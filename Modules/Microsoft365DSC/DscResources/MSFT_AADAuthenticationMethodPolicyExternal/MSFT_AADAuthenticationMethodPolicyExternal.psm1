@@ -410,7 +410,6 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthenticationMethodPolicyExternal] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthenticationMethodPolicyExternal])
@@ -462,4 +461,3 @@ class MSFT_AADAuthenticationMethodPolicyExternalOpenIdConnectSetting
     [System.ComponentModel.Description('The host URL of the external identity provider''s OIDC discovery endpoint.')]
     [System.String] $DiscoveryUrl
 }
-

@@ -229,7 +229,6 @@ class TeamsNotificationAndFeedsPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsNotificationAndFeedsPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsNotificationAndFeedsPolicy])
@@ -246,4 +245,3 @@ class TeamsNotificationAndFeedsPolicy : M365DSCResourceBase
         return $result
     }
 }
-

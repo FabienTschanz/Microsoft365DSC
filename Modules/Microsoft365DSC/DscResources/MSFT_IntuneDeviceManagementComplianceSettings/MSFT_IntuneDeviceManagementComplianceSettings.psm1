@@ -203,12 +203,11 @@ class IntuneDeviceManagementComplianceSettings : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceManagementComplianceSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceManagementComplianceSettings])
@@ -225,4 +224,3 @@ class IntuneDeviceManagementComplianceSettings : M365DSCResourceBase
         return $result
     }
 }
-

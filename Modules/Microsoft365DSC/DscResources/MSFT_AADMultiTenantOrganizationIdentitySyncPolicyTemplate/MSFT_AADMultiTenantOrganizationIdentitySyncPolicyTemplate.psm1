@@ -234,7 +234,6 @@ class AADMultiTenantOrganizationIdentitySyncPolicyTemplate : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADMultiTenantOrganizationIdentitySyncPolicyTemplate] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADMultiTenantOrganizationIdentitySyncPolicyTemplate])
@@ -258,4 +257,3 @@ class MSFT_AADMultiTenantOrganizationIdentitySyncPolicyTemplateUserSyncInbound
     [System.ComponentModel.Description('Defines whether user objects should be synchronized from the partner tenant. false causes any current user synchronization from the source tenant to the target tenant to stop. This property has no impact on existing users who have already been synchronized.')]
     [System.Nullable[System.Boolean]] $isSyncAllowed
 }
-

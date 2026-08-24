@@ -852,12 +852,11 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationVpnPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationVpnPolicyWindows10])
@@ -1121,4 +1120,3 @@ class MSFT_MicrosoftGraphNumberRange
     [System.ComponentModel.Description('Upper number.')]
     [System.Nullable[System.UInt32]] $UpperNumber
 }
-

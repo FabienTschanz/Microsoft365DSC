@@ -786,7 +786,6 @@ class IntuneFirewallPolicyWindows10 : M365DSCResourceBase
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneFirewallPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneFirewallPolicyWindows10])
@@ -836,4 +835,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

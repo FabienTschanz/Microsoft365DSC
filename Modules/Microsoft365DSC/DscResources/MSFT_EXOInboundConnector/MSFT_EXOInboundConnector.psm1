@@ -346,7 +346,6 @@ class EXOInboundConnector : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOInboundConnector] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOInboundConnector])

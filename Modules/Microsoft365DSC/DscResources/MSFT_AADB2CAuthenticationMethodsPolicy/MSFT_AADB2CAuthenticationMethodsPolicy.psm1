@@ -208,7 +208,6 @@ class AADB2CAuthenticationMethodsPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADB2CAuthenticationMethodsPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADB2CAuthenticationMethodsPolicy])
@@ -225,4 +224,3 @@ class AADB2CAuthenticationMethodsPolicy : M365DSCResourceBase
         return $result
     }
 }
-

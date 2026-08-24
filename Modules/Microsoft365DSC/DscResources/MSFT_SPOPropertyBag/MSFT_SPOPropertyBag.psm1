@@ -347,7 +347,6 @@ class SPOPropertyBag : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOPropertyBag] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOPropertyBag])
@@ -364,4 +363,3 @@ class SPOPropertyBag : M365DSCResourceBase
         return $result
     }
 }
-

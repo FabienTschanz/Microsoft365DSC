@@ -445,7 +445,6 @@ class IntuneAndroidManagedStoreAppConfiguration : M365DSCResourceBase
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAndroidManagedStoreAppConfiguration] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAndroidManagedStoreAppConfiguration])

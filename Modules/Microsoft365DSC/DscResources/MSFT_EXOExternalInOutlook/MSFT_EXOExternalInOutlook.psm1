@@ -244,7 +244,6 @@ class EXOExternalInOutlook : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOExternalInOutlook] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOExternalInOutlook])
@@ -261,4 +260,3 @@ class EXOExternalInOutlook : M365DSCResourceBase
         return $result
     }
 }
-

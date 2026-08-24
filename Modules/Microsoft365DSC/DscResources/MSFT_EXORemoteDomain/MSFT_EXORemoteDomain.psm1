@@ -369,7 +369,6 @@ class EXORemoteDomain : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXORemoteDomain] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXORemoteDomain])
@@ -386,4 +385,3 @@ class EXORemoteDomain : M365DSCResourceBase
         return $result
     }
 }
-

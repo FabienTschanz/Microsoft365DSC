@@ -264,7 +264,6 @@ class TeamsCallParkPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsCallParkPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsCallParkPolicy])
@@ -281,4 +280,3 @@ class TeamsCallParkPolicy : M365DSCResourceBase
         return $result
     }
 }
-

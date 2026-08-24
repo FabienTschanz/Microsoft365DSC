@@ -279,7 +279,6 @@ class TeamsVoiceRoutingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsVoiceRoutingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsVoiceRoutingPolicy])

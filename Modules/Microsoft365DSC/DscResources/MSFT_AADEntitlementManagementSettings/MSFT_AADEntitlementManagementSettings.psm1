@@ -191,7 +191,6 @@ class AADEntitlementManagementSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADEntitlementManagementSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADEntitlementManagementSettings])
@@ -208,4 +207,3 @@ class AADEntitlementManagementSettings : M365DSCResourceBase
         return $result
     }
 }
-

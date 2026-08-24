@@ -299,7 +299,6 @@ class SCUnifiedAuditLogRetentionPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCUnifiedAuditLogRetentionPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCUnifiedAuditLogRetentionPolicy])
@@ -316,4 +315,3 @@ class SCUnifiedAuditLogRetentionPolicy : M365DSCResourceBase
         return $result
     }
 }
-

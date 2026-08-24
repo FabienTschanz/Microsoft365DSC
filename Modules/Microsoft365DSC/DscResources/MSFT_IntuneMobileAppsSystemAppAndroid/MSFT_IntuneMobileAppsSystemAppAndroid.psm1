@@ -378,7 +378,6 @@ class IntuneMobileAppsSystemAppAndroid : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsSystemAppAndroid] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsSystemAppAndroid])
@@ -456,4 +455,3 @@ class MSFT_DeviceManagementSystemMobileAppAssignmentSettings : MSFT_DeviceManage
     [ValidateSet('default', 'postponed', 'priority')]
     [System.String] $autoUpdateMode
 }
-

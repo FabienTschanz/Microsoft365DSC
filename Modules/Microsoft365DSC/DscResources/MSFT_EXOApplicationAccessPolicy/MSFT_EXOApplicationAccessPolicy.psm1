@@ -320,7 +320,6 @@ class EXOApplicationAccessPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOApplicationAccessPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOApplicationAccessPolicy])
@@ -337,4 +336,3 @@ class EXOApplicationAccessPolicy : M365DSCResourceBase
         return $result
     }
 }
-

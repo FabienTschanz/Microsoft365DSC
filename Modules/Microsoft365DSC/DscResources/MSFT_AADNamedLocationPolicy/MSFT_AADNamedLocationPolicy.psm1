@@ -365,7 +365,6 @@ class AADNamedLocationPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADNamedLocationPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADNamedLocationPolicy])
@@ -382,4 +381,3 @@ class AADNamedLocationPolicy : M365DSCResourceBase
         return $result
     }
 }
-

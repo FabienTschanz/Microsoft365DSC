@@ -460,7 +460,7 @@ class AADIdentityGovernanceLifecycleWorkflow : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
@@ -532,7 +532,6 @@ class AADIdentityGovernanceLifecycleWorkflow : M365DSCResourceBase
         return $taskList
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADIdentityGovernanceLifecycleWorkflow] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADIdentityGovernanceLifecycleWorkflow])
@@ -636,4 +635,3 @@ class MSFT_IdentityGovernanceTrigger
     [System.ComponentModel.Description('The offset in days for the Trigger.')]
     [System.Nullable[System.Int32]] $OffsetInDays
 }
-

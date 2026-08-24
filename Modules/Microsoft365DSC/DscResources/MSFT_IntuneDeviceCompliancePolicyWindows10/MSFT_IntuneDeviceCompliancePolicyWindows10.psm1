@@ -690,12 +690,11 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceCompliancePolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceCompliancePolicyWindows10])
@@ -791,4 +790,3 @@ class MSFT_MicrosoftGraphDeviceComplianceScheduledActionsForRuleConfiguration
     [System.ComponentModel.Description('Display name of the Notification Template used in the compliance policy. Can only be used with ActionType ''notification''.')]
     [System.String] $NotificationTemplate
 }
-

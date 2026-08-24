@@ -361,7 +361,6 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneWindowsUpdateForBusinessHotpatchProfileWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneWindowsUpdateForBusinessHotpatchProfileWindows10])

@@ -303,7 +303,6 @@ class SPOUserProfileProperty : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOUserProfileProperty] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOUserProfileProperty])
@@ -331,4 +330,3 @@ class MSFT_SPOUserProfilePropertyInstance
     [System.ComponentModel.Description('Value of the User Profile Property.')]
     [System.String] $Value
 }
-

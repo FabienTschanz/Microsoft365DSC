@@ -605,7 +605,6 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
         return $values
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADGroupEligibilityScheduleSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADGroupEligibilityScheduleSettings])

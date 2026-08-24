@@ -560,7 +560,7 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
@@ -579,7 +579,6 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAppConfigurationPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAppConfigurationPolicy])
@@ -666,4 +665,3 @@ class MSFT_AppIdentifier
     [System.ComponentModel.Description('AppId Windows.')]
     [System.String] $windowsAppId
 }
-

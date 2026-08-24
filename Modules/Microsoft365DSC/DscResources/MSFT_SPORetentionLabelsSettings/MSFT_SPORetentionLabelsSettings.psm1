@@ -252,7 +252,6 @@ class SPORetentionLabelsSettings : M365DSCResourceBase
         return $true
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPORetentionLabelsSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPORetentionLabelsSettings])

@@ -434,7 +434,6 @@ class EXOQuarantinePolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOQuarantinePolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOQuarantinePolicy])
@@ -451,4 +450,3 @@ class EXOQuarantinePolicy : M365DSCResourceBase
         return $result
     }
 }
-

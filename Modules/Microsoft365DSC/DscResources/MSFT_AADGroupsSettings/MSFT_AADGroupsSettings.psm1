@@ -361,7 +361,6 @@ class AADGroupsSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADGroupsSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADGroupsSettings])

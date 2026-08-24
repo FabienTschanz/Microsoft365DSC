@@ -804,7 +804,7 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
@@ -922,7 +922,6 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAppProtectionPolicyAndroid] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAppProtectionPolicyAndroid])
@@ -972,4 +971,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

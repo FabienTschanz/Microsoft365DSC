@@ -358,7 +358,6 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthenticationMethodPolicyQRCodeImage] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthenticationMethodPolicyQRCodeImage])
@@ -399,4 +398,3 @@ class MSFT_AADAuthenticationMethodPolicyQRCodeImageIncludeTarget
     [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
-

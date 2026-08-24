@@ -370,7 +370,6 @@ class AADHomeRealmDiscoveryPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADHomeRealmDiscoveryPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADHomeRealmDiscoveryPolicy])
@@ -413,4 +412,3 @@ class MSFT_AADHomeRealDiscoveryPolicyDefinitionAlternateIdLogin
     [System.ComponentModel.Description('Boolean for whether AlternateIdLogin is enabled.')]
     [System.Nullable[System.Boolean]] $Enabled
 }
-

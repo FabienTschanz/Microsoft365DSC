@@ -278,7 +278,6 @@ class IntuneDerivedCredential : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDerivedCredential] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDerivedCredential])
@@ -295,4 +294,3 @@ class IntuneDerivedCredential : M365DSCResourceBase
         return $result
     }
 }
-

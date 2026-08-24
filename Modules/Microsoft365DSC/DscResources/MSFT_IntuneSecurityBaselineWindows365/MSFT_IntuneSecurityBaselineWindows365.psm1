@@ -2269,7 +2269,6 @@ class IntuneSecurityBaselineWindows365 : M365DSCResourceBase
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneSecurityBaselineWindows365] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneSecurityBaselineWindows365])
@@ -4517,4 +4516,3 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogpol_hardenedpaths
     [System.ComponentModel.Description('Name')]
     [System.String] $key
 }
-

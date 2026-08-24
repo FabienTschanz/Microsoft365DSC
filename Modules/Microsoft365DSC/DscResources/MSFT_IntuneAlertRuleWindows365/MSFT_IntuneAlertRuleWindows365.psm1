@@ -368,7 +368,6 @@ class IntuneAlertRuleWindows365 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAlertRuleWindows365] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAlertRuleWindows365])
@@ -436,4 +435,3 @@ class MSFT_IntuneAlertRuleNotificationChannelReceiver
     [ValidateSet('en-us', 'cs-cz', 'de-de', 'es-es', 'fr-fr', 'hu-hu', 'it-it', 'ja-jp', 'ko-kr', 'nl-nl', 'pl-pl', 'pt-br', 'pt-pt', 'ru-ru', 'sv-se', 'tr-tr', 'zh-cn', 'zh-tw')]
     [System.String] $Locale
 }
-

@@ -318,7 +318,6 @@ class EXOAuthenticationPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOAuthenticationPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOAuthenticationPolicy])
@@ -335,4 +334,3 @@ class EXOAuthenticationPolicy : M365DSCResourceBase
         return $result
     }
 }
-

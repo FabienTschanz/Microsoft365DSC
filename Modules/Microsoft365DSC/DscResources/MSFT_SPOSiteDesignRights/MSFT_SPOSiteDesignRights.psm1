@@ -337,7 +337,6 @@ class SPOSiteDesignRights : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOSiteDesignRights] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOSiteDesignRights])
@@ -354,4 +353,3 @@ class SPOSiteDesignRights : M365DSCResourceBase
         return $result
     }
 }
-

@@ -692,7 +692,6 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10])

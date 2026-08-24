@@ -643,7 +643,6 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
         return $true
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADRoleEligibilityScheduleRequest] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADRoleEligibilityScheduleRequest])
@@ -761,4 +760,3 @@ class MSFT_AADRoleEligibilityScheduleRequestScheduleRecurrenceRange
     [ValidateSet('endDate', 'noEnd', 'numbered')]
     [System.String] $type
 }
-

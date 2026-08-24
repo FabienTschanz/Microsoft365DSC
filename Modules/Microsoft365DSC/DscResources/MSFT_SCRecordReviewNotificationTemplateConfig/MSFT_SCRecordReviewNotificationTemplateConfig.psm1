@@ -227,7 +227,6 @@ class SCRecordReviewNotificationTemplateConfig : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCRecordReviewNotificationTemplateConfig] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCRecordReviewNotificationTemplateConfig])
@@ -244,4 +243,3 @@ class SCRecordReviewNotificationTemplateConfig : M365DSCResourceBase
         return $result
     }
 }
-

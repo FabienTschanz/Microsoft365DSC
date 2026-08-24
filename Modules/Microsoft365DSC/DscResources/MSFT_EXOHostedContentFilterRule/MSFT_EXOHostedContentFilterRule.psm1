@@ -337,7 +337,6 @@ class EXOHostedContentFilterRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOHostedContentFilterRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOHostedContentFilterRule])
@@ -354,4 +353,3 @@ class EXOHostedContentFilterRule : M365DSCResourceBase
         return $result
     }
 }
-

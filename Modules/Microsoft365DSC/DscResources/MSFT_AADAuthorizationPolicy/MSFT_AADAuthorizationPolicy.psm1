@@ -366,7 +366,6 @@ class AADAuthorizationPolicy : M365DSCResourceBase
         return $roleName
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthorizationPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthorizationPolicy])
@@ -383,4 +382,3 @@ class AADAuthorizationPolicy : M365DSCResourceBase
         return $result
     }
 }
-

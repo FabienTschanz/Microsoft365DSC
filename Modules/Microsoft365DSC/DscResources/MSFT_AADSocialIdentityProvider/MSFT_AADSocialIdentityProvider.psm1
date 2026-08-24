@@ -277,7 +277,6 @@ class AADSocialIdentityProvider : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADSocialIdentityProvider] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADSocialIdentityProvider])
@@ -294,4 +293,3 @@ class AADSocialIdentityProvider : M365DSCResourceBase
         return $result
     }
 }
-

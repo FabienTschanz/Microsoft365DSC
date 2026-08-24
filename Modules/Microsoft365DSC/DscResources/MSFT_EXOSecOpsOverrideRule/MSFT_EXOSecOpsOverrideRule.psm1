@@ -240,7 +240,6 @@ class EXOSecOpsOverrideRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOSecOpsOverrideRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOSecOpsOverrideRule])
@@ -257,4 +256,3 @@ class EXOSecOpsOverrideRule : M365DSCResourceBase
         return $result
     }
 }
-

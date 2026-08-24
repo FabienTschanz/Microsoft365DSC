@@ -328,7 +328,6 @@ class TeamsAppPermissionPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsAppPermissionPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsAppPermissionPolicy])
@@ -345,4 +344,3 @@ class TeamsAppPermissionPolicy : M365DSCResourceBase
         return $result
     }
 }
-

@@ -380,7 +380,6 @@ class AADAppManagementPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAppManagementPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAppManagementPolicy])
@@ -431,4 +430,3 @@ class MSFT_AADAppManagementPolicyRestrictionsCredential
     [System.ComponentModel.Description('Indicates whether the restriction is evaluated. The possible values are: enabled, disabled, unknownFutureValue. If enabled, the restriction is evaluated. If disabled, the restriction isn''t evaluated or enforced.')]
     [System.String] $State
 }
-

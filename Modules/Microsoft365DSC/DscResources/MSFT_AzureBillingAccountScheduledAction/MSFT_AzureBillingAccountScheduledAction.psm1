@@ -385,7 +385,6 @@ class AzureBillingAccountScheduledAction : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureBillingAccountScheduledAction] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureBillingAccountScheduledAction])
@@ -448,4 +447,3 @@ class MSFT_AzureBillingAccountScheduledActionSchedule
     [System.ComponentModel.Description('UTC time at which cost analysis data will be emailed.')]
     [System.Nullable[System.UInt32]] $hourOfDay
 }
-

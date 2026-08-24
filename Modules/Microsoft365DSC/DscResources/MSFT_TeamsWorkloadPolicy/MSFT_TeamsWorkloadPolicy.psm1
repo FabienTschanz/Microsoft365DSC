@@ -274,7 +274,6 @@ class TeamsWorkloadPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsWorkloadPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsWorkloadPolicy])
@@ -291,4 +290,3 @@ class TeamsWorkloadPolicy : M365DSCResourceBase
         return $result
     }
 }
-

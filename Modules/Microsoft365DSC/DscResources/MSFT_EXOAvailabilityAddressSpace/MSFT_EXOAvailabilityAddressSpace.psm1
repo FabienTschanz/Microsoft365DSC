@@ -327,7 +327,6 @@ class EXOAvailabilityAddressSpace : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOAvailabilityAddressSpace] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOAvailabilityAddressSpace])
@@ -344,4 +343,3 @@ class EXOAvailabilityAddressSpace : M365DSCResourceBase
         return $result
     }
 }
-

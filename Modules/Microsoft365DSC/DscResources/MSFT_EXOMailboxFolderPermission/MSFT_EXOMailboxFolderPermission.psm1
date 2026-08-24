@@ -297,7 +297,6 @@ class EXOMailboxFolderPermission : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOMailboxFolderPermission] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOMailboxFolderPermission])
@@ -329,4 +328,3 @@ class MSFT_EXOMailboxFolderUserPermission
     [System.ComponentModel.Description('The SharingPermissionFlags parameter assigns calendar delegate permissions. This parameter only applies to calendar folders and can only be used when the AccessRights parameter value is Editor. Valid values are: None, Delegate, CanViewPrivateItems')]
     [System.String] $SharingPermissionFlags
 }
-

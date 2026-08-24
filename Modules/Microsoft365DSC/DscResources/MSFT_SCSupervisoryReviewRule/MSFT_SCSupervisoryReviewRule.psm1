@@ -234,7 +234,6 @@ class SCSupervisoryReviewRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCSupervisoryReviewRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCSupervisoryReviewRule])
@@ -251,4 +250,3 @@ class SCSupervisoryReviewRule : M365DSCResourceBase
         return $result
     }
 }
-

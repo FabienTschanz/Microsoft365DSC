@@ -543,7 +543,6 @@ class IntuneWindowsAutopilotDeploymentProfileAzureADJoined : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneWindowsAutopilotDeploymentProfileAzureADJoined] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneWindowsAutopilotDeploymentProfileAzureADJoined])
@@ -653,4 +652,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

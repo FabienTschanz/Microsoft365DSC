@@ -283,7 +283,6 @@ class EXODataClassification : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXODataClassification] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXODataClassification])
@@ -300,4 +299,3 @@ class EXODataClassification : M365DSCResourceBase
         return $result
     }
 }
-

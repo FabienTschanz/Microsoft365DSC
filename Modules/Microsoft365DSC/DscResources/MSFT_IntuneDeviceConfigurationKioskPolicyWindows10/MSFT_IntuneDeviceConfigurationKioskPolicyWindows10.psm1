@@ -640,12 +640,11 @@ class IntuneDeviceConfigurationKioskPolicyWindows10 : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationKioskPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationKioskPolicyWindows10])
@@ -1016,4 +1015,3 @@ class MSFT_MicrosoftGraphWindowsKioskWin32App
     [ValidateSet('#microsoft.graph.windowsKioskDesktopApp', '#microsoft.graph.windowsKioskUWPApp', '#microsoft.graph.windowsKioskWin32App')]
     [System.String] $odataType
 }
-

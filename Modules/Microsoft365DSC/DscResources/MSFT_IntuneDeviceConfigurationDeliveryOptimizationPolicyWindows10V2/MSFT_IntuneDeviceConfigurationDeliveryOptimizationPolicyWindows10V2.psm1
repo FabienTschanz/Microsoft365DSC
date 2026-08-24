@@ -568,7 +568,6 @@ class IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2 : M365DSCRe
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2])
@@ -618,4 +617,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

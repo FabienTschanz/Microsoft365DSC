@@ -1158,7 +1158,6 @@ class FabricAdminTenantSettings : M365DSCResourceBase
         return $values
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [FabricAdminTenantSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [FabricAdminTenantSettings])
@@ -1248,4 +1247,3 @@ class MSFT_FabricTenantSettingProperty
     [System.ComponentModel.Description('The value of the property.')]
     [System.String] $value
 }
-

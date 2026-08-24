@@ -322,7 +322,6 @@ class TeamsEmergencyCallRoutingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsEmergencyCallRoutingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsEmergencyCallRoutingPolicy])
@@ -354,4 +353,3 @@ class MSFT_TeamsEmergencyNumber
     [System.ComponentModel.Description('Specify the online public switched telephone network (PSTN) usage')]
     [System.String] $OnlinePSTNUsage
 }
-

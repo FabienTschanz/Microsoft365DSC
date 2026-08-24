@@ -480,7 +480,6 @@ class IntuneWindowsAutopilotDevicePreparationAutomaticPolicy : M365DSCResourceBa
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneWindowsAutopilotDevicePreparationAutomaticPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneWindowsAutopilotDevicePreparationAutomaticPolicy])
@@ -497,4 +496,3 @@ class IntuneWindowsAutopilotDevicePreparationAutomaticPolicy : M365DSCResourceBa
         return $result
     }
 }
-

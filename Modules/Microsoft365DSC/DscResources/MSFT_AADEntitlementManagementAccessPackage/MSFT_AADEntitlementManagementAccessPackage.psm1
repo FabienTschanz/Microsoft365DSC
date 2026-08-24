@@ -819,7 +819,6 @@ class AADEntitlementManagementAccessPackage : M365DSCResourceBase
         return $OriginId
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADEntitlementManagementAccessPackage] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADEntitlementManagementAccessPackage])

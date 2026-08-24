@@ -759,7 +759,6 @@ class SCLabelPolicy : M365DSCResourceBase
         return $foundSettings
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCLabelPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCLabelPolicy])

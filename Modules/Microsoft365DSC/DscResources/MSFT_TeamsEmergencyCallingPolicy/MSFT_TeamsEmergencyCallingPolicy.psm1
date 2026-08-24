@@ -339,7 +339,6 @@ class TeamsEmergencyCallingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsEmergencyCallingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsEmergencyCallingPolicy])
@@ -376,4 +375,3 @@ class MSFT_TeamsEmergencyCallingExtendedNotification
     [ValidateSet('ConferenceMuted', 'ConferenceUnMuted', 'NotificationOnly')]
     [System.String] $NotificationMode
 }
-

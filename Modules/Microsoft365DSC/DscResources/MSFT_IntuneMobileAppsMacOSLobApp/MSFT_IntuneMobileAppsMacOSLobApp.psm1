@@ -562,7 +562,6 @@ class IntuneMobileAppsMacOSLobApp : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsMacOSLobApp] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsMacOSLobApp])
@@ -727,4 +726,3 @@ class MSFT_DeviceManagementMacOSLobAppAssignmentSettings : MSFT_DeviceManagement
     [System.ComponentModel.Description('When TRUE, indicates that the app should be uninstalled when the device is removed from Intune. When FALSE, indicates that the app will not be uninstalled when the device is removed from Intune.')]
     [System.Nullable[System.Boolean]] $uninstallOnDeviceRemoval
 }
-

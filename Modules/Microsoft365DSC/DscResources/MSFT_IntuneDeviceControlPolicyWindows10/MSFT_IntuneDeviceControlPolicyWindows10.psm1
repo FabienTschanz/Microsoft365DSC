@@ -641,7 +641,6 @@ class IntuneDeviceControlPolicyWindows10 : M365DSCResourceBase
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceControlPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceControlPolicyWindows10])
@@ -736,4 +735,3 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogPolicyRuleEntry
     [System.ComponentModel.Description('Computer Sid')]
     [System.String] $ComputerSid
 }
-

@@ -340,7 +340,6 @@ class AADFilteringProfile : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADFilteringProfile] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADFilteringProfile])
@@ -376,4 +375,3 @@ class MSFT_AADFilteringProfilePolicyLink
     [System.ComponentModel.Description('Name of the associated policy.')]
     [System.String] $PolicyName
 }
-

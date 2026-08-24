@@ -273,7 +273,6 @@ class SCComplianceCase : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCComplianceCase] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCComplianceCase])
@@ -290,4 +289,3 @@ class SCComplianceCase : M365DSCResourceBase
         return $result
     }
 }
-

@@ -496,7 +496,6 @@ class IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy : M365DSCR
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy])
@@ -546,4 +545,3 @@ class MSFT_IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicyAssign
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

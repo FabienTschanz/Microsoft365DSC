@@ -314,7 +314,6 @@ class AADRoleDefinition : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADRoleDefinition] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADRoleDefinition])
@@ -331,4 +330,3 @@ class AADRoleDefinition : M365DSCResourceBase
         return $result
     }
 }
-

@@ -238,7 +238,6 @@ class TeamsTargetingPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTargetingPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTargetingPolicy])
@@ -255,4 +254,3 @@ class TeamsTargetingPolicy : M365DSCResourceBase
         return $result
     }
 }
-

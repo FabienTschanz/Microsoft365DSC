@@ -674,7 +674,6 @@ class TeamsUserPolicyAssignment : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsUserPolicyAssignment] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsUserPolicyAssignment])
@@ -691,4 +690,3 @@ class TeamsUserPolicyAssignment : M365DSCResourceBase
         return $result
     }
 }
-

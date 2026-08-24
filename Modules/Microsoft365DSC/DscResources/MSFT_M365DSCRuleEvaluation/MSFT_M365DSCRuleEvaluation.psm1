@@ -297,7 +297,7 @@ class M365DSCRuleEvaluation : M365DSCResourceBase
             return $result
         }
         $this.ExportedInstance = $null
-    
+
         # Every code path must return in a method with a declared return type.
         return $false
     }
@@ -313,7 +313,6 @@ class M365DSCRuleEvaluation : M365DSCResourceBase
         return $null
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [M365DSCRuleEvaluation] AsResult([System.Object] $Values)
     {
         if ($Values -is [M365DSCRuleEvaluation])
@@ -330,4 +329,3 @@ class M365DSCRuleEvaluation : M365DSCResourceBase
         return $result
     }
 }
-

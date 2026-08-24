@@ -296,7 +296,6 @@ class EXOManagementRole : M365DSCResourceBase
         return $null
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOManagementRole] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOManagementRole])
@@ -313,4 +312,3 @@ class EXOManagementRole : M365DSCResourceBase
         return $result
     }
 }
-

@@ -433,7 +433,6 @@ class EXOAntiPhishPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOAntiPhishPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOAntiPhishPolicy])
@@ -450,4 +449,3 @@ class EXOAntiPhishPolicy : M365DSCResourceBase
         return $result
     }
 }
-

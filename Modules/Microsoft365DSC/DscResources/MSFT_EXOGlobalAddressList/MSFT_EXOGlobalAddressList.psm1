@@ -425,7 +425,6 @@ class EXOGlobalAddressList : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOGlobalAddressList] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOGlobalAddressList])
@@ -442,4 +441,3 @@ class EXOGlobalAddressList : M365DSCResourceBase
         return $result
     }
 }
-

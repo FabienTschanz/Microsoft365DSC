@@ -279,7 +279,6 @@ class AzureVerifiedIdFaceCheck : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureVerifiedIdFaceCheck] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureVerifiedIdFaceCheck])
@@ -296,4 +295,3 @@ class AzureVerifiedIdFaceCheck : M365DSCResourceBase
         return $result
     }
 }
-

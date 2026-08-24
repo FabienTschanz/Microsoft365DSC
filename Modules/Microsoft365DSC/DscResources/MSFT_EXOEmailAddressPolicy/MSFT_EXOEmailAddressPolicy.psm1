@@ -289,7 +289,6 @@ class EXOEmailAddressPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOEmailAddressPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOEmailAddressPolicy])
@@ -306,4 +305,3 @@ class EXOEmailAddressPolicy : M365DSCResourceBase
         return $result
     }
 }
-

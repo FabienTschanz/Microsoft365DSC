@@ -281,7 +281,6 @@ class EXOMailboxPermission : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOMailboxPermission] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOMailboxPermission])
@@ -298,4 +297,3 @@ class EXOMailboxPermission : M365DSCResourceBase
         return $result
     }
 }
-

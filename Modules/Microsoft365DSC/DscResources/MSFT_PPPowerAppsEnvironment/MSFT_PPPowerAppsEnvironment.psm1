@@ -366,7 +366,6 @@ class PPPowerAppsEnvironment : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PPPowerAppsEnvironment] AsResult([System.Object] $Values)
     {
         if ($Values -is [PPPowerAppsEnvironment])
@@ -383,4 +382,3 @@ class PPPowerAppsEnvironment : M365DSCResourceBase
         return $result
     }
 }
-

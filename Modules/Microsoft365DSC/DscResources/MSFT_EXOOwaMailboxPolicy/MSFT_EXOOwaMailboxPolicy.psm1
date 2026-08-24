@@ -785,7 +785,6 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOOwaMailboxPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOOwaMailboxPolicy])
@@ -802,4 +801,3 @@ class EXOOwaMailboxPolicy : M365DSCResourceBase
         return $result
     }
 }
-

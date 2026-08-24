@@ -414,7 +414,6 @@ class AADCustomAuthenticationExtension : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADCustomAuthenticationExtension] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADCustomAuthenticationExtension])
@@ -461,4 +460,3 @@ class MSFT_AADCustomAuthenticationExtensionClaimForTokenConfiguration
     [System.ComponentModel.Description('Defines the claim id in api response.')]
     [System.String] $ClaimIdInApiResponse
 }
-

@@ -615,12 +615,11 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceCompliancePolicyAndroidWorkProfile] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceCompliancePolicyAndroidWorkProfile])
@@ -694,4 +693,3 @@ class MSFT_ScheduledActionConfigurations
     [System.ComponentModel.Description('A list of group IDs to specify who to CC this notification message to.')]
     [System.String[]] $notificationMessageCCList
 }
-

@@ -559,12 +559,11 @@ class IntuneDeviceCompliancePolicyiOs : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceCompliancePolicyiOs] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceCompliancePolicyiOs])
@@ -657,4 +656,3 @@ class MSFT_appListItem
     [System.ComponentModel.Description('The application or bundle identifier of the application.')]
     [System.String] $appId
 }
-

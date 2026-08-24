@@ -297,7 +297,6 @@ class AADOrganizationCertificateBasedAuthConfiguration : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADOrganizationCertificateBasedAuthConfiguration] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADOrganizationCertificateBasedAuthConfiguration])
@@ -333,4 +332,3 @@ class MSFT_MicrosoftGraphcertificateAuthority
     [System.ComponentModel.Description('Required. true if the trusted certificate is a root authority, false if the trusted certificate is an intermediate authority.')]
     [System.Nullable[System.Boolean]] $IsRootAuthority
 }
-

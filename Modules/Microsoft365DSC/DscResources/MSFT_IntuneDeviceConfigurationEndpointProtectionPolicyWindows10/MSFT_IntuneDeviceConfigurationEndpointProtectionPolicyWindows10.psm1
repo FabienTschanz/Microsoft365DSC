@@ -3848,12 +3848,11 @@ class IntuneDeviceConfigurationEndpointProtectionPolicyWindows10 : M365DSCResour
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationEndpointProtectionPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationEndpointProtectionPolicyWindows10])
@@ -4242,4 +4241,3 @@ class MSFT_MicrosoftGraphDeviceManagementUserRightsLocalUserOrGroup
     [System.ComponentModel.Description('The security identifier of this local user or group (e.g. S-1-5-32-544).')]
     [System.String] $SecurityIdentifier
 }
-

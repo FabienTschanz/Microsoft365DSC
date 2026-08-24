@@ -310,7 +310,6 @@ class PlannerPlan : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PlannerPlan] AsResult([System.Object] $Values)
     {
         if ($Values -is [PlannerPlan])
@@ -327,4 +326,3 @@ class PlannerPlan : M365DSCResourceBase
         return $result
     }
 }
-

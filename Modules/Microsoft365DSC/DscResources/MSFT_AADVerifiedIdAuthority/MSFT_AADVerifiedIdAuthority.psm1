@@ -359,7 +359,6 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADVerifiedIdAuthority] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADVerifiedIdAuthority])
@@ -395,4 +394,3 @@ class MSFT_AADVerifiedIdAuthorityKeyVaultMetadata
     [System.ComponentModel.Description('Resource URL of the Key Vault.')]
     [System.String] $ResourceUrl
 }
-

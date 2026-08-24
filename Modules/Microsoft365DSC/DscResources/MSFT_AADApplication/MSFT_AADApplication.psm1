@@ -1821,7 +1821,6 @@ class AADApplication : M365DSCResourceBase
         return $permissionResults
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADApplication] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADApplication])

@@ -318,7 +318,6 @@ class EXOSafeLinksRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOSafeLinksRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOSafeLinksRule])
@@ -335,4 +334,3 @@ class EXOSafeLinksRule : M365DSCResourceBase
         return $result
     }
 }
-

@@ -379,7 +379,6 @@ class ADOPermissionGroup : M365DSCResourceBase
         Invoke-M365DSCAzureDevOPSWebRequest -Uri $uri -Method $Method | Out-Null
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [ADOPermissionGroup] AsResult([System.Object] $Values)
     {
         if ($Values -is [ADOPermissionGroup])

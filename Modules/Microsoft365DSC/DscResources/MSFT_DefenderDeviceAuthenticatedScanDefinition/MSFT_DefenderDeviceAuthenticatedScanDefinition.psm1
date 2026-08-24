@@ -421,7 +421,6 @@ class DefenderDeviceAuthenticatedScanDefinition : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [DefenderDeviceAuthenticatedScanDefinition] AsResult([System.Object] $Values)
     {
         if ($Values -is [DefenderDeviceAuthenticatedScanDefinition])
@@ -504,4 +503,3 @@ class MSFT_DefenderDeviceAuthenticatedScanDefinitionAuthenticationParams
     [System.ComponentModel.Description('Priv password to use with SnmpAuthParams and AuthPriv.')]
     [System.String] $PrivPassword
 }
-

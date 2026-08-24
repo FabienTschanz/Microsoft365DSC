@@ -365,7 +365,6 @@ class PPAdminDLPPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PPAdminDLPPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [PPAdminDLPPolicy])
@@ -382,4 +381,3 @@ class PPAdminDLPPolicy : M365DSCResourceBase
         return $result
     }
 }
-

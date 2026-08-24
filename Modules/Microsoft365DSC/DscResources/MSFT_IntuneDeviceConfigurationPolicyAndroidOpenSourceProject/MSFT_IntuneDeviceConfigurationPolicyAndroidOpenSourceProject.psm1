@@ -425,7 +425,6 @@ class IntuneDeviceConfigurationPolicyAndroidOpenSourceProject : M365DSCResourceB
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationPolicyAndroidOpenSourceProject] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationPolicyAndroidOpenSourceProject])

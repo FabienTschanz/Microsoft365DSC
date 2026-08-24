@@ -346,7 +346,6 @@ class SCProtectionAlert : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCProtectionAlert] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCProtectionAlert])
@@ -363,4 +362,3 @@ class SCProtectionAlert : M365DSCResourceBase
         return $result
     }
 }
-

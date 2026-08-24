@@ -254,7 +254,6 @@ class TeamsEnhancedEncryptionPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsEnhancedEncryptionPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsEnhancedEncryptionPolicy])
@@ -271,4 +270,3 @@ class TeamsEnhancedEncryptionPolicy : M365DSCResourceBase
         return $result
     }
 }
-

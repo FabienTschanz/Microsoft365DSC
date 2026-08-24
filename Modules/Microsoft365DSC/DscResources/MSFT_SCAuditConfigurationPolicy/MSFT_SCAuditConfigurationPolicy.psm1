@@ -241,7 +241,6 @@ class SCAuditConfigurationPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCAuditConfigurationPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCAuditConfigurationPolicy])
@@ -258,4 +257,3 @@ class SCAuditConfigurationPolicy : M365DSCResourceBase
         return $result
     }
 }
-

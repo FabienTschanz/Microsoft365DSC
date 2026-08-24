@@ -214,7 +214,6 @@ class AADExternalIdentityPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADExternalIdentityPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADExternalIdentityPolicy])
@@ -231,4 +230,3 @@ class AADExternalIdentityPolicy : M365DSCResourceBase
         return $result
     }
 }
-

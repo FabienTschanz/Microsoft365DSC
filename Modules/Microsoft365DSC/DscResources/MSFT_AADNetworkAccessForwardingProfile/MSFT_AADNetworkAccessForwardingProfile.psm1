@@ -335,7 +335,6 @@ class AADNetworkAccessForwardingProfile : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADNetworkAccessForwardingProfile] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADNetworkAccessForwardingProfile])
@@ -367,4 +366,3 @@ class MSFT_MicrosoftGraphNetworkaccessPolicyLink
     [System.ComponentModel.Description('status')]
     [System.String] $state
 }
-

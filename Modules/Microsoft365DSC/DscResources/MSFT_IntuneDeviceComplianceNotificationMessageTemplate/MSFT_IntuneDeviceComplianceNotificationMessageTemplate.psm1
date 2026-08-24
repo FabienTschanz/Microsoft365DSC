@@ -406,7 +406,6 @@ class IntuneDeviceComplianceNotificationMessageTemplate : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceComplianceNotificationMessageTemplate] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceComplianceNotificationMessageTemplate])
@@ -443,4 +442,3 @@ class MSFT_DeviceManagementNotificationMessageTemplate
     [System.ComponentModel.Description('The subject of the message template.')]
     [System.String] $Subject
 }
-

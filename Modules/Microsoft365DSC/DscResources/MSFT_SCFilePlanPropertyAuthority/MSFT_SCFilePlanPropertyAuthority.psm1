@@ -227,7 +227,6 @@ class SCFilePlanPropertyAuthority : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCFilePlanPropertyAuthority] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCFilePlanPropertyAuthority])
@@ -244,4 +243,3 @@ class SCFilePlanPropertyAuthority : M365DSCResourceBase
         return $result
     }
 }
-

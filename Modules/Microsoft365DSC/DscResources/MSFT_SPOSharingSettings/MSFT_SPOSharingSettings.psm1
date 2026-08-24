@@ -673,7 +673,6 @@ class SPOSharingSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOSharingSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOSharingSettings])

@@ -342,7 +342,6 @@ class AzureDiagnosticSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureDiagnosticSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureDiagnosticSettings])
@@ -370,4 +369,3 @@ class MSFT_AzureDiagnosticSettingsCategory
     [System.ComponentModel.Description('Is the log category enabled or not.')]
     [System.Nullable[System.Boolean]] $enabled
 }
-

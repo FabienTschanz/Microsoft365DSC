@@ -290,7 +290,6 @@ class SCSecurityFilter : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCSecurityFilter] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCSecurityFilter])
@@ -307,4 +306,3 @@ class SCSecurityFilter : M365DSCResourceBase
         return $result
     }
 }
-

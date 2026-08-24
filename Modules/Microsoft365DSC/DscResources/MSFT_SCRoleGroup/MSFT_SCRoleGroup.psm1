@@ -268,7 +268,6 @@ class SCRoleGroup : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCRoleGroup] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCRoleGroup])
@@ -285,4 +284,3 @@ class SCRoleGroup : M365DSCResourceBase
         return $result
     }
 }
-

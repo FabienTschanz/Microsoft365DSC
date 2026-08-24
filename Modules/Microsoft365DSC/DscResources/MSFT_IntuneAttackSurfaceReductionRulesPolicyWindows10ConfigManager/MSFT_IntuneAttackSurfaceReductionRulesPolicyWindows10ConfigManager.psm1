@@ -497,7 +497,6 @@ class IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager : M365DSCRes
         return $this.GetSettingsCatalogCompareParameters()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager])
@@ -547,4 +546,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

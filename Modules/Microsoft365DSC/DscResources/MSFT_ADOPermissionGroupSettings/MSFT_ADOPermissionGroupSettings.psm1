@@ -485,7 +485,6 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
         return $results
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [ADOPermissionGroupSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [ADOPermissionGroupSettings])

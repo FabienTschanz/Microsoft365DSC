@@ -414,7 +414,6 @@ class AADEntitlementManagementRoleAssignment : M365DSCResourceBase
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADEntitlementManagementRoleAssignment] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADEntitlementManagementRoleAssignment])
@@ -431,4 +430,3 @@ class AADEntitlementManagementRoleAssignment : M365DSCResourceBase
         return $result
     }
 }
-

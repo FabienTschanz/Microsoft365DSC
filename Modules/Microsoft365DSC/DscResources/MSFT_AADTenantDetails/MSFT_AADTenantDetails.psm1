@@ -224,7 +224,6 @@ class AADTenantDetails : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADTenantDetails] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADTenantDetails])
@@ -241,4 +240,3 @@ class AADTenantDetails : M365DSCResourceBase
         return $result
     }
 }
-

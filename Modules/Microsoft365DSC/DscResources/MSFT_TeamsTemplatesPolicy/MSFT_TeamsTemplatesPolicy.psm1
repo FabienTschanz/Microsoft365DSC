@@ -258,7 +258,6 @@ class TeamsTemplatesPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTemplatesPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTemplatesPolicy])
@@ -275,4 +274,3 @@ class TeamsTemplatesPolicy : M365DSCResourceBase
         return $result
     }
 }
-

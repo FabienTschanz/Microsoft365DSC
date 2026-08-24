@@ -343,7 +343,6 @@ class AADAdminConsentRequestPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAdminConsentRequestPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAdminConsentRequestPolicy])
@@ -375,4 +374,3 @@ class MSFT_AADAdminConsentRequestPolicyReviewer
     [System.ComponentModel.Description('Associated query.')]
     [System.String] $QueryRoot
 }
-

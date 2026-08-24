@@ -228,7 +228,6 @@ class TeamsPstnUsage : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsPstnUsage] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsPstnUsage])
@@ -245,4 +244,3 @@ class TeamsPstnUsage : M365DSCResourceBase
         return $result
     }
 }
-

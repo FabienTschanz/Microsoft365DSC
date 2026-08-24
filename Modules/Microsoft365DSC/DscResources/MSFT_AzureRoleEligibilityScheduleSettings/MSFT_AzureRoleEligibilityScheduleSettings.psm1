@@ -1291,7 +1291,6 @@ class AzureRoleEligibilityScheduleSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureRoleEligibilityScheduleSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureRoleEligibilityScheduleSettings])

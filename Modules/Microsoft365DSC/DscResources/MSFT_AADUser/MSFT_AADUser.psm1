@@ -1001,7 +1001,6 @@ class AADUser : M365DSCResourceBase
         return [Array]$newCustomSecurityAttributes
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADUser] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADUser])

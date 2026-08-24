@@ -327,7 +327,6 @@ class SPOStorageEntity : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOStorageEntity] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOStorageEntity])
@@ -344,4 +343,3 @@ class SPOStorageEntity : M365DSCResourceBase
         return $result
     }
 }
-

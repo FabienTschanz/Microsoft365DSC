@@ -456,7 +456,6 @@ class TeamsTeam : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsTeam] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsTeam])
@@ -473,4 +472,3 @@ class TeamsTeam : M365DSCResourceBase
         return $result
     }
 }
-

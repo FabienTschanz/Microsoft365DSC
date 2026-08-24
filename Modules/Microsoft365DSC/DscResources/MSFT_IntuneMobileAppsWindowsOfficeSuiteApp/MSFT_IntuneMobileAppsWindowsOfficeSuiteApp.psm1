@@ -607,7 +607,6 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsWindowsOfficeSuiteApp] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsWindowsOfficeSuiteApp])
@@ -732,4 +731,3 @@ class MSFT_DeviceManagementMobileAppExcludedApp
     [System.ComponentModel.Description('Specifies whether to exclude Microsoft Office Word from the installation.')]
     [System.Nullable[System.Boolean]] $Word
 }
-

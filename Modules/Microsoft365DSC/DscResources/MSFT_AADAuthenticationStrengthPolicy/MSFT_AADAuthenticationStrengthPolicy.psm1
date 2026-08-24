@@ -295,7 +295,6 @@ class AADAuthenticationStrengthPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAuthenticationStrengthPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAuthenticationStrengthPolicy])
@@ -312,4 +311,3 @@ class AADAuthenticationStrengthPolicy : M365DSCResourceBase
         return $result
     }
 }
-

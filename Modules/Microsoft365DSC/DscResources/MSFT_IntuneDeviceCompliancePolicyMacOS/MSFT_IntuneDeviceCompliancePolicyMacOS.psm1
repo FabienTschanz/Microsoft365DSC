@@ -572,12 +572,11 @@ class IntuneDeviceCompliancePolicyMacOS : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceCompliancePolicyMacOS] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceCompliancePolicyMacOS])
@@ -651,4 +650,3 @@ class MSFT_ScheduledActionConfigurations
     [System.ComponentModel.Description('A list of group IDs to specify who to CC this notification message to.')]
     [System.String[]] $notificationMessageCCList
 }
-

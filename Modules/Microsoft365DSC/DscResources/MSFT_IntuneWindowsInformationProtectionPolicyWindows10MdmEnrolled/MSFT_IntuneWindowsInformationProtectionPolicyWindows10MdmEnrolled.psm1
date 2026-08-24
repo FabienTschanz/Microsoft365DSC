@@ -835,12 +835,11 @@ class IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled : M365DSCReso
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled])
@@ -1013,4 +1012,3 @@ class MSFT_MicrosoftGraphProxiedDomain
     [System.ComponentModel.Description('Proxy IP or FQDN')]
     [System.String] $Proxy
 }
-

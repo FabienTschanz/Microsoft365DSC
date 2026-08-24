@@ -784,7 +784,6 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADCrossTenantAccessPolicyConfigurationPartner] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADCrossTenantAccessPolicyConfigurationPartner])

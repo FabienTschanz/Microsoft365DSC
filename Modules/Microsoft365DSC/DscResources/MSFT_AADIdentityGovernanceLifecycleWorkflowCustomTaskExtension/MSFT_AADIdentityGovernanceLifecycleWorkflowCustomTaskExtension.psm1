@@ -468,12 +468,11 @@ class AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension : M365DSCResourc
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension])
@@ -531,4 +530,3 @@ class MSFT_AADIdentityGovernanceLifecycleWorkflowCustomTaskExtensionCallbackConf
     [System.ComponentModel.Description('List of apps names that are allowed to resume a task processing result.')]
     [System.String[]] $authorizedApps
 }
-

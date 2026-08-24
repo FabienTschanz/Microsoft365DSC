@@ -306,7 +306,6 @@ class SPOTheme : M365DSCResourceBase
         return $themes
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOTheme] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOTheme])
@@ -334,4 +333,3 @@ class MSFT_SPOThemePaletteProperty
     [System.ComponentModel.Description('Color value in Hexadecimal.')]
     [System.String] $Value
 }
-

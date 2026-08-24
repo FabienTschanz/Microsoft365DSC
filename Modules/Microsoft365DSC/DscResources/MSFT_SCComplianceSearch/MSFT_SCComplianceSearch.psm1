@@ -345,7 +345,6 @@ class SCComplianceSearch : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCComplianceSearch] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCComplianceSearch])
@@ -362,4 +361,3 @@ class SCComplianceSearch : M365DSCResourceBase
         return $result
     }
 }
-

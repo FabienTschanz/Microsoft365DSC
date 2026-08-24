@@ -284,7 +284,6 @@ class SPOAccessControlSettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOAccessControlSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOAccessControlSettings])
@@ -301,4 +300,3 @@ class SPOAccessControlSettings : M365DSCResourceBase
         return $result
     }
 }
-

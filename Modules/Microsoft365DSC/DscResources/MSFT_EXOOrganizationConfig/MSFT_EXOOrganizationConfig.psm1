@@ -898,7 +898,6 @@ class EXOOrganizationConfig : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOOrganizationConfig] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOOrganizationConfig])
@@ -915,4 +914,3 @@ class EXOOrganizationConfig : M365DSCResourceBase
         return $result
     }
 }
-

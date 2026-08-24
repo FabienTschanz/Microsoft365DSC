@@ -222,7 +222,6 @@ class AADIdentityProtectionPolicySettings : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADIdentityProtectionPolicySettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADIdentityProtectionPolicySettings])
@@ -239,4 +238,3 @@ class AADIdentityProtectionPolicySettings : M365DSCResourceBase
         return $result
     }
 }
-

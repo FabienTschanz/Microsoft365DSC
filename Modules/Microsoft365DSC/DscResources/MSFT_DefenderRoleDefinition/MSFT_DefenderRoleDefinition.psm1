@@ -311,7 +311,6 @@ class DefenderRoleDefinition : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [DefenderRoleDefinition] AsResult([System.Object] $Values)
     {
         if ($Values -is [DefenderRoleDefinition])
@@ -335,4 +334,3 @@ class MSFT_DefenderRoleDefinitionRolePermissions
     [System.ComponentModel.Description('Set of tasks that can be performed on a resource.')]
     [System.String[]] $allowedResourceActions
 }
-

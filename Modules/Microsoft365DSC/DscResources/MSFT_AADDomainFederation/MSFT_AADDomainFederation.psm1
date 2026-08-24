@@ -428,7 +428,6 @@ class AADDomainFederation : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADDomainFederation] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADDomainFederation])
@@ -445,4 +444,3 @@ class AADDomainFederation : M365DSCResourceBase
         return $result
     }
 }
-

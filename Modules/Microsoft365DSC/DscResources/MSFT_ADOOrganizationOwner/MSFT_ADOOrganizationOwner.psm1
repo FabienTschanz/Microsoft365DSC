@@ -220,7 +220,6 @@ class ADOOrganizationOwner : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [ADOOrganizationOwner] AsResult([System.Object] $Values)
     {
         if ($Values -is [ADOOrganizationOwner])
@@ -237,4 +236,3 @@ class ADOOrganizationOwner : M365DSCResourceBase
         return $result
     }
 }
-

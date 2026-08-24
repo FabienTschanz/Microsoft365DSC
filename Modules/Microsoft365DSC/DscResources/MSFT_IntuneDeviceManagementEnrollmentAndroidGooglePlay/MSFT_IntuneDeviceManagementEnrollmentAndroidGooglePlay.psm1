@@ -252,7 +252,6 @@ class IntuneDeviceManagementEnrollmentAndroidGooglePlay : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceManagementEnrollmentAndroidGooglePlay] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceManagementEnrollmentAndroidGooglePlay])
@@ -269,4 +268,3 @@ class IntuneDeviceManagementEnrollmentAndroidGooglePlay : M365DSCResourceBase
         return $result
     }
 }
-

@@ -351,7 +351,6 @@ class PPDLPPolicyConnectorConfigurations : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PPDLPPolicyConnectorConfigurations] AsResult([System.Object] $Values)
     {
         if ($Values -is [PPDLPPolicyConnectorConfigurations])
@@ -394,4 +393,3 @@ class MSFT_PPDLPPolicyConnectorConfigurationsActionRules
     [System.ComponentModel.Description('Associated behavior.')]
     [System.String] $behavior
 }
-

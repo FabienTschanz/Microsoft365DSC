@@ -673,12 +673,11 @@ class IntuneVPNConfigurationPolicyIOS : M365DSCResourceBase
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneVPNConfigurationPolicyIOS] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneVPNConfigurationPolicyIOS])
@@ -841,4 +840,3 @@ class MSFT_DeviceManagementConfigurationPolicyAssignments
     [System.ComponentModel.Description('The collection Id that is the target of the assignment.(ConfigMgr)')]
     [System.String] $collectionId
 }
-

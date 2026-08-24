@@ -740,7 +740,6 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
         return $results
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceEnrollmentPlatformRestriction] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceEnrollmentPlatformRestriction])

@@ -231,7 +231,6 @@ class TeamsUpgradePolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [TeamsUpgradePolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [TeamsUpgradePolicy])
@@ -248,4 +247,3 @@ class TeamsUpgradePolicy : M365DSCResourceBase
         return $result
     }
 }
-

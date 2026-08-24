@@ -525,7 +525,6 @@ class IntuneMobileAppsLobAppWindows10 : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsLobAppWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsLobAppWindows10])

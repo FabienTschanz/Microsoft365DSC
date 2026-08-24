@@ -581,7 +581,6 @@ class PPTenantSettings : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PPTenantSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [PPTenantSettings])

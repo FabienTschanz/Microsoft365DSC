@@ -884,7 +884,6 @@ class AADAdministrativeUnit : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADAdministrativeUnit] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADAdministrativeUnit])
@@ -924,4 +923,3 @@ class MSFT_MicrosoftGraphScopedRoleMembership
     [System.ComponentModel.Description('Member that is assigned the scoped role. Note: Any groups must be role-enabled')]
     [MSFT_MicrosoftGraphMember] $RoleMemberInfo
 }
-

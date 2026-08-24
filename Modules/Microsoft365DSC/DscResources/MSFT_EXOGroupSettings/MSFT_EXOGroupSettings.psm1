@@ -654,7 +654,6 @@ class EXOGroupSettings : M365DSCResourceBase
         return @($simplifiedNames | Sort-Object)
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOGroupSettings] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOGroupSettings])

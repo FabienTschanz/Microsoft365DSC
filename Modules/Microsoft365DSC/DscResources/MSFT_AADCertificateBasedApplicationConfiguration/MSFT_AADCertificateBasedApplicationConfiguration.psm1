@@ -591,7 +591,6 @@ class AADCertificateBasedApplicationConfiguration : M365DSCResourceBase
         return $CertificateValue
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADCertificateBasedApplicationConfiguration] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADCertificateBasedApplicationConfiguration])

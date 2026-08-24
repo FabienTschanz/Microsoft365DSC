@@ -269,7 +269,6 @@ class PlannerBucket : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [PlannerBucket] AsResult([System.Object] $Values)
     {
         if ($Values -is [PlannerBucket])
@@ -286,4 +285,3 @@ class PlannerBucket : M365DSCResourceBase
         return $result
     }
 }
-

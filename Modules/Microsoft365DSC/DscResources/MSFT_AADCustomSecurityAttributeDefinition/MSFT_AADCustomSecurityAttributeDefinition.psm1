@@ -411,7 +411,6 @@ class AADCustomSecurityAttributeDefinition : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADCustomSecurityAttributeDefinition] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADCustomSecurityAttributeDefinition])
@@ -439,4 +438,3 @@ class MSFT_CustomSecurityAttributeAllowedValue
     [System.ComponentModel.Description('If the allowed value is active.')]
     [System.Nullable[System.Boolean]] $IsActive
 }
-

@@ -429,7 +429,6 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
         return $dscContent.ToString()
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCAutoSensitivityLabelPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCAutoSensitivityLabelPolicy])

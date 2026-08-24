@@ -209,7 +209,6 @@ class EXODataAtRestEncryptionPolicyAssignment : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXODataAtRestEncryptionPolicyAssignment] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXODataAtRestEncryptionPolicyAssignment])
@@ -226,4 +225,3 @@ class EXODataAtRestEncryptionPolicyAssignment : M365DSCResourceBase
         return $result
     }
 }
-

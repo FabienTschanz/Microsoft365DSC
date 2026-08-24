@@ -255,7 +255,6 @@ class VivaEngagementRoleMember : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [VivaEngagementRoleMember] AsResult([System.Object] $Values)
     {
         if ($Values -is [VivaEngagementRoleMember])
@@ -272,4 +271,3 @@ class VivaEngagementRoleMember : M365DSCResourceBase
         return $result
     }
 }
-

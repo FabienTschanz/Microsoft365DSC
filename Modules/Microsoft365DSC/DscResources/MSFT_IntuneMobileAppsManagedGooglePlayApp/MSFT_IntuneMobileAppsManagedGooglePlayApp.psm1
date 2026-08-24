@@ -373,7 +373,6 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsManagedGooglePlayApp] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsManagedGooglePlayApp])
@@ -451,4 +450,3 @@ class MSFT_DeviceManagementManagedGooglePlayMobileAppAssignmentSettings : MSFT_D
     [System.ComponentModel.Description('The track IDs to enable for this app assignment.')]
     [System.String[]] $androidManagedStoreAppTrackIds
 }
-

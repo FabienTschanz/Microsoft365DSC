@@ -272,7 +272,6 @@ class EXOOfflineAddressBook : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOOfflineAddressBook] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOOfflineAddressBook])
@@ -289,4 +288,3 @@ class EXOOfflineAddressBook : M365DSCResourceBase
         return $result
     }
 }
-

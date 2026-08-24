@@ -229,7 +229,6 @@ class SPOHomeSite : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SPOHomeSite] AsResult([System.Object] $Values)
     {
         if ($Values -is [SPOHomeSite])
@@ -246,4 +245,3 @@ class SPOHomeSite : M365DSCResourceBase
         return $result
     }
 }
-

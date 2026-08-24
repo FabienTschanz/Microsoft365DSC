@@ -486,12 +486,11 @@ class IntuneAccountProtectionLocalUserGroupMembershipPolicy : M365DSCResourceBas
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneAccountProtectionLocalUserGroupMembershipPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneAccountProtectionLocalUserGroupMembershipPolicy])
@@ -563,4 +562,3 @@ class MSFT_MicrosoftGraphIntuneSettingsCatalogAccessGroup
     [ValidateSet('users', 'manual')]
     [System.String] $userselectiontype
 }
-

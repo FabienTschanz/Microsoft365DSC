@@ -280,7 +280,6 @@ class SCDLPSensitiveInformationType : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCDLPSensitiveInformationType] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCDLPSensitiveInformationType])
@@ -297,4 +296,3 @@ class SCDLPSensitiveInformationType : M365DSCResourceBase
         return $result
     }
 }
-

@@ -519,7 +519,6 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADIdentityB2XUserFlow] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADIdentityB2XUserFlow])
@@ -586,4 +585,3 @@ class MSFT_MicrosoftGraphuserFlowUserAttributeAssignmentUserAttributeValues
     [System.ComponentModel.Description('Used to set the value as the default.')]
     [System.Nullable[System.Boolean]] $IsDefault
 }
-

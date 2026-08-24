@@ -458,7 +458,6 @@ class IntuneMobileAppsMicrosoft365SuiteMacOS : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsMicrosoft365SuiteMacOS] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsMicrosoft365SuiteMacOS])
@@ -531,4 +530,3 @@ class MSFT_DeviceManagementMobileAppAssignment
     [ValidateSet('available', 'required', 'uninstall', 'availableWithoutEnrollment')]
     [System.String] $intent
 }
-

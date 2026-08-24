@@ -343,7 +343,6 @@ class AzureDiagnosticSettingsCustomSecurityAttribute : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AzureDiagnosticSettingsCustomSecurityAttribute] AsResult([System.Object] $Values)
     {
         if ($Values -is [AzureDiagnosticSettingsCustomSecurityAttribute])
@@ -371,4 +370,3 @@ class MSFT_AzureDiagnosticSettingsCustomSecurityAttributeCategory
     [System.ComponentModel.Description('Is the log category enabled or not.')]
     [System.Nullable[System.Boolean]] $enabled
 }
-

@@ -845,7 +845,6 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
         return $Configurations
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceFeaturesConfigurationPolicyIOS] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceFeaturesConfigurationPolicyIOS])

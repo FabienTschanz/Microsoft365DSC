@@ -436,12 +436,11 @@ class IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 : M365DSCResourceB
                 throw
             }
         }
-    
+
         # Every code path must return in a method with a declared return type.
         return ''
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10])
@@ -557,4 +556,3 @@ class MSFT_MicrosoftGraphIpRange1
     [ValidateSet('#microsoft.graph.iPv4Range', '#microsoft.graph.iPv6Range')]
     [System.String] $odataType
 }
-

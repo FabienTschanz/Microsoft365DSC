@@ -566,7 +566,6 @@ class IntuneMobileAppsLobAppiOS : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneMobileAppsLobAppiOS] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneMobileAppsLobAppiOS])
@@ -731,4 +730,3 @@ class MSFT_DeviceManagementLobAppiOSAssignmentSettings : MSFT_DeviceManagementMo
     [System.ComponentModel.Description('When TRUE, indicates that the app should not be backed up to iCloud. When FALSE, indicates that the app may be backed up to iCloud. By default, this property is set to null which internally is treated as FALSE.')]
     [System.Nullable[System.Boolean]] $preventManagedAppBackup
 }
-

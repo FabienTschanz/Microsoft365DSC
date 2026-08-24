@@ -265,7 +265,6 @@ class EXODkimSigningConfig : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXODkimSigningConfig] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXODkimSigningConfig])
@@ -282,4 +281,3 @@ class EXODkimSigningConfig : M365DSCResourceBase
         return $result
     }
 }
-

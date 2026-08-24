@@ -738,7 +738,6 @@ class IntuneSettingCatalogCustomPolicyWindows10 : M365DSCResourceBase
         return $null
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [IntuneSettingCatalogCustomPolicyWindows10] AsResult([System.Object] $Values)
     {
         if ($Values -is [IntuneSettingCatalogCustomPolicyWindows10])

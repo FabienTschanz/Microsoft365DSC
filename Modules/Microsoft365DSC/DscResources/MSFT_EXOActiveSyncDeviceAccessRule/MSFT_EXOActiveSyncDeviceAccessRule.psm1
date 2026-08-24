@@ -269,7 +269,6 @@ class EXOActiveSyncDeviceAccessRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXOActiveSyncDeviceAccessRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXOActiveSyncDeviceAccessRule])
@@ -286,4 +285,3 @@ class EXOActiveSyncDeviceAccessRule : M365DSCResourceBase
         return $result
     }
 }
-

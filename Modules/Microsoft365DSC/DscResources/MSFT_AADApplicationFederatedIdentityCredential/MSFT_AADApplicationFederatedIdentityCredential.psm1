@@ -396,7 +396,6 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [AADApplicationFederatedIdentityCredential] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADApplicationFederatedIdentityCredential])
@@ -413,4 +412,3 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
         return $result
     }
 }
-

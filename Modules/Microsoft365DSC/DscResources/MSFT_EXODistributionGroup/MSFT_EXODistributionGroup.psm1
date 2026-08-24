@@ -687,7 +687,6 @@ class EXODistributionGroup : M365DSCResourceBase
         return @($simplifiedNames | Sort-Object)
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [EXODistributionGroup] AsResult([System.Object] $Values)
     {
         if ($Values -is [EXODistributionGroup])
