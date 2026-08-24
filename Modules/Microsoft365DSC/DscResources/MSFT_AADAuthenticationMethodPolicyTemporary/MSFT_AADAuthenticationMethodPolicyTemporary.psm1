@@ -202,7 +202,6 @@ class AADAuthenticationMethodPolicyTemporary : M365DSCResourceBase
             }
             #endregion
 
-            Write-Verbose -Message 'Get-TargetResource returned values'
             $results = @{
                 #region resource generator code
                 DefaultLength            = $getValue.defaultLength
@@ -446,4 +445,3 @@ class MSFT_AADAuthenticationMethodPolicyTemporaryIncludeTarget
     [ValidateSet('group', 'unknownFutureValue')]
     [System.String] $TargetType
 }
-

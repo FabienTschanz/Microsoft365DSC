@@ -490,9 +490,9 @@ class AADEntitlementManagementAccessPackage : M365DSCResourceBase
             $currentAccessPackageResourceOriginIds = $currentInstance.AccessPackageResourceRoleScopes.AccessPackageResourceOriginId
             foreach ($accessPackageResourceRoleScope in $this.AccessPackageResourceRoleScopes)
             {
-                # Match against the same value Get-TargetResource returns (display name for AadGroup/AadApplication).
-                # Comparing the raw GUID OriginId here made a GUID-specified scope look absent every run, so it was
-                # removed and re-added on every Set, eventually leaving the package with no resource roles.
+                # Match against the same value Get() returns (display name for AadGroup/AadApplication).
+                # Comparing the raw GUID OriginId here made a GUID-specified scope look absent every run.
+                # This resulted in a removal and re-add on every Set, leaving the package with no resource roles.
                 $originKey = Get-AADEntitlementManagementAccessPackageM365DSCAccessPackageResourceOriginKey `
                     -OriginId $accessPackageResourceRoleScope.AccessPackageResourceOriginId `
                     -OriginSystem $accessPackageResourceRoleScope.AccessPackageResourceScopeOriginSystem
@@ -845,8 +845,8 @@ class MSFT_AccessPackageResourceRoleScope
 # generated part file holds several of them.
 function Get-AADEntitlementManagementAccessPackageM365DSCAccessPackageResourceOriginKey
 {
-    # Resolves a resource role scope OriginId to the value Get-TargetResource reports for it. For an
-    # AadGroup or AadApplication, Get-TargetResource replaces the GUID OriginId with the object's display
+    # Resolves a resource role scope OriginId to the value Get() reports for it. For an
+    # AadGroup or AadApplication, Get() replaces the GUID OriginId with the object's display
     # name, so any code that compares a desired OriginId against the current value has to resolve it the
     # same way. A value that is not a GUID (already a display name) is returned unchanged.
     [OutputType([System.String])]
@@ -874,4 +874,3 @@ function Get-AADEntitlementManagementAccessPackageM365DSCAccessPackageResourceOr
         default { return $OriginId }
     }
 }
-

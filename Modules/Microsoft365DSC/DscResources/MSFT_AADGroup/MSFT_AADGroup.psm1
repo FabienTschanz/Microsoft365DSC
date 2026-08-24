@@ -240,7 +240,7 @@ class AADGroup : M365DSCResourceBase
             $MembersValues = [System.Collections.Generic.List[System.String]]::new()
             $GroupAsMembersValues = [System.Collections.Generic.List[System.String]]::new()
 
-            # If the Members and GroupAsMembers parameters are not specified, do not attempt to retrieve them as part of the Get-TargetResource.
+            # If the Members and GroupAsMembers parameters are not specified, do not attempt to retrieve them as part of the Get() method.
             if ($Group.MembershipRuleProcessingState -ne 'On' -and ($this.GetBoundParameters().ContainsKey('Members') -or $this.GetBoundParameters().ContainsKey('GroupAsMembers')))
             {
                 # Members

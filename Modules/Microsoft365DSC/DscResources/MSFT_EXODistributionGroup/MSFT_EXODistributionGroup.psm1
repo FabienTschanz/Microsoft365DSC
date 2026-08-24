@@ -455,7 +455,7 @@ class EXODistributionGroup : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentDistributionGroup.Ensure -eq 'Present')
         {
             Write-Verbose -Message "The Distribution Group {$($this.Identity)} exists but shouldn't. Removing it."
-            # Use the group identity value retrieved from Get-TargetResource, in case we got the group using PrimarySmtpAddress
+            # Use the group identity value retrieved from Get(), in case we got the group using PrimarySmtpAddress
             Remove-DistributionGroup -Identity $currentDistributionGroup.Identity `
                 -BypassSecurityGroupManagerCheck `
                 -Confirm:$false
@@ -468,7 +468,7 @@ class EXODistributionGroup : M365DSCResourceBase
             {
                 $currentParameters.Identity = $newGroup.Identity
             }
-            # Otherwise, use the existing group identity (using the value retrieved from Get-TargetResource, in the event that we got the group using PrimarySmtpAddress)
+            # Otherwise, use the existing group identity (using the value retrieved from Get(), in the event that we got the group using PrimarySmtpAddress)
             else
             {
                 $currentParameters.Identity = $currentDistributionGroup.Identity
@@ -505,13 +505,13 @@ class EXODistributionGroup : M365DSCResourceBase
                 foreach ($member in $membersToAdd)
                 {
                     Write-Verbose -Message "Adding member {$member}"
-                    # Use the group identity value retrieved from Get-TargetResource, in case we got the group using PrimarySmtpAddress
+                    # Use the group identity value retrieved from Get(), in case we got the group using PrimarySmtpAddress
                     Add-DistributionGroupMember -Identity $currentParameters.Identity -Member $member -BypassSecurityGroupManagerCheck
                 }
                 foreach ($member in $membersToRemove)
                 {
                     Write-Verbose -Message "Removing member {$member}"
-                    # Use the group identity value retrieved from Get-TargetResource, in case we got the group using PrimarySmtpAddress
+                    # Use the group identity value retrieved from Get(), in case we got the group using PrimarySmtpAddress
                     Remove-DistributionGroupMember -Identity $currentParameters.Identity `
                         -Member $member `
                         -BypassSecurityGroupManagerCheck `

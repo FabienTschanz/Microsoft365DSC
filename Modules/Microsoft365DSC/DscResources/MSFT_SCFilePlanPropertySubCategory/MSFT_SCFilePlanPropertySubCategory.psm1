@@ -81,7 +81,7 @@ class SCFilePlanPropertySubCategory : M365DSCResourceBase
 
                 if ($null -eq $parent)
                 {
-                    Write-Warning "Invalid Parent Category {$($this.Category)} detected in the Get-TargetResource"
+                    Write-Warning "Invalid Parent Category {$($this.Category)} detected in the Get() method"
                     return $this.AsResult($nullReturn)
                 }
 
@@ -266,4 +266,3 @@ class SCFilePlanPropertySubCategory : M365DSCResourceBase
         return $result
     }
 }
-

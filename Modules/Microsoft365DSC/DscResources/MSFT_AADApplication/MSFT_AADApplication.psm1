@@ -236,7 +236,7 @@ class AADApplication : M365DSCResourceBase
                 }
                 elseif ($null -eq $AADApp)
                 {
-                    Write-Verbose -Message 'Could not retrieve and instance of the Azure AD App in the Get-TargetResource function.'
+                    Write-Verbose -Message 'Could not retrieve and instance of the Azure AD App in the Get() method.'
                     return $this.AsResult($nullReturn)
                 }
             }

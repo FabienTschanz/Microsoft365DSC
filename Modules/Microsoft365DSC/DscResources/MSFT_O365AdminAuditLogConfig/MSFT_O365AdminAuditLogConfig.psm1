@@ -77,7 +77,6 @@ class O365AdminAuditLogConfig : M365DSCResourceBase
             if (-not $GetResults)
             {
                 Write-Warning 'Unable to determine Unified Audit Log Ingestion State.'
-                Write-Verbose -Message 'Returning Get-TargetResource NULL Result'
                 return $this.AsResult($nullReturn)
             }
             else
@@ -259,4 +258,3 @@ class O365AdminAuditLogConfig : M365DSCResourceBase
         return $result
     }
 }
-

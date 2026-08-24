@@ -687,6 +687,18 @@ class M365DSCResourceBase
         return [System.String[]] $this._info.Properties.Keys
     }
 
+    # Declared type of one schema property, or $null when the derived type has no such property.
+    [Type] GetSchemaPropertyType([System.String] $Name)
+    {
+        $propertyInfo = $this._info.Properties[$Name]
+        if ($null -eq $propertyInfo)
+        {
+            return $null
+        }
+
+        return $propertyInfo.PropertyType
+    }
+
     [Hashtable] GetSettingsCatalogCompareParameters()
     {
         return $this.GetSettingsCatalogCompareParameters(@())
@@ -736,7 +748,6 @@ class M365DSCResourceBase
         return $result
     }
 
-    # Replaces `Get-TargetResource @params` inside Export-TargetResource.
     [Hashtable] GetForExport([Hashtable] $Values)
     {
         $this.FromHashtable($Values)

@@ -386,7 +386,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                             url    = $query.Replace('/v1.0', '').Replace('transitiveMembers/microsoft.graph.user', '')
                         }
                     }
-                    Write-Verbose -Message "Invoking BATCH request to resolve Fallback Reviewers from Get-TargetResource: $(ConvertTo-Json $batchRequests -Depth 10)"
+                    Write-Verbose -Message "Invoking BATCH request to resolve Fallback Reviewers from Get(): $(ConvertTo-Json $batchRequests -Depth 10)"
                     $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
                 }
 
@@ -427,7 +427,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                             url    = $query.Replace('/v1.0', '').Replace('transitiveMembers/microsoft.graph.user', '')
                         }
                     }
-                    Write-Verbose -Message "Invoking BATCH request to resolve Additional Notification Recipients from Get-TargetResource: $(ConvertTo-Json $batchRequests -Depth 10)"
+                    Write-Verbose -Message "Invoking BATCH request to resolve Additional Notification Recipients from Get(): $(ConvertTo-Json $batchRequests -Depth 10)"
                     $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
                 }
 
@@ -469,7 +469,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
             }
             if ($batchRequests.Count -gt 0)
             {
-                Write-Verbose -Message "Invoking BATCH request to resolve Reviewers from Get-TargetResource: $(ConvertTo-Json $batchRequests -Depth 10)"
+                Write-Verbose -Message "Invoking BATCH request to resolve Reviewers from Get(): $(ConvertTo-Json $batchRequests -Depth 10)"
                 $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
             }
 

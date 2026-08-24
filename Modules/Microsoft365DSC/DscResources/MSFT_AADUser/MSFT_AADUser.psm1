@@ -562,7 +562,7 @@ class AADUser : M365DSCResourceBase
                         else
                         {
                             # Group that user is a member of is not present in MemberOf, remove user from group
-                            # (no need to test for dynamic groups as they are ignored in Get-TargetResource)
+                            # (no need to test for dynamic groups as they are ignored in Get())
                             if ($null -eq $group)
                             {
                                 $this.LogError($_, 'Error updating data:')

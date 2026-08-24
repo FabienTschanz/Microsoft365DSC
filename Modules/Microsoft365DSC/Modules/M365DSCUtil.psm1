@@ -543,9 +543,7 @@ function Test-M365DSCParameterState
     Specifies the explicit property names to compare.
 
 .PARAMETER CurrentValues
-    Specifies the current state to compare against. Mandatory: resources are classes, so there is no
-    Get-TargetResource for this function to call on the caller's behalf. M365DSCResourceBase.Test()
-    passes the result of its own Get().
+    Mandatory. Specifies the current state to compare against.
 
 .PARAMETER PostProcessing
     Specifies an optional callback to transform compare inputs before evaluation.

@@ -921,14 +921,14 @@ class EXOTransportRule : M365DSCResourceBase
                 TenantId                                     = $this.TenantId
                 AccessTokens                                 = $this.AccessTokens
             }
-            $inputParams = (Get-Command 'Get-TargetResource').Parameters
-            foreach ($key in $inputParams.Keys)
+
+            foreach ($name in $this.GetSchemaPropertyNames())
             {
-                $propertyInfo = $inputParams.$key
-                $curVar = $TransportRule.$key
-                if ($result.ContainsKey($key) -and $propertyInfo.ParameterType.Name -eq 'String[]' -and $null -eq $curVar)
+                if ($result.ContainsKey($name) -and
+                    $this.GetSchemaPropertyType($name) -eq [System.String[]] -and
+                    $null -eq $TransportRule.$name)
                 {
-                    $result.$key = @()
+                    $result.$name = @()
                 }
             }
 
@@ -1209,4 +1209,3 @@ class EXOTransportRule : M365DSCResourceBase
         return $result
     }
 }
-

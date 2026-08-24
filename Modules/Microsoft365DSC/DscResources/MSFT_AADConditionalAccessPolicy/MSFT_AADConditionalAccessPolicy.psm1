@@ -352,10 +352,10 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $Policy = $this.ExportedInstance
             }
 
-            Write-Verbose -Message 'Get-TargetResource: Found existing Conditional Access policy'
+            Write-Verbose -Message 'Get(): Found existing Conditional Access policy'
             $PolicyDisplayName = $Policy.DisplayName
 
-            Write-Verbose -Message 'Get-TargetResource: Process IncludeUsers'
+            Write-Verbose -Message 'Get(): Process IncludeUsers'
             #translate IncludeUser GUIDs to UPN, except id value is GuestsOrExternalUsers, None or All
             $includeUsersValue = @()
             if ($Policy.Conditions.Users.IncludeUsers)
@@ -386,7 +386,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Get-TargetResource: Process ExcludeUsers'
+            Write-Verbose -Message 'Get(): Process ExcludeUsers'
             #translate ExcludeUser GUIDs to UPN, except id value is GuestsOrExternalUsers, None or All
             $excludeUsersValue = @()
             if ($Policy.Conditions.Users.ExcludeUsers)
@@ -417,7 +417,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Get-TargetResource: Process IncludeGroups'
+            Write-Verbose -Message 'Get(): Process IncludeGroups'
             #translate IncludeGroup GUIDs to DisplayName
             $includeGroupsValue = @()
             if ($Policy.Conditions.Users.IncludeGroups)
@@ -441,7 +441,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 }
             }
 
-            Write-Verbose -Message 'Get-TargetResource: Process ExcludeGroups'
+            Write-Verbose -Message 'Get(): Process ExcludeGroups'
             #translate ExcludeGroup GUIDs to DisplayName
             $excludeGroupsValue = @()
             if ($Policy.Conditions.Users.ExcludeGroups)
@@ -470,7 +470,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             #translate role template guids to role name
             if ($Policy.Conditions.Users.IncludeRoles -or $Policy.Conditions.Users.ExcludeRoles)
             {
-                Write-Verbose -Message 'Get-TargetResource: Role condition defined, processing'
+                Write-Verbose -Message 'Get(): Role condition defined, processing'
                 #build role translation table
                 $rolelookup = @{}
                 foreach ($role in Get-MgDirectoryRoleTemplate -All)
@@ -478,7 +478,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     $rolelookup[$role.Id] = $role.DisplayName
                 }
 
-                Write-Verbose -Message 'Get-TargetResource: Processing IncludeRoles'
+                Write-Verbose -Message 'Get(): Processing IncludeRoles'
                 if ($Policy.Conditions.Users.IncludeRoles)
                 {
                     foreach ($IncludeRoleGUID in $Policy.Conditions.Users.IncludeRoles)
@@ -494,7 +494,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     }
                 }
 
-                Write-Verbose -Message 'Get-TargetResource: Processing ExcludeRoles'
+                Write-Verbose -Message 'Get(): Processing ExcludeRoles'
                 if ($Policy.Conditions.Users.ExcludeRoles)
                 {
                     foreach ($ExcludeRoleGUID in $Policy.Conditions.Users.ExcludeRoles)
@@ -516,7 +516,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             #translate Location template guids to Location name
             if ($Policy.Conditions.Locations)
             {
-                Write-Verbose -Message 'Get-TargetResource: Location condition defined, processing'
+                Write-Verbose -Message 'Get(): Location condition defined, processing'
                 #build Location translation table
                 $Locationlookup = @{}
                 foreach ($Location in Get-MgBetaIdentityConditionalAccessNamedLocation)
@@ -524,7 +524,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     $Locationlookup[$Location.Id] = $Location.DisplayName
                 }
 
-                Write-Verbose -Message 'Get-TargetResource: Processing IncludeLocations'
+                Write-Verbose -Message 'Get(): Processing IncludeLocations'
                 if ($Policy.Conditions.Locations.IncludeLocations)
                 {
                     foreach ($IncludeLocationGUID in $Policy.Conditions.Locations.IncludeLocations)
@@ -548,7 +548,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                     }
                 }
 
-                Write-Verbose -Message 'Get-TargetResource: Processing ExcludeLocations'
+                Write-Verbose -Message 'Get(): Processing ExcludeLocations'
                 if ($Policy.Conditions.Locations.ExcludeLocations)
                 {
                     foreach ($ExcludeLocationGUID in $Policy.Conditions.Locations.ExcludeLocations)
@@ -668,7 +668,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 foreach ($app in $Policy.Conditions.Applications.IncludeApplications)
                 {
                     # Only resolve to display name if the app is a GUID and not already in the list of included applications
-                    # to prevent drifts during Test-TargetResource
+                    # to prevent drifts during Test()
                     if ([System.Guid]::TryParse($app, [ref][System.Guid]::Empty) -and $this.IncludeApplications -notcontains $app)
                     {
                         $appInfo = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
@@ -694,7 +694,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 foreach ($app in $Policy.Conditions.Applications.ExcludeApplications)
                 {
                     # Only resolve to display name if the app is a GUID and not already in the list of excluded applications
-                    # to prevent drifts during Test-TargetResource
+                    # to prevent drifts during Test()
                     if ([System.Guid]::TryParse($app, [ref][System.Guid]::Empty) -and $this.ExcludeApplications -notcontains $app)
                     {
                         $appInfo = Get-MgServicePrincipal -Filter "AppId eq '$app'" -ErrorAction SilentlyContinue
