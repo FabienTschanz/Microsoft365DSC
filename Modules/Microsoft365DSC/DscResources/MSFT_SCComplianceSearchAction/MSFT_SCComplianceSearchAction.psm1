@@ -358,7 +358,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
 
             if ($actions.Count -gt 0)
             {
-                Write-M365DSCHost -Message "`r`n    Tenant Wide Actions:"
+                Write-M365DSCHost -Message "`r`n    Tenant Wide Actions:" -CommitWrite
             }
             else
             {

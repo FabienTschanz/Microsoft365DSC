@@ -120,12 +120,12 @@ class SPOSharingSettings : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the maximum number of days before organization sharing links expire for all OneDrive sites. This is a tenant wide setting, and all geos will inherit the policy. The value can be from 7 to 720 days. To remove the expiration requirement, set the value to zero (0).')]
-    [ValidateRange(7, 720)]
+    [ValidateRange(0, 720)]
     [System.Nullable[System.Int32]] $OneDriveOrganizationSharingLinkMaxExpirationInDays
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the recommended number of days before organization sharing links expire for all OneDrive sites. This setting provides a suggested expiration period to users when they create sharing links. This is a tenant wide setting, and all geos will inherit the policy. The value can be from 7 to 720 days and must be less than or equal to the maximum expiration value set by `OneDriveOrganizationSharingLinkMaxExpirationInDays`. When set to 0, the default value will be `OneDriveOrganizationSharingLinkMaxExpirationInDays`.')]
-    [ValidateRange(7, 720)]
+    [ValidateRange(0, 720)]
     [System.Nullable[System.Int32]] $OneDriveOrganizationSharingLinkRecommendedExpirationInDays
 
     [DscProperty()]
@@ -154,7 +154,7 @@ class SPOSharingSettings : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies all anonymous links that have been created (or will be created) will expire after the set number of days.')]
-    [System.Nullable[System.UInt32]] $RequireAnonymousLinksExpireInDays
+    [System.Nullable[System.Int32]] $RequireAnonymousLinksExpireInDays
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies a list of email domains that is allowed for sharing with the external collaborators. Entry values as an array of domains.')]
@@ -244,7 +244,7 @@ class SPOSharingSettings : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies Number of days for Guest Access links to expire.')]
-    [System.Nullable[System.UInt32]] $ExternalUserExpireInDays
+    [System.Nullable[System.Int32]] $ExternalUserExpireInDays
 
     [DscProperty()]
     [System.ComponentModel.Description('Access token used for authentication.')]
