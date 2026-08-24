@@ -604,10 +604,14 @@ class EXOGroupSettings : M365DSCResourceBase
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{
-            # The script block is invoked by Test-M365DSCTargetResource, outside this instance's
-            # scope, so $this is not available inside it. State travels via PostProcessingArgs.
             PostProcessing = {
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+
+                if ([M365DSCResourceBase]::IsReportContext($PostProcessingArgs))
+                {
+                    return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+                }
+
                 foreach ($key in $PostProcessingArgs[0])
                 {
                     $key = $key.Replace('Include', '').Replace('WithDisplayNames', '')

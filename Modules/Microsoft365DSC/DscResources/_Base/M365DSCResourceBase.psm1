@@ -659,12 +659,25 @@ class M365DSCResourceBase
 
     # Overridden by resources that need custom comparison parameters
     # (ExcludedProperties / IncludedProperties / PostProcessing / PostProcessingArgs).
-    # CONSTRAINT: reporting calls this on a BARE instance ($type::new().GetCompareParameters()),
-    # so the override must not depend on bound property state - branch on $DesiredValues inside
-    # the PostProcessing scriptblock instead of on $this out here.
     [Hashtable] GetCompareParameters()
     {
         return @{}
+    }
+
+    # True when the PostProcessing scriptblock runs for report generation (New-M365DSCDeltaReport)
+    # rather than for Test(). Reporting compares two configuration files and has no guaranteed
+    # workload connection, so callbacks that call a cmdlet must return their values untouched.
+    static [bool] IsReportContext([System.Object[]] $PostProcessingArgs)
+    {
+        foreach ($argument in $PostProcessingArgs)
+        {
+            if ($argument -is [System.Collections.Hashtable] -and $argument['IsReport'] -eq $true)
+            {
+                return $true
+            }
+        }
+
+        return $false
     }
 
     # Every schema property of the derived type. Replaces

@@ -1492,7 +1492,14 @@ function New-M365DSCDeltaReport
             $parameters.ExcludedProperties = [System.String[]] $customCompareParams.ExcludedProperties
             $parameters.IncludedProperties = [System.String[]] $customCompareParams.IncludedProperties
             $parameters.PostProcessing = $customCompareParams.PostProcessing
-            $parameters.PostProcessingArgs = [System.Object[]] $customCompareParams.PostProcessingArgs
+
+            $existingArgs = @()
+            if ($null -ne $customCompareParams.PostProcessingArgs)
+            {
+                $existingArgs = @($customCompareParams.PostProcessingArgs)
+            }
+
+            $parameters.PostProcessingArgs = [System.Object[]] ($existingArgs + @{ IsReport = $true })
             $compareParameters.Add($resourceName, $parameters)
         }
 

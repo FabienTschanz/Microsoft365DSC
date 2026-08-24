@@ -165,3 +165,35 @@ Describe 'M365DSCResourceBase complex-type hydration' {
         $validateSet[0].ValidValues | Should -Contain '#microsoft.graph.groupAssignmentTarget'
     }
 }
+
+Describe 'M365DSCResourceBase report context' {
+    BeforeAll {
+        $Script:RoleGroup = New-M365DSCResourceInstance -ResourceName 'EXORoleGroup' -Property @{
+            Name = 'Organization Management'
+        }
+    }
+
+    It 'Detects the marker wherever reporting appended it' {
+        $Script:RoleGroup::IsReportContext(@(@{ IsReport = $true })) | Should -BeTrue
+        $Script:RoleGroup::IsReportContext(@((, [System.String[]] @('Members')), @{ IsReport = $true })) | Should -BeTrue
+    }
+
+    It 'Treats the drift-path arguments as a live comparison' {
+        $Script:RoleGroup::IsReportContext(@()) | Should -BeFalse
+        $Script:RoleGroup::IsReportContext(@(, [System.String[]] @('Members'))) | Should -BeFalse
+        $Script:RoleGroup::IsReportContext(@(@{ IsReport = $false })) | Should -BeFalse
+    }
+
+    It 'Leaves the values untouched instead of resolving members for a report' {
+        $desiredValues = @{ Name = 'Organization Management'; Members = @('Some Display Name') }
+        $currentValues = @{ Name = 'Organization Management'; Members = @('Another Display Name') }
+        $valuesToCheck = $desiredValues.Clone()
+
+        $postProcessing = $Script:RoleGroup.GetCompareParameters().PostProcessing
+        $result = & $postProcessing $desiredValues $currentValues $valuesToCheck @(@{ IsReport = $true })
+
+        $result.Item1.Members | Should -Be @('Some Display Name')
+        $result.Item2.Members | Should -Be @('Another Display Name')
+        $result.Item3.Members | Should -Be @('Some Display Name')
+    }
+}

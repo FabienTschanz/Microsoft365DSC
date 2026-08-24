@@ -473,8 +473,6 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
         # Normalize condition sets in desired values so that permission names
         # compare correctly against the current values.
         return @{
-            # The script block is invoked by Test-M365DSCTargetResource, outside this instance's
-            # scope, so $this is not available inside it. State travels via PostProcessingArgs.
             PostProcessing = {
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
 

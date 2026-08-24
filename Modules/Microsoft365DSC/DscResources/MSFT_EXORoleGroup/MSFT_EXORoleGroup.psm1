@@ -331,12 +331,17 @@ class EXORoleGroup : M365DSCResourceBase
     }
 
     # Members provided as display names are resolved to comparable identifiers.
-    # TODO: Only do this if not doing a Report. It requires a connection to the EXO workload, which is not available when doing a report.
     [System.Collections.Hashtable] GetCompareParameters()
     {
         return @{
             PostProcessing = {
-                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+
+                if ([M365DSCResourceBase]::IsReportContext($PostProcessingArgs))
+                {
+                    return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)
+                }
+
                 if ($DesiredValues.ContainsKey('Members'))
                 {
                     $newMembersValue = @()

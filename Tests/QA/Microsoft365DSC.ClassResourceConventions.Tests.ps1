@@ -74,6 +74,24 @@ BeforeDiscovery {
         return $false
     }
 
+    $offlineCommands = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($command in (Get-Command -CommandType Cmdlet -ErrorAction SilentlyContinue |
+                Where-Object -FilterScript {
+                    $_.Source -like 'Microsoft.PowerShell.*' -or
+                    $_.Source -in @('CimCmdlets', 'PSDesiredStateConfiguration', 'Microsoft.WSMan.Management') }))
+    {
+        $null = $offlineCommands.Add($command.Name)
+    }
+
+    $modulesPath = Join-Path -Path $PSScriptRoot -ChildPath '../../Modules/Microsoft365DSC/Modules'
+    foreach ($moduleFile in (Get-ChildItem -Path $modulesPath -Filter '*.psm1' -File -Recurse))
+    {
+        foreach ($match in [regex]::Matches((Get-Content -Path $moduleFile.FullName -Raw), '(?im)^\s*function\s+([\w-]+)'))
+        {
+            $null = $offlineCommands.Add($match.Groups[1].Value)
+        }
+    }
+
     $thisWrites            = [System.Collections.Generic.List[string]]::new()
     $methodResultWrites    = [System.Collections.Generic.List[string]]::new()
     $fromHashtableInGet    = [System.Collections.Generic.List[string]]::new()
@@ -85,6 +103,7 @@ BeforeDiscovery {
     $nonNullableProperties = [System.Collections.Generic.List[string]]::new()
     $testDoesOwnCompare    = [System.Collections.Generic.List[string]]::new()
     $compareParamsUseThis  = [System.Collections.Generic.List[string]]::new()
+    $unguardedPostProcess  = [System.Collections.Generic.List[string]]::new()
     $exportMissingPlumbing = [System.Collections.Generic.List[string]]::new()
 
     foreach ($file in (Get-ChildItem -Path $resourcesPath -Filter 'MSFT_*.psm1' -File -Recurse))
@@ -317,6 +336,34 @@ BeforeDiscovery {
         }
         #endregion
 
+        #region
+        if ($methods.ContainsKey('GetCompareParameters'))
+        {
+            $localFunctions = @($topLevelFunctions | ForEach-Object -Process { $_.Name })
+
+            foreach ($block in $methods['GetCompareParameters'].Body.FindAll({
+                        param($a) $a -is [System.Management.Automation.Language.ScriptBlockExpressionAst] }, $true))
+            {
+                $guard = @($block.FindAll({
+                            param($a) $a -is [System.Management.Automation.Language.IfStatementAst] -and
+                            $a.Clauses[0].Item1.Extent.Text -match 'IsReportContext' -and
+                            $a.Clauses[0].Item2.Extent.Text -match '\breturn\b' }, $true)) | Select-Object -First 1
+
+                foreach ($call in $block.FindAll({
+                            param($a) $a -is [System.Management.Automation.Language.CommandAst] }, $true))
+                {
+                    $commandName = $call.GetCommandName()
+                    if ([System.String]::IsNullOrEmpty($commandName)) { continue }
+                    if ($offlineCommands.Contains($commandName) -or $commandName -in $localFunctions) { continue }
+                    if ($null -ne $guard -and $guard.Extent.StartLineNumber -lt $call.Extent.StartLineNumber) { continue }
+
+                    $unguardedPostProcess.Add(('{0} L{1}: {2}' -f $resourceName,
+                            $call.Extent.StartLineNumber, $commandName))
+                }
+            }
+        }
+        #endregion
+
         #region Export() plumbing
         # Single-instance resources may legitimately call $this.Get() directly, or splat parameters
         # and use $this.ExportedInstance. Either shape is fine for a resource with one instance.
@@ -401,6 +448,12 @@ BeforeDiscovery {
             Offenders = @($compareParamsUseThis)
             Because   = 'reporting calls it on a bare instance via $type::new(), where property reads are null. ' +
                         'Branch on $DesiredValues inside the PostProcessing scriptblock instead'
+        }
+        @{
+            Name      = 'calls no connected cmdlet in PostProcessing without an IsReportContext() guard'
+            Offenders = @($unguardedPostProcess)
+            Because   = 'reporting invokes PostProcessing while comparing two configuration files, with no workload ' +
+                        'connection and no try/catch around the call'
         }
         @{
             Name      = 'exports through the shared export plumbing'
