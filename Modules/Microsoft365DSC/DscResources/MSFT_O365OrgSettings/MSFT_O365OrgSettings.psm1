@@ -796,8 +796,6 @@ class O365OrgSettings : M365DSCResourceBase
     }
 }
 
-# Was Get-M365DSCOrgSettingsDynamicsCustomerVoice. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
 {
     [CmdletBinding()]
@@ -823,8 +821,6 @@ function Get-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
     }
 }
 
-# Was Get-M365DSCOrgSettingsToDo. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCOrgSettingsToDo
 {
     [CmdletBinding()]
@@ -850,8 +846,6 @@ function Get-O365OrgSettingsM365DSCOrgSettingsToDo
     }
 }
 
-# Was Update-M365DSCOrgSettingsAppsAndServices. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Update-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
 {
     [CmdletBinding()]
@@ -877,8 +871,6 @@ function Update-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
     }
 }
 
-# Was Get-M365DSCOrgSettingsForms. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCOrgSettingsForms
 {
     [CmdletBinding()]
@@ -904,8 +896,6 @@ function Get-O365OrgSettingsM365DSCOrgSettingsForms
     }
 }
 
-# Was Update-M365DSCOrgSettingsForms. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Update-O365OrgSettingsM365DSCOrgSettingsForms
 {
     [CmdletBinding()]
@@ -932,8 +922,6 @@ function Update-O365OrgSettingsM365DSCOrgSettingsForms
     }
 }
 
-# Was Get-M365DSCOrgSettingsAdminCenterReport. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
 {
     [CmdletBinding()]
@@ -959,8 +947,6 @@ function Get-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
     }
 }
 
-# Was Set-M365DSCO365OrgSettingsPlannerConfig. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Set-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
 {
     [CmdletBinding()]
@@ -998,8 +984,6 @@ function Set-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
     }
 }
 
-# Was Update-M365DSCOrgSettingsAdminCenterReport. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Update-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
 {
     [CmdletBinding()]
@@ -1018,8 +1002,6 @@ function Update-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
     Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $body | Out-Null
 }
 
-# Was Get-M365DSCOrgSettingsInstallationOptions. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
 {
     [CmdletBinding()]
@@ -1049,8 +1031,6 @@ function Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
     }
 }
 
-# Was Update-M365DSCOrgSettingsInstallationOptions. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Update-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
 {
     [CmdletBinding()]
@@ -1085,8 +1065,6 @@ function Update-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
     }
 }
 
-# Was Update-M365DSCOrgSettingsToDo. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Update-O365OrgSettingsM365DSCOrgSettingsToDo
 {
     [CmdletBinding()]
@@ -1113,8 +1091,6 @@ function Update-O365OrgSettingsM365DSCOrgSettingsToDo
     }
 }
 
-# Was Get-M365DSCOrgSettingsAppsAndServices. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
 {
     [CmdletBinding()]
@@ -1140,8 +1116,6 @@ function Get-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
     }
 }
 
-# Was Get-M365DSCO365OrgSettingsPlannerConfig. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
 {
     [CmdletBinding()]
@@ -1176,8 +1150,6 @@ function Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
     }
 }
 
-# Was Update-M365DSCOrgSettingsDynamicsCustomerVoice. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Update-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
 {
     [CmdletBinding()]

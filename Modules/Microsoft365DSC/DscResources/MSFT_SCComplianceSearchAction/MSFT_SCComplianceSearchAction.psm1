@@ -503,8 +503,6 @@ class SCComplianceSearchAction : M365DSCResourceBase
     }
 }
 
-# Was Get-CurrentAction. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-SCComplianceSearchActionCurrentAction
 {
     [CmdletBinding()]

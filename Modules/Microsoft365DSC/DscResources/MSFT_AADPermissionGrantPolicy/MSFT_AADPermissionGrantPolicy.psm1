@@ -581,8 +581,6 @@ function Get-AADPermissionGrantPolicyServicePrincipalCache
     return $Cache['ServicePrincipalCache']
 }
 
-# Was Resolve-ResourceApplicationName. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Resolve-AADPermissionGrantPolicyResourceApplicationName
 {
     [CmdletBinding()]
@@ -643,8 +641,6 @@ function Resolve-AADPermissionGrantPolicyResourceApplicationName
     return $ResourceApplication
 }
 
-# Was Get-PermissionGrantConditionSetAsHashtable. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable
 {
     [CmdletBinding()]
@@ -721,8 +717,6 @@ function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable
     return $result
 }
 
-# Was Test-ConditionSetsEqual. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-AADPermissionGrantPolicyConditionSetsEqual
 {
     [CmdletBinding()]
@@ -807,8 +801,6 @@ function Test-AADPermissionGrantPolicyConditionSetsEqual
     return $true
 }
 
-# Was ConvertTo-PermissionName. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function ConvertTo-AADPermissionGrantPolicyPermissionName
 {
     [CmdletBinding()]
@@ -931,8 +923,6 @@ function ConvertTo-AADPermissionGrantPolicyPermissionName
     return $PermissionId
 }
 
-# Was Get-PermissionGrantConditionSetAsParameters. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters
 {
     [CmdletBinding()]
@@ -1011,8 +1001,6 @@ function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters
     return $params
 }
 
-# Was ConvertTo-PermissionGuid. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function ConvertTo-AADPermissionGrantPolicyPermissionGuid
 {
     [CmdletBinding()]
@@ -1138,8 +1126,6 @@ function ConvertTo-AADPermissionGrantPolicyPermissionGuid
     return $PermissionName
 }
 
-# Was Resolve-ResourceApplicationId. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Resolve-AADPermissionGrantPolicyResourceApplicationId
 {
     [CmdletBinding()]

@@ -1804,8 +1804,6 @@ function Convert-Resource
         $text = Update-HelperCallSite -Text $text -HelperRename $HelperRename
 
         [void] $builder.AppendLine('')
-        [void] $builder.AppendLine("# Was $($helper.Original). Renamed because helper names recur across resources and the")
-        [void] $builder.AppendLine('# generated part file holds several of them.')
         [void] $builder.AppendLine($text)
 
         $notes.Add("Helper $($helper.Original) emitted as $($helper.Renamed).")

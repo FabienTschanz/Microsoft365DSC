@@ -940,8 +940,6 @@ class MSFT_SCDLPLabel
     [System.String] $type
 }
 
-# Was Test-ContainsSensitiveInformationGroups. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
 {
     [CmdletBinding()]
@@ -1016,8 +1014,6 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
     }
 }
 
-# Was Get-SCDLPSensitiveInformation. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation
 {
     [CmdletBinding()]
@@ -1071,8 +1067,6 @@ function Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation
     return $returnValue
 }
 
-# Was Test-ContainsSensitiveInformationLabels. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationLabels
 {
     [CmdletBinding()]
@@ -1125,8 +1119,6 @@ function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationLabels
     }
 }
 
-# Was Get-SCDLPSensitiveInformationGroups. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups
 {
     [CmdletBinding()]
@@ -1226,8 +1218,6 @@ function Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups
     return $returnValue
 }
 
-# Was Test-ContainsSensitiveInformation. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation
 {
     [CmdletBinding()]

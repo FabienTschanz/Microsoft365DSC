@@ -862,8 +862,6 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
     }
 }
 
-# Was Convert-ToExchangeFilterSyntax. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
 {
     [CmdletBinding()]

@@ -731,8 +731,6 @@ class MSFT_SCLabelSetting
     [System.String[]] $Value
 }
 
-# Was New-PolicyData. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function New-SCLabelPolicyPolicyData
 {
     [CmdletBinding()]
@@ -785,8 +783,6 @@ function New-SCLabelPolicyPolicyData
     return $desiredData
 }
 
-# Was Test-AdvancedSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCLabelPolicyAdvancedSettings
 {
     [CmdletBinding()]

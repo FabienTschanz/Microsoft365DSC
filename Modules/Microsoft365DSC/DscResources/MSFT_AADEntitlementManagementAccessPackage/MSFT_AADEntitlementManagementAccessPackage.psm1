@@ -841,8 +841,6 @@ class MSFT_AccessPackageResourceRoleScope
     [System.String] $AccessPackageResourceScopeOriginSystem
 }
 
-# Was Get-M365DSCAccessPackageResourceOriginKey. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-AADEntitlementManagementAccessPackageM365DSCAccessPackageResourceOriginKey
 {
     # Resolves a resource role scope OriginId to the value Get() reports for it. For an

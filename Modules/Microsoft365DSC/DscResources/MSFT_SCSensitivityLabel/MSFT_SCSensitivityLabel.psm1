@@ -1513,8 +1513,6 @@ class MSFT_SCSLTrainableClassifiers
     [System.String] $id
 }
 
-# Was Test-LocaleSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCSensitivityLabelLocaleSettings
 {
     [CmdletBinding()]
@@ -1581,8 +1579,6 @@ function Test-SCSensitivityLabelLocaleSettings
     return $foundSettings
 }
 
-# Was Test-AutoLabelingSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCSensitivityLabelAutoLabelingSettings
 {
     [CmdletBinding()]
@@ -1726,8 +1722,6 @@ function Test-SCSensitivityLabelAutoLabelingSettings
     return $foundSettings
 }
 
-# Was Test-AdvancedSettings. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCSensitivityLabelAdvancedSettings
 {
     [CmdletBinding()]

@@ -1221,8 +1221,6 @@ class MSFT_SCDLPLabel
     [System.String] $type
 }
 
-# Was Test-ContainsSensitiveInformation. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCDLPComplianceRuleContainsSensitiveInformation
 {
     [CmdletBinding()]
@@ -1275,8 +1273,6 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformation
     }
 }
 
-# Was Get-SCDLPSensitiveInformationGroups. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups
 {
     [CmdletBinding()]
@@ -1413,8 +1409,6 @@ function Get-SCDLPComplianceRuleSCDLPSensitiveInformationGroups
     return $returnValue
 }
 
-# Was Test-ContainsSensitiveInformationGroups. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCDLPComplianceRuleContainsSensitiveInformationGroups
 {
     [CmdletBinding()]
@@ -1489,8 +1483,6 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationGroups
     }
 }
 
-# Was Format-Json. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Format-SCDLPComplianceRuleJson([Parameter(Mandatory, ValueFromPipeline)][String] $json)
 {
     $indent = 0
@@ -1510,8 +1502,6 @@ function Format-SCDLPComplianceRuleJson([Parameter(Mandatory, ValueFromPipeline)
     }) -join "`n"
 }
 
-# Was Convert-SCDLPEndpointDlpRestrictions. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions
 {
     [CmdletBinding()]
@@ -1552,8 +1542,6 @@ function Convert-SCDLPComplianceRuleSCDLPEndpointDlpRestrictions
     return $returnValue
 }
 
-# Was Test-ContainsSensitiveInformationLabels. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Test-SCDLPComplianceRuleContainsSensitiveInformationLabels
 {
     [CmdletBinding()]
@@ -1606,8 +1594,6 @@ function Test-SCDLPComplianceRuleContainsSensitiveInformationLabels
     }
 }
 
-# Was Get-SCDLPSensitiveInformation. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-SCDLPComplianceRuleSCDLPSensitiveInformation
 {
     [CmdletBinding()]

@@ -555,8 +555,6 @@ class MSFT_DeviceManagementConfigurationPolicyItems
     [System.String[]] $guidedDeploymentTags
 }
 
-# Was Get-PayloadIdFromItem. Renamed because helper names recur across resources and the
-# generated part file holds several of them.
 function Get-IntunePolicySetsPayloadIdFromItem
 {
     [CmdletBinding()]
