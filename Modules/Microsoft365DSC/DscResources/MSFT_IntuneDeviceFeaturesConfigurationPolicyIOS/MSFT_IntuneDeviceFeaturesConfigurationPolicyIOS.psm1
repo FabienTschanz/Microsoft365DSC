@@ -197,6 +197,22 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
                 $configuration.value = [string]$configuration.value
             }
 
+            foreach ($dockPage in $getValue.homeScreenDockIcons.pages)
+            {
+                # Remove null displayName property
+                $dockPage.Remove('displayName') | Out-Null
+            }
+
+            foreach ($page in $getValue.homeScreenPages)
+            {
+                # Remove null displayName property
+                $page.Remove('displayName') | Out-Null
+                foreach ($iconPage in $page.icons.pages)
+                {
+                    $iconPage.Remove('displayName') | Out-Null
+                }
+            }
+
             $results = @{
                 #region resource generator code
                 Id                       = $getValue.Id

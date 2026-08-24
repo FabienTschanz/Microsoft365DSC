@@ -58,6 +58,8 @@
 * IntuneDiskEncryptionMacOS
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDiskEncryptionFileVaultPolicyMacOS` instead.
+* IntuneDeviceFeaturesConfigurationPolicyIOS
+  * Removed null-valued `displayName` properties from nested home screen page instances.
 * IntuneMobileAppsLobAppWindows10
   * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementAppxMobileAppAssignment`.
 * IntuneMobileAppsSystemAppAndroid
