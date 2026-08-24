@@ -59,7 +59,7 @@ class TeamsEmergencyCallRoutingPolicy : M365DSCResourceBase
     [System.String[]] $AccessTokens
 
     # Export-only. Not part of the resource schema.
-    [System.String] $Filter
+    [System.String] $Filter = '*'
 
     [TeamsEmergencyCallRoutingPolicy] Get()
     {
