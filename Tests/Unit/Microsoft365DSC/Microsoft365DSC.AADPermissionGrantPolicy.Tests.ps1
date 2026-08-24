@@ -21,9 +21,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Invoke-Command -ScriptBlock $Global:DscHelper.InitializeScript -NoNewScope
         BeforeAll {
 
-            # Stands in for the resource instance's $this.ResourceCache when the helper functions
+            # Stands in for the resource instance's $this.ResourceCache when the helper methods
             # are exercised directly.
             $testCache = @{}
+            $resource = [AADPermissionGrantPolicy]::new()
 
             $secpasswd = ConvertTo-SecureString (New-Guid | Out-String) -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('tenantadmin@onmicrosoft.com', $secpasswd)
@@ -359,7 +360,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Permissions              = @('User.Read')
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $true
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $true
             }
 
             It 'Should return false for different permission types' {
@@ -373,7 +374,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PermissionType = 'application'
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $false
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $false
             }
 
             It 'Should return false for different array values' {
@@ -387,7 +388,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Permissions = @('User.Read')
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $false
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $false
             }
 
             It 'Should return true for arrays in different order' {
@@ -401,7 +402,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ClientApplicationIds = @('id3', 'id1', 'id2')
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $true
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $true
             }
 
             It 'Should return false when properties are missing' {
@@ -416,7 +417,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PermissionType = 'delegated'
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $false
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $false
             }
         }
 
@@ -435,7 +436,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication                         = '00000003-0000-0000-c000-000000000000'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($testCache, $conditionSet)
 
                 $result.Id | Should -Be 'test-id'
                 $result.PermissionType | Should -Be 'delegated'
@@ -450,7 +451,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PermissionType = 'delegated'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($testCache, $conditionSet)
 
                 $result.ContainsKey('Id') | Should -Be $true
                 $result.ContainsKey('PermissionType') | Should -Be $true
@@ -468,7 +469,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication  = 'any'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $conditionSet -Cache $testCache
+                $result = $resource.GetPermissionGrantConditionSetAsParameters($testCache, $conditionSet)
 
                 $result.ContainsKey('PermissionGrantConditionSetId') | Should -Be $false
                 $result.PermissionType | Should -Be 'delegated'
@@ -482,7 +483,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ClientApplicationIds = @()
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $conditionSet -Cache $testCache
+                $result = $resource.GetPermissionGrantConditionSetAsParameters($testCache, $conditionSet)
 
                 $result.ContainsKey('ClientApplicationIds') | Should -Be $false
             }
@@ -491,59 +492,47 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         Context -Name 'Complex Scenario - Helper function ConvertTo-PermissionGuid' -Fixture {
             It 'Should pass through wildcard all as all' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'all' -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, 'all', $null, $null)
                 $result | Should -Be 'all'
             }
 
             It 'Should convert any wildcard to all' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'any' -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, 'any', $null, $null)
                 $result | Should -Be 'all'
             }
 
             It 'Should pass through existing GUIDs unchanged' {
                 $guid = 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName $guid -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, $guid, $null, $null)
                 $result | Should -Be $guid
             }
 
             It 'Should resolve delegated permission name to GUID' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, 'User.Read', '00000003-0000-0000-c000-000000000000', 'delegated')
                 $result | Should -Be 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
             }
 
             It 'Should resolve application permission name to GUID' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read.All' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'application' -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, 'User.Read.All', '00000003-0000-0000-c000-000000000000', 'application')
                 $result | Should -Be 'df021288-bdef-4463-88db-98f22de89214'
             }
 
             It 'Should return name when ResourceApplication is any' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read' `
-                    -ResourceApplicationId 'any' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, 'User.Read', 'any', 'delegated')
                 $result | Should -Be 'User.Read'
             }
 
             It 'Should return name when ResourceApplication is not specified' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read' -Cache $testCache
+                $result = $resource.ConvertToPermissionGuid($testCache, 'User.Read', $null, $null)
                 $result | Should -Be 'User.Read'
             }
 
             It 'Should cache service principal and only call Get-MgServicePrincipal once for same ResourceApplication' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
 
-                $result1 = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'delegated' -Cache $testCache
-                $result2 = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'openid' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'delegated' -Cache $testCache
-                $result3 = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read.All' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'application' -Cache $testCache
+                $result1 = $resource.ConvertToPermissionGuid($testCache, 'User.Read', '00000003-0000-0000-c000-000000000000', 'delegated')
+                $result2 = $resource.ConvertToPermissionGuid($testCache, 'openid', '00000003-0000-0000-c000-000000000000', 'delegated')
+                $result3 = $resource.ConvertToPermissionGuid($testCache, 'User.Read.All', '00000003-0000-0000-c000-000000000000', 'application')
 
                 $result1 | Should -Be 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
                 $result2 | Should -Be '37f7f235-527c-4136-accd-4a02d197296e'
@@ -555,98 +544,87 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         Context -Name 'Helper function ConvertTo-PermissionName' -Fixture {
             It 'Should pass through wildcard all unchanged' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'all' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'all', $null, $null)
                 $result | Should -Be 'all'
             }
 
             It 'Should pass through wildcard any unchanged' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'any' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'any', $null, $null)
                 $result | Should -Be 'any'
             }
 
             It 'Should pass through non-GUID value as already a name' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'User.Read' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'User.Read', $null, $null)
                 $result | Should -Be 'User.Read'
             }
 
             It 'Should resolve delegated permission GUID to name' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'e1fe6dd8-ba31-4d61-89e7-88639da4683d' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', '00000003-0000-0000-c000-000000000000', 'delegated')
                 $result | Should -Be 'User.Read'
             }
 
             It 'Should resolve application permission GUID to name' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'df021288-bdef-4463-88db-98f22de89214' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'application' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'df021288-bdef-4463-88db-98f22de89214', '00000003-0000-0000-c000-000000000000', 'application')
                 $result | Should -Be 'User.Read.All'
             }
 
             It 'Should return GUID when ResourceApplication is any' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'e1fe6dd8-ba31-4d61-89e7-88639da4683d' `
-                    -ResourceApplicationId 'any' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', 'any', 'delegated')
                 $result | Should -Be 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
             }
 
             It 'Should return GUID when ResourceApplication is not specified' {
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'e1fe6dd8-ba31-4d61-89e7-88639da4683d' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', $null, $null)
                 $result | Should -Be 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
             }
 
             It 'Should resolve GUID even without PermissionType by searching both collections' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'e1fe6dd8-ba31-4d61-89e7-88639da4683d' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', '00000003-0000-0000-c000-000000000000', $null)
                 $result | Should -Be 'User.Read'
             }
 
             It 'Should return GUID when permission is not found in service principal' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' `
-                    -ResourceApplicationId '00000003-0000-0000-c000-000000000000' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', '00000003-0000-0000-c000-000000000000', 'delegated')
                 $result | Should -Be 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
             }
 
             It 'Should resolve SP name as ResourceApplicationId and resolve permission' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionName -PermissionId 'e1fe6dd8-ba31-4d61-89e7-88639da4683d' `
-                    -ResourceApplicationId 'Microsoft Graph' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = [AADPermissionGrantPolicy]::ConvertToPermissionName($testCache, 'e1fe6dd8-ba31-4d61-89e7-88639da4683d', 'Microsoft Graph', 'delegated')
                 $result | Should -Be 'User.Read'
             }
         }
 
         Context -Name 'Helper function Resolve-ResourceApplicationName' -Fixture {
             It 'Should resolve GUID to service principal display name' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication '00000003-0000-0000-c000-000000000000' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = $resource.ResolveResourceApplicationName($testCache, '00000003-0000-0000-c000-000000000000')
                 $result | Should -Be 'Microsoft Graph'
             }
 
             It 'Should pass through wildcard any unchanged' {
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication 'any' -Cache $testCache
+                $result = $resource.ResolveResourceApplicationName($testCache, 'any')
                 $result | Should -Be 'any'
             }
 
             It 'Should pass through non-GUID value as already a name' {
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication 'Microsoft Graph' -Cache $testCache
+                $result = $resource.ResolveResourceApplicationName($testCache, 'Microsoft Graph')
                 $result | Should -Be 'Microsoft Graph'
             }
 
             It 'Should return GUID when service principal is not found' {
                 Mock -CommandName Get-MgServicePrincipal -MockWith { return $null }
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = $resource.ResolveResourceApplicationName($testCache, 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee')
                 $result | Should -Be 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
             }
 
             It 'Should use cache for repeated lookups' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 Mock -CommandName Get-MgServicePrincipal -MockWith {
                     return @{
                         AppId       = '00000003-0000-0000-c000-000000000000'
@@ -654,14 +632,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                $null = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication '00000003-0000-0000-c000-000000000000' -Cache $testCache
-                $null = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication '00000003-0000-0000-c000-000000000000' -Cache $testCache
+                $null = $resource.ResolveResourceApplicationName($testCache, '00000003-0000-0000-c000-000000000000')
+                $null = $resource.ResolveResourceApplicationName($testCache, '00000003-0000-0000-c000-000000000000')
 
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
             }
 
             It 'Should also cache by DisplayName so name lookups can find cached entries' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 Mock -CommandName Get-MgServicePrincipal -MockWith {
                     return @{
                         AppId       = '00000003-0000-0000-c000-000000000000'
@@ -669,35 +647,35 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                $null = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication '00000003-0000-0000-c000-000000000000' -Cache $testCache
-                (Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $testCache).ContainsKey('Microsoft Graph') | Should -BeTrue
+                $null = $resource.ResolveResourceApplicationName($testCache, '00000003-0000-0000-c000-000000000000')
+                ([AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $false)).ContainsKey('Microsoft Graph') | Should -BeTrue
             }
         }
 
         Context -Name 'Helper function Resolve-ResourceApplicationId' -Fixture {
             It 'Should resolve service principal name to AppId GUID' {
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication 'Microsoft Graph' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, 'Microsoft Graph')
                 $result | Should -Be '00000003-0000-0000-c000-000000000000'
             }
 
             It 'Should pass through GUID value unchanged' {
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication '00000003-0000-0000-c000-000000000000' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, '00000003-0000-0000-c000-000000000000')
                 $result | Should -Be '00000003-0000-0000-c000-000000000000'
             }
 
             It 'Should pass through wildcard any unchanged' {
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication 'any' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, 'any')
                 $result | Should -Be 'any'
             }
 
             It 'Should return name when service principal is not found' {
                 Mock -CommandName Get-MgServicePrincipal -MockWith { return $null }
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication 'NonExistentApp' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, 'NonExistentApp')
                 $result | Should -Be 'NonExistentApp'
             }
 
             It 'Should use cache for repeated name-based lookups' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 Mock -CommandName Get-MgServicePrincipal -MockWith {
                     return @{
                         AppId       = '00000003-0000-0000-c000-000000000000'
@@ -705,14 +683,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                $null = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication 'Microsoft Graph' -Cache $testCache
-                $null = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication 'Microsoft Graph' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, 'Microsoft Graph')
+                $null = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, 'Microsoft Graph')
 
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
             }
 
             It 'Should find cached entry after GUID-based lookup by Resolve-ResourceApplicationName' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 Mock -CommandName Get-MgServicePrincipal -MockWith {
                     return @{
                         AppId       = '00000003-0000-0000-c000-000000000000'
@@ -721,9 +699,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
                 # First lookup by GUID populates cache with both GUID and name keys
-                $null = Resolve-AADPermissionGrantPolicyResourceApplicationName -ResourceApplication '00000003-0000-0000-c000-000000000000' -Cache $testCache
+                $null = $resource.ResolveResourceApplicationName($testCache, '00000003-0000-0000-c000-000000000000')
                 # Second lookup by name should use cache
-                $result = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication 'Microsoft Graph' -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($testCache, 'Microsoft Graph')
                 $result | Should -Be '00000003-0000-0000-c000-000000000000'
 
                 Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
@@ -732,18 +710,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
         Context -Name 'ConvertTo-PermissionGuid with SP name as ResourceApplicationId' -Fixture {
             It 'Should resolve SP name and then resolve permission' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read' `
-                    -ResourceApplicationId 'Microsoft Graph' `
-                    -PermissionType 'delegated' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = $resource.ConvertToPermissionGuid($testCache, 'User.Read', 'Microsoft Graph', 'delegated')
                 $result | Should -Be 'e1fe6dd8-ba31-4d61-89e7-88639da4683d'
             }
 
             It 'Should resolve SP name for application permission' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
-                $result = ConvertTo-AADPermissionGrantPolicyPermissionGuid -PermissionName 'User.Read.All' `
-                    -ResourceApplicationId 'Microsoft Graph' `
-                    -PermissionType 'application' -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
+                $result = $resource.ConvertToPermissionGuid($testCache, 'User.Read.All', 'Microsoft Graph', 'application')
                 $result | Should -Be 'df021288-bdef-4463-88db-98f22de89214'
             }
         }
@@ -756,7 +730,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication = '00000003-0000-0000-c000-000000000000'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($testCache, $conditionSet)
                 $result.ResourceApplication | Should -Be '00000003-0000-0000-c000-000000000000'
             }
 
@@ -767,12 +741,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication = 'any'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($testCache, $conditionSet)
                 $result.ResourceApplication | Should -Be 'any'
             }
 
             It 'Should resolve permission GUIDs to names' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 $conditionSet = [PSCustomObject]@{
                     Id                  = 'test-id'
                     PermissionType      = 'delegated'
@@ -780,7 +754,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Permissions         = @('e1fe6dd8-ba31-4d61-89e7-88639da4683d', '37f7f235-527c-4136-accd-4a02d197296e')
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($testCache, $conditionSet)
                 $result.Permissions | Should -Be @('User.Read', 'openid')
             }
 
@@ -792,7 +766,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Permissions         = @('all')
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $testCache
+                $result = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($testCache, $conditionSet)
                 $result.Permissions | Should -Be @('all')
             }
         }
@@ -806,7 +780,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication = '00000003-0000-0000-c000-000000000000'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $conditionSet -Cache $testCache
+                $result = $resource.GetPermissionGrantConditionSetAsParameters($testCache, $conditionSet)
                 $result.ResourceApplication | Should -Be '00000003-0000-0000-c000-000000000000'
             }
 
@@ -818,7 +792,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication = 'any'
                 }
 
-                $result = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $conditionSet -Cache $testCache
+                $result = $resource.GetPermissionGrantConditionSetAsParameters($testCache, $conditionSet)
                 $result.ResourceApplication | Should -Be 'any'
             }
         }
@@ -863,13 +837,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should resolve Permission GUIDs to names in Includes' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 $result = (New-M365DSCResourceInstance -ResourceName 'AADPermissionGrantPolicy' -Property @{ Id = 'name-test-policy'; Credential = $Credential }).Get().ToHashtable()
                 $result.Includes[0].Permissions | Should -Be @('User.Read', 'openid')
             }
 
             It 'Should resolve Permission GUIDs to names in Excludes' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
                 $result = (New-M365DSCResourceInstance -ResourceName 'AADPermissionGrantPolicy' -Property @{ Id = 'name-test-policy'; Credential = $Credential }).Get().ToHashtable()
                 $result.Excludes[0].Permissions | Should -Be @('User.Read.All')
             }
@@ -894,7 +868,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ResourceApplication      = '00000003-0000-0000-c000-000000000000'
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $true
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $true
             }
 
             It 'Should return true when both have Ids but content matches' {
@@ -912,7 +886,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Permissions              = @('User.Read')
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $true
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $true
             }
 
             It 'Should return false when content differs even with same Id' {
@@ -926,13 +900,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PermissionType = 'application'
                 }
 
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $set1 -ConditionSet2 $set2 -Cache $testCache | Should -Be $false
+                $resource.TestConditionSetsEqual($testCache, $set1, $set2) | Should -Be $false
             }
         }
 
         Context -Name 'Set() uses content-based matching for includes' -Fixture {
             It 'Should match desired include without Id to current include with Id via Test-ConditionSetsEqual' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
 
                 # Simulate: desired state has no Id (like real DSC config CIM instances)
                 $desiredInclude = @{
@@ -962,11 +936,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 # This should return true because both use the same GUID for ResourceApplication,
                 # permissions resolve to the same display names, and Id is skipped during comparison
-                Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredInclude -ConditionSet2 $currentInclude -Cache $testCache | Should -Be $true
+                $resource.TestConditionSetsEqual($testCache, $desiredInclude, $currentInclude) | Should -Be $true
             }
 
             It 'Should match multiple desired includes without Ids to current includes with Ids' {
-                $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Reset -Cache $testCache
+                $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($testCache, $true)
 
                 $desiredIncludes = @(
                     @{
@@ -1011,7 +985,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     foreach ($current in $currentIncludes)
                     {
                         if ($current.Id -notin $matchedCurrentIds -and
-                            (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desired -ConditionSet2 $current -Cache $testCache))
+                            ($resource.TestConditionSetsEqual($testCache, $desired, $current)))
                         {
                             $matchedCurrentIds += $current.Id
                             break
@@ -1054,7 +1028,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     foreach ($current in $currentIncludes)
                     {
                         if ($current.Id -notin $matchedCurrentIds -and
-                            (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desired -ConditionSet2 $current -Cache $testCache))
+                            ($resource.TestConditionSetsEqual($testCache, $desired, $current)))
                         {
                             $matchedCurrentIds += $current.Id
                             break

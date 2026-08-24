@@ -432,11 +432,11 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 {
                     if ($null -ne $item.groups)
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformationGroups($item)
                     }
                     else
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformation($item)
                     }
                 }
                 $CreationParams.ContentContainsSensitiveInformation = $value
@@ -449,11 +449,11 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 {
                     if ($null -ne $item.groups)
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformationGroups($item)
                     }
                     else
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformation($item)
                     }
                 }
                 $CreationParams.ExceptIfContentContainsSensitiveInformation = $value
@@ -490,11 +490,11 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 {
                     if ($null -ne $item.groups)
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformationGroups($item)
                     }
                     else
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformation($item)
                     }
                 }
                 $UpdateParams.ContentContainsSensitiveInformation = $value
@@ -507,11 +507,11 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                 {
                     if ($null -ne $item.groups)
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformationGroups($item)
                     }
                     else
                     {
-                        $value += Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation $item
+                        $value += [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformation($item)
                     }
                 }
                 $UpdateParams.ExceptIfContentContainsSensitiveInformation = $value
@@ -558,15 +558,15 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
                     {
                         if ($null -ne $DesiredValues[$key].groups)
                         {
-                            $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $DesiredValues[$key]
-                            $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups -SensitiveInformation $CurrentValues[$key]
-                            $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups -targetValues $contentSITS -sourceValue $currentSITS
+                            $contentSITS = [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformationGroups($DesiredValues[$key])
+                            $currentSITS = [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformationGroups($CurrentValues[$key])
+                            $desiredState = [SCAutoSensitivityLabelRule]::TestContainsSensitiveInformationGroups($contentSITS, $currentSITS)
                         }
                         else
                         {
-                            $contentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $DesiredValues[$key]
-                            $currentSITS = Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation -SensitiveInformation $CurrentValues[$key]
-                            $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation -targetValues $contentSITS -sourceValue $currentSITS
+                            $contentSITS = [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformation($DesiredValues[$key])
+                            $currentSITS = [SCAutoSensitivityLabelRule]::GetSCDLPSensitiveInformation($CurrentValues[$key])
+                            $desiredState = [SCAutoSensitivityLabelRule]::TestContainsSensitiveInformation($contentSITS, $currentSITS)
                         }
 
                         if ($desiredState)
@@ -829,7 +829,283 @@ class SCAutoSensitivityLabelRule : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden static [System.Boolean] TestContainsSensitiveInformationGroups([System.Object[]] $targetValues, [System.Object[]] $sourceValues)
+    {
+        if ($targetValues.operator -ne $sourceValues.operator)
+        {
+            $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                "DLP Compliance Rule has invalid value for property operator. " + `
+                "Current value is {$($targetValues.operator)} and is expected to be {$($sourceValues.operator)}."
+            Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+            return $false
+        }
+
+        foreach ($group in $targetValues.groups)
+        {
+            $matchingExistingGroup = $sourceValues.groups | Where-Object -FilterScript { $_.name -eq $group.name }
+
+            if ($null -ne $matchingExistingGroup)
+            {
+                Write-Verbose -Message "ContainsSensitiveInformationGroup {$($group.name)} was found"
+                if ($group.operator -ne $matchingExistingGroup.operator)
+                {
+                    $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                        "Group {$($group.name)} has invalid value for property operator. " + `
+                        "Current value is {$($matchingExistingGroup.operator)} and is expected to be {$($group.operator)}."
+                    Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                        -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+                    return $false
+                }
+            }
+            else
+            {
+                Write-Verbose -Message "Sensitive Information Action {$($group.name)} was not found"
+                $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                    "An action on {$($group.name)} Sensitive Information Type is missing."
+                Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                    -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+                return $false
+            }
+
+            if ($null -ne $group.sensitivetypes)
+            {
+                $desiredState = [SCAutoSensitivityLabelRule]::TestContainsSensitiveInformation($group.sensitivetypes, $matchingExistingGroup.sensitivetypes)
+                if ($desiredState -eq $false)
+                {
+                    return $false
+                }
+            }
+
+            if ($null -ne $group.labels)
+            {
+                $desiredState = [SCAutoSensitivityLabelRule]::TestContainsSensitiveInformationLabels($group.labels, $matchingExistingGroup.labels)
+                if ($desiredState -eq $false)
+                {
+                    return $false
+                }
+            }
+        }
+
+        return $true
+    }
+
+    hidden static [System.Object[]] GetSCDLPSensitiveInformation([System.Object[]] $SensitiveInformationItems)
+    {
+        $returnValue = @()
+
+        foreach ($item in $SensitiveInformationItems.SensitiveInformation)
+        {
+            $result = [ordered]@{
+                name = $item.name
+            }
+
+            if ($null -ne $item.id)
+            {
+                $result.Add('id', $item.id)
+            }
+
+            if ($null -ne $item.maxconfidence)
+            {
+                $result.Add('maxconfidence', $item.maxconfidence)
+            }
+
+            if ($null -ne $item.minconfidence)
+            {
+                $result.Add('minconfidence', $item.minconfidence)
+            }
+
+            if ($null -ne $item.classifiertype)
+            {
+                $result.Add('classifiertype', $item.classifiertype)
+            }
+
+            if ($null -ne $item.mincount)
+            {
+                $result.Add('mincount', $item.mincount)
+            }
+
+            if ($null -ne $item.maxcount)
+            {
+                $result.Add('maxcount', $item.maxcount)
+            }
+            $returnValue += $result
+        }
+        return $returnValue
+    }
+
+    hidden static [System.Boolean] TestContainsSensitiveInformationLabels([System.Object[]] $targetValues, [System.Object[]] $sourceValues)
+    {
+        foreach ($sit in $targetValues)
+        {
+            Write-Verbose -Message "Trying to find existing Sensitive Information labels matching name {$($sit.name)}"
+            $matchingExistingRule = $sourceValues | Where-Object -FilterScript { $_.name -eq $sit.name }
+
+            if ($null -ne $matchingExistingRule)
+            {
+                Write-Verbose -Message "Sensitive Information label {$($sit.name)} was found"
+                $propertiesTocheck = @('id', 'type')
+
+                foreach ($property in $propertiesToCheck)
+                {
+                    Write-Verbose -Message "Checking property {$property} for Sensitive Information label {$($sit.name)}"
+                    if ($sit.$property -ne $matchingExistingRule.$property)
+                    {
+                        Write-Verbose -Message "Property {$property} is set to {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
+                        $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                            "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
+                            "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
+                        Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                            -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+                        return $false
+                    }
+                }
+            }
+            else
+            {
+                Write-Verbose -Message "Sensitive Information label {$($sit.name)} was not found"
+                $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                    "An action on {$($sit.name)} Sensitive Information label is missing."
+                Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                    -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+                return $false
+            }
+        }
+
+        return $true
+    }
+
+    hidden static [System.Object[]] GetSCDLPSensitiveInformationGroups([System.Object[]] $SensitiveInformationGroups)
+    {
+        $returnValue = @()
+        $sits = @()
+        $groups = @()
+
+        $result = @{
+            operator = $SensitiveInformationGroups.operator
+        }
+
+        foreach ($group in $SensitiveInformationGroups.groups)
+        {
+            $myGroup = [ordered]@{
+                name = $group.name
+            }
+            if ($null -ne $group.operator)
+            {
+                $myGroup.Add('operator', $group.operator)
+            }
+            $sits = @()
+            foreach ($item in $group.SensitiveInformation)
+            {
+                $sit = [ordered]@{
+                    name = $item.name
+                }
+
+                if ($null -ne $item.id)
+                {
+                    $sit.Add('id', $item.id)
+                }
+
+                if ($null -ne $item.maxconfidence)
+                {
+                    $sit.Add('maxconfidence', $item.maxconfidence)
+                }
+
+                if ($null -ne $item.minconfidence)
+                {
+                    $sit.Add('minconfidence', $item.minconfidence)
+                }
+
+                if ($null -ne $item.classifiertype)
+                {
+                    $sit.Add('classifiertype', $item.classifiertype)
+                }
+
+                if ($null -ne $item.mincount)
+                {
+                    $sit.Add('mincount', $item.mincount)
+                }
+
+                if ($null -ne $item.maxcount)
+                {
+                    $sit.Add('maxcount', $item.maxcount)
+                }
+                $sits += $sit
+            }
+            if ($sits.Length -gt 0)
+            {
+                $myGroup.Add('sensitivetypes', $sits)
+            }
+            $labels = @()
+            foreach ($item in $group.labels)
+            {
+                $label = [ordered]@{
+                    name = $item.name
+                }
+
+                if ($null -ne $item.id)
+                {
+                    $label.Add('id', $item.id)
+                }
+
+                if ($null -ne $item.type)
+                {
+                    $label.Add('type', $item.type)
+                }
+                $labels += $label
+            }
+            if ($labels.Length -gt 0)
+            {
+                $myGroup.Add('labels', $labels)
+            }
+            $groups += $myGroup
+        }
+        $result.Add('groups', $groups)
+        $returnValue += $result
+        return $returnValue
+    }
+
+    hidden static [System.Boolean] TestContainsSensitiveInformation([System.Object[]] $targetValues, [System.Object[]] $sourceValues)
+    {
+        foreach ($sit in $targetValues)
+        {
+            Write-Verbose -Message "Trying to find existing Sensitive Information Action matching name {$($sit.name)}"
+            $matchingExistingRule = $sourceValues | Where-Object -FilterScript { $_.name -eq $sit.name.Replace("''", "'") }
+
+            if ($null -ne $matchingExistingRule)
+            {
+                Write-Verbose -Message "Sensitive Information Action {$($sit.name)} was found"
+                $propertiesTocheck = @('id', 'maxconfidence', 'minconfidence', 'classifiertype', 'mincount', 'maxcount')
+
+                foreach ($property in $propertiesToCheck)
+                {
+                    Write-Verbose -Message "Checking property {$property} for Sensitive Information Action {$($sit.name)}"
+                    if ($sit.$property -ne $matchingExistingRule.$property)
+                    {
+                        Write-Verbose -Message "Property {$property} is set to {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
+                        $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                            "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
+                            "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
+                        Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                            -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+                        return $false
+                    }
+                }
+            }
+            else
+            {
+                Write-Verbose -Message "Sensitive Information Action {$($sit.name)} was not found"
+                $EventMessage = "DLP Compliance Rule was not in the desired state.`r`n" + `
+                    "An action on {$($sit.name)} Sensitive Information Type is missing."
+                Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
+                    -EventID 1 -Source 'SCAutoSensitivityLabelRule'
+                return $false
+            }
+        }
+
+        return $true
+    }
+
     hidden [SCAutoSensitivityLabelRule] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCAutoSensitivityLabelRule])
@@ -938,334 +1214,4 @@ class MSFT_SCDLPLabel
     [DscProperty()]
     [System.ComponentModel.Description('Type of the Sensitive Information label')]
     [System.String] $type
-}
-
-function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationGroups
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object[]]
-        $targetValues,
-
-        [Parameter()]
-        [System.Object[]]
-        $sourceValues
-    )
-
-    if ($targetValues.operator -ne $sourceValues.operator)
-    {
-        $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-            "DLP Compliance Rule {$Name} has invalid value for property operator. " + `
-            "Current value is {$($targetValues.$operator)} and is expected to be {$($sourceValues.$operator)}."
-        Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-            -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-        return $false
-    }
-
-    foreach ($group in $targetValues.groups)
-    {
-        $matchingExistingGroup = $sourceValues.groups | Where-Object -FilterScript { $_.name -eq $group.name }
-
-        if ($null -ne $matchingExistingGroup)
-        {
-            Write-Verbose -Message "ContainsSensitiveInformationGroup {$($group.name)} was found"
-            if ($group.operator -ne $matchingExistingGroup.operator)
-            {
-                $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-                    "Group {$($group.name)} has invalid value for property operator. " + `
-                    "Current value is {$($matchingExistingRule.$operator)} and is expected to be {$($group.$operator)}."
-                Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                    -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-                return $false
-            }
-        }
-        else
-        {
-            Write-Verbose -Message "Sensitive Information Action {$($group.name)} was not found"
-            $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-                "An action on {$($sit.name)} Sensitive Information Type is missing."
-            Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-            return $false
-        }
-
-        if ($null -ne $group.sensitivetypes)
-        {
-            $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation -targetValues $group.sensitivetypes `
-                -sourceValues $matchingExistingGroup.sensitivetypes
-            if ($desiredState -eq $false)
-            {
-                return $false
-            }
-        }
-
-        if ($null -ne $group.labels)
-        {
-            $desiredState = Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationLabels -targetValues $group.labels `
-                -sourceValues $matchingExistingGroup.labels
-            if ($desiredState -eq $false)
-            {
-                return $false
-            }
-        }
-    }
-}
-
-function Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformation
-{
-    [CmdletBinding()]
-    [OutputType([System.Object[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object[]]
-        $SensitiveInformationItems
-    )
-
-    $returnValue = @()
-
-    foreach ($item in $SensitiveInformationItems.SensitiveInformation)
-    {
-        $result = [ordered]@{
-            name = $item.name
-        }
-
-        if ($null -ne $item.id)
-        {
-            $result.Add('id', $item.id)
-        }
-
-        if ($null -ne $item.maxconfidence)
-        {
-            $result.Add('maxconfidence', $item.maxconfidence)
-        }
-
-        if ($null -ne $item.minconfidence)
-        {
-            $result.Add('minconfidence', $item.minconfidence)
-        }
-
-        if ($null -ne $item.classifiertype)
-        {
-            $result.Add('classifiertype', $item.classifiertype)
-        }
-
-        if ($null -ne $item.mincount)
-        {
-            $result.Add('mincount', $item.mincount)
-        }
-
-        if ($null -ne $item.maxcount)
-        {
-            $result.Add('maxcount', $item.maxcount)
-        }
-        $returnValue += $result
-    }
-    return $returnValue
-}
-
-function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformationLabels
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object[]]
-        $targetValues,
-
-        [Parameter()]
-        [System.Object[]]
-        $sourceValues
-    )
-
-    foreach ($sit in $targetValues)
-    {
-        Write-Verbose -Message "Trying to find existing Sensitive Information labels matching name {$($sit.name)}"
-        $matchingExistingRule = $sourceValues | Where-Object -FilterScript { $_.name -eq $sit.name }
-
-        if ($null -ne $matchingExistingRule)
-        {
-            Write-Verbose -Message "Sensitive Information label {$($sit.name)} was found"
-            $propertiesTocheck = @('id', 'type')
-
-            foreach ($property in $propertiesToCheck)
-            {
-                Write-Verbose -Message "Checking property {$property} for Sensitive Information label {$($sit.name)}"
-                if ($sit.$property -ne $matchingExistingRule.$property)
-                {
-                    Write-Verbose -Message "Property {$property} is set to {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
-                    $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-                        "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
-                        "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
-                    Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                        -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-                    return $false
-                }
-            }
-        }
-        else
-        {
-            Write-Verbose -Message "Sensitive Information label {$($sit.name)} was not found"
-            $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-                "An action on {$($sit.name)} Sensitive Information label is missing."
-            Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-            return $false
-        }
-    }
-}
-
-function Get-SCAutoSensitivityLabelRuleSCDLPSensitiveInformationGroups
-{
-    [CmdletBinding()]
-    [OutputType([System.Object[]])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object[]]
-        $SensitiveInformationGroups
-    )
-
-    $returnValue = @()
-    $sits = @()
-    $groups = @()
-
-    $result = @{
-        operator = $SensitiveInformationGroups.operator
-    }
-
-    foreach ($group in $SensitiveInformationGroups.groups)
-    {
-        $myGroup = [ordered]@{
-            name = $group.name
-        }
-        if ($null -ne $group.operator)
-        {
-            $myGroup.Add('operator', $group.operator)
-        }
-        $sits = @()
-        foreach ($item in $group.SensitiveInformation)
-        {
-            $sit = [ordered]@{
-                name = $item.name
-            }
-
-            if ($null -ne $item.id)
-            {
-                $sit.Add('id', $item.id)
-            }
-
-            if ($null -ne $item.maxconfidence)
-            {
-                $sit.Add('maxconfidence', $item.maxconfidence)
-            }
-
-            if ($null -ne $item.minconfidence)
-            {
-                $sit.Add('minconfidence', $item.minconfidence)
-            }
-
-            if ($null -ne $item.classifiertype)
-            {
-                $sit.Add('classifiertype', $item.classifiertype)
-            }
-
-            if ($null -ne $item.mincount)
-            {
-                $sit.Add('mincount', $item.mincount)
-            }
-
-            if ($null -ne $item.maxcount)
-            {
-                $sit.Add('maxcount', $item.maxcount)
-            }
-            $sits += $sit
-        }
-        if ($sits.Length -gt 0)
-        {
-            $myGroup.Add('sensitivetypes', $sits)
-        }
-        $labels = @()
-        foreach ($item in $group.labels)
-        {
-            $label = [ordered]@{
-                name = $item.name
-            }
-
-            if ($null -ne $item.id)
-            {
-                $label.Add('id', $item.id)
-            }
-
-            if ($null -ne $item.type)
-            {
-                $label.Add('type', $item.type)
-            }
-            $labels += $label
-        }
-        if ($labels.Length -gt 0)
-        {
-            $myGroup.Add('labels', $labels)
-        }
-        $groups += $myGroup
-    }
-    $result.Add('groups', $groups)
-    $returnValue += $result
-    return $returnValue
-}
-
-function Test-SCAutoSensitivityLabelRuleContainsSensitiveInformation
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Object[]]
-        $targetValues,
-
-        [Parameter()]
-        [System.Object[]]
-        $sourceValues
-    )
-
-    foreach ($sit in $targetValues)
-    {
-        Write-Verbose -Message "Trying to find existing Sensitive Information Action matching name {$($sit.name)}"
-        $matchingExistingRule = $sourceValues | Where-Object -FilterScript { $_.name -eq $sit.name.Replace("''", "'") }
-
-        if ($null -ne $matchingExistingRule)
-        {
-            Write-Verbose -Message "Sensitive Information Action {$($sit.name)} was found"
-            $propertiesTocheck = @('id', 'maxconfidence', 'minconfidence', 'classifiertype', 'mincount', 'maxcount')
-
-            foreach ($property in $propertiesToCheck)
-            {
-                Write-Verbose -Message "Checking property {$property} for Sensitive Information Action {$($sit.name)}"
-                if ($sit.$property -ne $matchingExistingRule.$property)
-                {
-                    Write-Verbose -Message "Property {$property} is set to {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
-                    $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-                        "Sensitive Information Action {$($sit.name)} has invalid value for property {$property}. " + `
-                        "Current value is {$($matchingExistingRule.$property)} and is expected to be {$($sit.$property)}."
-                    Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                        -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-                    return $false
-                }
-            }
-        }
-        else
-        {
-            Write-Verbose -Message "Sensitive Information Action {$($sit.name)} was not found"
-            $EventMessage = "DLP Compliance Rule {$Name} was not in the desired state.`r`n" + `
-                "An action on {$($sit.name)} Sensitive Information Type is missing."
-            Add-M365DSCEvent -Message $EventMessage -EntryType 'Warning' `
-                -EventID 1 -Source 'SCAutoSensitivityLabelRule'
-            return $false
-        }
-    }
 }

@@ -752,7 +752,7 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
                 if ($DesiredValues.ContainsKey('RecipientFilter') -and -not [System.String]::IsNullOrEmpty($DesiredValues.RecipientFilter))
                 {
-                    $DesiredValues.RecipientFilter = Convert-EXODynamicDistributionGroupToExchangeFilterSyntax -Expression $DesiredValues.RecipientFilter
+                    $DesiredValues.RecipientFilter = [EXODynamicDistributionGroup]::ToExchangeFilterSyntax($DesiredValues.RecipientFilter)
 
                     # If RecipientFilter is specified, ignore the conditional properties
                     $ValuesToCheck.Keys.Clone() | Where-Object { $_ -like "Conditional*" } | Foreach-Object {
@@ -844,43 +844,19 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
         return $trimmed
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
-    hidden [EXODynamicDistributionGroup] AsResult([System.Object] $Values)
+    hidden static [System.String] ToExchangeFilterSyntax([System.String] $Expression)
     {
-        if ($Values -is [EXODynamicDistributionGroup])
-        {
-            return $Values
-        }
-
-        $result = [EXODynamicDistributionGroup]::new()
-        if ($Values -is [System.Collections.Hashtable])
-        {
-            $result.FromHashtable($Values)
-        }
-
-        return $result
+        # Always add one final outer wrapper
+        return '(' + [EXODynamicDistributionGroup]::NormalizeFilterExpression($Expression) + ')'
     }
-}
 
-function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Expression
-    )
-
-    function ConvertFrom-ExchangeExpression {
-        param ([System.String] $expr)
-
+    hidden static [System.String] NormalizeFilterExpression([System.String] $Expression)
+    {
         # Trim outer spaces and redundant parentheses
-        $expr = $expr.Trim()
-        while ($expr.StartsWith('(') -and $expr.EndsWith(')'))
+        $expression = $Expression.Trim()
+        while ($expression.StartsWith('(') -and $expression.EndsWith(')'))
         {
-            $inner = $expr.Substring(1, $expr.Length - 2).Trim()
+            $inner = $expression.Substring(1, $expression.Length - 2).Trim()
             $balance = 0
             $valid = $true
             foreach ($ch in $inner.ToCharArray())
@@ -905,16 +881,16 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
             {
                 break
             }
-            $expr = $inner
+            $expression = $inner
         }
 
         # Parse into tokens considering nested parentheses
         $tokens = [System.Collections.Generic.List[string]]::new()
         $current = ''
         $depth = 0
-        for ($i = 0; $i -lt $expr.Length; $i++)
+        for ($i = 0; $i -lt $expression.Length; $i++)
         {
-            $ch = $expr[$i]
+            $ch = $expression[$i]
             if ($ch -eq '(')
             {
                 $depth++
@@ -925,7 +901,7 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
                 $depth--
                 $current += $ch
             }
-            elseif ($depth -eq 0 -and $expr.Substring($i) -match '^-or\s|^-and\s')
+            elseif ($depth -eq 0 -and $expression.Substring($i) -match '^-or\s|^-and\s')
             {
                 # Split at top-level logical operator
                 $match = $matches[0].Trim()
@@ -944,7 +920,7 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
             $tokens.Add(($current.Trim()))
         }
 
-        # Base condition — no logical operators
+        # Base condition - no logical operators
         if ($tokens.Count -eq 1)
         {
             return $tokens[0]
@@ -956,10 +932,9 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
         {
             if ($tokens[$i] -eq '-and')
             {
-                $left = ConvertFrom-ExchangeExpression $tokens[$i - 1]
-                $right = ConvertFrom-ExchangeExpression $tokens[$i + 1]
-                $combined = "(($left) -and ($right))"
-                $tokens[$i - 1] = $combined
+                $left = [EXODynamicDistributionGroup]::NormalizeFilterExpression($tokens[$i - 1])
+                $right = [EXODynamicDistributionGroup]::NormalizeFilterExpression($tokens[$i + 1])
+                $tokens[$i - 1] = "(($left) -and ($right))"
                 $tokens.RemoveAt($i)    # remove operator
                 $tokens.RemoveAt($i)    # remove right operand
                 $i--
@@ -971,10 +946,9 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
         {
             if ($tokens[$i] -eq '-or')
             {
-                $left = ConvertFrom-ExchangeExpression $tokens[$i - 1]
-                $right = ConvertFrom-ExchangeExpression $tokens[$i + 1]
-                $combined = "(($left) -or ($right))"
-                $tokens[$i - 1] = $combined
+                $left = [EXODynamicDistributionGroup]::NormalizeFilterExpression($tokens[$i - 1])
+                $right = [EXODynamicDistributionGroup]::NormalizeFilterExpression($tokens[$i + 1])
+                $tokens[$i - 1] = "(($left) -or ($right))"
                 $tokens.RemoveAt($i)
                 $tokens.RemoveAt($i)
                 $i--
@@ -984,6 +958,19 @@ function Convert-EXODynamicDistributionGroupToExchangeFilterSyntax
         return $tokens[0]
     }
 
-    $normalized = ConvertFrom-ExchangeExpression $Expression
-    return "($normalized)"  # Always add one final outer wrapper
+    hidden [EXODynamicDistributionGroup] AsResult([System.Object] $Values)
+    {
+        if ($Values -is [EXODynamicDistributionGroup])
+        {
+            return $Values
+        }
+
+        $result = [EXODynamicDistributionGroup]::new()
+        if ($Values -is [System.Collections.Hashtable])
+        {
+            $result.FromHashtable($Values)
+        }
+
+        return $result
+    }
 }

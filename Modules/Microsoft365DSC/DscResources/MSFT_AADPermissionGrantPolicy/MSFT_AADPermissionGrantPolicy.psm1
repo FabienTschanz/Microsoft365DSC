@@ -124,7 +124,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
             {
                 foreach ($include in $getValue.Includes)
                 {
-                    $includesArray += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $include -Cache $this.ResourceCache
+                    $includesArray += [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($this.ResourceCache, $include)
                 }
             }
 
@@ -134,7 +134,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
             {
                 foreach ($exclude in $getValue.Excludes)
                 {
-                    $excludesArray += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $exclude -Cache $this.ResourceCache
+                    $excludesArray += [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($this.ResourceCache, $exclude)
                 }
             }
 
@@ -186,7 +186,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
         try
         {
             # Clear the service principal cache for fresh lookups
-            $null = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $this.ResourceCache -Reset
+            $null = [AADPermissionGrantPolicy]::GetServicePrincipalCache($this.ResourceCache, $true)
 
             $null = $this.Connect('MicrosoftGraph')
 
@@ -211,7 +211,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                     foreach ($include in $this.Includes)
                     {
                         Write-Verbose -Message "Adding include condition set {$($include.Id)}"
-                        $includeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $include -Cache $this.ResourceCache
+                        $includeParams = $this.GetPermissionGrantConditionSetAsParameters($this.ResourceCache, $include)
                         New-MgBetaPolicyPermissionGrantPolicyInclude -PermissionGrantPolicyId $this.Id -BodyParameter $includeParams | Out-Null
                     }
                 }
@@ -222,7 +222,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                     foreach ($exclude in $this.Excludes)
                     {
                         Write-Verbose -Message "Adding exclude condition set {$($exclude.Id)}"
-                        $excludeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $exclude -Cache $this.ResourceCache
+                        $excludeParams = $this.GetPermissionGrantConditionSetAsParameters($this.ResourceCache, $exclude)
                         New-MgBetaPolicyPermissionGrantPolicyExclude -PermissionGrantPolicyId $this.Id -BodyParameter $excludeParams | Out-Null
                     }
                 }
@@ -262,7 +262,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         foreach ($currentInclude in $currentPolicy.Includes)
                         {
                             if ($currentInclude.Id -notin $matchedCurrentIncludeIds -and
-                                (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredInclude -ConditionSet2 $currentInclude -Cache $this.ResourceCache))
+                                ($this.TestConditionSetsEqual($this.ResourceCache, $desiredInclude, $currentInclude)))
                             {
                                 $matchedCurrentIncludeIds += $currentInclude.Id
                                 $matchFound = $true
@@ -273,7 +273,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         if (-not $matchFound)
                         {
                             Write-Verbose -Message "Adding include condition set"
-                            $includeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $desiredInclude -Cache $this.ResourceCache
+                            $includeParams = $this.GetPermissionGrantConditionSetAsParameters($this.ResourceCache, $desiredInclude)
                             New-MgBetaPolicyPermissionGrantPolicyInclude -PermissionGrantPolicyId $this.Id -BodyParameter $includeParams | Out-Null
                         }
                     }
@@ -305,7 +305,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         foreach ($currentExclude in $currentPolicy.Excludes)
                         {
                             if ($currentExclude.Id -notin $matchedCurrentExcludeIds -and
-                                (Test-AADPermissionGrantPolicyConditionSetsEqual -ConditionSet1 $desiredExclude -ConditionSet2 $currentExclude -Cache $this.ResourceCache))
+                                ($this.TestConditionSetsEqual($this.ResourceCache, $desiredExclude, $currentExclude)))
                             {
                                 $matchedCurrentExcludeIds += $currentExclude.Id
                                 $matchFound = $true
@@ -316,7 +316,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         if (-not $matchFound)
                         {
                             Write-Verbose -Message "Adding exclude condition set"
-                            $excludeParams = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters -ConditionSet $desiredExclude -Cache $this.ResourceCache
+                            $excludeParams = $this.GetPermissionGrantConditionSetAsParameters($this.ResourceCache, $desiredExclude)
                             New-MgBetaPolicyPermissionGrantPolicyExclude -PermissionGrantPolicyId $this.Id -BodyParameter $excludeParams | Out-Null
                         }
                     }
@@ -483,7 +483,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
                         $normalizedSets = @()
                         foreach ($conditionSet in $ValuesToCheck[$propertyName])
                         {
-                            $normalizedSets += Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $conditionSet -Cache $PostProcessingArgs[0]
+                            $normalizedSets += [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($PostProcessingArgs[0], $conditionSet)
                         }
                         $ValuesToCheck[$propertyName] = [Array]$normalizedSets
                         $DesiredValues[$propertyName] = [Array]$normalizedSets
@@ -496,7 +496,513 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden static [System.Collections.Hashtable] GetServicePrincipalCache([System.Collections.Hashtable] $Cache, [System.Boolean] $Reset)
+    {
+        if ($Reset -or $null -eq $Cache['ServicePrincipalCache'])
+        {
+            $Cache['ServicePrincipalCache'] = @{}
+        }
+
+        return $Cache['ServicePrincipalCache']
+    }
+
+    hidden [System.String] ResolveResourceApplicationName([System.Collections.Hashtable] $Cache, [System.String] $ResourceApplication)
+    {
+        # Pass through wildcard
+        if ($ResourceApplication -eq 'any')
+        {
+            return $ResourceApplication
+        }
+
+        # If not a GUID, assume it is already a display name
+        $guidResult = [System.Guid]::Empty
+        if (-not [System.Guid]::TryParse($ResourceApplication, [ref]$guidResult))
+        {
+            return $ResourceApplication
+        }
+
+        try
+        {
+            $servicePrincipalCache = [AADPermissionGrantPolicy]::GetServicePrincipalCache($Cache, $false)
+            $cacheKey = $guidResult.ToString()
+            if ($servicePrincipalCache.ContainsKey($cacheKey))
+            {
+                $servicePrincipal = $servicePrincipalCache[$cacheKey]
+            }
+            else
+            {
+                $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
+                $servicePrincipalCache[$cacheKey] = $servicePrincipal
+                if ($null -ne $servicePrincipal -and -not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
+                {
+                    $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
+                }
+            }
+
+            if ($null -ne $servicePrincipal)
+            {
+                Write-Verbose -Message "Resolved ResourceApplication '$ResourceApplication' to name '$($servicePrincipal.DisplayName)'."
+                return $servicePrincipal.DisplayName
+            }
+        }
+        catch
+        {
+            Write-Verbose -Message "Error resolving ResourceApplication '$ResourceApplication': $_"
+        }
+
+        return $ResourceApplication
+    }
+
+    hidden static [System.Collections.Hashtable] GetPermissionGrantConditionSetAsHashtable([System.Collections.Hashtable] $Cache, [System.Object] $ConditionSet)
+    {
+        $result = @{
+            Id = $ConditionSet.Id
+        }
+
+        if ($null -ne $ConditionSet.CertifiedClientApplicationsOnly)
+        {
+            $result.Add('CertifiedClientApplicationsOnly', $ConditionSet.CertifiedClientApplicationsOnly)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationIds)
+        {
+            $result.Add('ClientApplicationIds', [string[]]$ConditionSet.ClientApplicationIds)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationPublisherIds)
+        {
+            $result.Add('ClientApplicationPublisherIds', [string[]]$ConditionSet.ClientApplicationPublisherIds)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationTenantIds)
+        {
+            $result.Add('ClientApplicationTenantIds', [string[]]$ConditionSet.ClientApplicationTenantIds)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
+        {
+            $result.Add('ClientApplicationsFromVerifiedPublisherOnly', $ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
+        }
+
+        if ($null -ne $ConditionSet.PermissionClassification)
+        {
+            $result.Add('PermissionClassification', $ConditionSet.PermissionClassification)
+        }
+
+        if ($null -ne $ConditionSet.PermissionType)
+        {
+            $result.Add('PermissionType', $ConditionSet.PermissionType)
+        }
+
+        if ($null -ne $ConditionSet.ResourceApplication)
+        {
+            $result.Add('ResourceApplication', $ConditionSet.ResourceApplication)
+        }
+
+        if ($null -ne $ConditionSet.Permissions)
+        {
+            $resolvedPermissions = @()
+            foreach ($permission in $ConditionSet.Permissions)
+            {
+                $resolvedPermissions += [AADPermissionGrantPolicy]::ConvertToPermissionName($Cache, $permission, $ConditionSet.ResourceApplication, $ConditionSet.PermissionType)
+            }
+            $result.Add('Permissions', [string[]]$resolvedPermissions)
+        }
+
+        return $result
+    }
+
+    hidden [System.Boolean] TestConditionSetsEqual([System.Collections.Hashtable] $Cache, [System.Object] $ConditionSet1, [System.Object] $ConditionSet2)
+    {
+        # Convert both to hashtables for comparison
+        $hash1 = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($Cache, $ConditionSet1)
+        $hash2 = [AADPermissionGrantPolicy]::GetPermissionGrantConditionSetAsHashtable($Cache, $ConditionSet2)
+
+        # Compare each property, skipping Id (auto-generated by Graph API)
+        foreach ($key in $hash1.Keys)
+        {
+            if ($key -eq 'Id')
+            {
+                continue
+            }
+
+            if (-not $hash2.ContainsKey($key))
+            {
+                return $false
+            }
+
+            $value1 = $hash1[$key]
+            $value2 = $hash2[$key]
+
+            # Handle array comparison
+            if ($value1 -is [Array] -and $value2 -is [Array])
+            {
+                if ($value1.Count -ne $value2.Count)
+                {
+                    return $false
+                }
+
+                $sorted1 = $value1 | Sort-Object
+                $sorted2 = $value2 | Sort-Object
+
+                for ($i = 0; $i -lt $sorted1.Count; $i++)
+                {
+                    if ($sorted1[$i] -ne $sorted2[$i])
+                    {
+                        return $false
+                    }
+                }
+            }
+            else
+            {
+                if ($value1 -ne $value2)
+                {
+                    return $false
+                }
+            }
+        }
+
+        # Check for keys in hash2 that are not in hash1 (excluding Id)
+        foreach ($key in $hash2.Keys)
+        {
+            if ($key -eq 'Id')
+            {
+                continue
+            }
+
+            if (-not $hash1.ContainsKey($key))
+            {
+                return $false
+            }
+        }
+
+        return $true
+    }
+
+    hidden static [System.String] ConvertToPermissionName([System.Collections.Hashtable] $Cache, [System.String] $PermissionId, [System.String] $ResourceApplicationId, [System.String] $PermissionType)
+    {
+        # Pass through wildcard values
+        if ($PermissionId -eq 'all' -or $PermissionId -eq 'any')
+        {
+            return $PermissionId
+        }
+
+        # If not a GUID, assume it is already a display name
+        $guidResult = [System.Guid]::Empty
+        if (-not [System.Guid]::TryParse($PermissionId, [ref]$guidResult))
+        {
+            return $PermissionId
+        }
+
+        # Cannot resolve without a specific resource application
+        if ([System.String]::IsNullOrEmpty($ResourceApplicationId) -or
+            $ResourceApplicationId -eq 'any')
+        {
+            Write-Verbose -Message "Cannot resolve permission GUID '$PermissionId' without a specific ResourceApplication."
+            return $PermissionId
+        }
+
+        # If ResourceApplicationId is not a GUID, try to resolve it as a service principal name
+        $appIdGuid = [System.Guid]::Empty
+        if (-not [System.Guid]::TryParse($ResourceApplicationId, [ref]$appIdGuid))
+        {
+            $resolvedId = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($Cache, $ResourceApplicationId)
+            if (-not [System.Guid]::TryParse($resolvedId, [ref]$appIdGuid))
+            {
+                Write-Verbose -Message "ResourceApplication '$ResourceApplicationId' could not be resolved to a valid GUID."
+                return $PermissionId
+            }
+            $ResourceApplicationId = $resolvedId
+        }
+
+        try
+        {
+            $servicePrincipalCache = [AADPermissionGrantPolicy]::GetServicePrincipalCache($Cache, $false)
+            $cacheKey = $appIdGuid.ToString()
+            if ($servicePrincipalCache.ContainsKey($cacheKey))
+            {
+                Write-Verbose -Message "Using cached service principal for ResourceApplication '$ResourceApplicationId'."
+                $servicePrincipal = $servicePrincipalCache[$cacheKey]
+            }
+            else
+            {
+                $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
+                $servicePrincipalCache[$cacheKey] = $servicePrincipal
+            }
+
+            if ($null -eq $servicePrincipal)
+            {
+                Write-Verbose -Message "Service principal for ResourceApplication '$ResourceApplicationId' not found."
+                return $PermissionId
+            }
+
+            if ($PermissionType -eq 'delegated')
+            {
+                $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Id -eq $guidResult }
+                if ($null -ne $scope)
+                {
+                    Write-Verbose -Message "Resolved delegated permission GUID '$PermissionId' to name '$($scope.Value)'."
+                    return $scope.Value
+                }
+            }
+            elseif ($PermissionType -eq 'application')
+            {
+                $role = $servicePrincipal.AppRoles | Where-Object { $_.Id -eq $guidResult }
+                if ($null -ne $role)
+                {
+                    Write-Verbose -Message "Resolved application permission GUID '$PermissionId' to name '$($role.Value)'."
+                    return $role.Value
+                }
+            }
+
+            # Try both collections if PermissionType is not specified or not found
+            $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Id -eq $guidResult }
+            if ($null -ne $scope)
+            {
+                Write-Verbose -Message "Resolved permission GUID '$PermissionId' to name '$($scope.Value)' from Oauth2PermissionScopes."
+                return $scope.Value
+            }
+
+            $role = $servicePrincipal.AppRoles | Where-Object { $_.Id -eq $guidResult }
+            if ($null -ne $role)
+            {
+                Write-Verbose -Message "Resolved permission GUID '$PermissionId' to name '$($role.Value)' from AppRoles."
+                return $role.Value
+            }
+
+            Write-Verbose -Message "Permission GUID '$PermissionId' not found in service principal for '$ResourceApplicationId'."
+        }
+        catch
+        {
+            Write-Verbose -Message "Error resolving permission GUID '$PermissionId': $_"
+        }
+
+        return $PermissionId
+    }
+
+    hidden [System.Collections.Hashtable] GetPermissionGrantConditionSetAsParameters([System.Collections.Hashtable] $Cache, [System.Object] $ConditionSet)
+    {
+        $params = @{}
+
+        if ($null -ne $ConditionSet.CertifiedClientApplicationsOnly)
+        {
+            $params.Add('CertifiedClientApplicationsOnly', [bool]$ConditionSet.CertifiedClientApplicationsOnly)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationIds -and $ConditionSet.ClientApplicationIds.Count -gt 0)
+        {
+            $params.Add('ClientApplicationIds', [string[]]$ConditionSet.ClientApplicationIds)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationPublisherIds -and $ConditionSet.ClientApplicationPublisherIds.Count -gt 0)
+        {
+            $params.Add('ClientApplicationPublisherIds', [string[]]$ConditionSet.ClientApplicationPublisherIds)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationTenantIds -and $ConditionSet.ClientApplicationTenantIds.Count -gt 0)
+        {
+            $params.Add('ClientApplicationTenantIds', [string[]]$ConditionSet.ClientApplicationTenantIds)
+        }
+
+        if ($null -ne $ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
+        {
+            $params.Add('ClientApplicationsFromVerifiedPublisherOnly', [bool]$ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
+        }
+
+        if (-not [string]::IsNullOrEmpty($ConditionSet.PermissionClassification))
+        {
+            $params.Add('PermissionClassification', $ConditionSet.PermissionClassification)
+        }
+
+        # Pass through ResourceApplication as-is (expects GUID or 'any')
+        if (-not [string]::IsNullOrEmpty($ConditionSet.ResourceApplication))
+        {
+            $params.Add('ResourceApplication', $ConditionSet.ResourceApplication)
+        }
+
+        if (-not [string]::IsNullOrEmpty($ConditionSet.PermissionType))
+        {
+            $params.Add('PermissionType', $ConditionSet.PermissionType)
+        }
+
+        # Convert permission names to GUIDs
+        if ($null -ne $ConditionSet.Permissions -and $ConditionSet.Permissions.Count -gt 0)
+        {
+            $resourceAppValue = $ConditionSet.ResourceApplication
+
+            $resolvedPermissions = @()
+            foreach ($permission in $ConditionSet.Permissions)
+            {
+                $resolvedPermissions += $this.ConvertToPermissionGuid($Cache, $permission, $resourceAppValue, $ConditionSet.PermissionType)
+            }
+            $params.Add('Permissions', [string[]]$resolvedPermissions)
+        }
+
+        return $params
+    }
+
+    hidden [System.String] ConvertToPermissionGuid([System.Collections.Hashtable] $Cache, [System.String] $PermissionName, [System.String] $ResourceApplicationId, [System.String] $PermissionType)
+    {
+        # Pass through wildcard values
+        if ($PermissionName -eq 'all' -or $PermissionName -eq 'any')
+        {
+            return 'all'
+        }
+
+        # Check if already a GUID
+        if ([System.Guid]::TryParse($PermissionName, [ref][System.Guid]::Empty))
+        {
+            return $PermissionName
+        }
+
+        # Cannot resolve without a specific resource application
+        if ([System.String]::IsNullOrEmpty($ResourceApplicationId) -or
+            $ResourceApplicationId -eq 'any')
+        {
+            Write-Verbose -Message "Cannot resolve permission name '$PermissionName' without a specific ResourceApplication."
+            return $PermissionName
+        }
+
+        # If ResourceApplicationId is not a GUID, try to resolve it as a service principal name
+        $appIdGuid = [System.Guid]::Empty
+        if (-not [System.Guid]::TryParse($ResourceApplicationId, [ref]$appIdGuid))
+        {
+            $resolvedId = [AADPermissionGrantPolicy]::ResolveResourceApplicationId($Cache, $ResourceApplicationId)
+            if (-not [System.Guid]::TryParse($resolvedId, [ref]$appIdGuid))
+            {
+                Write-Verbose -Message "ResourceApplication '$ResourceApplicationId' could not be resolved to a valid GUID."
+                return $PermissionName
+            }
+            $ResourceApplicationId = $resolvedId
+        }
+
+        try
+        {
+            $servicePrincipalCache = [AADPermissionGrantPolicy]::GetServicePrincipalCache($Cache, $false)
+            $cacheKey = $appIdGuid.ToString()
+            if ($servicePrincipalCache.ContainsKey($cacheKey))
+            {
+                Write-Verbose -Message "Using cached service principal for ResourceApplication '$ResourceApplicationId'."
+                $servicePrincipal = $servicePrincipalCache[$cacheKey]
+            }
+            else
+            {
+                $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
+                $servicePrincipalCache[$cacheKey] = $servicePrincipal
+                if ($null -ne $servicePrincipal -and -not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
+                {
+                    $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
+                }
+            }
+
+            if ($null -eq $servicePrincipal)
+            {
+                Write-Verbose -Message "Service principal for ResourceApplication '$ResourceApplicationId' not found."
+                return $PermissionName
+            }
+
+            if ($PermissionType -eq 'delegated')
+            {
+                $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Value -eq $PermissionName }
+                if ($null -ne $scope)
+                {
+                    Write-Verbose -Message "Resolved delegated permission '$PermissionName' to GUID '$($scope.Id)'."
+                    return $scope.Id.ToString()
+                }
+            }
+            elseif ($PermissionType -eq 'application')
+            {
+                $role = $servicePrincipal.AppRoles | Where-Object { $_.Value -eq $PermissionName }
+                if ($null -ne $role)
+                {
+                    Write-Verbose -Message "Resolved application permission '$PermissionName' to GUID '$($role.Id)'."
+                    return $role.Id.ToString()
+                }
+            }
+
+            # Try both collections if PermissionType is not specified or not found
+            $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Value -eq $PermissionName }
+            if ($null -ne $scope)
+            {
+                Write-Verbose -Message "Resolved permission '$PermissionName' to GUID '$($scope.Id)' from Oauth2PermissionScopes."
+                return $scope.Id.ToString()
+            }
+
+            $role = $servicePrincipal.AppRoles | Where-Object { $_.Value -eq $PermissionName }
+            if ($null -ne $role)
+            {
+                Write-Verbose -Message "Resolved permission '$PermissionName' to GUID '$($role.Id)' from AppRoles."
+                return $role.Id.ToString()
+            }
+
+            Write-Verbose -Message "Permission '$PermissionName' not found in service principal for '$ResourceApplicationId'."
+        }
+        catch
+        {
+            Write-Verbose -Message "Error resolving permission '$PermissionName': $_"
+        }
+
+        return $PermissionName
+    }
+
+    hidden static [System.String] ResolveResourceApplicationId([System.Collections.Hashtable] $Cache, [System.String] $ResourceApplication)
+    {
+        # Pass through wildcard
+        if ($ResourceApplication -eq 'any')
+        {
+            return $ResourceApplication
+        }
+
+        # If already a GUID, return as-is
+        $guidResult = [System.Guid]::Empty
+        if ([System.Guid]::TryParse($ResourceApplication, [ref]$guidResult))
+        {
+            return $ResourceApplication
+        }
+
+        try
+        {
+            $servicePrincipalCache = [AADPermissionGrantPolicy]::GetServicePrincipalCache($Cache, $false)
+
+            # Check if the display name is already in the cache
+            if ($servicePrincipalCache.ContainsKey($ResourceApplication))
+            {
+                $servicePrincipal = $servicePrincipalCache[$ResourceApplication]
+            }
+            else
+            {
+                # Look up the service principal by display name
+                $escapedName = $ResourceApplication -replace "'", "''"
+                $servicePrincipal = Get-MgServicePrincipal -Filter "DisplayName eq '$escapedName'" -ErrorAction SilentlyContinue
+            }
+
+            if ($null -ne $servicePrincipal)
+            {
+                # Handle array result (multiple SPs with same name)
+                if ($servicePrincipal -is [Array])
+                {
+                    Write-Verbose -Message "Multiple service principals found for DisplayName '$ResourceApplication'. Using the first match."
+                    $servicePrincipal = $servicePrincipal[0]
+                }
+
+                $servicePrincipalCache[$servicePrincipal.AppId] = $servicePrincipal
+                if (-not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
+                {
+                    $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
+                }
+                Write-Verbose -Message "Resolved ResourceApplication name '$ResourceApplication' to AppId '$($servicePrincipal.AppId)'."
+                return $servicePrincipal.AppId
+            }
+        }
+        catch
+        {
+            Write-Verbose -Message "Error resolving ResourceApplication name '$ResourceApplication': $_"
+        }
+
+        Write-Verbose -Message "Could not resolve ResourceApplication name '$ResourceApplication' to an AppId."
+        return $ResourceApplication
+    }
+
     hidden [AADPermissionGrantPolicy] AsResult([System.Object] $Values)
     {
         if ($Values -is [AADPermissionGrantPolicy])
@@ -555,644 +1061,4 @@ class MSFT_AADPermissionGrantConditionSet
     [DscProperty()]
     [System.ComponentModel.Description('The appId of the resource application (e.g. ''00000003-0000-0000-c000-000000000000'' for Microsoft Graph) for which a permission is being granted, or ''any'' to match any resource application. Use the AppId GUID, not the display name.')]
     [System.String] $ResourceApplication
-}
-
-# Memoises Get-MgServicePrincipal lookups, keyed by both AppId and DisplayName.
-function Get-AADPermissionGrantPolicyServicePrincipalCache
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Reset
-    )
-
-    if ($Reset -or $null -eq $Cache['ServicePrincipalCache'])
-    {
-        $Cache['ServicePrincipalCache'] = @{}
-    }
-
-    return $Cache['ServicePrincipalCache']
-}
-
-function Resolve-AADPermissionGrantPolicyResourceApplicationName
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResourceApplication
-    )
-
-    # Pass through wildcard
-    if ($ResourceApplication -eq 'any')
-    {
-        return $ResourceApplication
-    }
-
-    # If not a GUID, assume it is already a display name
-    $guidResult = [System.Guid]::Empty
-    if (-not [System.Guid]::TryParse($ResourceApplication, [ref]$guidResult))
-    {
-        return $ResourceApplication
-    }
-
-    try
-    {
-        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
-        $cacheKey = $guidResult.ToString()
-        if ($servicePrincipalCache.ContainsKey($cacheKey))
-        {
-            $servicePrincipal = $servicePrincipalCache[$cacheKey]
-        }
-        else
-        {
-            $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
-            $servicePrincipalCache[$cacheKey] = $servicePrincipal
-            if ($null -ne $servicePrincipal -and -not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
-            {
-                $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
-            }
-        }
-
-        if ($null -ne $servicePrincipal)
-        {
-            Write-Verbose -Message "Resolved ResourceApplication '$ResourceApplication' to name '$($servicePrincipal.DisplayName)'."
-            return $servicePrincipal.DisplayName
-        }
-    }
-    catch
-    {
-        Write-Verbose -Message "Error resolving ResourceApplication '$ResourceApplication': $_"
-    }
-
-    return $ResourceApplication
-}
-
-function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $ConditionSet
-    )
-
-    $result = @{
-        Id = $ConditionSet.Id
-    }
-
-    if ($null -ne $ConditionSet.CertifiedClientApplicationsOnly)
-    {
-        $result.Add('CertifiedClientApplicationsOnly', $ConditionSet.CertifiedClientApplicationsOnly)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationIds)
-    {
-        $result.Add('ClientApplicationIds', [string[]]$ConditionSet.ClientApplicationIds)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationPublisherIds)
-    {
-        $result.Add('ClientApplicationPublisherIds', [string[]]$ConditionSet.ClientApplicationPublisherIds)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationTenantIds)
-    {
-        $result.Add('ClientApplicationTenantIds', [string[]]$ConditionSet.ClientApplicationTenantIds)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
-    {
-        $result.Add('ClientApplicationsFromVerifiedPublisherOnly', $ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
-    }
-
-    if ($null -ne $ConditionSet.PermissionClassification)
-    {
-        $result.Add('PermissionClassification', $ConditionSet.PermissionClassification)
-    }
-
-    if ($null -ne $ConditionSet.PermissionType)
-    {
-        $result.Add('PermissionType', $ConditionSet.PermissionType)
-    }
-
-    if ($null -ne $ConditionSet.ResourceApplication)
-    {
-        $result.Add('ResourceApplication', $ConditionSet.ResourceApplication)
-    }
-
-    if ($null -ne $ConditionSet.Permissions)
-    {
-        $resolvedPermissions = @()
-        foreach ($permission in $ConditionSet.Permissions)
-        {
-            $resolvedPermissions += ConvertTo-AADPermissionGrantPolicyPermissionName `
-                -PermissionId $permission `
-                -ResourceApplicationId $ConditionSet.ResourceApplication `
-                -PermissionType $ConditionSet.PermissionType `
-                -Cache $Cache
-        }
-        $result.Add('Permissions', [string[]]$resolvedPermissions)
-    }
-
-    return $result
-}
-
-function Test-AADPermissionGrantPolicyConditionSetsEqual
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $ConditionSet1,
-
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $ConditionSet2
-    )
-
-    # Convert both to hashtables for comparison
-    $hash1 = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $ConditionSet1 -Cache $Cache
-    $hash2 = Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable -ConditionSet $ConditionSet2 -Cache $Cache
-
-    # Compare each property, skipping Id (auto-generated by Graph API)
-    foreach ($key in $hash1.Keys)
-    {
-        if ($key -eq 'Id')
-        {
-            continue
-        }
-
-        if (-not $hash2.ContainsKey($key))
-        {
-            return $false
-        }
-
-        $value1 = $hash1[$key]
-        $value2 = $hash2[$key]
-
-        # Handle array comparison
-        if ($value1 -is [Array] -and $value2 -is [Array])
-        {
-            if ($value1.Count -ne $value2.Count)
-            {
-                return $false
-            }
-
-            $sorted1 = $value1 | Sort-Object
-            $sorted2 = $value2 | Sort-Object
-
-            for ($i = 0; $i -lt $sorted1.Count; $i++)
-            {
-                if ($sorted1[$i] -ne $sorted2[$i])
-                {
-                    return $false
-                }
-            }
-        }
-        else
-        {
-            if ($value1 -ne $value2)
-            {
-                return $false
-            }
-        }
-    }
-
-    # Check for keys in hash2 that are not in hash1 (excluding Id)
-    foreach ($key in $hash2.Keys)
-    {
-        if ($key -eq 'Id')
-        {
-            continue
-        }
-
-        if (-not $hash1.ContainsKey($key))
-        {
-            return $false
-        }
-    }
-
-    return $true
-}
-
-function ConvertTo-AADPermissionGrantPolicyPermissionName
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PermissionId,
-
-        [Parameter()]
-        [System.String]
-        $ResourceApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $PermissionType
-    )
-
-    # Pass through wildcard values
-    if ($PermissionId -eq 'all' -or $PermissionId -eq 'any')
-    {
-        return $PermissionId
-    }
-
-    # If not a GUID, assume it is already a display name
-    $guidResult = [System.Guid]::Empty
-    if (-not [System.Guid]::TryParse($PermissionId, [ref]$guidResult))
-    {
-        return $PermissionId
-    }
-
-    # Cannot resolve without a specific resource application
-    if ([System.String]::IsNullOrEmpty($ResourceApplicationId) -or
-        $ResourceApplicationId -eq 'any')
-    {
-        Write-Verbose -Message "Cannot resolve permission GUID '$PermissionId' without a specific ResourceApplication."
-        return $PermissionId
-    }
-
-    # If ResourceApplicationId is not a GUID, try to resolve it as a service principal name
-    $appIdGuid = [System.Guid]::Empty
-    if (-not [System.Guid]::TryParse($ResourceApplicationId, [ref]$appIdGuid))
-    {
-        $resolvedId = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication $ResourceApplicationId -Cache $Cache
-        if (-not [System.Guid]::TryParse($resolvedId, [ref]$appIdGuid))
-        {
-            Write-Verbose -Message "ResourceApplication '$ResourceApplicationId' could not be resolved to a valid GUID."
-            return $PermissionId
-        }
-        $ResourceApplicationId = $resolvedId
-    }
-
-    try
-    {
-        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
-        $cacheKey = $appIdGuid.ToString()
-        if ($servicePrincipalCache.ContainsKey($cacheKey))
-        {
-            Write-Verbose -Message "Using cached service principal for ResourceApplication '$ResourceApplicationId'."
-            $servicePrincipal = $servicePrincipalCache[$cacheKey]
-        }
-        else
-        {
-            $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
-            $servicePrincipalCache[$cacheKey] = $servicePrincipal
-        }
-
-        if ($null -eq $servicePrincipal)
-        {
-            Write-Verbose -Message "Service principal for ResourceApplication '$ResourceApplicationId' not found."
-            return $PermissionId
-        }
-
-        if ($PermissionType -eq 'delegated')
-        {
-            $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Id -eq $guidResult }
-            if ($null -ne $scope)
-            {
-                Write-Verbose -Message "Resolved delegated permission GUID '$PermissionId' to name '$($scope.Value)'."
-                return $scope.Value
-            }
-        }
-        elseif ($PermissionType -eq 'application')
-        {
-            $role = $servicePrincipal.AppRoles | Where-Object { $_.Id -eq $guidResult }
-            if ($null -ne $role)
-            {
-                Write-Verbose -Message "Resolved application permission GUID '$PermissionId' to name '$($role.Value)'."
-                return $role.Value
-            }
-        }
-
-        # Try both collections if PermissionType is not specified or not found
-        $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Id -eq $guidResult }
-        if ($null -ne $scope)
-        {
-            Write-Verbose -Message "Resolved permission GUID '$PermissionId' to name '$($scope.Value)' from Oauth2PermissionScopes."
-            return $scope.Value
-        }
-
-        $role = $servicePrincipal.AppRoles | Where-Object { $_.Id -eq $guidResult }
-        if ($null -ne $role)
-        {
-            Write-Verbose -Message "Resolved permission GUID '$PermissionId' to name '$($role.Value)' from AppRoles."
-            return $role.Value
-        }
-
-        Write-Verbose -Message "Permission GUID '$PermissionId' not found in service principal for '$ResourceApplicationId'."
-    }
-    catch
-    {
-        Write-Verbose -Message "Error resolving permission GUID '$PermissionId': $_"
-    }
-
-    return $PermissionId
-}
-
-function Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.Object]
-        $ConditionSet
-    )
-
-    $params = @{}
-
-    if ($null -ne $ConditionSet.CertifiedClientApplicationsOnly)
-    {
-        $params.Add('CertifiedClientApplicationsOnly', [bool]$ConditionSet.CertifiedClientApplicationsOnly)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationIds -and $ConditionSet.ClientApplicationIds.Count -gt 0)
-    {
-        $params.Add('ClientApplicationIds', [string[]]$ConditionSet.ClientApplicationIds)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationPublisherIds -and $ConditionSet.ClientApplicationPublisherIds.Count -gt 0)
-    {
-        $params.Add('ClientApplicationPublisherIds', [string[]]$ConditionSet.ClientApplicationPublisherIds)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationTenantIds -and $ConditionSet.ClientApplicationTenantIds.Count -gt 0)
-    {
-        $params.Add('ClientApplicationTenantIds', [string[]]$ConditionSet.ClientApplicationTenantIds)
-    }
-
-    if ($null -ne $ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
-    {
-        $params.Add('ClientApplicationsFromVerifiedPublisherOnly', [bool]$ConditionSet.ClientApplicationsFromVerifiedPublisherOnly)
-    }
-
-    if (-not [string]::IsNullOrEmpty($ConditionSet.PermissionClassification))
-    {
-        $params.Add('PermissionClassification', $ConditionSet.PermissionClassification)
-    }
-
-    # Pass through ResourceApplication as-is (expects GUID or 'any')
-    if (-not [string]::IsNullOrEmpty($ConditionSet.ResourceApplication))
-    {
-        $params.Add('ResourceApplication', $ConditionSet.ResourceApplication)
-    }
-
-    if (-not [string]::IsNullOrEmpty($ConditionSet.PermissionType))
-    {
-        $params.Add('PermissionType', $ConditionSet.PermissionType)
-    }
-
-    # Convert permission names to GUIDs
-    if ($null -ne $ConditionSet.Permissions -and $ConditionSet.Permissions.Count -gt 0)
-    {
-        $resourceAppValue = $ConditionSet.ResourceApplication
-
-        $resolvedPermissions = @()
-        foreach ($permission in $ConditionSet.Permissions)
-        {
-            $resolvedPermissions += ConvertTo-AADPermissionGrantPolicyPermissionGuid `
-                -PermissionName $permission `
-                -ResourceApplicationId $resourceAppValue `
-                -PermissionType $ConditionSet.PermissionType `
-                -Cache $Cache
-        }
-        $params.Add('Permissions', [string[]]$resolvedPermissions)
-    }
-
-    return $params
-}
-
-function ConvertTo-AADPermissionGrantPolicyPermissionGuid
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $PermissionName,
-
-        [Parameter()]
-        [System.String]
-        $ResourceApplicationId,
-
-        [Parameter()]
-        [System.String]
-        $PermissionType
-    )
-
-    # Pass through wildcard values
-    if ($PermissionName -eq 'all' -or $PermissionName -eq 'any')
-    {
-        return 'all'
-    }
-
-    # Check if already a GUID
-    if ([System.Guid]::TryParse($PermissionName, [ref][System.Guid]::Empty))
-    {
-        return $PermissionName
-    }
-
-    # Cannot resolve without a specific resource application
-    if ([System.String]::IsNullOrEmpty($ResourceApplicationId) -or
-        $ResourceApplicationId -eq 'any')
-    {
-        Write-Verbose -Message "Cannot resolve permission name '$PermissionName' without a specific ResourceApplication."
-        return $PermissionName
-    }
-
-    # If ResourceApplicationId is not a GUID, try to resolve it as a service principal name
-    $appIdGuid = [System.Guid]::Empty
-    if (-not [System.Guid]::TryParse($ResourceApplicationId, [ref]$appIdGuid))
-    {
-        $resolvedId = Resolve-AADPermissionGrantPolicyResourceApplicationId -ResourceApplication $ResourceApplicationId -Cache $Cache
-        if (-not [System.Guid]::TryParse($resolvedId, [ref]$appIdGuid))
-        {
-            Write-Verbose -Message "ResourceApplication '$ResourceApplicationId' could not be resolved to a valid GUID."
-            return $PermissionName
-        }
-        $ResourceApplicationId = $resolvedId
-    }
-
-    try
-    {
-        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
-        $cacheKey = $appIdGuid.ToString()
-        if ($servicePrincipalCache.ContainsKey($cacheKey))
-        {
-            Write-Verbose -Message "Using cached service principal for ResourceApplication '$ResourceApplicationId'."
-            $servicePrincipal = $servicePrincipalCache[$cacheKey]
-        }
-        else
-        {
-            $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$cacheKey'" -ErrorAction SilentlyContinue
-            $servicePrincipalCache[$cacheKey] = $servicePrincipal
-            if ($null -ne $servicePrincipal -and -not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
-            {
-                $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
-            }
-        }
-
-        if ($null -eq $servicePrincipal)
-        {
-            Write-Verbose -Message "Service principal for ResourceApplication '$ResourceApplicationId' not found."
-            return $PermissionName
-        }
-
-        if ($PermissionType -eq 'delegated')
-        {
-            $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Value -eq $PermissionName }
-            if ($null -ne $scope)
-            {
-                Write-Verbose -Message "Resolved delegated permission '$PermissionName' to GUID '$($scope.Id)'."
-                return $scope.Id.ToString()
-            }
-        }
-        elseif ($PermissionType -eq 'application')
-        {
-            $role = $servicePrincipal.AppRoles | Where-Object { $_.Value -eq $PermissionName }
-            if ($null -ne $role)
-            {
-                Write-Verbose -Message "Resolved application permission '$PermissionName' to GUID '$($role.Id)'."
-                return $role.Id.ToString()
-            }
-        }
-
-        # Try both collections if PermissionType is not specified or not found
-        $scope = $servicePrincipal.Oauth2PermissionScopes | Where-Object { $_.Value -eq $PermissionName }
-        if ($null -ne $scope)
-        {
-            Write-Verbose -Message "Resolved permission '$PermissionName' to GUID '$($scope.Id)' from Oauth2PermissionScopes."
-            return $scope.Id.ToString()
-        }
-
-        $role = $servicePrincipal.AppRoles | Where-Object { $_.Value -eq $PermissionName }
-        if ($null -ne $role)
-        {
-            Write-Verbose -Message "Resolved permission '$PermissionName' to GUID '$($role.Id)' from AppRoles."
-            return $role.Id.ToString()
-        }
-
-        Write-Verbose -Message "Permission '$PermissionName' not found in service principal for '$ResourceApplicationId'."
-    }
-    catch
-    {
-        Write-Verbose -Message "Error resolving permission '$PermissionName': $_"
-    }
-
-    return $PermissionName
-}
-
-function Resolve-AADPermissionGrantPolicyResourceApplicationId
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Cache,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $ResourceApplication
-    )
-
-    # Pass through wildcard
-    if ($ResourceApplication -eq 'any')
-    {
-        return $ResourceApplication
-    }
-
-    # If already a GUID, return as-is
-    $guidResult = [System.Guid]::Empty
-    if ([System.Guid]::TryParse($ResourceApplication, [ref]$guidResult))
-    {
-        return $ResourceApplication
-    }
-
-    try
-    {
-        $servicePrincipalCache = Get-AADPermissionGrantPolicyServicePrincipalCache -Cache $Cache
-
-        # Check if the display name is already in the cache
-        if ($servicePrincipalCache.ContainsKey($ResourceApplication))
-        {
-            $servicePrincipal = $servicePrincipalCache[$ResourceApplication]
-        }
-        else
-        {
-            # Look up the service principal by display name
-            $escapedName = $ResourceApplication -replace "'", "''"
-            $servicePrincipal = Get-MgServicePrincipal -Filter "DisplayName eq '$escapedName'" -ErrorAction SilentlyContinue
-        }
-
-        if ($null -ne $servicePrincipal)
-        {
-            # Handle array result (multiple SPs with same name)
-            if ($servicePrincipal -is [Array])
-            {
-                Write-Verbose -Message "Multiple service principals found for DisplayName '$ResourceApplication'. Using the first match."
-                $servicePrincipal = $servicePrincipal[0]
-            }
-
-            $servicePrincipalCache[$servicePrincipal.AppId] = $servicePrincipal
-            if (-not [System.String]::IsNullOrEmpty($servicePrincipal.DisplayName))
-            {
-                $servicePrincipalCache[$servicePrincipal.DisplayName] = $servicePrincipal
-            }
-            Write-Verbose -Message "Resolved ResourceApplication name '$ResourceApplication' to AppId '$($servicePrincipal.AppId)'."
-            return $servicePrincipal.AppId
-        }
-    }
-    catch
-    {
-        Write-Verbose -Message "Error resolving ResourceApplication name '$ResourceApplication': $_"
-    }
-
-    Write-Verbose -Message "Could not resolve ResourceApplication name '$ResourceApplication' to an AppId."
-    return $ResourceApplication
 }

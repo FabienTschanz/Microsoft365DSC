@@ -555,7 +555,7 @@ class SCLabelPolicy : M365DSCResourceBase
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
                 if ($null -ne $DesiredValues.AdvancedSettings)
                 {
-                    $TestAdvancedSettings = Test-SCLabelPolicyAdvancedSettings -DesiredProperty $DesiredValues.AdvancedSettings -CurrentProperty $CurrentValues.AdvancedSettings
+                    $TestAdvancedSettings = [SCLabelPolicy]::TestAdvancedSettings($DesiredValues.AdvancedSettings, $CurrentValues.AdvancedSettings)
                     if ($TestAdvancedSettings)
                     {
                         $ValuesToCheck.Remove('AdvancedSettings') | Out-Null
@@ -578,10 +578,7 @@ class SCLabelPolicy : M365DSCResourceBase
                         continue
                     }
 
-                    $configData = New-SCLabelPolicyPolicyData -configData $desired `
-                        -currentData $CurrentValues[$deltaProperty] `
-                        -removedData $removed `
-                        -additionalData $added
+                    $configData = [SCLabelPolicy]::NewPolicyData($desired, $CurrentValues[$deltaProperty], $removed, $added)
 
                     if ($null -eq $configData -and $null -ne $CurrentValues[$deltaProperty] -and $null -ne $removed)
                     {
@@ -702,6 +699,66 @@ class SCLabelPolicy : M365DSCResourceBase
         return $settings
     }
 
+    hidden static [System.Collections.ArrayList] NewPolicyData([System.Object] $ConfigData, [System.Object] $CurrentData, [System.Object] $RemovedData, [System.Object] $AdditionalData)
+    {
+        $desiredData = [System.Collections.ArrayList]::new()
+        foreach ($currentItem in $CurrentData)
+        {
+            if (-not $desiredData.Contains($currentItem))
+            {
+                $desiredData.Add($currentItem) | Out-Null
+            }
+        }
+
+        foreach ($currentItem in $ConfigData)
+        {
+            if (-not $desiredData.Contains("$currentItem"))
+            {
+                $desiredData.Add($currentItem) | Out-Null
+            }
+        }
+
+        foreach ($currentItem in $RemovedData)
+        {
+            $desiredData.Remove($currentItem) | Out-Null
+        }
+
+        foreach ($currentItem in $AdditionalData)
+        {
+            if (-not $desiredData.Contains("$currentItem"))
+            {
+                $desiredData.Add($currentItem) | Out-Null
+            }
+        }
+
+        return $desiredData
+    }
+
+    hidden static [System.Boolean] TestAdvancedSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    {
+        $foundSettings = $true
+        foreach ($desiredSetting in $DesiredProperty)
+        {
+            $foundKey = $CurrentProperty | Where-Object -FilterScript { $_.Key -eq $desiredSetting.Key }
+            if ($null -ne $foundKey)
+            {
+                $checkValue = $desiredSetting.Value
+                if ($checkValue.GetType().BaseType -eq 'array' -or $checkValue.GetType().Name -contains 'string[]')
+                {
+                    $checkValue = $desiredSetting.Value[0]
+                }
+                if ($foundKey.Value.ToString() -ne $checkValue.ToString())
+                {
+                    $foundSettings = $false
+                    break
+                }
+            }
+        }
+
+        Write-Verbose -Message "Test AdvancedSettings returned {$foundSettings}"
+        return $foundSettings
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [SCLabelPolicy] AsResult([System.Object] $Values)
     {
@@ -729,92 +786,4 @@ class MSFT_SCLabelSetting
     [DscProperty()]
     [System.ComponentModel.Description('Advanced settings value.')]
     [System.String[]] $Value
-}
-
-function New-SCLabelPolicyPolicyData
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.ArrayList])]
-    param
-    (
-        [Parameter()]
-        $configData,
-
-        [Parameter()]
-        $currentData,
-
-        [Parameter()]
-        $removedData,
-
-        [Parameter()]
-        $additionalData
-    )
-
-    $desiredData = [System.Collections.ArrayList]::new()
-    foreach ($currItem in $currentData)
-    {
-        if (!$desiredData.Contains($currItem))
-        {
-            $desiredData.Add($currItem) | Out-Null
-        }
-    }
-
-    foreach ($currItem in $configData)
-    {
-        if (!$desiredData.Contains("$curritem"))
-        {
-            $desiredData.Add($currItem) | Out-Null
-        }
-    }
-
-    foreach ($currItem in $removedData)
-    {
-        $desiredData.Remove($currItem) | Out-Null
-    }
-
-    foreach ($currItem in $additionalData)
-    {
-        if (!$desiredData.Contains("$curritem"))
-        {
-            $desiredData.Add($currItem) | Out-Null
-        }
-    }
-
-    return $desiredData
-}
-
-function Test-SCLabelPolicyAdvancedSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter (Mandatory = $true)]
-        $DesiredProperty,
-
-        [Parameter (Mandatory = $true)]
-        $CurrentProperty
-    )
-
-    $foundSettings = $true
-    foreach ($desiredSetting in $DesiredProperty)
-    {
-        $foundKey = $CurrentProperty | Where-Object { $_.Key -eq $desiredSetting.Key }
-        if ($null -ne $foundKey)
-        {
-            $checkValue = $desiredSetting.Value
-            if ($checkValue.GetType().BaseType -eq 'array' -or $checkValue.GetType().Name -contains 'string[]')
-            {
-                $checkValue = $desiredSetting.Value[0]
-            }
-            if ($foundKey.Value.ToString() -ne $checkValue.ToString())
-            {
-                $foundSettings = $false
-                break
-            }
-        }
-    }
-
-    Write-Verbose -Message "Test AdvancedSettings returned {$foundSettings}"
-    return $foundSettings
 }

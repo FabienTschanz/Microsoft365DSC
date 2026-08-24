@@ -223,7 +223,7 @@ class O365OrgSettings : M365DSCResourceBase
                     $this.GetBoundParameters().ContainsKey('AllowPlannerCopilot') -or `
                     $this.ExportedInstance)
             {
-                $PlannerSettings = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig } -RetryOnNotFoundError
+                $PlannerSettings = Invoke-M365DSCCommand -ScriptBlock { $this.GetPlannerConfig() } -RetryOnNotFoundError
                 if ($null -ne $PlannerSettings)
                 {
                     $results += @{
@@ -295,7 +295,7 @@ class O365OrgSettings : M365DSCResourceBase
             if ($this.GetBoundParameters().ContainsKey('AdminCenterReportDisplayConcealedNames') -or `
                     $this.ExportedInstance)
             {
-                $AdminCenterReportDisplayConcealedNamesValue = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport } -RetryOnNotFoundError
+                $AdminCenterReportDisplayConcealedNamesValue = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsAdminCenterReport() } -RetryOnNotFoundError
                 if ($null -ne $AdminCenterReportDisplayConcealedNamesValue)
                 {
                     $results += @{
@@ -310,7 +310,7 @@ class O365OrgSettings : M365DSCResourceBase
                     $this.GetBoundParameters().ContainsKey('InstallationOptionsAppsForMac') -or `
                     $this.ExportedInstance)
             {
-                $installationOptions = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions -AuthenticationOption $ConnectionModeTasks } -RetryOnNotFoundError
+                $installationOptions = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsInstallationOptions($ConnectionModeTasks) } -RetryOnNotFoundError
                 if ($null -ne $installationOptions)
                 {
                     $appsForWindowsValue = @()
@@ -348,7 +348,7 @@ class O365OrgSettings : M365DSCResourceBase
                     $this.GetBoundParameters().ContainsKey('FormsIsInOrgFormsPhishingScanEnabled') -or `
                     $this.ExportedInstance)
             {
-                $FormsSettings = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsForms } -RetryOnNotFoundError
+                $FormsSettings = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsForms() } -RetryOnNotFoundError
                 if ($null -ne $FormsSettings)
                 {
                     $results += @{
@@ -369,7 +369,7 @@ class O365OrgSettings : M365DSCResourceBase
                     $this.GetBoundParameters().ContainsKey('DynamicsCustomerVoiceIsInOrgFormsPhishingScanEnabled') -or `
                     $this.ExportedInstance)
             {
-                $DynamicCustomerVoiceSettings = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice } -RetryOnNotFoundError
+                $DynamicCustomerVoiceSettings = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsDynamicsCustomerVoice() } -RetryOnNotFoundError
                 if ($null -ne $DynamicCustomerVoiceSettings)
                 {
                     $results += @{
@@ -385,7 +385,7 @@ class O365OrgSettings : M365DSCResourceBase
                     $this.GetBoundParameters().ContainsKey('AppsAndServicesIsAppAndServicesTrialEnabled') -or `
                     $this.ExportedInstance)
             {
-                $AppsAndServicesSettings = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsAppsAndServices } -RetryOnNotFoundError
+                $AppsAndServicesSettings = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsAppsAndServices() } -RetryOnNotFoundError
                 if ($null -ne $AppsAndServicesSettings)
                 {
                     $results += @{
@@ -401,7 +401,7 @@ class O365OrgSettings : M365DSCResourceBase
                     $this.GetBoundParameters().ContainsKey('ToDoIsExternalShareEnabled') -or `
                     $this.ExportedInstance)
             {
-                $ToDoSettings = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsToDo } -RetryOnNotFoundError
+                $ToDoSettings = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsToDo() } -RetryOnNotFoundError
                 if ($null -ne $ToDoSettings)
                 {
                     $results += @{
@@ -460,8 +460,7 @@ class O365OrgSettings : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating the Planner Allow Calendar Sharing setting to {$($this.PlannerAllowCalendarSharing)}"
             Invoke-M365DSCCommand -ScriptBlock {
-                Set-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig -AllowCalendarSharing $this.PlannerAllowCalendarSharing `
-                    -AllowPlannerCopilot $this.AllowPlannerCopilot
+                $this.SetPlannerConfig($this.PlannerAllowCalendarSharing, $this.AllowPlannerCopilot)
             } -RetryOnNotFoundError
         }
 
@@ -517,13 +516,13 @@ class O365OrgSettings : M365DSCResourceBase
         }
 
         # Reports Display Names
-        $AdminCenterReportDisplayConcealedNamesEnabled = Get-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
+        $AdminCenterReportDisplayConcealedNamesEnabled = $this.GetOrgSettingsAdminCenterReport()
         if ($this.GetBoundParameters().ContainsKey('AdminCenterReportDisplayConcealedNames') -and `
             ($this.AdminCenterReportDisplayConcealedNames -ne $AdminCenterReportDisplayConcealedNamesEnabled.displayConcealedNames))
         {
             Write-Verbose -Message "Updating the Admin Center Report Display Concealed Names setting to {$($this.AdminCenterReportDisplayConcealedNames)}"
             Invoke-M365DSCCommand -ScriptBlock {
-                Update-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport -DisplayConcealedNames $this.AdminCenterReportDisplayConcealedNames
+                $this.UpdateOrgSettingsAdminCenterReport($this.AdminCenterReportDisplayConcealedNames)
             } -RetryOnNotFoundError
         }
 
@@ -534,7 +533,7 @@ class O365OrgSettings : M365DSCResourceBase
             ($null -ne (Compare-Object -ReferenceObject $currentValues.InstallationOptionsAppsForMac -DifferenceObject $this.InstallationOptionsAppsForMac))))
         {
             $ConnectionModeTasks = $this.Connect('Tasks')
-            $InstallationOptions = Invoke-M365DSCCommand -ScriptBlock { Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions -AuthenticationOption $ConnectionModeTasks } -RetryOnNotFoundError
+            $InstallationOptions = Invoke-M365DSCCommand -ScriptBlock { $this.GetOrgSettingsInstallationOptions($ConnectionModeTasks) } -RetryOnNotFoundError
             $InstallationOptionsToUpdate = @{
                 updateChannel  = ''
                 appsForWindows = @{
@@ -587,8 +586,7 @@ class O365OrgSettings : M365DSCResourceBase
             {
                 Write-Verbose -Message "Updating O365 Installation Options with $(Convert-M365DscHashtableToString -Hashtable $InstallationOptionsToUpdate)"
                 Invoke-M365DSCCommand -ScriptBlock {
-                    Update-O365OrgSettingsM365DSCOrgSettingsInstallationOptions -Options $InstallationOptionsToUpdate `
-                        -AuthenticationOption $ConnectionModeTasks
+                    $this.UpdateOrgSettingsInstallationOptions($InstallationOptionsToUpdate, $ConnectionModeTasks)
                 } -RetryOnNotFoundError
             }
         }
@@ -634,7 +632,7 @@ class O365OrgSettings : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating the Microsoft Forms settings with values:$(Convert-M365DscHashtableToString -Hashtable $FormsParametersToUpdate)"
             Invoke-M365DSCCommand -ScriptBlock {
-                Update-O365OrgSettingsM365DSCOrgSettingsForms -Options $FormsParametersToUpdate
+                $this.UpdateOrgSettingsForms($FormsParametersToUpdate)
             } -RetryOnNotFoundError
         }
 
@@ -659,7 +657,7 @@ class O365OrgSettings : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating the Dynamics 365 Customer Voice settings with values:$(Convert-M365DscHashtableToString -Hashtable $DynamicsCustomerVoiceParametersToUpdate)"
             Invoke-M365DSCCommand -ScriptBlock {
-                Update-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice -Options $DynamicsCustomerVoiceParametersToUpdate
+                $this.UpdateOrgSettingsDynamicsCustomerVoice($DynamicsCustomerVoiceParametersToUpdate)
             } -RetryOnNotFoundError
         }
 
@@ -679,7 +677,7 @@ class O365OrgSettings : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating the Apps & Settings settings with values:$(Convert-M365DscHashtableToString -Hashtable $AppsAndServicesParametersToUpdate)"
             Invoke-M365DSCCommand -ScriptBlock {
-                Update-O365OrgSettingsM365DSCOrgSettingsAppsAndServices -Options $AppsAndServicesParametersToUpdate
+                $this.UpdateOrgSettingsAppsAndServices($AppsAndServicesParametersToUpdate)
             } -RetryOnNotFoundError
         }
 
@@ -704,7 +702,7 @@ class O365OrgSettings : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating the To Do settings with values:$(Convert-M365DscHashtableToString -Hashtable $ToDoParametersToUpdate)"
             Invoke-M365DSCCommand -ScriptBlock {
-                Update-O365OrgSettingsM365DSCOrgSettingsToDo -Options $ToDoParametersToUpdate
+                $this.UpdateOrgSettingsToDo($ToDoParametersToUpdate)
             } -RetryOnNotFoundError
         }
     }
@@ -778,6 +776,269 @@ class O365OrgSettings : M365DSCResourceBase
         }
     }
 
+    hidden [System.Collections.Hashtable] GetOrgSettingsDynamicsCustomerVoice()
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/dynamics/customerVoice'
+            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            return $results
+        }
+        catch
+        {
+            Write-Verbose -Message 'Not able to retrieve O365OrgSettings Dynamics Customer Voice Settings. Please ensure correct permissions have been granted.'
+            New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Dynamics Customer Voice Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+
+            throw
+        }
+    }
+
+    hidden [System.Collections.Hashtable] GetOrgSettingsToDo()
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/todo/settings'
+            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            return $results
+        }
+        catch
+        {
+            Write-Verbose -Message 'Not able to retrieve ToDo settings. Please ensure correct permissions have been granted.'
+            New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings To Do Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+
+            throw
+        }
+    }
+
+    hidden [Void] UpdateOrgSettingsAppsAndServices([System.Collections.Hashtable] $Options)
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/appsAndServices/settings'
+            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+        }
+        catch
+        {
+            New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Apps and Services Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+        }
+    }
+
+    hidden [System.Collections.Hashtable] GetOrgSettingsForms()
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/forms/settings'
+            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            return $results
+        }
+        catch
+        {
+            Write-Verbose -Message 'Not able to retrieve O365OrgSettings Forms Settings. Please ensure correct permissions have been granted.'
+            New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Forms Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+
+            throw
+        }
+    }
+
+    hidden [Void] UpdateOrgSettingsForms([System.Collections.Hashtable] $Options)
+    {
+        try
+        {
+            Write-Verbose -Message 'Updating Forms Settings'
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/forms/settings'
+            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+        }
+        catch
+        {
+            New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Forms Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+        }
+    }
+
+    hidden [System.Collections.Hashtable] GetOrgSettingsAdminCenterReport()
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/reportSettings'
+            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            return $results
+        }
+        catch
+        {
+            Write-Verbose -Message 'Not able to retrieve Office 365 Report Settings. Please ensure correct permissions have been granted.'
+            New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Admin Center Report Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+
+            throw
+        }
+    }
+
+    hidden [Void] SetPlannerConfig([System.Boolean] $AllowCalendarSharing, [System.Boolean] $AllowPlannerCopilot)
+    {
+        $flags = @{}
+
+        if ($null -ne $AllowCalendarSharing)
+        {
+            $flags.Add('allowCalendarSharing', $AllowCalendarSharing)
+        }
+        if ($null -ne $AllowPlannerCopilot)
+        {
+            $flags.Add('allowPlannerCopilot', $AllowPlannerCopilot)
+        }
+
+        if ($flags.Keys.Count -gt 0)
+        {
+            $requestBody = $flags | ConvertTo-Json
+            Write-Verbose -Message "Updating Planner settings with values:`r`n$($requestBody)"
+            $Uri = (Get-MSCloudLoginConnectionProfile -Workload Tasks).HostUrl + '/taskAPI/tenantAdminSettings/Settings'
+            $results = Invoke-RestMethod -ContentType 'application/json;odata.metadata=full' `
+                -Headers @{'Accept' = 'application/json'; 'Authorization' = (Get-MSCloudLoginConnectionProfile -Workload Tasks).AccessToken; 'Accept-Charset' = 'UTF-8'; 'OData-Version' = '4.0;NetFx'; 'OData-MaxVersion' = '4.0;NetFx' } `
+                -Method PATCH `
+                -Body $requestBody `
+                -Uri $Uri
+        }
+    }
+
+    hidden [Void] UpdateOrgSettingsAdminCenterReport([System.Boolean] $DisplayConcealedNames)
+    {
+        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/reportSettings'
+        $body = @{
+            '@odata.context'      = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/$metadata#admin/reportSettings/$entity'
+            displayConcealedNames = $DisplayConcealedNames
+        }
+        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $body | Out-Null
+    }
+
+    hidden [System.Collections.Hashtable] GetOrgSettingsInstallationOptions([System.String] $AuthenticationOption)
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/microsoft365Apps/installationOptions'
+            $results = Invoke-MgGraphRequest -Method GET -Uri $url
+            return $results
+        }
+        catch
+        {
+            Write-Verbose -Message 'Not able to retrieve Office 365 Apps Installation Options. Please ensure correct permissions have been granted.'
+            New-M365DSCLogEntry -Message 'Error retrieving Office 365 Apps Installation Options' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+
+            throw
+        }
+    }
+
+    hidden [Void] UpdateOrgSettingsInstallationOptions([System.Collections.Hashtable] $Options, [System.String] $AuthenticationOption)
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/microsoft365Apps/installationOptions'
+            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+        }
+        catch
+        {
+            if ($_.Exception.ToString().Contains('Forbidden (Forbidden)'))
+            {
+                if ($AuthenticationOption -eq 'Credentials')
+                {
+                    $errorMessage = "You don't have the proper permissions to update the Office 365 Apps Installation Options." `
+                        + ' When using Credentials to authenticate, you need to grant permissions to the Microsoft Graph PowerShell SDK by running' `
+                        + ' Connect-MgGraph -Scopes OrgSettings-Microsoft365Install.ReadWrite.All'
+                    Write-Error -Message $errorMessage
+                }
+            }
+        }
+    }
+
+    hidden [Void] UpdateOrgSettingsToDo([System.Collections.Hashtable] $Options)
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/todo/settings'
+            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+        }
+        catch
+        {
+            Write-Verbose -Message "Error: $($_.Exception.Message)"
+            New-M365DSCLogEntry -Message 'Error updating O365OrgSettings To Do Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+        }
+    }
+
+    hidden [System.Collections.Hashtable] GetOrgSettingsAppsAndServices()
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/appsAndServices/settings'
+            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            return $results
+        }
+        catch
+        {
+            Write-Verbose -Message 'Not able to retrieve O365OrgSettings Apps and Services Settings. Please ensure correct permissions have been granted.'
+            New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Apps and Services Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+
+            throw
+        }
+    }
+
+    hidden [System.Object] GetPlannerConfig()
+    {
+        try
+        {
+            $Uri = (Get-MSCloudLoginConnectionProfile -Workload Tasks).HostUrl + '/taskAPI/tenantAdminSettings/Settings'
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $results = Invoke-RestMethod -ContentType 'application/json;odata.metadata=full' `
+                -Headers @{'Accept' = 'application/json'; 'Authorization' = (Get-MSCloudLoginConnectionProfile -Workload Tasks).AccessToken; 'Accept-Charset' = 'UTF-8'; 'OData-Version' = '4.0;NetFx'; 'OData-MaxVersion' = '4.0;NetFx' } `
+                -Method GET `
+                -Uri $Uri -ErrorAction Stop
+            return $results
+        }
+        catch
+        {
+            if ($_.Exception.Message -eq 'The request was aborted: Could not create SSL/TLS secure channel.')
+            {
+                Write-Warning -Message 'Could not create SSL/TLS secure channel. Skipping the Planner settings.'
+            }
+            else
+            {
+                Write-Verbose -Message 'Not able to retrieve Office 365 Planner Settings. Please ensure correct permissions have been granted.'
+                New-M365DSCLogEntry -Message 'Error retrieving Office 365 Planner Settings' `
+                    -Exception $_ `
+                    -Source 'O365OrgSettings'
+            }
+            throw
+        }
+    }
+
+    hidden [Void] UpdateOrgSettingsDynamicsCustomerVoice([System.Collections.Hashtable] $Options)
+    {
+        try
+        {
+            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/dynamics/customerVoice'
+            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+        }
+        catch
+        {
+            New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Dynamics Customer Voice Settings' `
+                -Exception $_ `
+                -Source 'O365OrgSettings'
+        }
+    }
+
     # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
     hidden [O365OrgSettings] AsResult([System.Object] $Values)
     {
@@ -796,382 +1057,30 @@ class O365OrgSettings : M365DSCResourceBase
     }
 }
 
-function Get-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
 
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/dynamics/customerVoice'
-        $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
-        return $results
-    }
-    catch
-    {
-        Write-Verbose -Message 'Not able to retrieve O365OrgSettings Dynamics Customer Voice Settings. Please ensure correct permissions have been granted.'
-        New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Dynamics Customer Voice Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
-    }
-}
 
-function Get-O365OrgSettingsM365DSCOrgSettingsToDo
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
 
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/todo/settings'
-        $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
-        return $results
-    }
-    catch
-    {
-        Write-Verbose -Message 'Not able to retrieve ToDo settings. Please ensure correct permissions have been granted.'
-        New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings To Do Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
-    }
-}
 
-function Update-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
-{
-    [CmdletBinding()]
-    [OutputType([Void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Options
-    )
 
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/appsAndServices/settings'
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Apps and Services Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-}
 
-function Get-O365OrgSettingsM365DSCOrgSettingsForms
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
 
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/forms/settings'
-        $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
-        return $results
-    }
-    catch
-    {
-        Write-Verbose -Message 'Not able to retrieve O365OrgSettings Forms Settings. Please ensure correct permissions have been granted.'
-        New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Forms Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
-    }
-}
 
-function Update-O365OrgSettingsM365DSCOrgSettingsForms
-{
-    [CmdletBinding()]
-    [OutputType([Void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Options
-    )
 
-    try
-    {
-        Write-Verbose -Message 'Updating Forms Settings'
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/forms/settings'
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Forms Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-}
 
-function Get-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
 
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/reportSettings'
-        $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
-        return $results
-    }
-    catch
-    {
-        Write-Verbose -Message 'Not able to retrieve Office 365 Report Settings. Please ensure correct permissions have been granted.'
-        New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Admin Center Report Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
-    }
-}
 
-function Set-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.Boolean]
-        $AllowCalendarSharing,
 
-        [Parameter()]
-        [System.Boolean]
-        $AllowPlannerCopilot
-    )
 
-    $flags = @{}
 
-    if ($null -ne $AllowCalendarSharing)
-    {
-        $flags.Add('allowCalendarSharing', $AllowCalendarSharing)
-    }
-    if ($null -ne $AllowPlannerCopilot)
-    {
-        $flags.Add('allowPlannerCopilot', $AllowPlannerCopilot)
-    }
 
-    if ($flags.Keys.Count -gt 0)
-    {
-        $requestBody = $flags | ConvertTo-Json
-        Write-Verbose -Message "Updating Planner settings with values:`r`n$($requestBody)"
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload Tasks).HostUrl + '/taskAPI/tenantAdminSettings/Settings'
-        $results = Invoke-RestMethod -ContentType 'application/json;odata.metadata=full' `
-            -Headers @{'Accept' = 'application/json'; 'Authorization' = (Get-MSCloudLoginConnectionProfile -Workload Tasks).AccessToken; 'Accept-Charset' = 'UTF-8'; 'OData-Version' = '4.0;NetFx'; 'OData-MaxVersion' = '4.0;NetFx' } `
-            -Method PATCH `
-            -Body $requestBody `
-            -Uri $Uri
-    }
-}
 
-function Update-O365OrgSettingsM365DSCOrgSettingsAdminCenterReport
-{
-    [CmdletBinding()]
-    [OutputType([Void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Boolean]
-        $DisplayConcealedNames
-    )
 
-    $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/reportSettings'
-    $body = @{
-        '@odata.context'      = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/$metadata#admin/reportSettings/$entity'
-        displayConcealedNames = $DisplayConcealedNames
-    }
-    Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $body | Out-Null
-}
 
-function Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AuthenticationOption
-    )
 
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/microsoft365Apps/installationOptions'
-        $results = Invoke-MgGraphRequest -Method GET -Uri $url
-        return $results
-    }
-    catch
-    {
-        Write-Verbose -Message 'Not able to retrieve Office 365 Apps Installation Options. Please ensure correct permissions have been granted.'
-        New-M365DSCLogEntry -Message 'Error retrieving Office 365 Apps Installation Options' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
 
-        throw
-    }
-}
 
-function Update-O365OrgSettingsM365DSCOrgSettingsInstallationOptions
-{
-    [CmdletBinding()]
-    [OutputType([Void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Options,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $AuthenticationOption
-    )
-
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/microsoft365Apps/installationOptions'
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
-    }
-    catch
-    {
-        if ($_.Exception.ToString().Contains('Forbidden (Forbidden)'))
-        {
-            if ($AuthenticationOption -eq 'Credentials')
-            {
-                $errorMessage = "You don't have the proper permissions to update the Office 365 Apps Installation Options." `
-                    + ' When using Credentials to authenticate, you need to grant permissions to the Microsoft Graph PowerShell SDK by running' `
-                    + ' Connect-MgGraph -Scopes OrgSettings-Microsoft365Install.ReadWrite.All'
-                Write-Error -Message $errorMessage
-            }
-        }
-    }
-}
-
-function Update-O365OrgSettingsM365DSCOrgSettingsToDo
-{
-    [CmdletBinding()]
-    [OutputType([Void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Options
-    )
-
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/todo/settings'
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
-    }
-    catch
-    {
-        Write-Verbose -Message "Error: $($_.Exception.Message)"
-        New-M365DSCLogEntry -Message 'Error updating O365OrgSettings To Do Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-}
-
-function Get-O365OrgSettingsM365DSCOrgSettingsAppsAndServices
-{
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param()
-
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/appsAndServices/settings'
-        $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
-        return $results
-    }
-    catch
-    {
-        Write-Verbose -Message 'Not able to retrieve O365OrgSettings Apps and Services Settings. Please ensure correct permissions have been granted.'
-        New-M365DSCLogEntry -Message 'Error retrieving O365OrgSettings Apps and Services Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
-
-        throw
-    }
-}
-
-function Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig
-{
-    [CmdletBinding()]
-    param()
-
-    try
-    {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload Tasks).HostUrl + '/taskAPI/tenantAdminSettings/Settings'
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $results = Invoke-RestMethod -ContentType 'application/json;odata.metadata=full' `
-            -Headers @{'Accept' = 'application/json'; 'Authorization' = (Get-MSCloudLoginConnectionProfile -Workload Tasks).AccessToken; 'Accept-Charset' = 'UTF-8'; 'OData-Version' = '4.0;NetFx'; 'OData-MaxVersion' = '4.0;NetFx' } `
-            -Method GET `
-            -Uri $Uri -ErrorAction Stop
-        return $results
-    }
-    catch
-    {
-        if ($_.Exception.Message -eq 'The request was aborted: Could not create SSL/TLS secure channel.')
-        {
-            Write-Warning -Message 'Could not create SSL/TLS secure channel. Skipping the Planner settings.'
-        }
-        else
-        {
-            Write-Verbose -Message 'Not able to retrieve Office 365 Planner Settings. Please ensure correct permissions have been granted.'
-            New-M365DSCLogEntry -Message 'Error retrieving Office 365 Planner Settings' `
-                -Exception $_ `
-                -Source 'O365OrgSettings' `
-                -TenantId $TenantId `
-                -Credential $Credential
-        }
-        throw
-    }
-}
-
-function Update-O365OrgSettingsM365DSCOrgSettingsDynamicsCustomerVoice
-{
-    [CmdletBinding()]
-    [OutputType([Void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [System.Collections.Hashtable]
-        $Options
-    )
-
-    try
-    {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/dynamics/customerVoice'
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
-    }
-    catch
-    {
-        New-M365DSCLogEntry -Message 'Error updating O365OrgSettings Dynamics Customer Voice Settings' `
-            -Exception $_ `
-            -Source 'O365OrgSettings' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-}
 

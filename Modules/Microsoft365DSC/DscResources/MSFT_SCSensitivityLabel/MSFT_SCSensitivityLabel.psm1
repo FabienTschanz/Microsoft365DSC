@@ -1242,7 +1242,7 @@ class SCSensitivityLabel : M365DSCResourceBase
                 if ($null -ne $DesiredValues.AdvancedSettings -and $null -ne $CurrentValues.AdvancedSettings)
                 {
                     Write-Verbose -Message 'Testing AdvancedSettings'
-                    $TestAdvancedSettings = Test-SCSensitivityLabelAdvancedSettings -DesiredProperty $DesiredValues.AdvancedSettings -CurrentProperty $CurrentValues.AdvancedSettings
+                    $TestAdvancedSettings = [SCSensitivityLabel]::TestAdvancedSettings($DesiredValues.AdvancedSettings, $CurrentValues.AdvancedSettings)
                     if ($false -eq $TestAdvancedSettings)
                     {
                         $DesiredValues['AdvancedSettings'] = 'AdvancedSettings drift detected'
@@ -1254,7 +1254,7 @@ class SCSensitivityLabel : M365DSCResourceBase
                 if ($null -ne $DesiredValues.LocaleSettings -and $null -ne $CurrentValues.LocaleSettings)
                 {
                     Write-Verbose -Message 'Testing LocaleSettings'
-                    $localeSettingsSame = Test-SCSensitivityLabelLocaleSettings -DesiredProperty $DesiredValues.LocaleSettings -CurrentProperty $CurrentValues.LocaleSettings
+                    $localeSettingsSame = [SCSensitivityLabel]::TestLocaleSettings($DesiredValues.LocaleSettings, $CurrentValues.LocaleSettings)
                     if ($false -eq $localeSettingsSame)
                     {
                         $DesiredValues['LocaleSettings'] = 'LocaleSettings drift detected'
@@ -1270,7 +1270,7 @@ class SCSensitivityLabel : M365DSCResourceBase
                     # Convert the AutoLabelingSettings to the correct JSON format, ready to be inserted into the label cmdlets
                     $autoLabelingSettingsHT = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $DesiredValues.AutoLabelingSettings
 
-                    $autoLabelSettingsSame = Test-SCSensitivityLabelAutoLabelingSettings -CurrentProperty $CurrentValues.AutoLabelingSettings -DesiredProperty $autoLabelingSettingsHT
+                    $autoLabelSettingsSame = [SCSensitivityLabel]::TestAutoLabelingSettings($autoLabelingSettingsHT, $CurrentValues.AutoLabelingSettings)
                     if ($false -eq $autoLabelSettingsSame)
                     {
                         $DesiredValues['AutoLabelingSettings'] = 'AutoLabelingSettings drift detected'
@@ -1397,7 +1397,256 @@ class SCSensitivityLabel : M365DSCResourceBase
         return $settings
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden static [System.Boolean] TestLocaleSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    {
+        $driftedSetting = @()
+        $foundSettings = $true
+        foreach ($desiredSetting in $DesiredProperty)
+        {
+            $foundKey = $CurrentProperty | Where-Object { $_.LocaleKey -eq $desiredSetting.localeKey }
+            foreach ($setting in $desiredSetting.LabelSettings)
+            {
+                $myLabel = $null
+                if ($null -ne $foundKey)
+                {
+                    if ($setting.Value -is [Array])
+                    {
+                        if ($setting.Value.Count -eq 1)
+                        {
+                            $myLabel = $foundKey.LabelSettings | Where-Object { $_.Key -eq $setting.Key -and $_.Value -eq $setting.Value[0] }
+                        }
+                        else
+                        {
+                            $foundSettings = $false
+                            $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
+                        }
+                    }
+                    else
+                    {
+                        $myLabel = $foundKey.LabelSettings | Where-Object { $_.Key -eq $setting.Key -and $_.Value -eq $setting.Value }
+                    }
+
+                    if ($null -eq $myLabel)
+                    {
+                        $foundSettings = $false
+                        $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
+                    }
+                }
+                else
+                {
+                    $foundSettings = $false
+                    $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
+                }
+            }
+        }
+
+        if ($foundSettings -eq $false)
+        {
+            New-M365DSCLogEntry -Message "LocaleSettings do not match: $($driftedSetting -join ', ')" `
+                -Source 'SCSensitivityLabel'
+        }
+
+        Write-Verbose -Message "Test LocaleSettings returns $foundSettings"
+
+        return $foundSettings
+    }
+
+    hidden static [System.Boolean] TestAutoLabelingSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    {
+        $foundSettings = $true
+        $driftedSetting = New-Object System.Collections.ArrayList
+
+        if ($DesiredProperty.Operator -ne $CurrentProperty.Operator)
+        {
+            $null = $driftedSetting.Add("Parameter 'Operator' does not match. Current: '$($CurrentProperty.Operator)'. Desired: '$($DesiredProperty.Operator)'.")
+            $foundSettings = $false
+        }
+
+        if ($DesiredProperty.AutoApplyType -ne $CurrentProperty.AutoApplyType)
+        {
+            $null = $driftedSetting.Add("Parameter 'AutoApplyType' does not match. Current: '$($CurrentProperty.AutoApplyType)'. Desired: '$($DesiredProperty.AutoApplyType)'.")
+            $foundSettings = $false
+        }
+
+        if ($DesiredProperty.ContainsKey('PolicyTip') -and $DesiredProperty.PolicyTip -ne $CurrentProperty.PolicyTip)
+        {
+            $null = $driftedSetting.Add("Parameter 'PolicyTip' does not match. Current: '$($CurrentProperty.PolicyTip)'. Desired: '$($DesiredProperty.PolicyTip)'.")
+            $foundSettings = $false
+        }
+
+        foreach ($group in $DesiredProperty.Groups)
+        {
+            $currentGroup = $CurrentProperty.Groups | Where-Object { $_.Name -eq $group.Name }
+            if ($null -eq $currentGroup)
+            {
+                $null = $driftedSetting.Add("Group '$($group.Name)' not found in the current settings.")
+                $foundSettings = $false
+                continue
+            }
+
+            if ($group.Operator -ne $currentGroup.Operator)
+            {
+                $null = $driftedSetting.Add("Parameter 'Groups\$($group.Name)\Operator' does not match. Current: '$($currentGroup.Operator)'. Desired: '$($group.Operator)'.")
+                $foundSettings = $false
+            }
+
+            foreach ($sensitiveinfotype in $group.SensitiveInformationType)
+            {
+                $currentSensitiveInfoType = $currentGroup.SensitiveInformationType | Where-Object { $_.name -eq $sensitiveinfotype.name }
+                if ($null -eq $currentSensitiveInfoType)
+                {
+                    $null = $driftedSetting.Add("Sensitive Information Type '$($sensitiveinfotype.name)' not found in the current settings for group '$($group.Name)'.")
+                    $foundSettings = $false
+                    continue
+                }
+
+                if ($sensitiveinfotype.ContainsKey('confidencelevel') -and $sensitiveinfotype.confidencelevel -ne $currentSensitiveInfoType.confidencelevel)
+                {
+                    $null = $driftedSetting.Add("Parameter 'confidencelevel' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.confidencelevel)'. Desired: '$($sensitiveinfotype.confidencelevel)'.")
+                    $foundSettings = $false
+                }
+
+                if ($sensitiveinfotype.ContainsKey('classifiertype') -and $sensitiveinfotype.classifiertype -ne $currentSensitiveInfoType.classifiertype)
+                {
+                    $null = $driftedSetting.Add("Parameter 'classifiertype' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.classifiertype)'. Desired: '$($sensitiveinfotype.classifiertype)'.")
+                    $foundSettings = $false
+                }
+
+                if ($sensitiveinfotype.ContainsKey('mincount') -and $sensitiveinfotype.mincount -ne $currentSensitiveInfoType.mincount)
+                {
+                    $null = $driftedSetting.Add("Parameter 'mincount' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.mincount)'. Desired: '$($sensitiveinfotype.mincount)'.")
+                    $foundSettings = $false
+                }
+
+                if ($sensitiveinfotype.ContainsKey('maxcount') -and $sensitiveinfotype.maxcount -ne $currentSensitiveInfoType.maxcount)
+                {
+                    $null = $driftedSetting.Add("Parameter 'maxcount' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.maxcount)'. Desired: '$($sensitiveinfotype.maxcount)'.")
+                    $foundSettings = $false
+                }
+            }
+            foreach ($trainableClassifier in $group.TrainableClassifier)
+            {
+                $currentTrainableClassifier = $currentGroup.trainableClassifier | Where-Object { $_.name -eq $trainableClassifier.name }
+                if ($null -eq $currentTrainableClassifier)
+                {
+                    $null = $driftedSetting.Add("Trainable Classifier '$($trainableClassifier.name)' not found in the current settings for group '$($group.Name)'.")
+                    $foundSettings = $false
+                    continue
+                }
+            }
+        }
+
+        foreach ($group in $CurrentProperty.Groups)
+        {
+            $desiredGroup = $DesiredProperty.Groups | Where-Object { $_.Name -eq $group.Name }
+            if ($null -eq $desiredGroup)
+            {
+                $null = $driftedSetting.Add("Group '$($group.Name)' not found in the desired settings.")
+                $foundSettings = $false
+                continue
+            }
+
+            foreach ($sensitiveinfotype in $group.SensitiveInformationType)
+            {
+                $desiredSensitiveInfoType = $desiredGroup.SensitiveInformationType | Where-Object { $_.name -eq $sensitiveinfotype.name }
+                if ($null -eq $desiredSensitiveInfoType)
+                {
+                    $null = $driftedSetting.Add("Sensitive Information Type '$($sensitiveinfotype.name)' not found in the desired settings for group '$($group.Name)'.")
+                    $foundSettings = $false
+                    continue
+                }
+            }
+            foreach ($trainableClassifier in $group.TrainableClassifier)
+            {
+                $desiredTrainableClassifier = $desiredGroup.trainableClassifier | Where-Object { $_.name -eq $trainableClassifier.name }
+                if ($null -eq $desiredTrainableClassifier)
+                {
+                    $null = $driftedSetting.Add("Trainable Classifier '$($trainableClassifier.name)' not found in the desired settings for group '$($group.Name)'.")
+                    $foundSettings = $false
+                    continue
+                }
+            }
+        }
+
+        if ($foundSettings -eq $false)
+        {
+            New-M365DSCLogEntry -Message "AutoLabelingSettings do not match: `r`n- $($driftedSetting -join '`r`n- ')" `
+                -Source 'SCSensitivityLabel'
+        }
+
+        Write-Verbose -Message "Test AutoLabelingSettings returns $foundSettings"
+
+        return $foundSettings
+    }
+
+    hidden static [System.Boolean] TestAdvancedSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    {
+        $driftedSetting = @()
+        $foundSettings = $true
+        foreach ($desiredSetting in $DesiredProperty)
+        {
+            $foundKey = $CurrentProperty | Where-Object { $_.Key -eq $desiredSetting.Key }
+            if ($null -ne $foundKey)
+            {
+                if ($desiredSetting.Value -is [Array])
+                {
+                    if ($foundKey.Value -is [Array])
+                    {
+                        $diff = Compare-Object -ReferenceObject $foundKey.Value -DifferenceObject $desiredSetting.Value
+                        if ($diff.Count -ne 0)
+                        {
+                            $foundSettings = $false
+                            $driftedSetting += $desiredSetting.Key
+                        }
+                    }
+                    else
+                    {
+                        if ($desiredSetting.Value.Count -ne 1 -or `
+                                $foundKey.Value.ToString() -ne $desiredSetting.Value[0].ToString())
+                        {
+                            $foundSettings = $false
+                            $driftedSetting += $desiredSetting.Key
+                        }
+                    }
+                }
+                else
+                {
+                    if ($foundKey.Value -is [Array])
+                    {
+                        if ($foundKey.Value.Count -ne 1 -or `
+                                $foundKey.Value[0].ToString() -ne $desiredSetting.Value.ToString())
+                        {
+                            $foundSettings = $false
+                            $driftedSetting += $desiredSetting.Key
+                        }
+                    }
+                    else
+                    {
+                        if ($foundKey.Value.ToString() -ne $desiredSetting.Value.ToString())
+                        {
+                            $foundSettings = $false
+                            $driftedSetting += $desiredSetting.Key
+                        }
+                    }
+                }
+            }
+            else
+            {
+                $foundSettings = $false
+                $driftedSetting += $desiredSetting.Key
+            }
+        }
+
+        if ($foundSettings -eq $false)
+        {
+            New-M365DSCLogEntry -Message "AdvancedSettings do not match: $($driftedSetting -join ', ')" `
+                -Source 'SCSensitivityLabel'
+        }
+
+        Write-Verbose -Message "Test AdvancedSettings returns $foundSettings"
+        return $foundSettings
+    }
+
     hidden [SCSensitivityLabel] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCSensitivityLabel])
@@ -1511,294 +1760,4 @@ class MSFT_SCSLTrainableClassifiers
     [DscProperty()]
     [System.ComponentModel.Description('Id of the Trainable Classifier')]
     [System.String] $id
-}
-
-function Test-SCSensitivityLabelLocaleSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter (Mandatory = $true)]
-        $DesiredProperty,
-
-        [Parameter (Mandatory = $true)]
-        $CurrentProperty
-    )
-
-    $driftedSetting = @()
-    $foundSettings = $true
-    foreach ($desiredSetting in $DesiredProperty)
-    {
-        $foundKey = $CurrentProperty | Where-Object { $_.LocaleKey -eq $desiredSetting.localeKey }
-        foreach ($setting in $desiredSetting.LabelSettings)
-        {
-            if ($null -ne $foundKey)
-            {
-                if ($setting.Value -is [Array])
-                {
-                    if ($setting.Value.Count -eq 1)
-                    {
-                        $myLabel = $foundKey.LabelSettings | Where-Object { $_.Key -eq $setting.Key -and $_.Value -eq $setting.Value[0] }
-                    }
-                    else
-                    {
-                        $foundSettings = $false
-                        $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
-                    }
-                }
-                else
-                {
-                    $myLabel = $foundKey.LabelSettings | Where-Object { $_.Key -eq $setting.Key -and $_.Value -eq $setting.Value }
-                }
-
-                if ($null -eq $myLabel)
-                {
-                    $foundSettings = $false
-                    $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
-                }
-            }
-            else
-            {
-                $foundSettings = $false
-                $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
-            }
-        }
-    }
-
-    if ($foundSettings -eq $false)
-    {
-        New-M365DSCLogEntry -Message "LocaleSettings for label $Name do not match: $($driftedSetting -join ', ')" `
-            -Source 'SCSensitivityLabel' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-
-    Write-Verbose -Message "Test LocaleSettings returns $foundSettings"
-
-    return $foundSettings
-}
-
-function Test-SCSensitivityLabelAutoLabelingSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter (Mandatory = $true)]
-        [System.Object]
-        $DesiredProperty,
-
-        [Parameter (Mandatory = $true)]
-        [System.Object]
-        $CurrentProperty
-    )
-
-    $foundSettings = $true
-    $driftedSetting = New-Object System.Collections.ArrayList
-
-    if ($DesiredProperty.Operator -ne $CurrentProperty.Operator)
-    {
-        $null = $driftedSetting.Add("Parameter 'Operator' does not match. Current: '$($CurrentProperty.Operator)'. Desired: '$($DesiredProperty.Operator)'.")
-        $foundSettings = $false
-    }
-
-    if ($DesiredProperty.AutoApplyType -ne $CurrentProperty.AutoApplyType)
-    {
-        $null = $driftedSetting.Add("Parameter 'AutoApplyType' does not match. Current: '$($CurrentProperty.AutoApplyType)'. Desired: '$($DesiredProperty.AutoApplyType)'.")
-        $foundSettings = $false
-    }
-
-    if ($DesiredProperty.ContainsKey('PolicyTip') -and $DesiredProperty.PolicyTip -ne $CurrentProperty.PolicyTip)
-    {
-        $null = $driftedSetting.Add("Parameter 'PolicyTip' does not match. Current: '$($CurrentProperty.PolicyTip)'. Desired: '$($DesiredProperty.PolicyTip)'.")
-        $foundSettings = $false
-    }
-
-    foreach ($group in $DesiredProperty.Groups)
-    {
-        $currentGroup = $CurrentProperty.Groups | Where-Object { $_.Name -eq $group.Name }
-        if ($null -eq $currentGroup)
-        {
-            $null = $driftedSetting.Add("Group '$($group.Name)' not found in the current settings.")
-            $foundSettings = $false
-            continue
-        }
-
-        if ($group.Operator -ne $currentGroup.Operator)
-        {
-            $null = $driftedSetting.Add("Parameter 'Groups\$($group.Name)\Operator' does not match. Current: '$($currentGroup.Operator)'. Desired: '$($group.Operator)'.")
-            $foundSettings = $false
-        }
-
-        foreach ($sensitiveinfotype in $group.SensitiveInformationType)
-        {
-            $currentSensitiveInfoType = $currentGroup.SensitiveInformationType | Where-Object { $_.name -eq $sensitiveinfotype.name }
-            if ($null -eq $currentSensitiveInfoType)
-            {
-                $null = $driftedSetting.Add("Sensitive Information Type '$($sensitiveinfotype.name)' not found in the current settings for group '$($group.Name)'.")
-                $foundSettings = $false
-                continue
-            }
-
-            if ($sensitiveinfotype.ContainsKey('confidencelevel') -and $sensitiveinfotype.confidencelevel -ne $currentSensitiveInfoType.confidencelevel)
-            {
-                $null = $driftedSetting.Add("Parameter 'confidencelevel' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.confidencelevel)'. Desired: '$($sensitiveinfotype.confidencelevel)'.")
-                $foundSettings = $false
-            }
-
-            if ($sensitiveinfotype.ContainsKey('classifiertype') -and $sensitiveinfotype.classifiertype -ne $currentSensitiveInfoType.classifiertype)
-            {
-                $null = $driftedSetting.Add("Parameter 'classifiertype' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.classifiertype)'. Desired: '$($sensitiveinfotype.classifiertype)'.")
-                $foundSettings = $false
-            }
-
-            if ($sensitiveinfotype.ContainsKey('mincount') -and $sensitiveinfotype.mincount -ne $currentSensitiveInfoType.mincount)
-            {
-                $null = $driftedSetting.Add("Parameter 'mincount' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.mincount)'. Desired: '$($sensitiveinfotype.mincount)'.")
-                $foundSettings = $false
-            }
-
-            if ($sensitiveinfotype.ContainsKey('maxcount') -and $sensitiveinfotype.maxcount -ne $currentSensitiveInfoType.maxcount)
-            {
-                $null = $driftedSetting.Add("Parameter 'maxcount' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.maxcount)'. Desired: '$($sensitiveinfotype.maxcount)'.")
-                $foundSettings = $false
-            }
-        }
-        foreach ($trainableClassifier in $group.TrainableClassifier)
-        {
-            $currentTrainableClassifier = $currentGroup.trainableClassifier | Where-Object { $_.name -eq $trainableClassifier.name }
-            if ($null -eq $currentTrainableClassifier)
-            {
-                $null = $driftedSetting.Add("Trainable Classifier '$($trainableClassifier.name)' not found in the current settings for group '$($group.Name)'.")
-                $foundSettings = $false
-                continue
-            }
-        }
-    }
-
-    foreach ($group in $CurrentProperty.Groups)
-    {
-        $desiredGroup = $DesiredProperty.Groups | Where-Object { $_.Name -eq $group.Name }
-        if ($null -eq $desiredGroup)
-        {
-            $null = $driftedSetting.Add("Group '$($group.Name)' not found in the desired settings.")
-            $foundSettings = $false
-            continue
-        }
-
-        foreach ($sensitiveinfotype in $group.SensitiveInformationType)
-        {
-            $desiredSensitiveInfoType = $desiredGroup.SensitiveInformationType | Where-Object { $_.name -eq $sensitiveinfotype.name }
-            if ($null -eq $desiredSensitiveInfoType)
-            {
-                $null = $driftedSetting.Add("Sensitive Information Type '$($sensitiveinfotype.name)' not found in the desired settings for group '$($group.Name)'.")
-                $foundSettings = $false
-                continue
-            }
-        }
-        foreach ($trainableClassifier in $group.TrainableClassifier)
-        {
-            $desiredTrainableClassifier = $desiredGroup.trainableClassifier | Where-Object { $_.name -eq $trainableClassifier.name }
-            if ($null -eq $desiredTrainableClassifier)
-            {
-                $null = $driftedSetting.Add("Trainable Classifier '$($trainableClassifier.name)' not found in the desired settings for group '$($group.Name)'.")
-                $foundSettings = $false
-                continue
-            }
-        }
-    }
-
-    if ($foundSettings -eq $false)
-    {
-        New-M365DSCLogEntry -Message "AutoLabelingSettings for label $Name do not match: `r`n- $($driftedSetting -join '`r`n- ')" `
-            -Source 'SCSensitivityLabel' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-
-    Write-Verbose -Message "Test AutoLabelingSettings returns $foundSettings"
-
-    return $foundSettings
-}
-
-function Test-SCSensitivityLabelAdvancedSettings
-{
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter (Mandatory = $true)]
-        $DesiredProperty,
-
-        [Parameter (Mandatory = $true)]
-        $CurrentProperty
-    )
-
-    $driftedSetting = @()
-    $foundSettings = $true
-    foreach ($desiredSetting in $DesiredProperty)
-    {
-        $foundKey = $CurrentProperty | Where-Object { $_.Key -eq $desiredSetting.Key }
-        if ($null -ne $foundKey)
-        {
-            if ($desiredSetting.Value -is [Array])
-            {
-                if ($foundKey.Value -is [Array])
-                {
-                    $diff = Compare-Object -ReferenceObject $foundKey.Value -DifferenceObject $desiredSetting.Value
-                    if ($diff.Count -ne 0)
-                    {
-                        $foundSettings = $false
-                        $driftedSetting += $desiredSetting.Key
-                    }
-                }
-                else
-                {
-                    if ($desiredSetting.Value.Count -ne 1 -or `
-                            $foundKey.Value.ToString() -ne $desiredSetting.Value[0].ToString())
-                    {
-                        $foundSettings = $false
-                        $driftedSetting += $desiredSetting.Key
-                    }
-                }
-            }
-            else
-            {
-                if ($foundKey.Value -is [Array])
-                {
-                    if ($foundKey.Value.Count -ne 1 -or `
-                            $foundKey.Value[0].ToString() -ne $desiredSetting.Value.ToString())
-                    {
-                        $foundSettings = $false
-                        $driftedSetting += $desiredSetting.Key
-                    }
-                }
-                else
-                {
-                    if ($foundKey.Value.ToString() -ne $desiredSetting.Value.ToString())
-                    {
-                        $foundSettings = $false
-                        $driftedSetting += $desiredSetting.Key
-                    }
-                }
-            }
-        }
-        else
-        {
-            $foundSettings = $false
-            $driftedSetting += $desiredSetting.Key
-        }
-    }
-
-    if ($foundSettings -eq $false)
-    {
-        New-M365DSCLogEntry -Message "AdvancedSettings for label $Name do not match: $($driftedSetting -join ', ')" `
-            -Source 'SCSensitivityLabel' `
-            -TenantId $TenantId `
-            -Credential $Credential
-    }
-
-    Write-Verbose -Message "Test AdvancedSettings returns $foundSettings"
-    return $foundSettings
 }

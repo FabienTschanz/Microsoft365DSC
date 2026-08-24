@@ -52,14 +52,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             Mock -CommandName Set-DefaultTenantMyAnalyticsFeatureConfig -MockWith {
             }
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                return @{
-                    "@odata.type"         = "#microsoft.graph.adminReportSettings"
-                    displayConcealedNames = $true
-                }
-            }
 
-            Mock -CommandName Get-O365OrgSettingsM365DSCOrgSettingsInstallationOptions -MockWith {
+            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -like '*installationOptions*' } -MockWith {
                 return @{
                     '@odata.context' = 'https://graph.microsoft.com/beta/$metadata#admin/microsoft365Apps/installationOptions/$entity'
                     updateChannel = 'current'
@@ -76,7 +70,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Get-O365OrgSettingsM365DSCO365OrgSettingsPlannerConfig -MockWith {
+            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                return @{
+                    "@odata.type"         = "#microsoft.graph.adminReportSettings"
+                    displayConcealedNames = $true
+                }
+            }
+
+            Mock -CommandName Invoke-RestMethod -MockWith {
                 return @{
                     allowCalendarSharing = $false
                 }

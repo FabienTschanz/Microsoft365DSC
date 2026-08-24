@@ -113,8 +113,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
                 $nullReturn = $this.GetBoundParameters()
                 $nullReturn.Ensure = 'Absent'
 
-                $currentAction = Invoke-M365DSCCommand -ScriptBlock { Get-SCComplianceSearchActionCurrentAction -SearchName $this.SearchName -Action $this.Action `
-                    -ErrorAction Stop } -SuppressNotFoundError
+                $currentAction = Invoke-M365DSCCommand -ScriptBlock { $this.GetCurrentAction($this.SearchName, $this.Action) } -SuppressNotFoundError
 
                 if ($null -eq $currentAction)
                 {
@@ -325,7 +324,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
         }
         elseif ($this.Ensure -eq 'Absent' -and $CurrentAction.Ensure -eq 'Present')
         {
-            $currentAction = Get-SCComplianceSearchActionCurrentAction -Action $this.Action -SearchName $this.SearchName
+            $currentAction = $this.GetCurrentAction($this.SearchName, $this.Action)
 
             # If the Rule exists and it shouldn't, simply remove it;
             Remove-ComplianceSearchAction -Identity $currentAction.Identity -Confirm:$false
@@ -452,8 +451,6 @@ class SCComplianceSearchAction : M365DSCResourceBase
         }
     }
 
-    # Returns [System.Object] rather than [System.String]: the body also yields $true / $false / $null,
-    # and callers feed the result into nullable-boolean properties.
     hidden [System.Object] GetResultProperty([System.String] $ResultString, [System.String] $PropertyName)
     {
         $start = $ResultString.IndexOf($PropertyName) + $PropertyName.Length + 2
@@ -485,7 +482,57 @@ class SCComplianceSearchAction : M365DSCResourceBase
         return $result
     }
 
-    # Materialises a Get() result. The script-based body built a hashtable; DSC needs the type.
+    hidden [System.Object] GetCurrentAction([System.String] $SearchName, [System.String] $Action)
+    {
+        # For the sake of retrieving the current action, search by Action = Export;
+        $scenario = $null
+        $effectiveAction = $Action
+        if ('Retention' -eq $Action)
+        {
+            $effectiveAction = 'Export'
+            $scenario = 'RetentionReports'
+        }
+        elseif ('Export' -eq $Action)
+        {
+            $scenario = 'GenerateReports'
+        }
+
+        # Get the case associated with the Search Instance if any;
+        $cases = Get-ComplianceCase
+        $currentAction = $null
+
+        foreach ($case in $cases)
+        {
+            $searches = Get-ComplianceSearch -Case $case.Name | Where-Object -FilterScript { $_.Name -eq $SearchName }
+
+            if ($null -ne $searches)
+            {
+                $currentAction = Get-ComplianceSearchAction -Case $case.Name
+                break
+            }
+        }
+
+        if ($null -eq $currentAction)
+        {
+            $currentAction = Get-ComplianceSearchAction | Where-Object -FilterScript { $_.SearchName -eq $SearchName -and $_.Action -eq $effectiveAction }
+        }
+
+        if ('Purge' -ne $effectiveAction -and $null -ne $currentAction -and -not [System.String]::IsNullOrEmpty($scenario))
+        {
+            $currentAction = $currentAction | Where-Object -FilterScript { $_.Results -like "*Scenario: $($scenario)*" }
+        }
+        elseif ('Purge' -eq $effectiveAction)
+        {
+            $currentAction = $currentAction | Where-Object -FilterScript { $_.Action -eq 'Purge' }
+        }
+        elseif ('Preview' -eq $effectiveAction)
+        {
+            $currentAction = $currentAction | Where-Object -FilterScript { $_.Action -eq 'Preview' }
+        }
+
+        return $currentAction
+    }
+
     hidden [SCComplianceSearchAction] AsResult([System.Object] $Values)
     {
         if ($Values -is [SCComplianceSearchAction])
@@ -501,63 +548,4 @@ class SCComplianceSearchAction : M365DSCResourceBase
 
         return $result
     }
-}
-
-function Get-SCComplianceSearchActionCurrentAction
-{
-    [CmdletBinding()]
-    [OutputType([System.Management.Automation.PSObject])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SearchName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Action
-    )
-    # For the sake of retrieving the current action, search by Action = Export;
-    if ('Retention' -eq $Action)
-    {
-        $Action = 'Export'
-        $Scenario = 'RetentionReports'
-    }
-    elseif ('Export' -eq $Action)
-    {
-        $Scenario = 'GenerateReports'
-    }
-    # Get the case associated with the Search Instance if any;
-    $Cases = Get-ComplianceCase
-
-    foreach ($Case in $Cases)
-    {
-        $searches = Get-ComplianceSearch -Case $Case.Name | Where-Object { $_.Name -eq $SearchName }
-
-        if ($null -ne $searches)
-        {
-            $currentAction = Get-ComplianceSearchAction -Case $Case.Name
-            break
-        }
-    }
-
-    if ($null -eq $currentAction)
-    {
-        $currentAction = Get-ComplianceSearchAction | Where-Object { $_.SearchName -eq $SearchName -and $_.Action -eq $Action }
-    }
-
-    if ('Purge' -ne $Action -and $null -ne $currentAction -and -not [System.String]::IsNullOrEmpty($Scenario))
-    {
-        $currentAction = $currentAction | Where-Object { $_.Results -like "*Scenario: $($Scenario)*" }
-    }
-    elseif ('Purge' -eq $Action)
-    {
-        $currentAction = $currentAction | Where-Object { $_.Action -eq 'Purge' }
-    }
-    elseif ('Preview' -eq $Action)
-    {
-        $currentAction = $currentAction | Where-Object { $_.Action -eq 'Preview' }
-    }
-
-    return $currentAction
 }

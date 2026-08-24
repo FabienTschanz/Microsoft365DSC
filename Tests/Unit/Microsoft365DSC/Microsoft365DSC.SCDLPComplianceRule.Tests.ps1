@@ -438,15 +438,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     return $null
                 }
 
-                Mock -CommandName Test-M365DSCParameterState -MockWith {
-                    param($CurrentValues, $Source, $DesiredValues, $ValuesToCheck)
+                Mock -CommandName Compare-M365DSCResourceState -ModuleName M365DSCUtil -MockWith {
+                    param($ResourceName, $DesiredValues, $CurrentValues, $ExcludedProperties, $IncludedProperties, $PostProcessing, $PostProcessingArgs)
                     $Script:AdvancedRulePassedToTest = $DesiredValues.AdvancedRule
                     return $false
                 }
             }
 
             It 'Should not normalize AdvancedRules for missing rules' {
-                Test-TargetResource @testParams | Should -Be $false
+                (New-M365DSCResourceInstance -ResourceName 'SCDLPComplianceRule' -Property $testParams).Test() | Should -Be $false
                 $Script:AdvancedRulePassedToTest | Should -Be ($desiredAdvancedRule | ConvertTo-Json -Compress)
             }
         }
