@@ -160,7 +160,11 @@ class IntuneDeviceEnrollmentLimitRestriction : M365DSCResourceBase
                 AccessTokens          = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment -DeviceEnrollmentConfigurationId $config.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $config
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment -DeviceEnrollmentConfigurationId $config.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -298,9 +302,9 @@ class IntuneDeviceEnrollmentLimitRestriction : M365DSCResourceBase
 
         try
         {
-            [array]$configs = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Filter $this.Filter -All -ErrorAction Stop | Where-Object {
-                $_.'@odata.type' -eq "#microsoft.graph.deviceEnrollmentLimitConfiguration"
-            }
+            [array]$configs = Get-M365DSCExportCachedCollection -Collection 'deviceEnrollmentConfigurations' `
+                -ODataType 'microsoft.graph.deviceEnrollmentLimitConfiguration' `
+                -Filter $this.Filter
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             if ($configs.Length -eq 0)

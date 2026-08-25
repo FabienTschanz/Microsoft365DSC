@@ -542,12 +542,420 @@ function Get-M365DSCExportCachedConfigurationPolicies
     {
         return Get-MgBetaDeviceManagementConfigurationPolicy -All `
             -Filter $Filter `
+            -ExpandProperty 'assignments' `
             -ErrorAction Stop
     }
 
     return Get-MgBetaDeviceManagementConfigurationPolicy -All `
         -Filter "templateReference/TemplateId eq '$TemplateId'" `
+        -ExpandProperty 'assignments' `
         -ErrorAction Stop
+}
+
+<#
+.SYNOPSIS
+    Maps each export collection cache key to the resources that consume it.
+
+.DESCRIPTION
+    Returns the resource names whose Export() lists a collection through Get-M365DSCExportCachedCollection,
+    keyed by collection. Used to register and release cache consumers during an export.
+
+.OUTPUTS
+    System.Collections.Hashtable
+#>
+function Get-M365DSCExportCollectionConsumerMap
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param ()
+
+    return @{
+        deviceConfigurations           = @(
+            'IntuneDeviceConfigurationCustomPolicyWindows10',
+            'IntuneDeviceConfigurationCustomPolicyiOS',
+            'IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10',
+            'IntuneDeviceConfigurationDomainJoinPolicyWindows10',
+            'IntuneDeviceConfigurationEmailProfilePolicyWindows10',
+            'IntuneDeviceConfigurationEndpointProtectionPolicyWindows10',
+            'IntuneDeviceConfigurationFirmwareInterfacePolicyWindows10',
+            'IntuneDeviceConfigurationHealthMonitoringPolicyWindows10',
+            'IntuneDeviceConfigurationIdentityProtectionPolicyWindows10',
+            'IntuneDeviceConfigurationImportedPfxCertificatePolicyWindows10',
+            'IntuneDeviceConfigurationKioskPolicyWindows10',
+            'IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10',
+            'IntuneDeviceConfigurationPkcsCertificatePolicyWindows10',
+            'IntuneDeviceConfigurationPolicyAndroidDeviceOwner',
+            'IntuneDeviceConfigurationPolicyAndroidOpenSourceProject',
+            'IntuneDeviceConfigurationPolicyAndroidWorkProfile',
+            'IntuneDeviceConfigurationPolicyMacOS',
+            'IntuneDeviceConfigurationPolicyWindows10',
+            'IntuneDeviceConfigurationPolicyiOS',
+            'IntuneDeviceConfigurationSCEPCertificatePolicyWindows10',
+            'IntuneDeviceConfigurationSecureAssessmentPolicyWindows10',
+            'IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10',
+            'IntuneDeviceConfigurationTrustedCertificatePolicyWindows10',
+            'IntuneDeviceConfigurationVpnPolicyWindows10',
+            'IntuneDeviceConfigurationWindowsTeamPolicyWindows10',
+            'IntuneDeviceConfigurationWiredNetworkPolicyWindows10',
+            'IntuneDeviceFeaturesConfigurationPolicyIOS',
+            'IntuneTrustedRootCertificateAndroidDeviceOwner',
+            'IntuneTrustedRootCertificateAndroidWork',
+            'IntuneTrustedRootCertificateIOS',
+            'IntuneVPNConfigurationPolicyAndroidDeviceOwner',
+            'IntuneVPNConfigurationPolicyAndroidWork',
+            'IntuneVPNConfigurationPolicyIOS',
+            'IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner',
+            'IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile',
+            'IntuneWifiConfigurationPolicyAndroidForWork',
+            'IntuneWifiConfigurationPolicyAndroidOpenSourceProject',
+            'IntuneWifiConfigurationPolicyIOS',
+            'IntuneWifiConfigurationPolicyMacOS',
+            'IntuneWifiConfigurationPolicyWindows10',
+            'IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10'
+        )
+        deviceCompliancePolicies       = @(
+            'IntuneDeviceCompliancePolicyAndroidDeviceOwner',
+            'IntuneDeviceCompliancePolicyAndroidWorkProfile',
+            'IntuneDeviceCompliancePolicyMacOS',
+            'IntuneDeviceCompliancePolicyWindows10',
+            'IntuneDeviceCompliancePolicyiOs'
+        )
+        deviceEnrollmentConfigurations = @(
+            'IntuneDeviceEnrollmentLimitRestriction',
+            'IntuneDeviceEnrollmentPlatformRestriction',
+            'IntuneDeviceEnrollmentStatusPageWindows10',
+            'IntuneWindowsBackupForOrganizationConfiguration',
+            'IntuneWindowsHelloForBusinessGlobalPolicy'
+        )
+    }
+}
+
+<#
+.SYNOPSIS
+    Clears and enables the export collection cache for a new export session.
+
+.DESCRIPTION
+    Resets the process-wide export collection cache and enables it so that resources exported in this
+    session share one download per Graph collection.
+#>
+function Initialize-M365DSCExportCollectionCache
+{
+    [CmdletBinding()]
+    param ()
+
+    [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+    [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
+}
+
+<#
+.SYNOPSIS
+    Clears and disables the export collection cache.
+
+.DESCRIPTION
+    Releases every cached collection and disables the cache so that resources use live Graph requests.
+#>
+function Reset-M365DSCExportCollectionCache
+{
+    [CmdletBinding()]
+    param ()
+
+    if ($null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
+    {
+        [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+    }
+}
+
+<#
+.SYNOPSIS
+    Registers how many exported resources consume each cached collection.
+
+.DESCRIPTION
+    Counts the resources in the export selection per collection key and registers those counts with
+    the export collection cache so that a collection is released after its last consumer.
+
+.PARAMETER ResourceNames
+    Specifies the names of the resources selected for the export.
+#>
+function Register-M365DSCExportCollectionConsumers
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.String[]]
+        $ResourceNames
+    )
+
+    $map = Get-M365DSCExportCollectionConsumerMap
+    foreach ($key in $map.Keys)
+    {
+        $count = @($map[$key] | Where-Object -FilterScript { $ResourceNames -contains $_ }).Count
+        if ($count -gt 0)
+        {
+            [Microsoft365DSC.Intune.ExportCollectionCache]::RegisterConsumers($key, $count)
+        }
+    }
+}
+
+<#
+.SYNOPSIS
+    Releases the cached collections consumed by a resource once its export has completed.
+
+.DESCRIPTION
+    Decrements the consumer count of every collection the resource consumes. The cache frees a
+    collection when its count reaches zero.
+
+.PARAMETER ResourceName
+    Specifies the name of the resource whose export has completed.
+#>
+function Complete-M365DSCExportCollectionConsumer
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ResourceName
+    )
+
+    if ($null -eq ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
+    {
+        return
+    }
+
+    $map = Get-M365DSCExportCollectionConsumerMap
+    foreach ($key in $map.Keys)
+    {
+        if ($map[$key] -contains $ResourceName)
+        {
+            $null = [Microsoft365DSC.Intune.ExportCollectionCache]::Release($key)
+        }
+    }
+}
+
+<#
+.SYNOPSIS
+    Returns the items of an Intune collection, served from the export collection cache when possible.
+
+.DESCRIPTION
+    Lists a Graph collection once per export and filters the cached items client-side on '@odata.type'.
+    Performs the resource's live filtered request when the cache is disabled or when a user filter is
+    supplied.
+
+.PARAMETER Collection
+    Specifies the Graph collection to list.
+
+.PARAMETER ODataType
+    Specifies the OData types to return, written like the isof() argument (for example
+    'microsoft.graph.windowsKioskConfiguration'). Returns every type when omitted.
+
+.PARAMETER ExcludeODataType
+    Specifies the OData types to exclude from the result.
+
+.PARAMETER Filter
+    Specifies the user-supplied OData filter. A non-empty filter bypasses the cache.
+
+.OUTPUTS
+    System.Object[]
+#>
+function Get-M365DSCExportCachedCollection
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('deviceConfigurations', 'deviceCompliancePolicies', 'deviceEnrollmentConfigurations')]
+        [System.String]
+        $Collection,
+
+        [Parameter()]
+        [System.String[]]
+        $ODataType = @(),
+
+        [Parameter()]
+        [System.String[]]
+        $ExcludeODataType = @(),
+
+        [Parameter()]
+        [System.String]
+        $Filter
+    )
+
+    $descriptors = @{
+        deviceConfigurations           = @{ Expand = @('assignments'); ServerSideTypeFilter = $true }
+        deviceCompliancePolicies       = @{ Expand = @('scheduledActionsForRule($expand=scheduledActionConfigurations)', 'assignments'); ServerSideTypeFilter = $true }
+        deviceEnrollmentConfigurations = @{ Expand = @('assignments'); ServerSideTypeFilter = $false }
+    }
+    $descriptor = $descriptors[$Collection]
+
+    $cacheAvailable = $null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]) -and
+        [Microsoft365DSC.Intune.ExportCollectionCache]::IsEnabled
+
+    if ($cacheAvailable -and [System.String]::IsNullOrEmpty($Filter))
+    {
+        $cached = [Microsoft365DSC.Intune.ExportCollectionCache]::GetByODataType($Collection, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+        if ($null -ne $cached)
+        {
+            return , [System.Object[]]$cached
+        }
+
+        $all = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand
+        $null = [Microsoft365DSC.Intune.ExportCollectionCache]::TrySet($Collection, [System.Object[]]$all)
+        return , [System.Object[]][Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$all, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+    }
+
+    $typeFilter = ''
+    if ($descriptor.ServerSideTypeFilter -and $ODataType.Count -gt 0)
+    {
+        $typeFilter = ($ODataType | ForEach-Object -Process { "isof('$_')" }) -join ' or '
+        if ($ODataType.Count -gt 1)
+        {
+            $typeFilter = "($typeFilter)"
+        }
+        foreach ($excluded in $ExcludeODataType)
+        {
+            $typeFilter += " and not isof('$excluded')"
+        }
+    }
+
+    $mergedFilter = $typeFilter
+    if (-not [System.String]::IsNullOrEmpty($Filter))
+    {
+        $mergedFilter = if ([System.String]::IsNullOrEmpty($typeFilter)) { $Filter } else { "($typeFilter) and ($Filter)" }
+    }
+
+    $items = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand -Filter $mergedFilter
+    if (-not $descriptor.ServerSideTypeFilter -and $null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
+    {
+        $items = [Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$items, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+    }
+    elseif (-not $descriptor.ServerSideTypeFilter -and $ODataType.Count -gt 0)
+    {
+        $wanted = @($ODataType | ForEach-Object -Process { $_.TrimStart('#') })
+        $items = @($items | Where-Object -FilterScript { $wanted -contains ([System.String]$_.'@odata.type').TrimStart('#') })
+    }
+
+    return , [System.Object[]]$items
+}
+
+<#
+.SYNOPSIS
+    Lists a Graph collection with the given expand and filter.
+
+.DESCRIPTION
+    Calls the collection's Get cmdlet with -All and returns the items as an array without null entries.
+
+.PARAMETER Collection
+    Specifies the Graph collection to list.
+
+.PARAMETER ExpandProperty
+    Specifies the navigation properties to expand.
+
+.PARAMETER Filter
+    Specifies the OData filter to apply.
+
+.OUTPUTS
+    System.Object[]
+#>
+function Invoke-M365DSCExportCollectionList
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Collection,
+
+        [Parameter()]
+        [System.String[]]
+        $ExpandProperty,
+
+        [Parameter()]
+        [System.String]
+        $Filter
+    )
+
+    $params = @{ All = $true; ErrorAction = 'Stop' }
+    if ($ExpandProperty.Count -gt 0)
+    {
+        $params.ExpandProperty = $ExpandProperty
+    }
+    if (-not [System.String]::IsNullOrEmpty($Filter))
+    {
+        $params.Filter = $Filter
+    }
+
+    $result = switch ($Collection)
+    {
+        'deviceConfigurations' { Get-MgBetaDeviceManagementDeviceConfiguration @params }
+        'deviceCompliancePolicies' { Get-MgBetaDeviceManagementDeviceCompliancePolicy @params }
+        'deviceEnrollmentConfigurations' { Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration @params }
+    }
+
+    $items = [System.Collections.Generic.List[System.Object]]::new()
+    foreach ($item in $result)
+    {
+        if ($null -ne $item)
+        {
+            $items.Add($item)
+        }
+    }
+
+    return , $items.ToArray()
+}
+
+<#
+.SYNOPSIS
+    Returns the assignments expanded on a Graph item, or $null when they must be fetched.
+
+.DESCRIPTION
+    Reads the 'assignments' navigation property of an item returned with $expand=assignments. Returns
+    $null when the item carries no expanded assignments or when Graph truncated them.
+
+.PARAMETER Instance
+    Specifies the Graph item, as a hashtable or object.
+
+.OUTPUTS
+    System.Object[]
+#>
+function Get-M365DSCIntuneExpandedAssignments
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
+        [System.Object]
+        $Instance
+    )
+
+    if ($null -eq $Instance)
+    {
+        return $null
+    }
+
+    if ($Instance -is [System.Collections.IDictionary])
+    {
+        if ($Instance.Contains('assignments@odata.nextLink') -or -not $Instance.Contains('assignments'))
+        {
+            return $null
+        }
+
+        return , [System.Object[]]@($Instance['assignments'] | Where-Object -FilterScript { $null -ne $_ })
+    }
+
+    $properties = $Instance.PSObject.Properties
+    if ($null -ne $properties['assignments@odata.nextLink'])
+    {
+        return $null
+    }
+
+    $property = $properties['assignments']
+    if ($null -eq $property)
+    {
+        return $null
+    }
+
+    return , [System.Object[]]@($property.Value | Where-Object -FilterScript { $null -ne $_ })
 }
 
 <#
@@ -1751,6 +2159,7 @@ function Wait-ForFileProcessing
 
 Export-ModuleMember -Function @(
     'Compare-M365DSCIntunePolicyAssignment',
+    'Complete-M365DSCExportCollectionConsumer',
     'ConvertFrom-IntuneMobileAppAssignment',
     'ConvertFrom-IntunePolicyAssignment',
     'ConvertTo-IntuneMobileAppAssignment',
@@ -1759,11 +2168,17 @@ Export-ModuleMember -Function @(
     'Find-GraphDataUsingComplexFunctions',
     'Get-ComplexFunctionsFromFilterQuery',
     'Get-IntuneSettingCatalogPolicySetting',
+    'Get-M365DSCExportCachedCollection',
     'Get-M365DSCExportCachedConfigurationPolicies',
+    'Get-M365DSCExportCollectionConsumerMap',
     'Get-M365DSCIntuneDeviceConfigurationSettings',
+    'Get-M365DSCIntuneExpandedAssignments',
     'Get-OmaSettingPlainTextValue',
+    'Initialize-M365DSCExportCollectionCache',
     'Invoke-M365DSCIntuneMobileAppInitialUpload',
+    'Register-M365DSCExportCollectionConsumers',
     'Remove-ComplexFunctionsFromFilterQuery',
+    'Reset-M365DSCExportCollectionCache',
     'Update-DeviceAppManagementAppCategory',
     'Update-DeviceAppManagementPolicyAssignment',
     'Update-DeviceConfigurationPolicyAssignment',

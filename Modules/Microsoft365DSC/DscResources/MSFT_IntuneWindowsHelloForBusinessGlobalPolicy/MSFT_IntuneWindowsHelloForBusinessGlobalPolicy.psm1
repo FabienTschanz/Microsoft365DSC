@@ -113,8 +113,6 @@ class IntuneWindowsHelloForBusinessGlobalPolicy : M365DSCResourceBase
 
     [IntuneWindowsHelloForBusinessGlobalPolicy] Get()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
-        $DisplayName = $null
         if ($this.RequiresPowerShellCore())
         {
             $remote = [IntuneWindowsHelloForBusinessGlobalPolicy]::new()
@@ -126,7 +124,7 @@ class IntuneWindowsHelloForBusinessGlobalPolicy : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $DisplayName)
+            if (-not $this.ExportedInstance)
             {
                 $null = $this.Connect('MicrosoftGraph')
 
@@ -285,9 +283,9 @@ class IntuneWindowsHelloForBusinessGlobalPolicy : M365DSCResourceBase
         try
         {
             #region resource generator code
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Filter $this.Filter -All -ErrorAction Stop | Where-Object {
-                $_.'@odata.type' -eq '#microsoft.graph.deviceEnrollmentWindowsHelloForBusinessConfiguration'
-            }
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceEnrollmentConfigurations' `
+                -ODataType 'microsoft.graph.deviceEnrollmentWindowsHelloForBusinessConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

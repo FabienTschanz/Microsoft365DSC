@@ -103,7 +103,8 @@ class IntuneDiagnosticSettings : M365DSCResourceBase
                 $nullResult.Ensure = 'Absent'
 
                 $response = Invoke-AzRestMethod -Uri "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/microsoft.intune/diagnosticsettings?api-version=2017-04-01-preview" `
-                    -Method Get
+                    -Method Get `
+                    -ErrorAction Stop
                 $instances = (ConvertFrom-Json $response.Content).value
                 $instance = $instances | Where-Object -FilterScript { $_.name -eq $this.Name }
             }
@@ -258,7 +259,8 @@ class IntuneDiagnosticSettings : M365DSCResourceBase
         try
         {
             $response = Invoke-AzRestMethod -Uri "$((Get-MSCloudLoginConnectionProfile -Workload Azure).ManagementUrl)providers/microsoft.intune/diagnosticsettings?api-version=2017-04-01-preview" `
-                -Method Get
+                -Method Get `
+                -ErrorAction Stop
             [array] $exportedInstances = (ConvertFrom-Json $response.Content).value
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

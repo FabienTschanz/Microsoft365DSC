@@ -41,6 +41,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {
             }
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceConfiguration
+            }
             Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
                 return @{
                     destinationStore = "computerCertStoreRoot"

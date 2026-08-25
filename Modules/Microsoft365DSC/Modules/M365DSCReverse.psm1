@@ -753,6 +753,7 @@ function Start-M365DSCConfigurationExtract
             }
         }
         $resourcesToProcess = $resourcesToProcess | Sort-Object $_.Name
+        Register-M365DSCExportCollectionConsumers -ResourceNames @($resourcesToProcess | ForEach-Object -Process { $_.Name })
 
         # If the tenant id is not a GUID, retrieve it based on the organization name
         # Only implemented for public cloud tenants
@@ -902,6 +903,10 @@ function Start-M365DSCConfigurationExtract
                         throw $_
                     }
                 }
+                finally
+                {
+                    Complete-M365DSCExportCollectionConsumer -ResourceName $resourceName
+                }
             }
         }
 
@@ -918,7 +923,12 @@ function Start-M365DSCConfigurationExtract
                 ManagedIdentity = $ManagedIdentity
                 AccessTokens = $AccessTokens
             }
-            $allRequestedConfigurationPolicies = Get-M365DSCArrayFromProperty -PropertyValue (Get-MgBetaDeviceManagementConfigurationPolicy -All | Where-Object { $_.templateReference.templateId -in $requestedConfigurationPolicyTemplateIds })
+            $allRequestedConfigurationPolicies = Get-M365DSCArrayFromProperty -PropertyValue (Get-MgBetaDeviceManagementConfigurationPolicy -All `
+                -Filter "templateReference/templateFamily ne 'none'" -Property creationSource, description, templateReference, name, technologies, id, roleScopeTagIds, platforms `
+                -ExpandProperty 'assignments' | Where-Object {
+                    $_.templateReference.templateId -in $requestedConfigurationPolicyTemplateIds
+                }
+            )
             $batchRequests = @()
             foreach ($policy in $allRequestedConfigurationPolicies)
             {

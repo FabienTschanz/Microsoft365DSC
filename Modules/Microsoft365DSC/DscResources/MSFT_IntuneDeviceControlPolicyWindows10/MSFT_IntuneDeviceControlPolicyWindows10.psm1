@@ -382,7 +382,11 @@ class IntuneDeviceControlPolicyWindows10 : M365DSCResourceBase
             $results += $policySettings
 
             Write-Verbose -Message 'Getting Assignments'
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            }
             $assignmentResult = @()
 
             Write-Verbose -Message 'Converting Asignments'

@@ -243,7 +243,11 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
                 IosSingleSignOnExtension = $complexIosSingleSignonExtension
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $Results.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $Results.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -461,13 +465,9 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
         try
         {
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.iosDeviceFeaturesConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.iosDeviceFeaturesConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

@@ -70,19 +70,35 @@ function New-M365DSCAdditionalMockBlock
         $ResourceModel
     )
 
-    if (-not $ResourceModel.HasAssignments)
+    $cachedCollectionCmdlets = @(
+        'Get-MgBetaDeviceManagementDeviceConfiguration',
+        'Get-MgBetaDeviceManagementDeviceCompliancePolicy',
+        'Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration'
+    )
+    $usesCachedCollection = $ResourceModel.IsAdditionalProperty -and $cachedCollectionCmdlets -contains $ResourceModel.Cmdlets.GetCmdlet
+    if (-not $ResourceModel.HasAssignments -and -not $usesCachedCollection)
     {
         return ''
     }
 
     $indent = ' ' * 12
     $builder = [System.Text.StringBuilder]::new()
-    $null = $builder.AppendLine('')
-    $null = $builder.AppendLine("${indent}Mock -CommandName $($ResourceModel.Cmdlets.AssignmentCmdlet) -MockWith {")
-    $null = $builder.AppendLine("$indent}")
-    $null = $builder.AppendLine('')
-    $null = $builder.AppendLine("${indent}Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {")
-    $null = $builder.Append("$indent}")
+    if ($usesCachedCollection)
+    {
+        $null = $builder.AppendLine('')
+        $null = $builder.AppendLine("${indent}Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {")
+        $null = $builder.AppendLine("$indent    return $($ResourceModel.Cmdlets.GetCmdlet)")
+        $null = $builder.Append("$indent}")
+    }
+    if ($ResourceModel.HasAssignments)
+    {
+        $null = $builder.AppendLine('')
+        $null = $builder.AppendLine("${indent}Mock -CommandName $($ResourceModel.Cmdlets.AssignmentCmdlet) -MockWith {")
+        $null = $builder.AppendLine("$indent}")
+        $null = $builder.AppendLine('')
+        $null = $builder.AppendLine("${indent}Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {")
+        $null = $builder.Append("$indent}")
+    }
 
     return $builder.ToString()
 }

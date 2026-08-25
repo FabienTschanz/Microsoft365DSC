@@ -40,6 +40,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return "Credentials"
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceConfiguration
+            }
             Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
                 return @{
                     kioskBrowserBlockedURLs = @("FakeStringValue")

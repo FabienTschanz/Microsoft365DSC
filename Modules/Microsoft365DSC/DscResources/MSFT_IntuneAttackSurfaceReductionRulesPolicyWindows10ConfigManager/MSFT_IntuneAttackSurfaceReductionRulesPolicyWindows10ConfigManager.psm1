@@ -251,7 +251,11 @@ class IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager : M365DSCRes
             $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `

@@ -30,7 +30,11 @@ function New-M365DSCAssignmentsGetBlock
     $builder = [System.Text.StringBuilder]::new()
 
     $null = $builder.AppendLine('')
-    $null = $builder.AppendLine("$indent`$assignmentsValues = $($cmdlets.AssignmentCmdlet) -$($cmdlets.AssignmentKeyParameter) `$getValue.Id -ErrorAction SilentlyContinue")
+    $null = $builder.AppendLine("$indent`$assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance `$getValue")
+    $null = $builder.AppendLine("${indent}if (`$null -eq `$assignmentsValues)")
+    $null = $builder.AppendLine("$indent{")
+    $null = $builder.AppendLine("$indent    `$assignmentsValues = $($cmdlets.AssignmentCmdlet) -$($cmdlets.AssignmentKeyParameter) `$getValue.Id -ErrorAction SilentlyContinue")
+    $null = $builder.AppendLine("$indent}")
     $null = $builder.AppendLine("$indent`$assignmentResult = @()")
     $null = $builder.AppendLine("${indent}if (`$null -ne `$assignmentsValues -and `$assignmentsValues.Count -gt 0)")
     $null = $builder.AppendLine("$indent{")

@@ -165,6 +165,8 @@
     FIXES [#7414](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7414)
   * Updated `ReverseDSC` to version 2.0.0.38.
 * MISC
+  * Intune export: device configurations, compliance policies and enrollment
+    configurations are downloaded once per export and shared across resources.
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.
   * Added `Utilities/Measure-M365DSCExampleCoverage.ps1`, which reports how much of each

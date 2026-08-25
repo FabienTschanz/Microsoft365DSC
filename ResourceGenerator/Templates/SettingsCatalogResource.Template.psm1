@@ -101,7 +101,11 @@ class <ResourceName> : M365DSCResourceBase
             }
             $result += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId -ErrorAction SilentlyContinue
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId -ErrorAction SilentlyContinue
+            }
             $assignmentResult = @()
             if ($null -ne $assignmentsValues -and $assignmentsValues.Count -gt 0)
             {

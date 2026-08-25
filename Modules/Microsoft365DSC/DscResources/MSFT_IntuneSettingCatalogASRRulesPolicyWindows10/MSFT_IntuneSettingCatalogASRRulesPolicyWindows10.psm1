@@ -343,7 +343,11 @@ class IntuneSettingCatalogASRRulesPolicyWindows10 : M365DSCResourceBase
 
             $returnHashtable = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $returnHashtable
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

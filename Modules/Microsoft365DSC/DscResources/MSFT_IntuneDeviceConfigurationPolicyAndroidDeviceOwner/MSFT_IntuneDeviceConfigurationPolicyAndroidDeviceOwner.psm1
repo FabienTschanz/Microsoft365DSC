@@ -990,7 +990,11 @@ class IntuneDeviceConfigurationPolicyAndroidDeviceOwner : M365DSCResourceBase
                 AccessTokens                                             = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $getValue.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $getValue.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -1152,13 +1156,9 @@ class IntuneDeviceConfigurationPolicyAndroidDeviceOwner : M365DSCResourceBase
         {
 
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.androidDeviceOwnerGeneralDeviceConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.androidDeviceOwnerGeneralDeviceConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

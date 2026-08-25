@@ -559,7 +559,11 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
             $returnHashtable += $policySettings
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `
@@ -744,6 +748,7 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
             [array]$policies = Get-MgBetaDeviceManagementConfigurationPolicy `
                 -Filter $mergedFilter `
                 -All `
+                -ExpandProperty 'assignments' `
                 -ErrorAction Stop
 
             if ($policies.Length -eq 0)

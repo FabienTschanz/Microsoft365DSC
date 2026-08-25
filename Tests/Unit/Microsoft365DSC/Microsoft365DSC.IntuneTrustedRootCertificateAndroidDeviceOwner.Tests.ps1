@@ -64,6 +64,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential                                  = $Credential
                 }
 
+                Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                    return Get-MgBetaDeviceManagementDeviceConfiguration
+                }
                 Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
                     return $null
                 }

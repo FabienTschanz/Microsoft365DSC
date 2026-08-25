@@ -42,6 +42,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration
+            }
             Mock -CommandName Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {
                 return @{
                     '@odata.type'       = '#microsoft.graph.deviceEnrollmentPlatformRestrictionConfiguration'

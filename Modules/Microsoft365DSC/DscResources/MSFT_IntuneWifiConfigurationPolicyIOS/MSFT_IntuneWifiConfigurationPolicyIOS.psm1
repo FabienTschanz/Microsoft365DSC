@@ -203,7 +203,11 @@ class IntuneWifiConfigurationPolicyIOS : M365DSCResourceBase
                 AccessTokens                   = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -341,13 +345,10 @@ class IntuneWifiConfigurationPolicyIOS : M365DSCResourceBase
         {
 
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.iosWiFiConfiguration') and not isof('microsoft.graph.iosEnterpriseWiFiConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.iosWiFiConfiguration' `
+                -ExcludeODataType 'microsoft.graph.iosEnterpriseWiFiConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

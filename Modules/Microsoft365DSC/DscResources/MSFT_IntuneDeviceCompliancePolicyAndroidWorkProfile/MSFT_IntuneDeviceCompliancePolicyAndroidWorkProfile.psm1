@@ -348,7 +348,11 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
             }
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -DeviceCompliancePolicyId $devicePolicy.Id
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $devicePolicy
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -DeviceCompliancePolicyId $devicePolicy.Id
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 [array]$graphAssignments = $graphAssignments | Where-Object -FilterScript { $_.source -eq 'direct' }
@@ -507,17 +511,15 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
 
         try
         {
-            $baseFilter = "isof('microsoft.graph.androidWorkProfileCompliancePolicy')"
-            $mergedFilter = $baseFilter
+            $strippedFilter = $null
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
                 $strippedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $mergedFilter = "($baseFilter) and ($strippedFilter)"
             }
-            [array]$configDeviceAndroidPolicies = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
-                -ExpandProperty 'scheduledActionsForRule($expand=scheduledActionConfigurations)' `
-                -ErrorAction Stop -All -Filter $mergedFilter
+            [array]$configDeviceAndroidPolicies = Get-M365DSCExportCachedCollection -Collection 'deviceCompliancePolicies' `
+                -ODataType 'microsoft.graph.androidWorkProfileCompliancePolicy' `
+                -Filter $strippedFilter
             $configDeviceAndroidPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configDeviceAndroidPolicies
 
             $i = 1

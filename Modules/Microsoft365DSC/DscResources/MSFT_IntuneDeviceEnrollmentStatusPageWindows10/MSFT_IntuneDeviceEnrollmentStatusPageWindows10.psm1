@@ -240,7 +240,11 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
                 #endregion
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment -DeviceEnrollmentConfigurationId $resolvedId
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment -DeviceEnrollmentConfigurationId $resolvedId
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -417,9 +421,9 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
         try
         {
             #region resource generator code
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Filter $this.Filter -All -ErrorAction Stop | Where-Object {
-                $_.'@odata.type' -eq "#microsoft.graph.windows10EnrollmentCompletionPageConfiguration"
-            }
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceEnrollmentConfigurations' `
+                -ODataType 'microsoft.graph.windows10EnrollmentCompletionPageConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

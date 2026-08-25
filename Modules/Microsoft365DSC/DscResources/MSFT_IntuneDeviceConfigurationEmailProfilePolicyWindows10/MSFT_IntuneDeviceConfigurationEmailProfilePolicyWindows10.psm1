@@ -263,7 +263,11 @@ class IntuneDeviceConfigurationEmailProfilePolicyWindows10 : M365DSCResourceBase
             }
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `
@@ -376,13 +380,9 @@ class IntuneDeviceConfigurationEmailProfilePolicyWindows10 : M365DSCResourceBase
         try
         {
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.windows10EasEmailProfileConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.windows10EasEmailProfileConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

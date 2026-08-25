@@ -145,18 +145,6 @@ function New-M365DSCConnection
         Set-M365DSCRequiredModulesLoaded -Value $true
     }
 
-    if ($Workload -eq 'MicrosoftTeams')
-    {
-        try
-        {
-            $null = Get-Command 'Connect-MicrosoftTeams' -ErrorAction Stop
-        }
-        catch
-        {
-            Import-Module 'MicrosoftTeams' -Global -Force -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking | Out-Null
-        }
-    }
-
     Write-Verbose -Message "Attempting connection to {$Workload} with:"
     Write-Verbose -Message "$($InboundParameters | Out-String)"
 

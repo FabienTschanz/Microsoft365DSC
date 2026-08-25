@@ -247,10 +247,7 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
             }
             else
             {
-                $devicePolicy = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
-                    -DeviceCompliancePolicyId $this.ExportedInstance.Id `
-                    -ExpandProperty 'scheduledActionsForRule($expand=scheduledActionConfigurations)' `
-                    -ErrorAction SilentlyContinue
+                $devicePolicy = $this.ExportedInstance
             }
 
             $complexValidOperatingSystemBuildRanges = @()
@@ -368,7 +365,11 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
             }
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -DeviceCompliancePolicyId $devicePolicy.Id
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $devicePolicy
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -DeviceCompliancePolicyId $devicePolicy.Id
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 [array]$graphAssignments = $graphAssignments | Where-Object -FilterScript { $_.source -eq 'direct' }
@@ -544,16 +545,15 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
 
         try
         {
-            $baseFilter = "isof('microsoft.graph.windows10CompliancePolicy')"
-            $mergedFilter = $baseFilter
+            $strippedFilter = $null
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
                 $strippedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $mergedFilter = "($baseFilter) and ($strippedFilter)"
             }
-            [array]$configDeviceWindowsPolicies = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
-                -ErrorAction Stop -All -Filter $mergedFilter
+            [array]$configDeviceWindowsPolicies = Get-M365DSCExportCachedCollection -Collection 'deviceCompliancePolicies' `
+                -ODataType 'microsoft.graph.windows10CompliancePolicy' `
+                -Filter $strippedFilter
             $configDeviceWindowsPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configDeviceWindowsPolicies
 
             $i = 1

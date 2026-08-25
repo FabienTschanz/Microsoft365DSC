@@ -385,9 +385,26 @@ function New-M365DSCExportGetAllBlock
     $arguments = @()
     $prelude = ''
 
+    $cachedCollections = @{
+        'Get-MgBetaDeviceManagementDeviceConfiguration'           = 'deviceConfigurations'
+        'Get-MgBetaDeviceManagementDeviceCompliancePolicy'        = 'deviceCompliancePolicies'
+        'Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration' = 'deviceEnrollmentConfigurations'
+    }
+    if ($ResourceModel.IsAdditionalProperty -and $cachedCollections.ContainsKey($cmdlets.GetCmdlet))
+    {
+        return "$indent[array] `$exportedInstances = Get-M365DSCExportCachedCollection -Collection '$($cachedCollections[$cmdlets.GetCmdlet])' ``" + "`r`n" +
+        "$indent    -ODataType 'microsoft.graph.$($ResourceModel.SelectedODataType)' ``" + "`r`n" +
+        "$indent    -Filter `$this.Filter"
+    }
+
     if ($cmdlets.SupportsAll)
     {
         $arguments += '-All'
+    }
+
+    if ($ResourceModel.HasAssignments)
+    {
+        $arguments += "-ExpandProperty 'assignments'"
     }
 
     if ($cmdlets.SupportsFilter)

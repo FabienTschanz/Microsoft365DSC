@@ -204,7 +204,11 @@ class IntuneAccountProtectionLocalUserGroupMembershipPolicy : M365DSCResourceBas
             $returnHashtable.Add('AccessTokens', $this.AccessTokens)
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $policy.Id
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $policy.Id
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 $returnAssignments += ConvertFrom-IntunePolicyAssignment `

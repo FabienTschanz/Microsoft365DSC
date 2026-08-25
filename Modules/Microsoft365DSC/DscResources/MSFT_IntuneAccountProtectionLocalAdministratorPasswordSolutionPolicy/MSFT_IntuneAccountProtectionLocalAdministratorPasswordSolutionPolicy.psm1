@@ -253,7 +253,11 @@ class IntuneAccountProtectionLocalAdministratorPasswordSolutionPolicy : M365DSCR
                 $returnHashtable.AdPasswordEncryptionEnabled = [bool]::Parse($returnHashtable.AdPasswordEncryptionEnabled)
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $policy.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $policy.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

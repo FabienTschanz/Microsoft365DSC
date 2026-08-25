@@ -219,7 +219,11 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
                 $results.Remove('WindowsMobileRestriction') | Out-Null
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment -DeviceEnrollmentConfigurationId $config.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $config
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment -DeviceEnrollmentConfigurationId $config.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -427,8 +431,9 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
 
         try
         {
-            [array]$configs = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Filter $this.Filter -All `
-                -ErrorAction Stop | Where-Object -FilterScript { $_.DeviceEnrollmentConfigurationType -like '*platformRestriction*' }
+            [array]$configs = Get-M365DSCExportCachedCollection -Collection 'deviceEnrollmentConfigurations' `
+                -ODataType @('microsoft.graph.deviceEnrollmentPlatformRestrictionsConfiguration', 'microsoft.graph.deviceEnrollmentPlatformRestrictionConfiguration') `
+                -Filter $this.Filter
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

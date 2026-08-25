@@ -56,6 +56,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return @()
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration
+            }
             Mock -CommandName Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {
                 return @{
                     Id                   = 'FakeStringValue'

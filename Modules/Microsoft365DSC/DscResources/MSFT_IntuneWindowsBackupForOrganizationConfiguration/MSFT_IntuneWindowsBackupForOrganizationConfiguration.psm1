@@ -176,11 +176,8 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
         try
         {
             #region resource generator code
-            $filter = "deviceEnrollmentConfigurationType eq 'WindowsRestore'"
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration `
-                -Filter $filter `
-                -All `
-                -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceEnrollmentConfigurations' `
+                -ODataType 'microsoft.graph.windowsRestoreDeviceEnrollmentConfiguration'
             #endregion
 
             $i = 1

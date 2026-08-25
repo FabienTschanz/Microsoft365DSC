@@ -191,7 +191,11 @@ class IntuneEndpointDetectionAndResponsePolicyWindows10 : M365DSCResourceBase
             }
             $results += $policySettings
 
-            $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementConfigurationPolicyAssignment -DeviceManagementConfigurationPolicyId $resolvedId
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {

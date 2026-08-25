@@ -360,7 +360,11 @@ class IntuneDeviceConfigurationPolicyAndroidWorkProfile : M365DSCResourceBase
                 AccessTokens                                              = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $policy.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $policy
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $policy.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -463,13 +467,9 @@ class IntuneDeviceConfigurationPolicyAndroidWorkProfile : M365DSCResourceBase
 
         try
         {
-            $baseFilter = "isof('microsoft.graph.androidWorkProfileGeneralDeviceConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$policies = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$policies = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.androidWorkProfileGeneralDeviceConfiguration' `
+                -Filter $this.Filter
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             if ($policies.Length -eq 0)

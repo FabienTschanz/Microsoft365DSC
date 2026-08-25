@@ -281,6 +281,7 @@ function Export-M365DSCConfiguration
     Initialize-M365DSCDllLoader -ErrorAction Stop
     [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
     [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
+    Initialize-M365DSCExportCollectionCache
 
     # Clear performance caches for fresh export
     $Script:M365DSCMandatoryKeyCache = @{}
@@ -431,85 +432,92 @@ function Export-M365DSCConfiguration
     }
 
     $resourceSettings = Get-M365DSCResourceSettings
-    if ($null -ne $Workloads)
+    try
     {
-        Write-M365DSCHost -Message "Exporting Microsoft 365 configuration for Workloads: $($Workloads -join ', ')"
-        Start-M365DSCConfigurationExtract -Credential $Credential `
-            -Workloads $Workloads `
-            -ExcludeComponents $ExcludeComponents `
-            -Mode $Mode `
-            -Path $Path -FileName $FileName `
-            -ConfigurationName $ConfigurationName `
-            -ApplicationId $ApplicationId `
-            -ApplicationSecret $ApplicationSecret `
-            -TenantId $TenantId `
-            -CertificateThumbprint $CertificateThumbprint `
-            -CertificatePath $CertificatePath `
-            -CertificatePassword $CertificatePassword `
-            -ManagedIdentity:$ManagedIdentity.IsPresent `
-            -AccessTokens $AccessTokens `
-            -SubscriptionId $SubscriptionId `
-            -GenerateInfo $GenerateInfo `
-            -Filters $Filters `
-            -Validate:$Validate.IsPresent `
-            -Parallel:$Parallel.IsPresent `
-            -ResourceSettings $resourceSettings `
-            -ErrorAction $ErrorActionPreference `
-            -WithStatistics:$WithStatistics.IsPresent `
-            -IncludeDependencies:$IncludeDependencies.IsPresent
+        if ($null -ne $Workloads)
+        {
+            Write-M365DSCHost -Message "Exporting Microsoft 365 configuration for Workloads: $($Workloads -join ', ')"
+            Start-M365DSCConfigurationExtract -Credential $Credential `
+                -Workloads $Workloads `
+                -ExcludeComponents $ExcludeComponents `
+                -Mode $Mode `
+                -Path $Path -FileName $FileName `
+                -ConfigurationName $ConfigurationName `
+                -ApplicationId $ApplicationId `
+                -ApplicationSecret $ApplicationSecret `
+                -TenantId $TenantId `
+                -CertificateThumbprint $CertificateThumbprint `
+                -CertificatePath $CertificatePath `
+                -CertificatePassword $CertificatePassword `
+                -ManagedIdentity:$ManagedIdentity.IsPresent `
+                -AccessTokens $AccessTokens `
+                -SubscriptionId $SubscriptionId `
+                -GenerateInfo $GenerateInfo `
+                -Filters $Filters `
+                -Validate:$Validate.IsPresent `
+                -Parallel:$Parallel.IsPresent `
+                -ResourceSettings $resourceSettings `
+                -ErrorAction $ErrorActionPreference `
+                -WithStatistics:$WithStatistics.IsPresent `
+                -IncludeDependencies:$IncludeDependencies.IsPresent
+        }
+        elseif ($null -ne $Components)
+        {
+            Write-M365DSCHost -Message "Exporting Microsoft 365 configuration for Components: $($Components -join ', ')"
+            Start-M365DSCConfigurationExtract -Credential $Credential `
+                -Components $Components `
+                -ExcludeComponents $ExcludeComponents `
+                -Path $Path -FileName $FileName `
+                -ConfigurationName $ConfigurationName `
+                -ApplicationId $ApplicationId `
+                -ApplicationSecret $ApplicationSecret `
+                -TenantId $TenantId `
+                -CertificateThumbprint $CertificateThumbprint `
+                -CertificatePath $CertificatePath `
+                -CertificatePassword $CertificatePassword `
+                -ManagedIdentity:$ManagedIdentity.IsPresent `
+                -AccessTokens $AccessTokens `
+                -SubscriptionId $SubscriptionId `
+                -GenerateInfo $GenerateInfo `
+                -Filters $Filters `
+                -Validate:$Validate.IsPresent `
+                -Parallel:$Parallel.IsPresent `
+                -ResourceSettings $resourceSettings `
+                -ErrorAction $ErrorActionPreference `
+                -WithStatistics:$WithStatistics.IsPresent `
+                -IncludeDependencies:$IncludeDependencies.IsPresent
+        }
+        elseif ($null -ne $Mode)
+        {
+            Write-M365DSCHost -Message "Exporting Microsoft 365 configuration for Mode: $Mode"
+            Start-M365DSCConfigurationExtract -Credential $Credential `
+                -Mode $Mode `
+                -ExcludeComponents $ExcludeComponents `
+                -Path $Path -FileName $FileName `
+                -ConfigurationName $ConfigurationName `
+                -ApplicationId $ApplicationId `
+                -ApplicationSecret $ApplicationSecret `
+                -TenantId $TenantId `
+                -CertificateThumbprint $CertificateThumbprint `
+                -CertificatePath $CertificatePath `
+                -CertificatePassword $CertificatePassword `
+                -ManagedIdentity:$ManagedIdentity.IsPresent `
+                -AccessTokens $AccessTokens `
+                -SubscriptionId $SubscriptionId `
+                -GenerateInfo $GenerateInfo `
+                -AllComponents `
+                -Filters $Filters `
+                -Validate:$Validate.IsPresent `
+                -Parallel:$Parallel.IsPresent `
+                -ResourceSettings $resourceSettings `
+                -ErrorAction $ErrorActionPreference `
+                -WithStatistics:$WithStatistics.IsPresent `
+                -IncludeDependencies:$IncludeDependencies.IsPresent
+        }
     }
-    elseif ($null -ne $Components)
+    finally
     {
-        Write-M365DSCHost -Message "Exporting Microsoft 365 configuration for Components: $($Components -join ', ')"
-        Start-M365DSCConfigurationExtract -Credential $Credential `
-            -Components $Components `
-            -ExcludeComponents $ExcludeComponents `
-            -Path $Path -FileName $FileName `
-            -ConfigurationName $ConfigurationName `
-            -ApplicationId $ApplicationId `
-            -ApplicationSecret $ApplicationSecret `
-            -TenantId $TenantId `
-            -CertificateThumbprint $CertificateThumbprint `
-            -CertificatePath $CertificatePath `
-            -CertificatePassword $CertificatePassword `
-            -ManagedIdentity:$ManagedIdentity.IsPresent `
-            -AccessTokens $AccessTokens `
-            -SubscriptionId $SubscriptionId `
-            -GenerateInfo $GenerateInfo `
-            -Filters $Filters `
-            -Validate:$Validate.IsPresent `
-            -Parallel:$Parallel.IsPresent `
-            -ResourceSettings $resourceSettings `
-            -ErrorAction $ErrorActionPreference `
-            -WithStatistics:$WithStatistics.IsPresent `
-            -IncludeDependencies:$IncludeDependencies.IsPresent
-    }
-    elseif ($null -ne $Mode)
-    {
-        Write-M365DSCHost -Message "Exporting Microsoft 365 configuration for Mode: $Mode"
-        Start-M365DSCConfigurationExtract -Credential $Credential `
-            -Mode $Mode `
-            -ExcludeComponents $ExcludeComponents `
-            -Path $Path -FileName $FileName `
-            -ConfigurationName $ConfigurationName `
-            -ApplicationId $ApplicationId `
-            -ApplicationSecret $ApplicationSecret `
-            -TenantId $TenantId `
-            -CertificateThumbprint $CertificateThumbprint `
-            -CertificatePath $CertificatePath `
-            -CertificatePassword $CertificatePassword `
-            -ManagedIdentity:$ManagedIdentity.IsPresent `
-            -AccessTokens $AccessTokens `
-            -SubscriptionId $SubscriptionId `
-            -GenerateInfo $GenerateInfo `
-            -AllComponents `
-            -Filters $Filters `
-            -Validate:$Validate.IsPresent `
-            -Parallel:$Parallel.IsPresent `
-            -ResourceSettings $resourceSettings `
-            -ErrorAction $ErrorActionPreference `
-            -WithStatistics:$WithStatistics.IsPresent `
-            -IncludeDependencies:$IncludeDependencies.IsPresent
+        Reset-M365DSCExportCollectionCache
     }
 
     if ($IncludeDependencies.IsPresent)
@@ -526,6 +534,7 @@ function Export-M365DSCConfiguration
     [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
     [Microsoft365DSC.Relations.ExportRelationSession]::Reset()
     [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
+    Reset-M365DSCExportCollectionCache
     $Global:M365DSCExportInProgress = $false
 
     $data = [System.Collections.Generic.Dictionary[[System.String], [System.Object]]]::new()

@@ -51,6 +51,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return @()
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceCompliancePolicy
+            }
             Mock -CommandName Get-MgBetaDeviceManagementDeviceCompliancePolicy -MockWith {
                 return @{
                     DisplayName          = 'Windows 10 DSC Policy'

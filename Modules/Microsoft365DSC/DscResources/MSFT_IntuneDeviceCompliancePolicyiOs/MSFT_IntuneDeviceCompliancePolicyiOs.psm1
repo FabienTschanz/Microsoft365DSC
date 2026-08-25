@@ -267,7 +267,11 @@ class IntuneDeviceCompliancePolicyiOs : M365DSCResourceBase
             }
 
             $returnAssignments = @()
-            $graphAssignments = Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -DeviceCompliancePolicyId $devicePolicy.Id
+            $graphAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $devicePolicy
+            if ($null -eq $graphAssignments)
+            {
+                $graphAssignments = Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -DeviceCompliancePolicyId $devicePolicy.Id
+            }
             if ($graphAssignments.Count -gt 0)
             {
                 [array]$graphAssignments = $graphAssignments | Where-Object -FilterScript { $_.source -eq 'direct' }
@@ -439,17 +443,15 @@ class IntuneDeviceCompliancePolicyiOs : M365DSCResourceBase
 
         try
         {
-            $baseFilter = "isof('microsoft.graph.iosCompliancePolicy')"
-            $mergedFilter = $baseFilter
+            $strippedFilter = $null
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
                 $complexFunctions = Get-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
                 $strippedFilter = Remove-ComplexFunctionsFromFilterQuery -FilterQuery $this.Filter
-                $mergedFilter = "($baseFilter) and ($strippedFilter)"
             }
-            [array]$configDeviceiOsPolicies = Get-MgBetaDeviceManagementDeviceCompliancePolicy `
-                -ExpandProperty 'scheduledActionsForRule($expand=scheduledActionConfigurations)' `
-                -ErrorAction Stop -All -Filter $mergedFilter
+            [array]$configDeviceiOsPolicies = Get-M365DSCExportCachedCollection -Collection 'deviceCompliancePolicies' `
+                -ODataType 'microsoft.graph.iosCompliancePolicy' `
+                -Filter $strippedFilter
             $configDeviceiOsPolicies = Find-GraphDataUsingComplexFunctions -ComplexFunctions $complexFunctions -Policies $configDeviceiOsPolicies
 
             $i = 1

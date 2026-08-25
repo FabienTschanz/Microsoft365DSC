@@ -178,7 +178,11 @@ class IntuneWifiConfigurationPolicyAndroidOpenSourceProject : M365DSCResourceBas
                 AccessTokens                   = $this.AccessTokens
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -294,13 +298,10 @@ class IntuneWifiConfigurationPolicyAndroidOpenSourceProject : M365DSCResourceBas
         try
         {
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.aospDeviceOwnerWiFiConfiguration') and not isof('microsoft.graph.aospDeviceOwnerEnterpriseWiFiConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.aospDeviceOwnerWiFiConfiguration' `
+                -ExcludeODataType 'microsoft.graph.aospDeviceOwnerEnterpriseWiFiConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

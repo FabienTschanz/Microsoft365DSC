@@ -2006,7 +2006,11 @@ class IntuneDeviceConfigurationPolicyWindows10 : M365DSCResourceBase
             }
 
             $rawAssignments = @()
-            $rawAssignments = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId -All
+            $rawAssignments = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $rawAssignments)
+            {
+                $rawAssignments = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $resolvedId -All
+            }
             $assignmentResult = @()
             if ($null -ne $rawAssignments -and $rawAssignments.Count -gt 0)
             {
@@ -2152,13 +2156,9 @@ class IntuneDeviceConfigurationPolicyWindows10 : M365DSCResourceBase
         try
         {
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.windows10GeneralConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType 'microsoft.graph.windows10GeneralConfiguration' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1

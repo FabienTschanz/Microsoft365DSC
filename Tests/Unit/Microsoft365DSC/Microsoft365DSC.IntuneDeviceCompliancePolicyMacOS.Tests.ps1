@@ -41,6 +41,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgBetaDeviceManagementDeviceCompliancePolicy -MockWith {
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceCompliancePolicy
+            }
             Mock -CommandName Get-MgBetaDeviceManagementDeviceCompliancePolicy -MockWith {
                 return @{
                     DisplayName          = 'MacOS DSC Policy'

@@ -355,7 +355,11 @@ class IntuneVPNConfigurationPolicyIOS : M365DSCResourceBase
 
             }
 
-            $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $Results.Id
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = Get-MgBetaDeviceManagementDeviceConfigurationAssignment -DeviceConfigurationId $Results.Id
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -494,13 +498,10 @@ class IntuneVPNConfigurationPolicyIOS : M365DSCResourceBase
         {
 
             #region resource generator code
-            $baseFilter = "isof('microsoft.graph.iosVpnConfiguration')"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($baseFilter) and ($($this.Filter))"
-            }
-            [array]$getValue = Get-MgBetaDeviceManagementDeviceConfiguration -Filter $mergedFilter -All -ErrorAction Stop
+            # TODO: Check if microsoft.graph.iosikEv2VpnConfiguration matches this resource
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' `
+                -ODataType @('microsoft.graph.iosVpnConfiguration') `
+                -Filter $this.Filter
             #endregion
 
             $i = 1
