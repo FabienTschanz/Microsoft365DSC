@@ -13,9 +13,10 @@
     Specifies the authentication method to check for. Valid values are:
     'ApplicationWithSecret', 'CertificateThumbprint', 'CertificatePath', 'Credentials',
     'CredentialsWithTenantId', 'CredentialsWithApplicationId', 'ManagedIdentity', 'AccessTokens'.
+    If not specified, every authentication method is evaluated.
 
 .PARAMETER Resources
-    Specifies the resources to check. If not specified, all resources will be checked.
+    Specifies the resources to check. If not specified, all resources in the schema cache are checked.
 
 .FUNCTIONALITY
     Internal
@@ -45,11 +46,53 @@ function Get-M365DSCComponentsWithMostSecureAuthenticationType
         throw 'The schema cache does not contain any of the requested resources. Run Utilities/New-M365DSCDscSchemaCache.ps1 to regenerate SchemaDefinition.json.'
     }
 
+    $requestedResources = $Resources
+    if ($null -eq $requestedResources -or $requestedResources.Count -eq 0)
+    {
+        $requestedResources = [System.String[]] $propertyNames.Keys
+    }
+
+    $requestedMethods = $AuthenticationMethod
+    if ($null -eq $requestedMethods -or $requestedMethods.Count -eq 0)
+    {
+        $requestedMethods = [System.String[]] $MyInvocation.MyCommand.Parameters['AuthenticationMethod'].Attributes.Where(
+            { $_ -is [System.Management.Automation.ValidateSetAttribute] }).ValidValues
+    }
+
     return [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
         [System.Collections.IDictionary]$propertyNames,
-        $AuthenticationMethod,
-        $Resources
+        $requestedMethods,
+        $requestedResources
     )
+}
+
+<#
+.SYNOPSIS
+    Gets the names of the resources exported by the Microsoft365DSC module manifest.
+
+.DESCRIPTION
+    Reads DscResourcesToExport from the module manifest once and caches the result for the
+    lifetime of the module.
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.String[]
+#>
+function Get-M365DSCExportedResourceName
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param()
+
+    if ($null -eq $Script:M365DSCExportedResourceNames)
+    {
+        $manifestPath = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Microsoft365DSC.psd1')).Path
+        $Script:M365DSCExportedResourceNames = [System.String[]]@((Import-PowerShellDataFile -Path $manifestPath).DscResourcesToExport)
+    }
+
+    return $Script:M365DSCExportedResourceNames
 }
 
 <#
@@ -61,7 +104,8 @@ function Get-M365DSCComponentsWithMostSecureAuthenticationType
     requested resources. Returns an empty map when the schema is not loaded.
 
 .PARAMETER Resources
-    Specifies the resource names without the MSFT_ prefix.
+    Specifies the resource names without the MSFT_ prefix. When omitted, every class in the schema
+    cache is returned.
 
 .OUTPUTS
     System.Collections.Hashtable
@@ -72,7 +116,7 @@ function Get-M365DSCResourcePropertyNameMap
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.String[]]
         $Resources
     )
@@ -81,6 +125,11 @@ function Get-M365DSCResourcePropertyNameMap
     if (-not [Microsoft365DSC.Cache.CacheManager]::IsSchemaLoaded)
     {
         return $map
+    }
+
+    if ($null -eq $Resources -or $Resources.Count -eq 0)
+    {
+        $Resources = Get-M365DSCExportedResourceName
     }
 
     $classes = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::OrdinalIgnoreCase)

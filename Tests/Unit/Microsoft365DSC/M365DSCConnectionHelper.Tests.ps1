@@ -151,6 +151,21 @@ Describe 'Get-M365DSCComponentsWithMostSecureAuthenticationType' {
         $map.ContainsKey('GraphThingItem') | Should -BeFalse
     }
 
+    It 'Maps every exported resource when none is requested' {
+        Mock -ModuleName M365DSCConnection -CommandName Get-M365DSCExportedResourceName -MockWith { return [System.String[]] @('GraphThing', 'MinimalThing') }
+        $map = Get-M365DSCResourcePropertyNameMap
+        $map.Count | Should -Be 2
+        $map.ContainsKey('GraphThingItem') | Should -BeFalse
+    }
+
+    It 'Evaluates every exported resource and authentication method when no argument is supplied' {
+        Mock -ModuleName M365DSCConnection -CommandName Get-M365DSCExportedResourceName -MockWith { return [System.String[]] @('GraphThing', 'MinimalThing') }
+        $components = @(Get-M365DSCComponentsWithMostSecureAuthenticationType)
+        $components.Count | Should -Be 2
+        ($components | Where-Object -FilterScript { $_.Resource -eq 'GraphThing' }).AuthMethod | Should -Be 'CertificateThumbprint'
+        ($components | Where-Object -FilterScript { $_.Resource -eq 'MinimalThing' }).AuthMethod | Should -Be 'AccessTokens'
+    }
+
     It 'Resolves the requested resources from the loaded schema' {
         $components = @(Get-M365DSCComponentsWithMostSecureAuthenticationType -AuthenticationMethod $Script:AllAuthenticationMethods -Resources @('GraphThing', 'MinimalThing'))
         $components.Count | Should -Be 2
