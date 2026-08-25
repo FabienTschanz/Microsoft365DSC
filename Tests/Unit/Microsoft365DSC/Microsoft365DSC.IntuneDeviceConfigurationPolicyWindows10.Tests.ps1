@@ -51,6 +51,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             # Mock Write-M365DSCHost to hide output during the tests
             Mock -CommandName Write-M365DSCHost -MockWith {
             }
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return Get-MgBetaDeviceManagementDeviceConfiguration
+            }
+
             $Script:exportedInstances =$null
             $Script:ExportMode = $false
         }
@@ -368,9 +372,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential                                            = $Credential
                 }
 
-                Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
-                    return Get-MgBetaDeviceManagementDeviceConfiguration
-                }
                 Mock -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
                     return $null
                 }

@@ -342,7 +342,7 @@ $payload = & $module {
         they embed, collecting assemblies until nothing new turns up. Then enumerate those whole,
         so a type that only some other complex type embeds is still picked up.
     #>
-    $infrastructure = @('M365DSCResourceBase', 'M365DSCResourceInfo')
+    $infrastructure = @('M365DSCResourceBase', 'M365DSCResourceInfo', 'M365DSCPropertyMeta')
 
     $seed = [System.Collections.Generic.List[Type]]::new()
     foreach ($name in [M365DSCResourceBase]::GetRegisteredNames())

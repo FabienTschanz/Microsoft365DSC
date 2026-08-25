@@ -60,7 +60,7 @@
         },
         @{
             ModuleName      = 'ReverseDSC'
-            RequiredVersion = '2.0.0.38'
+            RequiredVersion = '3.0.0.0'
         },
         @{
             ModuleName      = 'PSParallelPipeline'

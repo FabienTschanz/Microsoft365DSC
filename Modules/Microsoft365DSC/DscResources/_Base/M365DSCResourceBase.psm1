@@ -2,6 +2,7 @@ using namespace System
 using namespace System.Collections
 using namespace System.Collections.Generic
 using namespace System.Management.Automation
+using namespace System.Management.Automation.Runspaces
 using namespace System.Reflection
 
 <#
@@ -32,6 +33,79 @@ using namespace System.Reflection
          cross-contaminate. They become $this.ExportedInstance / $this.ResourceCache.
 #>
 
+# Per-property reflection and validation metadata, built once per derived type.
+class M365DSCPropertyMeta
+{
+    [PropertyInfo] $Property
+
+    [Type] $PropertyType
+
+    [FieldInfo] $BackingField
+
+    [bool] $IsSchema
+
+    [bool] $IsRequired
+
+    [bool] $IsComplex
+
+    [bool] $HasValidateSet
+
+    [bool] $TreatsEmptyStringAsNull
+
+    [bool] $HasEnumeratedValidation
+
+    [Attribute[]] $Validators
+
+    M365DSCPropertyMeta([PropertyInfo] $Property)
+    {
+        $this.Property = $Property
+        $this.PropertyType = $Property.PropertyType
+        $this.BackingField = $Property.DeclaringType.GetField(
+            "<$($Property.Name)>k__BackingField",
+            [BindingFlags]::Instance -bor [BindingFlags]::NonPublic)
+        $this.IsComplex = [M365DSCResourceBase]::IsComplexClassType($Property.PropertyType)
+
+        $list = [List[Attribute]]::new()
+        foreach ($attribute in $Property.GetCustomAttributes($true))
+        {
+            if ($attribute -is [DscPropertyAttribute])
+            {
+                $this.IsSchema = $true
+                $this.IsRequired = $attribute.Key -or $attribute.Mandatory
+                continue
+            }
+
+            if ($attribute -is [ValidateEnumeratedArgumentsAttribute])
+            {
+                $this.HasEnumeratedValidation = $true
+            }
+
+            if ($attribute -is [ValidateSetAttribute])
+            {
+                $this.HasValidateSet = $true
+                $this.TreatsEmptyStringAsNull = $true
+            }
+            elseif ($attribute -is [ValidatePatternAttribute] -or
+                ($attribute -is [ValidateLengthAttribute] -and $attribute.MinLength -gt 0))
+            {
+                $this.TreatsEmptyStringAsNull = $true
+            }
+
+            if ($attribute -is [ValidateSetAttribute] -or
+                $attribute -is [ValidateRangeAttribute] -or
+                $attribute -is [ValidateScriptAttribute] -or
+                $attribute -is [ValidateNotNullOrEmptyAttribute] -or
+                $attribute -is [ValidateLengthAttribute] -or
+                $attribute -is [ValidatePatternAttribute])
+            {
+                $list.Add($attribute)
+            }
+        }
+
+        $this.Validators = $list.ToArray()
+    }
+}
+
 # Per-derived-type reflection cache.
 class M365DSCResourceInfo
 {
@@ -41,44 +115,71 @@ class M365DSCResourceInfo
 
     [Dictionary[String, PropertyInfo]] $NonSchemaProperties
 
+    [Dictionary[String, M365DSCPropertyMeta]] $Meta
+
+    [String[]] $RequiredProperties
+
+    hidden static [Dictionary[String, ScriptBlock[]]] $_accessors = `
+        [Dictionary[String, ScriptBlock[]]]::new([StringComparer]::OrdinalIgnoreCase)
+
+    hidden static [ScriptBlock[]] GetAccessors([String] $Name)
+    {
+        $accessors = $null
+        if (-not [M365DSCResourceInfo]::_accessors.TryGetValue($Name, [ref] $accessors))
+        {
+            $accessors = [ScriptBlock[]] @(
+                [ScriptBlock]::Create(('$value = $this._GetProperty(''{0}''); if ($value -is [System.Array]) {{ , $value }} else {{ $value }}' -f $Name))
+                [ScriptBlock]::Create(('$this._SetProperty(''{0}'', $args[0])' -f $Name))
+            )
+            [M365DSCResourceInfo]::_accessors[$Name] = $accessors
+        }
+
+        return $accessors
+    }
+
     M365DSCResourceInfo([Type] $Type)
     {
         $this.Type = $Type
         $this.Properties = [Dictionary[String, PropertyInfo]]::new([StringComparer]::OrdinalIgnoreCase)
         $this.NonSchemaProperties = [Dictionary[String, PropertyInfo]]::new([StringComparer]::OrdinalIgnoreCase)
+        $this.Meta = [Dictionary[String, M365DSCPropertyMeta]]::new([StringComparer]::OrdinalIgnoreCase)
+        $required = [List[String]]::new()
 
         # Members declared on the base class are infrastructure, not resource schema.
-        $baseMembers = [M365DSCResourceBase].GetProperties().Name
+        $baseMembers = [HashSet[String]]::new([String[]] [M365DSCResourceBase].GetProperties().Name, [StringComparer]::OrdinalIgnoreCase)
+        $typeData = [TypeData]::new($Type.Name)
 
         foreach ($property in $Type.GetProperties())
         {
-            if ($baseMembers -contains $property.Name)
+            if ($baseMembers.Contains($property.Name) -or -not $property.CanWrite)
             {
                 continue
             }
 
-            if (-not $property.CanWrite)
-            {
-                continue
-            }
+            $propertyMeta = [M365DSCPropertyMeta]::new($property)
+            $this.Meta[$property.Name] = $propertyMeta
 
-            if (@($property.GetCustomAttributes([DscPropertyAttribute], $true)).Count -eq 0)
+            if (-not $propertyMeta.IsSchema)
             {
                 $this.NonSchemaProperties[$property.Name] = $property
                 continue
             }
 
             $this.Properties[$property.Name] = $property
-
-            $definition = @{
-                TypeName    = $Type.Name
-                MemberType  = 'ScriptProperty'
-                MemberName  = $property.Name
-                Value       = [ScriptBlock]::Create(('$value = $this._GetProperty(''{0}''); if ($value -is [System.Array]) {{ , $value }} else {{ $value }}' -f $property.Name))
-                SecondValue = [ScriptBlock]::Create(('$this._SetProperty(''{0}'', $args[0])' -f $property.Name))
-                Force       = $true
+            if ($propertyMeta.IsRequired)
+            {
+                $required.Add($property.Name)
             }
-            Update-TypeData @definition
+
+            $accessors = [M365DSCResourceInfo]::GetAccessors($property.Name)
+            $typeData.Members.Add($property.Name, [ScriptPropertyData]::new($property.Name, $accessors[0], $accessors[1]))
+        }
+
+        $this.RequiredProperties = $required.ToArray()
+
+        if ($typeData.Members.Count -gt 0)
+        {
+            Update-TypeData -TypeData $typeData -Force -ErrorAction Stop
         }
     }
 }
@@ -119,6 +220,10 @@ class M365DSCResourceBase
         [Dictionary[Type, System.Object]]::new()
 
     hidden [M365DSCResourceInfo] $_info
+
+    hidden [Hashtable] $_snapshot = @{}
+
+    hidden [bool] $_seeded
 
     # Resource-name to type map, populated by each generated Part<NN>.psm1 at import time.
     hidden static [Dictionary[String, Type]] $_registry = `
@@ -197,82 +302,130 @@ class M365DSCResourceBase
     # Validates, then writes THROUGH to the real CLR property.
     hidden [void] _SetProperty([System.String] $Name, [System.Object] $Value)
     {
-        $propertyInfo = $this._info.Properties[$Name]
-        if ($null -eq $propertyInfo)
+        $meta = $null
+        if (-not $this._info.Meta.TryGetValue($Name, [ref] $meta) -or -not $meta.IsSchema)
         {
             throw [ArgumentException]::new("Unknown property '$Name' on resource '$($this.GetResourceName())'.", $Name)
         }
 
-        $this.ValidateProperty($propertyInfo, $Name, $Value)
-
-        if ([M365DSCResourceBase]::IsComplexClassType($propertyInfo.PropertyType))
+        if (-not $this._seeded -and $meta.IsRequired)
         {
-            $Value = [M365DSCResourceBase]::SanitizeComplexValue($Value, $propertyInfo.PropertyType)
+            $this.SeedSnapshotIfPopulated()
+        }
+
+        $this.ValidateProperty($meta, $Name, $Value)
+
+        if ($meta.IsComplex)
+        {
+            $Value = [M365DSCResourceBase]::SanitizeComplexValue($Value, $meta.PropertyType)
         }
 
         if ($null -eq $Value)
         {
-            $this.SetNullValue($propertyInfo)
+            $this.SetNullValue($meta)
             return
         }
 
-        if ($Value -is [System.String] -and $Value -eq '' -and
-            @($propertyInfo.GetCustomAttributes($true) | Where-Object { $_ -is [System.Management.Automation.ValidateSetAttribute] }).Count -gt 0)
+        if ($meta.TreatsEmptyStringAsNull -and $Value -is [System.String] -and $Value -eq '')
         {
-            $this.SetNullValue($propertyInfo)
+            $this.SetNullValue($meta)
             return
         }
 
-        if ($Value -isnot [System.String] -and $Value -is [System.Collections.IEnumerable] -and
-            @($Value).Count -eq 0 -and
-            @($propertyInfo.GetCustomAttributes($true) | Where-Object { $_ -is [System.Management.Automation.ValidateEnumeratedArgumentsAttribute] }).Count -gt 0)
+        if ($meta.HasEnumeratedValidation -and $Value -isnot [System.String] -and
+            $Value -is [System.Collections.IEnumerable] -and @($Value).Count -eq 0)
         {
-            $this.SetNullValue($propertyInfo)
+            $this.SetNullValue($meta)
             return
         }
 
-        $converted = $Value -as $propertyInfo.PropertyType
+        $converted = $Value -as $meta.PropertyType
         if ($null -eq $converted)
         {
             throw [InvalidOperationException]::new(
                 "Cannot assign property '$Name' on resource '$($this.GetResourceName())': " +
                 "a value of type '$($Value.GetType().FullName)' does not convert to " +
-                "'$($propertyInfo.PropertyType.FullName)'." +
-                $this.DescribeConversionFailure($Value, $propertyInfo.PropertyType))
+                "'$($meta.PropertyType.FullName)'." +
+                $this.DescribeConversionFailure($Value, $meta.PropertyType))
         }
 
-        $propertyInfo.SetValue($this, $converted)
+        $meta.Property.SetValue($this, $converted)
+        $this._snapshot[$meta.Property.Name] = $converted
     }
 
-    # Applies the parameter validation attributes declared on the property.
-    hidden [void] SetNullValue([PropertyInfo] $PropertyInfo)
+    hidden [void] SetNullValue([M365DSCPropertyMeta] $Meta)
     {
         $value = $null
-        if ($PropertyInfo.PropertyType.IsValueType -and
-            $null -eq [Nullable]::GetUnderlyingType($PropertyInfo.PropertyType))
+        if ($Meta.PropertyType.IsValueType -and
+            $null -eq [Nullable]::GetUnderlyingType($Meta.PropertyType))
         {
-            $value = [Activator]::CreateInstance($PropertyInfo.PropertyType)
+            $value = [Activator]::CreateInstance($Meta.PropertyType)
         }
 
-        $field = $PropertyInfo.DeclaringType.GetField(
-            "<$($PropertyInfo.Name)>k__BackingField",
-            [BindingFlags]::Instance -bor [BindingFlags]::NonPublic)
-
-        if ($null -ne $field)
+        if ($null -ne $Meta.BackingField)
         {
-            $field.SetValue($this, $value)
+            $Meta.BackingField.SetValue($this, $value)
+        }
+        else
+        {
+            $Meta.Property.SetValue($this, $value)
+        }
+
+        if (-not $Meta.IsSchema)
+        {
             return
         }
 
-        $PropertyInfo.SetValue($this, $value)
+        if ($null -eq $value)
+        {
+            $this._snapshot.Remove($Meta.Property.Name)
+        }
+        else
+        {
+            $this._snapshot[$Meta.Property.Name] = $value
+        }
     }
 
     hidden [void] ClearNonSchemaProperties()
     {
-        foreach ($propertyInfo in $this._info.NonSchemaProperties.Values)
+        foreach ($meta in $this._info.Meta.Values)
         {
-            $this.SetNullValue($propertyInfo)
+            if (-not $meta.IsSchema)
+            {
+                $this.SetNullValue($meta)
+            }
         }
+    }
+
+    # Detects an instance that DSC populated by reflection and seeds the snapshot from the CLR state.
+    hidden [void] SeedSnapshotIfPopulated()
+    {
+        foreach ($name in $this._info.RequiredProperties)
+        {
+            if ($this._snapshot.ContainsKey($name) -or $null -eq $this._info.Properties[$name].GetValue($this))
+            {
+                continue
+            }
+
+            $this._snapshot = $this.ReadBoundParameters()
+            $this._seeded = $true
+            return
+        }
+    }
+
+    hidden [Hashtable] ReadBoundParameters()
+    {
+        $result = @{}
+        foreach ($entry in $this._info.Properties.GetEnumerator())
+        {
+            $value = $entry.Value.GetValue($this)
+            if ($null -ne $value)
+            {
+                $result[$entry.Key] = $value
+            }
+        }
+
+        return $result
     }
 
     # True when the property targets an embedded complex class (or an array of one).
@@ -466,14 +619,14 @@ class M365DSCResourceBase
         return ''
     }
 
-    hidden [void] ValidateProperty([PropertyInfo] $PropertyInfo, [System.String] $Name, [System.Object] $Value)
+    hidden [void] ValidateProperty([M365DSCPropertyMeta] $Meta, [System.String] $Name, [System.Object] $Value)
     {
         if ($null -eq $Value)
         {
             return
         }
 
-        foreach ($attribute in $PropertyInfo.GetCustomAttributes($true))
+        foreach ($attribute in $Meta.Validators)
         {
             if ($attribute -is [System.Management.Automation.ValidateSetAttribute])
             {
@@ -522,6 +675,40 @@ class M365DSCResourceBase
                     throw [ArgumentException]::new("Property '$Name' may not be null or empty.", $Name)
                 }
             }
+            elseif ($attribute -is [System.Management.Automation.ValidateLengthAttribute])
+            {
+                foreach ($item in @($Value))
+                {
+                    if ($item -isnot [System.String] -or $item -eq '')
+                    {
+                        continue
+                    }
+
+                    if ($item.Length -lt $attribute.MinLength -or $item.Length -gt $attribute.MaxLength)
+                    {
+                        throw [ArgumentException]::new(
+                            "The value '$item' is not valid for property '$Name': its length must be between $($attribute.MinLength) and $($attribute.MaxLength) characters.",
+                            $Name)
+                    }
+                }
+            }
+            elseif ($attribute -is [System.Management.Automation.ValidatePatternAttribute])
+            {
+                foreach ($item in @($Value))
+                {
+                    if ($item -isnot [System.String] -or $item -eq '')
+                    {
+                        continue
+                    }
+
+                    if (-not [System.Text.RegularExpressions.Regex]::IsMatch($item, $attribute.RegexPattern, $attribute.Options))
+                    {
+                        throw [ArgumentException]::new(
+                            "The value '$item' is not valid for property '$Name': it does not match the pattern '$($attribute.RegexPattern)'.",
+                            $Name)
+                    }
+                }
+            }
         }
     }
 
@@ -531,16 +718,13 @@ class M365DSCResourceBase
 
     [Hashtable] GetBoundParameters()
     {
-        $result = @{}
-        foreach ($name in $this._info.Properties.Keys)
+        if (-not $this._seeded)
         {
-            $value = $this._GetProperty($name)
-            if ($null -ne $value)
-            {
-                $result[$name] = $value
-            }
+            $this.SeedSnapshotIfPopulated()
+            $this._seeded = $true
         }
-        return $result
+
+        return $this._snapshot.Clone()
     }
 
     [Hashtable] GetAllParameters()
