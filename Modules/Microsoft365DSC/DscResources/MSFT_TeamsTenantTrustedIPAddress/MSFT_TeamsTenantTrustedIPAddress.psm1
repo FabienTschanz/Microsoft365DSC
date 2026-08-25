@@ -257,6 +257,7 @@ class TeamsTenantTrustedIPAddress : M365DSCResourceBase
         }
 
         $result = [TeamsTenantTrustedIPAddress]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

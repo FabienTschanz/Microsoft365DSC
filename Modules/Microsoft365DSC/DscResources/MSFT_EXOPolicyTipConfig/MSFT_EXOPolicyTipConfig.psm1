@@ -264,6 +264,7 @@ class EXOPolicyTipConfig : M365DSCResourceBase
         }
 
         $result = [EXOPolicyTipConfig]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

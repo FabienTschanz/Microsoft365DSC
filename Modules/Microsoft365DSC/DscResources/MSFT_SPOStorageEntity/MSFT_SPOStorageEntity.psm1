@@ -335,6 +335,7 @@ class SPOStorageEntity : M365DSCResourceBase
         }
 
         $result = [SPOStorageEntity]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

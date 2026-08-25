@@ -506,6 +506,7 @@ class EXOCalendarProcessing : M365DSCResourceBase
         }
 
         $result = [EXOCalendarProcessing]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

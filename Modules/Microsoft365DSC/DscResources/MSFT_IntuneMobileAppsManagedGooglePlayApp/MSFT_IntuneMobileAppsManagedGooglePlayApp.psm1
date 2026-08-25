@@ -381,6 +381,7 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsManagedGooglePlayApp]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

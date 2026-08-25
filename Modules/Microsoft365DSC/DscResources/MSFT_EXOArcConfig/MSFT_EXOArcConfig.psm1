@@ -216,6 +216,7 @@ class EXOArcConfig : M365DSCResourceBase
         }
 
         $result = [EXOArcConfig]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

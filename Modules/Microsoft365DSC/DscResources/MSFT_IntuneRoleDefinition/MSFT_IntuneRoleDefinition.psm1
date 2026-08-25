@@ -399,6 +399,7 @@ class IntuneRoleDefinition : M365DSCResourceBase
         }
 
         $result = [IntuneRoleDefinition]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

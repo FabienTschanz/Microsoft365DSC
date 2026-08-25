@@ -273,6 +273,7 @@ class TeamsMobilityPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsMobilityPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

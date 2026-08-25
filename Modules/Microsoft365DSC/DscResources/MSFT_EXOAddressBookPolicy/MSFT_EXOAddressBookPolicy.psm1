@@ -281,6 +281,7 @@ class EXOAddressBookPolicy : M365DSCResourceBase
         }
 
         $result = [EXOAddressBookPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -212,6 +212,7 @@ class IntuneDeviceManagementDeviceDiagnosticSettings : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceManagementDeviceDiagnosticSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

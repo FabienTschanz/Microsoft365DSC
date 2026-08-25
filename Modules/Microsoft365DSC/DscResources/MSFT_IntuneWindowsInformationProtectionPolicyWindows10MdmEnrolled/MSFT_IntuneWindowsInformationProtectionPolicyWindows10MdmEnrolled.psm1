@@ -848,6 +848,7 @@ class IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled : M365DSCReso
         }
 
         $result = [IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

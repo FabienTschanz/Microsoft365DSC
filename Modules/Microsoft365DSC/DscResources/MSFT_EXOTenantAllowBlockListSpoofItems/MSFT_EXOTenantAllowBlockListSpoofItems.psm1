@@ -279,6 +279,7 @@ class EXOTenantAllowBlockListSpoofItems : M365DSCResourceBase
         }
 
         $result = [EXOTenantAllowBlockListSpoofItems]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -319,6 +319,7 @@ class EXOMailboxSettings : M365DSCResourceBase
         }
 
         $result = [EXOMailboxSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -290,6 +290,7 @@ class TeamsFederationConfiguration : M365DSCResourceBase
         }
 
         $result = [TeamsFederationConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

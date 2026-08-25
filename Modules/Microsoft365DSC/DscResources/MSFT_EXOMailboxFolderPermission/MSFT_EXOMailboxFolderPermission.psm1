@@ -305,6 +305,7 @@ class EXOMailboxFolderPermission : M365DSCResourceBase
         }
 
         $result = [EXOMailboxFolderPermission]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

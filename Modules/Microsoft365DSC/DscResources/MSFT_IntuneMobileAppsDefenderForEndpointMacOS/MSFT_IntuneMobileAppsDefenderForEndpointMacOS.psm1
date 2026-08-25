@@ -466,6 +466,7 @@ class IntuneMobileAppsDefenderForEndpointMacOS : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsDefenderForEndpointMacOS]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

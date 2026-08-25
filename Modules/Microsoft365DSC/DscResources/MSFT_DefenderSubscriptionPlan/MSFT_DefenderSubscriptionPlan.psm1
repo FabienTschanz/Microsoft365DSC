@@ -297,6 +297,7 @@ securityresources | where type == "microsoft.security/pricings" | project Id=id,
         }
 
         $result = [DefenderSubscriptionPlan]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

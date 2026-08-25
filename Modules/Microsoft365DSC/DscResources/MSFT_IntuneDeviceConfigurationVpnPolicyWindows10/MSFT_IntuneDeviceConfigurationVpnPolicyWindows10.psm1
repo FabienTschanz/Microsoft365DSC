@@ -865,6 +865,7 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceConfigurationVpnPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

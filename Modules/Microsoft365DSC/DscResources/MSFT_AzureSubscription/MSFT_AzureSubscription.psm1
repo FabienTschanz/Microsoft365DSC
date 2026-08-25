@@ -325,6 +325,7 @@ class AzureSubscription : M365DSCResourceBase
         }
 
         $result = [AzureSubscription]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

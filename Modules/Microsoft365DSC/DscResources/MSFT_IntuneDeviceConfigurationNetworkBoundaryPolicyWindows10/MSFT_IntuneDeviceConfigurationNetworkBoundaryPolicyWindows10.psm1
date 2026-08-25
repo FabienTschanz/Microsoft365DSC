@@ -449,6 +449,7 @@ class IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10 : M365DSCResourceB
         }
 
         $result = [IntuneDeviceConfigurationNetworkBoundaryPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

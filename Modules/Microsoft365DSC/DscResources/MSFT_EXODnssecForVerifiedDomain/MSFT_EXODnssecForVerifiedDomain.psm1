@@ -216,6 +216,7 @@ class EXODnssecForVerifiedDomain : M365DSCResourceBase
         }
 
         $result = [EXODnssecForVerifiedDomain]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

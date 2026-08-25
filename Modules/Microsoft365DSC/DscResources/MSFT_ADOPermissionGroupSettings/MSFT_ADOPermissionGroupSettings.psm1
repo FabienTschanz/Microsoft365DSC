@@ -493,6 +493,7 @@ class ADOPermissionGroupSettings : M365DSCResourceBase
         }
 
         $result = [ADOPermissionGroupSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

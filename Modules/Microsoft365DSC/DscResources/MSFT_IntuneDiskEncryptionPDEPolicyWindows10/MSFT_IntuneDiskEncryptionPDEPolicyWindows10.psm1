@@ -419,6 +419,7 @@ class IntuneDiskEncryptionPDEPolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneDiskEncryptionPDEPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -248,6 +248,7 @@ class EXOSecOpsOverrideRule : M365DSCResourceBase
         }
 
         $result = [EXOSecOpsOverrideRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

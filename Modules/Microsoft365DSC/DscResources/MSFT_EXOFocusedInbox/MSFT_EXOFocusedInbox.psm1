@@ -239,6 +239,7 @@ class EXOFocusedInbox : M365DSCResourceBase
         }
 
         $result = [EXOFocusedInbox]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

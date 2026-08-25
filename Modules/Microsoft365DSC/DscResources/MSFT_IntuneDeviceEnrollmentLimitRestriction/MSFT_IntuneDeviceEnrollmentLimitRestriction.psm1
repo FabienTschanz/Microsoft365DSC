@@ -393,6 +393,7 @@ class IntuneDeviceEnrollmentLimitRestriction : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceEnrollmentLimitRestriction]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

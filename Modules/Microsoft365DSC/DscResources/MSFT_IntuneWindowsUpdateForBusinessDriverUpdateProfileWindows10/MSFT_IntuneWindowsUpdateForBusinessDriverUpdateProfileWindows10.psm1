@@ -370,6 +370,7 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
         }
 
         $result = [IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -272,6 +272,7 @@ class TeamsCallParkPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsCallParkPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

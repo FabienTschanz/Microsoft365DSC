@@ -809,6 +809,7 @@ class AADEntitlementManagementAccessPackageAssignmentPolicy : M365DSCResourceBas
         }
 
         $result = [AADEntitlementManagementAccessPackageAssignmentPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

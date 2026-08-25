@@ -326,6 +326,7 @@ class EXOAuthenticationPolicy : M365DSCResourceBase
         }
 
         $result = [EXOAuthenticationPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

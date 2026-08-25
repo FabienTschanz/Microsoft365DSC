@@ -351,6 +351,7 @@ class AADAgreement : M365DSCResourceBase
         }
 
         $result = [AADAgreement]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

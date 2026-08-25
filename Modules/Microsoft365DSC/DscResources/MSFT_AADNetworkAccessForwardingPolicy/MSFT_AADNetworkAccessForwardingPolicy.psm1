@@ -350,6 +350,7 @@ class AADNetworkAccessForwardingPolicy : M365DSCResourceBase
         }
 
         $result = [AADNetworkAccessForwardingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -559,6 +559,7 @@ class IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10 : M365DSCResourc
         }
 
         $result = [IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

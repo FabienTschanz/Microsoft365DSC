@@ -351,6 +351,7 @@ class TeamsM365App : M365DSCResourceBase
         }
 
         $result = [TeamsM365App]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

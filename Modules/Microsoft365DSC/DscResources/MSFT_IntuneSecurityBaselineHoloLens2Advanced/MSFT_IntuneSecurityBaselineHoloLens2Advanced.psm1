@@ -781,6 +781,7 @@ class IntuneSecurityBaselineHoloLens2Advanced : M365DSCResourceBase
         }
 
         $result = [IntuneSecurityBaselineHoloLens2Advanced]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

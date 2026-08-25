@@ -436,6 +436,7 @@ class IntuneFirewallPolicySetting : M365DSCResourceBase
         }
 
         $result = [IntuneFirewallPolicySetting]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

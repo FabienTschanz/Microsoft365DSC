@@ -831,6 +831,7 @@ class TeamsMeetingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsMeetingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -277,6 +277,7 @@ class EXOActiveSyncDeviceAccessRule : M365DSCResourceBase
         }
 
         $result = [EXOActiveSyncDeviceAccessRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

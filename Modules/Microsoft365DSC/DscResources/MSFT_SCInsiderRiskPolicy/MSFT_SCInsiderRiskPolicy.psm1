@@ -1554,6 +1554,7 @@ class SCInsiderRiskPolicy : M365DSCResourceBase
         }
 
         $result = [SCInsiderRiskPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

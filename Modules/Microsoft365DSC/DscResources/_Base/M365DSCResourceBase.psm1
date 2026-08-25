@@ -39,10 +39,13 @@ class M365DSCResourceInfo
 
     [Dictionary[String, PropertyInfo]] $Properties
 
+    [Dictionary[String, PropertyInfo]] $NonSchemaProperties
+
     M365DSCResourceInfo([Type] $Type)
     {
         $this.Type = $Type
         $this.Properties = [Dictionary[String, PropertyInfo]]::new([StringComparer]::OrdinalIgnoreCase)
+        $this.NonSchemaProperties = [Dictionary[String, PropertyInfo]]::new([StringComparer]::OrdinalIgnoreCase)
 
         # Members declared on the base class are infrastructure, not resource schema.
         $baseMembers = [M365DSCResourceBase].GetProperties().Name
@@ -56,6 +59,12 @@ class M365DSCResourceInfo
 
             if (-not $property.CanWrite)
             {
+                continue
+            }
+
+            if (@($property.GetCustomAttributes([DscPropertyAttribute], $true)).Count -eq 0)
+            {
+                $this.NonSchemaProperties[$property.Name] = $property
                 continue
             }
 
@@ -162,10 +171,21 @@ class M365DSCResourceBase
 
     #region Property plumbing
 
+    hidden [PropertyInfo] _FindProperty([System.String] $Name)
+    {
+        $propertyInfo = $this._info.Properties[$Name]
+        if ($null -eq $propertyInfo)
+        {
+            $propertyInfo = $this._info.NonSchemaProperties[$Name]
+        }
+
+        return $propertyInfo
+    }
+
     # Reads the real CLR property.
     hidden [System.Object] _GetProperty([System.String] $Name)
     {
-        $propertyInfo = $this._info.Properties[$Name]
+        $propertyInfo = $this._FindProperty($Name)
         if ($null -eq $propertyInfo)
         {
             return $null
@@ -247,9 +267,15 @@ class M365DSCResourceBase
         $PropertyInfo.SetValue($this, $value)
     }
 
+    hidden [void] ClearNonSchemaProperties()
+    {
+        foreach ($propertyInfo in $this._info.NonSchemaProperties.Values)
+        {
+            $this.SetNullValue($propertyInfo)
+        }
+    }
+
     # True when the property targets an embedded complex class (or an array of one).
-    # Every embedded class is MSFT_-prefixed; resource classes, PSCredential and
-    # CimInstance are not.
     hidden static [System.Boolean] IsComplexClassType([Type] $Type)
     {
         $element = if ($Type.IsArray) { $Type.GetElementType() } else { $Type }
@@ -283,17 +309,7 @@ class M365DSCResourceBase
         return $table
     }
 
-    <#
-        Complex classes carry [ValidateSet] restored from the former MOF ValueMaps. Unlike the
-        resource's own properties, which _SetProperty routes around validation for null/empty
-        (SetNullValue), nested members are assigned by PowerShell's hashtable-to-class conversion
-        during the -as cast below, which enforces every attribute - and one $null or '' on a
-        ValidateSet member makes the WHOLE cast return $null. Graph frequently hands back $null/''
-        for enum-typed members, and the PS 5.1 dispatch path deserializes instances carrying every
-        property including unset ones. Dropping those keys before the cast keeps "unset" meaning
-        unset; a non-empty out-of-set value still fails the cast and is reported by
-        DescribeConversionFailure.
-    #>
+    # Check and fix all values for each property recursively
     hidden static [System.Object] SanitizeComplexValue([System.Object] $Value, [Type] $TargetType)
     {
         if ($null -eq $Value)
@@ -513,23 +529,24 @@ class M365DSCResourceBase
 
     #region $PSBoundParameters replacement
 
-    <#
-        The direct replacement for $PSBoundParameters.
-
-        "Specified" means "not $null". There is no separate record of which properties were
-        assigned, because there cannot be one: DSC populates instances by reflection, so an
-        assignment-tracking set stays empty on exactly the path that matters most - the LCM.
-
-        This is why the converter emits value-type properties as System.Nullable[T]. DSC only sets
-        the properties present in the compiled MOF instance and leaves the rest at their CLR
-        defaults, so with a nullable property "omitted" is $null while "specified as $false" is
-        $false, and the two stay distinguishable. With a plain [Boolean] they are not - measured:
-        an omitted [UInt32] came back as 0 and an omitted [Nullable[UInt32]] came back as $null.
-    #>
     [Hashtable] GetBoundParameters()
     {
         $result = @{}
         foreach ($name in $this._info.Properties.Keys)
+        {
+            $value = $this._GetProperty($name)
+            if ($null -ne $value)
+            {
+                $result[$name] = $value
+            }
+        }
+        return $result
+    }
+
+    [Hashtable] GetAllParameters()
+    {
+        $result = $this.GetBoundParameters()
+        foreach ($name in $this._info.NonSchemaProperties.Keys)
         {
             $value = $this._GetProperty($name)
             if ($null -ne $value)
@@ -549,7 +566,7 @@ class M365DSCResourceBase
     {
         foreach ($entry in $Source.GetEnumerator())
         {
-            if ($this._info.Properties.ContainsKey($entry.Key))
+            if ($null -ne $this._FindProperty($entry.Key))
             {
                 $this.($entry.Key) = $entry.Value
             }
@@ -594,12 +611,12 @@ class M365DSCResourceBase
 
     [System.String] Connect([System.String] $Workload)
     {
-        return (New-M365DSCConnection -Workload $Workload -InboundParameters $this.GetBoundParameters())
+        return (New-M365DSCConnection -Workload $Workload -InboundParameters $this.GetAllParameters())
     }
 
     [System.String] Connect([System.String] $Workload, [System.String] $Url)
     {
-        return (New-M365DSCConnection -Workload $Workload -InboundParameters $this.GetBoundParameters() -Url $Url)
+        return (New-M365DSCConnection -Workload $Workload -InboundParameters $this.GetAllParameters() -Url $Url)
     }
 
     # Replaces the copy-pasted New-M365DSCLogEntry call in every catch block.
@@ -767,7 +784,7 @@ class M365DSCResourceBase
     {
         return (Invoke-M365DSCClassResourceInPowerShellCore -ClassName $this.GetResourceName() `
                 -MethodName $MethodName `
-                -Parameters $this.GetBoundParameters())
+                -Parameters $this.GetAllParameters())
     }
 
     #endregion

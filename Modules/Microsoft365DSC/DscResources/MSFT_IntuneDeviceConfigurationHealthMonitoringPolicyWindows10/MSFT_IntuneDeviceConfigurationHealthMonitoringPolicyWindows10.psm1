@@ -409,6 +409,7 @@ class IntuneDeviceConfigurationHealthMonitoringPolicyWindows10 : M365DSCResource
         }
 
         $result = [IntuneDeviceConfigurationHealthMonitoringPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

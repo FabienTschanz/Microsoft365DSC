@@ -335,6 +335,7 @@ class EXOAvailabilityAddressSpace : M365DSCResourceBase
         }
 
         $result = [EXOAvailabilityAddressSpace]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

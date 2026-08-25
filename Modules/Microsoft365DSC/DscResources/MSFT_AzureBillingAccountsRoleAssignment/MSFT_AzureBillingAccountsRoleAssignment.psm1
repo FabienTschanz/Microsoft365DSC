@@ -380,6 +380,7 @@ class AzureBillingAccountsRoleAssignment : M365DSCResourceBase
         }
 
         $result = [AzureBillingAccountsRoleAssignment]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

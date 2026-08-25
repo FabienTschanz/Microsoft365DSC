@@ -681,6 +681,7 @@ class SPOSharingSettings : M365DSCResourceBase
         }
 
         $result = [SPOSharingSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

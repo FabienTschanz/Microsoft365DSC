@@ -49,6 +49,7 @@ function New-M365DSCClassModuleFile
         Workload               = $ResourceModel.Workload
         HasEnsure              = -not $ResourceModel.IsSingleInstance
         PropertyBlock          = New-M365DSCClassPropertyBlock -Properties $ResourceModel.Properties
+        ExportOnlyPropertyBlock = New-M365DSCExportOnlyPropertyBlock -ResourceModel $ResourceModel
         GetInstanceBlock       = New-M365DSCGetInstanceBlock -ResourceModel $ResourceModel
         ComplexConversionBlock = New-M365DSCComplexConversionBlock -ResourceModel $ResourceModel
         HashtableMappingBlock  = New-M365DSCHashtableMappingBlock -ResourceModel $ResourceModel
@@ -329,6 +330,43 @@ function New-M365DSCSetInvocationBlock
 
 <#
 .SYNOPSIS
+    Renders the export-only property declarations.
+#>
+function New-M365DSCExportOnlyPropertyBlock
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $ResourceModel
+    )
+
+    $declarations = @()
+
+    if ($ResourceModel.Cmdlets.SupportsFilter)
+    {
+        $declarations += '[System.String] $Filter'
+    }
+
+    if (@($ResourceModel.Properties | Where-Object { $_.Name -eq 'ApplicationSecret' }).Count -eq 0)
+    {
+        $declarations += '[System.Management.Automation.PSCredential] $ApplicationSecret'
+    }
+
+    $indent = ' ' * 4
+    $blocks = @()
+    foreach ($declaration in $declarations)
+    {
+        $blocks += "$indent# Export-only. Not part of the resource schema.`r`n$indent$declaration"
+    }
+
+    return ($blocks -join "`r`n`r`n")
+}
+
+<#
+.SYNOPSIS
     Renders the enumeration at the top of Export().
 #>
 function New-M365DSCExportGetAllBlock
@@ -345,15 +383,29 @@ function New-M365DSCExportGetAllBlock
     $indent = ' ' * 12
     $cmdlets = $ResourceModel.Cmdlets
     $arguments = @()
+    $prelude = ''
 
     if ($cmdlets.SupportsAll)
     {
         $arguments += '-All'
     }
 
-    if ($ResourceModel.IsAdditionalProperty -and $cmdlets.SupportsFilter)
+    if ($cmdlets.SupportsFilter)
     {
-        $arguments += "-Filter `"isof('microsoft.graph.$($ResourceModel.SelectedODataType)')`""
+        if ($ResourceModel.IsAdditionalProperty)
+        {
+            $prelude = "$indent`$baseFilter = `"isof('microsoft.graph.$($ResourceModel.SelectedODataType)')`"`r`n" +
+            "$indent`$mergedFilter = `$baseFilter`r`n" +
+            "$indent" + 'if (-not [System.String]::IsNullOrEmpty($this.Filter))' + "`r`n" +
+            "$indent{`r`n" +
+            "$indent    `$mergedFilter = `"(`$baseFilter) and (`$(`$this.Filter))`"`r`n" +
+            "$indent}`r`n"
+            $arguments += '-Filter $mergedFilter'
+        }
+        else
+        {
+            $arguments += '-Filter $this.Filter'
+        }
     }
 
     $argumentString = ''
@@ -362,7 +414,7 @@ function New-M365DSCExportGetAllBlock
         $argumentString = ' ' + ($arguments -join ' ')
     }
 
-    return "$indent[array] `$exportedInstances = $($cmdlets.GetCmdlet)$argumentString ``" + "`r`n" +
+    return $prelude + "$indent[array] `$exportedInstances = $($cmdlets.GetCmdlet)$argumentString ``" + "`r`n" +
     "$indent    -ErrorAction Stop"
 }
 

@@ -252,6 +252,7 @@ class EXOExternalInOutlook : M365DSCResourceBase
         }
 
         $result = [EXOExternalInOutlook]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

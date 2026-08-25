@@ -325,6 +325,7 @@ class EXOSafeAttachmentRule : M365DSCResourceBase
         }
 
         $result = [EXOSafeAttachmentRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

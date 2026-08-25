@@ -533,6 +533,7 @@ class AADTenantAppManagementPolicy : M365DSCResourceBase
         }
 
         $result = [AADTenantAppManagementPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

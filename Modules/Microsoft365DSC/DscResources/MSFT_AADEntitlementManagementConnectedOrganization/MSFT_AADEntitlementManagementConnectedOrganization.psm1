@@ -611,6 +611,7 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
         }
 
         $result = [AADEntitlementManagementConnectedOrganization]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

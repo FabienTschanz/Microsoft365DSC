@@ -273,6 +273,7 @@ class EXOSharingPolicy : M365DSCResourceBase
         }
 
         $result = [EXOSharingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

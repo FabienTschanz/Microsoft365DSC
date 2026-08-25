@@ -305,6 +305,7 @@ class AADOrganizationCertificateBasedAuthConfiguration : M365DSCResourceBase
         }
 
         $result = [AADOrganizationCertificateBasedAuthConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -295,6 +295,7 @@ class EXORoleAssignmentPolicy : M365DSCResourceBase
         }
 
         $result = [EXORoleAssignmentPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

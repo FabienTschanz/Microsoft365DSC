@@ -321,6 +321,7 @@ class M365DSCRuleEvaluation : M365DSCResourceBase
         }
 
         $result = [M365DSCRuleEvaluation]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -326,6 +326,7 @@ class EXOSafeLinksPolicy : M365DSCResourceBase
         }
 
         $result = [EXOSafeLinksPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

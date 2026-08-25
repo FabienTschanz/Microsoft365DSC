@@ -280,6 +280,7 @@ class EXOOfflineAddressBook : M365DSCResourceBase
         }
 
         $result = [EXOOfflineAddressBook]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -422,6 +422,7 @@ class AADCustomAuthenticationExtension : M365DSCResourceBase
         }
 
         $result = [AADCustomAuthenticationExtension]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

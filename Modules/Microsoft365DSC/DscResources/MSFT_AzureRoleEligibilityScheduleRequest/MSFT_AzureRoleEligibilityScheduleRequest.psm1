@@ -771,6 +771,7 @@ class AzureRoleEligibilityScheduleRequest : M365DSCResourceBase
         }
 
         $result = [AzureRoleEligibilityScheduleRequest]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

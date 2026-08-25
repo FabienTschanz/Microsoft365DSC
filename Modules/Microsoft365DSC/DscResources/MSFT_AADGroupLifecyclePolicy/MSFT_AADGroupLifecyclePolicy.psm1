@@ -270,6 +270,7 @@ class AADGroupLifecyclePolicy : M365DSCResourceBase
         }
 
         $result = [AADGroupLifecyclePolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

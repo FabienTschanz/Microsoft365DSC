@@ -256,6 +256,7 @@ class EXOMailboxIRMAccess : M365DSCResourceBase
         }
 
         $result = [EXOMailboxIRMAccess]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

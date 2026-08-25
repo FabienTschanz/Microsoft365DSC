@@ -900,6 +900,7 @@ class SPOTenantSettings : M365DSCResourceBase
         }
 
         $result = [SPOTenantSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

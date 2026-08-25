@@ -294,6 +294,7 @@ class EXOPartnerApplication : M365DSCResourceBase
         }
 
         $result = [EXOPartnerApplication]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -242,6 +242,7 @@ class AADMultiTenantOrganizationIdentitySyncPolicyTemplate : M365DSCResourceBase
         }
 
         $result = [AADMultiTenantOrganizationIdentitySyncPolicyTemplate]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

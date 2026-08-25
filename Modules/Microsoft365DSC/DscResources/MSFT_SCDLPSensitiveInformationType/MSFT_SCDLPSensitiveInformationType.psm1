@@ -288,6 +288,7 @@ class SCDLPSensitiveInformationType : M365DSCResourceBase
         }
 
         $result = [SCDLPSensitiveInformationType]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

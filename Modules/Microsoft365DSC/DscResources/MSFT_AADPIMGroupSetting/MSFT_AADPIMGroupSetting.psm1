@@ -1196,6 +1196,7 @@ class AADPIMGroupSetting : M365DSCResourceBase
         }
 
         $result = [AADPIMGroupSetting]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

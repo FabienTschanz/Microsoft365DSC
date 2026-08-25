@@ -217,6 +217,7 @@ class AADSecurityDefaults : M365DSCResourceBase
         }
 
         $result = [AADSecurityDefaults]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

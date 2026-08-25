@@ -412,6 +412,7 @@ class AADAuthenticationMethodPolicyTemporary : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationMethodPolicyTemporary]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

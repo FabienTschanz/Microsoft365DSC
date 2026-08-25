@@ -334,6 +334,7 @@ class EXOOutboundConnector : M365DSCResourceBase
         }
 
         $result = [EXOOutboundConnector]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -323,6 +323,7 @@ class SPOSiteDesign : M365DSCResourceBase
         }
 
         $result = [SPOSiteDesign]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

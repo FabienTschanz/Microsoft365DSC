@@ -425,6 +425,7 @@ class IntuneAppControlForBusinessPolicyWindows10V2 : M365DSCResourceBase
         }
 
         $result = [IntuneAppControlForBusinessPolicyWindows10V2]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

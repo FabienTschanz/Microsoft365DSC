@@ -318,6 +318,7 @@ class PlannerPlan : M365DSCResourceBase
         }
 
         $result = [PlannerPlan]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

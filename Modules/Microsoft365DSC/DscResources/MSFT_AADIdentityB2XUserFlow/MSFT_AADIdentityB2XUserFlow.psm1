@@ -527,6 +527,7 @@ class AADIdentityB2XUserFlow : M365DSCResourceBase
         }
 
         $result = [AADIdentityB2XUserFlow]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

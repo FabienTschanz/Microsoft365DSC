@@ -281,6 +281,7 @@ class EXOManagementRoleEntry : M365DSCResourceBase
         }
 
         $result = [EXOManagementRoleEntry]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

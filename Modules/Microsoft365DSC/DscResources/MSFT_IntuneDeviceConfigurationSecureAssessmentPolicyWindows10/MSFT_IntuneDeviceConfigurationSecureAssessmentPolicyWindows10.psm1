@@ -417,6 +417,7 @@ class IntuneDeviceConfigurationSecureAssessmentPolicyWindows10 : M365DSCResource
         }
 
         $result = [IntuneDeviceConfigurationSecureAssessmentPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

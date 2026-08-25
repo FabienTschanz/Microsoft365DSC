@@ -376,6 +376,7 @@ class IntuneAlertRuleWindows365 : M365DSCResourceBase
         }
 
         $result = [IntuneAlertRuleWindows365]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

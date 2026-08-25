@@ -259,6 +259,7 @@ class TeamsTenantNetworkRegion : M365DSCResourceBase
         }
 
         $result = [TeamsTenantNetworkRegion]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

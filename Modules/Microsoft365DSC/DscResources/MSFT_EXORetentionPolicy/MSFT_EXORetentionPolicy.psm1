@@ -258,6 +258,7 @@ class EXORetentionPolicy : M365DSCResourceBase
         }
 
         $result = [EXORetentionPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

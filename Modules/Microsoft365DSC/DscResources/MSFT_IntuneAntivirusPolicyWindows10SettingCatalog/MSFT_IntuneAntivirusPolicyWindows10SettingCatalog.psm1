@@ -891,6 +891,7 @@ class IntuneAntivirusPolicyWindows10SettingCatalog : M365DSCResourceBase
         }
 
         $result = [IntuneAntivirusPolicyWindows10SettingCatalog]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

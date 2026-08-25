@@ -420,6 +420,7 @@ class IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner : M365DSCResourc
         }
 
         $result = [IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

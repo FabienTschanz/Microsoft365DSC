@@ -373,6 +373,7 @@ class AADNamedLocationPolicy : M365DSCResourceBase
         }
 
         $result = [AADNamedLocationPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

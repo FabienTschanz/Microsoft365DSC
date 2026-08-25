@@ -350,6 +350,7 @@ class AzureDiagnosticSettings : M365DSCResourceBase
         }
 
         $result = [AzureDiagnosticSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

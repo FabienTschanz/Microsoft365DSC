@@ -408,6 +408,7 @@ class AADClaimsMappingPolicy : M365DSCResourceBase
         }
 
         $result = [AADClaimsMappingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

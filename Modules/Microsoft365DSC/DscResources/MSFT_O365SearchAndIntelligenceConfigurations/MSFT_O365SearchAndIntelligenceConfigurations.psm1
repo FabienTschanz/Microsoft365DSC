@@ -308,6 +308,7 @@ class O365SearchAndIntelligenceConfigurations : M365DSCResourceBase
         }
 
         $result = [O365SearchAndIntelligenceConfigurations]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

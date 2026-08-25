@@ -792,6 +792,7 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
         }
 
         $result = [AADCrossTenantAccessPolicyConfigurationPartner]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

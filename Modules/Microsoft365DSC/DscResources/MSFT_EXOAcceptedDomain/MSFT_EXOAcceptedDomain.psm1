@@ -256,6 +256,7 @@ class EXOAcceptedDomain : M365DSCResourceBase
         }
 
         $result = [EXOAcceptedDomain]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

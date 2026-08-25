@@ -1009,6 +1009,7 @@ class AADUser : M365DSCResourceBase
         }
 
         $result = [AADUser]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

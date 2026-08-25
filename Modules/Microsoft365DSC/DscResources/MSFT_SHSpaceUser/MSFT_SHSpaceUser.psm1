@@ -314,6 +314,7 @@ class SHSpaceUser : M365DSCResourceBase
         }
 
         $result = [SHSpaceUser]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

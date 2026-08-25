@@ -283,6 +283,7 @@ class EXOJournalRule : M365DSCResourceBase
         }
 
         $result = [EXOJournalRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

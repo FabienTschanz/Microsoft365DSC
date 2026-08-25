@@ -441,6 +441,7 @@ class EXOAntiPhishPolicy : M365DSCResourceBase
         }
 
         $result = [EXOAntiPhishPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

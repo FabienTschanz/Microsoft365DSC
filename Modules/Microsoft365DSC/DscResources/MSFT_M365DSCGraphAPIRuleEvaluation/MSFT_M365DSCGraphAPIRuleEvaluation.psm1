@@ -289,6 +289,7 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
         }
 
         $result = [M365DSCGraphAPIRuleEvaluation]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

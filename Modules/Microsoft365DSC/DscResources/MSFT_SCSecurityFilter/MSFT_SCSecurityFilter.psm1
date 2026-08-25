@@ -298,6 +298,7 @@ class SCSecurityFilter : M365DSCResourceBase
         }
 
         $result = [SCSecurityFilter]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

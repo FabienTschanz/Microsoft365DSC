@@ -463,6 +463,7 @@ class TeamsMessagingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsMessagingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

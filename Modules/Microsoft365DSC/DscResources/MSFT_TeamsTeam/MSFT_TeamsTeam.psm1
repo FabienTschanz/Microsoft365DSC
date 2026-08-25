@@ -464,6 +464,7 @@ class TeamsTeam : M365DSCResourceBase
         }
 
         $result = [TeamsTeam]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

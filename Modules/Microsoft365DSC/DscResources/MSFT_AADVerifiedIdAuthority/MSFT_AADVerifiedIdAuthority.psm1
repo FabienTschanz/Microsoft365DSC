@@ -367,6 +367,7 @@ class AADVerifiedIdAuthority : M365DSCResourceBase
         }
 
         $result = [AADVerifiedIdAuthority]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

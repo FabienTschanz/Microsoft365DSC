@@ -152,7 +152,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             id                      = 'FakeStringValue'
                             isRequired              = $True
                             odataType               = '#microsoft.graph.accessPackageMultipleChoiceQuestion'
-                            sequence                = 25
+                            SequencePosition        = 25
                         })
                     )
                     RequestApprovalSettings = ([MSFT_MicrosoftGraphapprovalsettings] @{
@@ -216,7 +216,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             id                      = 'FakeStringValue'
                             isRequired              = $True
                             odataType               = '#microsoft.graph.accessPackageMultipleChoiceQuestion'
-                            sequence                = 25
+                            SequencePosition        = 25
                         })
                     )
                     RequestApprovalSettings = ([MSFT_MicrosoftGraphapprovalsettings] @{
@@ -279,7 +279,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             id                      = 'FakeStringValue'
                             isRequired              = $True
                             odataType               = '#microsoft.graph.accessPackageMultipleChoiceQuestion'
-                            sequence                = 25
+                            SequencePosition        = 25
                         })
                     )
                     RequestApprovalSettings = ([MSFT_MicrosoftGraphapprovalsettings] @{
@@ -334,7 +334,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             id                      = 'FakeStringValue'
                             isRequired              = $True
                             odataType               = '#microsoft.graph.accessPackageMultipleChoiceQuestion'
-                            sequence                = 25
+                            SequencePosition        = 25
                         })
                     )
                     RequestApprovalSettings = ([MSFT_MicrosoftGraphapprovalsettings] @{

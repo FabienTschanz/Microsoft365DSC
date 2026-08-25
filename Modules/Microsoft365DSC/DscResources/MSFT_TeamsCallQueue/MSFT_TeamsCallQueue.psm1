@@ -846,6 +846,7 @@ class TeamsCallQueue : M365DSCResourceBase
         }
 
         $result = [TeamsCallQueue]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

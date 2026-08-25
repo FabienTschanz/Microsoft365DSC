@@ -615,6 +615,7 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsWindowsOfficeSuiteApp]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -432,6 +432,7 @@ class TeamsChannelTab : M365DSCResourceBase
         }
 
         $result = [TeamsChannelTab]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

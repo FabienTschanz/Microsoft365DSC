@@ -240,6 +240,7 @@ class EXOEmailTenantSettings : M365DSCResourceBase
         }
 
         $result = [EXOEmailTenantSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

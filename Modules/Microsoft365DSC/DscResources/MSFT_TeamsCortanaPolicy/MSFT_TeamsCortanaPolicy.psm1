@@ -258,6 +258,7 @@ class TeamsCortanaPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsCortanaPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -582,6 +582,7 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
         }
 
         $result = [AADRoleManagementPolicyRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

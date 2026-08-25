@@ -241,6 +241,7 @@ class SCDeviceConfigurationPolicy : M365DSCResourceBase
         }
 
         $result = [SCDeviceConfigurationPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

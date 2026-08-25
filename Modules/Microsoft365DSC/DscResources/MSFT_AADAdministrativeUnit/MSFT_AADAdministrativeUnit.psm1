@@ -892,6 +892,7 @@ class AADAdministrativeUnit : M365DSCResourceBase
         }
 
         $result = [AADAdministrativeUnit]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

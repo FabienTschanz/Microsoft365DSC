@@ -266,6 +266,7 @@ class TeamsTemplatesPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsTemplatesPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -262,6 +262,7 @@ class TeamsEnhancedEncryptionPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsEnhancedEncryptionPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

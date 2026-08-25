@@ -271,6 +271,7 @@ class EXODataEncryptionPolicy : M365DSCResourceBase
         }
 
         $result = [EXODataEncryptionPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

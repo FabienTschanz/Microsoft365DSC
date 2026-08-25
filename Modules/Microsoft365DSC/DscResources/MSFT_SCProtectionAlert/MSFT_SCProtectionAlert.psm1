@@ -354,6 +354,7 @@ class SCProtectionAlert : M365DSCResourceBase
         }
 
         $result = [SCProtectionAlert]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

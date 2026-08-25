@@ -450,6 +450,7 @@ class IntuneWifiConfigurationPolicyIOS : M365DSCResourceBase
         }
 
         $result = [IntuneWifiConfigurationPolicyIOS]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

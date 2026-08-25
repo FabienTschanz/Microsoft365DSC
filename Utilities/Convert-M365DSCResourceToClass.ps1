@@ -1642,6 +1642,7 @@ function Convert-Resource
     [void] $builder.AppendLine('        }')
     [void] $builder.AppendLine('')
     [void] $builder.AppendLine("        `$result = [$friendly]::new()")
+    [void] $builder.AppendLine('        $result.ClearNonSchemaProperties()')
     [void] $builder.AppendLine('        if ($Values -is [System.Collections.Hashtable])')
     [void] $builder.AppendLine('        {')
     [void] $builder.AppendLine('            $result.FromHashtable($Values)')

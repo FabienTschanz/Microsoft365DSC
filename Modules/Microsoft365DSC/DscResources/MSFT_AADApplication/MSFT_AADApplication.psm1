@@ -1829,6 +1829,7 @@ class AADApplication : M365DSCResourceBase
         }
 
         $result = [AADApplication]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

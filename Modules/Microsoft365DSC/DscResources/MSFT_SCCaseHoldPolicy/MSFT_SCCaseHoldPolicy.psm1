@@ -337,6 +337,7 @@ class SCCaseHoldPolicy : M365DSCResourceBase
         }
 
         $result = [SCCaseHoldPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -368,6 +368,7 @@ class IntuneTrustedRootCertificateAndroidWork : M365DSCResourceBase
         }
 
         $result = [IntuneTrustedRootCertificateAndroidWork]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

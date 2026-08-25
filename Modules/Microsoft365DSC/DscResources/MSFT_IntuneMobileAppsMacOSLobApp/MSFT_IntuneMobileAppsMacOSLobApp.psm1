@@ -570,6 +570,7 @@ class IntuneMobileAppsMacOSLobApp : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsMacOSLobApp]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

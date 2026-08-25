@@ -256,6 +256,7 @@ class TeamsDialInConferencingTenantSettings : M365DSCResourceBase
         }
 
         $result = [TeamsDialInConferencingTenantSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

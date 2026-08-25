@@ -257,6 +257,7 @@ class SCFilePlanPropertySubCategory : M365DSCResourceBase
         }
 
         $result = [SCFilePlanPropertySubCategory]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

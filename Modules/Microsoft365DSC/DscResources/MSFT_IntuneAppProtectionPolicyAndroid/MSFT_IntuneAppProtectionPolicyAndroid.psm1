@@ -930,6 +930,7 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
         }
 
         $result = [IntuneAppProtectionPolicyAndroid]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

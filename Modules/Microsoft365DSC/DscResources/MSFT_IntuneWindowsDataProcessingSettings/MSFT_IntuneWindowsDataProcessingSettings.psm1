@@ -206,6 +206,7 @@ class IntuneWindowsDataProcessingSettings : M365DSCResourceBase
         }
 
         $result = [IntuneWindowsDataProcessingSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

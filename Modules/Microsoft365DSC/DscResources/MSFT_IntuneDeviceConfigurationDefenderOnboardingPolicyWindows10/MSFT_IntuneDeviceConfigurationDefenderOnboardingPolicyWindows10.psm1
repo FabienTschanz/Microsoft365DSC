@@ -426,6 +426,7 @@ class IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10 : M365DSCResour
         }
 
         $result = [IntuneDeviceConfigurationDefenderOnboardingPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

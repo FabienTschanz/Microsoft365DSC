@@ -600,6 +600,7 @@ class IntuneVPNConfigurationPolicyAndroidWork : M365DSCResourceBase
         }
 
         $result = [IntuneVPNConfigurationPolicyAndroidWork]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

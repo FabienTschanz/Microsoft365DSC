@@ -1814,6 +1814,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
         }
 
         $result = [AADConditionalAccessPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -291,6 +291,7 @@ class EXOHostedOutboundSpamFilterPolicy : M365DSCResourceBase
         }
 
         $result = [EXOHostedOutboundSpamFilterPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

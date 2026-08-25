@@ -272,6 +272,7 @@ class IntuneAppCategory : M365DSCResourceBase
         }
 
         $result = [IntuneAppCategory]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

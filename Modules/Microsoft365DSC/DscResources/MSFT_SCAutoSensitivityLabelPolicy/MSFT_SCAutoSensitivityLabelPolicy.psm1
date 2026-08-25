@@ -437,6 +437,7 @@ class SCAutoSensitivityLabelPolicy : M365DSCResourceBase
         }
 
         $result = [SCAutoSensitivityLabelPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

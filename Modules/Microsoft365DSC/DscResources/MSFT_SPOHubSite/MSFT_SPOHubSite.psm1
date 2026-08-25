@@ -500,6 +500,7 @@ class SPOHubSite : M365DSCResourceBase
         }
 
         $result = [SPOHubSite]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -884,6 +884,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
         }
 
         $result = [IntuneAppProtectionPolicyiOS]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

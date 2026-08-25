@@ -249,6 +249,7 @@ class O365CopilotSettingsPeopleEnhancedPersonalization : M365DSCResourceBase
         }
 
         $result = [O365CopilotSettingsPeopleEnhancedPersonalization]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

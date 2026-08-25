@@ -433,6 +433,7 @@ class EXOGlobalAddressList : M365DSCResourceBase
         }
 
         $result = [EXOGlobalAddressList]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

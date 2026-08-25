@@ -692,6 +692,7 @@ class AADVerifiedIdAuthorityContract : M365DSCResourceBase
         }
 
         $result = [AADVerifiedIdAuthorityContract]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

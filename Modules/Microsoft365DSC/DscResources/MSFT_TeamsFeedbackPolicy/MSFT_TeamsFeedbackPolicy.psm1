@@ -278,6 +278,7 @@ class TeamsFeedbackPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsFeedbackPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

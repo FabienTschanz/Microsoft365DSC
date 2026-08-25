@@ -540,6 +540,7 @@ class AADIdentityGovernanceLifecycleWorkflow : M365DSCResourceBase
         }
 
         $result = [AADIdentityGovernanceLifecycleWorkflow]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -281,6 +281,7 @@ class TeamsAudioConferencingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsAudioConferencingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

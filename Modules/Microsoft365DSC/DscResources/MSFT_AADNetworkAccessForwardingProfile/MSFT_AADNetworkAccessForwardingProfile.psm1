@@ -343,6 +343,7 @@ class AADNetworkAccessForwardingProfile : M365DSCResourceBase
         }
 
         $result = [AADNetworkAccessForwardingProfile]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

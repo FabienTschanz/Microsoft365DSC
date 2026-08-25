@@ -345,6 +345,7 @@ class EXOHostedContentFilterRule : M365DSCResourceBase
         }
 
         $result = [EXOHostedContentFilterRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

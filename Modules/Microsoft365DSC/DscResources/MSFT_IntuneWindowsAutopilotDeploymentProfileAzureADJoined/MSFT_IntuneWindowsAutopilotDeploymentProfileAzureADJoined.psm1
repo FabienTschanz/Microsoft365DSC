@@ -551,6 +551,7 @@ class IntuneWindowsAutopilotDeploymentProfileAzureADJoined : M365DSCResourceBase
         }
 
         $result = [IntuneWindowsAutopilotDeploymentProfileAzureADJoined]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

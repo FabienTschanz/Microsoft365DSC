@@ -796,6 +796,7 @@ class IntuneAntivirusPolicyLinux : M365DSCResourceBase
         }
 
         $result = [IntuneAntivirusPolicyLinux]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

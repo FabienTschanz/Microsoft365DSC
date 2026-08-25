@@ -275,6 +275,7 @@ class EXOIntraOrganizationConnector : M365DSCResourceBase
         }
 
         $result = [EXOIntraOrganizationConnector]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -351,6 +351,7 @@ class AzureDiagnosticSettingsCustomSecurityAttribute : M365DSCResourceBase
         }
 
         $result = [AzureDiagnosticSettingsCustomSecurityAttribute]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

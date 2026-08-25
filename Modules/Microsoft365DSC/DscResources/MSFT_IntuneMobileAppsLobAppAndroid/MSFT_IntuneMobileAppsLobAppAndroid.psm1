@@ -545,6 +545,7 @@ class IntuneMobileAppsLobAppAndroid : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsLobAppAndroid]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

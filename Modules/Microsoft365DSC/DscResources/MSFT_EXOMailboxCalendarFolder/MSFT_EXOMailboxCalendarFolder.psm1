@@ -271,6 +271,7 @@ class EXOMailboxCalendarFolder : M365DSCResourceBase
         }
 
         $result = [EXOMailboxCalendarFolder]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -319,6 +319,7 @@ class DefenderRoleDefinition : M365DSCResourceBase
         }
 
         $result = [DefenderRoleDefinition]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

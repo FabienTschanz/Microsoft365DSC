@@ -286,6 +286,7 @@ class TeamsIPPhonePolicy : M365DSCResourceBase
         }
 
         $result = [TeamsIPPhonePolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

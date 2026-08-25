@@ -377,6 +377,7 @@ class EXORemoteDomain : M365DSCResourceBase
         }
 
         $result = [EXORemoteDomain]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -459,6 +459,7 @@ class SentinelWatchlist : M365DSCResourceBase
         }
 
         $result = [SentinelWatchlist]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

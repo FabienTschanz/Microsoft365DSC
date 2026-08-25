@@ -458,6 +458,7 @@ class IntuneDefenderGlobalExclusionsPolicyLinux : M365DSCResourceBase
         }
 
         $result = [IntuneDefenderGlobalExclusionsPolicyLinux]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

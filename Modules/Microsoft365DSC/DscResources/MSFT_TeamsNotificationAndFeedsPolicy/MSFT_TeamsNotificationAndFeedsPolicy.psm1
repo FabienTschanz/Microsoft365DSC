@@ -237,6 +237,7 @@ class TeamsNotificationAndFeedsPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsNotificationAndFeedsPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -814,6 +814,7 @@ class SCRetentionCompliancePolicy : M365DSCResourceBase
         }
 
         $result = [SCRetentionCompliancePolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -628,6 +628,7 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceCompliancePolicyAndroidWorkProfile]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

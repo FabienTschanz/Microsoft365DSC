@@ -258,6 +258,7 @@ class TeamsCallHoldPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsCallHoldPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

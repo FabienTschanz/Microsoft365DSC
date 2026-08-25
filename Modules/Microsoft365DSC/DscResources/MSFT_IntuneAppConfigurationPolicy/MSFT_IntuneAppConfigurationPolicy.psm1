@@ -587,6 +587,7 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
         }
 
         $result = [IntuneAppConfigurationPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

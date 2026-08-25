@@ -562,6 +562,7 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceEnrollmentStatusPageWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

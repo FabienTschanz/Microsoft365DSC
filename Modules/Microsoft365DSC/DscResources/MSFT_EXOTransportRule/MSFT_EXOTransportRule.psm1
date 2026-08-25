@@ -1200,6 +1200,7 @@ class EXOTransportRule : M365DSCResourceBase
         }
 
         $result = [EXOTransportRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

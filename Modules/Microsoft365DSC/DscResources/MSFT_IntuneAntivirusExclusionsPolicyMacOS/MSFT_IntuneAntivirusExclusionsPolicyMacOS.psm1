@@ -446,6 +446,7 @@ class IntuneAntivirusExclusionsPolicyMacOS : M365DSCResourceBase
         }
 
         $result = [IntuneAntivirusExclusionsPolicyMacOS]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

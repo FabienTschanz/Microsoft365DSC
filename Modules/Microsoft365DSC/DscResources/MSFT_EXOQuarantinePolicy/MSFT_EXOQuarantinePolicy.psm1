@@ -442,6 +442,7 @@ class EXOQuarantinePolicy : M365DSCResourceBase
         }
 
         $result = [EXOQuarantinePolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -266,6 +266,7 @@ class SCSupervisoryReviewPolicy : M365DSCResourceBase
         }
 
         $result = [SCSupervisoryReviewPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

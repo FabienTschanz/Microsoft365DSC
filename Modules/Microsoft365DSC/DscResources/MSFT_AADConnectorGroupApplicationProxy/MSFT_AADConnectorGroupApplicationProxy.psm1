@@ -311,6 +311,7 @@ class AADConnectorGroupApplicationProxy : M365DSCResourceBase
         }
 
         $result = [AADConnectorGroupApplicationProxy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

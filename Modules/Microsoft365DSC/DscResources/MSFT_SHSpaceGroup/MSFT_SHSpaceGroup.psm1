@@ -333,6 +333,7 @@ class SHSpaceGroup : M365DSCResourceBase
         }
 
         $result = [SHSpaceGroup]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

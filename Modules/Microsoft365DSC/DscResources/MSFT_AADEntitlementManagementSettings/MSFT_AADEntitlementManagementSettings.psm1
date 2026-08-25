@@ -199,6 +199,7 @@ class AADEntitlementManagementSettings : M365DSCResourceBase
         }
 
         $result = [AADEntitlementManagementSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

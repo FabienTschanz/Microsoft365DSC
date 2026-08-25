@@ -236,6 +236,7 @@ class TeamsPstnUsage : M365DSCResourceBase
         }
 
         $result = [TeamsPstnUsage]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -265,6 +265,7 @@ class AADB2BManagementPolicy : M365DSCResourceBase
         }
 
         $result = [AADB2BManagementPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

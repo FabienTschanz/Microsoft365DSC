@@ -429,6 +429,7 @@ class DefenderDeviceAuthenticatedScanDefinition : M365DSCResourceBase
         }
 
         $result = [DefenderDeviceAuthenticatedScanDefinition]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

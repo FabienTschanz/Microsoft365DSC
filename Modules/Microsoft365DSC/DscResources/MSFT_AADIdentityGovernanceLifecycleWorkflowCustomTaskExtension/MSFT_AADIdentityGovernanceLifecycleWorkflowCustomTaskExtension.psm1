@@ -481,6 +481,7 @@ class AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension : M365DSCResourc
         }
 
         $result = [AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

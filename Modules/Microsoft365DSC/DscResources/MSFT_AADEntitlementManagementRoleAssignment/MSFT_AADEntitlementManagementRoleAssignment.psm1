@@ -422,6 +422,7 @@ class AADEntitlementManagementRoleAssignment : M365DSCResourceBase
         }
 
         $result = [AADEntitlementManagementRoleAssignment]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -305,6 +305,7 @@ class EXOOnPremisesOrganization : M365DSCResourceBase
         }
 
         $result = [EXOOnPremisesOrganization]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

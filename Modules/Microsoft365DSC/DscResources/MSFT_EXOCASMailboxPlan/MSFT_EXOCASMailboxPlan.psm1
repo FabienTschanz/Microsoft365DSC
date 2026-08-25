@@ -284,6 +284,7 @@ class EXOCASMailboxPlan : M365DSCResourceBase
         }
 
         $result = [EXOCASMailboxPlan]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

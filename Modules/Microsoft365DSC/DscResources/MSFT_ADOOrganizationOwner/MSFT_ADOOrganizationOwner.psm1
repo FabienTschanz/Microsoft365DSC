@@ -228,6 +228,7 @@ class ADOOrganizationOwner : M365DSCResourceBase
         }
 
         $result = [ADOOrganizationOwner]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

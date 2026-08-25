@@ -505,6 +505,7 @@ class IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager : M365DSCRes
         }
 
         $result = [IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

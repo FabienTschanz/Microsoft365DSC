@@ -273,6 +273,7 @@ class EXOAvailabilityConfig : M365DSCResourceBase
         }
 
         $result = [EXOAvailabilityConfig]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

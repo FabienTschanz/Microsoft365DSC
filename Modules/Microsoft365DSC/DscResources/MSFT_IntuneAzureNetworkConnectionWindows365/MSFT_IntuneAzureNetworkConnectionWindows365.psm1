@@ -439,6 +439,7 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
         }
 
         $result = [IntuneAzureNetworkConnectionWindows365]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

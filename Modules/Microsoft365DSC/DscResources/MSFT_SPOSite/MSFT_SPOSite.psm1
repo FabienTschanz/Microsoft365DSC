@@ -802,6 +802,7 @@ class SPOSite : M365DSCResourceBase
         }
 
         $result = [SPOSite]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

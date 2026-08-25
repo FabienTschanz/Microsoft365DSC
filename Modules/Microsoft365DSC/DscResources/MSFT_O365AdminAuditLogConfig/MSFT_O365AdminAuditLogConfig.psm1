@@ -249,6 +249,7 @@ class O365AdminAuditLogConfig : M365DSCResourceBase
         }
 
         $result = [O365AdminAuditLogConfig]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

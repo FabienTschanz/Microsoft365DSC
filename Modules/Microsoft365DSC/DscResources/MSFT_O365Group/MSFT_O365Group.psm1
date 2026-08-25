@@ -486,6 +486,7 @@ class O365Group : M365DSCResourceBase
         }
 
         $result = [O365Group]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

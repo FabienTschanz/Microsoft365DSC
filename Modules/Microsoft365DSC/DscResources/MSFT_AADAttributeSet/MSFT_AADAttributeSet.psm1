@@ -270,6 +270,7 @@ class AADAttributeSet : M365DSCResourceBase
         }
 
         $result = [AADAttributeSet]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

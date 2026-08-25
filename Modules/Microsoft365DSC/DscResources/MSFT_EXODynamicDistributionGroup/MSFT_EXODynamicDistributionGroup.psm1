@@ -966,6 +966,7 @@ class EXODynamicDistributionGroup : M365DSCResourceBase
         }
 
         $result = [EXODynamicDistributionGroup]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

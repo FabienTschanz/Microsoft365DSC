@@ -508,6 +508,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
         }
 
         $result = [IntuneRoleAssignment]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

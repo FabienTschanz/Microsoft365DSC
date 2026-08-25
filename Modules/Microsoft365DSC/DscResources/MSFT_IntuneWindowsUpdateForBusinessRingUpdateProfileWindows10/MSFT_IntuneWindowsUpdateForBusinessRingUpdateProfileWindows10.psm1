@@ -710,6 +710,7 @@ class IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10 : M365DSCResource
         }
 
         $result = [IntuneWindowsUpdateForBusinessRingUpdateProfileWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

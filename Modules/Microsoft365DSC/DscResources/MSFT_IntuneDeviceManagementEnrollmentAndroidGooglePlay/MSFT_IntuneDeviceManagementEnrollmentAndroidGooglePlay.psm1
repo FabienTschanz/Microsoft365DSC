@@ -260,6 +260,7 @@ class IntuneDeviceManagementEnrollmentAndroidGooglePlay : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceManagementEnrollmentAndroidGooglePlay]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

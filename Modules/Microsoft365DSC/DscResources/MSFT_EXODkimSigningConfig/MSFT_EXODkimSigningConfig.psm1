@@ -273,6 +273,7 @@ class EXODkimSigningConfig : M365DSCResourceBase
         }
 
         $result = [EXODkimSigningConfig]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

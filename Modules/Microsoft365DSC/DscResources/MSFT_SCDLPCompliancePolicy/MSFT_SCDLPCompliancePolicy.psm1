@@ -779,6 +779,7 @@ class SCDLPCompliancePolicy : M365DSCResourceBase
         }
 
         $result = [SCDLPCompliancePolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

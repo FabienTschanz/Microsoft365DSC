@@ -380,6 +380,7 @@ class TeamsAppSetupPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsAppSetupPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

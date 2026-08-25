@@ -285,6 +285,7 @@ class AADSocialIdentityProvider : M365DSCResourceBase
         }
 
         $result = [AADSocialIdentityProvider]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

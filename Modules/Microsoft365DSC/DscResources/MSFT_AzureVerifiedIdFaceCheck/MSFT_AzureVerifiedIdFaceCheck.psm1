@@ -287,6 +287,7 @@ class AzureVerifiedIdFaceCheck : M365DSCResourceBase
         }
 
         $result = [AzureVerifiedIdFaceCheck]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

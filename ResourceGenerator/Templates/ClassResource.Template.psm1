@@ -6,6 +6,10 @@ using module ..\_Base\M365DSCResourceBase.psm1
 class <ResourceName> : M365DSCResourceBase
 {
 <PropertyBlock>
+<#IF ExportOnlyPropertyBlock#>
+
+<ExportOnlyPropertyBlock>
+<#ENDIF ExportOnlyPropertyBlock#>
 
     [<ResourceName>] Get()
     {
@@ -202,7 +206,6 @@ class <ResourceName> : M365DSCResourceBase
         }
     }
 
-    # Materialises a Get() result. DSC needs the typed instance rather than a hashtable.
     hidden [<ResourceName>] AsResult([System.Object] $Values)
     {
         if ($Values -is [<ResourceName>])
@@ -211,6 +214,7 @@ class <ResourceName> : M365DSCResourceBase
         }
 
         $result = [<ResourceName>]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

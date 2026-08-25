@@ -575,6 +575,7 @@ class IntuneMobileAppsWebLink : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsWebLink]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -265,6 +265,7 @@ class EXOATPBuiltInProtectionRule : M365DSCResourceBase
         }
 
         $result = [EXOATPBuiltInProtectionRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

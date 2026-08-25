@@ -977,6 +977,7 @@ class SCInsiderRiskEntityList : M365DSCResourceBase
         }
 
         $result = [SCInsiderRiskEntityList]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

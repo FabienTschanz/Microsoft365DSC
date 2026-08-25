@@ -554,6 +554,7 @@ class IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr : M365DSCResourc
         }
 
         $result = [IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

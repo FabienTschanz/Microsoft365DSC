@@ -515,6 +515,7 @@ class EXOActiveSyncMailboxPolicy : M365DSCResourceBase
         }
 
         $result = [EXOActiveSyncMailboxPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

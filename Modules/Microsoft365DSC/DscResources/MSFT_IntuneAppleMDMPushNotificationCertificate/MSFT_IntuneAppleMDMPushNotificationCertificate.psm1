@@ -290,6 +290,7 @@ class IntuneAppleMDMPushNotificationCertificate : M365DSCResourceBase
         }
 
         $result = [IntuneAppleMDMPushNotificationCertificate]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

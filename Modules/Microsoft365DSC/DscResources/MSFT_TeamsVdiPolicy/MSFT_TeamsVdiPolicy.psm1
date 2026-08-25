@@ -262,6 +262,7 @@ class TeamsVdiPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsVdiPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

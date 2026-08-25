@@ -460,6 +460,7 @@ class IntuneEndpointDetectionAndResponsePolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneEndpointDetectionAndResponsePolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

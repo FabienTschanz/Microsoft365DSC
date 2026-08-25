@@ -359,6 +359,7 @@ class PPDLPPolicyConnectorConfigurations : M365DSCResourceBase
         }
 
         $result = [PPDLPPolicyConnectorConfigurations]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

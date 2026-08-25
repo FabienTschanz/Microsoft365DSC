@@ -436,6 +436,7 @@ class AADDomainFederation : M365DSCResourceBase
         }
 
         $result = [AADDomainFederation]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

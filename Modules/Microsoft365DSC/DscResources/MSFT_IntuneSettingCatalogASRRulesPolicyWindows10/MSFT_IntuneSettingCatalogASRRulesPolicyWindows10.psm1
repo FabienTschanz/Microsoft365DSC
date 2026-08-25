@@ -592,6 +592,7 @@ class IntuneSettingCatalogASRRulesPolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneSettingCatalogASRRulesPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

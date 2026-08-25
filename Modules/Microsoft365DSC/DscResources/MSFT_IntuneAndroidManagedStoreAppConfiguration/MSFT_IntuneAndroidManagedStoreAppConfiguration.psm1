@@ -453,6 +453,7 @@ class IntuneAndroidManagedStoreAppConfiguration : M365DSCResourceBase
         }
 
         $result = [IntuneAndroidManagedStoreAppConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

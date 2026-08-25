@@ -239,6 +239,7 @@ class TeamsUpgradePolicy : M365DSCResourceBase
         }
 
         $result = [TeamsUpgradePolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

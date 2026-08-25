@@ -336,6 +336,7 @@ class TeamsAppPermissionPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsAppPermissionPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -1459,6 +1459,7 @@ class IntuneDeviceConfigurationPolicyAndroidDeviceOwner : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceConfigurationPolicyAndroidDeviceOwner]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

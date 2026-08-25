@@ -330,6 +330,7 @@ class TeamsEmergencyCallRoutingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsEmergencyCallRoutingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

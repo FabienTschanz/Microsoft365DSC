@@ -444,6 +444,7 @@ class SPOSiteGroup : M365DSCResourceBase
         }
 
         $result = [SPOSiteGroup]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

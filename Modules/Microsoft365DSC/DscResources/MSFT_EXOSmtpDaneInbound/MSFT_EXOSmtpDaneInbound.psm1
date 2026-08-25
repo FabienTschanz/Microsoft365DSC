@@ -240,6 +240,7 @@ class EXOSmtpDaneInbound : M365DSCResourceBase
         }
 
         $result = [EXOSmtpDaneInbound]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

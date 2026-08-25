@@ -388,6 +388,7 @@ class AADAppManagementPolicy : M365DSCResourceBase
         }
 
         $result = [AADAppManagementPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

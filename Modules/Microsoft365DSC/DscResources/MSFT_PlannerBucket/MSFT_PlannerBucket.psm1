@@ -277,6 +277,7 @@ class PlannerBucket : M365DSCResourceBase
         }
 
         $result = [PlannerBucket]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

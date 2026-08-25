@@ -374,6 +374,7 @@ class PPPowerAppsEnvironment : M365DSCResourceBase
         }
 
         $result = [PPPowerAppsEnvironment]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

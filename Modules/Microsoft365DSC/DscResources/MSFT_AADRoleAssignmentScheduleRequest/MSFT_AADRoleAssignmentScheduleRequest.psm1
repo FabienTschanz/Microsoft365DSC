@@ -683,6 +683,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         }
 
         $result = [AADRoleAssignmentScheduleRequest]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

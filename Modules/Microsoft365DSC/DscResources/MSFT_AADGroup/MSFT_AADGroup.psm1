@@ -1187,6 +1187,7 @@ class AADGroup : M365DSCResourceBase
         }
 
         $result = [AADGroup]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

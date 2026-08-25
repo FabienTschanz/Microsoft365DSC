@@ -272,6 +272,7 @@ class TeamsTenantNetworkSubnet : M365DSCResourceBase
         }
 
         $result = [TeamsTenantNetworkSubnet]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

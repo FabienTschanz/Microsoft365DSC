@@ -307,6 +307,7 @@ class SCUnifiedAuditLogRetentionPolicy : M365DSCResourceBase
         }
 
         $result = [SCUnifiedAuditLogRetentionPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

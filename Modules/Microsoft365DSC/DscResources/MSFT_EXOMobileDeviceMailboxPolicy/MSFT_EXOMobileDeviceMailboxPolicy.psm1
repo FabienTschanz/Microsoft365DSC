@@ -586,6 +586,7 @@ class EXOMobileDeviceMailboxPolicy : M365DSCResourceBase
         }
 
         $result = [EXOMobileDeviceMailboxPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

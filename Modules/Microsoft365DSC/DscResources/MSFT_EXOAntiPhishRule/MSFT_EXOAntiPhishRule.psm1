@@ -332,6 +332,7 @@ class EXOAntiPhishRule : M365DSCResourceBase
         }
 
         $result = [EXOAntiPhishRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

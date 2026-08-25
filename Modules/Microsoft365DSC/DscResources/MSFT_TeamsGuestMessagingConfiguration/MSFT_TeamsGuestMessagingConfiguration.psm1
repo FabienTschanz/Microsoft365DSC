@@ -253,6 +253,7 @@ class TeamsGuestMessagingConfiguration : M365DSCResourceBase
         }
 
         $result = [TeamsGuestMessagingConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

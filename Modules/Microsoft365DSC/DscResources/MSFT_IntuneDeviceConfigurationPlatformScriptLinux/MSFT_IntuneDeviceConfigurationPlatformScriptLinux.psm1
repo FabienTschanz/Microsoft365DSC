@@ -427,6 +427,7 @@ class IntuneDeviceConfigurationPlatformScriptLinux : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceConfigurationPlatformScriptLinux]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

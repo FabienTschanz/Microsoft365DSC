@@ -200,6 +200,7 @@ class TeamsUpgradeConfiguration : M365DSCResourceBase
         }
 
         $result = [TeamsUpgradeConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

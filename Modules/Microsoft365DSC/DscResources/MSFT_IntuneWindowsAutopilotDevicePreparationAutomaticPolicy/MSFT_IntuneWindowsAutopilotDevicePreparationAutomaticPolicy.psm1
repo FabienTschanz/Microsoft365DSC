@@ -488,6 +488,7 @@ class IntuneWindowsAutopilotDevicePreparationAutomaticPolicy : M365DSCResourceBa
         }
 
         $result = [IntuneWindowsAutopilotDevicePreparationAutomaticPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

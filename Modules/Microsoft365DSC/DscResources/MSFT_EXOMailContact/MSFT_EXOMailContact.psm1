@@ -457,6 +457,7 @@ class EXOMailContact : M365DSCResourceBase
         }
 
         $result = [EXOMailContact]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

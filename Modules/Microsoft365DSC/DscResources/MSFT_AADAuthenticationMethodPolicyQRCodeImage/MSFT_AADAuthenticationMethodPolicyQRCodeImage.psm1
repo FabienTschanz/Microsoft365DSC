@@ -366,6 +366,7 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationMethodPolicyQRCodeImage]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

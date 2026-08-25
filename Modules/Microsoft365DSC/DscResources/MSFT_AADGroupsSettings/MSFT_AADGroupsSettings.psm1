@@ -369,6 +369,7 @@ class AADGroupsSettings : M365DSCResourceBase
         }
 
         $result = [AADGroupsSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

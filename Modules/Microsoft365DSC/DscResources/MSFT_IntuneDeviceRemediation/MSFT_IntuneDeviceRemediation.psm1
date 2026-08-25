@@ -641,6 +641,7 @@ class IntuneDeviceRemediation : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceRemediation]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

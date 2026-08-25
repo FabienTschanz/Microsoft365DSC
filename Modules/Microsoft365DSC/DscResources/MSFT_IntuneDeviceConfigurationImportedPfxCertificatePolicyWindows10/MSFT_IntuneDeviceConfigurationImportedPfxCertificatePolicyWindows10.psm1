@@ -440,6 +440,7 @@ class IntuneDeviceConfigurationImportedPfxCertificatePolicyWindows10 : M365DSCRe
         }
 
         $result = [IntuneDeviceConfigurationImportedPfxCertificatePolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

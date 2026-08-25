@@ -492,6 +492,7 @@ class IntuneAppAndBrowserIsolationPolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneAppAndBrowserIsolationPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

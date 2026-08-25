@@ -164,6 +164,11 @@ function Get-M365DSCGenericCmdletInfo
         }
     }
 
+    # Whether Export() can pass the -Filters entry the reverse engine collected. Also decides
+    # whether the class declares the export-only $Filter property that the engine probes for.
+    $getCommand = Get-Command -Name "Get-$CmdLetNoun" -ErrorAction SilentlyContinue
+    $result.SupportsFilter = $null -ne $getCommand -and $getCommand.Parameters.ContainsKey('Filter')
+
     # Key parameter of the Get cmdlet, for the Get() lookup.
     $getKeys = @(Get-M365DSCCmdletKeyParameter -CmdletName "Get-$CmdLetNoun" -ParameterSetNames @('Identity', 'Default'))
     $result.GetKeyParameters = $getKeys

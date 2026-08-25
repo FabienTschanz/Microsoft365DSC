@@ -381,6 +381,7 @@ class ADOSecurityPolicy : M365DSCResourceBase
         }
 
         $result = [ADOSecurityPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

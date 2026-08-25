@@ -259,6 +259,7 @@ class EXOManagementScope : M365DSCResourceBase
         }
 
         $result = [EXOManagementScope]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

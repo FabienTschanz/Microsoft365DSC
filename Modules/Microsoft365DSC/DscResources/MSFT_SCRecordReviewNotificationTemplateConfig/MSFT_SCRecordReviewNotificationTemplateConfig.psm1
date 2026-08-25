@@ -235,6 +235,7 @@ class SCRecordReviewNotificationTemplateConfig : M365DSCResourceBase
         }
 
         $result = [SCRecordReviewNotificationTemplateConfig]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

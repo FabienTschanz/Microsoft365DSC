@@ -243,6 +243,7 @@ class EXOTeamsProtectionPolicy : M365DSCResourceBase
         }
 
         $result = [EXOTeamsProtectionPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

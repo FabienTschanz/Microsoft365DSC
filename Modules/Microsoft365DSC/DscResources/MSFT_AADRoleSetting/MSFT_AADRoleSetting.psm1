@@ -1090,6 +1090,7 @@ class AADRoleSetting : M365DSCResourceBase
         }
 
         $result = [AADRoleSetting]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

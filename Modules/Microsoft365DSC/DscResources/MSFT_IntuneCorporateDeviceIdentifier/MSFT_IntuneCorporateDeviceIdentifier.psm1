@@ -482,6 +482,7 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
         }
 
         $result = [IntuneCorporateDeviceIdentifier]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

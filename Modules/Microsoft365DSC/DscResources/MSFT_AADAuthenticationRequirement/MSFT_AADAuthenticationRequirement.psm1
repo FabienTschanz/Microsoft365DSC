@@ -249,6 +249,7 @@ class AADAuthenticationRequirement : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationRequirement]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

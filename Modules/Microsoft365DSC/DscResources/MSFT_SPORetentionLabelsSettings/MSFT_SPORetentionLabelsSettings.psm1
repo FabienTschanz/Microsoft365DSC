@@ -260,6 +260,7 @@ class SPORetentionLabelsSettings : M365DSCResourceBase
         }
 
         $result = [SPORetentionLabelsSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

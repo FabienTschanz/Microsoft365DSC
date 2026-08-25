@@ -260,6 +260,7 @@ class TeamsOnlineVoiceUser : M365DSCResourceBase
         }
 
         $result = [TeamsOnlineVoiceUser]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

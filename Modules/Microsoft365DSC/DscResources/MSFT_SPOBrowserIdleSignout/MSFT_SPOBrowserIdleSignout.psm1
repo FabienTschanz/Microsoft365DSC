@@ -254,6 +254,7 @@ class SPOBrowserIdleSignout : M365DSCResourceBase
         }
 
         $result = [SPOBrowserIdleSignout]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

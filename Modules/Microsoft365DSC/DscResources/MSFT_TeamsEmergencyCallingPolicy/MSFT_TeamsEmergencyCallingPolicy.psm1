@@ -347,6 +347,7 @@ class TeamsEmergencyCallingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsEmergencyCallingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

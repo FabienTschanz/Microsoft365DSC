@@ -703,6 +703,7 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceCompliancePolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

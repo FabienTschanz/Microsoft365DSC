@@ -282,6 +282,7 @@ class EXORecipientPermission : M365DSCResourceBase
         }
 
         $result = [EXORecipientPermission]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

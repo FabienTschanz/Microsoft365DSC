@@ -334,6 +334,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceAndAppManagementAssignmentFilter]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

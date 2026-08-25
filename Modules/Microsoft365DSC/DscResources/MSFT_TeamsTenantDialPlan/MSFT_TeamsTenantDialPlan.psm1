@@ -450,6 +450,7 @@ class TeamsTenantDialPlan : M365DSCResourceBase
         }
 
         $result = [TeamsTenantDialPlan]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

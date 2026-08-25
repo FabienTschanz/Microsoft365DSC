@@ -214,6 +214,7 @@ class EXOPerimeterConfiguration : M365DSCResourceBase
         }
 
         $result = [EXOPerimeterConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

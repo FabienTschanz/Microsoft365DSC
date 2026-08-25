@@ -373,6 +373,7 @@ class PPAdminDLPPolicy : M365DSCResourceBase
         }
 
         $result = [PPAdminDLPPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

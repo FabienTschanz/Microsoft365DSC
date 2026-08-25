@@ -433,6 +433,7 @@ class IntuneEpmElevationSettingsPolicyWindows10 : M365DSCResourceBase
         }
 
         $result = [IntuneEpmElevationSettingsPolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -352,6 +352,7 @@ class IntuneDeviceManagementAndroidDeviceOwnerEnrollmentProfile : M365DSCResourc
         }
 
         $result = [IntuneDeviceManagementAndroidDeviceOwnerEnrollmentProfile]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

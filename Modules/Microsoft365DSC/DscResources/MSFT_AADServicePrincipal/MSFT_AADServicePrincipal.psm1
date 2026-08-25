@@ -1199,6 +1199,7 @@ class AADServicePrincipal : M365DSCResourceBase
         }
 
         $result = [AADServicePrincipal]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

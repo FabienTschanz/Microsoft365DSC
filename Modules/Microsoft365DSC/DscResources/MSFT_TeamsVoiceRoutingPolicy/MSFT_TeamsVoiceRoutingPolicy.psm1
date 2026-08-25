@@ -287,6 +287,7 @@ class TeamsVoiceRoutingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsVoiceRoutingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

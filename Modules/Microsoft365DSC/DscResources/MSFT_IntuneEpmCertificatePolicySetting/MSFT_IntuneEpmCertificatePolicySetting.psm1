@@ -361,6 +361,7 @@ class IntuneEpmCertificatePolicySetting : M365DSCResourceBase
         }
 
         $result = [IntuneEpmCertificatePolicySetting]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

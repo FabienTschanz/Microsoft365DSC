@@ -259,6 +259,7 @@ class TeamsTranslationRule : M365DSCResourceBase
         }
 
         $result = [TeamsTranslationRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

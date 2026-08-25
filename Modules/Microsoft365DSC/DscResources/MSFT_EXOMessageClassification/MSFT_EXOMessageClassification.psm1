@@ -286,6 +286,7 @@ class EXOMessageClassification : M365DSCResourceBase
         }
 
         $result = [EXOMessageClassification]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

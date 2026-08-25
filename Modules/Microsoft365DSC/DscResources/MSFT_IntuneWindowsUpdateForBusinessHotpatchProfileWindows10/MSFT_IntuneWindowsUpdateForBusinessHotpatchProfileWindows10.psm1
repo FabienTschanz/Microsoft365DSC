@@ -369,6 +369,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
         }
 
         $result = [IntuneWindowsUpdateForBusinessHotpatchProfileWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

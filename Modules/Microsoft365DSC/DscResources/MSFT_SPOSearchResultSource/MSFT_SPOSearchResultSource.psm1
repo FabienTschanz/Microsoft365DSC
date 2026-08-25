@@ -472,6 +472,7 @@ class SPOSearchResultSource : M365DSCResourceBase
         }
 
         $result = [SPOSearchResultSource]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -324,6 +324,7 @@ class EXOAtpProtectionPolicyRule : M365DSCResourceBase
         }
 
         $result = [EXOAtpProtectionPolicyRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

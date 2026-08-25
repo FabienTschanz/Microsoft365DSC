@@ -231,6 +231,7 @@ class AADAuthenticationFlowPolicy : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationFlowPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

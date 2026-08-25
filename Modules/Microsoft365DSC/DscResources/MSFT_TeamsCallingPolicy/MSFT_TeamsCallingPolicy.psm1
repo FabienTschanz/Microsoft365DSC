@@ -420,6 +420,7 @@ class TeamsCallingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsCallingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

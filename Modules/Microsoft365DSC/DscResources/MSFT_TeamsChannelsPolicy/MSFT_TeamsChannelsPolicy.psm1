@@ -269,6 +269,7 @@ class TeamsChannelsPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsChannelsPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

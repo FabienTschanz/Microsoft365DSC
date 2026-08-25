@@ -305,6 +305,7 @@ class EXOOMEConfiguration : M365DSCResourceBase
         }
 
         $result = [EXOOMEConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

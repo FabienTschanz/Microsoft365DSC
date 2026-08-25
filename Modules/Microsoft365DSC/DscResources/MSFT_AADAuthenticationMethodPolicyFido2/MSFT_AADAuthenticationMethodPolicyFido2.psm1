@@ -525,6 +525,7 @@ class AADAuthenticationMethodPolicyFido2 : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationMethodPolicyFido2]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

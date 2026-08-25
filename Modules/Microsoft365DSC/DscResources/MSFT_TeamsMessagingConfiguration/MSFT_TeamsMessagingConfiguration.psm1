@@ -264,6 +264,7 @@ class TeamsMessagingConfiguration : M365DSCResourceBase
         }
 
         $result = [TeamsMessagingConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

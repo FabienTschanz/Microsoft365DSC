@@ -578,6 +578,7 @@ class PPTenantIsolationSettings : M365DSCResourceBase
         }
 
         $result = [PPTenantIsolationSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

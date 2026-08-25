@@ -249,6 +249,7 @@ class SCAuditConfigurationPolicy : M365DSCResourceBase
         }
 
         $result = [SCAuditConfigurationPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

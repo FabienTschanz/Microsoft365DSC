@@ -443,6 +443,7 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
         }
 
         $result = [AADDeviceRegistrationPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

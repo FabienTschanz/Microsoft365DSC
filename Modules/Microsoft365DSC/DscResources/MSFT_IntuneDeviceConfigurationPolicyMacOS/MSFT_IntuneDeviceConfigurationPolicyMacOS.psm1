@@ -710,6 +710,7 @@ class IntuneDeviceConfigurationPolicyMacOS : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceConfigurationPolicyMacOS]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

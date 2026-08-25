@@ -613,6 +613,7 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
         }
 
         $result = [AADGroupEligibilityScheduleSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

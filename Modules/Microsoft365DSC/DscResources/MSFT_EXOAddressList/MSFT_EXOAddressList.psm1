@@ -446,6 +446,7 @@ class EXOAddressList : M365DSCResourceBase
         }
 
         $result = [EXOAddressList]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -221,6 +221,7 @@ class TeamsGuestMeetingConfiguration : M365DSCResourceBase
         }
 
         $result = [TeamsGuestMeetingConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -296,6 +296,7 @@ class AzureBillingAccountsAssociatedTenant : M365DSCResourceBase
         }
 
         $result = [AzureBillingAccountsAssociatedTenant]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

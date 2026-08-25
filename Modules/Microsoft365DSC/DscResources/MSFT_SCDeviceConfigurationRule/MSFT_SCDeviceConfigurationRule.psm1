@@ -560,6 +560,7 @@ class SCDeviceConfigurationRule : M365DSCResourceBase
         }
 
         $result = [SCDeviceConfigurationRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -274,6 +274,7 @@ class AADAuthenticationContextClassReference : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationContextClassReference]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -255,6 +255,7 @@ class AADLifecycleWorkflowSettings : M365DSCResourceBase
         }
 
         $result = [AADLifecycleWorkflowSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -311,6 +311,7 @@ class SPOUserProfileProperty : M365DSCResourceBase
         }
 
         $result = [SPOUserProfileProperty]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

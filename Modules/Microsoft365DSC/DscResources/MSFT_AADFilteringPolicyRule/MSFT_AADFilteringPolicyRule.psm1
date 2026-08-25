@@ -368,6 +368,7 @@ class AADFilteringPolicyRule : M365DSCResourceBase
         }
 
         $result = [AADFilteringPolicyRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

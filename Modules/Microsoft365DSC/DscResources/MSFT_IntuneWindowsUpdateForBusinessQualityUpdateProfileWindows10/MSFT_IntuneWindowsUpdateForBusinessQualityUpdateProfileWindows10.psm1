@@ -403,6 +403,7 @@ class IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10 : M365DSCResou
         }
 
         $result = [IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

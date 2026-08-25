@@ -232,6 +232,7 @@ class AADTenantDetails : M365DSCResourceBase
         }
 
         $result = [AADTenantDetails]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

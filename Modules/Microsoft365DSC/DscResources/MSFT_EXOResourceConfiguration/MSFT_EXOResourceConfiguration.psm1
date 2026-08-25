@@ -211,6 +211,7 @@ class EXOResourceConfiguration : M365DSCResourceBase
         }
 
         $result = [EXOResourceConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -267,6 +267,7 @@ class EXOReportSubmissionRule : M365DSCResourceBase
         }
 
         $result = [EXOReportSubmissionRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -215,6 +215,7 @@ class EXOMailboxAuditBypassAssociation : M365DSCResourceBase
         }
 
         $result = [EXOMailboxAuditBypassAssociation]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -365,6 +365,7 @@ class EXOMigrationEndpoint : M365DSCResourceBase
         }
 
         $result = [EXOMigrationEndpoint]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

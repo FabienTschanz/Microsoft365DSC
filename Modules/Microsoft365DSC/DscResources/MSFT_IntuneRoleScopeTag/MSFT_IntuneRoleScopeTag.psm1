@@ -349,6 +349,7 @@ class IntuneRoleScopeTag : M365DSCResourceBase
         }
 
         $result = [IntuneRoleScopeTag]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

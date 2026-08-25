@@ -414,6 +414,7 @@ class IntuneDeviceComplianceNotificationMessageTemplate : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceComplianceNotificationMessageTemplate]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -297,6 +297,7 @@ class EXOEmailAddressPolicy : M365DSCResourceBase
         }
 
         $result = [EXOEmailAddressPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

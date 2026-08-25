@@ -323,6 +323,7 @@ class IntuneDeviceEnrollmentScopeConfigurationMdm : M365DSCResourceBase
         }
 
         $result = [IntuneDeviceEnrollmentScopeConfigurationMdm]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

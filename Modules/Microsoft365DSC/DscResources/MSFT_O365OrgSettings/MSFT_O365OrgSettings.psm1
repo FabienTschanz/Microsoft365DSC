@@ -1047,6 +1047,7 @@ class O365OrgSettings : M365DSCResourceBase
         }
 
         $result = [O365OrgSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

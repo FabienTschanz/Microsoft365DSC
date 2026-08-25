@@ -540,6 +540,7 @@ class SCDeviceConditionalAccessRule : M365DSCResourceBase
         }
 
         $result = [SCDeviceConditionalAccessRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

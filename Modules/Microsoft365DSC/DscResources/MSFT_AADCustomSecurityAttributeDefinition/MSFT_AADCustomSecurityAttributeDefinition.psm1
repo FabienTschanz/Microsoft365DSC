@@ -419,6 +419,7 @@ class AADCustomSecurityAttributeDefinition : M365DSCResourceBase
         }
 
         $result = [AADCustomSecurityAttributeDefinition]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

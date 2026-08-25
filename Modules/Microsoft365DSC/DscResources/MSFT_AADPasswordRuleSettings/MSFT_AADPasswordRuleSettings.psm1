@@ -306,6 +306,7 @@ class AADPasswordRuleSettings : M365DSCResourceBase
         }
 
         $result = [AADPasswordRuleSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

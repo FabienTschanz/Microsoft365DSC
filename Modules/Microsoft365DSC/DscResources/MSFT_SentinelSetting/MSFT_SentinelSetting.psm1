@@ -325,6 +325,7 @@ class SentinelSetting : M365DSCResourceBase
         }
 
         $result = [SentinelSetting]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -314,6 +314,7 @@ class SPOTheme : M365DSCResourceBase
         }
 
         $result = [SPOTheme]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

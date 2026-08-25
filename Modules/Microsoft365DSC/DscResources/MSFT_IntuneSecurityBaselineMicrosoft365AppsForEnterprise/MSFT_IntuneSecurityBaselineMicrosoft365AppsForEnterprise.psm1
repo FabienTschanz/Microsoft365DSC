@@ -893,6 +893,7 @@ class IntuneSecurityBaselineMicrosoft365AppsForEnterprise : M365DSCResourceBase
         }
 
         $result = [IntuneSecurityBaselineMicrosoft365AppsForEnterprise]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

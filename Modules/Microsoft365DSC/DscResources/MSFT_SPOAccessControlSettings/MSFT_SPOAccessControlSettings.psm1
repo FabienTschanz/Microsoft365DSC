@@ -292,6 +292,7 @@ class SPOAccessControlSettings : M365DSCResourceBase
         }
 
         $result = [SPOAccessControlSettings]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

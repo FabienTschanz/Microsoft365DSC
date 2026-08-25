@@ -273,6 +273,7 @@ class AADGroupsNamingPolicy : M365DSCResourceBase
         }
 
         $result = [AADGroupsNamingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

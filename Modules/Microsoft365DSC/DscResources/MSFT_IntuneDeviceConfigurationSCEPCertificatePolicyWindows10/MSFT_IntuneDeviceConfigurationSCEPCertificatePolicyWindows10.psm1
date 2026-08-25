@@ -671,6 +671,7 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
         }
 
         $result = [IntuneDeviceConfigurationSCEPCertificatePolicyWindows10]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

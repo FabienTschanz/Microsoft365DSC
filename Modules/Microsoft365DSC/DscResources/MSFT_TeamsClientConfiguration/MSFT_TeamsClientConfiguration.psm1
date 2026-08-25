@@ -312,6 +312,7 @@ class TeamsClientConfiguration : M365DSCResourceBase
         }
 
         $result = [TeamsClientConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

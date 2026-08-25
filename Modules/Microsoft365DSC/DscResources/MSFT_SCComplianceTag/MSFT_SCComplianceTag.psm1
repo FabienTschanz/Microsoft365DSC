@@ -401,6 +401,7 @@ class SCComplianceTag : M365DSCResourceBase
         }
 
         $result = [SCComplianceTag]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

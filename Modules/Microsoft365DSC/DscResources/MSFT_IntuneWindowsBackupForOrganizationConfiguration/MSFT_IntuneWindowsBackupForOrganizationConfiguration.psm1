@@ -248,6 +248,7 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
         }
 
         $result = [IntuneWindowsBackupForOrganizationConfiguration]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

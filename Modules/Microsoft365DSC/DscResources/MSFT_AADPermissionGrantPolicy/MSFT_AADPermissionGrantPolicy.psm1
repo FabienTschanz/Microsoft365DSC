@@ -1011,6 +1011,7 @@ class AADPermissionGrantPolicy : M365DSCResourceBase
         }
 
         $result = [AADPermissionGrantPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

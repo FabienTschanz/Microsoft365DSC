@@ -303,6 +303,7 @@ class EXOSweepRule : M365DSCResourceBase
         }
 
         $result = [EXOSweepRule]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

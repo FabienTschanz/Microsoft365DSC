@@ -373,6 +373,7 @@ class IntuneTermsAndConditions : M365DSCResourceBase
         }
 
         $result = [IntuneTermsAndConditions]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

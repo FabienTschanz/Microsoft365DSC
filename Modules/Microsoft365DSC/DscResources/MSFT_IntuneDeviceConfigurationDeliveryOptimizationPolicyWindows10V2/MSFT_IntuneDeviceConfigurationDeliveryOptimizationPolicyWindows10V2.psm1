@@ -576,6 +576,7 @@ class IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2 : M365DSCRe
         }
 
         $result = [IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -286,6 +286,7 @@ class IntuneDerivedCredential : M365DSCResourceBase
         }
 
         $result = [IntuneDerivedCredential]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

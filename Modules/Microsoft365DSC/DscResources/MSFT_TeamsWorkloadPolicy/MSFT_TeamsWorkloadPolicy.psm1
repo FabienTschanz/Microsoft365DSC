@@ -282,6 +282,7 @@ class TeamsWorkloadPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsWorkloadPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

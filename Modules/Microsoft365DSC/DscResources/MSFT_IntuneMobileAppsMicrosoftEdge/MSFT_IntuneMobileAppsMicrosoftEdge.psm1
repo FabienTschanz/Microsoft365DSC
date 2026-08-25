@@ -509,6 +509,7 @@ class IntuneMobileAppsMicrosoftEdge : M365DSCResourceBase
         }
 
         $result = [IntuneMobileAppsMicrosoftEdge]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

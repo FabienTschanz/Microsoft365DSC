@@ -435,6 +435,7 @@ class IntuneMobileThreatDefenseConnector : M365DSCResourceBase
         }
 
         $result = [IntuneMobileThreatDefenseConnector]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

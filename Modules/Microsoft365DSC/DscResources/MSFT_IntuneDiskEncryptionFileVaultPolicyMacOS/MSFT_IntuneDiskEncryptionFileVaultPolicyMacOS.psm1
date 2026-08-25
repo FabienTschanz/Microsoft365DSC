@@ -439,6 +439,7 @@ class IntuneDiskEncryptionFileVaultPolicyMacOS : M365DSCResourceBase
         }
 
         $result = [IntuneDiskEncryptionFileVaultPolicyMacOS]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

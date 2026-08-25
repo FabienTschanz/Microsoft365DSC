@@ -233,6 +233,7 @@ class SCRetentionEventType : M365DSCResourceBase
         }
 
         $result = [SCRetentionEventType]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

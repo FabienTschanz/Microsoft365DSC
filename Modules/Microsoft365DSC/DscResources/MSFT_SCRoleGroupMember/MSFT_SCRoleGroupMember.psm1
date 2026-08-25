@@ -294,6 +294,7 @@ class SCRoleGroupMember : M365DSCResourceBase
         }
 
         $result = [SCRoleGroupMember]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

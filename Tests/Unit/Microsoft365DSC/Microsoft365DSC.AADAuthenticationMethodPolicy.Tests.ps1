@@ -48,7 +48,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 @{
                                     Id = "FakeStringValue"
                                     TargetType = "user"
-                                    TargetedAuthenticationMethod = "FakeStringValue"
+                                    TargetedAuthenticationMethod = "microsoftAuthenticator"
                                 }
                             )
                             State = "default"
@@ -122,7 +122,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 ([MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget] @{
                                     Id = "FakeStringValue"
                                     TargetType = "user"
-                                    TargetedAuthenticationMethod = "FakeStringValue"
+                                    TargetedAuthenticationMethod = "microsoftAuthenticator"
                                 })
                             )
                             State = "default"
@@ -184,7 +184,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 ([MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget] @{
                                     Id = "FakeStringValue"
                                     TargetType = "user"
-                                    TargetedAuthenticationMethod = "FakeStringValue"
+                                    TargetedAuthenticationMethod = "microsoftAuthenticator"
                                 })
                             )
                             State = "default"
@@ -240,7 +240,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 ([MSFT_MicrosoftGraphAuthenticationMethodsRegistrationCampaignIncludeTarget] @{
                                     Id = "FakeStringValue"
                                     TargetType = "user"
-                                    TargetedAuthenticationMethod = "FakeStringValue"
+                                    TargetedAuthenticationMethod = "microsoftAuthenticator"
                                 })
                             )
                             State = "default"

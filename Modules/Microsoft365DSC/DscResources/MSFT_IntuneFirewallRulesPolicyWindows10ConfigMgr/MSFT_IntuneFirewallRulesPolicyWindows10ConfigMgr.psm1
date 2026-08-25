@@ -438,6 +438,7 @@ class IntuneFirewallRulesPolicyWindows10ConfigMgr : M365DSCResourceBase
         }
 
         $result = [IntuneFirewallRulesPolicyWindows10ConfigMgr]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

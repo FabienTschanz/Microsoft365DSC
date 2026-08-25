@@ -304,6 +304,7 @@ class SPOApp : M365DSCResourceBase
         }
 
         $result = [SPOApp]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

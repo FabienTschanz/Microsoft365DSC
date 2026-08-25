@@ -280,6 +280,7 @@ class AADUserFlowAttribute : M365DSCResourceBase
         }
 
         $result = [AADUserFlowAttribute]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

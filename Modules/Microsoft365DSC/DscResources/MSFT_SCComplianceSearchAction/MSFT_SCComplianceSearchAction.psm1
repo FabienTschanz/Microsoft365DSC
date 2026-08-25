@@ -541,6 +541,7 @@ class SCComplianceSearchAction : M365DSCResourceBase
         }
 
         $result = [SCComplianceSearchAction]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

@@ -350,6 +350,7 @@ class EXOPlace : M365DSCResourceBase
         }
 
         $result = [EXOPlace]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

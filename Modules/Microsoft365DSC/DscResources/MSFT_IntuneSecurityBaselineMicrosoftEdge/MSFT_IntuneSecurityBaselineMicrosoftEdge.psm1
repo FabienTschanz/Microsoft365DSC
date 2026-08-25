@@ -514,6 +514,7 @@ class IntuneSecurityBaselineMicrosoftEdge : M365DSCResourceBase
         }
 
         $result = [IntuneSecurityBaselineMicrosoftEdge]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

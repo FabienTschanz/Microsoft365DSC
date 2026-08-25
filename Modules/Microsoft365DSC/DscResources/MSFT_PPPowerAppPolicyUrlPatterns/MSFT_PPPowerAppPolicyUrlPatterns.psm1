@@ -333,6 +333,7 @@ class PPPowerAppPolicyUrlPatterns : M365DSCResourceBase
         }
 
         $result = [PPPowerAppPolicyUrlPatterns]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

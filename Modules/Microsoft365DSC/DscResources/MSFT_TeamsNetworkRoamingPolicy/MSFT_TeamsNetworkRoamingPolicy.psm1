@@ -261,6 +261,7 @@ class TeamsNetworkRoamingPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsNetworkRoamingPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

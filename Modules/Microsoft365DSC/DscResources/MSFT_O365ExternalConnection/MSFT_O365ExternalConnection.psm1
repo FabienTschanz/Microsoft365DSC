@@ -314,6 +314,7 @@ class O365ExternalConnection : M365DSCResourceBase
         }
 
         $result = [O365ExternalConnection]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

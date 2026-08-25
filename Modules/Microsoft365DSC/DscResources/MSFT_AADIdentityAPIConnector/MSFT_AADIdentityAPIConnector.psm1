@@ -493,6 +493,7 @@ class AADIdentityAPIConnector : M365DSCResourceBase
         }
 
         $result = [AADIdentityAPIConnector]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

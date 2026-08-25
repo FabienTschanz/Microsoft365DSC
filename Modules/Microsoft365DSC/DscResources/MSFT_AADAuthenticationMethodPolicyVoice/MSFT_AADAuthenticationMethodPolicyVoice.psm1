@@ -383,6 +383,7 @@ class AADAuthenticationMethodPolicyVoice : M365DSCResourceBase
         }
 
         $result = [AADAuthenticationMethodPolicyVoice]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

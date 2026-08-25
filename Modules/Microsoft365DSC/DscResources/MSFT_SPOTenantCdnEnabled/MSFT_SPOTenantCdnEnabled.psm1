@@ -231,6 +231,7 @@ class SPOTenantCdnEnabled : M365DSCResourceBase
         }
 
         $result = [SPOTenantCdnEnabled]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

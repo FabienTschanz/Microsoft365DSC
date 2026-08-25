@@ -244,6 +244,7 @@ class CommerceSelfServicePurchase : M365DSCResourceBase
         }
 
         $result = [CommerceSelfServicePurchase]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

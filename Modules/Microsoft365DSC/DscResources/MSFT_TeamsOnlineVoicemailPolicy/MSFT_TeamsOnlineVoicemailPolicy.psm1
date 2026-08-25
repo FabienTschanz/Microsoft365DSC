@@ -292,6 +292,7 @@ class TeamsOnlineVoicemailPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsOnlineVoicemailPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)

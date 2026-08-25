@@ -280,6 +280,7 @@ class TeamsShiftsPolicy : M365DSCResourceBase
         }
 
         $result = [TeamsShiftsPolicy]::new()
+        $result.ClearNonSchemaProperties()
         if ($Values -is [System.Collections.Hashtable])
         {
             $result.FromHashtable($Values)
