@@ -1,4 +1,5 @@
 [hashtable]$Script:M365DSCTelemetryConnectionToGraphParams = @{}
+[hashtable]$Script:M365DSCConnectionFailures = @{}
 
 <#
 .SYNOPSIS
@@ -36,18 +37,70 @@ function Get-M365DSCComponentsWithMostSecureAuthenticationType
     )
 
     Initialize-M365DSCDllLoader -ErrorAction Stop
+    Initialize-M365DSCSchemaCache -ErrorAction Stop
 
-    $resourceModulesPath = Join-Path -Path $PSScriptRoot -ChildPath '../Classes'
-    if (-not (Test-Path -Path $resourceModulesPath))
+    $propertyNames = Get-M365DSCResourcePropertyNameMap -Resources $Resources
+    if ($propertyNames.Count -eq 0)
     {
-        $resourceModulesPath = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources'
+        throw 'The schema cache does not contain any of the requested resources. Run Utilities/New-M365DSCDscSchemaCache.ps1 to regenerate SchemaDefinition.json.'
     }
 
     return [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-        $resourceModulesPath,
+        [System.Collections.IDictionary]$propertyNames,
         $AuthenticationMethod,
         $Resources
     )
+}
+
+<#
+.SYNOPSIS
+    Builds a map of resource name to DSC property names from the loaded schema cache.
+
+.DESCRIPTION
+    Reads the schema held by the Microsoft365DSC cache once and returns the property names of the
+    requested resources. Returns an empty map when the schema is not loaded.
+
+.PARAMETER Resources
+    Specifies the resource names without the MSFT_ prefix.
+
+.OUTPUTS
+    System.Collections.Hashtable
+#>
+function Get-M365DSCResourcePropertyNameMap
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String[]]
+        $Resources
+    )
+
+    $map = [System.Collections.Hashtable]::new([System.StringComparer]::OrdinalIgnoreCase)
+    if (-not [Microsoft365DSC.Cache.CacheManager]::IsSchemaLoaded)
+    {
+        return $map
+    }
+
+    $classes = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($entry in [Microsoft365DSC.Cache.CacheManager]::Schema)
+    {
+        $classes[[System.String]$entry['ClassName']] = $entry
+    }
+
+    foreach ($resource in $Resources)
+    {
+        $definition = $null
+        if (-not $classes.TryGetValue("MSFT_$resource", [ref] $definition))
+        {
+            continue
+        }
+
+        $map[$resource] = [System.String[]]@(foreach ($parameter in $definition['Parameters']) { $parameter['Name'] })
+    }
+
+    return $map
 }
 
 <#
@@ -210,6 +263,12 @@ function New-M365DSCConnection
     }
     Write-Verbose -Message "Connecting via $connectionMode"
 
+    $failureKey = "$Workload-$connectionMode"
+    if ($Global:M365DSCExportInProgress -and $Script:M365DSCConnectionFailures.ContainsKey($failureKey))
+    {
+        throw "Connection to $Workload failed earlier in this session: $($Script:M365DSCConnectionFailures[$failureKey]) Skipping."
+    }
+
     #region Build Connect-M365Tenant splat
     $connectParams = @{
         Workload                = $Workload
@@ -274,7 +333,15 @@ function New-M365DSCConnection
     }
     #endregion
 
-    Connect-M365Tenant @connectParams
+    try
+    {
+        Connect-M365Tenant @connectParams
+    }
+    catch
+    {
+        Register-M365DSCConnectionFailure -FailureKey $failureKey -Message $_.Exception.Message
+        throw
+    }
 
     #region Update telemetry cache
     $telemetryCacheKeys = switch ($connectionMode)
@@ -475,10 +542,61 @@ function Set-M365DSCTelemetryConnectionParameter
     $Script:M365DSCTelemetryConnectionToGraphParams = $Parameters.Clone()
 }
 
+<#
+.SYNOPSIS
+    Records a failed connection attempt for the running export.
+
+.DESCRIPTION
+    While an export is running, stores the failure message under the workload and connection mode key
+    so later attempts fail immediately.
+
+.PARAMETER FailureKey
+    Specifies the cache key in the form 'Workload-ConnectionMode'.
+
+.PARAMETER Message
+    Specifies the failure message.
+#>
+function Register-M365DSCConnectionFailure
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $FailureKey,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Message
+    )
+
+    if ($Global:M365DSCExportInProgress)
+    {
+        $Script:M365DSCConnectionFailures[$FailureKey] = $Message
+    }
+}
+
+<#
+.SYNOPSIS
+    Clears the connection failure cache.
+
+.DESCRIPTION
+    Removes every memoized connection failure so that the next export attempts each workload again.
+#>
+function Reset-M365DSCConnectionFailureCache
+{
+    [CmdletBinding()]
+    param ()
+
+    $Script:M365DSCConnectionFailures = @{}
+}
+
 Export-ModuleMember -Function @(
     'Get-M365DSCAuthenticationMode',
     'Get-M365DSCComponentsWithMostSecureAuthenticationType',
+    'Get-M365DSCResourcePropertyNameMap',
     'Get-M365DSCTelemetryConnectionParameter',
     'New-M365DSCConnection',
+    'Reset-M365DSCConnectionFailureCache',
     'Set-M365DSCTelemetryConnectionParameter'
 )

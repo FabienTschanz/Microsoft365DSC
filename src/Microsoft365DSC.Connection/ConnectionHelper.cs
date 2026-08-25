@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Microsoft365DSC.Connection
 {
@@ -12,32 +11,25 @@ namespace Microsoft365DSC.Connection
     public static class ConnectionHelper
     {
         /// <summary>
-        /// Gets all resources that support the specified authentication method and
-        /// determines the most secure authentication method supported by each resource.
+        /// Determines the most secure authentication method supported by each requested resource from a
+        /// map of resource name (with or without the MSFT_ prefix) to the names of its DSC properties.
         /// </summary>
-        /// <param name="resourceModulesPath">
-        /// The path to the folder containing the class-based resource modules. Both the generated
-        /// Classes folder and the per-resource DscResources folder are supported.
-        /// </param>
+        /// <param name="propertyNamesByResource">The property names declared by each resource.</param>
         /// <param name="authenticationMethods">
         /// The authentication methods to evaluate, in order of preference:
         /// ApplicationWithSecret, CertificateThumbprint, CertificatePath, Credentials,
         /// CredentialsWithTenantId, CredentialsWithApplicationId, ManagedIdentity, AccessTokens.
         /// </param>
-        /// <param name="resources">
-        /// The resource names to evaluate (without MSFT_ prefix).
-        /// </param>
-        /// <returns>
-        /// A list of Hashtable objects, each containing 'Resource' (string) and 'AuthMethod' (string).
-        /// </returns>
+        /// <param name="resources">The resource names to evaluate (without MSFT_ prefix).</param>
+        /// <returns>A list of Hashtable objects, each containing 'Resource' (string) and 'AuthMethod' (string).</returns>
         public static List<Hashtable> GetComponentsWithMostSecureAuthenticationType(
-            string resourceModulesPath,
+            IDictionary propertyNamesByResource,
             string[] authenticationMethods,
             string[] resources)
         {
-            if (string.IsNullOrEmpty(resourceModulesPath))
+            if (propertyNamesByResource == null || propertyNamesByResource.Count == 0)
             {
-                throw new ArgumentNullException(nameof(resourceModulesPath));
+                throw new ArgumentNullException(nameof(propertyNamesByResource));
             }
 
             if (authenticationMethods == null || authenticationMethods.Length == 0)
@@ -50,43 +42,49 @@ namespace Microsoft365DSC.Connection
                 throw new ArgumentNullException(nameof(resources));
             }
 
-            if (!Directory.Exists(resourceModulesPath))
+            HashSet<string> resourceSet = new(resources, StringComparer.OrdinalIgnoreCase);
+            HashSet<string> authMethodSet = new(authenticationMethods, StringComparer.OrdinalIgnoreCase);
+            List<Hashtable> components = [];
+
+            foreach (DictionaryEntry entry in propertyNamesByResource)
             {
-                throw new DirectoryNotFoundException($"The resource modules folder '{resourceModulesPath}' does not exist.");
-            }
-
-            HashSet<string>? resourceSet = new(resources, StringComparer.OrdinalIgnoreCase);
-            HashSet<string>? authMethodSet = new(authenticationMethods, StringComparer.OrdinalIgnoreCase);
-            List<Hashtable>? components = [];
-
-            string[]? modules = Directory.GetFiles(resourceModulesPath, "*.psm1", SearchOption.AllDirectories);
-
-            foreach (string modulePath in modules)
-            {
-                foreach (KeyValuePair<string, List<string>> resourceClass in Utilities.Utilities.GetDscResourcePropertyNamesByAST(modulePath))
+                string resourceName = StripPrefix(entry.Key.ToString(), "MSFT_");
+                if (!resourceSet.Contains(resourceName))
                 {
-                    string resourceName = StripPrefix(resourceClass.Key, "MSFT_");
+                    continue;
+                }
 
-                    if (!resourceSet.Contains(resourceName))
+                HashSet<string> propertySet = ToPropertyNames(entry.Value);
+                string? authMethod = DetermineMostSecureAuthMethod(authMethodSet, propertySet, resourceName);
+                if (authMethod != null)
+                {
+                    components.Add(new Hashtable
                     {
-                        continue;
-                    }
-
-                    HashSet<string>? propertySet = new(resourceClass.Value, StringComparer.OrdinalIgnoreCase);
-                    string? authMethod = DetermineMostSecureAuthMethod(authMethodSet, propertySet, resourceName);
-
-                    if (authMethod != null)
-                    {
-                        components.Add(new Hashtable
-                        {
-                            { "Resource", resourceName },
-                            { "AuthMethod", authMethod }
-                        });
-                    }
+                        { "Resource", resourceName },
+                        { "AuthMethod", authMethod }
+                    });
                 }
             }
 
             return components;
+        }
+
+        /// <summary>Collects the property names of a map value, accepting any non-string enumerable.</summary>
+        private static HashSet<string> ToPropertyNames(object? value)
+        {
+            HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
+            if (value is IEnumerable enumerable && value is not string)
+            {
+                foreach (object? item in enumerable)
+                {
+                    if (item?.ToString() is { Length: > 0 } name)
+                    {
+                        names.Add(name);
+                    }
+                }
+            }
+
+            return names;
         }
 
         /// <summary>

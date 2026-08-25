@@ -29,3 +29,7 @@ Describe 'Export collection consumer map' {
         $actual | Should -Be $expected
     }
 }
+
+AfterAll {
+    Remove-Module -Name M365DSCIntuneUtil -Force -ErrorAction SilentlyContinue
+}

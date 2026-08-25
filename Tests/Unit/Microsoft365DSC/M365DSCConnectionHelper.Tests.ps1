@@ -13,82 +13,14 @@ BeforeAll {
         'AccessTokens'
     )
 
-    $Script:TestResources = @('GraphThing', 'ExoThing', 'SPOThing', 'MinimalThing', 'NotAResource')
+    $Script:TestResources = @('GraphThing', 'ExoThing', 'SPOThing', 'MinimalThing')
 
-    function New-TestResourceModule
-    {
-        [CmdletBinding()]
-        param
-        (
-            [Parameter(Mandatory = $true)]
-            [System.String]
-            $Path
-        )
-
-        $content = @'
-[DscResource()]
-class GraphThing
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.Management.Automation.PSCredential] $Credential
-    [DscProperty()] [System.String] $ApplicationId
-    [DscProperty()] [System.String] $TenantId
-    [DscProperty()] [System.Management.Automation.PSCredential] $ApplicationSecret
-    [DscProperty()] [System.String] $CertificateThumbprint
-    [DscProperty()] [System.Management.Automation.PSCredential] $CertificatePassword
-    [DscProperty()] [System.String] $CertificatePath
-    [DscProperty()] [System.Nullable[System.Boolean]] $ManagedIdentity
-    [DscProperty()] [System.String[]] $AccessTokens
-    [System.String] $Filter
-}
-
-[DscResource()]
-class ExoThing
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.Management.Automation.PSCredential] $Credential
-    [DscProperty()] [System.String] $ApplicationId
-    [DscProperty()] [System.String] $TenantId
-    [DscProperty()] [System.String] $CertificateThumbprint
-    [DscProperty()] [System.Nullable[System.Boolean]] $ManagedIdentity
-    [DscProperty()] [System.String[]] $AccessTokens
-}
-
-[DscResource()]
-class SPOThing
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.Management.Automation.PSCredential] $Credential
-    [DscProperty()] [System.String] $ApplicationId
-    [DscProperty()] [System.String] $TenantId
-    [DscProperty()] [System.String[]] $AccessTokens
-}
-
-[DscResource()]
-class MinimalThing
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.String[]] $AccessTokens
-}
-
-[DscResource()]
-class NotSelected
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.String] $ApplicationId
-    [DscProperty()] [System.String] $TenantId
-    [DscProperty()] [System.String] $CertificateThumbprint
-}
-
-class NotAResource
-{
-    [DscProperty()] [System.String] $ApplicationId
-    [DscProperty()] [System.String] $TenantId
-    [DscProperty()] [System.String] $CertificateThumbprint
-}
-'@
-
-        Set-Content -Path $Path -Value $content -Encoding UTF8
+    $Script:PropertyMap = @{
+        GraphThing    = [System.String[]] @('Id', 'Credential', 'ApplicationId', 'TenantId', 'ApplicationSecret', 'CertificateThumbprint', 'CertificatePassword', 'CertificatePath', 'ManagedIdentity', 'AccessTokens')
+        MSFT_ExoThing = [System.String[]] @('Id', 'Credential', 'ApplicationId', 'TenantId', 'CertificateThumbprint', 'ManagedIdentity', 'AccessTokens')
+        SPOThing      = [System.String[]] @('Id', 'Credential', 'ApplicationId', 'TenantId', 'AccessTokens')
+        MinimalThing  = @('Id', 'AccessTokens')
+        NotSelected   = [System.String[]] @('Id', 'ApplicationId', 'TenantId', 'CertificateThumbprint')
     }
 
     function Get-TestAuthenticationMethod
@@ -96,10 +28,6 @@ class NotAResource
         [CmdletBinding()]
         param
         (
-            [Parameter(Mandatory = $true)]
-            [System.String]
-            $Path,
-
             [Parameter(Mandatory = $true)]
             [System.String]
             $ResourceName,
@@ -110,7 +38,7 @@ class NotAResource
         )
 
         $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-            $Path,
+            [System.Collections.IDictionary] $Script:PropertyMap,
             $AuthenticationMethod,
             $Script:TestResources
         )
@@ -119,121 +47,125 @@ class NotAResource
     }
 }
 
-Describe 'Utilities.GetDscResourcePropertyNamesByAST' {
-    BeforeAll {
-        $Script:ModulePath = Join-Path -Path $TestDrive -ChildPath 'Part00.psm1'
-        New-TestResourceModule -Path $Script:ModulePath
-        $Script:Parsed = [Microsoft365DSC.Utilities.Utilities]::GetDscResourcePropertyNamesByAST($Script:ModulePath)
-    }
-
-    It 'Returns every class carrying a DscResource attribute' {
-        $Script:Parsed.Keys | Sort-Object | Should -Be @('ExoThing', 'GraphThing', 'MinimalThing', 'NotSelected', 'SPOThing')
-    }
-
-    It 'Skips classes without a DscResource attribute' {
-        $Script:Parsed.ContainsKey('NotAResource') | Should -BeFalse
-    }
-
-    It 'Returns the DscProperty members of a resource' {
-        $Script:Parsed['MinimalThing'] | Should -Be @('Id', 'AccessTokens')
-    }
-
-    It 'Skips members that are not declared as a DscProperty' {
-        $Script:Parsed['GraphThing'] | Should -Not -Contain 'Filter'
-    }
-}
-
 Describe 'ConnectionHelper.GetComponentsWithMostSecureAuthenticationType' {
-    BeforeAll {
-        $Script:ResourcePath = Join-Path -Path $TestDrive -ChildPath 'Resources'
-        New-Item -Path $Script:ResourcePath -ItemType Directory | Out-Null
-        New-TestResourceModule -Path (Join-Path -Path $Script:ResourcePath -ChildPath 'Part00.psm1')
-    }
-
     It 'Prefers the certificate thumbprint over every other method' {
-        Get-TestAuthenticationMethod -Path $Script:ResourcePath -ResourceName 'GraphThing' | Should -Be 'CertificateThumbprint'
+        Get-TestAuthenticationMethod -ResourceName 'GraphThing' | Should -Be 'CertificateThumbprint'
     }
 
     It 'Falls back to the application secret when no certificate method is requested' {
-        Get-TestAuthenticationMethod -Path $Script:ResourcePath -ResourceName 'GraphThing' `
+        Get-TestAuthenticationMethod -ResourceName 'GraphThing' `
             -AuthenticationMethod @('ApplicationWithSecret', 'Credentials') | Should -Be 'ApplicationSecret'
     }
 
     It 'Skips the application secret for a resource that does not declare one' {
-        Get-TestAuthenticationMethod -Path $Script:ResourcePath -ResourceName 'ExoThing' `
+        Get-TestAuthenticationMethod -ResourceName 'ExoThing' `
             -AuthenticationMethod @('ApplicationWithSecret', 'Credentials') | Should -Be 'Credentials'
     }
 
     It 'Excludes SPO resources from CredentialsWithTenantId' {
-        Get-TestAuthenticationMethod -Path $Script:ResourcePath -ResourceName 'SPOThing' `
+        Get-TestAuthenticationMethod -ResourceName 'SPOThing' `
             -AuthenticationMethod @('CredentialsWithTenantId', 'Credentials') | Should -Be 'Credentials'
     }
 
     It 'Returns CredentialsWithTenantId for a resource without an SPO, OD or PP prefix' {
-        Get-TestAuthenticationMethod -Path $Script:ResourcePath -ResourceName 'ExoThing' `
+        Get-TestAuthenticationMethod -ResourceName 'ExoThing' `
             -AuthenticationMethod @('CredentialsWithTenantId', 'Credentials') | Should -Be 'CredentialsWithTenantId'
     }
 
     It 'Returns the access tokens when the resource declares nothing else' {
-        Get-TestAuthenticationMethod -Path $Script:ResourcePath -ResourceName 'MinimalThing' | Should -Be 'AccessTokens'
+        Get-TestAuthenticationMethod -ResourceName 'MinimalThing' | Should -Be 'AccessTokens'
+    }
+
+    It 'Accepts object[] values and strips the MSFT_ prefix' {
+        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType([System.Collections.IDictionary] $Script:PropertyMap, $Script:AllAuthenticationMethods, @('MinimalThing', 'ExoThing'))
+        ($components | Where-Object -FilterScript { $_.Resource -eq 'MinimalThing' }).AuthMethod | Should -Be 'AccessTokens'
+        ($components | Where-Object -FilterScript { $_.Resource -eq 'ExoThing' }).AuthMethod | Should -Be 'CertificateThumbprint'
     }
 
     It 'Ignores resources that were not requested' {
-        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-            $Script:ResourcePath,
-            $Script:AllAuthenticationMethods,
-            $Script:TestResources
-        )
+        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType([System.Collections.IDictionary] $Script:PropertyMap, $Script:AllAuthenticationMethods, $Script:TestResources)
+        $components.Count | Should -Be $Script:TestResources.Count
         $components.Resource | Should -Not -Contain 'NotSelected'
     }
 
-    It 'Ignores classes without a DscResource attribute' {
-        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-            $Script:ResourcePath,
-            $Script:AllAuthenticationMethods,
-            $Script:TestResources
-        )
-        $components.Resource | Should -Not -Contain 'NotAResource'
+    It 'Omits a resource that supports none of the requested methods' {
+        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType([System.Collections.IDictionary] $Script:PropertyMap, @('ManagedIdentity'), $Script:TestResources)
+        $components.Resource | Should -Not -Contain 'MinimalThing'
+        $components.Resource | Should -Contain 'GraphThing'
     }
 
-    It 'Finds resources declared across several module files' {
-        $multiPath = Join-Path -Path $TestDrive -ChildPath 'MultiFile'
-        New-Item -Path $multiPath -ItemType Directory | Out-Null
-        Set-Content -Path (Join-Path -Path $multiPath -ChildPath 'Part00.psm1') -Encoding UTF8 -Value @'
-[DscResource()]
-class GraphThing
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.String] $ApplicationId
-    [DscProperty()] [System.String] $TenantId
-    [DscProperty()] [System.String] $CertificateThumbprint
+    It 'Throws for an empty map' {
+        {
+            [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType([System.Collections.IDictionary] @{}, $Script:AllAuthenticationMethods, $Script:TestResources)
+        } | Should -Throw -ExceptionType ([System.Management.Automation.MethodInvocationException])
+    }
 }
-'@
-        Set-Content -Path (Join-Path -Path $multiPath -ChildPath 'Part01.psm1') -Encoding UTF8 -Value @'
-[DscResource()]
-class MinimalThing
-{
-    [DscProperty(Key)] [System.String] $Id
-    [DscProperty()] [System.String[]] $AccessTokens
-}
-'@
-        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-            $multiPath,
-            $Script:AllAuthenticationMethods,
-            $Script:TestResources
+
+Describe 'Get-M365DSCComponentsWithMostSecureAuthenticationType' {
+    BeforeAll {
+        Import-Module "$PSScriptRoot/../../../Modules/Microsoft365DSC/Modules/M365DSCConnection.psm1" -Force -Global
+        function global:Initialize-M365DSCSchemaCache
+        {
+            [CmdletBinding()]
+            param ()
+        }
+
+        $Script:FixtureSchema = @(
+            @{
+                ClassName  = 'MSFT_GraphThing'
+                Parameters = @(
+                    @{ Name = 'Id'; CIMType = 'String'; Option = 'Key' }
+                    @{ Name = 'ApplicationId'; CIMType = 'String'; Option = 'Write' }
+                    @{ Name = 'TenantId'; CIMType = 'String'; Option = 'Write' }
+                    @{ Name = 'CertificateThumbprint'; CIMType = 'String'; Option = 'Write' }
+                    @{ Name = 'Credential'; CIMType = 'PSCredential'; Option = 'Write' }
+                )
+            }
+            @{
+                ClassName  = 'MSFT_MinimalThing'
+                Parameters = @(
+                    @{ Name = 'Id'; CIMType = 'String'; Option = 'Key' }
+                    @{ Name = 'AccessTokens'; CIMType = 'StringArray'; Option = 'Write' }
+                )
+            }
+            @{
+                ClassName  = 'MSFT_GraphThingItem'
+                Parameters = @(
+                    @{ Name = 'Key'; CIMType = 'String'; Option = 'Required' }
+                )
+            }
         )
+        [Microsoft365DSC.Cache.CacheManager]::LoadSchema([System.Collections.Generic.List[object]] @($Script:FixtureSchema))
+    }
+
+    AfterAll {
+        [Microsoft365DSC.Cache.CacheManager]::ClearSchema()
+        Remove-Item -Path 'Function:\global:Initialize-M365DSCSchemaCache' -ErrorAction SilentlyContinue
+        Remove-Module -Name M365DSCConnection -Force -ErrorAction SilentlyContinue
+    }
+
+    It 'Builds the property map for requested resources only' {
+        $map = Get-M365DSCResourcePropertyNameMap -Resources @('GraphThing', 'MinimalThing', 'Unknown')
+        $map.Count | Should -Be 2
+        $map['GraphThing'] | Should -Contain 'CertificateThumbprint'
+        $map.ContainsKey('GraphThingItem') | Should -BeFalse
+    }
+
+    It 'Resolves the requested resources from the loaded schema' {
+        $components = @(Get-M365DSCComponentsWithMostSecureAuthenticationType -AuthenticationMethod $Script:AllAuthenticationMethods -Resources @('GraphThing', 'MinimalThing'))
         $components.Count | Should -Be 2
         ($components | Where-Object -FilterScript { $_.Resource -eq 'GraphThing' }).AuthMethod | Should -Be 'CertificateThumbprint'
         ($components | Where-Object -FilterScript { $_.Resource -eq 'MinimalThing' }).AuthMethod | Should -Be 'AccessTokens'
     }
 
-    It 'Throws when the resource modules folder does not exist' {
-        {
-            [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType(
-                (Join-Path -Path $TestDrive -ChildPath 'DoesNotExist'),
-                $Script:AllAuthenticationMethods,
-                $Script:TestResources
-            )
-        } | Should -Throw -ExceptionType ([System.Management.Automation.MethodInvocationException])
+    It 'Throws when the schema contains none of the requested resources' {
+        { Get-M365DSCComponentsWithMostSecureAuthenticationType -AuthenticationMethod $Script:AllAuthenticationMethods -Resources @('Unknown') } |
+            Should -Throw -ExpectedMessage '*schema cache does not contain*'
+    }
+
+    It 'Propagates a failure to load the schema cache' {
+        Mock -ModuleName M365DSCConnection -CommandName Initialize-M365DSCSchemaCache -MockWith { throw 'missing' }
+        { Get-M365DSCComponentsWithMostSecureAuthenticationType -AuthenticationMethod $Script:AllAuthenticationMethods -Resources @('GraphThing') } |
+            Should -Throw -ExpectedMessage '*missing*'
     }
 }

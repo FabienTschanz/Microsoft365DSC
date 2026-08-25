@@ -163,7 +163,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
             $resourceScopesDisplayNamesValue = @()
             foreach ($resourceScope in $getValue.ResourceScopes)
             {
-                $group = Get-MgGroup -GroupId $resourceScope -ErrorAction SilentlyContinue
+                $group = Get-M365DSCIntuneGroup -GroupId $resourceScope
                 if ($null -eq $group)
                 {
                     Write-Warning -Message "Could not find group with Id {$resourceScope} when retrieving resource scope display names"
@@ -175,7 +175,7 @@ class IntuneRoleAssignment : M365DSCResourceBase
             $membersDisplayNamesValue = @()
             foreach ($tempMember in $getValue.Members)
             {
-                $group = Get-MgGroup -GroupId $tempMember -ErrorAction SilentlyContinue
+                $group = Get-M365DSCIntuneGroup -GroupId $tempMember
                 if ($null -eq $group)
                 {
                     Write-Warning -Message "Could not find group with Id {$tempMember} when retrieving member display names"

@@ -160,13 +160,16 @@
 * DEPENDENCIES
   * Added `M365DSC.Mgx` with version 2.0.4.
   * Added `M365DSC.PSDesiredStateConfiguration` with version 3.1.4.
-  * Updated `MSCloudLoginAssistant` to version 1.2.5.
+  * Updated `MSCloudLoginAssistant` to version 1.2.6.
   * Updated `PnP.PowerShell` to version 3.3.0.
     FIXES [#7414](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7414)
   * Updated `ReverseDSC` to version 2.0.0.38.
 * MISC
-  * Intune export: device configurations, compliance policies and enrollment
-    configurations are downloaded once per export and shared across resources.
+  * Added caching for Intune device configurations, compliance policies and enrollment
+    configurations across resources.
+  * Added caching for Entra groups referenced by assignments for Intune resources.
+  * Added handling of a workload connection that fails during connect. It is reported
+    once and skipped for the rest of the export.
   * Added `Absent` as an accepted value for `Ensure` to several resources to make them work
     when the requested instance does not exist.
   * Added `Utilities/Measure-M365DSCExampleCoverage.ps1`, which reports how much of each

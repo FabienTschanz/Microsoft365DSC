@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
-using System.Management.Automation.Language;
 
 namespace Microsoft365DSC.Utilities
 {
@@ -18,48 +17,6 @@ namespace Microsoft365DSC.Utilities
             "Credential", "ApplicationId", "ApplicationSecret", "TenantId", "CertificateThumbprint",
             "CertificatePath", "CertificatePassword", "ManagedIdentity", "AccessTokens"
         ];
-
-        /// <summary>
-        /// Gets the names of the DSC properties declared by every class-based DSC resource in a module.
-        /// </summary>
-        /// <param name="modulePath">
-        /// The path to the .psm1 file to parse. Both the generated Part<NN>.psm1 bundles and the
-        /// per-resource source files are supported.
-        /// </param>
-        /// <returns>
-        /// A dictionary keyed by class name, each value holding the names of the members that carry
-        /// a DscProperty attribute. Classes without a DscResource attribute are not returned.
-        /// </returns>
-        public static Dictionary<string, List<string>> GetDscResourcePropertyNamesByAST(string modulePath)
-        {
-            ScriptBlockAst ast = Parser.ParseFile(modulePath, out _, out _);
-            Dictionary<string, List<string>> resources = new(StringComparer.OrdinalIgnoreCase);
-
-            foreach (TypeDefinitionAst typeDefinition in ast.FindAll(node => node is TypeDefinitionAst, searchNestedScriptBlocks: false).Cast<TypeDefinitionAst>())
-            {
-                if (typeDefinition.IsEnum ||
-                    !HasAttribute(typeDefinition.Attributes, "DscResource") ||
-                    resources.ContainsKey(typeDefinition.Name))
-                {
-                    continue;
-                }
-
-                resources[typeDefinition.Name] = typeDefinition.Members
-                    .OfType<PropertyMemberAst>()
-                    .Where(property => HasAttribute(property.Attributes, "DscProperty"))
-                    .Select(property => property.Name)
-                    .ToList();
-            }
-
-            return resources;
-        }
-
-        private static bool HasAttribute(IEnumerable<AttributeAst> attributes, string name)
-        {
-            return attributes.Any(attribute =>
-                attribute.TypeName.Name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
-                attribute.TypeName.Name.Equals(name + "Attribute", StringComparison.OrdinalIgnoreCase));
-        }
 
         /// <summary>
         /// Method to update special characters in strings.

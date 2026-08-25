@@ -88,6 +88,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
+            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -ParameterFilter { $GroupId -eq '12345-12345-12345-12345-12345' } -MockWith {
+                return @{
+                    id = '12345-12345-12345-12345-12345'
+                    displayName = 'FakeStringValue'
+                }
+            }
+
             Mock -CommandName Get-MgGroup -ParameterFilter { $GroupId -eq '12345-12345-12345-12345-12345' } -MockWith {
                 return @{
                     id = '12345-12345-12345-12345-12345'

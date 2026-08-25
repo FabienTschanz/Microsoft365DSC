@@ -282,6 +282,7 @@ function Export-M365DSCConfiguration
     [Microsoft365DSC.Relations.ExportInstanceNames]::Reset()
     [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
     Initialize-M365DSCExportCollectionCache
+    Reset-M365DSCConnectionFailureCache
 
     # Clear performance caches for fresh export
     $Script:M365DSCMandatoryKeyCache = @{}
@@ -518,6 +519,7 @@ function Export-M365DSCConfiguration
     finally
     {
         Reset-M365DSCExportCollectionCache
+        Reset-M365DSCConnectionFailureCache
     }
 
     if ($IncludeDependencies.IsPresent)
@@ -535,6 +537,7 @@ function Export-M365DSCConfiguration
     [Microsoft365DSC.Relations.ExportRelationSession]::Reset()
     [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
     Reset-M365DSCExportCollectionCache
+    Reset-M365DSCConnectionFailureCache
     $Global:M365DSCExportInProgress = $false
 
     $data = [System.Collections.Generic.Dictionary[[System.String], [System.Object]]]::new()

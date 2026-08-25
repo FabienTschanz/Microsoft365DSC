@@ -280,7 +280,7 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
                     [System.String[]]$groups = @()
                     foreach ($group in $actionConfiguration.NotificationMessageCCList)
                     {
-                        $groups += (Get-MgGroup -GroupId $group -ErrorAction SilentlyContinue).DisplayName
+                        $groups += (Get-M365DSCIntuneGroup -GroupId $group).DisplayName
                     }
                     $scheduledAction.Add('NotificationMessageCCList', $groups)
                 }

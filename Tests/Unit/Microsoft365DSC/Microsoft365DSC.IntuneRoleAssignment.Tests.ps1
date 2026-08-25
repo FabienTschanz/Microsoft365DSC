@@ -77,6 +77,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
+            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -MockWith {
+                return @{
+                    Displayname = 'FakeStringValue'
+                    Id          = 'FakeStringValue'
+                }
+            }
+
             Mock -CommandName Get-MgGroup -ParameterFilter { $Filter -like '*OtherMember*' } -MockWith {
                 return @{
                     Displayname = 'OtherMember'

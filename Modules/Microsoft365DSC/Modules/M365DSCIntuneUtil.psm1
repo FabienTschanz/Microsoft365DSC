@@ -42,6 +42,7 @@ function ConvertFrom-IntunePolicyAssignment
     $assignmentResult = @()
     foreach ($assignment in $Assignments)
     {
+        $groupDisplayName = $null
         $hashAssignment = [ordered]@{}
         if ($null -ne $assignment.Target.'@odata.type')
         {
@@ -75,7 +76,7 @@ function ConvertFrom-IntunePolicyAssignment
         {
             $hashAssignment.Add('groupId', $groupId)
 
-            $group = Get-MgGroup -GroupId ($groupId) -ErrorAction SilentlyContinue
+            $group = Get-M365DSCIntuneGroup -GroupId $groupId
             if ($null -ne $group)
             {
                 $groupDisplayName = $group.DisplayName
@@ -199,12 +200,11 @@ function ConvertTo-IntunePolicyAssignment
             $group = $null
             if (-not [System.String]::IsNullOrEmpty($assignment.groupId))
             {
-                $group = Get-MgGroup -GroupId ($assignment.groupId) -ErrorAction SilentlyContinue
+                $group = Get-M365DSCIntuneGroup -GroupId $assignment.groupId
             }
             if ($null -eq $group -and -not [System.String]::IsNullOrEmpty($assignment.groupDisplayName))
             {
-                $escapedName = $assignment.groupDisplayName -replace "'", "''"
-                [array]$group = Get-MgGroup -Filter "DisplayName eq '$escapedName'" -All -ErrorAction SilentlyContinue
+                [array]$group = Get-M365DSCIntuneGroup -DisplayName $assignment.groupDisplayName
                 if ($null -eq $group -or $group.Count -eq 0)
                 {
                     Write-Warning "Skipping assignment: groupDisplayName '{$($assignment.groupDisplayName)}' not found."
@@ -283,6 +283,7 @@ function ConvertFrom-IntuneMobileAppAssignment
     $assignmentResult = @()
     foreach ($assignment in $Assignments)
     {
+        $groupDisplayName = $null
         $hashAssignment = @{}
         if ($null -ne $assignment.Target.'@odata.type')
         {
@@ -307,7 +308,7 @@ function ConvertFrom-IntuneMobileAppAssignment
         {
             $hashAssignment.Add('groupId', $groupId)
 
-            $group = Get-MgGroup -GroupId ($groupId) -ErrorAction SilentlyContinue
+            $group = Get-M365DSCIntuneGroup -GroupId $groupId
             if ($null -ne $group)
             {
                 $groupDisplayName = $group.DisplayName
@@ -448,13 +449,12 @@ function ConvertTo-IntuneMobileAppAssignment
             $group = $null
             if (-not [System.String]::IsNullOrEmpty($assignment.groupId))
             {
-                $group = Get-MgGroup -GroupId $assignment.groupId -ErrorAction SilentlyContinue
+                $group = Get-M365DSCIntuneGroup -GroupId $assignment.groupId
             }
             # If groupId lookup failed, try by display name
             if ($null -eq $group -and -not [System.String]::IsNullOrEmpty($assignment.groupDisplayName))
             {
-                $escapedName = $assignment.groupDisplayName -replace "'", "''"
-                [array]$group = Get-MgGroup -Filter "DisplayName eq '$escapedName'" -All -ErrorAction SilentlyContinue
+                [array]$group = Get-M365DSCIntuneGroup -DisplayName $assignment.groupDisplayName
                 if ($null -eq $group -or $group.Count -eq 0)
                 {
                     Write-Warning "Skipping assignment: groupDisplayName '{$($assignment.groupDisplayName)}' not found."
@@ -644,6 +644,8 @@ function Initialize-M365DSCExportCollectionCache
     param ()
 
     [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+    [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
+    $Script:IntuneAssignmentFilters = $null
     [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
 }
 
@@ -659,9 +661,11 @@ function Reset-M365DSCExportCollectionCache
     [CmdletBinding()]
     param ()
 
+    $Script:IntuneAssignmentFilters = $null
     if ($null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
     {
         [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+        [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
     }
 }
 
@@ -960,6 +964,70 @@ function Get-M365DSCIntuneExpandedAssignments
 
 <#
 .SYNOPSIS
+    Resolves an Entra group by identifier or display name.
+
+.DESCRIPTION
+    Looks a group up by id or by an exact display name match and returns its id and display name.
+    Results are served from the export group cache while an export session is active.
+
+.PARAMETER GroupId
+    Specifies the group identifier. Returns a single group, or $null when not found.
+
+.PARAMETER DisplayName
+    Specifies the exact display name. Returns the matching groups as an array, empty when none match.
+
+.OUTPUTS
+    System.Object
+#>
+function Get-M365DSCIntuneGroup
+{
+    [CmdletBinding(DefaultParameterSetName = 'ById')]
+    param (
+        [Parameter(Mandatory = $true, ParameterSetName = 'ById')]
+        [System.String]
+        $GroupId,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByDisplayName')]
+        [System.String]
+        $DisplayName
+    )
+
+    $cacheAvailable = $null -ne ('Microsoft365DSC.Intune.IntuneGroupCache' -as [System.Type]) -and
+        [Microsoft365DSC.Intune.IntuneGroupCache]::IsEnabled
+
+    if ($PSCmdlet.ParameterSetName -eq 'ById')
+    {
+        $group = $null
+        if ($cacheAvailable -and [Microsoft365DSC.Intune.IntuneGroupCache]::TryGetById($GroupId, [ref] $group))
+        {
+            return $group
+        }
+
+        $group = Get-MgGroup -GroupId $GroupId -Property 'id,displayName' -ErrorAction SilentlyContinue
+        if ($cacheAvailable)
+        {
+            [Microsoft365DSC.Intune.IntuneGroupCache]::SetById($GroupId, $group)
+        }
+        return $group
+    }
+
+    $groups = $null
+    if ($cacheAvailable -and [Microsoft365DSC.Intune.IntuneGroupCache]::TryGetByName($DisplayName, [ref] $groups))
+    {
+        return , [System.Object[]]$groups
+    }
+
+    $escapedName = $DisplayName -replace "'", "''"
+    [System.Object[]]$groups = @(Get-MgGroup -Filter "displayName eq '$escapedName'" -Property 'id,displayName' -All -ErrorAction SilentlyContinue | Where-Object -FilterScript { $null -ne $_ })
+    if ($cacheAvailable)
+    {
+        [Microsoft365DSC.Intune.IntuneGroupCache]::SetByName($DisplayName, $groups)
+    }
+    return , $groups
+}
+
+<#
+.SYNOPSIS
     Updates assignments on an Intune device configuration policy.
 
 .DESCRIPTION
@@ -1038,12 +1106,12 @@ function Update-DeviceConfigurationPolicyAssignment
             }
             if ($target.groupId)
             {
-                $group = Get-MgGroup -GroupId ($target.groupId) -ErrorAction SilentlyContinue
+                $group = Get-M365DSCIntuneGroup -GroupId $target.groupId
                 if ($null -eq $group)
                 {
                     if ($target.groupDisplayName)
                     {
-                        [array]$group = Get-MgGroup -Filter "DisplayName eq '$($target.groupDisplayName -replace "'", "''")'" -All -ErrorAction SilentlyContinue
+                        [array]$group = Get-M365DSCIntuneGroup -DisplayName $target.groupDisplayName
                         if ($null -eq $group -or $group.Count -eq 0)
                         {
                             $message = "Skipping assignment for the group with DisplayName {$($target.groupDisplayName)} as it could not be found in the directory.`r`n"
@@ -1187,12 +1255,12 @@ function Update-DeviceAppManagementPolicyAssignment
             }
             if ($target.groupId)
             {
-                $group = Get-MgGroup -GroupId ($target.groupId) -ErrorAction SilentlyContinue
+                $group = Get-M365DSCIntuneGroup -GroupId $target.groupId
                 if ($null -eq $group)
                 {
                     if ($target.groupDisplayName)
                     {
-                        [array]$group = Get-MgGroup -Filter "DisplayName eq '$($target.groupDisplayName -replace "'", "''")'" -All -ErrorAction SilentlyContinue
+                        [array]$group = Get-M365DSCIntuneGroup -DisplayName $target.groupDisplayName
                         if ($null -eq $group -or $group.Count -eq 0)
                         {
                             $message = "Skipping assignment for the group with DisplayName {$($target.groupDisplayName)} as it could not be found in the directory.`r`n"
@@ -2173,6 +2241,7 @@ Export-ModuleMember -Function @(
     'Get-M365DSCExportCollectionConsumerMap',
     'Get-M365DSCIntuneDeviceConfigurationSettings',
     'Get-M365DSCIntuneExpandedAssignments',
+    'Get-M365DSCIntuneGroup',
     'Get-OmaSettingPlainTextValue',
     'Initialize-M365DSCExportCollectionCache',
     'Invoke-M365DSCIntuneMobileAppInitialUpload',

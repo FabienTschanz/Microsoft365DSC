@@ -392,17 +392,28 @@ Describe 'SettingsCatalogHelper.GetSettingName' {
 }
 
 Describe 'ConnectionHelper.GetComponentsWithMostSecureAuthenticationType' {
-    It 'Resolves every shipped resource to an authentication method' {
-        $classesPath = "$PSScriptRoot/../../../Modules/Microsoft365DSC/Classes"
-        if (-not (Test-Path -Path $classesPath))
+    It 'Resolves every shipped resource from the schema to an authentication method' {
+        $schemaPath = "$PSScriptRoot/../../../Modules/Microsoft365DSC/SchemaDefinition.json"
+        if (-not (Test-Path -Path $schemaPath))
         {
-            Set-ItResult -Skipped -Because 'the generated class modules have not been built'
+            Set-ItResult -Skipped -Because 'the schema has not been built'
             return
         }
 
+        Import-Module "$PSScriptRoot/../../../Modules/Microsoft365DSC/Modules/M365DSCConnection.psm1" -Force -Global
         $manifest = Import-PowerShellDataFile "$PSScriptRoot/../../../Modules/Microsoft365DSC/Microsoft365DSC.psd1"
         $resources = $manifest.DscResourcesToExport
-        $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType($classesPath, $Script:AllAuthMethods, $resources)
+        try
+        {
+            [Microsoft365DSC.Cache.CacheManager]::LoadSchema([System.Collections.Generic.List[object]] @([System.IO.File]::ReadAllText($schemaPath) | ConvertFrom-Json))
+            $map = Get-M365DSCResourcePropertyNameMap -Resources $resources
+            $components = [Microsoft365DSC.Connection.ConnectionHelper]::GetComponentsWithMostSecureAuthenticationType([System.Collections.IDictionary] $map, $Script:AllAuthMethods, $resources)
+        }
+        finally
+        {
+            [Microsoft365DSC.Cache.CacheManager]::ClearSchema()
+            Remove-Module -Name M365DSCConnection -Force -ErrorAction SilentlyContinue
+        }
 
         $components.Count | Should -Be $resources.Count
     }

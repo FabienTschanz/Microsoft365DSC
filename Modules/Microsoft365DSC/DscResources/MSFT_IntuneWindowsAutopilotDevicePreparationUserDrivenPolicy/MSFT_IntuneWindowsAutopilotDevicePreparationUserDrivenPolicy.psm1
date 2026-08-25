@@ -252,7 +252,7 @@ class IntuneWindowsAutopilotDevicePreparationUserDrivenPolicy : M365DSCResourceB
             if ($target.enrollmentTimeDeviceMembershipTargetValidationStatuses.Count -gt 0)
             {
                 $groupId = $target.enrollmentTimeDeviceMembershipTargetValidationStatuses[0].targetId
-                $resolvedGroup = Get-MgGroup -GroupId $groupId -Property "id, displayName"
+                $resolvedGroup = Get-M365DSCIntuneGroup -GroupId $groupId
                 $assignmentResult = $resolvedGroup.displayName
             }
             $results.Add('AssignmentTarget', $assignmentResult)

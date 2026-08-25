@@ -21,12 +21,29 @@ BeforeAll {
         param ($All, $Filter, $ExpandProperty)
     }
 
+    function global:Get-MgGroup
+    {
+        [CmdletBinding()]
+        param ($GroupId, $Filter, $Property, [switch] $All)
+    }
+
+    function global:Get-MgBetaDeviceManagementAssignmentFilter
+    {
+        [CmdletBinding()]
+        param ([switch] $All)
+    }
+
     $Script:Cache = [Microsoft365DSC.Intune.ExportCollectionCache]
+}
+
+AfterAll {
+    Remove-Module -Name M365DSCIntuneUtil -Force -ErrorAction SilentlyContinue
 }
 
 Describe 'M365DSCExportCollectionCache' {
     AfterEach {
         [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+        [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
     }
 
     Context 'ExportCollectionCache' {
@@ -221,6 +238,85 @@ Describe 'M365DSCExportCollectionCache' {
             [Microsoft365DSC.Intune.ExportCollectionCache]::IsEnabled | Should -BeTrue
             Reset-M365DSCExportCollectionCache
             [Microsoft365DSC.Intune.ExportCollectionCache]::IsEnabled | Should -BeFalse
+        }
+    }
+
+    Context 'Get-M365DSCIntuneGroup' {
+        BeforeEach {
+            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementAssignmentFilter -MockWith { }
+            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -MockWith {
+                if ($GroupId -eq 'missing') { return $null }
+                if ($GroupId) { return @{ Id = $GroupId; DisplayName = "Group $GroupId" } }
+                if ($Filter -like "*'Dup'*") { return @(@{ Id = 'a'; DisplayName = 'Dup' }, @{ Id = 'b'; DisplayName = 'Dup' }) }
+                if ($Filter -like "*'Nope'*") { return $null }
+                return @{ Id = 'g1'; DisplayName = 'Group g1' }
+            }
+        }
+
+        It 'serves the second lookup of a group from the cache while enabled' {
+            Initialize-M365DSCExportCollectionCache
+            $assignments = @(@{ Target = @{ '@odata.type' = '#microsoft.graph.groupAssignmentTarget'; groupId = 'g1' } })
+            $first = ConvertFrom-IntunePolicyAssignment -Assignments $assignments
+            $second = ConvertFrom-IntunePolicyAssignment -Assignments $assignments
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 1 -ParameterFilter { $GroupId -eq 'g1' }
+            $first[0].groupDisplayName | Should -Be 'Group g1'
+            $second[0].groupDisplayName | Should -Be 'Group g1'
+        }
+
+        It 'performs a live lookup for every call while disabled' {
+            $assignments = @(@{ Target = @{ '@odata.type' = '#microsoft.graph.groupAssignmentTarget'; groupId = 'g1' } })
+            $null = ConvertFrom-IntunePolicyAssignment -Assignments $assignments
+            $null = ConvertFrom-IntunePolicyAssignment -Assignments $assignments
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 2 -ParameterFilter { $GroupId -eq 'g1' }
+        }
+
+        It 'does not cache a miss' {
+            Initialize-M365DSCExportCollectionCache
+            Get-M365DSCIntuneGroup -GroupId 'missing' | Should -BeNullOrEmpty
+            Get-M365DSCIntuneGroup -GroupId 'missing' | Should -BeNullOrEmpty
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 2
+            [Microsoft365DSC.Intune.IntuneGroupCache]::Count | Should -Be 0
+        }
+
+        It 'returns an array for a display name and caches it' {
+            Initialize-M365DSCExportCollectionCache
+            $result = Get-M365DSCIntuneGroup -DisplayName 'Dup'
+            $result.Count | Should -Be 2
+            $null = Get-M365DSCIntuneGroup -DisplayName 'Dup'
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 1 -ParameterFilter { $Filter -eq "displayName eq 'Dup'" -and $All }
+        }
+
+        It 'returns an empty array for an unknown display name and does not cache it' {
+            Initialize-M365DSCExportCollectionCache
+            (Get-M365DSCIntuneGroup -DisplayName 'Nope').Count | Should -Be 0
+            (Get-M365DSCIntuneGroup -DisplayName 'Nope').Count | Should -Be 0
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 2
+        }
+
+        It 'escapes quotes in the display name filter and requests only id and displayName' {
+            $null = Get-M365DSCIntuneGroup -DisplayName "O'Brien"
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 1 -ParameterFilter { $Filter -eq "displayName eq 'O''Brien'" -and $Property -eq 'id,displayName' }
+            $null = Get-M365DSCIntuneGroup -GroupId 'g1'
+            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -Exactly -Times 1 -ParameterFilter { $GroupId -eq 'g1' -and $Property -eq 'id,displayName' }
+        }
+
+        It 'does not reuse the previous display name for a missed group' {
+            $assignments = @(
+                @{ Target = @{ '@odata.type' = '#microsoft.graph.groupAssignmentTarget'; groupId = 'g1' } },
+                @{ Target = @{ '@odata.type' = '#microsoft.graph.groupAssignmentTarget'; groupId = 'missing' } }
+            )
+            $result = ConvertFrom-IntunePolicyAssignment -Assignments $assignments
+            $result[0].groupDisplayName | Should -Be 'Group g1'
+            $result[1].Contains('groupDisplayName') | Should -BeFalse
+        }
+
+        It 'clears the group cache with the export cache' {
+            Initialize-M365DSCExportCollectionCache
+            $null = Get-M365DSCIntuneGroup -GroupId 'g1'
+            [Microsoft365DSC.Intune.IntuneGroupCache]::Count | Should -Be 1
+            Reset-M365DSCExportCollectionCache
+            [Microsoft365DSC.Intune.IntuneGroupCache]::Count | Should -Be 0
+            [Microsoft365DSC.Intune.IntuneGroupCache]::IsEnabled | Should -BeFalse
         }
     }
 }

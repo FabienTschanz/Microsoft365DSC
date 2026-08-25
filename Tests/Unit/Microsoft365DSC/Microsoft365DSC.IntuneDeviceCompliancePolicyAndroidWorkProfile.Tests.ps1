@@ -141,6 +141,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 )
             }
 
+            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgGroup -MockWith {
+                return @(
+                    @{
+                        Id = '00000000-0000-0000-0000-000000000001'
+                        DisplayName = 'Test Group 1'
+                    }
+                    @{
+                        Id = '00000000-0000-0000-0000-000000000002'
+                        DisplayName = 'Test Group 2'
+                    }
+                )
+            }
+
             Mock -CommandName Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment -MockWith {
                 return @()
             }
