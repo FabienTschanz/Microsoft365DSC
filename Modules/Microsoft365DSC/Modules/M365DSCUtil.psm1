@@ -2603,6 +2603,12 @@ function Invoke-M365DSCGraphBatchRequest
             -Body ($request | ConvertTo-Json -Depth 10) `
             -ErrorAction SilentlyContinue
 
+        if ($null -eq $apiResponse.responses)
+        {
+            Write-Verbose -Message "Batch request starting at index $i returned no responses."
+            continue outer
+        }
+
         :inner foreach ($response in $apiResponse.responses)
         {
             switch ($response.status)

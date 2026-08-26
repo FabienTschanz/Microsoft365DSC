@@ -9,7 +9,7 @@
 # =============================================================================
 #endregion
 
-$Script:IsPowerShell75OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.5'
+$Script:IsPowerShell76OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.6'
 
 #region Shared Helpers
 
@@ -124,7 +124,7 @@ function Invoke-M365DSCGraphShimRequest
     }
 }
 
-function Invoke-M365DSCGraphShimRequestV75
+function Invoke-M365DSCGraphShimRequestV76
 {
     [CmdletBinding()]
     param(
@@ -167,7 +167,7 @@ function Invoke-M365DSCGraphShimRequestV75
 
     if ($PSBoundParameters.ContainsKey('OutputType') -and -not [System.String]::IsNullOrEmpty($OutputType))
     {
-        throw [System.NotSupportedException] 'The OutputType parameter is not supported in PowerShell 7.5 or later.'
+        throw [System.NotSupportedException] 'The OutputType parameter is not supported in PowerShell 7.6 or later.'
     }
 
     $invokeParams = @{
@@ -319,7 +319,7 @@ function Get-M365DSCGraphShimAllPages
     return $allResults
 }
 
-function Get-M365DSCGraphShimAllPagesV75
+function Get-M365DSCGraphShimAllPagesV76
 {
     [CmdletBinding()]
     param(
@@ -363,7 +363,7 @@ function Get-M365DSCGraphShimAllPagesV75
         $requestParams['Top'] = $Top
     }
 
-    $response = Invoke-M365DSCGraphShimRequestV75 @requestParams -PassThru
+    $response = Invoke-M365DSCGraphShimRequestV76 @requestParams -PassThru
     if ($response -is [System.Collections.IEnumerable] -and $response -isnot [string])
     {
         $allResults.AddRange([array]$response)
@@ -583,9 +583,9 @@ function Invoke-M365DSCGraphShimGetResource
         if ($BoundParameters['ExpandProperty']) { $queryParts += "`$expand=$($BoundParameters['ExpandProperty'] -join ',')" }
         if ($queryParts.Count -gt 0) { $uri = "$uri`?$($queryParts -join '&')" }
 
-        if ($Script:IsPowerShell75OrGreater)
+        if ($Script:IsPowerShell76OrGreater)
         {
-            return Invoke-M365DSCGraphShimRequestV75 -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+            return Invoke-M365DSCGraphShimRequestV76 -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
         }
         return Invoke-M365DSCGraphShimRequest -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
@@ -607,16 +607,16 @@ function Invoke-M365DSCGraphShimGetResource
 
     if ($BoundParameters.ContainsKey('All') -and $BoundParameters['All'])
     {
-        if ($Script:IsPowerShell75OrGreater)
+        if ($Script:IsPowerShell76OrGreater)
         {
-            return Get-M365DSCGraphShimAllPagesV75 -Uri $uri -Headers $requestHeaders @paramSplat -ErrorAction $ErrorActionPreference
+            return Get-M365DSCGraphShimAllPagesV76 -Uri $uri -Headers $requestHeaders @paramSplat -ErrorAction $ErrorActionPreference
         }
         return Get-M365DSCGraphShimAllPages -Uri $uri -Headers $requestHeaders @paramSplat -ErrorAction $ErrorActionPreference
     }
 
-    if ($Script:IsPowerShell75OrGreater)
+    if ($Script:IsPowerShell76OrGreater)
     {
-        $response = Invoke-M365DSCGraphShimRequestV75 -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+        $response = Invoke-M365DSCGraphShimRequestV76 -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
     else
     {
@@ -678,9 +678,9 @@ function Invoke-M365DSCGraphShimWriteResource
         -NamedParams $namedParams `
         -ExcludeParams $excludeFromBody
 
-    if ($Script:IsPowerShell75OrGreater)
+    if ($Script:IsPowerShell76OrGreater)
     {
-        return Invoke-M365DSCGraphShimRequestV75 -Method $Method -Uri $Uri -Body $body -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+        return Invoke-M365DSCGraphShimRequestV76 -Method $Method -Uri $Uri -Body $body -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
     else
     {
@@ -708,9 +708,9 @@ function Invoke-M365DSCGraphShimDeleteResource
 
     $requestHeaders = @{}
     if ($BoundParameters.ContainsKey('Headers')) { $requestHeaders = $BoundParameters['Headers'] }
-    if ($Script:IsPowerShell75OrGreater)
+    if ($Script:IsPowerShell76OrGreater)
     {
-        Invoke-M365DSCGraphShimRequestV75 -Method 'DELETE' -Uri $Uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
+        Invoke-M365DSCGraphShimRequestV76 -Method 'DELETE' -Uri $Uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
     else
     {

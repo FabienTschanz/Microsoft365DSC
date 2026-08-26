@@ -929,21 +929,25 @@ function Start-M365DSCConfigurationExtract
                     $_.templateReference.templateId -in $requestedConfigurationPolicyTemplateIds
                 }
             )
+            $policiesById = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::OrdinalIgnoreCase)
             $batchRequests = @()
             foreach ($policy in $allRequestedConfigurationPolicies)
             {
-                $batchRequest = @{
+                $policiesById[[System.String]$policy.id] = $policy
+                $batchRequests += @{
                     Id = $policy.id
                     Method = 'GET'
                     Url = "/deviceManagement/configurationPolicies/$($policy.id)/settings?`$expand=settingDefinitions&`$top=1000"
                 }
-                $batchRequests += $batchRequest
             }
             $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
             foreach ($policySettings in $batchResponses)
             {
-                $policy = $allRequestedConfigurationPolicies | Where-Object -Property Id -EQ $policySettings.id
-                $policy.settings = $policySettings.body.value
+                $policy = $null
+                if ($policiesById.TryGetValue([System.String]$policySettings.id, [ref] $policy))
+                {
+                    $policy.settings = $policySettings.body.value
+                }
             }
             [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Populate($allRequestedConfigurationPolicies, [System.Func[System.Object, System.String]]{ param($policy) $policy.templateReference.templateId })
         }

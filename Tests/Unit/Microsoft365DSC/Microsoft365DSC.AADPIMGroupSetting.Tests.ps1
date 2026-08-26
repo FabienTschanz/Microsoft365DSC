@@ -506,7 +506,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 )
             }
 
-            # On PowerShell 7.5+ the resource batches through mgx instead.
+            # On PowerShell 7.6+ the resource batches through mgx instead.
             Mock -CommandName Invoke-MgxBatchRequest -MockWith {
                 return @(
                     @{
@@ -518,7 +518,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 )
             }
 
-            $isPowerShell75OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.5'
+            $isPowerShell76OrGreater = $PSVersionTable.PSVersion -ge [Version]'7.6'
 
             # Mock Write-M365DSCHost to hide output during the tests
             Mock -CommandName Write-M365DSCHost -MockWith {
@@ -669,7 +669,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Get-MgGroup -Exactly 1
                 if ($isM365DSCAvailable)
                 {
-                    if ($isPowerShell75OrGreater)
+                    if ($isPowerShell76OrGreater)
                     {
                         Should -Invoke -CommandName Invoke-MgxBatchRequest -Exactly 1
                     }
@@ -687,7 +687,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Get-MgGroup -Exactly 1
                 if ($isM365DSCAvailable)
                 {
-                    if ($isPowerShell75OrGreater)
+                    if ($isPowerShell76OrGreater)
                     {
                         Should -Invoke -CommandName Invoke-MgxBatchRequest -Exactly 1
                     }
