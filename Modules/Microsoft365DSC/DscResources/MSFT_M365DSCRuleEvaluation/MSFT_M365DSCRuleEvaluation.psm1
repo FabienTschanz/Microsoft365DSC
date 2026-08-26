@@ -124,7 +124,7 @@ class M365DSCRuleEvaluation : M365DSCResourceBase
             {
                 $params.Add('Filter', $this.Filter)
             }
-            Initialize-M365DSCAllResourcesDictionary
+            Initialize-M365DSCResourcesDictionary
 
             Write-Verbose -Message "Exporting instances of {$($this.ResourceTypeName)}"
             [Array]$instances = Invoke-M365DSCResourceMethod -ResourceName $this.ResourceTypeName `

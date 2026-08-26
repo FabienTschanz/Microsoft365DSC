@@ -686,7 +686,7 @@ function Test-M365DSCTargetResource
 .FUNCTIONALITY
     Internal
 #>
-function Set-M365DSCAllResourcesDictionary
+function Set-M365DSCResourcesDictionary
 {
     [CmdletBinding()]
     param(
@@ -707,7 +707,7 @@ function Set-M365DSCAllResourcesDictionary
 .FUNCTIONALITY
     Internal
 #>
-function Get-M365DSCAllResourcesDictionary
+function Get-M365DSCResourcesDictionary
 {
     [CmdletBinding()]
     param()
@@ -725,20 +725,65 @@ function Get-M365DSCAllResourcesDictionary
 .FUNCTIONALITY
     Internal
 #>
-function Initialize-M365DSCAllResourcesDictionary
+function Initialize-M365DSCResourcesDictionary
 {
     [CmdletBinding()]
     param()
 
     if ($null -eq $Script:AllM365DSCResources -and -not $Global:IsTestEnvironment)
     {
-        $Script:AllM365DSCResources = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new([System.StringComparer]::InvariantCultureIgnoreCase)
-
-        foreach ($resource in (Get-M365DSCResourceSchema))
-        {
-            $Script:AllM365DSCResources.Add($resource.Name, $resource)
-        }
+        $Script:AllM365DSCResources = [System.Collections.Concurrent.ConcurrentDictionary[System.String, System.Object]]::new(
+            [System.StringComparer]::InvariantCultureIgnoreCase)
     }
+}
+
+<#
+.SYNOPSIS
+    Gets the metadata of a single Microsoft365DSC resource.
+
+.DESCRIPTION
+    Returns the resource definition from the cached dictionary, building and caching it on first
+    request. Returns $null when the resource is unknown.
+
+.PARAMETER ResourceName
+    Specifies the name of the resource without the MSFT_ prefix.
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.Object
+#>
+function Get-M365DSCResourceDefinition
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ResourceName
+    )
+
+    Initialize-M365DSCResourcesDictionary
+    if ($null -eq $Script:AllM365DSCResources)
+    {
+        return $null
+    }
+
+    $definition = $null
+    if ($Script:AllM365DSCResources.TryGetValue($ResourceName, [ref] $definition))
+    {
+        return $definition
+    }
+
+    $definition = @(Get-M365DSCResourceSchema -ResourceName $ResourceName) | Select-Object -First 1
+    if ($null -ne $definition)
+    {
+        $null = $Script:AllM365DSCResources.TryAdd($definition.Name, $definition)
+    }
+
+    return $definition
 }
 
 <#
@@ -1590,15 +1635,22 @@ function Get-M365DSCAllResources
     [CmdletBinding()]
     param ()
 
-    Initialize-M365DSCAllResourcesDictionary
-    $dictionary = Get-M365DSCAllResourcesDictionary
-
-    if ($null -eq $dictionary)
+    if ($Global:IsTestEnvironment)
     {
         return [System.String[]] @()
     }
 
-    return [System.String[]] $dictionary.Keys
+    if ($null -eq $Script:M365DSCManifestPath)
+    {
+        $Script:M365DSCManifestPath = (Resolve-Path -Path (Join-Path -Path $PSScriptRoot -ChildPath '../Microsoft365DSC.psd1')).Path
+    }
+
+    if ($null -eq $Script:M365DSCExportedResourceNames)
+    {
+        $Script:M365DSCExportedResourceNames = @((Import-PowerShellDataFile -Path $Script:M365DSCManifestPath).DscResourcesToExport)
+    }
+
+    return [System.String[]] $Script:M365DSCExportedResourceNames
 }
 
 <#
@@ -2197,7 +2249,7 @@ function Get-M365DSCConfigurationConflict
     $resourcesPrimaryIdentities = @()
     foreach ($component in $parsedContent)
     {
-        $resourceDefinition = $Script:AllM365DSCResources[$component.ResourceName]
+        $resourceDefinition = Get-M365DSCResourceDefinition -ResourceName $component.ResourceName
         [Array]$mandatoryProperties = $resourceDefinition.Properties | Where-Object -Property IsMandatory -EQ $true
         $primaryKeyValues = ''
         foreach ($mandatoryKey in $mandatoryProperties.Name)
@@ -3238,7 +3290,7 @@ Export-ModuleMember -Function @(
     'Convert-M365DscHashtableToString',
     'Get-AllSPOPackages',
     'Get-M365DSCAllResources',
-    'Get-M365DSCAllResourcesDictionary',
+    'Get-M365DSCResourcesDictionary',
     'Get-M365DSCArrayFromProperty',
     'Get-M365DSCAuthenticationMode',
     'Get-M365DSCConfigurationConflict',
@@ -3246,13 +3298,14 @@ Export-ModuleMember -Function @(
     'Get-M365DSCGroupDisplayNameById',
     'Get-M365DSCGroupIdByDisplayName',
     'Get-M365DSCResourceDifferences',
+    'Get-M365DSCResourceDefinition',
     'Get-M365DSCResourceSchema',
     'Get-M365DSCResourceComparisonParameters',
     'Get-M365DSCUserIdByPrincipalName',
     'Get-M365DSCUserPrincipalNameById',
     'Get-M365DSCWorkloadForResource',
     'Get-TeamByName',
-    'Initialize-M365DSCAllResourcesDictionary',
+    'Initialize-M365DSCResourcesDictionary',
     'Initialize-M365DSCSchemaCache',
     'Initialize-PowerShellCoreSession',
     'Initialize-WindowsPowerShellSession',
@@ -3265,7 +3318,7 @@ Export-ModuleMember -Function @(
     'Remove-NullEntriesFromHashtable',
     'Set-M365DSCAuthenticationParameterMask',
     'Send-M365DSCPushNotification',
-    'Set-M365DSCAllResourcesDictionary',
+    'Set-M365DSCResourcesDictionary',
     'Test-CodePage',
     'Test-M365DSCParameterState',
     'Test-M365DSCTargetResource',

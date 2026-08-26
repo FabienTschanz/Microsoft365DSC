@@ -106,12 +106,8 @@ function Get-PropertyReport
         $PSBoundParameters.Add('Credential', $Credential)
     }
 
-    # Resources are classes. There is no DscResources folder holding one .psm1 per resource to scan
-    # any more, so both "does this resource exist" and "what properties does it have" come off the
-    # discovered-resource dictionary instead.
-    Initialize-M365DSCAllResourcesDictionary
-    $allResources = Get-M365DSCAllResourcesDictionary
-    if ($null -eq $allResources)
+    Initialize-M365DSCResourcesDictionary
+    if (@(Get-M365DSCAllResources).Count -eq 0)
     {
         throw 'Could not enumerate the Microsoft365DSC resources. Confirm the module is installed and importable.'
     }
@@ -161,7 +157,8 @@ function Get-PropertyReport
             {
                 $resourceName = $resourceName -replace ('TeamsCs', 'Teams')
             }
-            $resourceExists = $allResources.ContainsKey($resourceName)
+            $resourceDefinition = Get-M365DSCResourceDefinition -ResourceName $resourceName
+            $resourceExists = $null -ne $resourceDefinition
 
             if (-not $resourceExists)
             {
@@ -169,7 +166,8 @@ function Get-PropertyReport
                 if ($null -ne $resourceNameFromMapping)
                 {
                     $resourceName = $module.Prefix + $resourceNameFromMapping
-                    $resourceExists = $allResources.ContainsKey($resourceName)
+                    $resourceDefinition = Get-M365DSCResourceDefinition -ResourceName $resourceName
+                    $resourceExists = $null -ne $resourceDefinition
                 }
             }
 
@@ -191,7 +189,7 @@ function Get-PropertyReport
 
                 # Get properties of DSC resource
                 Write-Verbose "Get properties of resource $resourceName"
-                $resourceProperties = $allResources[$resourceName].Properties.Name
+                $resourceProperties = $resourceDefinition.Properties.Name
 
                 foreach ($property in $resourceProperties)
                 {

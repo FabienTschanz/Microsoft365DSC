@@ -718,6 +718,58 @@ function Uninstall-M365DSCOutdatedDependencies
 
 <#
 .SYNOPSIS
+    Determines whether a module version is present on the module path.
+
+.DESCRIPTION
+    Probes every PSModulePath root for the manifest of the requested module version. This answers the
+    common case without enumerating the metadata of every installed module.
+
+.PARAMETER ModuleName
+    Specifies the name of the module to look for.
+
+.PARAMETER RequiredVersion
+    Specifies the version the module directory must carry.
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.Boolean
+#>
+function Test-M365DSCDependencyManifestPath
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ModuleName,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $RequiredVersion
+    )
+
+    if ($null -eq $Script:M365DSCModulePathRoots)
+    {
+        $Script:M365DSCModulePathRoots = @($env:PSModulePath -split [System.IO.Path]::PathSeparator |
+                Where-Object -FilterScript { -not [System.String]::IsNullOrWhiteSpace($_) })
+    }
+
+    foreach ($root in $Script:M365DSCModulePathRoots)
+    {
+        if (Test-Path -Path (Join-Path -Path $root -ChildPath "$ModuleName\$RequiredVersion\$ModuleName.psd1"))
+        {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+<#
+.SYNOPSIS
     Installs or validates Microsoft365DSC dependencies.
 
 .DESCRIPTION
@@ -838,7 +890,10 @@ function Update-M365DSCDependencies
         # $null comparison is correct in that way because the left-hand side is always an array and the right-hand side is a single value
         foreach ($dependency in ($dependencies -ne $null))
         {
-            Write-Progress -Activity 'Scanning dependencies' -PercentComplete ($i / $dependencies.Count * 100)
+            if (-not $ValidateOnly)
+            {
+                Write-Progress -Activity 'Scanning dependencies' -PercentComplete ($i / $dependencies.Count * 100)
+            }
             try
             {
                 if (-not $Force)
@@ -853,7 +908,11 @@ function Update-M365DSCDependencies
                         Write-Verbose -Message "The dependency {$($dependency.ModuleName)} requires Windows PowerShell. Skipping."
                         continue
                     }
-                    $found = Get-Module $dependency.ModuleName -ListAvailable | Where-Object -Property Version -EQ $dependency.RequiredVersion
+                    $found = Test-M365DSCDependencyManifestPath -ModuleName $dependency.ModuleName -RequiredVersion $dependency.RequiredVersion
+                    if (-not $found)
+                    {
+                        $found = Get-Module $dependency.ModuleName -ListAvailable | Where-Object -Property Version -EQ $dependency.RequiredVersion
+                    }
                     if (-not $found)
                     {
                         $found = Get-PSResource -Name $dependency.ModuleName -Version $dependency.RequiredVersion -Scope $Scope -ErrorAction SilentlyContinue

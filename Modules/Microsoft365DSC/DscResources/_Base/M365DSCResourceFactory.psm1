@@ -173,7 +173,7 @@ function Get-M365DSCResourceModuleName
 .DESCRIPTION
     Used by the export engine to pick the instance name for an exported resource block.
 
-    Reads the class itself rather than Get-M365DSCAllResourcesDictionary. The dictionary is
+    Reads the class itself rather than Get-M365DSCResourcesDictionary. The dictionary is
     populated from Get-DscResourceV2 and is deliberately left empty in some hosts - notably under
     $Global:IsTestEnvironment - which left the export engine with $null keys and no usable fallback
     once MSFT_<Name>.psm1 stopped existing. The attributes on the class are always there.

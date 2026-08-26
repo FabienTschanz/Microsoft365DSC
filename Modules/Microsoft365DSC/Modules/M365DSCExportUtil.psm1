@@ -426,7 +426,7 @@ function Export-M365DSCConfiguration
     }
 
     Add-M365DSCTelemetryEvent -Type 'ExportInitiated' -Data $data
-    Initialize-M365DSCAllResourcesDictionary
+    Initialize-M365DSCResourcesDictionary
     if ($PSBoundParameters.ContainsKey('TokenReplacement'))
     {
         Set-M365DSCStringReplacementMap -Map $TokenReplacement
@@ -1768,10 +1768,15 @@ function New-M365DSCStubBlockOption
     $mandatoryProperties = @{}
     try
     {
-        $dictionary = Get-M365DSCAllResourcesDictionary
-        foreach ($entry in $dictionary.GetEnumerator())
+        foreach ($resourceName in (Get-M365DSCAllResources))
         {
-            $properties = @($entry.Value.Properties.Where({ $_.IsMandatory }) | ForEach-Object {
+            $definition = Get-M365DSCResourceDefinition -ResourceName $resourceName
+            if ($null -eq $definition)
+            {
+                continue
+            }
+
+            $properties = @($definition.Properties.Where({ $_.IsMandatory }) | ForEach-Object {
                 @{
                     Name         = $_.Name
                     PropertyType = $_.PropertyType
@@ -1781,7 +1786,7 @@ function New-M365DSCStubBlockOption
 
             if ($properties.Count -gt 0)
             {
-                $mandatoryProperties[$entry.Key] = $properties
+                $mandatoryProperties[$resourceName] = $properties
             }
         }
     }

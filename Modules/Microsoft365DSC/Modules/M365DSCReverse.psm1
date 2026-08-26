@@ -699,8 +699,7 @@ function Start-M365DSCConfigurationExtract
 
         $resourcesToExport = [System.Collections.Generic.List[Hashtable[]]]::new()
         $resourcesToProcess = [System.Collections.Generic.List[System.Object]]::new()
-        Initialize-M365DSCAllResourcesDictionary
-        $allResources = Get-M365DSCAllResourcesDictionary
+        Initialize-M365DSCResourcesDictionary
 
         $containsConfigurationPolicies = $false
         $requestedConfigurationPolicyTemplateIds = @()
@@ -729,9 +728,10 @@ function Start-M365DSCConfigurationExtract
                     }
                     $resourcesToExport.Add($resourceInfo)
 
-                    if ($null -ne $allResources -and $allResources.ContainsKey($resourceModule))
+                    $resourceDefinition = Get-M365DSCResourceDefinition -ResourceName $resourceModule
+                    if ($null -ne $resourceDefinition)
                     {
-                        $resourcesToProcess.Add($allResources[$resourceModule])
+                        $resourcesToProcess.Add($resourceDefinition)
                     }
                     else
                     {
@@ -784,7 +784,7 @@ function Start-M365DSCConfigurationExtract
         [void]$synchronizedHashtable.TryAdd('ResourcesResult', [System.Collections.Concurrent.ConcurrentDictionary[System.String, System.String]]::new())
         [void]$synchronizedHashtable.TryAdd('SuccessfulResources', 0)
         [void]$synchronizedHashtable.TryAdd('FailedResources', 0)
-        $resourceDictionary = Get-M365DSCAllResourcesDictionary
+        $resourceDictionary = Get-M365DSCResourcesDictionary
         $M365DSCStringReplacementMap = Get-M365DSCStringReplacementMap
         $exportScriptBlock = {
             $Global:MaximumFunctionCount = 32768
@@ -792,7 +792,7 @@ function Start-M365DSCConfigurationExtract
             $Global:M365DSCSkipDependenciesValidation = $true
             $Global:M365DSCStringReplacementMap = $using:M365DSCStringReplacementMap
             $resource = $_
-            Set-M365DSCAllResourcesDictionary -DscResourceDictionary $using:resourceDictionary
+            Set-M365DSCResourcesDictionary -DscResourceDictionary $using:resourceDictionary
             $resourceName = $resource.Name
             $mostSecureAuthMethod = ($using:allSupportedResourcesWithMostSecureAuthMethod | Where-Object -Property Resource -EQ $resourceName).AuthMethod
 
@@ -961,27 +961,10 @@ function Start-M365DSCConfigurationExtract
             foreach ($workload in $Workloads)
             {
                 Write-M365DSCHost -Message "Starting export in parallel mode for workload {$workload}. Initialization may take a while..."
-                $requiredModules = [System.Collections.Generic.List[System.String]]::new(25)
-                $currentWorkloadResources = $resourcesToExport | Where-Object -FilterScript { $_.Name -Like "$workload*" }
-                foreach ($resource in $currentWorkloadResources)
-                {
-                    foreach ($module in $resourceSettings[$resource.Name].requiredModules)
-                    {
-                        if (-not $requiredModules.Contains($module))
-                        {
-                            $requiredModules.Add($module)
-                        }
-                    }
-                }
                 $arguments = @{
                     ScriptBlock = $exportScriptBlock
+                    ModuleNames = @((Get-Module -Name 'Microsoft365DSC').Path)
                 }
-                <# Removed due to collection enumeration error in parallel execution
-                if ($requiredModules.Count -gt 0)
-                {
-                    $arguments.Add('ModuleName', $requiredModules)
-                }
-                #>
                 $resourcesToProcess | Where-Object -FilterScript { $_.Name -like "$workload*" } | Invoke-Parallel @arguments -Verbose
             }
         }
