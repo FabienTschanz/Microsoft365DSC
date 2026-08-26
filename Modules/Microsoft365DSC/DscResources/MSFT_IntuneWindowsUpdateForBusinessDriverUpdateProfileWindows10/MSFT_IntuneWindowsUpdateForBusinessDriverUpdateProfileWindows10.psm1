@@ -110,7 +110,11 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
                 if (-not [string]::IsNullOrEmpty($this.Id))
                 {
                     $uri = "/beta/deviceManagement/windowsDriverUpdateProfiles/$($this.Id)"
-                    $getValue = (Invoke-MgGraphRequest -Method GET -Uri $uri -SkipHttpErrorCheck).value
+                    $response = Invoke-MgGraphRequest -Method GET -Uri $uri -SkipHttpErrorCheck
+                    if (-not [System.String]::IsNullOrEmpty($response.id))
+                    {
+                        $getValue = $response
+                    }
                 }
 
                 if ($null -eq $getValue)
@@ -167,8 +171,12 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
                 #endregion
             }
 
-            $uri = "/beta/deviceManagement/windowsDriverUpdateProfiles/$($resolvedId)/assignments"
-            $assignmentsValues = (Invoke-MgGraphRequest -Method GET -Uri $uri).value
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $uri = "/beta/deviceManagement/windowsDriverUpdateProfiles/$($resolvedId)/assignments"
+                $assignmentsValues = (Invoke-MgGraphRequest -Method GET -Uri $uri).value
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -281,7 +289,7 @@ class IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10 : M365DSCResour
         {
             #region resource generator code
             # Filter is currently not supported
-            [array]$getValue = (Invoke-MgGraphRequest -Method GET -Uri '/beta/deviceManagement/windowsDriverUpdateProfiles').value
+            [array]$getValue = (Invoke-MgGraphRequest -Method GET -Uri '/beta/deviceManagement/windowsDriverUpdateProfiles?$expand=assignments').value
             #endregion
 
             $i = 1

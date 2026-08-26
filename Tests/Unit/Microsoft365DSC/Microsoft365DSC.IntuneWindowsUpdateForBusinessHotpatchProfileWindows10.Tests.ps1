@@ -58,7 +58,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies" } -MockWith {
+            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies*" -and $Uri -notlike "*FakeStringValue*" } -MockWith {
                 return @{
                     value = @(
                         @{
@@ -96,7 +96,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential;
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies" } -MockWith {
+                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies*" -and $Uri -notlike "*FakeStringValue*" } -MockWith {
                     return $null
                 }
 

@@ -142,6 +142,37 @@ namespace Microsoft365DSC.Intune
             return result.ToArray();
         }
 
+        /// <summary>Filters items on a top-level property. An empty property name or value list matches every item.</summary>
+        public static object[] FilterByProperty(object[]? items, string? propertyName, string[]? values)
+        {
+            if (items is null || items.Length == 0)
+            {
+                return [];
+            }
+
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                return items;
+            }
+
+            var wanted = NormalizeValueSet(values);
+            if (wanted.Count == 0)
+            {
+                return items;
+            }
+
+            var result = new List<object>(items.Length);
+            foreach (var item in items)
+            {
+                if (GetPropertyValue(item, propertyName!) is string value && wanted.Contains(value))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result.ToArray();
+        }
+
         /// <summary>Records how many resources will consume the collection.</summary>
         public static void RegisterConsumers(string key, int count)
         {
@@ -192,24 +223,46 @@ namespace Microsoft365DSC.Intune
         }
 
         /// <summary>Reads the top-level '@odata.type' of a hashtable or PSObject item.</summary>
-        public static string? GetODataType(object? item)
+        public static string? GetODataType(object? item) => GetPropertyValue(item, "@odata.type") as string;
+
+        /// <summary>Reads a top-level property of a hashtable or PSObject item.</summary>
+        public static object? GetPropertyValue(object? item, string propertyName)
         {
             if (item is PSObject psObject)
             {
                 if (psObject.BaseObject is IDictionary baseDictionary)
                 {
-                    return baseDictionary["@odata.type"] as string;
+                    return baseDictionary[propertyName];
                 }
 
-                return psObject.Properties["@odata.type"]?.Value as string;
+                return psObject.Properties[propertyName]?.Value;
             }
 
             if (item is IDictionary dictionary)
             {
-                return dictionary["@odata.type"] as string;
+                return dictionary[propertyName];
             }
 
             return null;
+        }
+
+        private static HashSet<string> NormalizeValueSet(string[]? values)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (values is null)
+            {
+                return set;
+            }
+
+            foreach (var value in values)
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    set.Add(value.Trim());
+                }
+            }
+
+            return set;
         }
 
         private static HashSet<string> NormalizeSet(string[]? values)

@@ -509,12 +509,26 @@ Describe 'M365DSCResourceBase property validation' {
 }
 
 Describe 'M365DSCResourceBase module re-import' {
-    It 'Registers the type data again after a forced re-import' {
+    It 'Registers the type data again after a forced re-import, in an isolated session' {
         $repoRoot = Join-Path -Path $PSScriptRoot -ChildPath '..\..\..' -Resolve
-        Import-Module -Name (Join-Path -Path $repoRoot -ChildPath 'Modules\Microsoft365DSC\Microsoft365DSC.psd1') -Global -Force
-        $instance = New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property @{ DisplayName = 'after' }
-        $instance.DisplayName | Should -Be 'after'
-        $instance.GetBoundParameters().DisplayName | Should -Be 'after'
-        @((Get-TypeData -TypeName 'AADGroup').Members.Keys | Sort-Object) | Should -Be @($instance.GetSchemaPropertyNames() | Sort-Object)
+        $manifestPath = Join-Path -Path $repoRoot -ChildPath 'Modules\Microsoft365DSC\Microsoft365DSC.psd1'
+        $isolatedCommand = @"
+Import-Module -Name '$manifestPath' -Global
+Import-Module -Name '$manifestPath' -Global -Force
+`$instance = New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property @{ DisplayName = 'after' }
+[PSCustomObject]@{
+    DisplayName         = `$instance.DisplayName
+    BoundDisplayName    = `$instance.GetBoundParameters().DisplayName
+    TypeDataMembers     = @((Get-TypeData -TypeName 'AADGroup').Members.Keys | Sort-Object)
+    SchemaPropertyNames = @(`$instance.GetSchemaPropertyNames() | Sort-Object)
+} | ConvertTo-Json -Depth 4 -Compress
+"@
+        $isolatedOutput = & (Get-Process -Id $PID).Path -NoProfile -NonInteractive -Command $isolatedCommand
+        $result = $isolatedOutput | ConvertFrom-Json
+
+        $result | Should -Not -BeNullOrEmpty
+        $result.DisplayName | Should -Be 'after'
+        $result.BoundDisplayName | Should -Be 'after'
+        $result.TypeDataMembers | Should -Be $result.SchemaPropertyNames
     }
 }

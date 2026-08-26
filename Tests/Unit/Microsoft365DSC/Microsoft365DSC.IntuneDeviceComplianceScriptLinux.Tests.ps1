@@ -75,6 +75,24 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return @(
+                    @{
+                        id = 'FakeStringValue'
+                        displayName = 'FakeStringValue'
+                        description = 'FakeStringValue'
+                        settingDefinitionId = 'linux_customcompliance_discoveryscript_reusablesetting'
+                        settingInstance = @{
+                            '@odata.type' = '#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance'
+                            settingInstanceTemplateReference = $null
+                            simpleSettingValue = @{
+                                value = 'I2Jpbi9iYXNoCmVjaG8gZmFsc2U='
+                            }
+                        }
+                    }
+                )
+            }
+
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }

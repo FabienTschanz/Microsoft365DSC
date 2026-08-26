@@ -627,6 +627,12 @@ function Get-M365DSCExportCollectionConsumerMap
             'IntuneWindowsBackupForOrganizationConfiguration',
             'IntuneWindowsHelloForBusinessGlobalPolicy'
         )
+        reusablePolicySettings         = @(
+            'IntuneDeviceComplianceScriptLinux',
+            'IntuneDeviceControlPolicySetting',
+            'IntuneEpmCertificatePolicySetting',
+            'IntuneFirewallPolicySetting'
+        )
     }
 }
 
@@ -755,6 +761,13 @@ function Complete-M365DSCExportCollectionConsumer
 .PARAMETER ExcludeODataType
     Specifies the OData types to exclude from the result.
 
+.PARAMETER PropertyName
+    Specifies the top-level property to match, for collections whose consumers differ by a property
+    rather than by OData type. Applied client-side on the cached items and server-side otherwise.
+
+.PARAMETER PropertyValue
+    Specifies the values the property must match. Returns every item when omitted.
+
 .PARAMETER Filter
     Specifies the user-supplied OData filter. A non-empty filter bypasses the cache.
 
@@ -767,7 +780,7 @@ function Get-M365DSCExportCachedCollection
     [OutputType([System.Object[]])]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('deviceConfigurations', 'deviceCompliancePolicies', 'deviceEnrollmentConfigurations')]
+        [ValidateSet('deviceConfigurations', 'deviceCompliancePolicies', 'deviceEnrollmentConfigurations', 'reusablePolicySettings')]
         [System.String]
         $Collection,
 
@@ -781,6 +794,14 @@ function Get-M365DSCExportCachedCollection
 
         [Parameter()]
         [System.String]
+        $PropertyName,
+
+        [Parameter()]
+        [System.String[]]
+        $PropertyValue = @(),
+
+        [Parameter()]
+        [System.String]
         $Filter
     )
 
@@ -788,6 +809,7 @@ function Get-M365DSCExportCachedCollection
         deviceConfigurations           = @{ Expand = @('assignments'); ServerSideTypeFilter = $true }
         deviceCompliancePolicies       = @{ Expand = @('scheduledActionsForRule($expand=scheduledActionConfigurations)', 'assignments'); ServerSideTypeFilter = $true }
         deviceEnrollmentConfigurations = @{ Expand = @('assignments'); ServerSideTypeFilter = $false }
+        reusablePolicySettings         = @{ Expand = @(); ServerSideTypeFilter = $false; Select = @('id', 'displayName', 'description', 'settingDefinitionId', 'settingInstance') }
     }
     $descriptor = $descriptors[$Collection]
 
@@ -797,14 +819,14 @@ function Get-M365DSCExportCachedCollection
     if ($cacheAvailable -and [System.String]::IsNullOrEmpty($Filter))
     {
         $cached = [Microsoft365DSC.Intune.ExportCollectionCache]::GetByODataType($Collection, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
-        if ($null -ne $cached)
+        if ($null -eq $cached)
         {
-            return , [System.Object[]]$cached
+            $all = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand -Property $descriptor.Select
+            $null = [Microsoft365DSC.Intune.ExportCollectionCache]::TrySet($Collection, [System.Object[]]$all)
+            $cached = [Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$all, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
         }
 
-        $all = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand
-        $null = [Microsoft365DSC.Intune.ExportCollectionCache]::TrySet($Collection, [System.Object[]]$all)
-        return , [System.Object[]][Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$all, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+        return , [System.Object[]][Microsoft365DSC.Intune.ExportCollectionCache]::FilterByProperty([System.Object[]]$cached, $PropertyName, [System.String[]]$PropertyValue)
     }
 
     $typeFilter = ''
@@ -821,13 +843,23 @@ function Get-M365DSCExportCachedCollection
         }
     }
 
+    if (-not [System.String]::IsNullOrEmpty($PropertyName) -and $PropertyValue.Count -gt 0)
+    {
+        $propertyFilter = ($PropertyValue | ForEach-Object -Process { "$PropertyName eq '$_'" }) -join ' or '
+        if ($PropertyValue.Count -gt 1)
+        {
+            $propertyFilter = "($propertyFilter)"
+        }
+        $typeFilter = if ([System.String]::IsNullOrEmpty($typeFilter)) { $propertyFilter } else { "($typeFilter) and ($propertyFilter)" }
+    }
+
     $mergedFilter = $typeFilter
     if (-not [System.String]::IsNullOrEmpty($Filter))
     {
         $mergedFilter = if ([System.String]::IsNullOrEmpty($typeFilter)) { $Filter } else { "($typeFilter) and ($Filter)" }
     }
 
-    $items = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand -Filter $mergedFilter
+    $items = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand -Property $descriptor.Select -Filter $mergedFilter
     if (-not $descriptor.ServerSideTypeFilter -and $null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
     {
         $items = [Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$items, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
@@ -843,6 +875,78 @@ function Get-M365DSCExportCachedCollection
 
 <#
 .SYNOPSIS
+    Lists a Graph collection as raw JSON items, following the paging links.
+
+.DESCRIPTION
+    Calls Invoke-MgGraphRequest on the collection and follows '@odata.nextLink' until every page has
+    been read. Returns the items in the shape Graph sends them rather than in the SDK object model.
+
+.PARAMETER Uri
+    Specifies the collection URI.
+
+.PARAMETER Property
+    Specifies the properties to select. Required for properties the collection omits by default.
+
+.PARAMETER Filter
+    Specifies the OData filter to apply.
+
+.OUTPUTS
+    System.Object[]
+#>
+function Get-M365DSCRawGraphCollection
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Uri,
+
+        [Parameter()]
+        [System.String[]]
+        $Property,
+
+        [Parameter()]
+        [System.String]
+        $Filter
+    )
+
+    $query = [System.Collections.Generic.List[System.String]]::new()
+    if ($Property.Count -gt 0)
+    {
+        $query.Add('$select=' + ($Property -join ','))
+    }
+    if (-not [System.String]::IsNullOrEmpty($Filter))
+    {
+        $query.Add('$filter=' + $Filter)
+    }
+
+    $requestUri = $Uri
+    if ($query.Count -gt 0)
+    {
+        $requestUri = $Uri + '?' + ($query -join '&')
+    }
+
+    $items = [System.Collections.Generic.List[System.Object]]::new()
+    while (-not [System.String]::IsNullOrEmpty($requestUri))
+    {
+        $response = Invoke-MgGraphRequest -Method GET -Uri $requestUri -ErrorAction Stop
+        foreach ($item in $response.value)
+        {
+            if ($null -ne $item)
+            {
+                $items.Add($item)
+            }
+        }
+
+        $requestUri = $response.'@odata.nextLink'
+    }
+
+    return , $items.ToArray()
+}
+
+<#
+.SYNOPSIS
     Lists a Graph collection with the given expand and filter.
 
 .DESCRIPTION
@@ -853,6 +957,9 @@ function Get-M365DSCExportCachedCollection
 
 .PARAMETER ExpandProperty
     Specifies the navigation properties to expand.
+
+.PARAMETER Property
+    Specifies the properties to select. Required for properties the collection omits by default.
 
 .PARAMETER Filter
     Specifies the OData filter to apply.
@@ -874,6 +981,10 @@ function Invoke-M365DSCExportCollectionList
         $ExpandProperty,
 
         [Parameter()]
+        [System.String[]]
+        $Property,
+
+        [Parameter()]
         [System.String]
         $Filter
     )
@@ -882,6 +993,10 @@ function Invoke-M365DSCExportCollectionList
     if ($ExpandProperty.Count -gt 0)
     {
         $params.ExpandProperty = $ExpandProperty
+    }
+    if ($Property.Count -gt 0)
+    {
+        $params.Property = $Property
     }
     if (-not [System.String]::IsNullOrEmpty($Filter))
     {
@@ -893,6 +1008,7 @@ function Invoke-M365DSCExportCollectionList
         'deviceConfigurations' { Get-MgBetaDeviceManagementDeviceConfiguration @params }
         'deviceCompliancePolicies' { Get-MgBetaDeviceManagementDeviceCompliancePolicy @params }
         'deviceEnrollmentConfigurations' { Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration @params }
+        'reusablePolicySettings' { Get-M365DSCRawGraphCollection -Uri '/beta/deviceManagement/reusablePolicySettings' -Property $Property -Filter $Filter }
     }
 
     $items = [System.Collections.Generic.List[System.Object]]::new()

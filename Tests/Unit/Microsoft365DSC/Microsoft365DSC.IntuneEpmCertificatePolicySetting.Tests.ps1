@@ -67,6 +67,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                return @($baseBody)
+            }
+
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }

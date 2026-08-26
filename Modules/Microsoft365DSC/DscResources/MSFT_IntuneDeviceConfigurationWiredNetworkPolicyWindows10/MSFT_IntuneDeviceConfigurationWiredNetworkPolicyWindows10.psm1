@@ -285,8 +285,14 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
             $rootCertificateForClientValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'rootCertificateForClientValidation')
             $rootCertificatesForServerValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'rootCertificatesForServerValidation')
             $identityCertificateForClientAuthentication = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'identityCertificateForClientAuthentication')
-            $secondaryIdentityCertificateForClientAuthentication = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'secondaryIdentityCertificateForClientAuthentication')
-            $secondaryRootCertificateForClientValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'secondaryRootCertificateForClientValidation')
+
+            $secondaryIdentityCertificateForClientAuthentication = $null
+            $secondaryRootCertificateForClientValidation = $null
+            if (-not [System.String]::IsNullOrEmpty($enumSecondaryAuthenticationMethod))
+            {
+                $secondaryIdentityCertificateForClientAuthentication = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'secondaryIdentityCertificateForClientAuthentication')
+                $secondaryRootCertificateForClientValidation = $this.GetDeviceConfigurationPolicyCertificate($getValue.Id, 'secondaryRootCertificateForClientValidation')
+            }
 
             $results = @{
                 #region resource generator code

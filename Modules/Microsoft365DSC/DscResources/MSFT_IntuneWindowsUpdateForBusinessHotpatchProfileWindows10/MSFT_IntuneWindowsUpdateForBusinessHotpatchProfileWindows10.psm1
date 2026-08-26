@@ -161,7 +161,11 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
                 #endregion
             }
 
-            $assignmentsValues = (Invoke-MgGraphRequest -Uri "$($this.ResourceCache['BaseUrl'])/$($resolvedId)/assignments").value
+            $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
+            if ($null -eq $assignmentsValues)
+            {
+                $assignmentsValues = (Invoke-MgGraphRequest -Uri "$($this.ResourceCache['BaseUrl'])/$($resolvedId)/assignments").value
+            }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -275,10 +279,10 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
         try
         {
             #region resource generator code
-            $filterQuery = ''
+            $filterQuery = "?`$expand=assignments"
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
-                $filterQuery = "?`$filter=$($this.Filter)"
+                $filterQuery += "&`$filter=$($this.Filter)"
             }
             [array]$getValue = (Invoke-MgGraphRequest -Method GET -Uri "/beta/deviceManagement/windowsQualityUpdatePolicies$filterQuery" -ErrorAction Stop).value
             #endregion

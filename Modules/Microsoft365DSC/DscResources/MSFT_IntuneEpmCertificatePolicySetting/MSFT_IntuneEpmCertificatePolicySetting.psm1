@@ -272,16 +272,10 @@ class IntuneEpmCertificatePolicySetting : M365DSCResourceBase
         try
         {
             #region resource generator code
-            $baseFilter = "settingDefinitionId eq 'device_vendor_msft_policy_privilegemanagement_reusablesettings_certificatefile'"
-            $mergedFilter = $baseFilter
-            if (-not [System.String]::IsNullOrEmpty($this.Filter))
-            {
-                $mergedFilter = "($($this.Filter)) and ($baseFilter)"
-            }
-            [array]$getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')&`$filter=$($mergedFilter)" `
-                -Method GET `
-                -SkipHttpErrorCheck `
-                -ErrorAction Stop).value
+            [array]$getValue = Get-M365DSCExportCachedCollection -Collection 'reusablePolicySettings' `
+                -PropertyName 'settingDefinitionId' `
+                -PropertyValue 'device_vendor_msft_policy_privilegemanagement_reusablesettings_certificatefile' `
+                -Filter $this.Filter
             #endregion
 
             $i = 1
