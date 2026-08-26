@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Management.Automation;
 using System.Threading;
+using Microsoft365DSC.Utilities;
 
 namespace Microsoft365DSC.Intune
 {
@@ -164,7 +165,9 @@ namespace Microsoft365DSC.Intune
             var result = new List<object>(items.Length);
             foreach (var item in items)
             {
-                if (GetPropertyValue(item, propertyName!) is string value && wanted.Contains(value))
+                if (MemberAccessor.TryGetMember(item, propertyName!, out object? raw) &&
+                    raw is string value &&
+                    wanted.Contains(value))
                 {
                     result.Add(item);
                 }
@@ -223,28 +226,7 @@ namespace Microsoft365DSC.Intune
         }
 
         /// <summary>Reads the top-level '@odata.type' of a hashtable or PSObject item.</summary>
-        public static string? GetODataType(object? item) => GetPropertyValue(item, "@odata.type") as string;
-
-        /// <summary>Reads a top-level property of a hashtable or PSObject item.</summary>
-        public static object? GetPropertyValue(object? item, string propertyName)
-        {
-            if (item is PSObject psObject)
-            {
-                if (psObject.BaseObject is IDictionary baseDictionary)
-                {
-                    return baseDictionary[propertyName];
-                }
-
-                return psObject.Properties[propertyName]?.Value;
-            }
-
-            if (item is IDictionary dictionary)
-            {
-                return dictionary[propertyName];
-            }
-
-            return null;
-        }
+        public static string? GetODataType(object? item) => MemberAccessor.GetMemberAsString(item, "@odata.type");
 
         private static HashSet<string> NormalizeValueSet(string[]? values)
         {

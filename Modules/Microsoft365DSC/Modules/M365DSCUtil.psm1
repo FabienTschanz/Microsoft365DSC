@@ -9,6 +9,8 @@ $Global:M365DSCPushNotificationsBody = $null
 #endregion
 
 $Script:M365DSCWorkloads = @('AAD', 'ADO', 'AZURE', 'COMMERCE', 'DEFENDER', 'EXO', 'FABRIC', 'INTUNE', 'O365', 'OD', 'PLANNER', 'PP', 'SC', 'SENTINEL', 'SH', 'SPO', 'TEAMS')
+$Script:M365DSCMgxBatchCommand = $null
+$Script:M365DSCMgxBatchCommandResolved = $false
 
 <#
 .Description
@@ -821,63 +823,6 @@ function Initialize-M365DSCSchemaCache
 
 <#
 .SYNOPSIS
-    Converts a MOF type name into the PowerShell type name DSC discovery reports.
-
-.DESCRIPTION
-    SchemaDefinition.json stores MOF types ('String', 'SInt32', 'MSFT_Credential'), while
-    Get-DscResourceV2 reports PowerShell type names in brackets ('[string]', '[int]'). Callers
-    consume the latter, so schema-sourced metadata is translated here.
-
-.PARAMETER CimType
-    Specifies the MOF type name, with a trailing '[]' for arrays.
-
-.FUNCTIONALITY
-    Internal
-
-.OUTPUTS
-    System.String
-#>
-function ConvertFrom-M365DSCCimType
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [AllowEmptyString()]
-        [System.String]
-        $CimType
-    )
-
-    $isArray = $CimType.EndsWith('[]')
-    $bare = if ($isArray) { $CimType.Substring(0, $CimType.Length - 2) } else { $CimType }
-
-    $mapped = switch ($bare)
-    {
-        'String' { 'string' }
-        'Boolean' { 'bool' }
-        'DateTime' { 'datetime' }
-        'SInt16' { 'int16' }
-        'SInt32' { 'Int32' }
-        'SInt64' { 'long' }
-        'UInt16' { 'uint16' }
-        'UInt32' { 'uint32' }
-        'UInt64' { 'uint64' }
-        'Real64' { 'double' }
-        'MSFT_Credential' { 'PSCredential' }
-        default { $bare }
-    }
-
-    if ($isArray)
-    {
-        return "[$mapped[]]"
-    }
-
-    return "[$mapped]"
-}
-
-<#
-.SYNOPSIS
     Returns resource metadata from SchemaDefinition.json.
 
 .DESCRIPTION
@@ -940,16 +885,7 @@ function Get-M365DSCResourceSchema
             continue
         }
 
-        $properties = @($definition['Parameters'] | ForEach-Object {
-                [PSCustomObject] @{
-                    Name         = $_['Name']
-                    PropertyType = ConvertFrom-M365DSCCimType -CimType ([System.String] $_['CIMType'])
-                    IsMandatory  = $_['Option'] -in @('Key', 'Required')
-                    Values       = [System.String[]] @($_['Values'])
-                    Option       = $_['Option']
-                    Description  = $_['Description']
-                }
-            })
+        $properties = [Microsoft365DSC.Cache.CacheManager]::GetResourceProperties($definition)
 
         # DSC injects these two into every resource keyword, so discovery reports them and the
         # schema does not. Configurations do use DependsOn, and callers that validate property
@@ -2582,6 +2518,239 @@ function Write-M365DSCHost
 
 <#
 .SYNOPSIS
+    Returns the Mgx batch cmdlet when it can be used, otherwise $null.
+
+.DESCRIPTION
+    Resolves Invoke-MgxBatchRequest once per session and caches the CommandInfo. Returns $null on
+    PowerShell versions below 7.6 or when M365DSC.mgx is not installed, so callers fall back to the
+    Microsoft Graph SDK. Resolving by name on every call would pay command discovery each time.
+
+.OUTPUTS
+    System.Management.Automation.CommandInfo
+#>
+function Get-M365DSCMgxBatchCommand
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.CommandInfo])]
+    param ()
+
+    if (-not $Script:M365DSCMgxBatchCommandResolved)
+    {
+        $Script:M365DSCMgxBatchCommandResolved = $true
+        if ($PSVersionTable.PSVersion -ge [Version] '7.6')
+        {
+            $Script:M365DSCMgxBatchCommand = Get-Command -Name 'Invoke-MgxBatchRequest' -ErrorAction SilentlyContinue
+        }
+    }
+
+    return $Script:M365DSCMgxBatchCommand
+}
+
+<#
+.SYNOPSIS
+    Merges every page of a batch sub-response into its value collection.
+
+.DESCRIPTION
+    A sub-response to a list request carries only the first page. Follows '@odata.nextLink' until the
+    collection is complete and replaces the value array in place. Neither the Graph $batch endpoint nor
+    Invoke-MgxBatchRequest pages sub-responses.
+
+.PARAMETER Response
+    Specifies the batch sub-response. Left untyped so the value collection is replaced on the caller's
+    own object rather than on a coerced copy.
+#>
+function Resolve-M365DSCBatchResponsePaging
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowNull()]
+        [System.Object]
+        $Response
+    )
+
+    if ($null -eq $Response -or $null -eq $Response.body -or $null -eq $Response.body.'@odata.nextLink')
+    {
+        return
+    }
+
+    $value = [System.Collections.Generic.List[System.Object]]::new($Response.body.value)
+    $nextLink = $Response.body.'@odata.nextLink'
+    while ($nextLink)
+    {
+        Write-Verbose -Message "Fetching next page of results from $nextLink..."
+        $nextPageResponse = Invoke-MgGraphRequest -Method GET -Uri $nextLink -ErrorAction SilentlyContinue
+        $value.AddRange($nextPageResponse.value)
+        $nextLink = $nextPageResponse.'@odata.nextLink'
+    }
+
+    $Response.body.value = $value.ToArray()
+}
+
+<#
+.SYNOPSIS
+    Sends Graph batch requests through the Mgx batch cmdlet.
+
+.DESCRIPTION
+    Pipes every request into a single Invoke-MgxBatchRequest call, which chunks them and retries each
+    item on throttling and transient failures. Mgx reports a row per request carrying Url, Method,
+    Status and Body but no request identifier, so the caller's ids are restored by walking the results
+    against the requests in order and matching on url.
+
+.PARAMETER Requests
+    Specifies the requests, as hashtables with id, method and url members.
+
+.PARAMETER BatchCommand
+    Specifies the resolved Invoke-MgxBatchRequest command.
+
+.OUTPUTS
+    System.Collections.Generic.List[System.Collections.Hashtable]
+#>
+function Invoke-M365DSCMgxBatchRequest
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Generic.List[System.Collections.Hashtable]])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Hashtable[]]
+        $Requests,
+
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.CommandInfo]
+        $BatchCommand
+    )
+
+    $batchResponses = [System.Collections.Generic.List[System.Collections.Hashtable]]::new()
+    if ($Requests.Count -eq 0)
+    {
+        return , $batchResponses
+    }
+
+    $items = foreach ($request in $Requests)
+    {
+        $item = @{
+            Url    = $request.url
+            Method = if ([System.String]::IsNullOrEmpty($request.method)) { 'GET' } else { $request.method }
+        }
+        if ($null -ne $request.body)
+        {
+            $item.Body = $request.body
+        }
+        $item
+    }
+
+    Write-Verbose -Message "Sending BATCH Request with $($Requests.Count) sub-requests through Mgx..."
+    $results = @($items | & $BatchCommand -ApiVersion 'beta' -ErrorAction SilentlyContinue -WarningAction SilentlyContinue)
+
+    $requestIndex = 0
+    foreach ($result in $results)
+    {
+        while ($requestIndex -lt $Requests.Count -and $Requests[$requestIndex].url -ne $result.Url)
+        {
+            $requestIndex++
+        }
+
+        $response = @{
+            id     = if ($requestIndex -lt $Requests.Count) { $Requests[$requestIndex].id } else { $null }
+            status = $result.Status
+            body   = $result.Body
+        }
+        $requestIndex++
+
+        Resolve-M365DSCBatchResponsePaging -Response $response
+        $batchResponses.Add($response)
+    }
+
+    return , $batchResponses
+}
+
+<#
+.SYNOPSIS
+    Sends Graph batch requests through the Microsoft Graph SDK.
+
+.DESCRIPTION
+    Splits requests into batch payloads, sends them to Graph, detects throttling responses, and retries
+    with reduced batch size when needed. Used when the Mgx batch cmdlet is unavailable.
+
+.PARAMETER Requests
+    Specifies the requests, as hashtables with id, method and url members.
+
+.PARAMETER ThrottlingDelayInSeconds
+    Specifies delay before retrying throttled batches.
+
+.PARAMETER BatchRequestSize
+    Specifies maximum number of sub-requests per batch call.
+
+.OUTPUTS
+    System.Collections.Generic.List[System.Collections.Hashtable]
+#>
+function Invoke-M365DSCLegacyBatchRequest
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Generic.List[System.Collections.Hashtable]])]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Collections.Hashtable[]]
+        $Requests,
+
+        [Parameter()]
+        [System.Int32]
+        $ThrottlingDelayInSeconds = 5,
+
+        [Parameter()]
+        [System.Int32]
+        $BatchRequestSize = 20
+    )
+
+    $batchResponses = [System.Collections.Generic.List[System.Collections.Hashtable]]::new()
+    $halfBatchSize = [Math]::Ceiling($BatchRequestSize / 2)
+    :outer for ($i = 0; $i -lt $Requests.Count; $i += $BatchRequestSize)
+    {
+        $batchRequestSized = $Requests[$i..([Math]::Min($i + $BatchRequestSize - 1, $Requests.Count - 1))]
+
+        $request = @{
+            requests = $batchRequestSized
+        }
+
+        Write-Verbose -Message "Sending BATCH Request with $($request.requests.Count) sub-requests (starting at index $i)..."
+        $apiResponse = Invoke-MgGraphRequest -Method POST `
+            -Uri 'beta/$batch' `
+            -Body ($request | ConvertTo-Json -Depth 10) `
+            -ErrorAction SilentlyContinue
+
+        if ($null -eq $apiResponse.responses)
+        {
+            Write-Verbose -Message "Batch request starting at index $i returned no responses."
+            continue outer
+        }
+
+        :inner foreach ($response in $apiResponse.responses)
+        {
+            switch ($response.status)
+            {
+                200 {
+                    Resolve-M365DSCBatchResponsePaging -Response $response
+                }
+                429 {
+                    Write-Warning -Message 'Throttling encountered, pausing and repeating request...'
+                    Start-Sleep -Seconds $ThrottlingDelayInSeconds
+                    $BatchRequestSize = [Math]::Max($halfBatchSize, [Math]::Floor($BatchRequestSize / 2))
+                    $i = if ($i -ge $BatchRequestSize) { $i - $BatchRequestSize } else { 0 }
+                    continue outer
+                }
+            }
+        }
+
+        $batchResponses.AddRange([System.Collections.Hashtable[]]$apiResponse.responses)
+    }
+
+    return , $batchResponses
+}
+
+<#
+.SYNOPSIS
     Sends Microsoft Graph batch requests with throttling backoff handling.
 
 .DESCRIPTION
@@ -2639,58 +2808,16 @@ function Invoke-M365DSCGraphBatchRequest
         $BatchRequestSize = 20
     )
 
-    $batchResponses = [System.Collections.Generic.List[System.Collections.Hashtable]]::new()
-    $halfBatchSize = [Math]::Ceiling($BatchRequestSize / 2)
-    :outer for ($i = 0; $i -lt $Requests.Count; $i += $BatchRequestSize)
+    $mgxBatchCommand = Get-M365DSCMgxBatchCommand
+    if ($null -ne $mgxBatchCommand)
     {
-        $batchRequestSized = $Requests[$i..([Math]::Min($i + $BatchRequestSize - 1, $Requests.Count - 1))]
-
-        $request = @{
-            requests = $batchRequestSized
-        }
-
-        Write-Verbose -Message "Sending BATCH Request with $($request.requests.Count) sub-requests (starting at index $i)..."
-        $apiResponse = Invoke-MgGraphRequest -Method POST `
-            -Uri 'beta/$batch' `
-            -Body ($request | ConvertTo-Json -Depth 10) `
-            -ErrorAction SilentlyContinue
-
-        if ($null -eq $apiResponse.responses)
-        {
-            Write-Verbose -Message "Batch request starting at index $i returned no responses."
-            continue outer
-        }
-
-        :inner foreach ($response in $apiResponse.responses)
-        {
-            switch ($response.status)
-            {
-                200 {
-                    if ($null -ne $response.body.'@odata.nextLink')
-                    {
-                        $value = [System.Collections.Generic.List[System.Object]]::new($response.body.value)
-                        $nextLink = $response.body.'@odata.nextLink'
-                        while ($nextLink)
-                        {
-                            Write-Verbose -Message "Fetching next page of results from $nextLink..."
-                            $nextPageResponse = Invoke-MgGraphRequest -Method GET -Uri $nextLink -ErrorAction SilentlyContinue
-                            $value.AddRange($nextPageResponse.value)
-                            $nextLink = $nextPageResponse.'@odata.nextLink'
-                        }
-                        $response.body.value = $value.ToArray()
-                    }
-                }
-                429 {
-                    Write-Warning -Message "Throttling encountered, pausing and repeating request..."
-                    Start-Sleep -Seconds $ThrottlingDelayInSeconds
-                    $BatchRequestSize = [Math]::Max($halfBatchSize, [Math]::Floor($BatchRequestSize / 2))
-                    $i = if ($i -ge $BatchRequestSize) { $i - $BatchRequestSize } else { 0 }
-                    continue outer
-                }
-            }
-        }
-
-        $batchResponses.AddRange([System.Collections.Hashtable[]]$apiResponse.responses)
+        $batchResponses = Invoke-M365DSCMgxBatchRequest -Requests $Requests -BatchCommand $mgxBatchCommand
+    }
+    else
+    {
+        $batchResponses = Invoke-M365DSCLegacyBatchRequest -Requests $Requests `
+            -ThrottlingDelayInSeconds $ThrottlingDelayInSeconds `
+            -BatchRequestSize $BatchRequestSize
     }
 
     if ($AsList)
