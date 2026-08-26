@@ -276,7 +276,7 @@ in other scripts.
 The full path to the .schema.mof file to process.
 
 .Example
-$mof = Get-MofSchemaObject -FileName C:\repos\SharePointDsc\DSCRescoures\MSFT_SPSite\MSFT_SPSite.schema.mof
+$mof = Get-MofSchemaObject -FileName C:\repos\Microsoft365DSC\Modules\Microsoft365DSC\DscResources\MSFT_AADGroup\MSFT_AADGroup.schema.mof
 
 This example parses a MOF schema file.
 
