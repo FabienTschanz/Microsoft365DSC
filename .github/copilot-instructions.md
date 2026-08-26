@@ -123,6 +123,10 @@ These formatting rules are enforced during code review. Agents must apply them t
 8. **Use `[System.Nullable[System.Boolean]]` for optional booleans.** A plain `[System.Boolean]` cannot express "not set".
 9. **Escape single quotes in descriptions by doubling them.** e.g. `'The application''s certificate.'`
 
+## Examples
+
+1. **Changing a resource's property set means updating its examples.** The files under `Examples/Resources/<ResourceName>/` must configure every configurable non-authentication property. Read `.github/instructions/m365dsc-examples.instructions.md` in full before editing anything under `Examples/`, and verify with `Utilities/Measure-M365DSCExampleCoverage.ps1` and the Pester gates in `Tests/QA/`.
+
 <!-- mermaid-ai-skills:start -->
 ## Mermaid Diagrams
 

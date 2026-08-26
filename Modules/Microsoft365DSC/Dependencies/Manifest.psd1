@@ -34,7 +34,7 @@
         },
         @{
             ModuleName      = 'M365DSC.mgx'
-            RequiredVersion = '2.0.4'
+            RequiredVersion = '2.1.0'
             PowerShellCore  = $true
         },
         @{

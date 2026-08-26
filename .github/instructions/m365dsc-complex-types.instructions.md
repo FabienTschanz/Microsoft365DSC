@@ -47,6 +47,7 @@ class MSFT_AADPermissionGrantConditionSet
 ```
 
 **Rules:**
+
 - Every property in a complex type class must have a `Description` ending with a period.
 - Array-valued complex properties use the `[]` type suffix (e.g., `[MSFT_AADPermissionGrantConditionSet[]]`).
 - Deeply nested types reference other complex classes the same way (e.g., a scope class containing principal scopes and resource scopes).
@@ -58,6 +59,7 @@ class MSFT_AADPermissionGrantConditionSet
 During export, `Get()` runs once per instance. To avoid redundant API calls, `Export()` assigns each instance to `$this.ExportedInstance`, and `Get()` checks it first.
 
 **Pattern in `Get()`:**
+
 ```powershell
 if (-not $this.ExportedInstance -or $this.ExportedInstance.DisplayName -ne $this.DisplayName)
 {
@@ -72,6 +74,7 @@ else
 ```
 
 **Rules:**
+
 - The cache check must compare against a `[DscProperty(Key)]` property (e.g., `DisplayName` for AADAccessReviewDefinition, `Id` for AADPermissionGrantPolicy, `Name` for AADConnectorGroupApplicationProxy). Do **not** compare against a non-key property.
 - In `Export()`, set it before calling `$this.GetForExport($Params)`: `$this.ExportedInstance = $config`.
 - Resources that fetch the whole list up front cache it as `$this.ResourceCache['exportedInstances']`, guarded by `$this.ResourceCache['ExportMode']`.
@@ -80,7 +83,8 @@ else
 
 When the API returns nested objects, `Get()` must convert them to hashtables for downstream use.
 
-**Pattern 1: Resource-specific conversion helper (AADPermissionGrantPolicy)**
+### Pattern 1: Resource-specific conversion helper (AADPermissionGrantPolicy)
+
 ```powershell
 $includesArray = @()
 foreach ($include in $getValue.Includes)
@@ -91,12 +95,14 @@ foreach ($include in $getValue.Includes)
 $result.Add('Includes', [Array]$includesArray)
 ```
 
-**Pattern 2: Generic framework function**
+### Pattern 2: Generic framework function
+
 ```powershell
 $complexResult = Get-M365DSCDRGComplexTypeToHashtable -ComplexObject $getValue.SomeProperty
 ```
 
 **Rules:**
+
 - Build a hashtable of results and hand it to the resource's `AsResult()` method, which materialises the typed instance `Get()` must return.
 - Handle `$null` checks before iterating array properties.
 - Preserve all properties from the API response that are declared on the class.
@@ -107,7 +113,8 @@ When writing back to the API, the complex instances from the DSC configuration m
 
 ### Creating and Updating Complex Types
 
-**Pattern 1: Resource-specific parameter conversion helper (AADPermissionGrantPolicy)**
+#### Pattern 1: Resource-specific parameter conversion helper (AADPermissionGrantPolicy)
+
 ```powershell
 foreach ($include in $this.Includes)
 {
@@ -117,7 +124,8 @@ foreach ($include in $this.Includes)
 }
 ```
 
-**Pattern 2: Convert-M365DSCDRGComplexTypeToHashtable for API body**
+#### Pattern 2: Convert-M365DSCDRGComplexTypeToHashtable for API body
+
 ```powershell
 $bodyParams = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $instance -SingleLevel
 ```
@@ -129,6 +137,7 @@ The `-SingleLevel` switch converts only the top level and lowercases the first c
 When a resource manages arrays of complex objects (e.g., condition sets, reviewers), the API auto-generates `Id` values. `Set()` must perform **content-based matching** to determine which items to add, update, or remove.
 
 **Pattern (from AADPermissionGrantPolicy):**
+
 ```powershell
 $matchedCurrentIncludeIds = @()
 
@@ -169,6 +178,7 @@ foreach ($currentInclude in $currentPolicy.Includes)
 ```
 
 **Rules:**
+
 - Exclude auto-generated `Id` from comparisons.
 - Track matched IDs to avoid double-matching.
 - Remove unmatched current items and add unmatched desired items.
@@ -178,6 +188,7 @@ foreach ($currentInclude in $currentPolicy.Includes)
 When `Set()` needs to resolve multiple display names to IDs, use `Invoke-M365DSCGraphBatchRequest` to minimize API calls.
 
 **Pattern (from AADAccessReviewDefinition):**
+
 ```powershell
 $batchRequests = @()
 foreach ($reviewer in $this.FallbackReviewers)
@@ -215,6 +226,7 @@ When the standard comparison needs customization (e.g., normalizing dates, adjus
 The block is invoked by `Test-M365DSCTargetResource` from outside the instance's scope, so **`$this` is not available inside it**. Everything it needs travels through the sibling `PostProcessingArgs` key.
 
 **Pattern (from AADPermissionGrantPolicy):**
+
 ```powershell
 [System.Collections.Hashtable] GetCompareParameters()
 {
@@ -234,6 +246,7 @@ The block is invoked by `Test-M365DSCTargetResource` from outside the instance's
 ```
 
 **Rules:**
+
 - The callback must return a `[System.Tuple[Hashtable, Hashtable, Hashtable]]` of `($DesiredValues, $CurrentValues, $ValuesToCheck)`.
 - Never reference `$this` inside the block. Pass values in through `PostProcessingArgs` and read them as `$PostProcessingArgs[0]`, `[1]`, ...
 - Wrap a single array argument as `@(, $value)` to stop PowerShell unrolling it.
@@ -244,6 +257,7 @@ The block is invoked by `Test-M365DSCTargetResource` from outside the instance's
 When resources have arrays of complex objects that must be compared regardless of order, create a resource-specific comparison function.
 
 **Pattern (from AADPermissionGrantPolicy `Test-AADPermissionGrantPolicyConditionSetsEqual`):**
+
 ```powershell
 function Test-AADPermissionGrantPolicyConditionSetsEqual
 {
@@ -298,6 +312,7 @@ function Test-AADPermissionGrantPolicyConditionSetsEqual
 ```
 
 **Rules:**
+
 - Deep comparison helpers must follow `Verb-Noun` naming and carry the resource-name prefix (e.g., `Test-AADPermissionGrantPolicyConditionSetsEqual`).
 - Exclude auto-generated properties (like `Id`) from comparison.
 - Sort array properties before element-by-element comparison for order-independent matching.
@@ -310,6 +325,7 @@ function Test-AADPermissionGrantPolicyConditionSetsEqual
 In `Export()`, complex type properties must be converted from hashtables to DSC string representation. This uses `Get-M365DSCDRGComplexTypeToString` with a `$complexMapping` array that describes the type hierarchy.
 
 **Pattern:**
+
 ```powershell
 if ($null -ne $Results.ScopeValue)
 {
@@ -347,6 +363,7 @@ if ($null -ne $Results.ScopeValue)
 ```
 
 **Rules:**
+
 - The `$complexMapping` array must include an entry for each complex type in the hierarchy (parent and all nested types).
 - Each entry has three keys: `Name` (property name), `CimInstanceName` (complex class name without the `MSFT_` prefix), `IsRequired` (whether the property is mandatory).
 - The `-CIMInstanceName` parameter on `Get-M365DSCDRGComplexTypeToString` must match the exact casing of the complex class name (e.g., `MicrosoftGraphaccessReviewScope` with lowercase 'a'). Always verify against the class declaration.
@@ -357,6 +374,7 @@ if ($null -ne $Results.ScopeValue)
 Properties containing pre-formatted complex type strings must be listed in the `-NoEscape` parameter when calling `Get-M365DSCExportContentForResource`. Without this, the DSC export escapes the instantiation strings, corrupting the output.
 
 **Pattern:**
+
 ```powershell
 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
     -ConnectionMode $ConnectionMode `
@@ -367,6 +385,7 @@ $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetRe
 ```
 
 **Rules:**
+
 - List every complex type property name that was converted via `Get-M365DSCDRGComplexTypeToString`.
 - Only properties that contain DSC instantiation strings need `NoEscape`.
 
@@ -375,10 +394,12 @@ $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetRe
 Resources should use display names in DSC configuration for readability. Resolve IDs from the API to display names in `Get()`, and resolve display names back to IDs in `Set()`.
 
 **Helper functions (from `M365DSCUtil.psm1`):**
+
 - `Get-M365DSCGroupDisplayNameById` — Resolves a group ID to its display name.
 - `Get-M365DSCGroupIdByDisplayName` — Resolves a group display name to its ID.
 
 **Pattern in `Get()`:**
+
 ```powershell
 if ($getValue.TargetGroupId -notmatch 'all_users|00000000-0000-0000-0000-000000000000')
 {
@@ -388,11 +409,13 @@ if ($getValue.TargetGroupId -notmatch 'all_users|00000000-0000-0000-0000-0000000
 ```
 
 **Pattern in `Set()`:**
+
 ```powershell
 $groupId = Get-M365DSCGroupIdByDisplayName -GroupDisplayName $this.TargetGroupDisplayName
 ```
 
 **For non-group objects**, use `Get-MgBetaDirectoryObjectById` to resolve any object type:
+
 ```powershell
 $directoryObject = Get-MgBetaDirectoryObjectById -Ids $objectId
 switch ($directoryObject.AdditionalProperties.'@odata.type')
@@ -408,7 +431,7 @@ switch ($directoryObject.AdditionalProperties.'@odata.type')
 These functions are defined in `Modules/Microsoft365DSC/Modules/M365DSCDRGUtil.psm1` and are available to all resources:
 
 | Function | Purpose | When to Use |
-|----------|---------|-------------|
+| ---------- | --------- | ------------- |
 | `Get-M365DSCDRGComplexTypeToHashtable` | Converts complex instances (or arrays) to hashtables | In `Get()` when processing API results that contain nested objects |
 | `Get-M365DSCDRGComplexTypeToString` | Converts complex objects to DSC string representation | In `Export()` when serializing complex types for configuration output |
 | `Compare-M365DSCComplexObject` | Deep comparison with drift detection | When the standard framework comparison needs supplementation for specific properties |
@@ -424,6 +447,7 @@ These functions are defined in `Modules/Microsoft365DSC/Modules/M365DSCDRGUtil.p
 Cast a hashtable to the complex class to build an instance.
 
 **Pattern:**
+
 ```powershell
 $mockScope = ([MSFT_MicrosoftGraphaccessReviewScope] @{
     QueryRoot = 'FakeStringValue'
@@ -436,6 +460,7 @@ $mockScope = ([MSFT_MicrosoftGraphaccessReviewScope] @{
 > **Note:** The `odataType` property uses camelCase (not PascalCase) because it maps to the `@odata.type` JSON property from the Graph API. This is a codebase-wide convention for OData type discriminators.
 
 **Nested complex types:**
+
 ```powershell
 $mockSettings = ([MSFT_MicrosoftGraphAccessReviewScheduleSettings] @{
     AutoApplyDecisionsEnabled = $true
@@ -453,6 +478,7 @@ $mockSettings = ([MSFT_MicrosoftGraphAccessReviewScheduleSettings] @{
 ```
 
 **Rules:**
+
 - The type name must match the complex class exactly, including the `MSFT_` prefix and its casing.
 - Nested instances are constructed inside-out (innermost first).
 - Use the same mock instances in both the desired-state property block and the mock return values for consistency.
@@ -498,6 +524,7 @@ It 'Should return correct complex type values' {
 When the generic framework functions are insufficient for a resource's complex type handling, define resource-specific helpers at module scope, below the class in the same `.psm1` file.
 
 **Naming rules:**
+
 - All helpers must follow `Verb-Noun` naming with approved PowerShell verbs.
 - **Prefix the noun with the resource name.** All resources share one module scope, so `Get-PermissionGrantConditionSetAsHashtable` is a collision risk; `Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable` is not.
 - Conversion helpers: `Get-<Resource><Context>AsHashtable`, `Get-<Resource><Context>AsParameters`.
@@ -508,7 +535,7 @@ When the generic framework functions are insufficient for a resource's complex t
 **Common helper patterns:**
 
 | Helper Type | Naming Convention | Example |
-|-------------|-------------------|---------|
+| ------------- | ------------------- | --------- |
 | API object → hashtable | `Get-<Resource><Context>AsHashtable` | `Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsHashtable` |
 | Complex instance → API parameters | `Get-<Resource><Context>AsParameters` | `Get-AADPermissionGrantPolicyPermissionGrantConditionSetAsParameters` |
 | Deep equality comparison | `Test-<Resource><Context>Equal` | `Test-AADPermissionGrantPolicyConditionSetsEqual` |
@@ -519,12 +546,14 @@ When the generic framework functions are insufficient for a resource's complex t
 When Graph PowerShell SDK cmdlets do not exist for a specific API (commonly beta endpoints), use `Invoke-MgGraphRequest` with `Get-MSCloudLoginConnectionProfile` for the base URL.
 
 **Pattern:**
+
 ```powershell
 $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/some/endpoint"
 $response = Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction Stop
 ```
 
 **Rules:**
+
 - Never hardcode `https://graph.microsoft.com`. Always use `Get-MSCloudLoginConnectionProfile` for the base URL.
 - This pattern is used in resources like `MSFT_AADCertificateBasedApplicationConfiguration` and `MSFT_AADTenantGovernancePolicyTemplate`.
 
@@ -533,6 +562,7 @@ $response = Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction Stop
 When building hashtables for `ConvertTo-Json`, use `[System.Collections.ArrayList]` for array properties to prevent PowerShell 5.1 from collapsing single-element arrays to scalars.
 
 **Pattern:**
+
 ```powershell
 $params = @{
     enabledRules           = [System.Collections.ArrayList]@($rule1, $rule2)
@@ -542,5 +572,6 @@ $body = $params | ConvertTo-Json -Depth 10
 ```
 
 **Rules:**
+
 - This is only needed when the hashtable will be serialized to JSON via `ConvertTo-Json`.
 - Standard PowerShell `@()` arrays are fine for Graph SDK cmdlet parameters (splatting).

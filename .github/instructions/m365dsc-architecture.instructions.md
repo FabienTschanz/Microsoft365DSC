@@ -57,7 +57,7 @@ class AADExample : M365DSCResourceBase
 }
 ```
 
-### Rules:
+### Rules
 
 - **Properties are the schema.** Declare each one with `[DscProperty()]` and a `[System.ComponentModel.Description('...')]` ending with a period. Descriptions drive the generated documentation.
 - **`Modules/Microsoft365DSC/SchemaDefinition.json` is auto-generated** by reflection over the classes and must never be edited manually.
@@ -128,6 +128,7 @@ Dependency notes:
 - **Prefer non-beta (GA) modules and REST endpoints.** Use GA PowerShell modules (e.g., `Microsoft.Graph.Users`) and GA REST endpoints (e.g., `/v1.0/`) whenever the required functionality is available. Only use beta modules (e.g., `Microsoft.Graph.Beta.Users`) or beta REST endpoints (e.g., `/beta/`) when the functionality is new, not yet released to GA, or only available in preview.
 
 When generating new code, the agent should:
+
 - Prefer Graph where available
 - Prefer GA (non-beta) modules and endpoints over beta
 - Use existing helper modules
