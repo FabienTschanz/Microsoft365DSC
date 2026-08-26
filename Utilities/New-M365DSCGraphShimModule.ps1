@@ -34,6 +34,10 @@ param(
 
     [Parameter()]
     [System.String]
+    $CmdletMappingOverridesPath = "$PSScriptRoot\cmdlet-mapping-overrides.json",
+
+    [Parameter()]
+    [System.String]
     $FunctionSignaturesPath = "$PSScriptRoot\function-signatures.json",
 
     [Parameter()]
@@ -94,6 +98,24 @@ if (-not $SkipFunctionSignatureGeneration) {
 #region Load data sources
 Write-Host 'Loading cmdlet mapping...'
 $cmdletMapping = Get-Content $CmdletMappingPath -Raw | ConvertFrom-Json
+
+if (Test-Path -Path $CmdletMappingOverridesPath)
+{
+    Write-Host 'Applying cmdlet mapping overrides...'
+    $mappingOverrides = Get-Content $CmdletMappingOverridesPath -Raw | ConvertFrom-Json
+    foreach ($override in $mappingOverrides.PSObject.Properties)
+    {
+        $entry = $cmdletMapping.PSObject.Properties[$override.Name]
+        if ($null -eq $entry)
+        {
+            Write-Warning -Message "Mapping override for '$($override.Name)' does not match any cmdlet in the mapping."
+            continue
+        }
+
+        $entry.Value.Variants = $override.Value.Variants
+        Write-Host "  $($override.Name): $($override.Value.Reason)"
+    }
+}
 
 Write-Host 'Loading function signatures...'
 $functionSignatures = Get-Content $FunctionSignaturesPath -Raw | ConvertFrom-Json
@@ -361,7 +383,7 @@ function Invoke-M365DSCGraphShimRequestV76
         All        = $All
         ApiVersion = if ($Uri -match '^/beta') { 'beta' } else { 'v1.0' }
         Method     = $Method
-        Uri        = $Uri.TrimStart('/beta').TrimStart('/v1.0')
+        Uri        = [regex]::Replace($Uri, '^/beta|^/v1.0', '')
         ErrorAction = 'Stop'
     }
 
@@ -731,7 +753,7 @@ $script:GraphShimExcludeFromBody = @(
     'Filter', 'Property', 'ExpandProperty', 'Top', 'Skip',
     'Search', 'Sort', 'CountVariable', 'ConsistencyLevel',
     'All', 'PageSize', 'BodyParameter', 'AdditionalProperties',
-    'Confirm', 'WhatIf'
+    'Confirm', 'WhatIf', 'ErrorAction'
 )
 
 <#

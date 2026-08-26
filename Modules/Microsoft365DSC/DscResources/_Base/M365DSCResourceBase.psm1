@@ -750,7 +750,17 @@ class M365DSCResourceBase
     {
         foreach ($entry in $Source.GetEnumerator())
         {
-            if ($null -ne $this._FindProperty($entry.Key))
+            $meta = $null
+            if (-not $this._info.Meta.TryGetValue($entry.Key, [ref] $meta))
+            {
+                continue
+            }
+
+            if ($meta.IsSchema)
+            {
+                $this._SetProperty($meta.Property.Name, $entry.Value)
+            }
+            else
             {
                 $this.($entry.Key) = $entry.Value
             }

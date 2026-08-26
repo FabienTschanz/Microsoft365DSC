@@ -834,7 +834,7 @@ function Get-M365DSCExportContentForResource
     [void]$content.Append("        {`r`n")
     $partialContent = Get-DSCBlock -Params $Results -ModulePath $ModulePath -NoEscape $NoEscape -AllowVariablesInStrings:$AllowVariablesInStrings
 
-    if ($partialContent.ToLower().IndexOf($OrganizationName.ToLower()) -gt 0)
+    if ($partialContent.IndexOf($OrganizationName, [System.StringComparison]::OrdinalIgnoreCase) -gt 0)
     {
         if (-not $Script:M365DSCCompiledRegexCache.ContainsKey("OrgColon_$OrganizationName"))
         {
@@ -870,7 +870,7 @@ function Get-M365DSCExportContentForResource
                 continue
             }
 
-            if ($partialContent.ToLower().IndexOf($target.ToLower()) -gt 0)
+            if ($partialContent.IndexOf($target, [System.StringComparison]::OrdinalIgnoreCase) -gt 0)
             {
                 $cacheKeyBase = "Map_$target"
                 if (-not $Script:M365DSCCompiledRegexCache.ContainsKey("${cacheKeyBase}_colon"))
