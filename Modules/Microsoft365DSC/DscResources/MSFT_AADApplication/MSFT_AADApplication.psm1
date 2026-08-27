@@ -471,12 +471,12 @@ class AADApplication : M365DSCResourceBase
                     @{
                         id     = 'onPremisesPublishing'
                         method = 'GET'
-                        url    = "applications/$($AADApp.Id)/onPremisesPublishing"
+                        url    = "/applications/$($AADApp.Id)/onPremisesPublishing"
                     }
                     @{
                         id     = 'tokenLifetimePolicies'
                         method = 'GET'
-                        url    = "applications/$($AADApp.Id)/tokenLifetimePolicies"
+                        url    = "/applications/$($AADApp.Id)/tokenLifetimePolicies"
                     }
                 )
                 $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests

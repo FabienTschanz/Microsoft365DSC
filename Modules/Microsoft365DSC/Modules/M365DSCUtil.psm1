@@ -2522,8 +2522,9 @@ function Write-M365DSCHost
 
 .DESCRIPTION
     Resolves Invoke-MgxBatchRequest once per session and caches the CommandInfo. Returns $null on
-    PowerShell versions below 7.6 or when M365DSC.mgx is not installed, so callers fall back to the
-    Microsoft Graph SDK. Resolving by name on every call would pay command discovery each time.
+    PowerShell versions below 7.6, when M365DSC.mgx is not installed, or when the installed version
+    predates FollowNextLink, so callers fall back to the Microsoft Graph SDK. Resolving by name on
+    every call would pay command discovery each time.
 
 .OUTPUTS
     System.Management.Automation.CommandInfo
@@ -2539,7 +2540,11 @@ function Get-M365DSCMgxBatchCommand
         $Script:M365DSCMgxBatchCommandResolved = $true
         if ($PSVersionTable.PSVersion -ge [Version] '7.6')
         {
-            $Script:M365DSCMgxBatchCommand = Get-Command -Name 'Invoke-MgxBatchRequest' -ErrorAction SilentlyContinue
+            $command = Get-Command -Name 'Invoke-MgxBatchRequest' -ErrorAction SilentlyContinue
+            if ($null -ne $command -and $command.Parameters.ContainsKey('FollowNextLink'))
+            {
+                $Script:M365DSCMgxBatchCommand = $command
+            }
         }
     }
 
@@ -2592,10 +2597,10 @@ function Resolve-M365DSCBatchResponsePaging
     Sends Graph batch requests through the Mgx batch cmdlet.
 
 .DESCRIPTION
-    Pipes every request into a single Invoke-MgxBatchRequest call, which chunks them and retries each
-    item on throttling and transient failures. Mgx reports a row per request carrying Url, Method,
-    Status and Body but no request identifier, so the caller's ids are restored by walking the results
-    against the requests in order and matching on url.
+    Pipes every request into a single Invoke-MgxBatchRequest call, which chunks them, retries each item
+    on throttling and transient failures, echoes the caller's id back on every row, and follows
+    '@odata.nextLink' so a sub-request against a collection returns all of it rather than its first
+    page. A collection Mgx could not drain in full is reported through pagingIncomplete.
 
 .PARAMETER Requests
     Specifies the requests, as hashtables with id, method and url members.
@@ -2630,6 +2635,7 @@ function Invoke-M365DSCMgxBatchRequest
     $items = foreach ($request in $Requests)
     {
         $item = @{
+            Id     = $request.id
             Url    = $request.url
             Method = if ([System.String]::IsNullOrEmpty($request.method)) { 'GET' } else { $request.method }
         }
@@ -2641,24 +2647,22 @@ function Invoke-M365DSCMgxBatchRequest
     }
 
     Write-Verbose -Message "Sending BATCH Request with $($Requests.Count) sub-requests through Mgx..."
-    $results = @($items | & $BatchCommand -ApiVersion 'beta' -ErrorAction SilentlyContinue -WarningAction SilentlyContinue)
+    $results = @($items | & $BatchCommand -ApiVersion 'beta' -FollowNextLink -ErrorAction SilentlyContinue -WarningAction SilentlyContinue)
 
-    $requestIndex = 0
     foreach ($result in $results)
     {
-        while ($requestIndex -lt $Requests.Count -and $Requests[$requestIndex].url -ne $result.Url)
-        {
-            $requestIndex++
-        }
-
         $response = @{
-            id     = if ($requestIndex -lt $Requests.Count) { $Requests[$requestIndex].id } else { $null }
+            id     = $result.Id
             status = $result.Status
             body   = $result.Body
         }
-        $requestIndex++
 
-        Resolve-M365DSCBatchResponsePaging -Response $response
+        if ($result.PagingIncomplete)
+        {
+            $response.pagingIncomplete = $true
+            Write-Warning -Message "Batch sub-request '$($result.Id)' returned an incomplete collection for $($result.Url). The exported data for it is partial."
+        }
+
         $batchResponses.Add($response)
     }
 
