@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "capturedAt": "2026-08-27T14:35:44Z",
+  "capturedAt": "2026-08-27T16:04:39Z",
   "capturedBy": "local",
   "completeness": {
     "tenantConnected": false,
@@ -757,6 +757,7 @@
             "standard",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -1207,6 +1208,7 @@
             "tenant",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -1259,6 +1261,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -1582,6 +1585,7 @@
             "inactiveUsers",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -1714,6 +1718,7 @@
             "virtualMachine",
             "windowsPc"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -1906,6 +1911,7 @@
             "notConfigured",
             "notGranted"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -1918,6 +1924,7 @@
             "notConfigured",
             "notGranted"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2106,6 +2113,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2174,6 +2182,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2311,6 +2320,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2372,6 +2382,7 @@
             "basic",
             "hardwareBacked"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2431,6 +2442,7 @@
             "unknownFutureValue",
             "unspecified"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2501,6 +2513,7 @@
             "corporateOwnedFullyManaged",
             "corporateOwnedWorkProfile"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2513,6 +2526,7 @@
             "default",
             "deviceStaging"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2610,6 +2624,7 @@
             "wep",
             "wpa"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2644,6 +2659,7 @@
             "derivedCredential",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2747,6 +2763,7 @@
             "eapTtls",
             "peap"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2783,6 +2800,7 @@
             "microsoftChapVersionTwo",
             "unencryptedPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2794,6 +2812,7 @@
             "microsoftChapVersionTwo",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2813,6 +2832,7 @@
             "hardware",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2882,6 +2902,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -2962,6 +2983,7 @@
             "wpaEnterprise",
             "wpaPersonal"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3005,6 +3027,7 @@
             "userChoice",
             "wiFiOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3018,6 +3041,7 @@
             "deviceDefault",
             "prompt"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3104,6 +3128,7 @@
             "notConfigured",
             "unkownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3152,6 +3177,7 @@
             "notConfigured",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3227,6 +3253,7 @@
             "fullyManaged",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3304,6 +3331,7 @@
             "notificationsAndSystemInfoEnabled",
             "systemInfoOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3323,6 +3351,7 @@
             "navigationEnabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3395,6 +3424,7 @@
             "lightSquare",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3424,6 +3454,7 @@
             "small",
             "smallest"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3480,6 +3511,7 @@
             "notConfigured",
             "simple"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3542,6 +3574,7 @@
             "notConfigured",
             "portrait"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3603,6 +3636,7 @@
             "notConfigured",
             "singleAppMode"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3622,6 +3656,7 @@
             "notConfigured",
             "swipeUp"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3719,6 +3754,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3746,6 +3782,7 @@
             "notConfigured",
             "top"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3787,6 +3824,7 @@
             "trustAgents",
             "unredactedNotifications"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3869,6 +3907,7 @@
             "deviceDefault",
             "unkownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3887,6 +3926,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3928,6 +3968,7 @@
             "blockedApps",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -3947,6 +3988,7 @@
             "blockList",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -4017,6 +4059,7 @@
             "usb",
             "wireless"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -4066,6 +4109,7 @@
             "postpone",
             "windowed"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -4234,6 +4278,7 @@
             "deviceDefault",
             "unkownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -4252,6 +4297,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -4664,6 +4710,7 @@
             "sharedSecret",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -4689,6 +4736,7 @@
             "netMotionMobility",
             "pulseSecure"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5130,6 +5178,7 @@
             "wpaEnterprise",
             "wpaPersonal"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5308,6 +5357,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -5356,6 +5406,7 @@
             "androidOpenSourceProject",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5411,6 +5462,7 @@
             "photoLibrary",
             "sharePoint"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5428,6 +5480,7 @@
             "sharePoint",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5440,6 +5493,7 @@
             "managedApps",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5460,6 +5514,7 @@
             "managedApps",
             "managedAppsWithPasteIn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5472,6 +5527,7 @@
             "managedApps",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5485,6 +5541,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5498,6 +5555,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5511,6 +5569,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5524,6 +5583,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5537,6 +5597,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5550,6 +5611,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5563,6 +5625,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5576,6 +5639,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5589,6 +5653,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5602,6 +5667,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5615,6 +5681,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5628,6 +5695,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5641,6 +5709,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5654,6 +5723,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5667,6 +5737,7 @@
             "allMicrosoftApps",
             "selectedPublicApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5817,6 +5888,7 @@
             "customApp",
             "managedApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5913,6 +5985,7 @@
             "microsoftEdge",
             "notConfigured"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -5934,6 +6007,7 @@
             "notConfigured",
             "secured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6079,6 +6153,7 @@
             "thirdPartyPartnerOverDefender",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6092,6 +6167,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6104,6 +6180,7 @@
             "block",
             "blockOrganizationalData"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6150,6 +6227,7 @@
             "alphanumericAndSymbol",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6191,6 +6269,7 @@
             "blocked",
             "specificApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6204,6 +6283,7 @@
             "requiredWhenOnline",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6229,6 +6309,7 @@
             "enabled",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6241,6 +6322,7 @@
             "basicIntegrityAndDeviceCertification",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6252,6 +6334,7 @@
             "basic",
             "hardwareBacked"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6297,6 +6380,7 @@
             "unmanaged",
             "unspecified"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6345,6 +6429,7 @@
             "notBound",
             "unbinding"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6373,6 +6458,7 @@
             "targeted",
             "targetedAsEnrollmentRestrictions"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6402,6 +6488,7 @@
             "success",
             "unknownError"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6422,6 +6509,7 @@
             "managedGooglePlayAccountsEnterprise",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6634,6 +6722,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -6739,6 +6828,7 @@
             "notConfigured",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -6817,6 +6907,7 @@
             "androidWorkProfile",
             "default"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7041,6 +7132,7 @@
             "autoGrant",
             "prompt"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7070,6 +7162,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7138,6 +7231,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7232,6 +7326,7 @@
             "numeric",
             "numericComplex"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7252,6 +7347,7 @@
             "medium",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7341,6 +7437,7 @@
             "basic",
             "hardwareBacked"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7409,6 +7506,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7436,6 +7534,7 @@
             "medium",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7629,6 +7728,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7649,6 +7749,7 @@
             "medium",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7720,6 +7821,7 @@
             "blockAll",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7810,6 +7912,7 @@
             "noRestrictions",
             "preventAny"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7823,6 +7926,7 @@
             "deviceDefault",
             "prompt"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7938,6 +8042,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -7965,6 +8070,7 @@
             "medium",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -8165,6 +8271,7 @@
             "sharedSecret",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -8191,6 +8298,7 @@
             "paloAltoGlobalProtect",
             "pulseSecure"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -8589,6 +8697,7 @@
             "numericComplex",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -9279,6 +9388,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -9555,6 +9665,7 @@
             "unknownFutureValue",
             "visible"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -9689,6 +9800,7 @@
             "removeAccess",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -9822,6 +9934,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -9984,6 +10097,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10020,6 +10134,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10084,6 +10199,7 @@
             "preMigration",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10172,6 +10288,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10198,6 +10315,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10239,6 +10357,7 @@
             "x509CertificateMultiFactor",
             "x509CertificateSingleFactor"
           ],
+          "isFlags": true,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10294,6 +10413,7 @@
             "custom",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10306,6 +10426,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10334,6 +10455,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10538,6 +10660,7 @@
             "virtualMachine",
             "windowsPc"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10680,6 +10803,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10842,6 +10966,7 @@
             "signUpOrSignIn",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10869,6 +10994,7 @@
             "xtsAes128",
             "xtsAes256"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10930,6 +11056,7 @@
             "passwordAndKey",
             "passwordOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10943,6 +11070,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10956,6 +11084,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -10983,6 +11112,7 @@
             "xtsAes128",
             "xtsAes256"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11010,6 +11140,7 @@
             "xtsAes128",
             "xtsAes256"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11073,6 +11204,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11086,6 +11218,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11099,6 +11232,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11112,6 +11246,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11394,6 +11529,7 @@
             "monitorOnly",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11487,6 +11623,7 @@
             "premium",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11568,6 +11705,7 @@
             "usGovernmentDOD",
             "usWest"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11594,6 +11732,7 @@
             "hybridAzureADJoin",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11620,6 +11759,7 @@
             "usGovernment",
             "usWest"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11680,6 +11820,7 @@
             "usGovernmentDOD",
             "usWest"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11699,6 +11840,7 @@
             "hybridAzureADJoin",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11760,6 +11902,7 @@
             "hybridAzureADJoin",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11790,6 +11933,7 @@
             "unknownFutureValue",
             "warning"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11842,6 +11986,7 @@
             "unknownFutureValue",
             "windows365"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -11904,6 +12049,7 @@
             "hybridAzureADJoin",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12039,6 +12185,7 @@
             "udpConnectivityCheckUrlsNotAllowListed",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12069,6 +12216,7 @@
             "unknownFutureValue",
             "warning"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12283,6 +12431,7 @@
             "gallery",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12319,6 +12468,7 @@
             "unknownFutureValue",
             "windows365"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12342,6 +12492,7 @@
             "sharedByUser",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12362,6 +12513,7 @@
             "notApplicable",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12374,6 +12526,7 @@
             "cloudPc",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12442,6 +12595,7 @@
             "twentyFourHours",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12527,6 +12681,7 @@
             "snapshot",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12578,6 +12733,7 @@
             "thirtyTwoGB",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12625,6 +12781,7 @@
             "reset",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12637,6 +12794,7 @@
             "personal",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12660,6 +12818,7 @@
             "windowsMobileApplicationManagement",
             "windowsPhone81"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12739,6 +12898,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12810,6 +12970,7 @@
             "medium",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12842,6 +13003,7 @@
             "other",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12879,6 +13041,7 @@
             "moderate",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12910,6 +13073,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12925,6 +13089,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -12940,6 +13105,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13038,6 +13204,7 @@
             "enumerated",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13056,6 +13223,7 @@
             "exclude",
             "include"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13102,6 +13270,7 @@
             "riskRemediation",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13155,6 +13324,7 @@
             "serviceProvider",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13206,6 +13376,7 @@
             "windows",
             "windowsPhone"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13223,6 +13394,7 @@
             "windows",
             "windowsPhone"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13308,6 +13480,7 @@
             "enabled",
             "enabledForReportingButNotEnforced"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13535,6 +13708,7 @@
             "proposed",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13558,6 +13732,7 @@
         "connectorGroupType": {
           "type": "connectorGroupType",
           "enum": "applicationProxy",
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13602,6 +13777,7 @@
             "nam",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13641,6 +13817,7 @@
             "windowsDefenderATPConnectorLastHeartbeatDateTime",
             "windowsStoreForBusinessLastSyncDateTime"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13661,6 +13838,7 @@
             "unknown",
             "warning"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -13681,6 +13859,7 @@
             "strictLocation",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14197,6 +14376,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14216,6 +14396,7 @@
             "blocked",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14378,6 +14559,7 @@
             "sha1_96",
             "sha_256_128"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14396,6 +14578,7 @@
             "des",
             "tripleDes"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14411,6 +14594,7 @@
             "group2",
             "group24"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14429,6 +14613,7 @@
             "des",
             "tripleDes"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14444,6 +14629,7 @@
             "sha2_384",
             "sha2_512"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14460,6 +14646,7 @@
             "pfs24",
             "pfsMM"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14716,6 +14903,7 @@
             "equals",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14745,6 +14933,7 @@
             "universalResourceIdentifier",
             "userPrincipalName"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14789,6 +14978,7 @@
             "socialIdentityProviders",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14805,6 +14995,7 @@
             "socialIdentityProviders",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14870,6 +15061,7 @@
             "remove",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14886,6 +15078,7 @@
             "remove",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14902,6 +15095,7 @@
             "remove",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14918,6 +15112,7 @@
             "remove",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14943,6 +15138,7 @@
             "devices",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15009,6 +15205,7 @@
             "windowsMobileApplicationManagement",
             "windowsPhone81"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15109,6 +15306,7 @@
             "resourceScope",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15479,6 +15677,7 @@
             "windowsHelloForBusiness",
             "windowsRestore"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15573,6 +15772,7 @@
             "windowsHelloForBusiness",
             "windowsRestore"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15674,6 +15874,7 @@
             "windowsHelloForBusiness",
             "windowsRestore"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15693,6 +15894,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15733,6 +15935,7 @@
             "disallowed",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15766,6 +15969,7 @@
             "disallowed",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15778,6 +15982,7 @@
             "disallowed",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15818,6 +16023,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15830,6 +16036,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15899,6 +16106,7 @@
             "deviceHealthScript",
             "managedInstallerScript"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -15996,6 +16204,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17045,6 +17254,7 @@
             "pending",
             "warning"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17060,6 +17270,7 @@
             "none",
             "office365"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17645,6 +17856,7 @@
             "cloudPcUserSettingsPersistenceScenario",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17710,6 +17922,7 @@
             "unknownFutureValue",
             "warning"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17739,6 +17952,7 @@
             "sms",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17790,6 +18004,7 @@
             "percentage",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17813,6 +18028,7 @@
             "provisionFailures",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17829,6 +18045,7 @@
             "notEqual",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17841,6 +18058,7 @@
             "or",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17870,6 +18088,7 @@
             "percentage",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17886,6 +18105,7 @@
             "notEqual",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17911,6 +18131,7 @@
             "sModeConfiguration",
             "standardConfiguration"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17929,6 +18150,7 @@
             "exclude",
             "include"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17972,6 +18194,7 @@
             "windows10ProfessionalWorkstation",
             "windows10ProfessionalWorkstationN"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -17983,6 +18206,7 @@
             "exclude",
             "include"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18022,6 +18246,7 @@
             "exclude",
             "include"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18114,6 +18339,7 @@
             "windows10",
             "windows10X"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18171,6 +18397,7 @@
             "windows10XManagement",
             "windowsOsRecovery"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18227,6 +18454,7 @@
             "windowsOsRecoveryPolicies",
             "windowsRecoveryAndRemediationConfiguration"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -18275,6 +18503,7 @@
             "purebred",
             "xTec"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18287,6 +18516,7 @@
             "email",
             "none"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18413,6 +18643,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18464,6 +18695,7 @@
             "purebred",
             "xTec"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18603,6 +18835,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18772,6 +19005,7 @@
             "required",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18891,6 +19125,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -18933,6 +19168,7 @@
             "blocked",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19204,6 +19440,7 @@
             "bing",
             "default"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19224,6 +19461,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19258,6 +19496,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19356,6 +19595,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19530,6 +19770,7 @@
             "noExpiration",
             "notSpecified"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19694,6 +19935,7 @@
             "unknownFutureValue",
             "wikis"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19713,6 +19955,7 @@
             "search",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19796,6 +20039,7 @@
             "ready",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -19821,6 +20065,7 @@
             "startsWith",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19846,6 +20091,7 @@
             "and",
             "or"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -19968,6 +20214,7 @@
             "seamlessSso",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -20016,6 +20263,7 @@
             "role",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -20094,6 +20342,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -20120,6 +20369,7 @@
             "block",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -20177,6 +20427,7 @@
             "secret",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -20874,6 +21125,7 @@
             "unknown",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -20943,6 +21195,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21099,6 +21352,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21128,6 +21382,7 @@
             "tenantBot",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21155,6 +21410,7 @@
             "team",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21211,6 +21467,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21279,6 +21536,7 @@
             "skypeUser",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21425,6 +21683,7 @@
             "response",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21495,6 +21754,7 @@
             "any",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21523,6 +21783,7 @@
             "percentageBasedThresholdExceeded",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21559,6 +21820,7 @@
             "mover",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21707,6 +21969,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -21915,6 +22178,7 @@
             "unknownFutureValue",
             "voicemail"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22033,6 +22297,7 @@
             "facebook",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22062,6 +22327,7 @@
             "stringCollection",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22096,6 +22362,7 @@
             "required",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22164,6 +22431,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22311,6 +22579,7 @@
             "availableWithoutPrompts",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22531,6 +22800,7 @@
             "availableWithoutPrompts",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22725,6 +22995,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22793,6 +23064,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -22917,6 +23189,7 @@
             "deviceDefault",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -23398,6 +23671,7 @@
             "lockScreen",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -23602,6 +23876,7 @@
             "appsNotInListCompliant",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -23748,6 +24023,7 @@
             "appsNotInListCompliant",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -24294,6 +24570,7 @@
             "managedApp",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -24449,6 +24726,7 @@
             "allAllowed",
             "allBlocked"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -24653,6 +24931,7 @@
             "deviceDefault",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -24758,6 +25037,7 @@
             "blockAlways",
             "browserDefault"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25056,6 +25336,7 @@
             "mobileDeviceManagement",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25249,6 +25530,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -25326,6 +25608,7 @@
             "photoLibrary",
             "sharePoint"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25343,6 +25626,7 @@
             "sharePoint",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25355,6 +25639,7 @@
             "managedApps",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25382,6 +25667,7 @@
             "managedApps",
             "managedAppsWithPasteIn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25394,6 +25680,7 @@
             "managedApps",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25407,6 +25694,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25420,6 +25708,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25433,6 +25722,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25446,6 +25736,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25459,6 +25750,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25472,6 +25764,7 @@
             "whenDeviceLocked",
             "whenDeviceLockedExceptOpenFiles"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25485,6 +25778,7 @@
             "allMicrosoftApps",
             "selectedPublicApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25585,6 +25879,7 @@
             "customApp",
             "managedApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25654,6 +25949,7 @@
             "notBlocked",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25693,6 +25989,7 @@
             "microsoftEdge",
             "notConfigured"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25721,6 +26018,7 @@
             "notConfigured",
             "secured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25838,6 +26136,7 @@
             "thirdPartyPartnerOverDefender",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25851,6 +26150,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25863,6 +26163,7 @@
             "block",
             "blockOrganizationalData"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25909,6 +26210,7 @@
             "alphanumericAndSymbol",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25957,6 +26259,7 @@
             "blocked",
             "specificApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25970,6 +26273,7 @@
             "requiredWhenOnline",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -25996,6 +26300,7 @@
             "notBlocked",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26020,6 +26325,7 @@
             "unmanaged",
             "unspecified"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26046,6 +26352,7 @@
             "notBlocked",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26186,6 +26493,7 @@
             "modal",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26227,6 +26535,7 @@
             "neverShow",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26497,6 +26806,7 @@
             "sharedSecret",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26539,6 +26849,7 @@
             "pulseSecure",
             "zscalerPrivateAccess"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26773,6 +27084,7 @@
             "notConfigured",
             "packetTunnel"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -26962,6 +27274,7 @@
             "userPrincipalName",
             "userPrincipalUsername"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27073,6 +27386,7 @@
             "trustedCertificateAuthority",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27085,6 +27399,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27237,6 +27552,7 @@
             "bundleID",
             "path"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27259,6 +27575,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27335,6 +27652,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27376,6 +27694,7 @@
             "macAppStoreAndIdentifiedDevelopers",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27479,6 +27798,7 @@
             "deviceDefault",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27628,6 +27948,7 @@
             "appsNotInListCompliant",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -27991,6 +28312,7 @@
             "deviceDefault",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -28083,6 +28405,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -28334,6 +28657,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -28553,6 +28877,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -28842,6 +29167,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -28897,6 +29223,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -28909,6 +29236,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -28957,6 +29285,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -28983,6 +29312,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29001,6 +29331,7 @@
             "bundleID",
             "path"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29013,6 +29344,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29025,6 +29357,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29037,6 +29370,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29049,6 +29383,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29061,6 +29396,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29080,6 +29416,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29092,6 +29429,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29104,6 +29442,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29116,6 +29455,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29128,6 +29468,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29140,6 +29481,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29152,6 +29494,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29188,6 +29531,7 @@
             "windows",
             "windowsHolographic"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29397,6 +29741,7 @@
             "encryptAuditAndPrompt",
             "noProtection"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29607,6 +29952,7 @@
             "mature",
             "parentalGuidance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29625,6 +29971,7 @@
             "parentalGuidance",
             "preschoolers"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29648,6 +29995,7 @@
             "parentalGuidance",
             "restricted"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29665,6 +30013,7 @@
             "general",
             "parentalGuidance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29687,6 +30036,7 @@
             "allAllowed",
             "allBlocked"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29702,6 +30052,7 @@
             "allAllowed",
             "allBlocked"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29725,6 +30076,7 @@
             "allBlocked",
             "general"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29741,6 +30093,7 @@
             "allBlocked",
             "general"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29765,6 +30118,7 @@
             "general",
             "parentalGuidance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29781,6 +30135,7 @@
             "parentalSupervision",
             "youngAdults"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29803,6 +30158,7 @@
             "general",
             "parentalGuidance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29815,6 +30171,7 @@
             "allBlocked",
             "explicitAllowed"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29842,6 +30199,7 @@
             "parentalGuidance",
             "restricted"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29856,6 +30214,7 @@
             "general",
             "parentalGuidance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29881,6 +30240,7 @@
             "parentalGuidance",
             "universalChildren"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29893,6 +30253,7 @@
             "allBlocked",
             "caution"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29916,6 +30277,7 @@
             "parentalGuidance13",
             "restricted"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29933,6 +30295,7 @@
             "general",
             "parentalGuidance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -29968,6 +30331,7 @@
             "Succeeded",
             "UnsupportedFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30024,6 +30388,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30099,6 +30464,7 @@
             "starterManaged",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30120,6 +30486,7 @@
             "starterManaged",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30282,6 +30649,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -30366,6 +30734,7 @@
             "selected",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30457,6 +30826,7 @@
             "selected",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30663,6 +31033,7 @@
             "unknownFutureValue",
             "unresponsive"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30725,6 +31096,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30765,6 +31137,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30791,6 +31164,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30812,6 +31186,7 @@
             "bypass",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -30939,6 +31314,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31002,6 +31378,7 @@
             "private",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31094,6 +31471,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31107,6 +31485,7 @@
             "private",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31216,6 +31595,7 @@
             "westUS2",
             "westUS3"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31246,6 +31626,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31415,6 +31796,7 @@
             "full",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31480,6 +31862,7 @@
             "x64",
             "x86"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31493,6 +31876,7 @@
             "officeOpenXMLFormat",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31520,6 +31904,7 @@
             "projectProRetail",
             "visioProRetail"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31539,6 +31924,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -31597,6 +31983,7 @@
             "monthlyEnterprise",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -31903,6 +32290,7 @@
             "aadPreAuthentication",
             "passthru"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32039,6 +32427,7 @@
             "sessionPersistence",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32124,6 +32513,7 @@
             "saml",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32363,6 +32753,7 @@
             "sccm",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32408,6 +32799,7 @@
             "unknownFutureValue",
             "valueAddedResellerPartnerDelegatedAdmin"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32543,6 +32935,7 @@
             "singleUser",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32583,6 +32976,7 @@
             "standard",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32602,6 +32996,7 @@
             "singleUser",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32642,6 +33037,7 @@
             "standard",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32763,6 +33159,7 @@
             "symmetricKeyLifetime",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32775,6 +33172,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32817,6 +33215,7 @@
             "include",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32852,6 +33251,7 @@
             "win32app",
             "zeroTouchDeploymentDeviceConfigProfile"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -32924,6 +33324,7 @@
             "tenant",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33019,6 +33420,7 @@
             "always",
             "never"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33103,6 +33505,7 @@
             "notFound",
             "unauthorized"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33154,6 +33557,7 @@
             "unknown",
             "validating"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33314,6 +33718,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33344,6 +33749,7 @@
             "tuesday",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33360,6 +33766,7 @@
             "tuesday",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33374,6 +33781,7 @@
             "second",
             "third"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33403,6 +33811,7 @@
             "relativeYearly",
             "weekly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33450,6 +33859,7 @@
             "noEnd",
             "numbered"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33514,6 +33924,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33586,6 +33997,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33658,6 +34070,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33737,6 +34150,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33925,6 +34339,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33989,6 +34404,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34044,6 +34460,7 @@
             "rsaSha1",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34469,6 +34886,7 @@
             "notConfigured",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -34671,6 +35089,7 @@
             "diskSpaceThresholdOrInactiveThreshold",
             "immediate"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34726,6 +35145,7 @@
             "guest",
             "notConfigured"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34850,6 +35270,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34905,6 +35326,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34931,6 +35353,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34943,6 +35366,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34955,6 +35379,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -34967,6 +35392,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35030,6 +35456,7 @@
             "unknownFutureValue",
             "unrestricted"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35049,6 +35476,7 @@
             "secondaryAuthentication",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35061,6 +35489,7 @@
             "timeBased",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35079,6 +35508,7 @@
             "days",
             "hours"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35310,6 +35740,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35393,6 +35824,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35443,6 +35875,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35463,6 +35896,7 @@
             "allMicrosoftApps",
             "selectedPublicApps"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35576,6 +36010,7 @@
             "unmanaged",
             "unspecified"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35703,6 +36138,7 @@
             "team",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35814,6 +36250,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -36537,6 +36974,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37173,6 +37611,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37235,6 +37674,7 @@
             "evaluateConnection",
             "ignore"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37260,6 +37700,7 @@
             "connectIfNeeded",
             "neverConnect"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37280,6 +37721,7 @@
             "notConfigured",
             "wiFi"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37418,6 +37860,7 @@
             "none",
             "universal"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37483,6 +37926,7 @@
             "none",
             "splitTunnel"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37495,6 +37939,7 @@
             "outbound",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37597,6 +38042,7 @@
             "x64",
             "x86"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37612,6 +38058,7 @@
             "x64",
             "x86"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -37849,6 +38296,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -37960,6 +38408,7 @@
             "sizeInMB",
             "version"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38004,6 +38453,7 @@
             "notConfigured",
             "notEqual"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38041,6 +38491,7 @@
             "notConfigured",
             "notEqual"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38082,6 +38533,7 @@
             "force",
             "suppress"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38096,6 +38548,7 @@
             "terminateWithoutUserInteraction",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38114,6 +38567,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38133,6 +38587,7 @@
             "perMachine",
             "perUser"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38205,6 +38660,7 @@
             "sizeInMB",
             "version"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38256,6 +38712,7 @@
             "notConfigured",
             "notEqual"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38281,6 +38738,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38323,6 +38781,7 @@
             "softReboot",
             "success"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38391,6 +38850,7 @@
             "unknownFutureValue",
             "version"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38407,6 +38867,7 @@
             "notConfigured",
             "notEqual"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38458,6 +38919,7 @@
             "notConfigured",
             "notEqual"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38469,6 +38931,7 @@
             "detection",
             "requirement"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38487,6 +38950,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38664,6 +39128,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -38718,6 +39183,7 @@
             "system",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38738,6 +39204,7 @@
             "none",
             "weekly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38770,6 +39237,7 @@
             "desktop",
             "universal"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -38916,6 +39384,7 @@
             "secured",
             "unavailable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39061,6 +39530,7 @@
             "deviceDefault",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39342,6 +39812,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39354,6 +39825,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39366,6 +39838,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39378,6 +39851,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39389,6 +39863,7 @@
             "none",
             "notConfiguredOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39470,6 +39945,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39497,6 +39973,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39516,6 +39993,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39528,6 +40006,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39540,6 +40019,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39552,6 +40032,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39564,6 +40045,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39583,6 +40065,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39595,6 +40078,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39614,6 +40098,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39649,6 +40134,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39661,6 +40147,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39673,6 +40160,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39685,6 +40173,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39697,6 +40186,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39709,6 +40199,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39823,6 +40314,7 @@
             "unlimited",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39834,6 +40326,7 @@
             "primarySmtpAddress",
             "userPrincipalName"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39850,6 +40343,7 @@
             "thirtyMinutes",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39932,6 +40426,7 @@
             "fullDomainName",
             "netBiosDomainName"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39960,6 +40455,7 @@
             "samAccountName",
             "userPrincipalName"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39971,6 +40467,7 @@
             "primarySmtpAddress",
             "userPrincipalName"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -39999,6 +40496,7 @@
             "enforceComponentsStoreAppsAndSmartlocker",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40069,6 +40567,7 @@
             "blockNone",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40083,6 +40582,7 @@
             "blockTextFile",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40117,6 +40617,7 @@
             "enabledForOffice",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40181,6 +40682,7 @@
             "enabledForAzureAdAndHybrid",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40225,6 +40727,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40239,6 +40742,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40344,6 +40848,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40364,6 +40869,7 @@
             "notConfigured",
             "zeroTolerance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40484,6 +40990,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40498,6 +41005,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40561,6 +41069,7 @@
             "enable",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40582,6 +41091,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40596,6 +41106,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40610,6 +41121,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40624,6 +41136,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40638,6 +41151,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40652,6 +41166,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40666,6 +41181,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40680,6 +41196,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40694,6 +41211,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40708,6 +41226,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40722,6 +41241,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40736,6 +41256,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40750,6 +41271,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40764,6 +41286,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40783,6 +41306,7 @@
             "monitorIncomingFilesOnly",
             "monitorOutgoingFilesOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40803,6 +41327,7 @@
             "quick",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40829,6 +41354,7 @@
             "userDefined",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40850,6 +41376,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40864,6 +41391,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40878,6 +41406,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -40892,6 +41421,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41024,6 +41554,7 @@
             "displayOnlyInNotifications",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41036,6 +41567,7 @@
             "blockNoncriticalNotifications",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41063,6 +41595,7 @@
             "sendAllSamplesAutomatically",
             "sendSafeSamplesAutomatically"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41077,6 +41610,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41091,6 +41625,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41105,6 +41640,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41119,6 +41655,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41152,6 +41689,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41165,6 +41703,7 @@
             "enableWithoutUEFILock",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41177,6 +41716,7 @@
             "withDMA",
             "withoutDMA"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41244,6 +41784,7 @@
             "blockAll",
             "deviceDefault"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41264,6 +41805,7 @@
             "none",
             "require"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41327,6 +41869,7 @@
             "queueInbound",
             "queueOutbound"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41339,6 +41882,7 @@
             "none",
             "utF8"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41401,6 +41945,7 @@
             "lmNtlmV2AndNotLm",
             "lmNtlmV2AndNotLmOrNtm"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41438,6 +41983,7 @@
             "promptForCredentials",
             "promptForCredentialsOnTheSecureDesktop"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41619,6 +42165,7 @@
             "administratorsAndPowerUsers",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41653,6 +42200,7 @@
             "administratorsAndPowerUsers",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41666,6 +42214,7 @@
             "userDisplayNameDomainUser",
             "userDisplayNameOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41707,6 +42256,7 @@
             "require128BitEncryption",
             "requireNtmlV2SessionSecurity"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41720,6 +42270,7 @@
             "require128BitEncryption",
             "requireNtmlV2SessionSecurity"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41747,6 +42298,7 @@
             "lockWorkstation",
             "noAction"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -41760,6 +42312,7 @@
             "promptForCredentials",
             "promptForCredentialsOnTheSecureDesktop"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42083,6 +42636,7 @@
             "enable",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42095,6 +42649,7 @@
             "disabled",
             "manual"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42114,6 +42669,7 @@
             "disabled",
             "manual"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42126,6 +42682,7 @@
             "disabled",
             "manual"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42138,6 +42695,7 @@
             "disabled",
             "manual"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42232,6 +42790,7 @@
             "windowsHelloForBusiness",
             "windowsRestore"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42342,6 +42901,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42382,6 +42942,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42423,6 +42984,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42506,6 +43068,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42589,6 +43152,7 @@
             "notConfigured",
             "zeroTolerance"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42660,6 +43224,7 @@
             "monitorOutgoingFilesOnly",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42672,6 +43237,7 @@
             "block",
             "deviceDefault"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42686,6 +43252,7 @@
             "userDefined",
             "warn"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42707,6 +43274,7 @@
             "sendAllDataWithoutPrompting",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42804,6 +43372,7 @@
             "quick",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42845,6 +43414,7 @@
             "sendAllSamplesAutomatically",
             "sendSafeSamplesAutomatically"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42864,6 +43434,7 @@
             "userDefined",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42883,6 +43454,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -42959,6 +43531,7 @@
             "none",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43175,6 +43748,7 @@
             "blockThirdParty",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43201,6 +43775,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43251,6 +43826,7 @@
             "publicBrowsingMultiApp",
             "publicBrowsingSingleApp"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43279,6 +43855,7 @@
             "specificPages",
             "startPage"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43328,6 +43905,7 @@
             "keepGoing",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43348,6 +43926,7 @@
             "intranetAndInternet",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43444,6 +44023,7 @@
             "blockedWithUserOverride",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43456,6 +44036,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43490,6 +44071,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43502,6 +44084,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43542,6 +44125,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43630,6 +44214,7 @@
             "disabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43748,6 +44333,7 @@
             "deviceDefault",
             "numeric"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43783,6 +44369,7 @@
             "shutdown",
             "sleep"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43797,6 +44384,7 @@
             "shutdown",
             "sleep"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43809,6 +44397,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43821,6 +44410,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43835,6 +44425,7 @@
             "shutdown",
             "sleep"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43849,6 +44440,7 @@
             "shutdown",
             "sleep"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43863,6 +44455,7 @@
             "shutdown",
             "sleep"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43877,6 +44470,7 @@
             "shutdown",
             "sleep"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43918,6 +44512,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -43979,6 +44574,7 @@
             "strict",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44217,6 +44813,7 @@
             "recommendations",
             "storeOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44258,6 +44855,7 @@
             "remove",
             "userDefined"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44375,6 +44973,7 @@
             "nonFullScreen",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44387,6 +44986,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44399,6 +44999,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44411,6 +45012,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44423,6 +45025,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44435,6 +45038,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44447,6 +45051,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44459,6 +45064,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44471,6 +45077,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44483,6 +45090,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44495,6 +45103,7 @@
             "notConfigured",
             "show"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44699,6 +45308,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44768,6 +45378,7 @@
             "months",
             "years"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44873,6 +45484,7 @@
             "vpn",
             "wifi"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44886,6 +45498,7 @@
             "useTpmKspOtherwiseFail",
             "useTpmKspOtherwiseUseSoftwareKsp"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44930,6 +45543,7 @@
             "universalResourceIdentifier",
             "userPrincipalName"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -44948,6 +45562,7 @@
             "commonNameIncludingEmail",
             "custom"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45183,6 +45798,7 @@
             "machine",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45202,6 +45818,7 @@
             "months",
             "years"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45336,6 +45953,7 @@
             "useTpmKspOtherwiseFail",
             "useTpmKspOtherwiseUseSoftwareKsp"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45387,6 +46005,7 @@
             "universalResourceIdentifier",
             "userPrincipalName"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45405,6 +46024,7 @@
             "commonNameIncludingEmail",
             "custom"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45505,6 +46125,7 @@
             "localAccount",
             "localGuestAccount"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45839,6 +46460,7 @@
             "two",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45958,6 +46580,7 @@
             "showOrganizerAndTimeOnly",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -45994,6 +46617,7 @@
             "derivedCredential",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -46023,6 +46647,7 @@
             "pulseSecure",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -46227,6 +46852,7 @@
             "device",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -46415,6 +47041,7 @@
             "computerCertStoreRoot",
             "userCertStoreIntermediate"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -46616,6 +47243,7 @@
             "virtualMachine",
             "windowsPc"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47291,6 +47919,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47436,6 +48065,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47462,6 +48092,7 @@
             "blocked",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47482,6 +48113,7 @@
             "remoteAccess",
             "wireless"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47523,6 +48155,7 @@
             "private",
             "public"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47563,6 +48196,7 @@
             "notConfigured",
             "out"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47582,6 +48216,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47611,6 +48246,7 @@
             "undefined",
             "windowsUpdates"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47872,6 +48508,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47913,6 +48550,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -47926,6 +48564,7 @@
             "notConfigured",
             "required"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48188,6 +48827,7 @@
             "store",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48255,6 +48895,7 @@
             "fullScreen",
             "publicBrowsing"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48290,6 +48931,7 @@
             "small",
             "wide"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48594,6 +49236,7 @@
             "tuesday",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48607,6 +49250,7 @@
             "none",
             "weekly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48685,6 +49329,7 @@
             "store",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48727,6 +49372,7 @@
             "small",
             "wide"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48796,6 +49442,7 @@
             "store",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48835,6 +49482,7 @@
             "fullScreen",
             "publicBrowsing"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48863,6 +49511,7 @@
             "small",
             "wide"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48936,6 +49585,7 @@
             "vulnerability",
             "worm"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -48985,6 +49635,7 @@
             "running",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49145,6 +49796,7 @@
             "severe",
             "unknown"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49200,6 +49852,7 @@
             "remediatedWithNonCriticalFailures",
             "removed"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49219,6 +49872,7 @@
             "oneDriveForBusiness",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49232,6 +49886,7 @@
             "selectedApps",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49244,6 +49899,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49256,6 +49912,7 @@
             "oneDriveForBusiness",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49269,6 +49926,7 @@
             "selectedApps",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49282,6 +49940,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49369,6 +50028,7 @@
             "notConfigured",
             "secured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49459,6 +50119,7 @@
             "warn",
             "wipe"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -49790,6 +50451,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -50006,6 +50668,7 @@
             "x64",
             "x86"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50021,6 +50684,7 @@
             "team",
             "unknownFutureValue"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50228,6 +50892,7 @@
             "processing",
             "published"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": true,
@@ -50306,6 +50971,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50322,6 +50988,7 @@
             "userDefined",
             "windowsDefault"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50337,6 +51004,7 @@
             "windowsInsiderBuildRelease",
             "windowsInsiderBuildSlow"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50381,6 +51049,7 @@
             "simpleDownload",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50577,6 +51246,7 @@
             "settingsOnly",
             "userDefined"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50668,6 +51338,7 @@
             "restartWarningsOnly",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50684,6 +51355,7 @@
             "unknownFutureValue",
             "userDefined"
           ],
+          "isFlags": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50696,6 +51368,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50724,6 +51397,7 @@
             "enabled",
             "notConfigured"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50771,6 +51445,7 @@
             "userDefined",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -50952,6 +51627,7 @@
             "unrestricted",
             "variable"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51000,6 +51676,7 @@
             "none",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51061,6 +51738,7 @@
             "wpaEnterprise",
             "wpaPersonal"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51096,6 +51774,7 @@
             "unknownFutureValue",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51125,6 +51804,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51224,6 +51904,7 @@
             "peap",
             "teap"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51281,6 +51962,7 @@
             "microsoftChapVersionTwo",
             "unencryptedPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51359,6 +52041,7 @@
             "unknownFutureValue",
             "usernameAndPassword"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51513,6 +52196,7 @@
             "disabled",
             "enabled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51540,6 +52224,7 @@
             "x509CertificateMultiFactor",
             "x509CertificateSingleFactor"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51552,6 +52237,7 @@
             "low",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51600,6 +52286,7 @@
             "enabled",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51640,6 +52327,7 @@
             "x509CertificateMultiFactor",
             "x509CertificateSingleFactor"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51652,6 +52340,7 @@
             "low",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51665,6 +52354,7 @@
             "policyOID",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51691,6 +52381,7 @@
             "low",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -51994,6 +52685,7 @@
             "contactsOnly",
             "none"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52036,6 +52728,7 @@
             "disabled",
             "scheduled"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52093,6 +52786,7 @@
             "tuesday",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52226,6 +52920,7 @@
             "secret",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52876,6 +53571,7 @@
             "tenantBot",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52903,6 +53599,7 @@
             "team",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52959,6 +53656,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -53012,6 +53710,7 @@
             "skypeUser",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -53104,6 +53803,7 @@
             "unknownFutureValue",
             "voicemail"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -53427,6 +54127,7 @@
             "sendToDelegateAndPrincipal",
             "sendToDelegateOnly"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -53465,6 +54166,7 @@
             "unknownFutureValue",
             "user"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -53958,6 +54660,7 @@
             "roster",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -54133,6 +54836,7 @@
             "noPreview",
             "reference"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -54857,6 +55561,7 @@
             "tuesday",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -54905,6 +55610,7 @@
             "team",
             "unknownFutureValue"
           ],
+          "isFlags": false,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -56080,6 +56786,7 @@
             "tuesday",
             "wednesday"
           ],
+          "isFlags": false,
           "isArray": true,
           "isNavigation": false,
           "isReadOnly": false,

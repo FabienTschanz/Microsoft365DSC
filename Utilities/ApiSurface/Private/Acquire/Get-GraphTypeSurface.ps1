@@ -28,6 +28,8 @@
 #>
 function Get-GraphTypeSurface
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseLiteralInitializerForHashtable', '',
+        Justification = 'CSDL names differ by case. A literal hashtable is case insensitive and drops one of two such names.')]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -345,6 +347,7 @@ function New-GraphPropertySurface
         if ($target.Kind -eq 'EnumType')
         {
             $entry['enum'] = Get-M365DSCOrderedName -Value ([System.String[]] @(@($target.Node.Member) | ForEach-Object -Process { [System.String] $_.Name }))
+            $entry['isFlags'] = ([System.String] $target.Node.IsFlags) -eq 'true'
         }
         else
         {

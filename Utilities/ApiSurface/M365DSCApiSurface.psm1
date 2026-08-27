@@ -16,4 +16,5 @@ foreach ($scriptFile in $scriptFiles)
     . $scriptFile.FullName
 }
 
-Export-ModuleMember -Function 'Get-M365DSCApiSurface'
+Export-ModuleMember -Function 'Compare-M365DSCApiSurface', 'Get-M365DSCApiSurface',
+'Invoke-M365DSCApiSurfaceCheck'

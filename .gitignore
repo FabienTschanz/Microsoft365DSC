@@ -33,6 +33,8 @@ docs/site
 .code-review-graph/
 
 Modules/Microsoft365DSC/DscSchemaCache.json
+Utilities/ApiSurface/api-drift.json
+Utilities/ApiSurface/api-drift.md
 Modules/Microsoft365DSC/ResourcePermissions.json
 
 # NuGet packages produced by dotnet pack
