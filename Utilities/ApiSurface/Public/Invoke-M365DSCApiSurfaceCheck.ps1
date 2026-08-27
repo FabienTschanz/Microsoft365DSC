@@ -22,6 +22,13 @@
 .PARAMETER MarkdownPath
     Specifies where the Markdown report is written. Omitted means no Markdown is written.
 
+.PARAMETER IssueBodyPath
+    Specifies where the tracking Issue body is written. Omitted means no body is written.
+
+.PARAMETER CurrentIssueBodyPath
+    Specifies the body the tracking Issue holds right now. Its ticks are carried into the new
+    body. A missing file means nothing was ticked.
+
 .PARAMETER SchemaCachePath
     Specifies DscSchemaCache.json, which the build regenerates.
 
@@ -70,6 +77,14 @@ function Invoke-M365DSCApiSurfaceCheck
         [Parameter()]
         [System.String]
         $MarkdownPath,
+
+        [Parameter()]
+        [System.String]
+        $IssueBodyPath,
+
+        [Parameter()]
+        [System.String]
+        $CurrentIssueBodyPath,
 
         [Parameter()]
         [System.String]
@@ -183,19 +198,33 @@ function Invoke-M365DSCApiSurfaceCheck
         [System.IO.File]::WriteAllText($MarkdownPath, $markdown, [System.Text.UTF8Encoding]::new($false))
     }
 
+    if (-not [System.String]::IsNullOrEmpty($IssueBodyPath))
+    {
+        $ticked = [System.String[]] @()
+        if (-not [System.String]::IsNullOrEmpty($CurrentIssueBodyPath) -and (Test-Path -Path $CurrentIssueBodyPath))
+        {
+            $ticked = [System.String[]] @(Get-DriftIssueTicked -Body ([System.IO.File]::ReadAllText($CurrentIssueBodyPath)))
+        }
+
+        $since = Get-DriftVendorSince -Baseline $baseline -Current $Current
+        $body = Format-DriftIssueBody -Result $result -Ticked $ticked -Since $since
+        [System.IO.File]::WriteAllText($IssueBodyPath, ($body -replace "`r`n", "`n"), [System.Text.UTF8Encoding]::new($false))
+    }
+
     if ($UpdateBaseline)
     {
         [System.IO.File]::WriteAllText($BaselinePath, (ConvertTo-M365DSCApiSurfaceJson -Surface $Current), [System.Text.UTF8Encoding]::new($false))
     }
 
     return [ordered]@{
-        Findings     = $result.Findings
-        Coverage     = $result.Coverage
-        Backlog      = $result.Backlog
-        Summary      = $result.Summary
-        DriftPath    = $DriftPath
-        MarkdownPath = $MarkdownPath
-        BaselinePath = $BaselinePath
+        Findings      = $result.Findings
+        Coverage      = $result.Coverage
+        Backlog       = $result.Backlog
+        Summary       = $result.Summary
+        DriftPath     = $DriftPath
+        MarkdownPath  = $MarkdownPath
+        IssueBodyPath = $IssueBodyPath
+        BaselinePath  = $BaselinePath
     }
 }
 

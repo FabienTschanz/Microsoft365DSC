@@ -46,7 +46,7 @@ function Format-DriftMarkdown
             continue
         }
 
-        if ($section.Title -eq 'Newer dependency versions available')
+        if ($section.Name -eq 'Versions')
         {
             $lines.AddRange([System.String[]] @(Format-VersionSection -Finding $matched))
             continue
@@ -103,6 +103,11 @@ function Format-DriftMarkdown
 .PARAMETER Finding
     Specifies the VND-NEWER-VERSION findings.
 
+.PARAMETER Limit
+    Specifies how many entries to list across all groups. Each group heading states its true
+    count. A major jump is listed before a minor one, which is the order that matters when the
+    budget runs out.
+
 .OUTPUTS
     The Markdown lines.
 #>
@@ -115,10 +120,16 @@ function Format-VersionSection
         [Parameter()]
         [AllowEmptyCollection()]
         [System.Object[]]
-        $Finding = @()
+        $Finding = @(),
+
+        [Parameter()]
+        [System.Int32]
+        $Limit = [System.Int32]::MaxValue
     )
 
     $lines = [System.Collections.Generic.List[System.String]]::new()
+    $remaining = [System.Math]::Max($Limit, 0)
+    $total = 0
 
     foreach ($jump in @('Major', 'Minor', 'Patch'))
     {
@@ -128,14 +139,21 @@ function Format-VersionSection
             continue
         }
 
+        $total += $matched.Count
         $lines.Add("$jump ($($matched.Count))")
-        foreach ($item in $matched)
+        foreach ($item in ($matched | Select-Object -First $remaining))
         {
             $lines.Add("- ``$($item.id)``")
             $lines.Add("      $($item.from.version) -> $($item.to.version)")
         }
 
+        $remaining = [System.Math]::Max($remaining - $matched.Count, 0)
         $lines.Add('')
+    }
+
+    foreach ($line in (Get-TruncationLine -Total $total -Limit $Limit))
+    {
+        $lines.Insert($lines.Count - 1, $line)
     }
 
     return [System.String[]] $lines
@@ -147,23 +165,46 @@ function Format-VersionSection
 
 .DESCRIPTION
     Order is by how urgently a maintainer has to act. The auto-fixable section comes first
-    because it is the approval interface phase 4 reads back.
+    because it is the approval interface phase 4 reads back. Name is the stable key a renderer
+    selects on. Title is display text and carries the dependency move when one is given.
+
+.PARAMETER Since
+    Specifies the dependency move the vendor findings are measured from. An empty value names
+    the baseline snapshot instead.
 
 .OUTPUTS
-    Objects with Title and Codes.
+    Objects with Name, Title and Codes.
 #>
 function Get-DriftSection
 {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
-    param ()
+    param
+    (
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $Since
+    )
+
+    $vendorTitle = 'Vendor changes'
+    if ($PSBoundParameters.ContainsKey('Since'))
+    {
+        $anchor = $Since
+        if ([System.String]::IsNullOrWhiteSpace($anchor))
+        {
+            $anchor = 'the baseline snapshot'
+        }
+
+        $vendorTitle = "Vendor changes since $anchor"
+    }
 
     return @(
-        [PSCustomObject]@{ Title = 'Auto-fixable'; Codes = @('RES-ENUM-STALE', 'VND-ENUM-MEMBER-ADDED', 'RES-PROP-MISSING') }
-        [PSCustomObject]@{ Title = 'Needs a decision'; Codes = @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-TYPECHANGED', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH') }
-        [PSCustomObject]@{ Title = 'Read-only, suggested for no implementation'; Codes = @('RES-PROP-READONLY') }
-        [PSCustomObject]@{ Title = 'Vendor changes'; Codes = @('VND-TYPE-PROP-ADDED', 'VND-PARAM-ADDED') }
-        [PSCustomObject]@{ Title = 'Newer dependency versions available'; Codes = @('VND-NEWER-VERSION') }
+        [PSCustomObject]@{ Name = 'AutoFixable'; Title = 'Auto-fixable'; Codes = @('RES-ENUM-STALE', 'VND-ENUM-MEMBER-ADDED', 'RES-PROP-MISSING') }
+        [PSCustomObject]@{ Name = 'Decision'; Title = 'Needs a decision'; Codes = @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-TYPECHANGED', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH') }
+        [PSCustomObject]@{ Name = 'ReadOnly'; Title = 'Read-only, suggested for no implementation'; Codes = @('RES-PROP-READONLY') }
+        [PSCustomObject]@{ Name = 'VendorChanges'; Title = $vendorTitle; Codes = @('VND-TYPE-PROP-ADDED', 'VND-PARAM-ADDED') }
+        [PSCustomObject]@{ Name = 'Versions'; Title = 'Newer dependency versions available'; Codes = @('VND-NEWER-VERSION') }
     )
 }
 
