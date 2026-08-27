@@ -74,6 +74,8 @@ function New-M365DSCSettingsFile
 
     $settings = [ordered]@{
         resourceName          = $ResourceModel.ResourceName
+        generatedFrom         = Get-M365DSCGeneratedFromBlock -ResourceModel $ResourceModel
+        excludedProperties    = @()
         description           = "This resource configures a $($ResourceModel.ResourceDescription)."
         roles                 = [ordered]@{
             read   = @()
@@ -146,5 +148,95 @@ function Get-M365DSCGraphPermission
             read   = $readEntries
             update = $updateEntries
         }
+    }
+}
+
+<#
+.SYNOPSIS
+    Builds the generatedFrom block of settings.json.
+
+.DESCRIPTION
+    Records the vendor surface the resource was generated from (workload, API version, entity
+    type, subtype, cmdlet noun and verb) so the API surface checker can compare the resource
+    against exactly that surface. The generator writes generatedFrom, maintainers write
+    excludedProperties and the checker writes lastVerified, so only generatedFrom is produced
+    here.
+
+    Polymorphic Graph entities keep the cmdlet's entity type in entityType and the concrete
+    subtype in odataSubtype. Every other resource leaves odataSubtype null.
+#>
+function Get-M365DSCGeneratedFromBlock
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $ResourceModel
+    )
+
+    $isGraph = $ResourceModel.Workload -in @('MicrosoftGraph', 'Intune')
+
+    $cmdletNoun = $ResourceModel.CmdLetNoun
+    if ([System.String]::IsNullOrEmpty($cmdletNoun) -and -not [System.String]::IsNullOrEmpty($ResourceModel.Cmdlets.GetCmdlet))
+    {
+        $cmdletNoun = $ResourceModel.Cmdlets.GetCmdlet -replace '^Get-', ''
+    }
+
+    $cmdletVerb = $ResourceModel.CmdLetVerb
+    if ([System.String]::IsNullOrEmpty($cmdletVerb))
+    {
+        $cmdletVerb = 'New'
+    }
+
+    $apiVersion = $null
+    $entityType = $null
+    $odataSubtype = $null
+    if ($isGraph)
+    {
+        $apiVersion = $ResourceModel.Cmdlets.APIVersion
+        if ([System.String]::IsNullOrEmpty($apiVersion))
+        {
+            $apiVersion = 'v1.0'
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($ResourceModel.Cmdlets.EntityTypeName))
+        {
+            $entityType = $ResourceModel.Cmdlets.EntityTypeName
+        }
+        elseif (-not [System.String]::IsNullOrEmpty($ResourceModel.Cmdlets.ActualType))
+        {
+            $entityType = $ResourceModel.Cmdlets.ActualType
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($ResourceModel.Cmdlets.ODataSubtypeName))
+        {
+            $odataSubtype = $ResourceModel.Cmdlets.ODataSubtypeName
+        }
+        elseif ($ResourceModel.IsAdditionalProperty -and
+            -not [System.String]::IsNullOrEmpty($ResourceModel.SelectedODataType) -and
+            $ResourceModel.SelectedODataType -ne $entityType)
+        {
+            $odataSubtype = $ResourceModel.SelectedODataType
+        }
+    }
+
+    $generatorVersion = $null
+    $generatorModule = $ExecutionContext.SessionState.Module
+    if ($null -ne $generatorModule -and $null -ne $generatorModule.Version)
+    {
+        $generatorVersion = $generatorModule.Version.ToString()
+    }
+
+    return [ordered]@{
+        workload                    = $ResourceModel.Workload
+        apiVersion                  = $apiVersion
+        entityType                  = $entityType
+        odataSubtype                = $odataSubtype
+        cmdletNoun                  = $cmdletNoun
+        cmdletVerb                  = $cmdletVerb
+        includeNavigationProperties = [System.Boolean] $ResourceModel.IncludeNavigationProperties
+        generatorVersion            = $generatorVersion
     }
 }

@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneVPNConfigurationPolicyIOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "iosVpnConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune VPN Configuration Policy for iOS Device.",
   "permissions": {
     "graph": {

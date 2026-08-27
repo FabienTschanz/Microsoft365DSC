@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsWebLink",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps Web Link for the iOS, MacOS, Windows and general platform.",
   "permissions": {
     "graph": {

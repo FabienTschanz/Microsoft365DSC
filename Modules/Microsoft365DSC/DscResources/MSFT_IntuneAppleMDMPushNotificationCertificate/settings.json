@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAppleMDMPushCertificate",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "applePushNotificationCertificate",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementApplePushNotificationCertificate",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures a resource for Apple MDM Push notification certificate used for device enrollment.",
   "permissions": {
     "graph": {

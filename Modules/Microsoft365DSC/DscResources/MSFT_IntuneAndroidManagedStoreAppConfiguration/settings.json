@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAndroidManagedStoreAppConfiguration",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "managedDeviceMobileAppConfiguration",
+    "odataSubtype": "androidManagedStoreAppConfiguration",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileAppConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Android Managed Store Application Configuration Policy.",
   "permissions": {
     "graph": {

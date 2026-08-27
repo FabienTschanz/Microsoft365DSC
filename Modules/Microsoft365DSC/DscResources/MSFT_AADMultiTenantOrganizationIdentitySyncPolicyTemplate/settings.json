@@ -1,5 +1,16 @@
 {
   "resourceName": "AADMultiTenantOrganizationIdentitySyncPolicyTemplate",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "multiTenantOrganizationIdentitySyncPolicyTemplate",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyCrossTenantAccessPolicyTemplateMultiTenantOrganizationIdentitySynchronization",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Defines an optional cross-tenant access policy template with user synchronization settings for multitenant organization tenants.",
   "roles": {
     "read": [],

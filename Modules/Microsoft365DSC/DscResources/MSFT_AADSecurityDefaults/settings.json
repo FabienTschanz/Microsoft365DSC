@@ -1,5 +1,16 @@
 {
   "resourceName": "AADSecurityDefaults",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "identitySecurityDefaultsEnforcementPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyIdentitySecurityDefaultEnforcementPolicy",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory Security Defaults.",
   "roles": {
     "read": [],

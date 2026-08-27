@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceManagementEnrollmentAndroidGooglePlay",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "androidManagedStoreAccountEnterpriseSettings",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSetting",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures Intune Android enrollment settings.",
   "permissions": {
     "graph": {

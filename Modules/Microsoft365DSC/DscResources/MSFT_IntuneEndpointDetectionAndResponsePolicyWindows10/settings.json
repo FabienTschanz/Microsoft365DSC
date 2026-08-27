@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneEndpointDetectionAndResponsePolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagementConfigurationPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementConfigurationPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Endpoint Detection and Response Policy for Windows 10.",
   "permissions": {
     "graph": {

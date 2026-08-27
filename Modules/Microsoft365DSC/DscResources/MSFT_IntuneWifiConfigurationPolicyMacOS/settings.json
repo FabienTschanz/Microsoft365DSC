@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWifiConfigurationPolicyMacOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Wifi Configuration Policy for MacOS with Basic Wi-Fi type.",
   "permissions": {
     "graph": {

@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneRoleDefinitionWindows365",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleDefinition",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaRoleManagementCloudPcRoleDefinition",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Role Definition Windows365.",
   "permissions": {
     "graph": {

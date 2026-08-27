@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceCompliancePolicyiOs",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceCompliancePolicy",
+    "odataSubtype": "iosCompliancePolicy",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceCompliancePolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the Intune compliance policies for iOs devices.",
   "permissions": {
     "graph": {

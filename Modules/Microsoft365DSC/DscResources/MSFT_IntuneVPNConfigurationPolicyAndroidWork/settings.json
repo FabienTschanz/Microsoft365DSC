@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneVPNConfigurationPolicyAndroidWork",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "androidWorkProfileVpnConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune VPN Configuration Policy for Android Work Devices.",
   "permissions": {
     "graph": {

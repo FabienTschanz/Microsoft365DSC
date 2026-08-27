@@ -1,5 +1,16 @@
 {
   "resourceName": "AADPIMGroupSetting",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": null,
+    "cmdletVerb": null,
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an PIM Group.",
   "roles": {
     "read": [],
@@ -72,6 +83,7 @@
     }
   },
   "requiredModules": [
+    "M365DSC.mgx",
     "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.Identity.SignIns",
     "Microsoft.Graph.Groups",
@@ -84,6 +96,12 @@
   ],
   "mode": "Data",
   "commands": [
+    {
+      "module": "M365DSC.mgx",
+      "cmdlets": [
+        "Invoke-MgxBatchRequest"
+      ]
+    },
     {
       "module": "Microsoft.Graph.Authentication",
       "cmdlets": [

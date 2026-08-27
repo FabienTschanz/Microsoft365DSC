@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneRoleDefinition",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "roleDefinition",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementRoleDefinition",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Role Definition.",
   "permissions": {
     "graph": {

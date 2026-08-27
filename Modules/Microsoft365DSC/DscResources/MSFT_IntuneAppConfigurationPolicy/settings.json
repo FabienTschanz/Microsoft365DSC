@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAppConfigurationPolicy",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "targetedManagedAppConfiguration",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementTargetedManagedAppConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the Intune App configuration policies.",
   "permissions": {
     "graph": {

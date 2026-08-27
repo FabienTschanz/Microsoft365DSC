@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWifiConfigurationPolicyAndroidForWork",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "androidForWorkWiFiConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Wifi Configuration Policy Android For Work Device.",
   "permissions": {
     "graph": {

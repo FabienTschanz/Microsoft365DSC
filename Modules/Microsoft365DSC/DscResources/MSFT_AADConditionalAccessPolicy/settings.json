@@ -1,5 +1,16 @@
 {
   "resourceName": "AADConditionalAccessPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "conditionalAccessPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaIdentityConditionalAccessPolicy",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory Conditional Access Policy.",
   "roles": {
     "read": [

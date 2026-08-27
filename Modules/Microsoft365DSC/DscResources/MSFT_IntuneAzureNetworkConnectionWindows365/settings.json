@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAzureNetworkConnectionWindows365",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "cloudPcOnPremisesConnection",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementVirtualEndpointOnPremiseConnection",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Azure Network Connection for Windows365.",
   "permissions": {
     "graph": {

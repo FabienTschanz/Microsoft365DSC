@@ -1,5 +1,16 @@
 {
   "resourceName": "PlannerBucket",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "plannerBucket",
+    "odataSubtype": null,
+    "cmdletNoun": "MgPlannerBucket",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "",
   "permissions": {
     "graph": {

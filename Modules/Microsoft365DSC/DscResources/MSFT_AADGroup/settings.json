@@ -1,5 +1,16 @@
 {
   "resourceName": "AADGroup",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "group",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaGroup",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory group.",
   "roles": {
     "read": [],

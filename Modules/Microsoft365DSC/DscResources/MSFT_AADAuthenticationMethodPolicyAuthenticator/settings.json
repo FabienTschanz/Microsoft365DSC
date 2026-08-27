@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAuthenticationMethodPolicyAuthenticator",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "authenticationMethodConfiguration",
+    "odataSubtype": "microsoftAuthenticatorAuthenticationMethodConfiguration",
+    "cmdletNoun": "MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Authentication Method Policy Authenticator.",
   "roles": {
     "read": [

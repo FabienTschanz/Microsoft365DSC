@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWindowsAutopilotDeploymentProfileAzureADHybridJoined",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "windowsAutopilotDeploymentProfile",
+    "odataSubtype": "activeDirectoryWindowsAutopilotDeploymentProfile",
+    "cmdletNoun": "MgBetaDeviceManagementWindowsAutopilotDeploymentProfile",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Windows Autopilot Deployment Profile Azure AD Hybrid Joined.",
   "permissions": {
     "graph": {

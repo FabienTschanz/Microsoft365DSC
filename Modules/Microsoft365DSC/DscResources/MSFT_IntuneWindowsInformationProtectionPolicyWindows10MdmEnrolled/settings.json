@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWindowsInformationProtectionPolicyWindows10MdmEnrolled",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mdmWindowsInformationProtectionPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementMdmWindowsInformationProtectionPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Windows Information Protection Policy for Windows10 Mdm Enrolled.",
   "permissions": {
     "graph": {

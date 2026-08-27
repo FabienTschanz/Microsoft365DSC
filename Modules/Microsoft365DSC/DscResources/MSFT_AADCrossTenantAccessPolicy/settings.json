@@ -1,5 +1,16 @@
 {
   "resourceName": "AADCrossTenantAccessPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "crossTenantAccessPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyCrossTenantAccessPolicy",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Cross Tenant Policy (XTAP).",
   "roles": {
     "read": [

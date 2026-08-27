@@ -1,5 +1,16 @@
 {
   "resourceName": "AADFederationConfiguration",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": null,
+    "cmdletVerb": null,
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures federation in Entra Id.",
   "roles": {
     "read": [],

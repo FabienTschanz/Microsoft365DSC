@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAccessReviewDefinition",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "accessReviewScheduleDefinition",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaIdentityGovernanceAccessReviewDefinition",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Access Review Definition.",
   "permissions": {
     "graph": {

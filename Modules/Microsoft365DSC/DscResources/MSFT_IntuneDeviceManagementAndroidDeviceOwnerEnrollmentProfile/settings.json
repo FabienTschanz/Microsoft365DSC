@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceManagementAndroidDeviceOwnerEnrollmentProfile",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "androidDeviceOwnerEnrollmentProfile",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementAndroidDeviceOwnerEnrollmentProfile",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Enrollment Profile used to enroll Android Enterprise devices using Google's Cloud Management.",
   "permissions": {
     "graph": {

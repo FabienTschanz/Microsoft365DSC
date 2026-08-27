@@ -1,5 +1,16 @@
 {
   "resourceName": "AADRemoteNetwork",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "networkaccess.remoteNetwork",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaNetworkAccessConnectivityRemoteNetwork",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Use this resource to manage the Entra's Network Access Remote Networks, and related Device links.",
   "permissions": {
     "graph": {

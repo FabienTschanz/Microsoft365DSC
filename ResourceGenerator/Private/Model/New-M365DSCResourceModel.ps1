@@ -30,6 +30,16 @@
 
 .PARAMETER IsSingleInstance
     Indicates a singleton resource (gets an IsSingleInstance key instead of Id).
+
+.PARAMETER CmdLetNoun
+    Specifies the cmdlet noun the resource was generated from. Recorded in settings.json
+    under generatedFrom so the API surface checker can trace the resource back to its origin.
+
+.PARAMETER CmdLetVerb
+    Specifies the verb of the cmdlet whose parameters describe the resource (non-Graph workloads).
+
+.PARAMETER IncludeNavigationProperties
+    Indicates that Graph navigation properties were included in the generated schema.
 #>
 function New-M365DSCResourceModel
 {
@@ -68,7 +78,19 @@ function New-M365DSCResourceModel
 
         [Parameter()]
         [System.Boolean]
-        $IsSingleInstance = $false
+        $IsSingleInstance = $false,
+
+        [Parameter()]
+        [System.String]
+        $CmdLetNoun,
+
+        [Parameter()]
+        [System.String]
+        $CmdLetVerb = 'New',
+
+        [Parameter()]
+        [System.Boolean]
+        $IncludeNavigationProperties = $false
     )
 
     # Read-only server-side properties that never belong in a DSC schema.
@@ -181,6 +203,9 @@ function New-M365DSCResourceModel
         ComplexTypeClasses   = @(Get-M365DSCComplexTypeClass -Properties $schemaProperties)
         HasAssignments       = $hasAssignments
         SettingsCatalog      = $null
+        CmdLetNoun           = $CmdLetNoun
+        CmdLetVerb           = $CmdLetVerb
+        IncludeNavigationProperties = $IncludeNavigationProperties
     }
 }
 

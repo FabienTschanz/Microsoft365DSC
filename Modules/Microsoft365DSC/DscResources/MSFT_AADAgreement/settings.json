@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAgreement",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "agreement",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaAgreement",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures Azure AD Terms of Use Agreements in Entra ID.",
   "permissions": {
     "graph": {

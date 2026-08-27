@@ -1,5 +1,16 @@
 {
   "resourceName": "AADApplicationFederatedIdentityCredential",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "federatedIdentityCredential",
+    "odataSubtype": null,
+    "cmdletNoun": "MgApplicationFederatedIdentityCredential",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures federated identity credentials for Azure AD applications.",
   "roles": {
     "read": [],

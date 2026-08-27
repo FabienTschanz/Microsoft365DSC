@@ -1,5 +1,16 @@
 {
   "resourceName": "AADIdentityGovernanceLifecycleWorkflowCustomTaskExtension",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "identityGovernance.customTaskExtension",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaIdentityGovernanceLifecycleWorkflowCustomTaskExtension",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures custom extensions for Lifecycle workflows in Entra id.",
   "roles": {
     "read": [],

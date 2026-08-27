@@ -1,5 +1,16 @@
 {
   "resourceName": "AADApplication",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "application",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaApplication",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory Application.",
   "roles": {
     "read": [

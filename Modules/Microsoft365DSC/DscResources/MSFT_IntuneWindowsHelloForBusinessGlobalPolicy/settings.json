@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWindowsHelloForBusinessGlobalPolicy",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceEnrollmentConfiguration",
+    "odataSubtype": "deviceEnrollmentWindowsHelloForBusinessConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceEnrollmentConfiguration",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Windows Hello For Business Global Policy.",
   "permissions": {
     "graph": {

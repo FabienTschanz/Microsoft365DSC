@@ -1,5 +1,16 @@
 {
   "resourceName": "PlannerPlan",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "plannerPlan",
+    "odataSubtype": null,
+    "cmdletNoun": "MgPlannerPlan",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "",
   "permissions": {
     "graph": {

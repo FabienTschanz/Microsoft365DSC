@@ -1,5 +1,16 @@
 {
   "resourceName": "AADCrossTenantAccessPolicyConfigurationPartner",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "crossTenantAccessPolicyConfigurationPartner",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyCrossTenantAccessPolicyPartner",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Authentication Method Policy Configuration Partner.",
   "roles": {
     "read": [

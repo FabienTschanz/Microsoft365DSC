@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceEnrollmentLimitRestriction",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceEnrollmentConfiguration",
+    "odataSubtype": "deviceEnrollmentLimitConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceEnrollmentConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the Intune device enrollment limit restrictions.",
   "permissions": {
     "graph": {

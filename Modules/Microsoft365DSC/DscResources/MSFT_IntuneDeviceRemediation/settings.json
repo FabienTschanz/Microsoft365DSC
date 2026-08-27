@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceRemediation",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceHealthScript",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementDeviceHealthScript",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Remediation.",
   "permissions": {
     "graph": {

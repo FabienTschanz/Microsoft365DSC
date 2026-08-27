@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAccountProtectionLocalUserGroupMembershipPolicy",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagementConfigurationPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementConfigurationPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures a Intune Account Protection Local User Group Membership policy.",
   "permissions": {
     "graph": {

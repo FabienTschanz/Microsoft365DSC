@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneTermsAndConditions",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "termsAndConditions",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementTermAndCondition",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Terms And Conditions.",
   "permissions": {
     "graph": {

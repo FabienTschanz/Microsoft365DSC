@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationPlatformScriptMacOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceShellScript",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementDeviceShellScript",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Platform Script MacOS.",
   "permissions": {
     "graph": {

@@ -1,5 +1,16 @@
 {
   "resourceName": "AADEntitlementManagementSettings",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "entitlementManagementSettings",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaEntitlementManagementSetting",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Manages Entra Id Entitlement Management settings.",
   "roles": {
     "read": [

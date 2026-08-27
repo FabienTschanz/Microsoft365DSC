@@ -48,6 +48,7 @@ function New-M365DSCSettingsCatalogResourceModel
 
     $cmdlets = @{
         APIVersion             = 'beta'
+        ActualType             = 'deviceManagementConfigurationPolicy'
         GetCmdlet              = 'Get-MgBetaDeviceManagementConfigurationPolicy'
         NewCmdlet              = 'New-MgBetaDeviceManagementConfigurationPolicy'
         UpdateCmdlet           = 'Update-IntuneDeviceConfigurationPolicy'
@@ -78,6 +79,9 @@ function New-M365DSCSettingsCatalogResourceModel
         ComplexTypeClasses   = @(Get-M365DSCComplexTypeClass -Properties $schemaProperties)
         HasAssignments       = $true
         SettingsCatalog      = $SettingsCatalogInfo
+        CmdLetNoun           = 'MgBetaDeviceManagementConfigurationPolicy'
+        CmdLetVerb           = 'New'
+        IncludeNavigationProperties = $false
     }
 }
 

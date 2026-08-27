@@ -44,6 +44,7 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
 
         $cmdletInfo = @{
             APIVersion          = 'beta'
+            ActualType          = 'testPolicy'
             GetCmdlet           = 'Get-MgBetaTestPolicy'
             NewCmdlet           = 'New-MgBetaTestPolicy'
             UpdateCmdlet        = 'Update-MgBetaTestPolicy'
@@ -225,6 +226,109 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             $settings.roles | Should -Not -BeNullOrEmpty
             $settings.mode | Should -Be 'Configuration'
             $settings.supportedEnvironments | Should -Contain 'Global'
+        }
+
+        It 'records the origin in generatedFrom directly after resourceName' {
+            $json = New-M365DSCSettingsFile -ResourceModel $script:model -WarningAction SilentlyContinue
+            $settings = $json | ConvertFrom-Json
+
+            @($settings.PSObject.Properties.Name)[0..2] | Should -Be @('resourceName', 'generatedFrom', 'excludedProperties')
+            $settings.generatedFrom.workload | Should -Be 'MicrosoftGraph'
+            $settings.generatedFrom.apiVersion | Should -Be 'beta'
+            $settings.generatedFrom.entityType | Should -Be 'testPolicy'
+            $settings.generatedFrom.odataSubtype | Should -BeNullOrEmpty
+            $settings.generatedFrom.cmdletNoun | Should -Be 'MgBetaTestPolicy'
+            $settings.generatedFrom.cmdletVerb | Should -Be 'New'
+            $settings.generatedFrom.includeNavigationProperties | Should -BeFalse
+            $settings.generatedFrom.generatorVersion | Should -Be (Get-Module -Name 'M365DSCResourceGenerator').Version.ToString()
+        }
+
+        It 'leaves excludedProperties empty and never writes lastVerified' {
+            $json = New-M365DSCSettingsFile -ResourceModel $script:model -WarningAction SilentlyContinue
+            $settings = $json | ConvertFrom-Json
+
+            @($settings.excludedProperties) | Should -HaveCount 0
+            $settings.PSObject.Properties.Name | Should -Not -Contain 'lastVerified'
+        }
+
+        It 'records the concrete subtype of a polymorphic entity in odataSubtype' {
+            $polymorphicInfo = @{
+                APIVersion   = 'beta'
+                ActualType   = 'deviceCompliancePolicy'
+                GetCmdlet    = 'Get-MgBetaDeviceManagementDeviceCompliancePolicy'
+                NewCmdlet    = 'New-MgBetaDeviceManagementDeviceCompliancePolicy'
+                UpdateCmdlet = 'Update-MgBetaDeviceManagementDeviceCompliancePolicy'
+                RemoveCmdlet = 'Remove-MgBetaDeviceManagementDeviceCompliancePolicy'
+            }
+            $polymorphicModel = New-M365DSCResourceModel -ResourceName 'IntuneDeviceCompliancePolicyWindows10' -Workload 'Intune' `
+                -CmdletInfo $polymorphicInfo -Properties $properties `
+                -SelectedODataType 'windows10CompliancePolicy' -IsAdditionalProperty $true `
+                -CmdLetNoun 'MgBetaDeviceManagementDeviceCompliancePolicy' -IncludeNavigationProperties $true
+
+            $settings = (New-M365DSCSettingsFile -ResourceModel $polymorphicModel -WarningAction SilentlyContinue) | ConvertFrom-Json
+
+            $settings.generatedFrom.workload | Should -Be 'Intune'
+            $settings.generatedFrom.entityType | Should -Be 'deviceCompliancePolicy'
+            $settings.generatedFrom.odataSubtype | Should -Be 'windows10CompliancePolicy'
+            $settings.generatedFrom.includeNavigationProperties | Should -BeTrue
+        }
+
+        It 'records sub-namespaced Graph types with their namespace prefix' {
+            $namespacedInfo = @{
+                APIVersion       = 'beta'
+                ActualType       = 'policyRule'
+                EntityTypeName   = 'networkaccess.policyRule'
+                ODataSubtypeName = 'networkaccess.fqdnFilteringRule'
+                GetCmdlet        = 'Get-MgBetaNetworkAccessFilteringPolicyRule'
+                NewCmdlet        = 'New-MgBetaNetworkAccessFilteringPolicyRule'
+                UpdateCmdlet     = 'Update-MgBetaNetworkAccessFilteringPolicyRule'
+                RemoveCmdlet     = 'Remove-MgBetaNetworkAccessFilteringPolicyRule'
+            }
+            $namespacedModel = New-M365DSCResourceModel -ResourceName 'AADFilteringPolicyRule' -Workload 'MicrosoftGraph' `
+                -CmdletInfo $namespacedInfo -Properties $properties `
+                -SelectedODataType 'fqdnFilteringRule' -IsAdditionalProperty $true `
+                -CmdLetNoun 'MgBetaNetworkAccessFilteringPolicyRule'
+
+            $settings = (New-M365DSCSettingsFile -ResourceModel $namespacedModel -WarningAction SilentlyContinue) | ConvertFrom-Json
+
+            $settings.generatedFrom.entityType | Should -Be 'networkaccess.policyRule'
+            $settings.generatedFrom.odataSubtype | Should -Be 'networkaccess.fqdnFilteringRule'
+        }
+
+        It 'records the origin of a settings catalog resource' {
+            $catalogInfo = @{
+                TemplateId = '4cfd164c-5e8a-4ea9-b15d-9aa71e4ffff4_1'
+                Properties = @(New-M365DSCPropertyModel -Name 'Threshold' -Type 'Edm.Int32' -Description 'A catalog setting.')
+            }
+            $catalogModel = New-M365DSCSettingsCatalogResourceModel -ResourceName 'IntuneCatalogTestPolicyWindows10' -SettingsCatalogInfo $catalogInfo
+
+            $settings = (New-M365DSCSettingsFile -ResourceModel $catalogModel -WarningAction SilentlyContinue) | ConvertFrom-Json
+
+            $settings.generatedFrom.workload | Should -Be 'Intune'
+            $settings.generatedFrom.apiVersion | Should -Be 'beta'
+            $settings.generatedFrom.entityType | Should -Be 'deviceManagementConfigurationPolicy'
+            $settings.generatedFrom.cmdletNoun | Should -Be 'MgBetaDeviceManagementConfigurationPolicy'
+            $settings.generatedFrom.cmdletVerb | Should -Be 'New'
+        }
+
+        It 'records only the cmdlet noun and verb for a non-Graph workload' {
+            $exoInfo = @{
+                Workload     = 'ExchangeOnline'
+                GetCmdlet    = 'Get-AcceptedDomain'
+                NewCmdlet    = 'New-AcceptedDomain'
+                UpdateCmdlet = 'Set-AcceptedDomain'
+                RemoveCmdlet = 'Remove-AcceptedDomain'
+            }
+            $exoModel = New-M365DSCResourceModel -ResourceName 'EXOAcceptedDomain' -Workload 'ExchangeOnline' `
+                -CmdletInfo $exoInfo -Properties $properties -CmdLetNoun 'AcceptedDomain' -CmdLetVerb 'Set'
+
+            $settings = (New-M365DSCSettingsFile -ResourceModel $exoModel -WarningAction SilentlyContinue) | ConvertFrom-Json
+
+            $settings.generatedFrom.workload | Should -Be 'ExchangeOnline'
+            $settings.generatedFrom.apiVersion | Should -BeNullOrEmpty
+            $settings.generatedFrom.entityType | Should -BeNullOrEmpty
+            $settings.generatedFrom.cmdletNoun | Should -Be 'AcceptedDomain'
+            $settings.generatedFrom.cmdletVerb | Should -Be 'Set'
         }
     }
 }

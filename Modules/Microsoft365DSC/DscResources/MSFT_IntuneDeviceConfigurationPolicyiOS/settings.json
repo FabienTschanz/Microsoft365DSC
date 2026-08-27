@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationPolicyiOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "iosGeneralDeviceConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Profile for an iOS Device.",
   "permissions": {
     "graph": {

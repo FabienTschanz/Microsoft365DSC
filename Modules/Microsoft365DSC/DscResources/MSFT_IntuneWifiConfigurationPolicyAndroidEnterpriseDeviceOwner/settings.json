@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWifiConfigurationPolicyAndroidEnterpriseDeviceOwner",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "androidDeviceOwnerEnterpriseWiFiConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Wifi Configuration Policy Android Enterprise Device Owner Device.",
   "permissions": {
     "graph": {

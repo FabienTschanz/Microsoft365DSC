@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsMacOSLobApp",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "macOSLobApp",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune mobile app.",
   "permissions": {
     "graph": {

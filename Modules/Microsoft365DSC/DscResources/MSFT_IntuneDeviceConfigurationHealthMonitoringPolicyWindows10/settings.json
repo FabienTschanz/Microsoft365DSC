@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationHealthMonitoringPolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "windowsHealthMonitoringConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Health Monitoring Configuration Policy for Windows10.",
   "permissions": {
     "graph": {

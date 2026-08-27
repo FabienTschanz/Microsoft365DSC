@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAccessReviewPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "accessReviewPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyAccessReviewPolicy",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Use this resource to monitor the access review policy object.",
   "roles": {
     "read": [],

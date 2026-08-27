@@ -1,5 +1,16 @@
 {
   "resourceName": "AADCrossTenantAccessPolicyConfigurationDefault",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "crossTenantAccessPolicyConfigurationDefault",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyCrossTenantAccessPolicyDefault",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Authentication Method Policy Configuration Default.",
   "roles": {
     "read": [

@@ -1,5 +1,16 @@
 {
   "resourceName": "AADFilteringProfile",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "networkaccess.filteringProfile",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaNetworkAccessFilteringProfile",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures filtering profiles in Entra Id.",
   "roles": {
     "read": [],

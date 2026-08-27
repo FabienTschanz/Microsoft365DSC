@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneCloudProvisioningPolicyWindows365",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "cloudPcProvisioningPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementVirtualEndpointProvisioningPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Cloud Provisioning Policy for Windows365.",
   "permissions": {
     "graph": {

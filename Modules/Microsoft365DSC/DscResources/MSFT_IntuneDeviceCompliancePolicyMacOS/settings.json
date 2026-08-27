@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceCompliancePolicyMacOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceCompliancePolicy",
+    "odataSubtype": "macOSCompliancePolicy",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceCompliancePolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the settings of MacOS compliance policies in your cloud-based organization.",
   "permissions": {
     "graph": {

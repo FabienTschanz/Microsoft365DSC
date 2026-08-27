@@ -1,5 +1,16 @@
 {
   "resourceName": "AADConnectorGroupApplicationProxy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "connectorGroup",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaOnPremisePublishingProfileConnectorGroup",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Connector Group Application Proxy.",
   "permissions": {
     "graph": {

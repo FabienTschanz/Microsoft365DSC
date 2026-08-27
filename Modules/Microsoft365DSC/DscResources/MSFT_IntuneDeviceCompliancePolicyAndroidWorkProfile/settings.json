@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceCompliancePolicyAndroidWorkProfile",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceCompliancePolicy",
+    "odataSubtype": "androidWorkProfileCompliancePolicy",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceCompliancePolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the settings of Android Work Profile device compliance policies in your cloud-based organization.",
   "permissions": {
     "graph": {

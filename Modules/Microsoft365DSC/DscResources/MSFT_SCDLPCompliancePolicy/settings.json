@@ -1,5 +1,16 @@
 {
   "resourceName": "SCDLPCompliancePolicy",
+  "generatedFrom": {
+    "workload": "SecurityComplianceCenter",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "DlpCompliancePolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures a DLP Compliance Policy in Purview.",
   "roles": {
     "read": [
@@ -70,6 +81,15 @@
   ],
   "mode": "Configuration",
   "commands": [
+    {
+      "module": "ExchangeOnlineManagement",
+      "cmdlets": [
+        "Get-DlpCompliancePolicy",
+        "New-DLPCompliancePolicy",
+        "Remove-DLPCompliancePolicy",
+        "Set-DLPCompliancePolicy"
+      ]
+    },
     {
       "module": "Microsoft.Graph.Groups",
       "cmdlets": [

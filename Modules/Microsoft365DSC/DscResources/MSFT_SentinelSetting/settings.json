@@ -1,5 +1,16 @@
 {
   "resourceName": "SentinelSetting",
+  "generatedFrom": {
+    "workload": "Azure",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "AzSentinelSetting",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures settings for a Sentinel instance.",
   "roles": {
     "read": [],

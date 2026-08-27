@@ -1,5 +1,16 @@
 {
   "resourceName": "AADActivityBasedTimeoutPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "activityBasedTimeoutPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyActivityBasedTimeoutPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Activity Based Timeout Policy.",
   "permissions": {
     "graph": {

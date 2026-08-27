@@ -1,5 +1,16 @@
 {
   "resourceName": "TeamsChannelTab",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "teamsTab",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaTeamChannelTab",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "",
   "roles": {
     "read": [],

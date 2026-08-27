@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationSharedMultiDevicePolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "sharedPCConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Shared Multi Device Policy for Windows10.",
   "permissions": {
     "graph": {

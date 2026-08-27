@@ -1,5 +1,16 @@
 {
   "resourceName": "AADHomeRealmDiscoveryPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "homeRealmDiscoveryPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyHomeRealmDiscoveryPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Home Realm Discovery Policy.",
   "permissions": {
     "graph": {

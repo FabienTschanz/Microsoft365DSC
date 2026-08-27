@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationPlatformScriptWindows",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagementScript",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementScript",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Platform Script Windows.",
   "permissions": {
     "graph": {

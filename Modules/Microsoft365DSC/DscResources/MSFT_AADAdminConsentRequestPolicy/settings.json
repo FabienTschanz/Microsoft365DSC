@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAdminConsentRequestPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "adminConsentRequestPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyAdminConsentRequestPolicy",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures the Admin Consent Request Policy in Entra Id.",
   "roles": {
     "read": [],

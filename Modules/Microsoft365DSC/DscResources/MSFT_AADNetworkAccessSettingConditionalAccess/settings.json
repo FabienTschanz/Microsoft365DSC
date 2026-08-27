@@ -1,5 +1,16 @@
 {
   "resourceName": "AADNetworkAccessSettingConditionalAccess",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "networkaccess.conditionalAccessSettings",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaNetworkAccessSettingConditionalAccess",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures the adaptive access settings in Entra Id.",
   "roles": {
     "read": [],

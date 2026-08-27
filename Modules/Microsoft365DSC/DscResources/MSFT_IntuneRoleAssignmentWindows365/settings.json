@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneRoleAssignmentWindows365",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleAssignmentMultiple",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaRoleManagementCloudPcRoleAssignment",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Role Assignment Windows365.",
   "permissions": {
     "graph": {

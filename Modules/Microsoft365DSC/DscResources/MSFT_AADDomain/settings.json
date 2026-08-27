@@ -1,5 +1,16 @@
 {
   "resourceName": "AADDomain",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "domain",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDomain",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures custom domain names in Entra Id.",
   "roles": {
     "read": [],

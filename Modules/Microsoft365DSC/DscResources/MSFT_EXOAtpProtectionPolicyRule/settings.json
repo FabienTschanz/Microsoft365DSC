@@ -1,5 +1,16 @@
 {
   "resourceName": "ResourceName",
+  "generatedFrom": {
+    "workload": "ExchangeOnline",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "ATPProtectionPolicyRule",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Manage ATP Protection policy rules that are associated with Microsoft Defender for Office 365 protections in preset security policies.",
   "roles": {
     "read": [
@@ -48,5 +59,18 @@
     "Global",
     "USGov"
   ],
-  "mode": "Configuration"
+  "mode": "Configuration",
+  "commands": [
+    {
+      "module": "ExchangeOnlineManagement",
+      "cmdlets": [
+        "Disable-ATPProtectionPolicyRule",
+        "Enable-ATPProtectionPolicyRule",
+        "Get-ATPProtectionPolicyRule",
+        "New-ATPProtectionPolicyRule",
+        "Remove-ATPProtectionPolicyRule",
+        "Set-ATPProtectionPolicyRule"
+      ]
+    }
+  ]
 }

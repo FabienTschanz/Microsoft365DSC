@@ -166,15 +166,6 @@ function Search-AzGraph
         $UseTenantScope
     )
 }
-function Enable-ATPProtectionPolicyRule
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $Identity
-    )
-}
 function Enable-AzSubscription
 {
     [CmdletBinding()]
@@ -182,15 +173,6 @@ function Enable-AzSubscription
         [Parameter()]
         [System.String]
         $Id
-    )
-}
-function Disable-ATPProtectionPolicyRule
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $Identity
     )
 }
 function Disable-AzSubscription
@@ -222,6 +204,74 @@ function Invoke-AzRestMethod
 #endregion
 
 #region ExchangeOnlineManagement
+
+function Disable-ATPProtectionPolicyRule
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $Identity
+    )
+}
+
+function Enable-ATPProtectionPolicyRule
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $Identity
+    )
+}
+
+function Get-TenantAllowBlockListItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $ListType,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDate,
+
+        [Parameter()]
+        [switch]
+        $Allow,
+
+        [Parameter()]
+        [switch]
+        $Block,
+
+        [Parameter()]
+        [System.String]
+        $Entry,
+
+        [Parameter()]
+        [System.Object[]]
+        $ListSubType
+    )
+}
+
+function Get-TenantAllowBlockListSpoofItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $Action,
+
+        [Parameter()]
+        [System.String]
+        $SpoofType,
+
+        [Parameter()]
+        [System.Object]
+        $Identity
+    )
+}
 
 function New-DlpSensitiveInformationType
 {
@@ -264,6 +314,126 @@ function New-DlpSensitiveInformationType
         $FileData
     )
 }
+function New-TenantAllowBlockListItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String[]]
+        $Entries,
+
+        [Parameter()]
+        [System.String]
+        $ListType,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDate,
+
+        [Parameter()]
+        [switch]
+        $Allow,
+
+        [Parameter()]
+        [switch]
+        $Block,
+
+        [Parameter()]
+        [System.Object]
+        $ListSubType,
+
+        [Parameter()]
+        [switch]
+        $LogExtraDetails,
+
+        [Parameter()]
+        [System.String]
+        $Notes,
+
+        [Parameter()]
+        [switch]
+        $OutputJson,
+
+        [Parameter()]
+        [System.Int32]
+        $RemoveAfter,
+
+        [Parameter()]
+        [System.String]
+        $SubmissionID
+    )
+}
+
+function New-TenantAllowBlockListSpoofItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $Action,
+
+        [Parameter()]
+        [System.String]
+        $SendingInfrastructure,
+
+        [Parameter()]
+        [System.String]
+        $SpoofType,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm,
+
+        [Parameter()]
+        [System.Object]
+        $Identity,
+
+        [Parameter()]
+        [System.String]
+        $SpoofedUser
+    )
+}
+
+function Remove-TenantAllowBlockListItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $ListType,
+
+        [Parameter()]
+        [System.String[]]
+        $Entries,
+
+        [Parameter()]
+        [System.String]
+        $ListSubType,
+
+        [Parameter()]
+        [switch]
+        $OutputJson
+    )
+}
+
+function Remove-TenantAllowBlockListSpoofItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm,
+
+        [Parameter()]
+        [System.Object]
+        $Identity,
+
+        [Parameter()]
+        [System.String[]]
+        $Ids
+    )
+}
+
 function Set-DlpSensitiveInformationType
 {
     [CmdletBinding()]
@@ -398,6 +568,74 @@ function Remove-DlpSensitiveInformationTypeRulePackage
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Confirm
+    )
+}
+
+function Set-TenantAllowBlockListItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $ListType,
+
+        [Parameter()]
+        [System.DateTime]
+        $ExpirationDate,
+
+        [Parameter()]
+        [switch]
+        $Allow,
+
+        [Parameter()]
+        [switch]
+        $Block,
+
+        [Parameter()]
+        [System.String[]]
+        $Entries,
+
+        [Parameter()]
+        [System.Object[]]
+        $ListSubType,
+
+        [Parameter()]
+        [switch]
+        $NoExpiration,
+
+        [Parameter()]
+        [System.String]
+        $Notes,
+
+        [Parameter()]
+        [switch]
+        $OutputJson,
+
+        [Parameter()]
+        [System.Int32]
+        $RemoveAfter
+    )
+}
+
+function Set-TenantAllowBlockListSpoofItems
+{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [System.String]
+        $Action,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Confirm,
+
+        [Parameter()]
+        [System.Object]
+        $Identity,
+
+        [Parameter()]
+        [System.String[]]
+        $Ids
     )
 }
 
@@ -72731,36 +72969,6 @@ function Get-TenantSettings
     )
 }
 
-function Get-TenantAllowBlockListItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $ListType,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDate,
-
-        [Parameter()]
-        [switch]
-        $Allow,
-
-        [Parameter()]
-        [switch]
-        $Block,
-
-        [Parameter()]
-        [System.String]
-        $Entry,
-
-        [Parameter()]
-        [System.Object[]]
-        $ListSubType
-    )
-}
-
 function New-AdminPowerAppEnvironment
 {
     [CmdletBinding()]
@@ -72884,52 +73092,6 @@ function Set-TenantSettings
         [Parameter()]
         [System.Object]
         $RequestBody
-    )
-}
-
-function Set-TenantAllowBlockListItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $ListType,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDate,
-
-        [Parameter()]
-        [switch]
-        $Allow,
-
-        [Parameter()]
-        [switch]
-        $Block,
-
-        [Parameter()]
-        [System.String[]]
-        $Entries,
-
-        [Parameter()]
-        [System.Object[]]
-        $ListSubType,
-
-        [Parameter()]
-        [switch]
-        $NoExpiration,
-
-        [Parameter()]
-        [System.String]
-        $Notes,
-
-        [Parameter()]
-        [switch]
-        $OutputJson,
-
-        [Parameter()]
-        [System.Int32]
-        $RemoveAfter
     )
 }
 
@@ -75016,140 +75178,6 @@ function New-TeamChannel
     )
 }
 
-function New-TenantAllowBlockListItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String[]]
-        $Entries,
-
-        [Parameter()]
-        [System.String]
-        $ListType,
-
-        [Parameter()]
-        [System.DateTime]
-        $ExpirationDate,
-
-        [Parameter()]
-        [switch]
-        $Allow,
-
-        [Parameter()]
-        [switch]
-        $Block,
-
-        [Parameter()]
-        [System.Object]
-        $ListSubType,
-
-        [Parameter()]
-        [switch]
-        $LogExtraDetails,
-
-        [Parameter()]
-        [System.String]
-        $Notes,
-
-        [Parameter()]
-        [switch]
-        $OutputJson,
-
-        [Parameter()]
-        [System.Int32]
-        $RemoveAfter,
-
-        [Parameter()]
-        [System.String]
-        $SubmissionID
-    )
-}
-function New-TenantAllowBlockListSpoofItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $Action,
-
-        [Parameter()]
-        [System.String]
-        $SendingInfrastructure,
-
-        [Parameter()]
-        [System.String]
-        $SpoofType,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm,
-
-        [Parameter()]
-        [System.Object]
-        $Identity,
-
-        [Parameter()]
-        [System.String]
-        $SpoofedUser
-    )
-}
-function Remove-TenantAllowBlockListSpoofItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm,
-
-        [Parameter()]
-        [System.Object]
-        $Identity,
-
-        [Parameter()]
-        [System.String[]]
-        $Ids
-    )
-}
-function Get-TenantAllowBlockListSpoofItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $Action,
-
-        [Parameter()]
-        [System.String]
-        $SpoofType,
-
-        [Parameter()]
-        [System.Object]
-        $Identity
-    )
-}
-function Set-TenantAllowBlockListSpoofItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $Action,
-
-        [Parameter()]
-        [System.Management.Automation.SwitchParameter]
-        $Confirm,
-
-        [Parameter()]
-        [System.Object]
-        $Identity,
-
-        [Parameter()]
-        [System.String[]]
-        $Ids
-    )
-}
-
 function Remove-CsOnlineVoicemailPolicy
 {
     [CmdletBinding()]
@@ -75494,28 +75522,6 @@ function Remove-TeamUser
         [Parameter()]
         [System.String]
         $Role
-    )
-}
-
-function Remove-TenantAllowBlockListItems
-{
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [System.String]
-        $ListType,
-
-        [Parameter()]
-        [System.String[]]
-        $Entries,
-
-        [Parameter()]
-        [System.String]
-        $ListSubType,
-
-        [Parameter()]
-        [switch]
-        $OutputJson
     )
 }
 

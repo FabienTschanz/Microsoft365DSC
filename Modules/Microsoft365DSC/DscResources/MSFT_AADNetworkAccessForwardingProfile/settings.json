@@ -1,5 +1,16 @@
 {
   "resourceName": "AADNetworkAccessForwardingProfile",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "networkaccess.forwardingProfile",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaNetworkAccessForwardingProfile",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Network Access Forwarding Profile.",
   "permissions": {
     "graph": {

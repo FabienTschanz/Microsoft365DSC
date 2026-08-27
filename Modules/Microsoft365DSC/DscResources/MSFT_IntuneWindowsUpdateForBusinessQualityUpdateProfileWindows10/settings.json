@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneWindowsUpdateForBusinessQualityUpdateProfileWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "windowsQualityUpdateProfile",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementWindowsQualityUpdateProfile",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Windows Update For Business Quality Update Profile for Windows10.",
   "permissions": {
     "graph": {

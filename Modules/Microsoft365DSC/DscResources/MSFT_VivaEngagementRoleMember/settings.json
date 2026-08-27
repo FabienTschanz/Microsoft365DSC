@@ -1,5 +1,16 @@
 {
   "resourceName": "VivaEngagementRoleMember",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": null,
+    "cmdletVerb": null,
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Manage a Viva Engage role assigned to a user.",
   "roles": {
     "read": [],

@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceEnrollmentPlatformRestriction",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementDeviceEnrollmentConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the Intune device platform enrollment restrictions.",
   "permissions": {
     "graph": {

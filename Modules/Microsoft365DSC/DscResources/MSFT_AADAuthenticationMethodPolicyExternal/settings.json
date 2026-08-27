@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAuthenticationMethodPolicyExternal",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "authenticationMethodsPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyAuthenticationMethodPolicy",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Authentication Method Policy External.",
   "roles": {
     "read": [

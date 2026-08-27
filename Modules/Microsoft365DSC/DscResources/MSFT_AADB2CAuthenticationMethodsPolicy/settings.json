@@ -1,5 +1,16 @@
 {
   "resourceName": "AADB2CAuthenticationMethodsPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "b2cAuthenticationMethodsPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyB2CAuthenticationMethodPolicy",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "B2C allows tenant admins to choose a mechanism for letting end users register via local accounts.",
   "roles": {
     "read": [],

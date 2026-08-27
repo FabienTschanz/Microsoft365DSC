@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceManagementDeviceDiagnosticSettings",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagement",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagement",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the device diagnostic settings at the tenant level.",
   "permissions": {
     "graph": {

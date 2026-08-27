@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceEnrollmentScopeConfigurationMdm",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileDeviceManagementPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyMobileDeviceManagementPolicy",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Enrollment Scope Configuration Mdm.",
   "permissions": {
     "graph": {

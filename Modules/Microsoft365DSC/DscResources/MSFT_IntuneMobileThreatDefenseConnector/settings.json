@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileThreatDefenseConnector",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileThreatDefenseConnector",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementMobileThreatDefenseConnector",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures a connection to Mobile Threat Defense partner.",
   "permissions": {
     "graph": {

@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceCompliancePolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceCompliancePolicy",
+    "odataSubtype": "windows10CompliancePolicy",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceCompliancePolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the settings of Windows 10 compliance policies in your cloud-based organization.",
   "permissions": {
     "graph": {

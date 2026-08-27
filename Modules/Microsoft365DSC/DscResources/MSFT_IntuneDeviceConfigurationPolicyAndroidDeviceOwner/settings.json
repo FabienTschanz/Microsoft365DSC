@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationPolicyAndroidDeviceOwner",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "androidDeviceOwnerGeneralDeviceConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Policy Android Device Owner.",
   "permissions": {
     "graph": {

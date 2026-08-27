@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAuthenticationStrengthPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "authenticationStrengthPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyAuthenticationStrengthPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Authentication Strength Policy.",
   "roles": {
     "read": [],

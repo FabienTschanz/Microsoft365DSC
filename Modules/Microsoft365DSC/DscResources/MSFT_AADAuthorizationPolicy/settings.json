@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAuthorizationPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "authorizationPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyAuthorizationPolicy",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the Azure Active Directory Authorization Policy.",
   "roles": {
     "read": [],

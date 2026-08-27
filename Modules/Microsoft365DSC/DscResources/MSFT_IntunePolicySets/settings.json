@@ -1,5 +1,16 @@
 {
   "resourceName": "IntunePolicySets",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "policySet",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementPolicySet",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Policy Sets.",
   "permissions": {
     "graph": {

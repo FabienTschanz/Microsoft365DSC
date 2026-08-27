@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceEnrollmentStatusPageWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceEnrollmentConfiguration",
+    "odataSubtype": "windows10EnrollmentCompletionPageConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceEnrollmentConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Enrollment Status Page Configuration for Windows10.",
   "permissions": {
     "graph": {

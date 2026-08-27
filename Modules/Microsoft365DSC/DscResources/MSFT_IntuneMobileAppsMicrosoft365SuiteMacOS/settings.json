@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsMicrosoft365SuiteMacOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "macOSOfficeSuiteApp",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps Microsoft365 Suite for macOS.",
   "permissions": {
     "graph": {

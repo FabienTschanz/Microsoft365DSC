@@ -1,5 +1,16 @@
 {
   "resourceName": "AADUser",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "user",
+    "odataSubtype": null,
+    "cmdletNoun": "MgUser",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "",
   "roles": {
     "read": [

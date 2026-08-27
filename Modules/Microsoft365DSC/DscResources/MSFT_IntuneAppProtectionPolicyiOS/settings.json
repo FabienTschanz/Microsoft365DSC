@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAppProtectionPolicyiOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "iosManagedAppProtection",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementiOSManagedAppProtection",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune app protection policy for an iOS Device.",
   "permissions": {
     "graph": {

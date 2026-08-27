@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAlertRuleWindows365",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagement.alertRule",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementMonitoringAlertRule",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Alert Rule Windows365.",
   "permissions": {
     "graph": {

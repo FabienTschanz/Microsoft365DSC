@@ -1,5 +1,16 @@
 {
   "resourceName": "AADClaimsMappingPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "claimsMappingPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyClaimMappingPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Claims Mapping Policy.",
   "permissions": {
     "graph": {

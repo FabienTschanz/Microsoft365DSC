@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "groupPolicyConfiguration",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementGroupPolicyConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Administrative Template Policy for Windows10.",
   "permissions": {
     "graph": {

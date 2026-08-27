@@ -1,5 +1,16 @@
 {
   "resourceName": "AADGroupLifecyclePolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "groupLifecyclePolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgGroupLifecyclePolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory Group Lifecycle Policy (e.g. Expiration).",
   "roles": {
     "read": [],

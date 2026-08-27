@@ -1,5 +1,16 @@
 {
   "resourceName": "AADCertificateBasedApplicationConfiguration",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "certificateBasedApplicationConfiguration",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDirectoryCertificateAuthorityCertificateBasedApplicationConfiguration",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Manages certificate-based application configurations that define trusted certificate authorities for application authentication.",
   "roles": {
     "read": [

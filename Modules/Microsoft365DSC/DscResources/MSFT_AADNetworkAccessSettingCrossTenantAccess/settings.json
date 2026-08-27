@@ -1,5 +1,16 @@
 {
   "resourceName": "AADNetworkAccessSettingCrossTenantAccess",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "networkaccess.crossTenantAccessSettings",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaNetworkAccessSettingCrossTenantAccess",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures the universal tenant restrictions in Entra Id.",
   "roles": {
     "read": [],

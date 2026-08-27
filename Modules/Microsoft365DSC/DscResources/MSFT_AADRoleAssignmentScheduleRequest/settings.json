@@ -1,5 +1,16 @@
 {
   "resourceName": "AADRoleAssignmentScheduleRequest",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleAssignmentScheduleRequest",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaRoleManagementDirectoryRoleAssignmentScheduleRequest",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory Privilege Identity Management assignment.",
   "roles": {
     "read": [

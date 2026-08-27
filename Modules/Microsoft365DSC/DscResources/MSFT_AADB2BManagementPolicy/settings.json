@@ -1,5 +1,16 @@
 {
   "resourceName": "AADB2BManagementPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "b2bManagementPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyB2BManagementPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD B2B Management Policy.",
   "permissions": {
     "graph": {

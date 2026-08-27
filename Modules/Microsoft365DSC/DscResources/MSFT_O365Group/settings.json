@@ -1,5 +1,16 @@
 {
   "resourceName": "O365Group",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "group",
+    "odataSubtype": null,
+    "cmdletNoun": "MgGroup",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "",
   "permissions": {
     "graph": {

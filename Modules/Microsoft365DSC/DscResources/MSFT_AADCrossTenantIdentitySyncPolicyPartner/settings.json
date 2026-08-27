@@ -1,5 +1,16 @@
 {
   "resourceName": "AADCrossTenantIdentitySyncPolicyPartner",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "crossTenantIdentitySyncPolicyPartner",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyCrossTenantAccessPolicyPartnerIdentitySynchronization",
+    "cmdletVerb": "Set",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Create a cross-tenant user synchronization policy for a partner-specific configuration.",
   "roles": {
     "read": [

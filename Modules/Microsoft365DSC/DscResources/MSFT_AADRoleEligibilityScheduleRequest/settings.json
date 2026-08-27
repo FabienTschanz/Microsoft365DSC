@@ -1,5 +1,16 @@
 {
   "resourceName": "AADRoleEligibilityScheduleRequest",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleEligibilityScheduleRequest",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaRoleManagementDirectoryRoleEligibilityScheduleRequest",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory Privilege Identity Management eligibility request.",
   "roles": {
     "read": [

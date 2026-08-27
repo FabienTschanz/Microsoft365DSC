@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationSecureAssessmentPolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "windows10SecureAssessmentConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Secure Assessment Policy for Windows10.",
   "permissions": {
     "graph": {

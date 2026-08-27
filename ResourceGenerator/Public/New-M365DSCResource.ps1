@@ -208,6 +208,13 @@ function New-M365DSCResource
 
         Write-Verbose -Message "Generating '$ResourceName' from entity type '$($subtypeInfo.SelectedODataType)' (polymorphic: $($subtypeInfo.IsAdditionalProperty))."
 
+        $cmdletInfo.EntityTypeName = Get-M365DSCGraphQualifiedTypeName -Schema $schema -TypeName $cmdletInfo.ActualType
+        $cmdletInfo.ODataSubtypeName = $null
+        if ($subtypeInfo.IsAdditionalProperty)
+        {
+            $cmdletInfo.ODataSubtypeName = Get-M365DSCGraphQualifiedTypeName -Schema $schema -TypeName $subtypeInfo.SelectedODataType
+        }
+
         $existingCimClasses = Get-M365DSCExistingCimClassName -ResourceName $ResourceName
         $properties = @(Get-M365DSCGraphTypeProperty -Schema $schema `
                 -Entity $subtypeInfo.SelectedODataType `
@@ -221,7 +228,10 @@ function New-M365DSCResource
             -ParametersToSkip $ParametersToSkip `
             -SelectedODataType $subtypeInfo.SelectedODataType `
             -IsAdditionalProperty $subtypeInfo.IsAdditionalProperty `
-            -IsSingleInstance $IsSingleInstance.IsPresent
+            -IsSingleInstance $IsSingleInstance.IsPresent `
+            -CmdLetNoun $CmdLetNoun `
+            -CmdLetVerb $CmdLetVerb `
+            -IncludeNavigationProperties $IncludeNavigationProperties
     }
     else
     {
@@ -234,7 +244,9 @@ function New-M365DSCResource
             -CmdletInfo $cmdletInfo `
             -Properties $cmdletInfo.Properties `
             -ParametersToSkip $ParametersToSkip `
-            -IsSingleInstance $IsSingleInstance.IsPresent
+            -IsSingleInstance $IsSingleInstance.IsPresent `
+            -CmdLetNoun $CmdLetNoun `
+            -CmdLetVerb $CmdLetVerb
     }
 
     # ------------------------------------------------------------------ Emit (into staging)

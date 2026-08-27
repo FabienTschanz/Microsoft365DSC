@@ -1,5 +1,16 @@
 {
   "resourceName": "AADCustomAuthenticationExtension",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaIdentityCustomAuthenticationExtension",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Custom authentication extensions define interactions with external systems during a user authentication session. ",
   "roles": {
     "read": [

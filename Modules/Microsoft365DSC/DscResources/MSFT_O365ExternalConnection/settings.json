@@ -1,5 +1,16 @@
 {
   "resourceName": "O365ExternalConnection",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "externalConnectors.externalConnection",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaExternalConnection",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Configures external connectors in Microsoft 365.",
   "roles": {},
   "permissions": {

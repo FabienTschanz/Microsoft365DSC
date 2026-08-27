@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsDefenderForEndpointMacOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "macOSMicrosoftDefenderApp",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps Defender For Endpoint for macOS.",
   "permissions": {
     "graph": {

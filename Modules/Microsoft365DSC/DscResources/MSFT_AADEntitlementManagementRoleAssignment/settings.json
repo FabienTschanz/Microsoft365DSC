@@ -1,5 +1,16 @@
 {
   "resourceName": "AADEntitlementManagementRoleAssignment",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleAssignment",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaRoleManagementEntitlementManagementRoleAssignment",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Entitlement Management Role Assignments.",
   "roles": {
     "read": [

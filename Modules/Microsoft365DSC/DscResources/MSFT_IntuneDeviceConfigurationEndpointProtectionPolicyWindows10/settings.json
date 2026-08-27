@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationEndpointProtectionPolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "windows10EndpointProtectionConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Endpoint Protection Policy for Windows10.",
   "permissions": {
     "graph": {

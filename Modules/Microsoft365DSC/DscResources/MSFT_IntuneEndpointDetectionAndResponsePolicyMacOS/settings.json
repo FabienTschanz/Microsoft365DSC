@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneEndpointDetectionAndResponsePolicyMacOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagementConfigurationPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementConfigurationPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Endpoint Detection And Response Policy MacOS.",
   "permissions": {
     "graph": {

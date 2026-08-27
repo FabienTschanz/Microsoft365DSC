@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsSystemAppAndroid",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "androidManagedStoreApp",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps System App for Android.",
   "permissions": {
     "graph": {

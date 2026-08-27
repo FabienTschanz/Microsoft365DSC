@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAntivirusPolicyWindows10SettingCatalog",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagementConfigurationPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementConfigurationPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Endpoint Protection Antivirus policy for a Windows 10 Device.",
   "permissions": {
     "graph": {

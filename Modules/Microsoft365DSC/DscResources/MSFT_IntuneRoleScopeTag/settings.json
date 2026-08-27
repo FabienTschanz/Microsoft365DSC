@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneRoleScopeTag",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "roleScopeTag",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementRoleScopeTag",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Role Scope Tag.",
   "permissions": {
     "graph": {

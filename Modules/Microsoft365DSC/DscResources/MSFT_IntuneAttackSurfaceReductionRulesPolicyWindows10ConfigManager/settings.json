@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAttackSurfaceReductionRulesPolicyWindows10ConfigManager",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceManagementConfigurationPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceManagementConfigurationPolicy",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Endpoint Protection ASR Rules policy for a Windows 10 Device for ConfigManager.",
   "permissions": {
     "graph": {

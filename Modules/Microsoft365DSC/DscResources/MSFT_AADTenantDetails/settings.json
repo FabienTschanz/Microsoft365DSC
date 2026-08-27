@@ -1,5 +1,16 @@
 {
   "resourceName": "AADTenantDetails",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "organization",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaOrganization",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures the Azure AD Tenant Details.",
   "roles": {
     "read": [],

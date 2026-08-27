@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAuthenticationMethodPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "authenticationMethodsPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyAuthenticationMethodPolicy",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Authentication Method Policy.",
   "roles": {
     "read": [

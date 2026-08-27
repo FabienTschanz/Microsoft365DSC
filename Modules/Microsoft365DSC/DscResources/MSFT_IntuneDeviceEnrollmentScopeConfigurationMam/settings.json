@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceEnrollmentScopeConfigurationMam",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileAppManagementPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyMobileAppManagementPolicy",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Enrollment Scope Configuration Mam.",
   "permissions": {
     "graph": {

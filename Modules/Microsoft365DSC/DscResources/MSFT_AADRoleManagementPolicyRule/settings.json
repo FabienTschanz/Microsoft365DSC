@@ -1,5 +1,16 @@
 {
   "resourceName": "AADRoleManagementPolicyRule",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaPolicyRoleManagementPolicyRule",
+    "cmdletVerb": "Update",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Role Management Policy Rule.",
   "permissions": {
     "graph": {

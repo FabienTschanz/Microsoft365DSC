@@ -1,5 +1,16 @@
 {
   "resourceName": "AADNetworkAccessForwardingPolicy",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "networkaccess.forwardingPolicy",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaNetworkAccessForwardingPolicy",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Use this resource to monitor the forwarding policy rules associated with the forwarding policies.",
   "permissions": {
     "graph": {

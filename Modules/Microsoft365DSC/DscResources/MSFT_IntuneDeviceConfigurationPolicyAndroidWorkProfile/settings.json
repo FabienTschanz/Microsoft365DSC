@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationPolicyAndroidWorkProfile",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "androidWorkProfileGeneralDeviceConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune device configuration profile for an Android Workprofile device.",
   "permissions": {
     "graph": {

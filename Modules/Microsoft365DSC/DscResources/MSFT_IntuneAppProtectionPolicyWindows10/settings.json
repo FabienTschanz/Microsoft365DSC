@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAppProtectionPolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "windowsManagedAppProtection",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementWindowsManagedAppProtection",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune App Protection Policy for Windows10.",
   "permissions": {
     "graph": {

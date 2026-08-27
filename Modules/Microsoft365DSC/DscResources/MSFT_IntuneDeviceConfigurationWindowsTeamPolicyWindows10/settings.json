@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationWindowsTeamPolicyWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "windows10TeamGeneralConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Device Configuration Windows Team Policy for Windows10.",
   "permissions": {
     "graph": {

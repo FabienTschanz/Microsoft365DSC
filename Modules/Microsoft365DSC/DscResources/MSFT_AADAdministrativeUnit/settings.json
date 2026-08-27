@@ -1,5 +1,16 @@
 {
   "resourceName": "AADAdministrativeUnit",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "v1.0",
+    "entityType": "administrativeUnit",
+    "odataSubtype": null,
+    "cmdletNoun": "MgDirectoryAdministrativeUnit",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure Active Directory administrative unit.",
   "roles": {
     "read": [

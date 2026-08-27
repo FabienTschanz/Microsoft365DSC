@@ -1,5 +1,16 @@
 {
   "resourceName": "AADDomainFederation",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "domain",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDomain",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Manages Azure Active Directory Domain Federation configurations including SAML/WS-Fed settings, signing certificates, and authentication protocols for federated domains.",
   "roles": {
     "read": [

@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsLobAppMsiWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "windowsMobileMSI",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps Lob App MSI for Windows10.",
   "permissions": {
     "graph": {

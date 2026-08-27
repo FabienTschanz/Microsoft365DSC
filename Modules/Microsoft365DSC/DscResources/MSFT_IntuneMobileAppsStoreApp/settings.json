@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsStoreApp",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps Store App for Android and iOS.",
   "permissions": {
     "graph": {

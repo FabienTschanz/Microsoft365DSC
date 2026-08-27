@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneDeviceConfigurationCustomPolicyiOS",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "iosCustomConfiguration",
+    "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an iOS Intune Custom Configuration Policy.",
   "permissions": {
     "graph": {

@@ -26,8 +26,17 @@ function Get-M365DSCGraphCsdlMetadata
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [System.String]
+        $Path
     )
+
+    if (-not [System.String]::IsNullOrEmpty($Path))
+    {
+        return Read-M365DSCGraphCsdlFile -Path $Path
+    }
 
     if ($APIVersion -eq 'v1.0')
     {
@@ -76,9 +85,26 @@ function Get-M365DSCGraphCsdlMetadata
         Write-Verbose -Message "Using cached Graph $APIVersion metadata from $cachePath"
     }
 
-    # The file starts with a zero-width no-break space that breaks the XML parser.
+    return Read-M365DSCGraphCsdlFile -Path $cachePath
+}
+
+<#
+.SYNOPSIS
+    Parses a CSDL file into its schema nodes.
+#>
+function Read-M365DSCGraphCsdlFile
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Path
+    )
+
+    # The published file starts with a zero-width no-break space that breaks the XML parser.
     $zwnbsp = [System.Char] 0xFEFF
-    $metadata = (Get-Content -Path $cachePath -Raw) -replace $zwnbsp, ''
+    $metadata = (Get-Content -Path $Path -Raw) -replace $zwnbsp, ''
 
     return ([Xml] $metadata).Edmx.DataServices.schema
 }

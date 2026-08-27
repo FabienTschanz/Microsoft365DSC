@@ -1,5 +1,16 @@
 {
   "resourceName": "AADIdentityB2XUserFlow",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "b2xIdentityUserFlow",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaIdentityB2XUserFlow",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Azure AD Identity B2 X User Flow.",
   "permissions": {
     "graph": {

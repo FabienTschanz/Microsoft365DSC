@@ -1,5 +1,16 @@
 {
   "resourceName": "AADIdentityGovernanceLifecycleWorkflow",
+  "generatedFrom": {
+    "workload": "MicrosoftGraph",
+    "apiVersion": "beta",
+    "entityType": "identityGovernance.workflow",
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaIdentityGovernanceLifecycleWorkflow",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "Use this resource to manage Lifecycle workflows.",
   "roles": {
     "read": [

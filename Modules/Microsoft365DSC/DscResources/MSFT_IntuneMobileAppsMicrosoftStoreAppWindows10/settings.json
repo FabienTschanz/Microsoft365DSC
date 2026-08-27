@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneMobileAppsMicrosoftStoreAppWindows10",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "winGetApp",
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune Mobile Apps Microsoft Store App for Windows10 (new experience).",
   "permissions": {
     "graph": {

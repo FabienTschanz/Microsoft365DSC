@@ -1,5 +1,16 @@
 {
   "resourceName": "IntuneAppConfigurationDevicePolicy",
+  "generatedFrom": {
+    "workload": "Intune",
+    "apiVersion": null,
+    "entityType": null,
+    "odataSubtype": null,
+    "cmdletNoun": "MgBetaDeviceAppManagementMobileAppConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": false,
+    "generatorVersion": "2.0.0"
+  },
+  "excludedProperties": [],
   "description": "This resource configures an Intune App Configuration Device Policy.",
   "permissions": {
     "graph": {

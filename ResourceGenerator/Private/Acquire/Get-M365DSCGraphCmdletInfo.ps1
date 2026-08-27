@@ -227,6 +227,45 @@ function Resolve-M365DSCGraphODataSubtype
 
 <#
 .SYNOPSIS
+    Returns the name of a CSDL type as settings.json records it. Types in the microsoft.graph
+    namespace keep the bare name ('group'). Types in a sub-namespace carry it
+    ('networkaccess.filteringProfile'). The first namespace that declares the name wins, which
+    is also the namespace the generator reads the type from.
+#>
+function Get-M365DSCGraphQualifiedTypeName
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Schema,
+
+        [Parameter()]
+        [System.String]
+        $TypeName
+    )
+
+    if ([System.String]::IsNullOrEmpty($TypeName))
+    {
+        return $null
+    }
+
+    $namespaceNode = @($Schema | Where-Object -FilterScript {
+            $_.EntityType.Name -contains $TypeName -or $_.ComplexType.Name -contains $TypeName
+        }) | Select-Object -First 1
+
+    if ($null -eq $namespaceNode -or [System.String] $namespaceNode.Namespace -eq 'microsoft.graph')
+    {
+        return $TypeName
+    }
+
+    return (([System.String] $namespaceNode.Namespace) -replace '^microsoft\.graph\.', '') + '.' + $TypeName
+}
+
+<#
+.SYNOPSIS
     Returns the mandatory parameters of a cmdlet's named parameter set, falling back to the
     default set when none of the named sets exist.
 #>
