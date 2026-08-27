@@ -58,98 +58,26 @@ function Get-M365DSCGraphTypeProperty
 
     $null = $Visited.Add($Entity)
 
-    $namespace = $Schema | Where-Object -FilterScript { $_.EntityType.Name -contains $Entity }
-    if ($null -eq $namespace)
-    {
-        $namespace = $Schema | Where-Object -FilterScript { $_.ComplexType.Name -contains $Entity }
-    }
-
-    if ($null -eq $namespace)
+    $definition = Get-M365DSCGraphTypeDefinition -Schema $Schema -Entity $Entity
+    if ($null -eq $definition)
     {
         Write-Warning -Message "Type '$Entity' was not found in the Graph metadata."
         return @()
     }
 
-    # Collect the raw CSDL property nodes across the whole inheritance chain. Each entry keeps
-    # whether its declaring type is a "root" type (directly below graph.entity): on polymorphic
-    # resources the Graph cmdlets surface root properties on the output object itself, while
-    # subtype properties travel inside AdditionalProperties.
-    $rawProperties = @()
-    $navigationProperties = @()
-    $derivedSubtypeNames = @()
-    $baseTypeName = $Entity
+    $namespace = $definition.Schema
+    $derivedSubtypeNames = $definition.DerivedSubtypeNames
 
-    do
+    $rawEntries = @($definition.Properties)
+    if ($IncludeNavigationProperties)
     {
-        $typeNode = $namespace.EntityType | Where-Object -FilterScript { $_.Name -eq $baseTypeName }
-        $isComplexType = $false
-        if ($null -eq $typeNode)
-        {
-            $typeNode = $namespace.ComplexType | Where-Object -FilterScript { $_.Name -eq $baseTypeName }
-            $isComplexType = $true
-        }
-
-        if ($null -eq $typeNode)
-        {
-            break
-        }
-
-        $isRootType = ($typeNode.BaseType -eq 'graph.entity') -or ($typeNode.Name -eq 'entity')
-
-        if ($null -ne $typeNode.Property)
-        {
-            foreach ($propertyNode in @($typeNode.Property))
-            {
-                $rawProperties += [PSCustomObject]@{
-                    Node   = $propertyNode
-                    IsRoot = $isRootType
-                }
-            }
-        }
-
-        # An abstract complex type surfaces the union of its subtypes' properties plus a
-        # synthesized @odata.type discriminator.
-        if ($isComplexType -and $baseTypeName -eq $Entity -and $null -eq $typeNode.BaseType)
-        {
-            $subtypes = @($namespace.ComplexType | Where-Object -FilterScript { $_.BaseType -eq "graph.$baseTypeName" })
-            foreach ($subtype in $subtypes)
-            {
-                $derivedSubtypeNames += $subtype.Name
-                foreach ($subtypeProperty in @($subtype.Property))
-                {
-                    if ($null -ne $subtypeProperty -and $subtypeProperty.Name -notin @($rawProperties.Node.Name))
-                    {
-                        $rawProperties += [PSCustomObject]@{
-                            Node   = $subtypeProperty
-                            IsRoot = $false
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($IncludeNavigationProperties -and $null -ne $typeNode.NavigationProperty)
-        {
-            foreach ($navigationNode in @($typeNode.NavigationProperty))
-            {
-                $navigationProperties += [PSCustomObject]@{
-                    Node   = $navigationNode
-                    IsRoot = $isRootType
-                }
-            }
-        }
-
-        $baseTypeName = $null
-        if ($typeNode.BaseType -is [System.String] -and -not [System.String]::IsNullOrEmpty($typeNode.BaseType))
-        {
-            $baseTypeName = $typeNode.BaseType.Replace('graph.', '')
-        }
-    } while ($null -ne $baseTypeName)
+        $rawEntries += @($definition.NavigationProperties)
+    }
 
     # Project the raw nodes into property models.
     $models = @()
 
-    foreach ($rawEntry in ($rawProperties + $navigationProperties))
+    foreach ($rawEntry in $rawEntries)
     {
         $rawProperty = $rawEntry.Node
         $isFromAdditionalProperties = -not $rawEntry.IsRoot
