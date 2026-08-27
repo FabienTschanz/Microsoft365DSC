@@ -90,7 +90,10 @@ function Get-M365DSCGraphTypeProperty
             $rawType = $rawType.Replace('Collection(', '').Replace(')', '')
         }
 
-        $description = Get-M365DSCGraphPropertyDescription -Schema $Schema -Property $rawProperty
+        $description = Get-M365DSCGraphPropertyDescription -Schema $Schema `
+            -Property $rawProperty `
+            -NamespaceName $rawEntry.DeclaringNamespace `
+            -TypeName $rawEntry.DeclaringType
 
         if ($rawType -like 'graph.*')
         {
@@ -164,6 +167,21 @@ function Get-M365DSCGraphTypeProperty
 .SYNOPSIS
     Extracts a property description from its CSDL annotation, falling back to the schema-level
     annotations block.
+
+.PARAMETER Schema
+    Specifies the CSDL schema nodes.
+
+.PARAMETER Property
+    Specifies the property node.
+
+.PARAMETER NamespaceName
+    Specifies the namespace declaring the property, for example 'microsoft.graph.networkaccess'.
+
+.PARAMETER TypeName
+    Specifies the declaring type. Defaults to the parent node of the property.
+
+.OUTPUTS
+    The description, or an empty string.
 #>
 function Get-M365DSCGraphPropertyDescription
 {
@@ -177,23 +195,36 @@ function Get-M365DSCGraphPropertyDescription
 
         [Parameter(Mandatory = $true)]
         [System.Object]
-        $Property
+        $Property,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $NamespaceName = 'microsoft.graph',
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $TypeName
     )
 
-    $description = ''
+    $description = Get-M365DSCGraphAnnotationDescription -Annotation $Property.Annotation
 
-    if (-not [System.String]::IsNullOrWhiteSpace($Property.Annotation.String))
+    if ([System.String]::IsNullOrWhiteSpace($description))
     {
-        $description = $Property.Annotation.String
-    }
-    else
-    {
-        $target = "microsoft.graph.$($Property.ParentNode.Name)/$($Property.Name)"
-        $annotation = $Schema.Annotations | Where-Object -FilterScript { $_.Target -like $target }
-        if (-not [System.String]::IsNullOrWhiteSpace($annotation.Annotation.String))
+        if ([System.String]::IsNullOrEmpty($NamespaceName))
         {
-            $description = $annotation.Annotation.String
+            $NamespaceName = 'microsoft.graph'
         }
+
+        if ([System.String]::IsNullOrEmpty($TypeName))
+        {
+            $TypeName = [System.String] $Property.ParentNode.Name
+        }
+
+        $target = "$NamespaceName.$TypeName/$($Property.Name)"
+        $annotation = $Schema.Annotations | Where-Object -FilterScript { $_.Target -like $target }
+        $description = Get-M365DSCGraphAnnotationDescription -Annotation $annotation.Annotation
     }
 
     if ([System.String]::IsNullOrEmpty($description))
@@ -204,6 +235,48 @@ function Get-M365DSCGraphPropertyDescription
     $description = $description.Replace('"', "'")
     # Keep letters, digits and basic punctuation only - Description attributes choke on the rest.
     return ($description -replace '[^\p{L}\p{Nd}/(/}/_ -.,=:)'']', '')
+}
+
+<#
+.SYNOPSIS
+    Returns the Description string out of a set of CSDL annotations.
+
+.DESCRIPTION
+    A node can carry several annotations. Reading String off the set yields an array whose
+    capability entries are null, which fails on the first string operation.
+
+.PARAMETER Annotation
+    Specifies the annotation nodes.
+
+.OUTPUTS
+    The description, or an empty string.
+#>
+function Get-M365DSCGraphAnnotationDescription
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter()]
+        [AllowNull()]
+        [System.Object]
+        $Annotation
+    )
+
+    foreach ($entry in @($Annotation))
+    {
+        if ($null -eq $entry)
+        {
+            continue
+        }
+
+        if (([System.String] $entry.Term) -eq 'Org.OData.Core.V1.Description')
+        {
+            return [System.String] $entry.String
+        }
+    }
+
+    return ''
 }
 
 <#

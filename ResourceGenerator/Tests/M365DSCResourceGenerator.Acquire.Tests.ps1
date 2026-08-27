@@ -231,4 +231,122 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
                 Should -Be 'group'
         }
     }
+
+    Describe 'Get-M365DSCGraphPropertyDescription' {
+        BeforeAll {
+            $descriptionCsdl = @'
+<Edmx xmlns="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+  <DataServices>
+    <schema Namespace="microsoft.graph" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="entity" Abstract="true">
+        <Property Name="id" Type="Edm.String" />
+      </EntityType>
+      <EntityType Name="testRoot" BaseType="graph.entity">
+        <Property Name="inlineOne" Type="Edm.String">
+          <Annotation Term="Org.OData.Core.V1.Description" String="Inline description." />
+        </Property>
+        <Property Name="inlineMany" Type="Edm.String">
+          <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+          <Annotation Term="Org.OData.Capabilities.V1.UpdateRestrictions" />
+          <Annotation Term="Org.OData.Core.V1.Description" String="Third annotation wins." />
+        </Property>
+        <Property Name="onlyCapability" Type="Edm.String">
+          <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+        </Property>
+        <Property Name="viaFallback" Type="Edm.String" />
+      </EntityType>
+      <Annotations Target="microsoft.graph.testRoot/viaFallback">
+        <Annotation Term="Org.OData.Core.V1.Description" String="Root fallback description." />
+      </Annotations>
+      <Annotations Target="microsoft.graph.testRoot/onlyCapability">
+        <Annotation Term="Org.OData.Core.V1.Description" String="Capability fallback description." />
+      </Annotations>
+    </schema>
+    <schema Namespace="microsoft.graph.testaccess" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="testProfile" BaseType="graph.entity">
+        <Property Name="profileName" Type="Edm.String" />
+      </EntityType>
+      <Annotations Target="microsoft.graph.testaccess.testProfile/profileName">
+        <Annotation Term="Org.OData.Core.V1.Description" String="Sub-namespace description." />
+      </Annotations>
+    </schema>
+  </DataServices>
+</Edmx>
+'@
+            $script:descriptionSchema = ([Xml] $descriptionCsdl).Edmx.DataServices.schema
+
+            function Get-TestProperty
+            {
+                param
+                (
+                    [System.String] $Namespace,
+                    [System.String] $Type,
+                    [System.String] $Property
+                )
+
+                $node = $script:descriptionSchema | Where-Object -FilterScript { $_.Namespace -eq $Namespace }
+                $entity = $node.EntityType | Where-Object -FilterScript { $_.Name -eq $Type }
+
+                return $entity.Property | Where-Object -FilterScript { $_.Name -eq $Property }
+            }
+        }
+
+        It 'reads an inline description' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph' -Type 'testRoot' -Property 'inlineOne'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property |
+                Should -Be 'Inline description.'
+        }
+
+        It 'picks the Description out of several inline annotations' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph' -Type 'testRoot' -Property 'inlineMany'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property |
+                Should -Be 'Third annotation wins.'
+        }
+
+        It 'does not throw when a property carries several inline annotations' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph' -Type 'testRoot' -Property 'inlineMany'
+            { Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property } |
+                Should -Not -Throw
+        }
+
+        It 'falls back to the schema-level block in microsoft.graph' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph' -Type 'testRoot' -Property 'viaFallback'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property |
+                Should -Be 'Root fallback description.'
+        }
+
+        It 'falls back when the only inline annotation is not a description' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph' -Type 'testRoot' -Property 'onlyCapability'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property |
+                Should -Be 'Capability fallback description.'
+        }
+
+        It 'resolves the schema-level block of a sub-namespaced type' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph.testaccess' -Type 'testProfile' -Property 'profileName'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema `
+                -Property $property `
+                -NamespaceName 'microsoft.graph.testaccess' `
+                -TypeName 'testProfile' |
+                Should -Be 'Sub-namespace description.'
+        }
+
+        It 'finds nothing for a sub-namespaced type when the namespace is assumed' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph.testaccess' -Type 'testProfile' -Property 'profileName'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property |
+                Should -BeNullOrEmpty
+        }
+
+        It 'carries the declaring namespace through Get-M365DSCGraphTypeProperty' {
+            $models = Get-M365DSCGraphTypeProperty -Schema $script:descriptionSchema -Entity 'testProfile'
+            ($models | Where-Object { $_.Name -eq 'ProfileName' }).Description |
+                Should -Be 'Sub-namespace description.'
+        }
+
+        It 'returns an empty string for <Case>' -TestCases @(
+            @{ Case = 'no annotation at all'; Value = $null }
+            @{ Case = 'an empty collection'; Value = @() }
+        ) {
+            Get-M365DSCGraphAnnotationDescription -Annotation $Value | Should -Be ''
+        }
+    }
 }
