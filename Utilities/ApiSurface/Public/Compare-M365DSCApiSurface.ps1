@@ -85,6 +85,7 @@ function Compare-M365DSCApiSurface
     $findings = [System.Collections.Generic.List[System.Object]]::new()
 
     $findings.AddRange([System.Object[]] @(Compare-VendorSurface -Baseline $Baseline -Current $Current -Origin $Origin))
+    $findings.AddRange([System.Object[]] @(Compare-Shim -Current $Current -Origin $Origin -Exclusion $Exclusion))
     $findings.AddRange([System.Object[]] @(Compare-DependencyVersion -Current $Current))
 
     $resource = Compare-ResourceSurface -Baseline $Baseline `

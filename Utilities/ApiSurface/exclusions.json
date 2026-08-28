@@ -1,4 +1,14 @@
 {
+  "nonShimCmdlets": [
+    {
+      "cmdlet": "Invoke-MgGraphRequest",
+      "reason": "The raw Graph call the shim itself wraps. It is never wrapped by the shim."
+    },
+    {
+      "cmdlet": "Get-MgContext",
+      "reason": "An authentication cmdlet with no Graph route, so there is nothing for the shim to wrap."
+    }
+  ],
   "nonComparableEntityTypes": [
     {
       "entityType": "deviceManagementConfigurationPolicy",

@@ -21,6 +21,10 @@
 - `RES-TYPE-MISMATCH:TestGroup:Priority`
       csdl:beta/testGroup/priority, declared UInt32, vendor Edm.Int64
 
+## Graph shim, regenerate to fix  (0)
+
+None.
+
 ## Read-only, suggested for no implementation  (1)
 
 - `RES-PROP-READONLY:TestPolicy:CreatedDateTime`

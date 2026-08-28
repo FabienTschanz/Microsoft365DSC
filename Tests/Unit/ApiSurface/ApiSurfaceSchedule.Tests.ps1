@@ -119,14 +119,15 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         It 'orders the sections the way phase 3 specifies' {
             $headings = @((Get-TestBody) -split "`n" | Where-Object -FilterScript { $_ -like '## *' })
 
-            $headings | Should -HaveCount 7
+            $headings | Should -HaveCount 8
             $headings[0] | Should -BeLike '## Auto-fixable*'
             $headings[1] | Should -BeLike '## Needs a decision*'
-            $headings[2] | Should -BeLike '## Read-only, suggested for no implementation*'
-            $headings[3] | Should -BeLike '## Coverage gaps*'
-            $headings[4] | Should -BeLike '## Vendor changes since *'
-            $headings[5] | Should -BeLike '## Newer dependency versions available*'
-            $headings[6] | Should -BeLike '## Unaccepted breaking findings*'
+            $headings[2] | Should -BeLike '## Graph shim, regenerate to fix*'
+            $headings[3] | Should -BeLike '## Read-only, suggested for no implementation*'
+            $headings[4] | Should -BeLike '## Coverage gaps*'
+            $headings[5] | Should -BeLike '## Vendor changes since *'
+            $headings[6] | Should -BeLike '## Newer dependency versions available*'
+            $headings[7] | Should -BeLike '## Unaccepted breaking findings*'
         }
 
         It 'names the dependency move in the vendor section' {

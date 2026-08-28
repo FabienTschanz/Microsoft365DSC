@@ -215,6 +215,7 @@ function Get-DriftSection
 
     return @(
         [PSCustomObject]@{ Name = 'AutoFixable'; Title = 'Auto-fixable'; Codes = @('RES-ENUM-STALE', 'VND-ENUM-MEMBER-ADDED', 'RES-PROP-MISSING') }
+        [PSCustomObject]@{ Name = 'Shim'; Title = 'Graph shim, regenerate to fix'; Codes = @('SHIM-MISSING', 'SHIM-STALE') }
         [PSCustomObject]@{ Name = 'Decision'; Title = 'Needs a decision'; Codes = @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-TYPECHANGED', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH') }
         [PSCustomObject]@{ Name = 'ReadOnly'; Title = 'Read-only, suggested for no implementation'; Codes = @('RES-PROP-READONLY') }
         [PSCustomObject]@{ Name = 'VendorChanges'; Title = $vendorTitle; Codes = @('VND-TYPE-PROP-ADDED', 'VND-PARAM-ADDED') }
@@ -255,6 +256,20 @@ function Get-FindingEvidenceLine
         {
             $callers = @($Finding.evidence.calledBy)
             return "$source, called by $($callers.Count) resource(s): $((Get-M365DSCOrderedName -Value ([System.String[]] $callers)) -join ', ')"
+        }
+        'SHIM-MISSING'
+        {
+            $callers = @($Finding.evidence.calledBy)
+            return "not exported by the shim, called by $($callers.Count) resource(s): $((Get-M365DSCOrderedName -Value ([System.String[]] $callers)) -join ', ')"
+        }
+        'SHIM-STALE'
+        {
+            if (([System.String] $Finding.evidence.reason) -eq 'parameters')
+            {
+                return "$source, the SDK declares parameter(s) the wrapper does not: $(@($Finding.to.added) -join ', ')"
+            }
+
+            return "$source, wrapper has $($Finding.from.method) $($Finding.from.uri), the SDK has $(@($Finding.to.variants) -join '; ')"
         }
         'RES-ENUM-STALE'
         {

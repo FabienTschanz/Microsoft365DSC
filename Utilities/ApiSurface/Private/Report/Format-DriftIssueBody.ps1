@@ -212,6 +212,7 @@ function New-DriftIssueBody
     $lines.Add('')
 
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Decision'] -Finding $findings -Limit $CollapsedLimit))
+    $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Shim'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['ReadOnly'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-CoverageGapSection -Result $Result))
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['VendorChanges'] -Finding $findings -Limit $CollapsedLimit))

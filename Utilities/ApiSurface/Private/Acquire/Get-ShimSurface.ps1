@@ -314,7 +314,10 @@ function Resolve-ShimRouteArgument
 
     $apiVersion = $Matches[1]
     $uri = $raw.Substring($apiVersion.Length + 1)
-    $uri = $uri -replace '\$\(\$([A-Za-z_][A-Za-z0-9_]*)\)', '{$1}' -replace '\$([A-Za-z_][A-Za-z0-9_]*)', '{$1}'
+
+    # $ref is a literal OData segment, not an interpolated variable.
+    $uri = $uri -replace '\$\(\$([A-Za-z_][A-Za-z0-9_]*)\)', '{$1}'
+    $uri = $uri -replace '\$(?!ref\b)([A-Za-z_][A-Za-z0-9_]*)', '{$1}'
 
     return @{
         ApiVersion = $apiVersion

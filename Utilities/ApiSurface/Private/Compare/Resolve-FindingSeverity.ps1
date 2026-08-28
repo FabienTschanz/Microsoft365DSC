@@ -169,6 +169,8 @@ function Resolve-FindingSeverity
         'RES-PROP-ORPHANED'     = @{ Severity = 'breaking'; AutoFixable = $false }
         'RES-TYPE-MISMATCH'     = @{ Severity = 'breaking'; AutoFixable = $false }
         'RES-ENUM-STALE'        = @{ Severity = 'warning'; AutoFixable = $true }
+        'SHIM-MISSING'          = @{ Severity = 'breaking'; AutoFixable = $false }
+        'SHIM-STALE'            = @{ Severity = 'warning'; AutoFixable = $true }
     }
 
     if (-not $table.ContainsKey($Code))

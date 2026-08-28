@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "capturedAt": "2026-08-28T09:12:31Z",
+  "capturedAt": "2026-08-28T09:54:40Z",
   "capturedBy": "local",
   "completeness": {
     "tenantConnected": true,
@@ -87276,6 +87276,7 @@
       "parameters": {
         "AggregationTimeWindowForDlpAlerts": "System.Object",
         "CaseHoldPolicyLimit": "System.Int32",
+        "ClassificationMode": "System.Object",
         "ClassificationScheme": "System.Object",
         "ComplianceUrl": "System.String",
         "DlpAlertFoldingConfiguration": "System.Object",
@@ -98742,7 +98743,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "v1.0",
-      "uri": "/applications/{ApplicationId}/owners/{ref}",
+      "uri": "/applications/{ApplicationId}/owners/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -98765,7 +98766,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "v1.0",
-      "uri": "/applications/{ApplicationId}/tokenLifetimePolicies/{ref}",
+      "uri": "/applications/{ApplicationId}/tokenLifetimePolicies/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -100557,7 +100558,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleAccessPackages/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleAccessPackages/$ref",
       "itemUri": null,
       "parameters": [
         "AccessPackageId",
@@ -100580,7 +100581,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleGroups/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleGroups/$ref",
       "itemUri": null,
       "parameters": [
         "AccessPackageId",
@@ -100692,7 +100693,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/externalSponsors/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/externalSponsors/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -100715,7 +100716,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/internalSponsors/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/internalSponsors/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -100774,7 +100775,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/groups/{GroupId}/members/{ref}",
+      "uri": "/groups/{GroupId}/members/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -100847,7 +100848,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/userFlowIdentityProviders/{ref}",
+      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/userFlowIdentityProviders/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -101556,7 +101557,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "beta",
-      "uri": "/policies/featureRolloutPolicies/{FeatureRolloutPolicyId}/appliesTo/{ref}",
+      "uri": "/policies/featureRolloutPolicies/{FeatureRolloutPolicyId}/appliesTo/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -102047,7 +102048,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "v1.0",
-      "uri": "/directory/administrativeUnits/{AdministrativeUnitId}/members/{ref}",
+      "uri": "/directory/administrativeUnits/{AdministrativeUnitId}/members/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -102236,7 +102237,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "v1.0",
-      "uri": "/groups/{GroupId}/members/{ref}",
+      "uri": "/groups/{GroupId}/members/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -102259,7 +102260,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "v1.0",
-      "uri": "/groups/{GroupId}/owners/{ref}",
+      "uri": "/groups/{GroupId}/owners/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -102482,7 +102483,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "POST",
       "apiVersion": "v1.0",
-      "uri": "/servicePrincipals/{ServicePrincipalId}/owners/{ref}",
+      "uri": "/servicePrincipals/{ServicePrincipalId}/owners/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -102702,7 +102703,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "v1.0",
-      "uri": "/applications/{ApplicationId}/owners/{DirectoryObjectId}/{ref}",
+      "uri": "/applications/{ApplicationId}/owners/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "ApplicationId",
@@ -102724,7 +102725,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "v1.0",
-      "uri": "/applications/{ApplicationId}/tokenLifetimePolicies/{TokenLifetimePolicyId}/{ref}",
+      "uri": "/applications/{ApplicationId}/tokenLifetimePolicies/{TokenLifetimePolicyId}/$ref",
       "itemUri": null,
       "parameters": [
         "ApplicationId",
@@ -103739,7 +103740,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleAccessPackages/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleAccessPackages/$ref",
       "itemUri": null,
       "parameters": [
         "AccessPackageId",
@@ -103761,7 +103762,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleGroups/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/accessPackages/{AccessPackageId}/incompatibleGroups/$ref",
       "itemUri": null,
       "parameters": [
         "AccessPackageId",
@@ -103826,7 +103827,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/externalSponsors/{DirectoryObjectId}/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/externalSponsors/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -103848,7 +103849,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/internalSponsors/{DirectoryObjectId}/{ref}",
+      "uri": "/identityGovernance/entitlementManagement/connectedOrganizations/{ConnectedOrganizationId}/internalSponsors/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -103913,7 +103914,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/groups/{GroupId}/members/{DirectoryObjectId}/{ref}",
+      "uri": "/groups/{GroupId}/members/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -103977,7 +103978,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/userFlowIdentityProviders/{IdentityProviderBaseId}/{ref}",
+      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/userFlowIdentityProviders/{IdentityProviderBaseId}/$ref",
       "itemUri": null,
       "parameters": [
         "B2XIdentityUserFlowId",
@@ -104529,7 +104530,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "beta",
-      "uri": "/policies/featureRolloutPolicies/{FeatureRolloutPolicyId}/appliesTo/{DirectoryObjectId}/{ref}",
+      "uri": "/policies/featureRolloutPolicies/{FeatureRolloutPolicyId}/appliesTo/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -104828,7 +104829,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "v1.0",
-      "uri": "/directory/administrativeUnits/{AdministrativeUnitId}/members/{DirectoryObjectId}/{ref}",
+      "uri": "/directory/administrativeUnits/{AdministrativeUnitId}/members/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "AdministrativeUnitId",
@@ -104915,7 +104916,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "v1.0",
-      "uri": "/groups/{GroupId}/members/{DirectoryObjectId}/{ref}",
+      "uri": "/groups/{GroupId}/members/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -104937,7 +104938,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "v1.0",
-      "uri": "/groups/{GroupId}/owners/{DirectoryObjectId}/{ref}",
+      "uri": "/groups/{GroupId}/owners/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -105023,7 +105024,7 @@
       "helper": "Invoke-M365DSCGraphShimDeleteResource",
       "method": "DELETE",
       "apiVersion": "v1.0",
-      "uri": "/servicePrincipals/{ServicePrincipalId}/owners/{DirectoryObjectId}/{ref}",
+      "uri": "/servicePrincipals/{ServicePrincipalId}/owners/{DirectoryObjectId}/$ref",
       "itemUri": null,
       "parameters": [
         "Break",
@@ -105149,7 +105150,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "PUT",
       "apiVersion": "beta",
-      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/apiConnectorConfiguration/postAttributeCollection/{ref}",
+      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/apiConnectorConfiguration/postAttributeCollection/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
@@ -105173,7 +105174,7 @@
       "helper": "Invoke-M365DSCGraphShimWriteResource",
       "method": "PUT",
       "apiVersion": "beta",
-      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/apiConnectorConfiguration/postFederationSignup/{ref}",
+      "uri": "/identity/b2xUserFlows/{B2xIdentityUserFlowId}/apiConnectorConfiguration/postFederationSignup/$ref",
       "itemUri": null,
       "parameters": [
         "AdditionalProperties",
