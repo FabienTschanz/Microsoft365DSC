@@ -4,13 +4,8 @@
 
 .DESCRIPTION
     Append only. Every declared member keeps its place and its casing, and nothing is removed.
-    Four of the fifteen findings on the current tree name a set the resource does not merely
-    extend: IntuneDeviceCompliancePolicyAndroidDeviceOwner declares 'any', which the vendor
-    dropped, and IntuneAlertRuleWindows365 declares PascalCase against a camelCase vendor enum.
+    A resource may declare a member the vendor has dropped, or declare one in another casing.
     Replacing the set with the vendor list would reject configurations that work today.
-
-    The differ compares case insensitively, so a member already declared in another casing never
-    reaches to.added.
 
 .PARAMETER ClassEdit
     Specifies the parsed resource from Get-ResourceClassEdit.

@@ -9,8 +9,8 @@
 
     The Get() result hashtable is the argument of AsResult, either inline or through a variable.
     A resource has a second AsResult call for the null result, told apart by the auth keys the
-    real one carries. 515 of the 531 shipped resources resolve to exactly one hashtable, and the
-    rest resolve to none or to two. An applier that needs it refuses those rather than guessing.
+    real one carries. A resource that resolves to none or to more than one is refused rather than
+    guessed at.
 
 .PARAMETER Path
     Specifies the resource module.
@@ -75,8 +75,7 @@ function Get-ResourceClassEdit
 
 .DESCRIPTION
     ParseFile, never ParseInput. A resource opens with 'using module ..\_Base\M365DSCResourceBase.psm1'
-    and the base type only resolves relative to the file, so parsing the text alone reports a
-    TypeNotFound that is not a real defect.
+    and the base type only resolves relative to the file.
 
 .PARAMETER Path
     Specifies the resource module.

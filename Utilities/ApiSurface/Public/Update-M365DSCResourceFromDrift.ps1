@@ -13,9 +13,8 @@
 
     The unit test gate reads the built classes under Modules/Microsoft365DSC/Classes, not the
     resource source this function edits. Run Utilities/Build-Microsoft365DSC.ps1 between the edit
-    and the test, or pass -SkipUnitTest and batch one rebuild and one test pass over a whole set of
-    findings. A ValidateSet append cannot fail an existing test in any case, because every value
-    the test uses stays valid.
+    and the test, or pass -SkipUnitTest and batch one rebuild and one test pass over a set of
+    findings.
 
 .PARAMETER Finding
     Specifies one finding from api-drift.json.
@@ -136,6 +135,18 @@ function Update-M365DSCResourceFromDrift
                 $requireResultEntry = $true
                 $origin = Get-ResourceGeneratedFrom -ResourcePath $ResourcePath -Resource $resource
                 $edits = @(Add-ClassProperty -ClassEdit $classEdit `
+                        -Finding $Finding `
+                        -Generator $generator `
+                        -Origin $origin)
+            }
+            'RES-PROP-ORPHANED'
+            {
+                $edits = @(Set-PropertyDeprecated -ClassEdit $classEdit -Finding $Finding)
+            }
+            'RES-TYPE-MISMATCH'
+            {
+                $origin = Get-ResourceGeneratedFrom -ResourcePath $ResourcePath -Resource $resource
+                $edits = @(Update-PropertyType -ClassEdit $classEdit `
                         -Finding $Finding `
                         -Generator $generator `
                         -Origin $origin)

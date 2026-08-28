@@ -138,9 +138,8 @@ function Merge-ResourceEdit
     Specifies what the edit is for, reported when a run is inspected.
 
 .OUTPUTS
-    The edit record. A PSCustomObject, not a dictionary: Sort-Object reads a property and would
-    silently leave a set of dictionaries in its original order, which applies the edits ascending
-    and shifts every later offset.
+    The edit record. A PSCustomObject, because Sort-Object reads a property and a dictionary
+    exposes keys.
 #>
 function New-ResourceEdit
 {

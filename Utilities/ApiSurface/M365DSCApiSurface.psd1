@@ -8,7 +8,8 @@
     Description       = 'Captures and compares the vendor API surface Microsoft365DSC resources are built on.'
     PowerShellVersion = '7.3'
     FunctionsToExport = @('Compare-M365DSCApiSurface', 'Get-M365DSCApiSurface',
-        'Invoke-M365DSCApiSurfaceCheck', 'Update-M365DSCResourceFromDrift')
+        'Invoke-M365DSCApiSurfaceCheck', 'Invoke-M365DSCApiSurfaceUpdate',
+        'Update-M365DSCResourceFromDrift')
     CmdletsToExport   = @()
     VariablesToExport = @()
     AliasesToExport   = @()
