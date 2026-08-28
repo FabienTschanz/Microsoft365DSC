@@ -171,6 +171,7 @@ function Resolve-FindingSeverity
         'RES-ENUM-STALE'        = @{ Severity = 'warning'; AutoFixable = $true }
         'SHIM-MISSING'          = @{ Severity = 'breaking'; AutoFixable = $false }
         'SHIM-STALE'            = @{ Severity = 'warning'; AutoFixable = $true }
+        'COV-NO-RESOURCE'       = @{ Severity = 'info'; AutoFixable = $false }
     }
 
     if (-not $table.ContainsKey($Code))

@@ -220,7 +220,16 @@ function Invoke-M365DSCApiSurfaceCheck
         $previous = @((Get-Content -Path $DriftPath -Raw | ConvertFrom-Json).findings)
     }
 
+    $coveragePath = Join-Path -Path $RepositoryRoot -ChildPath 'Utilities/ApiSurface/coverage.json'
+    $coverageIgnorePath = Join-Path -Path $RepositoryRoot -ChildPath 'Utilities/ApiSurface/coverage-ignore.json'
+    $coverage = Get-CoverageReport -Origin $origin `
+        -PinnedVersion ([System.String] $Current.dependencies.'Microsoft.Graph.Authentication'.pinned) `
+        -CoveragePath $coveragePath `
+        -IgnorePath $coverageIgnorePath
+
     $result = Compare-M365DSCApiSurface -Baseline $baseline `
+        -CoverageCandidate $coverage.Candidate `
+        -CoverageBaselineNoun $coverage.BaselineNoun `
         -Current $Current `
         -Origin $origin `
         -SchemaKeyword $schemaKeyword `
@@ -267,6 +276,30 @@ function Invoke-M365DSCApiSurfaceCheck
     if ($UpdateBaseline)
     {
         [System.IO.File]::WriteAllText($BaselinePath, (ConvertTo-M365DSCApiSurfaceJson -Surface $Current), [System.Text.UTF8Encoding]::new($false))
+
+        if (@($coverage.Candidate).Count -gt 0)
+        {
+            # The stored candidate carries only what the delta and a reader need. Verbs are the
+            # same four on every candidate and the reasons are recomputed each run.
+            $stored = [ordered]@{
+                source     = $coverage.Source
+                candidates = @($coverage.Candidate | ForEach-Object -Process {
+                        [ordered]@{
+                            noun        = $_.noun
+                            modules     = $_.modules
+                            apiVersions = $_.apiVersions
+                            uri         = $_.uri
+                            score       = $_.score
+                        }
+                    })
+            }
+            [System.IO.File]::WriteAllText($coveragePath, (ConvertTo-M365DSCApiSurfaceJson -Surface $stored), [System.Text.UTF8Encoding]::new($false))
+
+            $markdown = (Format-CoverageMarkdown -Candidate $coverage.Candidate -Source $coverage.Source) -replace "`r`n", "`n" -replace "`n", "`r`n"
+            [System.IO.File]::WriteAllText(
+                (Join-Path -Path $RepositoryRoot -ChildPath 'Utilities/ApiSurface/coverage.md'),
+                $markdown, [System.Text.UTF8Encoding]::new($false))
+        }
     }
 
     return [ordered]@{
@@ -411,4 +444,89 @@ function Get-SchemaKeywordMap
     }
 
     return $map
+}
+
+<#
+.SYNOPSIS
+    Builds the coverage candidates and reads the nouns the committed file already holds.
+
+.DESCRIPTION
+    The inventory is read from the installed Graph SDK rather than committed, so only the derived
+    candidates are stored. An SDK that is not at the pin yields no candidates, because a coverage
+    delta against another release says nothing.
+
+.PARAMETER Origin
+    Specifies the resource rows.
+
+.PARAMETER PinnedVersion
+    Specifies the version Manifest.psd1 pins for Microsoft.Graph.Authentication.
+
+.PARAMETER CoveragePath
+    Specifies the committed coverage file.
+
+.PARAMETER IgnorePath
+    Specifies coverage-ignore.json.
+
+.OUTPUTS
+    An ordered dictionary with Source, Candidate and BaselineNoun.
+#>
+function Get-CoverageReport
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    param
+    (
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [System.Object[]]
+        $Origin = @(),
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $PinnedVersion,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $CoveragePath,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IgnorePath
+    )
+
+    $inventory = Get-GraphCommandInventory -PinnedVersion $PinnedVersion
+    $empty = [ordered]@{ Source = $inventory.Source; Candidate = @(); BaselineNoun = @() }
+
+    if ($inventory.Noun.Count -eq 0)
+    {
+        return $empty
+    }
+
+    if ($inventory.Source.versionSource -ne 'pinned')
+    {
+        Write-Warning -Message "Microsoft.Graph.Authentication $($inventory.Source.version) is not the pinned $PinnedVersion. The coverage report is skipped."
+        return $empty
+    }
+
+    $ignore = $null
+    if (Test-Path -Path $IgnorePath)
+    {
+        $ignore = Get-Content -Path $IgnorePath -Raw | ConvertFrom-Json
+    }
+
+    $baselineNoun = @()
+    if (Test-Path -Path $CoveragePath)
+    {
+        $baselineNoun = [System.String[]] @((Get-Content -Path $CoveragePath -Raw | ConvertFrom-Json).candidates |
+                ForEach-Object -Process { [System.String] $_.noun })
+    }
+
+    $claim = Get-CoverageClaimSet -Origin $Origin -Inventory $inventory.Noun
+
+    return [ordered]@{
+        Source       = $inventory.Source
+        Candidate    = @(Find-CoverageGap -Inventory $inventory.Noun -Claim $claim -Ignore $ignore -BaselineNoun $baselineNoun)
+        BaselineNoun = $baselineNoun
+    }
 }
