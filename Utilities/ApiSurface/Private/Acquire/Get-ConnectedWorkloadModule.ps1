@@ -197,6 +197,111 @@ function Connect-TenantWorkload
 
 <#
 .SYNOPSIS
+    Opens a Microsoft Graph session for the settings catalog capture.
+
+.PARAMETER RepositoryRoot
+    Specifies the root of the Microsoft365DSC repository.
+
+.PARAMETER Credential
+    Specifies the credential to authenticate with.
+
+.PARAMETER ApplicationId
+    Specifies the application registration.
+
+.PARAMETER TenantId
+    Specifies the tenant domain name.
+
+.PARAMETER CertificateThumbprint
+    Specifies the certificate registered on the application.
+
+.PARAMETER WorkloadAuthentication
+    Specifies per-workload ApplicationId and CertificateThumbprint overrides, keyed by workload.
+
+.OUTPUTS
+    An ordered dictionary with Connected and Error.
+#>
+function Connect-TenantGraph
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $RepositoryRoot,
+
+        [Parameter()]
+        [AllowNull()]
+        [System.Management.Automation.PSCredential]
+        $Credential,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $CertificateThumbprint,
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $WorkloadAuthentication = @{}
+    )
+
+    try
+    {
+        Import-Module -Name (Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC/Microsoft365DSC.psd1') `
+            -Force -Global -ErrorAction Stop
+
+        $override = @{}
+        if ($WorkloadAuthentication.Contains('MicrosoftGraph'))
+        {
+            $override = $WorkloadAuthentication['MicrosoftGraph']
+        }
+
+        $application = $ApplicationId
+        if (-not [System.String]::IsNullOrEmpty([System.String] $override['ApplicationId']))
+        {
+            $application = [System.String] $override['ApplicationId']
+        }
+
+        $thumbprint = $CertificateThumbprint
+        if (-not [System.String]::IsNullOrEmpty([System.String] $override['CertificateThumbprint']))
+        {
+            $thumbprint = [System.String] $override['CertificateThumbprint']
+        }
+
+        $parameters = New-ConnectionParameter -Credential $Credential `
+            -ApplicationId $application `
+            -TenantId $TenantId `
+            -CertificateThumbprint $thumbprint
+
+        if ($null -eq $parameters)
+        {
+            throw 'No authentication was supplied. Pass a credential, or an application id with a tenant name and a certificate thumbprint.'
+        }
+
+        $null = New-M365DSCConnection -Workload 'MicrosoftGraph' -InboundParameters $parameters -ErrorAction Stop
+
+        return [ordered]@{ Connected = $true; Error = '' }
+    }
+    catch
+    {
+        $message = "Microsoft Graph was not connected. $($_.Exception.Message)"
+        Write-Warning -Message $message
+        return [ordered]@{ Connected = $false; Error = $message }
+    }
+}
+
+<#
+.SYNOPSIS
     Returns the workloads a connected capture covers, with the command that identifies each proxy.
 
 .OUTPUTS

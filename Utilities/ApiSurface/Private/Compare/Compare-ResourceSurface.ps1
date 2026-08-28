@@ -2,12 +2,6 @@
 .SYNOPSIS
     Reports where a resource disagrees with the vendor type it was generated from.
 
-.DESCRIPTION
-    RES-PROP-MISSING and RES-PROP-READONLY are delta scoped. A property the vendor has always
-    offered and the resource has never declared is intentional subsetting, not drift, and
-    AADUser alone would contribute 119. Those become the coverage backlog count instead.
-    RES-PROP-ORPHANED, RES-TYPE-MISMATCH and RES-ENUM-STALE are absolute.
-
 .PARAMETER Baseline
     Specifies the previous snapshot.
 
@@ -252,8 +246,8 @@ function Compare-ResourceSurface
     Compares one declared property against the vendor property it matched.
 
 .DESCRIPTION
-    Two checks run here. The MOF typeConstraint from DscSchemaCache.json is mapped onto the
-    CSDL type, and a ValidateSet that is a strict subset of the vendor enum is stale.
+    Map the MOF typeConstraint from DscSchemaCache.json onto the
+    CSDL type.
 
 .PARAMETER Resource
     Specifies the resource row.
@@ -335,8 +329,7 @@ function Compare-DeclaredProperty
                     -Evidence ([ordered]@{ source = "csdl:$($TypeKey -replace ':', '/')/$($Vendor.Name)" })))
     }
 
-    # unknownFutureValue is an OData sentinel and never belongs in a ValidateSet. It accounted
-    # for 15 of the first 30 findings this check produced.
+    # unknownFutureValue is an OData sentinel and does not belong in a ValidateSet
     $vendorMembers = @($Vendor.Enum | Where-Object -FilterScript { $null -ne $_ -and $_ -ne 'unknownFutureValue' })
     if ($vendorMembers.Count -gt 0)
     {
@@ -368,11 +361,6 @@ function Compare-DeclaredProperty
 <#
 .SYNOPSIS
     Maps a CSDL type onto the MOF type constraints DscSchemaCache.json records.
-
-.DESCRIPTION
-    DscSchemaCache.json spells types the MOF way, never the .NET way: String, Boolean, SInt32,
-    UInt32, DateTime, and arrays as StringArray or SInt32Array. Several CSDL types legitimately
-    land on String, so the answer is a set of accepted constraints rather than one value.
 
 .PARAMETER VendorType
     Specifies the CSDL type name.
@@ -479,11 +467,6 @@ function ConvertTo-MofTypeConstraint
 <#
 .SYNOPSIS
     Returns the property names that come from DSC rather than from the vendor type.
-
-.DESCRIPTION
-    Authentication and DSC plumbing, plus Assignments, which every Intune resource declares
-    against the assignments navigation property and which phase 0 already special cased. It
-    alone accounted for 53 of the first 201 orphans.
 
 .OUTPUTS
     The property names.

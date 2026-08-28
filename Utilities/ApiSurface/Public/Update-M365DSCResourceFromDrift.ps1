@@ -90,6 +90,12 @@ function Update-M365DSCResourceFromDrift
     $code = [System.String] $Finding.code
     $resource = [System.String] $Finding.resource
 
+    if ($code.StartsWith('CAT-', [System.StringComparison]::Ordinal))
+    {
+        throw ("'$code' is never applied by the splicer. Regenerate the resource with " +
+            "New-M365DSCResource -ResourceName $resource -Workload Intune -SettingsCatalogTemplateId '<id>'.")
+    }
+
     if ([System.String]::IsNullOrEmpty($resource))
     {
         return New-ApplyResult -Finding $Finding -Applied $false -Reason "'$code' names no resource."
@@ -273,7 +279,8 @@ function Test-ApplyAllowed
     )
 
     # A cmdlet removal or a reroute is resource level rework. A scaffold cannot help with it.
-    if ($Code -in @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED'))
+    if ($Code -in @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED') -or
+        $Code.StartsWith('CAT-', [System.StringComparison]::Ordinal))
     {
         return $false
     }

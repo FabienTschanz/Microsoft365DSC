@@ -227,9 +227,16 @@ function Invoke-M365DSCApiSurfaceCheck
         -CoveragePath $coveragePath `
         -IgnorePath $coverageIgnorePath
 
+    . (Join-Path -Path $RepositoryRoot -ChildPath 'Utilities/Get-M365DSCIntuneTemplateBinding.ps1')
+    $templateBinding = @(Get-M365DSCIntuneTemplateBinding -ResourcePath $resourcePath)
+    $declaredProperty = Get-DeclaredPropertyMap -ResourcePath $resourcePath `
+        -Resource ([System.String[]] @($templateBinding | ForEach-Object -Process { $_.Resource }))
+
     $result = Compare-M365DSCApiSurface -Baseline $baseline `
         -CoverageCandidate $coverage.Candidate `
         -CoverageBaselineNoun $coverage.BaselineNoun `
+        -TemplateBinding $templateBinding `
+        -DeclaredProperty $declaredProperty `
         -Current $Current `
         -Origin $origin `
         -SchemaKeyword $schemaKeyword `
@@ -366,6 +373,51 @@ function Add-FindingClrType
         $item.to['clrType'] = [System.String] $model.ClrType
         $item.to['nullable'] = $model.ClrType -like 'System.Nullable*'
     }
+}
+
+<#
+.SYNOPSIS
+    Reads the DSC property names of the named resources.
+
+.PARAMETER ResourcePath
+    Specifies the folder holding the MSFT_<Name> resource folders.
+
+.PARAMETER Resource
+    Specifies the resources to read.
+
+.OUTPUTS
+    A map of resource name to a case-insensitive set of property names.
+#>
+function Get-DeclaredPropertyMap
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.IDictionary])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ResourcePath,
+
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [System.String[]]
+        $Resource = @()
+    )
+
+    $map = @{}
+
+    foreach ($name in $Resource)
+    {
+        $path = Join-Path -Path $ResourcePath -ChildPath "MSFT_$name/MSFT_$name.psm1"
+        if (-not (Test-Path -Path $path))
+        {
+            continue
+        }
+
+        $map[$name] = Get-ResourceDeclaredProperty -Path $path
+    }
+
+    return $map
 }
 
 <#

@@ -314,6 +314,44 @@ function Get-M365DSCApiSurface
         }
     }
 
+    $settingsCatalog = [ordered]@{ templates = [ordered]@{}; pinned = [ordered]@{} }
+
+    if ('Intune' -in $Workload)
+    {
+        $catalog = $null
+
+        if ($IncludeTenantConnected)
+        {
+            $graphConnection = Connect-TenantGraph -RepositoryRoot $RepositoryRoot `
+                -Credential $Credential `
+                -ApplicationId $ApplicationId `
+                -TenantId $TenantId `
+                -CertificateThumbprint $CertificateThumbprint `
+                -WorkloadAuthentication $WorkloadAuthentication
+
+            if ($graphConnection.Connected)
+            {
+                . (Join-Path -Path $RepositoryRoot -ChildPath 'Utilities/Get-M365DSCIntuneTemplateBinding.ps1')
+
+                $catalog = Get-SettingsCatalogSurface -Generator $generator `
+                    -Binding @(Get-M365DSCIntuneTemplateBinding -ResourcePath $ResourcePath)
+            }
+            elseif ([System.String]::IsNullOrEmpty($tenantError))
+            {
+                $tenantError = $graphConnection.Error
+            }
+        }
+
+        if ($null -eq $catalog -or -not [System.String]::IsNullOrEmpty($catalog.Error))
+        {
+            $skippedWorkloads.Add('settingsCatalog')
+        }
+        else
+        {
+            $settingsCatalog = $catalog.Section
+        }
+    }
+
     $shim = [ordered]@{}
     if ($graphRequested)
     {
@@ -344,5 +382,6 @@ function Get-M365DSCApiSurface
         cmdlets         = ConvertTo-M365DSCOrderedMap -Map $cmdlets
         cmdletOverrides = $overrides
         shim            = $shim
+        settingsCatalog = $settingsCatalog
     }
 }

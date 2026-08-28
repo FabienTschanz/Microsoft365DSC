@@ -48,6 +48,12 @@
   * [BREAKING CHANGE] Removed property `AppliationSecret`.
 * IntuneAlertRuleWindows365
   * Added value `unknown` to property `Severity`.
+* IntuneAntivirusPolicySecurityExperienceWindows10ConfigMgr
+  * Fixed an issue where the resource was missing from the Intune template
+    registry, which left its policies out of the export cache.
+* IntuneAntivirusPolicyWindows10ConfigMgr
+  * Fixed an issue where the resource was missing from the Intune template
+    registry, which left its policies out of the export cache.
 * IntuneAppControlForBusinessPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneAppControlForBusinessPolicyWindows10V2` instead.

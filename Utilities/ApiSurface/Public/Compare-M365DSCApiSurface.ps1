@@ -37,6 +37,12 @@
 .PARAMETER CoverageBaselineNoun
     Specifies the candidate nouns the committed coverage file holds.
 
+.PARAMETER TemplateBinding
+    Specifies the Resource and TemplateId rows from Get-M365DSCIntuneTemplateBinding.
+
+.PARAMETER DeclaredProperty
+    Specifies a map of resource name to the DSC property names it declares.
+
 .PARAMETER RunDate
     Specifies the date stamped on a finding seen for the first time.
 
@@ -95,7 +101,16 @@ function Compare-M365DSCApiSurface
         [Parameter()]
         [AllowEmptyCollection()]
         [System.String[]]
-        $CoverageBaselineNoun = @()
+        $CoverageBaselineNoun = @(),
+
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [System.Object[]]
+        $TemplateBinding = @(),
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $DeclaredProperty = @{}
     )
 
     $findings = [System.Collections.Generic.List[System.Object]]::new()
@@ -104,6 +119,10 @@ function Compare-M365DSCApiSurface
     $findings.AddRange([System.Object[]] @(Compare-Shim -Current $Current -Origin $Origin -Exclusion $Exclusion))
     $findings.AddRange([System.Object[]] @(Compare-Coverage -Candidate $CoverageCandidate -BaselineNoun $CoverageBaselineNoun))
     $findings.AddRange([System.Object[]] @(Compare-DependencyVersion -Current $Current))
+    $findings.AddRange([System.Object[]] @(Compare-SettingsCatalog -Baseline $Baseline `
+                -Current $Current `
+                -Binding $TemplateBinding `
+                -DeclaredProperty $DeclaredProperty))
 
     $resource = Compare-ResourceSurface -Baseline $Baseline `
         -Current $Current `

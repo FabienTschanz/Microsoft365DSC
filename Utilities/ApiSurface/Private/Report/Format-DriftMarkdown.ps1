@@ -217,6 +217,7 @@ function Get-DriftSection
         [PSCustomObject]@{ Name = 'AutoFixable'; Title = 'Auto-fixable'; Codes = @('RES-ENUM-STALE', 'VND-ENUM-MEMBER-ADDED', 'RES-PROP-MISSING') }
         [PSCustomObject]@{ Name = 'Shim'; Title = 'Graph shim, regenerate to fix'; Codes = @('SHIM-MISSING', 'SHIM-STALE') }
         [PSCustomObject]@{ Name = 'Decision'; Title = 'Needs a decision'; Codes = @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-TYPECHANGED', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH') }
+        [PSCustomObject]@{ Name = 'SettingsCatalog'; Title = 'Intune settings catalog, regenerate to fix'; Codes = @('CAT-SETTING-ADDED', 'CAT-SETTING-REMOVED', 'CAT-OPTION-ADDED', 'CAT-TEMPLATE-VERSION') }
         [PSCustomObject]@{ Name = 'ReadOnly'; Title = 'Read-only, suggested for no implementation'; Codes = @('RES-PROP-READONLY') }
         [PSCustomObject]@{ Name = 'VendorChanges'; Title = $vendorTitle; Codes = @('VND-TYPE-PROP-ADDED', 'VND-PARAM-ADDED') }
         [PSCustomObject]@{ Name = 'Versions'; Title = 'Newer dependency versions available'; Codes = @('VND-NEWER-VERSION') }

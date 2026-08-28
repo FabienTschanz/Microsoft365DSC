@@ -71,6 +71,56 @@ function Get-ResourceClassEdit
 
 <#
 .SYNOPSIS
+    Returns every DSC property a resource module declares, across all of its classes.
+
+.PARAMETER Path
+    Specifies the resource module.
+
+.OUTPUTS
+    A case-insensitive set of property names.
+#>
+function Get-ResourceDeclaredProperty
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Generic.HashSet[System.String]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Path
+    )
+
+    $names = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $ast = Get-ResourceAst -Path $Path
+
+    foreach ($class in $ast.FindAll({ $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] }, $true))
+    {
+        if (-not $class.IsClass)
+        {
+            continue
+        }
+
+        foreach ($member in $class.Members)
+        {
+            if ($member -isnot [System.Management.Automation.Language.PropertyMemberAst])
+            {
+                continue
+            }
+
+            if (@($member.Attributes.TypeName.Name) -notcontains 'DscProperty')
+            {
+                continue
+            }
+
+            $null = $names.Add($member.Name)
+        }
+    }
+
+    return , $names
+}
+
+<#
+.SYNOPSIS
     Parses a resource module from disk.
 
 .DESCRIPTION
