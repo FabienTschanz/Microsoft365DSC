@@ -10,7 +10,7 @@
 
     ExchangeOnline and Security and Compliance cmdlets are proxy-generated when
     Connect-ExchangeOnline runs and do not exist before that. Their modules are reported as skipped
-    rather than empty.
+    rather than empty, unless ConnectedModule carries a live proxy for them.
 
     Parameters come from Get-Command on an explicitly imported module. A bare Get-Command on a
     name that does not exist triggers module autodiscovery over every installed module, which
@@ -27,6 +27,15 @@
 
 .PARAMETER ConnectTimeModule
     Specifies the modules whose cmdlets only exist after a workload connection.
+
+.PARAMETER ConnectedModule
+    Specifies a map of workload name to the proxy module a connection produced. A connect-time
+    module is captured from these instead of being skipped.
+
+.PARAMETER IncludeModule
+    Specifies the only modules to process. Empty means all of them. A connection loads assemblies
+    that stop MicrosoftTeams importing, so the offline modules are captured in one call before the
+    connection and the connect-time ones in a second call after it.
 
 .OUTPUTS
     A hashtable with Cmdlets, an ordered map, SkippedModules and MissingCmdlets.
@@ -54,7 +63,16 @@ function Get-WorkloadCmdletSurface
         [Parameter()]
         [AllowEmptyCollection()]
         [System.String[]]
-        $ConnectTimeModule = @('ExchangeOnlineManagement')
+        $ConnectTimeModule = @('ExchangeOnlineManagement'),
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $ConnectedModule = @{},
+
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [System.String[]]
+        $IncludeModule = @()
     )
 
     $graphNames = [System.Collections.Generic.HashSet[System.String]]::new(
@@ -85,34 +103,51 @@ function Get-WorkloadCmdletSurface
 
     foreach ($moduleName in (Get-M365DSCOrderedName -Value ([System.String[]] @($requested.Keys))))
     {
+        if ($IncludeModule.Count -gt 0 -and $moduleName -notin $IncludeModule)
+        {
+            continue
+        }
+
+        $sources = @()
         if ($moduleName -in $ConnectTimeModule)
         {
-            $skipped.Add($moduleName)
-            continue
+            $sources = @(Resolve-ConnectedSource -ConnectedModule $ConnectedModule)
+            if ($sources.Count -eq 0)
+            {
+                $skipped.Add($moduleName)
+                continue
+            }
         }
-
-        $module = Import-WorkloadModule -Name $moduleName -Version $ModuleVersion[$moduleName]
-        if ($null -eq $module)
+        else
         {
-            $skipped.Add($moduleName)
-            continue
-        }
+            $module = Import-WorkloadModule -Name $moduleName -Version $ModuleVersion[$moduleName]
+            if ($null -eq $module)
+            {
+                $skipped.Add($moduleName)
+                continue
+            }
 
-        $workload = Get-ModuleWorkload -Name $moduleName
+            $sources = @([PSCustomObject]@{ Workload = (Get-ModuleWorkload -Name $moduleName); Module = $module })
+        }
 
         foreach ($cmdletName in (Get-M365DSCOrderedName -Value ([System.String[]] @($requested[$moduleName]))))
         {
-            $command = $module.ExportedCommands[$cmdletName]
-            if ($null -eq $command)
+            # The proxies overlap, and the first source to export the name owns it.
+            $source = @($sources | Where-Object -FilterScript { $_.Module.ExportedCommands.ContainsKey($cmdletName) })[0]
+            if ($null -eq $source)
             {
                 $missing.Add($cmdletName)
                 continue
             }
 
-            $cmdlets[$cmdletName] = [ordered]@{
-                workload      = $workload
+            $command = $source.Module.ExportedCommands[$cmdletName]
+
+            # settings.json carries the spelling the resource module uses, which is not always the
+            # vendor's. Record the live one.
+            $cmdlets[$command.Name] = [ordered]@{
+                workload      = $source.Workload
                 module        = $moduleName
-                moduleVersion = $module.Version.ToString()
+                moduleVersion = $source.Module.Version.ToString()
                 apiVersion    = $null
                 variants      = @()
                 parameters    = ConvertTo-CommandParameterMap -Command $command
@@ -125,6 +160,48 @@ function Get-WorkloadCmdletSurface
         SkippedModules = Get-M365DSCOrderedName -Value ([System.String[]] $skipped)
         MissingCmdlets = Get-M365DSCOrderedName -Value ([System.String[]] $missing)
     }
+}
+
+<#
+.SYNOPSIS
+    Orders the connected proxies into the sources a connect-time module is captured from.
+
+.PARAMETER ConnectedModule
+    Specifies a map of workload name to proxy module.
+
+.OUTPUTS
+    Objects with Workload and Module, in probe order.
+#>
+function Resolve-ConnectedSource
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $ConnectedModule = @{}
+    )
+
+    $sources = [System.Collections.Generic.List[System.Object]]::new()
+
+    foreach ($probe in (Get-ConnectedWorkloadProbe))
+    {
+        if (-not $ConnectedModule.Contains($probe.Workload))
+        {
+            continue
+        }
+
+        $module = $ConnectedModule[$probe.Workload]
+        if ($null -eq $module)
+        {
+            continue
+        }
+
+        $sources.Add([PSCustomObject]@{ Workload = $probe.Workload; Module = $module })
+    }
+
+    return [System.Object[]] $sources
 }
 
 <#

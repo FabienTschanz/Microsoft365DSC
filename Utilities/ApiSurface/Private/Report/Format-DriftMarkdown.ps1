@@ -10,6 +10,9 @@
 .PARAMETER Result
     Specifies the output of Compare-M365DSCApiSurface.
 
+.PARAMETER Warning
+    Specifies a completeness warning, such as a workload that could not be connected.
+
 .OUTPUTS
     The Markdown text.
 #>
@@ -21,7 +24,12 @@ function Format-DriftMarkdown
     (
         [Parameter(Mandatory = $true)]
         [System.Object]
-        $Result
+        $Result,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $Warning
     )
 
     $lines = [System.Collections.Generic.List[System.String]]::new()
@@ -29,6 +37,12 @@ function Format-DriftMarkdown
 
     $lines.Add('# API surface drift')
     $lines.Add('')
+
+    if (-not [System.String]::IsNullOrWhiteSpace($Warning))
+    {
+        $lines.Add("**Incomplete run.** $Warning")
+        $lines.Add('')
+    }
     $lines.Add("Resource comparison: $($Result.Summary.compared) compared, $($Result.Summary.skipped) skipped.")
     $lines.Add("Undeclared vendor properties across compared resources: $($Result.Backlog).")
     $lines.Add('')

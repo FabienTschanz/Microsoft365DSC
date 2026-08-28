@@ -100,16 +100,48 @@ jobs:
           [System.IO.File]::WriteAllText('current-issue-body.md', $body, [System.Text.UTF8Encoding]::new($false))
           "issue-number=$number" | Add-Content -Path $env:GITHUB_OUTPUT
 
+      - name: Check Tenant Certificate
+        shell: pwsh
+        run: |
+          $thumbprint = '${{ secrets.RUNNERCERTIFICATETHUMBPRINT }}'
+          if ([System.String]::IsNullOrWhiteSpace($thumbprint) -or -not (Test-Path -Path "Cert:\LocalMachine\My\$thumbprint"))
+          {
+            Write-Warning 'The runner certificate is not installed. Exchange Online and Security and Compliance stay skipped.'
+            'M365DSC_TENANT_CONNECTED=false' | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+          else
+          {
+            'M365DSC_TENANT_CONNECTED=true' | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+
       - name: Run API Surface Check
         shell: pwsh
-        timeout-minutes: 30
+        timeout-minutes: 45
+        env:
+          RUNNER_APP_ID: ${{ secrets.RUNNERAPPID }}
+          RUNNER_TENANT_ID: ${{ secrets.RUNNERTENANTID }}
+          RUNNER_THUMBPRINT: ${{ secrets.RUNNERCERTIFICATETHUMBPRINT }}
         run: |
           $ErrorActionPreference = 'Stop'
+          $MaximumFunctionCount = 32767
           Import-Module ./Utilities/ApiSurface/M365DSCApiSurface.psd1 -Force
 
-          $result = Invoke-M365DSCApiSurfaceCheck -MarkdownPath ./Utilities/ApiSurface/api-drift.md `
-            -IssueBodyPath ./issue-body.md `
-            -CurrentIssueBodyPath ./current-issue-body.md
+          $parameters = @{
+            MarkdownPath         = './Utilities/ApiSurface/api-drift.md'
+            IssueBodyPath        = './issue-body.md'
+            CurrentIssueBodyPath = './current-issue-body.md'
+          }
+
+          # A missing certificate downgrades the run to the offline capture. It never fails the job.
+          if ($env:M365DSC_TENANT_CONNECTED -eq 'true')
+          {
+            $parameters['IncludeTenantConnected'] = $true
+            $parameters['ApplicationId'] = $env:RUNNER_APP_ID
+            $parameters['TenantId'] = $env:RUNNER_TENANT_ID
+            $parameters['CertificateThumbprint'] = $env:RUNNER_THUMBPRINT
+          }
+
+          $result = Invoke-M365DSCApiSurfaceCheck @parameters
 
           "Findings: $(@($result.Findings).Count)"
 

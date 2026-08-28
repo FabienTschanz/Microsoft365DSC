@@ -138,14 +138,25 @@ function Get-M365DSCApiSurface
         $CsdlPathBeta,
 
         [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint,
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $WorkloadAuthentication = @{},
+
+        [Parameter()]
         [switch]
         $SkipGalleryLookup
     )
-
-    if ($IncludeTenantConnected -or $null -ne $Credential)
-    {
-        Write-Warning -Message 'A tenant connected capture is not implemented yet. IncludeTenantConnected and Credential are ignored and the affected workloads stay in skippedWorkloads.'
-    }
 
     $defaults = @{
         ResourcePath              = 'Modules/Microsoft365DSC/DscResources'
@@ -173,16 +184,10 @@ function Get-M365DSCApiSurface
         -DevManifestPath $DevManifestPath `
         -SkipGalleryLookup:$SkipGalleryLookup
 
-    $skippedWorkloads = [System.Collections.Generic.List[System.String]]::new()
     $skippedModules = [System.Collections.Generic.List[System.String]]::new()
-
-    foreach ($name in @('ExchangeOnline', 'SecurityComplianceCenter'))
-    {
-        if ($name -in $Workload)
-        {
-            $skippedWorkloads.Add($name)
-        }
-    }
+    $connected = @{}
+    $tenantError = ''
+    $skippedWorkloads = [System.Collections.Generic.List[System.String]]::new()
 
     $graphRequested = ('MicrosoftGraph' -in $Workload) -or ('Intune' -in $Workload)
 
@@ -235,13 +240,20 @@ function Get-M365DSCApiSurface
     }
 
     $graphCmdletNames = [System.String[]] @($cmdlets.Keys)
-    $workloadModules = @('MicrosoftTeams', 'PnP', 'PowerPlatforms', 'Azure') | Where-Object -FilterScript { $_ -in $Workload }
+    $workloadModules = @('MicrosoftTeams', 'PnP', 'PowerPlatforms', 'Azure', 'ExchangeOnline', 'SecurityComplianceCenter') |
+        Where-Object -FilterScript { $_ -in $Workload }
 
+    $missingCmdlets = @()
     if (@($workloadModules).Count -gt 0)
     {
+        # The offline modules are captured before any connection. Connecting loads assemblies that
+        # stop MicrosoftTeams importing afterwards.
         $workloadCmdlets = Get-WorkloadCmdletSurface -Origin $origin `
             -GraphCmdletName $graphCmdletNames `
             -ModuleVersion $dependency.PinnedVersion
+
+        $missingCmdlets = @($workloadCmdlets.MissingCmdlets)
+        $connectTimeModules = @($workloadCmdlets.SkippedModules)
 
         foreach ($entry in $workloadCmdlets.Cmdlets.GetEnumerator())
         {
@@ -254,6 +266,51 @@ function Get-M365DSCApiSurface
         foreach ($name in $workloadCmdlets.SkippedModules)
         {
             $skippedModules.Add($name)
+        }
+
+        if ($IncludeTenantConnected)
+        {
+            $connection = Connect-TenantWorkload -Workload $Workload `
+                -RepositoryRoot $RepositoryRoot `
+                -Credential $Credential `
+                -ApplicationId $ApplicationId `
+                -TenantId $TenantId `
+                -CertificateThumbprint $CertificateThumbprint `
+                -WorkloadAuthentication $WorkloadAuthentication
+
+            $connected = $connection.Module
+            $tenantError = $connection.Error
+        }
+
+        if ($connected.Count -gt 0)
+        {
+            $connectedCmdlets = Get-WorkloadCmdletSurface -Origin $origin `
+                -GraphCmdletName $graphCmdletNames `
+                -ModuleVersion $dependency.PinnedVersion `
+                -ConnectedModule $connected `
+                -IncludeModule ([System.String[]] $connectTimeModules)
+
+            $missingCmdlets = @($connectedCmdlets.MissingCmdlets)
+
+            foreach ($entry in $connectedCmdlets.Cmdlets.GetEnumerator())
+            {
+                if ($entry.Value.workload -in $Workload)
+                {
+                    $cmdlets[$entry.Key] = $entry.Value
+                }
+            }
+
+            $captured = @($connectedCmdlets.SkippedModules)
+            $skippedModules = [System.Collections.Generic.List[System.String]]::new(
+                [System.String[]] @($skippedModules | Where-Object -FilterScript { $_ -in $captured }))
+        }
+    }
+
+    foreach ($name in @('ExchangeOnline', 'SecurityComplianceCenter'))
+    {
+        if ($name -in $Workload -and -not $connected.ContainsKey($name))
+        {
+            $skippedWorkloads.Add($name)
         }
     }
 
@@ -274,10 +331,12 @@ function Get-M365DSCApiSurface
         capturedAt      = [System.DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ', [System.Globalization.CultureInfo]::InvariantCulture)
         capturedBy      = $capturedBy
         completeness    = [ordered]@{
-            tenantConnected   = $false
+            tenantConnected   = ($connected.Count -gt 0)
+            tenantError       = $tenantError
             workloads         = @(Get-M365DSCOrderedName -Value $Workload)
             skippedWorkloads  = @(Get-M365DSCOrderedName -Value ([System.String[]] $skippedWorkloads))
             skippedModules    = @(Get-M365DSCOrderedName -Value ([System.String[]] $skippedModules))
+            missingCmdlets    = @(Get-M365DSCOrderedName -Value ([System.String[]] $missingCmdlets))
             graphTypeCoverage = $typeCoverage
         }
         dependencies    = $dependency.Dependencies

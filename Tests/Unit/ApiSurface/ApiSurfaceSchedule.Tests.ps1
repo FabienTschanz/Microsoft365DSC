@@ -389,7 +389,7 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         }
 
         It 'feeds the current body back in so ticks survive' {
-            $script:workflow | Should -Match '-CurrentIssueBodyPath \./current-issue-body\.md'
+            $script:workflow | Should -Match "CurrentIssueBodyPath = '\./current-issue-body\.md'"
         }
     }
 }

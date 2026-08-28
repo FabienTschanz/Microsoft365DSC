@@ -176,6 +176,10 @@
     An example is `6:00 pm`. This is the standard on en-US cultures.
 * TeamsTenantNetworkSite
   * [BREAKING CHANGE] Removed deprecated property `SiteAddress`.
+* M365DSCCheckProperties
+  * [BREAKING CHANGE] Removed the module and its function `Get-PropertyReport`. The API surface
+    checker in `Utilities/ApiSurface` replaces it and covers every workload, not only Exchange
+    Online, Security and Compliance and Teams.
 * M365DSCGraphShim
   * Added handling for PowerShell 7.5 with Mgx to improve Graph calls.
 * M365DSCModuleMgmt

@@ -105,6 +105,30 @@ function Invoke-M365DSCApiSurfaceCheck
 
         [Parameter()]
         [switch]
+        $IncludeTenantConnected,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $Credential,
+
+        [Parameter()]
+        [System.String]
+        $ApplicationId,
+
+        [Parameter()]
+        [System.String]
+        $TenantId,
+
+        [Parameter()]
+        [System.String]
+        $CertificateThumbprint,
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $WorkloadAuthentication = @{},
+
+        [Parameter()]
+        [switch]
         $SkipGalleryLookup,
 
         [Parameter()]
@@ -139,7 +163,34 @@ function Invoke-M365DSCApiSurfaceCheck
 
     if ($null -eq $Current)
     {
-        $Current = Get-M365DSCApiSurface -RepositoryRoot $RepositoryRoot -SkipGalleryLookup:$SkipGalleryLookup
+        $acquire = @{
+            RepositoryRoot         = $RepositoryRoot
+            IncludeTenantConnected = $IncludeTenantConnected
+            SkipGalleryLookup      = $SkipGalleryLookup
+            WorkloadAuthentication = $WorkloadAuthentication
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($ApplicationId))
+        {
+            $acquire['ApplicationId'] = $ApplicationId
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($TenantId))
+        {
+            $acquire['TenantId'] = $TenantId
+        }
+
+        if (-not [System.String]::IsNullOrEmpty($CertificateThumbprint))
+        {
+            $acquire['CertificateThumbprint'] = $CertificateThumbprint
+        }
+
+        if ($null -ne $Credential)
+        {
+            $acquire['Credential'] = $Credential
+        }
+
+        $Current = Get-M365DSCApiSurface @acquire
     }
 
     $baseline = $Current
@@ -180,6 +231,8 @@ function Invoke-M365DSCApiSurfaceCheck
 
     Add-FindingClrType -Finding $result.Findings -RepositoryRoot $RepositoryRoot
 
+    $tenantWarning = [System.String] $Current.completeness.tenantError
+
     $drift = [ordered]@{
         formatVersion = 1
         baseline      = [System.String] $baseline.capturedAt
@@ -194,7 +247,7 @@ function Invoke-M365DSCApiSurfaceCheck
 
     if (-not [System.String]::IsNullOrEmpty($MarkdownPath))
     {
-        $markdown = (Format-DriftMarkdown -Result $result) -replace "`r`n", "`n" -replace "`n", "`r`n"
+        $markdown = (Format-DriftMarkdown -Result $result -Warning $tenantWarning) -replace "`r`n", "`n" -replace "`n", "`r`n"
         [System.IO.File]::WriteAllText($MarkdownPath, $markdown, [System.Text.UTF8Encoding]::new($false))
     }
 
@@ -207,7 +260,7 @@ function Invoke-M365DSCApiSurfaceCheck
         }
 
         $since = Get-DriftVendorSince -Baseline $baseline -Current $Current
-        $body = Format-DriftIssueBody -Result $result -Ticked $ticked -Since $since
+        $body = Format-DriftIssueBody -Result $result -Ticked $ticked -Since $since -Warning $tenantWarning
         [System.IO.File]::WriteAllText($IssueBodyPath, ($body -replace "`r`n", "`n"), [System.Text.UTF8Encoding]::new($false))
     }
 

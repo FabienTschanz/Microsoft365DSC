@@ -26,6 +26,10 @@
 .PARAMETER MaximumLength
     Specifies the character budget. Defaults to the 65536 GitHub allows an Issue body.
 
+.PARAMETER Warning
+    Specifies a completeness warning, such as a workload that could not be connected. It is
+    rendered above the approval list, because a silent gap reads as a clean report.
+
 .OUTPUTS
     The Issue body text.
 #>
@@ -52,10 +56,15 @@ function Format-DriftIssueBody
 
         [Parameter()]
         [System.Int32]
-        $MaximumLength = 65536
+        $MaximumLength = 65536,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $Warning
     )
 
-    $body = New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since
+    $body = New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -Warning $Warning
     if ((Measure-DriftIssueBodyLength -Body $body) -le $MaximumLength)
     {
         return $body
@@ -66,11 +75,12 @@ function Format-DriftIssueBody
         -Ticked $Ticked `
         -Since $Since `
         -MaximumLength $MaximumLength `
-        -UpperBound $itemCount
+        -UpperBound $itemCount `
+        -Warning $Warning
 
     if ($collapsedLimit -ge 0)
     {
-        return New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -CollapsedLimit $collapsedLimit
+        return New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -Warning $Warning -CollapsedLimit $collapsedLimit
     }
 
     $approvalLimit = Get-FittingItemLimit -Result $Result `
@@ -78,11 +88,13 @@ function Format-DriftIssueBody
         -Since $Since `
         -MaximumLength $MaximumLength `
         -UpperBound $itemCount `
+        -Warning $Warning `
         -VaryApprovalList
 
     return New-DriftIssueBody -Result $Result `
         -Ticked $Ticked `
         -Since $Since `
+        -Warning $Warning `
         -AutoFixableLimit ([System.Math]::Max($approvalLimit, 0)) `
         -CollapsedLimit 0
 }
@@ -105,6 +117,9 @@ function Format-DriftIssueBody
 
 .PARAMETER CollapsedLimit
     Specifies how many entries each section inside the details block lists.
+
+.PARAMETER Warning
+    Specifies a completeness warning, rendered above the approval list.
 
 .OUTPUTS
     The Issue body text.
@@ -136,7 +151,12 @@ function New-DriftIssueBody
 
         [Parameter()]
         [System.Int32]
-        $CollapsedLimit = [System.Int32]::MaxValue
+        $CollapsedLimit = [System.Int32]::MaxValue,
+
+        [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $Warning
     )
 
     $tickedSet = [System.Collections.Generic.HashSet[System.String]]::new(
@@ -145,6 +165,12 @@ function New-DriftIssueBody
 
     $findings = @($Result.Findings)
     $lines = [System.Collections.Generic.List[System.String]]::new()
+
+    if (-not [System.String]::IsNullOrWhiteSpace($Warning))
+    {
+        $lines.Add("> **Incomplete run.** $Warning")
+        $lines.Add('')
+    }
 
     $section = @{}
     foreach ($entry in (Get-DriftSection -Since $Since))
@@ -286,6 +312,11 @@ function Get-FittingItemLimit
         $UpperBound,
 
         [Parameter()]
+        [AllowEmptyString()]
+        [System.String]
+        $Warning,
+
+        [Parameter()]
         [switch]
         $VaryApprovalList
     )
@@ -300,11 +331,11 @@ function Get-FittingItemLimit
 
         if ($VaryApprovalList)
         {
-            $body = New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -AutoFixableLimit $middle -CollapsedLimit 0
+            $body = New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -Warning $Warning -AutoFixableLimit $middle -CollapsedLimit 0
         }
         else
         {
-            $body = New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -CollapsedLimit $middle
+            $body = New-DriftIssueBody -Result $Result -Ticked $Ticked -Since $Since -Warning $Warning -CollapsedLimit $middle
         }
 
         if ((Measure-DriftIssueBodyLength -Body $body) -le $MaximumLength)
