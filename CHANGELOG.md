@@ -4,6 +4,10 @@
 
 * AADApplication
   * Updated `Owners` to use `DisplayName` for Service Principal objects.
+* AADAuthenticationMethodPolicyExternal
+  * Added value `default` to property `State`.
+* AADConditionalAccessPolicy
+  * Added value `hidden` to property `ServicePrincipalRiskLevels`.
 * AADEntitlementManagementAccessPackageAssignmentPolicy
   * [BREAKING CHANGE] Renamed sub-property `Sequence` to `SequencePosition` to
     avoid a conflict with a reserved PowerShell keyword.
@@ -42,6 +46,8 @@
   * [BREAKING CHANGE] Removed deprecated property `Desks`.
 * EXOTenantAllowBlockListItems
   * [BREAKING CHANGE] Removed property `AppliationSecret`.
+* IntuneAlertRuleWindows365
+  * Added value `unknown` to property `Severity`.
 * IntuneAppControlForBusinessPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneAppControlForBusinessPolicyWindows10V2` instead.
@@ -50,8 +56,19 @@
     `IntuneDeviceConfigurationEndpointProtectionPolicyWindows10` instead.
 * IntuneAppProtectionPolicyiOS
   * [BREAKING CHANGE] Removed property `DeployedAppCount`.
+  * Added value `blockWhenSettingIsSupported` to property `AppActionIfDeviceComplianceRequired`.
+  * Added value `blockWhenSettingIsSupported` to property `AppActionIfIosDeviceModelNotAllowed`.
+  * Added value `blockWhenSettingIsSupported` to property `AppActionIfMaximumPinRetriesExceeded`.
+  * Added values `androidEnterpriseDedicatedDevicesWithAzureAdSharedMode`, `androidOpenSourceProjectUserAssociated` and `androidOpenSourceProjectUserless` to property `TargetedAppManagementLevels`.
+* IntuneAppProtectionPolicyWindows10
+  * Added value `selectedApps` to property `AllowedInboundDataTransferSources`.
+  * Added value `selectedApps` to property `AllowedOutboundDataTransferDestinations`.
 * IntuneCloudProvisioningPolicyWindows365
   * Removed unused class reference `MSFT_MicrosoftGraphMicrosoftManagedDesktop`.
+* IntuneDeviceAndAppManagementAssignmentFilter
+  * Added value `windowsMobileApplicationManagement` to property `Platform`.
+* IntuneDeviceCompliancePolicyAndroidDeviceOwner
+  * Added values `customPassword` and `required` to property `PasswordRequiredType`.
 * IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2` instead.
@@ -64,14 +81,22 @@
   * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementAppxMobileAppAssignment`.
 * IntuneMobileAppsSystemAppAndroid
   * [BREAKING CHANGE] Updated `Assignments` to use `MSFT_DeviceManagementSystemMobileAppAssignment`.
+* IntuneMobileAppsWin32AppWindows10
+  * Added values `arm` and `neutral` to property `AllowedArchitectures`.
 * IntuneMobileAppsWindowsOfficeSuiteApp
   * Removed unused class reference `MSFT_DeviceManagementMimeContent`.
 * IntuneSecurityBaselineMicrosoftEdge
   * [BREAKING CHANGE] Removed deprecated properties `WebSQLAccess` and `EdgeEnhanceImagesEnabled`.
 * IntuneSettingCatalogCustomPolicyWindows10
   * Fixed an issue where some nested properties didn't have the correct type.
+* IntuneVPNConfigurationPolicyAndroidWork
+  * Added value `paloAltoGlobalProtect` to property `connectionType`.
 * IntuneVPNConfigurationPolicyIOS
   * [BREAKING CHANGE] Updated `targetedMobileApps` to use `MSFT_targetedMobileApps`.
+* IntuneWifiConfigurationPolicyAndroidForWork
+  * Added values `wep` and `wpaPersonal` to property `WiFiSecurityType`.
+* IntuneWifiConfigurationPolicyWindows10
+  * Added value `wpa3Personal` to property `WifiSecurityType`.
 * O365OrgCustomizationSetting
   * [BREAKING CHANGE] Renamed the property `Ensure` to `State`.
 * SCComplianceTag

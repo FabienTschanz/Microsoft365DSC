@@ -248,12 +248,12 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Defines a managed app behavior, either block or wipe, when the device is either rooted or jailbroken, if DeviceComplianceRequired is set to true.')]
-    [ValidateSet('block', 'wipe', 'warn')]
+    [ValidateSet('block', 'wipe', 'warn', 'blockWhenSettingIsSupported')]
     [System.String] $AppActionIfDeviceComplianceRequired
 
     [DscProperty()]
     [System.ComponentModel.Description('Defines a managed app behavior, either block or wipe, based on maximum number of incorrect pin retry attempts.')]
-    [ValidateSet('block', 'wipe', 'warn')]
+    [ValidateSet('block', 'wipe', 'warn', 'blockWhenSettingIsSupported')]
     [System.String] $AppActionIfMaximumPinRetriesExceeded
 
     [DscProperty()]
@@ -271,7 +271,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The intended app management levels for this policy.')]
-    [ValidateSet('unspecified', 'unmanaged', 'mdm', 'androidEnterprise')]
+    [ValidateSet('unspecified', 'unmanaged', 'mdm', 'androidEnterprise', 'androidEnterpriseDedicatedDevicesWithAzureAdSharedMode', 'androidOpenSourceProjectUserAssociated', 'androidOpenSourceProjectUserless')]
     [System.String[]] $TargetedAppManagementLevels
 
     [DscProperty()]
@@ -293,7 +293,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Defines a managed app behavior, either block or wipe, if the specified device model is not allowed.')]
-    [ValidateSet('block', 'wipe', 'warn')]
+    [ValidateSet('block', 'wipe', 'warn', 'blockWhenSettingIsSupported')]
     [System.String] $AppActionIfIosDeviceModelNotAllowed
 
     [DscProperty()]

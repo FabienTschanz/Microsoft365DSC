@@ -24,7 +24,7 @@ class IntuneAlertRuleWindows365 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The severity of the rule. The possible values are: informational, warning, critical.')]
-    [ValidateSet('Critical', 'Warning', 'Informational')]
+    [ValidateSet('Critical', 'Warning', 'Informational', 'unknown')]
     [System.String] $Severity
 
     [DscProperty()]

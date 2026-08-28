@@ -19,7 +19,7 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The state of the policy. Possible values are: enabled, disabled.')]
-    [ValidateSet('enabled', 'disabled')]
+    [ValidateSet('enabled', 'disabled', 'default')]
     [System.String] $State
 
     [DscProperty()]

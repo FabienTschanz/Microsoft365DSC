@@ -39,7 +39,7 @@ class IntuneWifiConfigurationPolicyAndroidForWork : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Wi-Fi security')]
-    [ValidateSet('open', 'wpaEnterprise', 'wpa2Enterprise')]
+    [ValidateSet('open', 'wpaEnterprise', 'wpa2Enterprise', 'wep', 'wpaPersonal')]
     [System.String] $WiFiSecurityType
 
     [DscProperty()]

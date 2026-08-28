@@ -7,7 +7,7 @@ class IntuneAppProtectionPolicyWindows10 : M365DSCResourceBase
 {
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the sources from which data is allowed to be transferred. Some possible values are allApps or none. Possible values are: allApps, none.')]
-    [ValidateSet('allApps', 'none')]
+    [ValidateSet('allApps', 'none', 'selectedApps')]
     [System.String] $AllowedInboundDataTransferSources
 
     [DscProperty()]
@@ -17,7 +17,7 @@ class IntuneAppProtectionPolicyWindows10 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the destinations to which data is allowed to be transferred. Some possible values are allApps or none. Possible values are: allApps, none.')]
-    [ValidateSet('allApps', 'none')]
+    [ValidateSet('allApps', 'none', 'selectedApps')]
     [System.String] $AllowedOutboundDataTransferDestinations
 
     [DscProperty()]

@@ -71,7 +71,7 @@ class IntuneMobileAppsWin32AppWindows10 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Indicates the Windows architecture(s) this app should be installed on. The app will be treated as not applicable for devices with architectures not matching the selected value. The value ''none'' cannot be combined with other values.')]
-    [ValidateSet('none', 'x86', 'x64', 'arm64')]
+    [ValidateSet('none', 'x86', 'x64', 'arm64', 'arm', 'neutral')]
     [System.String[]] $AllowedArchitectures
 
     [DscProperty()]

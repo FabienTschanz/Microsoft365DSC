@@ -85,7 +85,7 @@ class IntuneWifiConfigurationPolicyWindows10 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Wi-Fi security')]
-    [ValidateSet('open', 'wpaPersonal', 'wpaEnterprise', 'wep', 'wpa2Personal', 'wpa2Enterprise')]
+    [ValidateSet('open', 'wpaPersonal', 'wpaEnterprise', 'wep', 'wpa2Personal', 'wpa2Enterprise', 'wpa3Personal')]
     [System.String] $WifiSecurityType
 
     [DscProperty()]

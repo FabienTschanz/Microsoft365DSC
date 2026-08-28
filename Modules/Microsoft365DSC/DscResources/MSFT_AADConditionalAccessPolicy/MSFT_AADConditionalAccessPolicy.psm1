@@ -233,7 +233,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Service principal risk levels included in the policy.')]
-    [ValidateSet('low', 'medium', 'high', 'none', 'unknownFutureValue')]
+    [ValidateSet('low', 'medium', 'high', 'none', 'unknownFutureValue', 'hidden')]
     [System.String[]] $ServicePrincipalRiskLevels
 
     [DscProperty()]

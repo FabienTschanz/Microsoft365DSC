@@ -24,7 +24,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Platform type of the devices on which the Assignment Filter will be applicable.')]
-    [ValidateSet('android', 'androidForWork', 'iOS', 'macOS', 'windowsPhone81', 'windows81AndLater', 'windows10AndLater', 'androidWorkProfile', 'unknown', 'androidAOSP', 'androidMobileApplicationManagement', 'iOSMobileApplicationManagement', 'unknownFutureValue')]
+    [ValidateSet('android', 'androidForWork', 'iOS', 'macOS', 'windowsPhone81', 'windows81AndLater', 'windows10AndLater', 'androidWorkProfile', 'unknown', 'androidAOSP', 'androidMobileApplicationManagement', 'iOSMobileApplicationManagement', 'unknownFutureValue', 'windowsMobileApplicationManagement')]
     [System.String] $Platform
 
     [DscProperty()]

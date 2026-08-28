@@ -44,7 +44,7 @@ class IntuneVPNConfigurationPolicyAndroidWork : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Connection type. Possible values are: ciscoAnyConnect, pulseSecure, f5EdgeClient, dellSonicWallMobileConnect, checkPointCapsuleVpn, citrix, microsoftTunnel, netMotionMobility, microsoftProtect.')]
-    [ValidateSet('ciscoAnyConnect', 'pulseSecure', 'f5EdgeClient', 'dellSonicWallMobileConnect', 'checkPointCapsuleVpn', 'citrix', 'microsoftTunnel', 'netMotionMobility', 'microsoftProtect')]
+    [ValidateSet('ciscoAnyConnect', 'pulseSecure', 'f5EdgeClient', 'dellSonicWallMobileConnect', 'checkPointCapsuleVpn', 'citrix', 'microsoftTunnel', 'netMotionMobility', 'microsoftProtect', 'paloAltoGlobalProtect')]
     [System.String] $connectionType
 
     [DscProperty()]

@@ -100,7 +100,7 @@ class IntuneDeviceCompliancePolicyAndroidDeviceOwner : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('PasswordRequiredType of the Android Device Owner device compliance policy.')]
-    [ValidateSet('deviceDefault', 'alphabetic', 'alphanumeric', 'alphanumericWithSymbols', 'lowSecurityBiometric', 'numeric', 'numericComplex', 'any')]
+    [ValidateSet('deviceDefault', 'alphabetic', 'alphanumeric', 'alphanumericWithSymbols', 'lowSecurityBiometric', 'numeric', 'numericComplex', 'any', 'customPassword', 'required')]
     [System.String] $PasswordRequiredType
 
     [DscProperty()]
