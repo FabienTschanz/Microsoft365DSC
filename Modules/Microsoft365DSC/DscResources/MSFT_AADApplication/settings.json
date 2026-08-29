@@ -10,7 +10,33 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ApplicationTemplateId",
+      "reason": "Deferred",
+      "note": "The beta application CSDL omits applicationTemplateId although v1.0 carries it and the resource uses the value only when instantiating an app from a template."
+    },
+    {
+      "name": "Homepage",
+      "reason": "Deferred",
+      "note": "The flattened web.homePageUrl property."
+    },
+    {
+      "name": "ObjectId",
+      "reason": "NotConfigurable",
+      "note": "ObjectId echoes the service assigned application id."
+    },
+    {
+      "name": "Permissions",
+      "reason": "Deferred",
+      "note": "Permissions is the DSC shaped projection of requiredResourceAccess."
+    },
+    {
+      "name": "ReplyURLs",
+      "reason": "Deferred",
+      "note": "The flattened web.redirectUris property."
+    }
+  ],
   "description": "This resource configures an Azure Active Directory Application.",
   "roles": {
     "read": [

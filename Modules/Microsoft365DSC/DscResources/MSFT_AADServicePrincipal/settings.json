@@ -2,15 +2,21 @@
   "resourceName": "AADServicePrincipal",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": "v1.0",
+    "apiVersion": "beta",
     "entityType": "servicePrincipal",
     "odataSubtype": null,
-    "cmdletNoun": "MgServicePrincipal",
+    "cmdletNoun": "MgBetaServicePrincipal",
     "cmdletVerb": "New",
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ObjectID",
+      "reason": "NotConfigurable",
+      "note": "ObjectID echoes the service assigned service principal id."
+    }
+  ],
   "description": "This resource configures an Azure Active Directory ServicePrincipal.",
   "roles": {
     "read": [],
@@ -73,6 +79,7 @@
   "requiredModules": [
     "Microsoft.Graph.Applications",
     "Microsoft.Graph.Authentication",
+    "Microsoft.Graph.Beta.Applications",
     "Microsoft.Graph.Groups",
     "Microsoft.Graph.Users",
     "MSCloudLoginAssistant"
@@ -87,22 +94,27 @@
       "module": "Microsoft.Graph.Applications",
       "cmdlets": [
         "Get-MgApplication",
-        "Get-MgServicePrincipal",
-        "Get-MgServicePrincipalAppRoleAssignedTo",
-        "New-MgServicePrincipal",
-        "New-MgServicePrincipalAppRoleAssignedTo",
-        "New-MgServicePrincipalOwnerByRef",
-        "Remove-MgServicePrincipal",
-        "Remove-MgServicePrincipalAppRoleAssignedTo",
-        "Remove-MgServicePrincipalOwnerDirectoryObjectByRef",
-        "Update-MgApplication",
-        "Update-MgServicePrincipal"
+        "Update-MgApplication"
       ]
     },
     {
       "module": "Microsoft.Graph.Authentication",
       "cmdlets": [
         "Invoke-MgGraphRequest"
+      ]
+    },
+    {
+      "module": "Microsoft.Graph.Beta.Applications",
+      "cmdlets": [
+        "Get-MgBetaServicePrincipal",
+        "Get-MgBetaServicePrincipalAppRoleAssignedTo",
+        "New-MgBetaServicePrincipal",
+        "New-MgBetaServicePrincipalAppRoleAssignedTo",
+        "New-MgBetaServicePrincipalOwnerByRef",
+        "Remove-MgBetaServicePrincipal",
+        "Remove-MgBetaServicePrincipalAppRoleAssignedTo",
+        "Remove-MgBetaServicePrincipalOwnerDirectoryObjectByRef",
+        "Update-MgBetaServicePrincipal"
       ]
     },
     {

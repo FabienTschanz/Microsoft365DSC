@@ -10,7 +10,23 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "AssignedToRole",
+      "reason": "Deferred",
+      "note": "The resource creates and removes unifiedRoleAssignment objects for the group."
+    },
+    {
+      "name": "GroupAsMembers",
+      "reason": "Deferred",
+      "note": "This property holds the group typed entries of the vendor members navigation collection."
+    },
+    {
+      "name": "GroupLifecyclePolicySelectedEnabled",
+      "reason": "Deferred",
+      "note": "This flag toggles the group membership in the selected scope group lifecycle policy, exposed through the groupLifecyclePolicies navigation."
+    }
+  ],
   "description": "This resource configures an Azure Active Directory group.",
   "roles": {
     "read": [],

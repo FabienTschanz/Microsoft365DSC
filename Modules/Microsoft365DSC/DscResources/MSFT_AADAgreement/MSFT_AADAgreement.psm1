@@ -145,6 +145,7 @@ class AADAgreement : M365DSCResourceBase
                 $fileContent = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($instance.File.Data))
             }
 
+            # TODO: Recheck or possibly regenerate the resource entirely to include all supported properties with the correct structure
             $results = @{
                 DisplayName                       = $instance.DisplayName
                 Id                                = $instance.Id

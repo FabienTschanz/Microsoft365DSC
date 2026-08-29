@@ -10,8 +10,8 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
     [System.String] $DisplayName
 
     [DscProperty()]
-    [System.ComponentModel.Description('Identity of the iOS App Protection Policy.')]
-    [System.String] $Identity
+    [System.ComponentModel.Description('Id of the iOS App Protection Policy.')]
+    [System.String] $Id
 
     [DscProperty()]
     [System.ComponentModel.Description('Description of the iOS App Protection Policy.')]
@@ -373,7 +373,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
             return $remote
         }
 
-        Write-Verbose -Message "Getting configuration of the Intune iOS App Protection Policy with Id {$($this.Identity)} and DisplayName {$($this.DisplayName)}"
+        Write-Verbose -Message "Getting configuration of the Intune iOS App Protection Policy with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
         try
         {
@@ -391,13 +391,13 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
                 $nullResult = $this.GetBoundParameters()
                 $nullResult.Ensure = 'Absent'
 
-                if (-not [System.String]::IsNullOrEmpty($this.Identity))
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    [Array]$policy = Get-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $this.Identity -ErrorAction SilentlyContinue
+                    [Array]$policy = Get-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $this.Id -ErrorAction SilentlyContinue
                 }
                 if ($policy.Length -eq 0)
                 {
-                    Write-Verbose -Message "No iOS App Protection Policy {$($this.Identity)} was found by Identity. Trying to retrieve by DisplayName"
+                    Write-Verbose -Message "No iOS App Protection Policy {$($this.Id)} was found by Id. Trying to retrieve by DisplayName"
                     [Array]$policy = Get-MgBetaDeviceAppManagementiOSManagedAppProtection -All -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'" -ErrorAction SilentlyContinue
                 }
 
@@ -423,12 +423,12 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
             }
             else
             {
-                $Id = $policy.Id
+                $policyId = $policy.Id
             }
 
-            Write-Verbose -Message "An Intune iOS App Protection Policy with Id {$Id} and DisplayName {$($this.DisplayName)} was found."
+            Write-Verbose -Message "An Intune iOS App Protection Policy with Id {$policyId} and DisplayName {$($this.DisplayName)} was found."
 
-            $policyApps = Get-MgBetaDeviceAppManagementiOSManagedAppProtectionApp -IosManagedAppProtectionId $Id
+            $policyApps = Get-MgBetaDeviceAppManagementiOSManagedAppProtectionApp -IosManagedAppProtectionId $policyId
 
             $appsArray = @()
             if ($policy.AppGroupType -eq 'selectedPublicApps')
@@ -439,7 +439,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
                 }
             }
 
-            $assignmentsValues = Get-MgBetaDeviceAppManagementiOSManagedAppProtectionAssignment -IosManagedAppProtectionId $Id
+            $assignmentsValues = Get-MgBetaDeviceAppManagementiOSManagedAppProtectionAssignment -IosManagedAppProtectionId $policyId
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
             {
@@ -484,7 +484,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
             }
 
             return $this.AsResult(@{
-                Identity                                       = $policy.Id
+                Id                                             = $policy.Id
                 DisplayName                                    = $policy.DisplayName
                 Description                                    = $policy.Description
                 RoleScopeTagIds                                = $policy.RoleScopeTagIds
@@ -602,7 +602,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
         {
             Write-Verbose -Message "Creating new iOS App Protection Policy {$($this.DisplayName)}"
             $createParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
-            $createParameters.Remove('Identity')
+            $createParameters.Remove('Id')
             $createParameters.Remove('Assignments')
             $createParameters.Remove('Apps')
             $createParameters.TargetedAppManagementLevels = $createParameters.TargetedAppManagementLevels -join ','
@@ -646,7 +646,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
         {
             Write-Verbose -Message "Updating existing iOS App Protection Policy {$($this.DisplayName)}"
             $updateParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
-            $updateParameters.Remove('Identity')
+            $updateParameters.Remove('Id')
             $updateParameters.Remove('Assignments')
             $updateParameters.Remove('Apps')
             $updateParameters.TargetedAppManagementLevels = $updateParameters.TargetedAppManagementLevels -join ','
@@ -670,23 +670,23 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
                 }
             }
             $updateParameters.ExemptedAppProtocols = $myExemptedAppProtocols
-            Update-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $currentPolicy.Identity -BodyParameter $updateParameters
+            Update-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $currentPolicy.Id -BodyParameter $updateParameters
 
-            Write-Verbose -Message "Updating targetApps for iOS App Protection Policy with Id {$($currentPolicy.Identity)} and DisplayName {$($this.DisplayName)}"
+            Write-Verbose -Message "Updating targetApps for iOS App Protection Policy with Id {$($currentPolicy.Id)} and DisplayName {$($this.DisplayName)}"
             $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
-            $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/iosManagedAppProtections('$($currentPolicy.Identity)')/targetApps"
+            $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/iosManagedAppProtections('$($currentPolicy.Id)')/targetApps"
             Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
 
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
             Update-DeviceConfigurationPolicyAssignment `
-                -DeviceConfigurationPolicyId $currentPolicy.Identity `
+                -DeviceConfigurationPolicyId $currentPolicy.Id `
                 -Targets $assignmentsHash `
                 -Repository 'deviceAppManagement/iosManagedAppProtections'
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentPolicy.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing iOS App Protection Policy {$($this.DisplayName)}"
-            Remove-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $currentPolicy.Identity
+            Remove-MgBetaDeviceAppManagementiOSManagedAppProtection -IosManagedAppProtectionId $currentPolicy.Id
         }
     }
 
@@ -743,7 +743,7 @@ class IntuneAppProtectionPolicyiOS : M365DSCResourceBase
 
                 Write-M365DSCHost -Message "    |---[$i/$($policies.Count)] $($policy.displayName)" -DeferWrite
                 $params = @{
-                    Identity              = $policy.id
+                    Id                    = $policy.id
                     DisplayName           = $policy.DisplayName
                     Ensure                = 'Present'
                     Credential            = $this.Credential

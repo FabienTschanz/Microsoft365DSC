@@ -147,7 +147,7 @@ class AADServicePrincipal : M365DSCResourceBase
 
     AADServicePrincipal() : base()
     {
-        $this.ResourceCache['PropertiesToExport'] = 'AppDisplayName', 'AppId', 'Id', 'DisplayName', 'CustomSecurityAttributes', 'AlternativeNames', 'AccountEnabled', 'AppRoleAssignmentRequired', 'ErrorUrl', 'Homepage', 'LogoutUrl', 'Notes', 'PreferredSingleSignOnMode', 'PublisherName', 'ReplyUrls', 'SamlMetadataURL', 'ServicePrincipalNames', 'ServicePrincipalType', 'Tags', 'KeyCredentials', 'PasswordCredentials'
+        $this.ResourceCache['PropertiesToExport'] = 'AppDisplayName', 'AppId', 'Id', 'DisplayName', 'CustomSecurityAttributes', 'AlternativeNames', 'AccountEnabled', 'AppRoleAssignmentRequired', 'ErrorUrl', 'Homepage', 'LogoutUrl', 'Notes', 'PreferredSingleSignOnMode', 'PublisherName', 'ReplyUrls', 'SamlMetadataUrl', 'ServicePrincipalNames', 'ServicePrincipalType', 'Tags', 'KeyCredentials', 'PasswordCredentials'
     }
 
     [AADServicePrincipal] Get()
@@ -183,7 +183,7 @@ class AADServicePrincipal : M365DSCResourceBase
 
                 if (-not [System.String]::IsNullOrEmpty($this.ObjectID))
                 {
-                    $AADServicePrincipal = Get-MgServicePrincipal -ServicePrincipalId $this.ObjectId `
+                    $AADServicePrincipal = Get-MgBetaServicePrincipal -ServicePrincipalId $this.ObjectId `
                         -Property $this.ResourceCache['PropertiesToExport'] `
                         -ExpandProperty 'AppRoleAssignedTo' `
                         -ErrorAction SilentlyContinue
@@ -193,7 +193,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 {
                     if (-not [System.Guid]::TryParse($this.AppId, [ref][System.Guid]::Empty))
                     {
-                        $AADServicePrincipal = [Array](Get-MgServicePrincipal -Filter "DisplayName eq '$($this.AppId -replace "'", "''")'" `
+                        $AADServicePrincipal = [Array](Get-MgBetaServicePrincipal -Filter "DisplayName eq '$($this.AppId -replace "'", "''")'" `
                                 -Property $this.ResourceCache['PropertiesToExport'] `
                                 -Expand 'AppRoleAssignedTo')
                         if ($null -ne $AADServicePrincipal -and $AADServicePrincipal.Count -gt 1)
@@ -203,7 +203,7 @@ class AADServicePrincipal : M365DSCResourceBase
                     }
                     else
                     {
-                        $AADServicePrincipal = Get-MgServicePrincipal -Filter "AppID eq '$($this.AppId)'" `
+                        $AADServicePrincipal = Get-MgBetaServicePrincipal -Filter "AppID eq '$($this.AppId)'" `
                             -Property $this.ResourceCache['PropertiesToExport'] `
                             -Expand 'AppRoleAssignedTo'
                     }
@@ -528,7 +528,7 @@ class AADServicePrincipal : M365DSCResourceBase
 
             $currentParameters.AppId = $resolvedAppId
             Write-Verbose -Message 'Creating new Service Principal'
-            $newSP = New-MgServicePrincipal -BodyParameter $currentParameters
+            $newSP = New-MgBetaServicePrincipal -BodyParameter $currentParameters
             Start-Sleep -Seconds 4
 
             # Assign Owners
@@ -539,7 +539,7 @@ class AADServicePrincipal : M365DSCResourceBase
                     '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/directoryObjects/$($userInfo.Id)"
                 }
                 Write-Verbose -Message "Adding new owner {$owner}"
-                Invoke-M365DSCCommand -ScriptBlock { New-MgServicePrincipalOwnerByRef -ServicePrincipalId $newSP.Id -BodyParameter $body -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
+                Invoke-M365DSCCommand -ScriptBlock { New-MgBetaServicePrincipalOwnerByRef -ServicePrincipalId $newSP.Id -BodyParameter $body -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
             }
 
             # Adding delegated permissions classifications
@@ -551,7 +551,7 @@ class AADServicePrincipal : M365DSCResourceBase
                         classification = $permissionClassification.Classification
                         permissionName = $permissionClassification.permissionName
                     }
-                    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/servicePrincipals/$($newSP.Id)/delegatedPermissionClassifications"
+                    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/servicePrincipals/$($newSP.Id)/delegatedPermissionClassifications"
                     Invoke-M365DSCCommand -ScriptBlock { Invoke-MgGraphRequest -Uri $Uri -Method Post -Body $params -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
                 }
             }
@@ -582,7 +582,7 @@ class AADServicePrincipal : M365DSCResourceBase
                         appRoleId   = $appRoleId
                     }
                     Write-Verbose -Message "Adding Service Principal AppRoleAssignedTo with values:`r`n$(ConvertTo-Json $bodyParam -Depth 3)"
-                    Invoke-M365DSCCommand -ScriptBlock { New-MgServicePrincipalAppRoleAssignedTo -ServicePrincipalId $newSP.Id -BodyParameter $bodyParam -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
+                    Invoke-M365DSCCommand -ScriptBlock { New-MgBetaServicePrincipalAppRoleAssignedTo -ServicePrincipalId $newSP.Id -BodyParameter $bodyParam -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
                 }
             }
 
@@ -606,7 +606,7 @@ class AADServicePrincipal : M365DSCResourceBase
             {
                 if ($null -eq $servicePrincipalDetails)
                 {
-                    $servicePrincipalDetails = Get-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppId'
+                    $servicePrincipalDetails = Get-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppId'
                 }
                 $identifiersToExclude = @($this.AppId, $resolvedAppId, $oldAppId, $servicePrincipalDetails.AppId) | Where-Object -FilterScript { -not [System.String]::IsNullOrEmpty($_) } | Select-Object -Unique
                 $IdentifierUris = @($this.ServicePrincipalNames | Where-Object -FilterScript { $_ -notin $identifiersToExclude })
@@ -622,7 +622,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 }
                 Invoke-MgGraphRequest -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/servicePrincipals/$($currentAADServicePrincipal.ObjectID)") -Method Patch -Body $CSAParams
             }
-            Update-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -BodyParameter $currentParameters
+            Update-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -BodyParameter $currentParameters
 
             if ($this.GetBoundParameters().ContainsKey('ClaimsPolicy'))
             {
@@ -636,7 +636,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 Write-Verbose -Message 'Updating the Application ID Uri on the application instance.'
                 if ($null -eq $servicePrincipalDetails)
                 {
-                    $servicePrincipalDetails = Get-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppId'
+                    $servicePrincipalDetails = Get-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppId'
                 }
 
                 [Array]$matchedApplications = Get-MgApplication -Filter "AppId eq '$($servicePrincipalDetails.AppId)'"
@@ -699,7 +699,7 @@ class AADServicePrincipal : M365DSCResourceBase
 
                             if ($null -eq $servicePrincipalDetails)
                             {
-                                $servicePrincipalDetails = Get-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppRoles'
+                                $servicePrincipalDetails = Get-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -Property 'AppRoles'
                             }
 
                             $appRoleId = $this.GetAppRoleId($servicePrincipalDetails.AppRoles, $assignment.PrincipalType)
@@ -709,7 +709,7 @@ class AADServicePrincipal : M365DSCResourceBase
                                 appRoleId   = $appRoleId
                             }
                             Write-Verbose -Message "Adding member {$($member.InputObject.ToString())}"
-                            New-MgServicePrincipalAppRoleAssignedTo -ServicePrincipalId $currentAADServicePrincipal.ObjectID `
+                            New-MgBetaServicePrincipalAppRoleAssignedTo -ServicePrincipalId $currentAADServicePrincipal.ObjectID `
                                 -BodyParameter $bodyParam | Out-Null
                         }
                     }
@@ -741,10 +741,10 @@ class AADServicePrincipal : M365DSCResourceBase
                             }
                             Write-Verbose -Message "PrincipalID Value = '$PrincipalIdValue'"
                             Write-Verbose -Message "ServicePrincipalId = '$($currentAADServicePrincipal.ObjectID)'"
-                            $allAssignments = Get-MgServicePrincipalAppRoleAssignedTo -ServicePrincipalId $currentAADServicePrincipal.ObjectID -All
+                            $allAssignments = Get-MgBetaServicePrincipalAppRoleAssignedTo -ServicePrincipalId $currentAADServicePrincipal.ObjectID -All
                             $assignmentToRemove = $allAssignments | Where-Object -FilterScript { $_.PrincipalId -eq $PrincipalIdValue }
                             Write-Verbose -Message "Removing member {$($member.InputObject.ToString())}"
-                            Remove-MgServicePrincipalAppRoleAssignedTo -ServicePrincipalId $currentAADServicePrincipal.ObjectID `
+                            Remove-MgBetaServicePrincipalAppRoleAssignedTo -ServicePrincipalId $currentAADServicePrincipal.ObjectID `
                                 -AppRoleAssignmentId $assignmentToRemove.Id | Out-Null
                         }
                     }
@@ -762,7 +762,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 $ownerInfo = Get-MgUser -UserId $diff.InputObject -ErrorAction SilentlyContinue
                 if ($null -eq $ownerInfo)
                 {
-                    $ownerInfo = Get-MgServicePrincipal -Filter "displayName eq '$($diff.InputObject -replace "'", "''")'" -ErrorAction SilentlyContinue
+                    $ownerInfo = Get-MgBetaServicePrincipal -Filter "displayName eq '$($diff.InputObject -replace "'", "''")'" -ErrorAction SilentlyContinue
                     if ($null -eq $ownerInfo)
                     {
                         throw "Owner {$($diff.InputObject)} was not found as a user or service principal in the tenant."
@@ -774,13 +774,13 @@ class AADServicePrincipal : M365DSCResourceBase
                         '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/directoryObjects/$($ownerInfo.Id)"
                     }
                     Write-Verbose -Message "Adding owner {$($ownerInfo.Id)}"
-                    New-MgServicePrincipalOwnerByRef -ServicePrincipalId $currentAADServicePrincipal.ObjectId `
+                    New-MgBetaServicePrincipalOwnerByRef -ServicePrincipalId $currentAADServicePrincipal.ObjectId `
                         -BodyParameter $body | Out-Null
                 }
                 else
                 {
                     Write-Verbose -Message "Removing owner {$($ownerInfo.Id)}"
-                    Remove-MgServicePrincipalOwnerDirectoryObjectByRef -ServicePrincipalId $currentAADServicePrincipal.ObjectId `
+                    Remove-MgBetaServicePrincipalOwnerDirectoryObjectByRef -ServicePrincipalId $currentAADServicePrincipal.ObjectId `
                         -DirectoryObjectId $ownerInfo.Id | Out-Null
                 }
             }
@@ -790,7 +790,7 @@ class AADServicePrincipal : M365DSCResourceBase
             if ($null -ne $this.DelegatedPermissionClassifications)
             {
                 # removing old perm classifications
-                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/servicePrincipals/$($currentAADServicePrincipal.ObjectID)/delegatedPermissionClassifications"
+                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/servicePrincipals/$($currentAADServicePrincipal.ObjectID)/delegatedPermissionClassifications"
                 $permissionClassificationList = Invoke-MgGraphRequest -Uri $Uri -Method Get
                 foreach ($permissionClassification in $permissionClassificationList.Value)
                 {
@@ -812,7 +812,7 @@ class AADServicePrincipal : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentAADServicePrincipal.Ensure -eq 'Present')
         {
             Write-Verbose -Message 'Removing Service Principal'
-            Remove-MgServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID
+            Remove-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID
         }
     }
 
@@ -842,7 +842,7 @@ class AADServicePrincipal : M365DSCResourceBase
         {
             $i = 1
             Write-M365DSCHost -Message "`r`n" -DeferWrite
-            [array] $exportedInstances = Get-MgServicePrincipal -All `
+            [array] $exportedInstances = Get-MgBetaServicePrincipal -All `
                 -Filter $this.Filter `
                 -Expand 'AppRoleAssignedTo' `
                 -Property $this.ResourceCache['PropertiesToExport'] `

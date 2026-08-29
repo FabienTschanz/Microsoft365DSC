@@ -99,11 +99,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PlanId          = '1234567890'
                     Title           = 'Contoso Task'
                     Priority        = 5
-                    Bucket          = '1234'
+                    BucketId        = '1234'
                     PercentComplete = 75
                     StartDateTime   = '2020-06-09'
                     DueDateTime     = '2020-06-10'
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     Ensure          = 'Present'
                     Credential      = $Credential
                 }
@@ -134,10 +134,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     PlanId          = '1234567890'
-                    TaskId          = '12345'
+                    Id              = '12345'
                     Title           = 'Contoso Task'
                     Priority        = 4
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     PercentComplete = 75
                     Categories      = @('Pink')
                     StartDateTime   = '2020-06-09'
@@ -165,14 +165,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     PlanId          = '1234567890'
                     Title           = 'Contoso Task'
-                    TaskId          = '12345'
+                    Id              = '12345'
                     Priority        = 5
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     PercentComplete = 75
                     Categories      = @('Pink')
                     StartDateTime   = '2020-06-09'
                     DueDateTime     = '2020-06-10'
-                    Bucket          = 'Bucket12345'
+                    BucketId        = 'Bucket12345'
                     Ensure          = 'Present'
                     Credential      = $Credential
                 }
@@ -192,9 +192,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     PlanId          = '1234567890'
                     Title           = 'Contoso Task'
-                    TaskId          = '12345'
+                    Id              = '12345'
                     Priority        = 5
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     PercentComplete = 75
                     Categories      = @('Pink')
                     StartDateTime   = '2020-06-09'
@@ -217,11 +217,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     PlanId          = '1234567890'
-                    TaskId          = '12345'
+                    Id              = '12345'
                     Title           = 'Contoso Task'
-                    Bucket          = 'Bucket12345'
+                    BucketId        = 'Bucket12345'
                     Priority        = 5
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     PercentComplete = 75
                     Categories      = @('Pink')
                     StartDateTime   = '2020-06-09'
@@ -239,7 +239,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It "Should return 'Bucket12345' as the Bucket Value" {
-                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Bucket | Should -Be 'Bucket12345'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).BucketId | Should -Be 'Bucket12345'
             }
 
             It 'Should return True from the Test method' {
@@ -252,11 +252,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     PlanId          = '1234567890'
-                    TaskId          = '12345'
+                    Id              = '12345'
                     Title           = 'Contoso Task'
-                    Bucket          = 'TestBucket'
+                    BucketId        = 'TestBucket'
                     Priority        = 5
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     PercentComplete = 75
                     Categories      = @('Pink')
                     StartDateTime   = '2020-06-09'
@@ -279,10 +279,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             BeforeAll {
                 $testParams = @{
                     PlanId          = '1234567890'
-                    TaskId          = '12345'
+                    Id              = '12345'
                     Title           = 'Contoso Task'
                     Priority        = 5
-                    AssignedUsers   = @('john.smith@contoso.com')
+                    Assignments     = @('john.smith@contoso.com')
                     PercentComplete = 75
                     Categories      = @('Pink')
                     StartDateTime   = '2020-06-09'
@@ -301,7 +301,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It "Should return 'TestBucket' as the Bucket Value" {
-                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).Bucket | Should -Be 'Bucket12345'
+                ((New-M365DSCResourceInstance -ResourceName 'PlannerTask' -Property $testParams).Get().ToHashtable()).BucketId | Should -Be 'Bucket12345'
             }
 
             It 'Should return False from the Test method' {

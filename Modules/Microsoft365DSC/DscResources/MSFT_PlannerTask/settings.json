@@ -7,10 +7,31 @@
     "odataSubtype": null,
     "cmdletNoun": "MgPlannerTask",
     "cmdletVerb": "New",
-    "includeNavigationProperties": false,
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "Attachments",
+      "reason": "Deferred",
+      "note": "Attachments maps to the references collection on the Graph entity."
+    },
+    {
+      "name": "Categories",
+      "reason": "Deferred",
+      "note": "Categories maps to the appliedCategories property."
+    },
+    {
+      "name": "Checklist",
+      "reason": "Deferred",
+      "note": "Checklist maps to the checklist collection on the plannerTaskDetails entity behind the task details navigation."
+    },
+    {
+      "name": "Description",
+      "reason": "Deferred",
+      "note": "Description maps to the description property of the plannerTaskDetails entity behind the task details navigation."
+    }
+  ],
   "description": "",
   "permissions": {
     "graph": {

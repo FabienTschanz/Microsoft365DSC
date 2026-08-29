@@ -10,7 +10,58 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "IdentityCertificateForClientAuthenticationDisplayName",
+      "reason": "Deferred",
+      "note": "A display name lookup for the client authentication certificate profile owned by IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 or IntuneDeviceConfigurationPkcsCertificatePolicyWindows10."
+    },
+    {
+      "name": "IdentityCertificateForClientAuthenticationId",
+      "reason": "Deferred",
+      "note": "Binds to the client authentication certificate profile from IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 or IntuneDeviceConfigurationPkcsCertificatePolicyWindows10."
+    },
+    {
+      "name": "RootCertificateForClientValidationDisplayName",
+      "reason": "Deferred",
+      "note": "A display name lookup for the trusted root certificate owned by IntuneDeviceConfigurationTrustedCertificatePolicyWindows10."
+    },
+    {
+      "name": "RootCertificateForClientValidationId",
+      "reason": "Deferred",
+      "note": "Binds to the trusted root certificate from IntuneDeviceConfigurationTrustedCertificatePolicyWindows10."
+    },
+    {
+      "name": "RootCertificatesForServerValidationDisplayNames",
+      "reason": "Deferred",
+      "note": "A display name lookup for the trusted root certificates owned by IntuneDeviceConfigurationTrustedCertificatePolicyWindows10."
+    },
+    {
+      "name": "RootCertificatesForServerValidationIds",
+      "reason": "Deferred",
+      "note": "Binds to the trusted root certificates from IntuneDeviceConfigurationTrustedCertificatePolicyWindows10."
+    },
+    {
+      "name": "SecondaryIdentityCertificateForClientAuthenticationDisplayName",
+      "reason": "Deferred",
+      "note": "A display name lookup for the secondary client authentication certificate profile owned by IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 or IntuneDeviceConfigurationPkcsCertificatePolicyWindows10."
+    },
+    {
+      "name": "SecondaryIdentityCertificateForClientAuthenticationId",
+      "reason": "Deferred",
+      "note": "Binds to the secondary client authentication certificate profile from IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 or IntuneDeviceConfigurationPkcsCertificatePolicyWindows10."
+    },
+    {
+      "name": "SecondaryRootCertificateForClientValidationDisplayName",
+      "reason": "Deferred",
+      "note": "A display name lookup for the secondary trusted root certificate owned by IntuneDeviceConfigurationTrustedCertificatePolicyWindows10."
+    },
+    {
+      "name": "SecondaryRootCertificateForClientValidationId",
+      "reason": "Deferred",
+      "note": "Binds to the secondary trusted root certificate from IntuneDeviceConfigurationTrustedCertificatePolicyWindows10."
+    }
+  ],
   "description": "This resource configures an Intune Device Configuration Wired Network Policy for Windows10.",
   "permissions": {
     "graph": {

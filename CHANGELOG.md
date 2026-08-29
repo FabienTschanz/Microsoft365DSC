@@ -27,6 +27,10 @@
   * Fixed an issue where roles with empty permissions were not exported.
 * AADRoleEligibilityScheduleRequest
   * [BREAKING CHANGE] Removed deprecated properties `Action` and `IsValidationOnly`.
+* AADServicePrincipal
+  * Switched the resource to the Microsoft Graph beta endpoint, which is where
+    the `ClaimsPolicy`, `ErrorUrl`, `PublisherName` and `SamlMetadataUrl`
+    properties are defined.
 * AADUser
   * [BREAKING CHANGE] Renamed properties `Fax` to `FaxNumber`, `FirstName` to
     `GivenName`, `LastName` to `Surname`, `Office` to `OfficeLocation` and `Title`
@@ -65,6 +69,8 @@
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDeviceConfigurationEndpointProtectionPolicyWindows10` instead.
 * IntuneAppProtectionPolicyiOS
+  * [BREAKING CHANGE] Renamed the property `Identity` to `Id` to match the name
+    Microsoft Graph uses.
   * [BREAKING CHANGE] Removed property `DeployedAppCount`.
   * Added value `blockWhenSettingIsSupported` to property `AppActionIfDeviceComplianceRequired`.
   * Added value `blockWhenSettingIsSupported` to property `AppActionIfIosDeviceModelNotAllowed`.
@@ -81,9 +87,15 @@
     name Microsoft Graph uses.
   * Removed unused class reference `MSFT_MicrosoftGraphMicrosoftManagedDesktop`.
 * IntuneDeviceAndAppManagementAssignmentFilter
+  * [BREAKING CHANGE] Renamed the property `Identity` to `Id` to match the name
+    Microsoft Graph uses.
   * Added value `windowsMobileApplicationManagement` to property `Platform`.
 * IntuneDeviceCompliancePolicyAndroidDeviceOwner
   * Added values `customPassword` and `required` to property `PasswordRequiredType`.
+* IntuneDeviceCompliancePolicyAndroidWorkProfile
+  * [BREAKING CHANGE] Removed the properties `RestrictedApps` and
+    `SecurityBlockDeviceAdministratorManagedDevices`, which the
+    androidWorkProfileCompliancePolicy Graph type does not define.
 * IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2` instead.
@@ -119,6 +131,10 @@
   * [BREAKING CHANGE] Renamed the property `Ensure` to `State`.
 * PlannerBucket
   * [BREAKING CHANGE] Renamed the property `BucketId` to `Id`.
+* PlannerTask
+  * [BREAKING CHANGE] Renamed the properties `AssignedUsers` to `Assignments`,
+    `Bucket` to `BucketId`, `Notes` to `Description` and `TaskId` to `Id` to
+    match the names Microsoft Graph uses.
 * SCComplianceTag
   * Fixed an issue where `EventType` was never exported.
 * SPOAccessControlSettings

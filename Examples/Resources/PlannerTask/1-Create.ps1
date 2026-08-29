@@ -28,7 +28,7 @@ Configuration Example
             PlanId                = "<planner-plan-id>"
             Title                 = "Contoso Task"
             Categories            = @("Red", "Blue")
-            AssignedUsers         = @("admin@$TenantId")
+            Assignments           = @("admin@$TenantId")
             Attachments           = @(
                 MSFT_PlannerTaskAttachment{
                     Alias = "Campaign brief"
@@ -46,7 +46,7 @@ Configuration Example
                     Completed = $false
                 }
             )
-            Notes                 = "Consolidate the regional marketing spend ahead of the quarterly budget review."
+            Description           = "Consolidate the regional marketing spend ahead of the quarterly budget review."
             StartDateTime         = "2026-01-05T08:00:00.0000000Z"
             DueDateTime           = "2026-01-30T17:00:00.0000000Z"
             PercentComplete       = 75

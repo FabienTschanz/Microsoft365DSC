@@ -340,6 +340,7 @@ function Invoke-M365DSCApiSurfaceCheck
             [System.IO.File]::WriteAllText(
                 (Join-Path -Path $RepositoryRoot -ChildPath 'Utilities/ApiSurface/coverage.md'),
                 $markdown, [System.Text.UTF8Encoding]::new($false))
+            Write-Host -Object "The coverage report was written to '$coveragePath' and 'Utilities/ApiSurface/coverage.md'."
         }
     }
 

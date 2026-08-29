@@ -294,7 +294,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PrintBlocked                                   = $False
                     SaveAsBlocked                                  = $True
                     SimplePinBlocked                               = $False
-                    Identity                                       = '12345-12345-12345-12345-12345'
+                    Id                                             = '12345-12345-12345-12345-12345'
                     TargetedAppManagementLevels                    = @('unmanaged')
                 }
                 Mock -CommandName Get-MgBetaDeviceAppManagementiosManagedAppProtection -MockWith {
@@ -392,7 +392,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PrintBlocked                                   = $False
                     SaveAsBlocked                                  = $True
                     SimplePinBlocked                               = $False
-                    Identity                                       = '12345-12345-12345-12345-12345'
+                    Id                                             = '12345-12345-12345-12345-12345'
                     TargetedAppManagementLevels                    = @('unmanaged')
                 }
             }
@@ -475,7 +475,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PrintBlocked                                   = $False
                     SaveAsBlocked                                  = $True
                     SimplePinBlocked                               = $False
-                    Identity                                       = '12345-12345-12345-12345-12345'
+                    Id                                             = '12345-12345-12345-12345-12345'
                     TargetedAppManagementLevels                    = @('unmanaged')
                 }
             }
@@ -561,7 +561,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     PrintBlocked                                   = $False
                     SaveAsBlocked                                  = $True
                     SimplePinBlocked                               = $False
-                    Identity                                       = '12345-12345-12345-12345-12345'
+                    Id                                             = '12345-12345-12345-12345-12345'
                     TargetedAppManagementLevels                    = @('unmanaged')
                 }
             }

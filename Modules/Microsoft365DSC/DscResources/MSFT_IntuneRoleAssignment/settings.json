@@ -10,7 +10,23 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "MembersDisplayNames",
+      "reason": "Deferred",
+      "note": "Used to resolve the member security groups ."
+    },
+    {
+      "name": "ResourceScopesDisplayNames",
+      "reason": "Deferred",
+      "note": "Used to resolve the resource scope security groups."
+    },
+    {
+      "name": "RoleDefinitionDisplayName",
+      "reason": "OwnedByOtherResource",
+      "note": "Used to resolve the role definition by display name."
+    }
+  ],
   "description": "This resource configures an Intune Role Assignment.",
   "permissions": {
     "graph": {

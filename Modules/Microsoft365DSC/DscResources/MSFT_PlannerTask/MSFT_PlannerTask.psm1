@@ -19,7 +19,7 @@ class PlannerTask : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('List of users assigned to the tasks (ex: @(''john.smith@contoso.com'', ''bob.houle@contoso.com'')).')]
-    [System.String[]] $AssignedUsers
+    [System.String[]] $Assignments
 
     [DscProperty()]
     [System.ComponentModel.Description('List of links to attachments assigned to the task.')]
@@ -31,15 +31,15 @@ class PlannerTask : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Description of the Task.')]
-    [System.String] $Notes
+    [System.String] $Description
 
     [DscProperty()]
     [System.ComponentModel.Description('The Id of the bucket that contains the task.')]
-    [System.String] $Bucket
+    [System.String] $BucketId
 
     [DscProperty()]
     [System.ComponentModel.Description('Id of the Task, if known.')]
-    [System.String] $TaskId
+    [System.String] $Id
 
     [DscProperty()]
     [System.ComponentModel.Description('Date and Time for the start of the Task.')]
@@ -132,13 +132,13 @@ class PlannerTask : M365DSCResourceBase
 
             $null = $this.Connect('MicrosoftGraph')
 
-            # If no TaskId were passed, automatically assume that this is a new task;
-            if ([System.String]::IsNullOrEmpty($this.TaskId))
+            # If no Id were passed, automatically assume that this is a new task;
+            if ([System.String]::IsNullOrEmpty($this.Id))
             {
                 return $this.AsResult($nullReturn)
             }
 
-            $taskResponse = Get-MgPlannerTask -PlannerTaskId $this.TaskId
+            $taskResponse = Get-MgPlannerTask -PlannerTaskId $this.Id
             $taskDetailsResponse = Get-MgPlannerTaskDetail -PlannerTaskId $taskResponse.Id
 
             #region Assignments
@@ -231,18 +231,18 @@ class PlannerTask : M365DSCResourceBase
                 $results = @{
                     PlanId                = $this.PlanId
                     Title                 = $this.Title
-                    AssignedUsers         = $assignmentsValue
-                    TaskId                = $taskResponse.Id
+                    Assignments           = $assignmentsValue
+                    Id                    = $taskResponse.Id
                     Categories            = $categoriesValue
                     Attachments           = $attachmentsValue
                     Checklist             = $checklistValue
-                    Bucket                = $taskResponse.BucketId
+                    BucketId              = $taskResponse.BucketId
                     Priority              = $taskResponse.Priority
                     ConversationThreadId  = $taskResponse.ConversationThreadId
                     PercentComplete       = $taskResponse.PercentComplete
                     StartDateTime         = $StartDateTimeValue
                     DueDateTime           = $DueDateTimeValue
-                    Notes                 = $NotesValue
+                    Description           = $NotesValue
                     Ensure                = 'Present'
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId
@@ -289,7 +289,7 @@ class PlannerTask : M365DSCResourceBase
         #region Assignments
         Write-Verbose -Message 'Converting Assignments into the proper format'
         $assignmentsValue = @{}
-        foreach ($assignment in $setParams.AssignedUsers)
+        foreach ($assignment in $setParams.Assignments)
         {
             $user = Get-MgUser -UserId $assignment -ErrorAction SilentlyContinue
 
@@ -303,13 +303,12 @@ class PlannerTask : M365DSCResourceBase
             }
         }
         $setParams.Assignments = $assignmentsValue
-        $setParams.Remove('AssignedUsers') | Out-Null
         #endregion
 
         $DetailsValue = @{
             id          = (New-Guid).ToString()
             checklist   = @()
-            description = $this.Notes
+            description = $this.Description
             references  = @()
         }
 
@@ -345,7 +344,7 @@ class PlannerTask : M365DSCResourceBase
 
         $setParams.Remove('Description') | Out-Null
         $setParams.Add('Details', $DetailsValue)
-        $setParams.Remove('Notes') | Out-Null
+        $setParams.Remove('Description') | Out-Null
 
         #region Categories
         $categoriesValue = @{
@@ -391,24 +390,22 @@ class PlannerTask : M365DSCResourceBase
         $setParams.Remove('Categories') | Out-Null
         #endregion
 
-        $setParams.Add('BucketId', $setParams.Bucket)
-        $setParams.Remove('Bucket') | Out-Null
         $setParams = Rename-M365DSCCimInstanceParameter -Properties $setParams
 
         if ($this.Ensure -eq 'Present' -and $currentValues.Ensure -eq 'Absent')
         {
-            $setParams.Remove('TaskId') | Out-Null
+            $setParams.Remove('Id') | Out-Null
             Write-Verbose -Message "Planner Task {$($this.Title)} doesn't already exist. Creating it with`r`n:$(Convert-M365DscHashtableToString -Hashtable $setParams)"
             $newTask = New-MgPlannerTask -BodyParameter $setParams
         }
         elseif ($this.Ensure -eq 'Present' -and $currentValues.Ensure -eq 'Present')
         {
-            $taskIdValue = $currentValues.TaskId
+            $taskIdValue = $currentValues.Id
             if ([System.String]::IsNullOrEmpty($taskIdValue))
             {
-                $taskIdValue = $setParams.TaskId
+                $taskIdValue = $setParams.Id
             }
-            $setParams.Remove('TaskId') | Out-Null
+            $setParams.Remove('Id') | Out-Null
             $details = $setParams.Details
             $setParams.Remove('Details') | Out-Null
             $setParams.Remove('Verbose') | Out-Null
@@ -456,7 +453,7 @@ class PlannerTask : M365DSCResourceBase
         {
             Write-Verbose -Message "Planner Task {$($this.Title)} exists, but is should not. `
             Removing it."
-            Remove-MgPlannerTask -PlannerTaskId $setParams.TaskId
+            Remove-MgPlannerTask -PlannerTaskId $setParams.Id
         }
     }
 
@@ -515,7 +512,7 @@ class PlannerTask : M365DSCResourceBase
                             $currentDSCBlock = ''
 
                             $params = @{
-                                TaskId                = $task.Id
+                                Id                    = $task.Id
                                 PlanId                = $plan.Id
                                 Title                 = $task.Title
                                 Credential            = $this.Credential
@@ -531,9 +528,9 @@ class PlannerTask : M365DSCResourceBase
 
                             $result = $this.GetForExport($params)
 
-                            if ($result.AssignedUsers.Count -eq 0)
+                            if ($result.Assignments.Count -eq 0)
                             {
-                                $result.Remove('AssignedUsers') | Out-Null
+                                $result.Remove('Assignments') | Out-Null
                             }
 
                             if ($result.Attachments)
@@ -566,11 +563,11 @@ class PlannerTask : M365DSCResourceBase
                                 }
                             }
 
-                            # Fix Notes which can have multiple lines
-                            if (-not [System.String]::IsNullOrEmpty($result.Notes))
+                            # Fix Description which can have multiple lines
+                            if (-not [System.String]::IsNullOrEmpty($result.Description))
                             {
-                                $result.Notes = $result.Notes.Replace('"', '``"')
-                                $result.Notes = $result.Notes.Replace('&', "``&")
+                                $result.Description = $result.Description.Replace('"', '``"')
+                                $result.Description = $result.Description.Replace('&', "``&")
                             }
 
                             $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
@@ -612,13 +609,13 @@ class PlannerTask : M365DSCResourceBase
         return @{
             PostProcessing = {
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
-                if ([System.String]::IsNullOrEmpty($DesiredValues.Bucket) -and
-                    -not [System.String]::IsNullOrEmpty($CurrentValues.Bucket))
+                if ([System.String]::IsNullOrEmpty($DesiredValues.BucketId) -and
+                    -not [System.String]::IsNullOrEmpty($CurrentValues.BucketId))
                 {
-                    if (-not $ValuesToCheck.ContainsKey('Bucket'))
+                    if (-not $ValuesToCheck.ContainsKey('BucketId'))
                     {
-                        $DesiredValues.Bucket = $null
-                        $ValuesToCheck.Add('Bucket', $null)
+                        $DesiredValues.BucketId = $null
+                        $ValuesToCheck.Add('BucketId', $null)
                     }
                 }
                 return [System.Tuple[Hashtable, Hashtable, Hashtable]]::new($DesiredValues, $CurrentValues, $ValuesToCheck)

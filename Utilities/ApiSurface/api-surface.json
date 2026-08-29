@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "capturedAt": "2026-08-29T10:13:43Z",
+  "capturedAt": "2026-08-29T16:57:14Z",
   "capturedBy": "local",
   "completeness": {
     "tenantConnected": true,
@@ -24,8 +24,8 @@
       "Set-DefaultTenantMyAnalyticsFeatureConfig"
     ],
     "graphTypeCoverage": {
-      "requested": 186,
-      "captured": 186,
+      "requested": 187,
+      "captured": 187,
       "missing": []
     }
   },
@@ -1894,6 +1894,35 @@
         },
         "isOrganizationDefault": {
           "type": "Edm.Boolean",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
+    "beta:addIn": {
+      "kind": "ComplexType",
+      "baseType": null,
+      "isAbstract": false,
+      "properties": {
+        "id": {
+          "type": "Edm.Guid",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "properties": {
+          "type": "keyValue",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "type": {
+          "type": "Edm.String",
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -14913,6 +14942,12 @@
         }
       }
     },
+    "beta:customSecurityAttributeValue": {
+      "kind": "ComplexType",
+      "baseType": null,
+      "isAbstract": false,
+      "properties": {}
+    },
     "beta:customSubjectAlternativeName": {
       "kind": "ComplexType",
       "baseType": null,
@@ -22476,6 +22511,160 @@
         },
         "termsOfServiceUrl": {
           "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
+    "beta:internalDomainFederation": {
+      "kind": "EntityType",
+      "baseType": "samlOrWsFedProvider",
+      "isAbstract": false,
+      "properties": {
+        "activeSignInUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "defaultInteractiveAuthenticationMethod": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "displayName": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "federatedIdpMfaBehavior": {
+          "type": "federatedIdpMfaBehavior",
+          "enum": [
+            "acceptIfMfaDoneByFederatedIdp",
+            "enforceMfaByFederatedIdp",
+            "rejectMfaByFederatedIdp",
+            "unknownFutureValue"
+          ],
+          "isFlags": false,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "id": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "isSignedAuthenticationRequestRequired": {
+          "type": "Edm.Boolean",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "issuerUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "metadataExchangeUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "nextSigningCertificate": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "openIdConnectDiscoveryEndpoint": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "passiveSignInUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "passwordChangeUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "passwordResetUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "preferredAuthenticationProtocol": {
+          "type": "authenticationProtocol",
+          "enum": [
+            "saml",
+            "unknownFutureValue",
+            "wsFed"
+          ],
+          "isFlags": false,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "promptLoginBehavior": {
+          "type": "promptLoginBehavior",
+          "enum": [
+            "disabled",
+            "nativeSupport",
+            "translateToFreshPasswordAuthentication",
+            "unknownFutureValue"
+          ],
+          "isFlags": false,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "signOutUri": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "signingCertificate": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "signingCertificateUpdateStatus": {
+          "type": "signingCertificateUpdateStatus",
+          "isComplex": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -33182,6 +33371,56 @@
         }
       }
     },
+    "beta:passwordSingleSignOnField": {
+      "kind": "ComplexType",
+      "baseType": null,
+      "isAbstract": false,
+      "properties": {
+        "customizedLabel": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "defaultLabel": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "fieldId": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "type": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
+    "beta:passwordSingleSignOnSettings": {
+      "kind": "ComplexType",
+      "baseType": null,
+      "isAbstract": false,
+      "properties": {
+        "fields": {
+          "type": "passwordSingleSignOnField",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
     "beta:patternedRecurrence": {
       "kind": "ComplexType",
       "baseType": null,
@@ -34736,6 +34975,20 @@
         }
       }
     },
+    "beta:samlSingleSignOnSettings": {
+      "kind": "ComplexType",
+      "baseType": null,
+      "isAbstract": false,
+      "properties": {
+        "relayState": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
     "beta:samsungEFotaFirmwareVersion": {
       "kind": "ComplexType",
       "baseType": null,
@@ -34847,6 +35100,493 @@
       "properties": {
         "isEnabled": {
           "type": "Edm.Boolean",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
+    "beta:servicePrincipal": {
+      "kind": "EntityType",
+      "baseType": "directoryObject",
+      "isAbstract": false,
+      "properties": {
+        "accountEnabled": {
+          "type": "Edm.Boolean",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "addIns": {
+          "type": "addIn",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "alternativeNames": {
+          "type": "Edm.String",
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appDescription": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appDisplayName": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appId": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appManagementPolicies": {
+          "type": "appManagementPolicy",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appOwnerOrganizationId": {
+          "type": "Edm.Guid",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appRoleAssignedTo": {
+          "type": "appRoleAssignment",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appRoleAssignmentRequired": {
+          "type": "Edm.Boolean",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appRoleAssignments": {
+          "type": "appRoleAssignment",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "appRoles": {
+          "type": "appRole",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "applicationTemplateId": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "claimsMappingPolicies": {
+          "type": "claimsMappingPolicy",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "claimsPolicy": {
+          "type": "customClaimsPolicy",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "createdByAppId": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": true
+        },
+        "createdObjects": {
+          "type": "directoryObject",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "customSecurityAttributes": {
+          "type": "customSecurityAttributeValue",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "delegatedPermissionClassifications": {
+          "type": "delegatedPermissionClassification",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "deletedDateTime": {
+          "type": "Edm.DateTimeOffset",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "description": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "disabledByMicrosoftStatus": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "displayName": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "endpoints": {
+          "type": "endpoint",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "errorUrl": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "federatedIdentityCredentials": {
+          "type": "federatedIdentityCredential",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "homeRealmDiscoveryPolicies": {
+          "type": "homeRealmDiscoveryPolicy",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "homepage": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "id": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "info": {
+          "type": "informationalUrl",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "isDisabled": {
+          "type": "Edm.Boolean",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "keyCredentials": {
+          "type": "keyCredential",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "licenseDetails": {
+          "type": "licenseDetails",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "lifecycle": {
+          "type": "identityGovernance.identityLifecycle",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "loginUrl": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "logoutUrl": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "memberOf": {
+          "type": "directoryObject",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "notes": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "notificationEmailAddresses": {
+          "type": "Edm.String",
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "oauth2PermissionGrants": {
+          "type": "oAuth2PermissionGrant",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "ownedObjects": {
+          "type": "directoryObject",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "owners": {
+          "type": "directoryObject",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "passwordCredentials": {
+          "type": "passwordCredential",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "passwordSingleSignOnSettings": {
+          "type": "passwordSingleSignOnSettings",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "permissionGrantPreApprovalPolicies": {
+          "type": "permissionGrantPreApprovalPolicy",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "preferredSingleSignOnMode": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "preferredTokenSigningKeyEndDateTime": {
+          "type": "Edm.DateTimeOffset",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "preferredTokenSigningKeyThumbprint": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "publishedPermissionScopes": {
+          "type": "permissionScope",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "publisherName": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "remoteDesktopSecurityConfiguration": {
+          "type": "remoteDesktopSecurityConfiguration",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "replyUrls": {
+          "type": "Edm.String",
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "samlMetadataUrl": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "samlSingleSignOnSettings": {
+          "type": "samlSingleSignOnSettings",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "servicePrincipalNames": {
+          "type": "Edm.String",
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "servicePrincipalType": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "signInAudience": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "synchronization": {
+          "type": "synchronization",
+          "isComplex": true,
+          "isArray": false,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "tags": {
+          "type": "Edm.String",
+          "isArray": true,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "tokenEncryptionKeyId": {
+          "type": "Edm.Guid",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "tokenIssuancePolicies": {
+          "type": "tokenIssuancePolicy",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "tokenLifetimePolicies": {
+          "type": "tokenLifetimePolicy",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "transitiveMemberOf": {
+          "type": "directoryObject",
+          "isComplex": true,
+          "isArray": true,
+          "isNavigation": true,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "verifiedPublisher": {
+          "type": "verifiedPublisher",
+          "isComplex": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -35518,6 +36258,27 @@
         },
         "value": {
           "type": "Edm.Int32",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        }
+      }
+    },
+    "beta:signingCertificateUpdateStatus": {
+      "kind": "ComplexType",
+      "baseType": null,
+      "isAbstract": false,
+      "properties": {
+        "certificateUpdateResult": {
+          "type": "Edm.String",
+          "isArray": false,
+          "isNavigation": false,
+          "isReadOnly": false,
+          "isImmutable": false
+        },
+        "lastRunDateTime": {
+          "type": "Edm.DateTimeOffset",
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -52405,35 +53166,6 @@
         }
       }
     },
-    "v1.0:addIn": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "id": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "properties": {
-          "type": "keyValue",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "type": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
     "v1.0:administrativeUnit": {
       "kind": "EntityType",
       "baseType": "directoryObject",
@@ -52520,62 +53252,6 @@
           "isImmutable": false
         },
         "visibility": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:appRole": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "allowedMemberTypes": {
-          "type": "Edm.String",
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "description": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "displayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "id": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "isEnabled": {
-          "type": "Edm.Boolean",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "origin": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "value": {
           "type": "Edm.String",
           "isArray": false,
           "isNavigation": false,
@@ -53885,132 +54561,6 @@
         }
       }
     },
-    "v1.0:informationalUrl": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "logoUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "marketingUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "privacyStatementUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "supportUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "termsOfServiceUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:keyCredential": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "customKeyIdentifier": {
-          "type": "Edm.Binary",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "displayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "endDateTime": {
-          "type": "Edm.DateTimeOffset",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "key": {
-          "type": "Edm.Binary",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "keyId": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "startDateTime": {
-          "type": "Edm.DateTimeOffset",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "type": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "usage": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:keyValue": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "key": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "value": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
     "v1.0:licenseAssignmentState": {
       "kind": "ComplexType",
       "baseType": null,
@@ -54359,62 +54909,6 @@
         }
       }
     },
-    "v1.0:passwordCredential": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "customKeyIdentifier": {
-          "type": "Edm.Binary",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "displayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "endDateTime": {
-          "type": "Edm.DateTimeOffset",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "hint": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "keyId": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "secretText": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "startDateTime": {
-          "type": "Edm.DateTimeOffset",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
     "v1.0:passwordProfile": {
       "kind": "ComplexType",
       "baseType": null,
@@ -54435,76 +54929,6 @@
           "isImmutable": false
         },
         "password": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:permissionScope": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "adminConsentDescription": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "adminConsentDisplayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "id": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "isEnabled": {
-          "type": "Edm.Boolean",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "origin": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "type": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "userConsentDescription": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "userConsentDisplayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "value": {
           "type": "Edm.String",
           "isArray": false,
           "isNavigation": false,
@@ -54903,489 +55327,6 @@
         },
         "service": {
           "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:resourceSpecificPermission": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "description": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "displayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "id": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "isEnabled": {
-          "type": "Edm.Boolean",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "value": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:samlSingleSignOnSettings": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "relayState": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:servicePrincipal": {
-      "kind": "EntityType",
-      "baseType": "directoryObject",
-      "isAbstract": false,
-      "properties": {
-        "accountEnabled": {
-          "type": "Edm.Boolean",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "addIns": {
-          "type": "addIn",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "alternativeNames": {
-          "type": "Edm.String",
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appDescription": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appDisplayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appId": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appManagementPolicies": {
-          "type": "appManagementPolicy",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appOwnerOrganizationId": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appRoleAssignedTo": {
-          "type": "appRoleAssignment",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appRoleAssignmentRequired": {
-          "type": "Edm.Boolean",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appRoleAssignments": {
-          "type": "appRoleAssignment",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "appRoles": {
-          "type": "appRole",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "applicationTemplateId": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "claimsMappingPolicies": {
-          "type": "claimsMappingPolicy",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "createdByAppId": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": true
-        },
-        "createdObjects": {
-          "type": "directoryObject",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "customSecurityAttributes": {
-          "type": "customSecurityAttributeValue",
-          "isComplex": true,
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "delegatedPermissionClassifications": {
-          "type": "delegatedPermissionClassification",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "deletedDateTime": {
-          "type": "Edm.DateTimeOffset",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "description": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "disabledByMicrosoftStatus": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "displayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "endpoints": {
-          "type": "endpoint",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "federatedIdentityCredentials": {
-          "type": "federatedIdentityCredential",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "homeRealmDiscoveryPolicies": {
-          "type": "homeRealmDiscoveryPolicy",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "homepage": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "id": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "info": {
-          "type": "informationalUrl",
-          "isComplex": true,
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "isDisabled": {
-          "type": "Edm.Boolean",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "keyCredentials": {
-          "type": "keyCredential",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "loginUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "logoutUrl": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "memberOf": {
-          "type": "directoryObject",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "notes": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "notificationEmailAddresses": {
-          "type": "Edm.String",
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "oauth2PermissionGrants": {
-          "type": "oAuth2PermissionGrant",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "oauth2PermissionScopes": {
-          "type": "permissionScope",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "ownedObjects": {
-          "type": "directoryObject",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "owners": {
-          "type": "directoryObject",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "passwordCredentials": {
-          "type": "passwordCredential",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "preferredSingleSignOnMode": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "preferredTokenSigningKeyThumbprint": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "remoteDesktopSecurityConfiguration": {
-          "type": "remoteDesktopSecurityConfiguration",
-          "isComplex": true,
-          "isArray": false,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "replyUrls": {
-          "type": "Edm.String",
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "resourceSpecificApplicationPermissions": {
-          "type": "resourceSpecificPermission",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "samlSingleSignOnSettings": {
-          "type": "samlSingleSignOnSettings",
-          "isComplex": true,
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "servicePrincipalNames": {
-          "type": "Edm.String",
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "servicePrincipalType": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "signInAudience": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "synchronization": {
-          "type": "synchronization",
-          "isComplex": true,
-          "isArray": false,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "tags": {
-          "type": "Edm.String",
-          "isArray": true,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "tokenEncryptionKeyId": {
-          "type": "Edm.Guid",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "tokenIssuancePolicies": {
-          "type": "tokenIssuancePolicy",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "tokenLifetimePolicies": {
-          "type": "tokenLifetimePolicy",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "transitiveMemberOf": {
-          "type": "directoryObject",
-          "isComplex": true,
-          "isArray": true,
-          "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "verifiedPublisher": {
-          "type": "verifiedPublisher",
-          "isComplex": true,
           "isArray": false,
           "isNavigation": false,
           "isReadOnly": false,
@@ -56739,34 +56680,6 @@
           "isComplex": true,
           "isArray": true,
           "isNavigation": true,
-          "isReadOnly": false,
-          "isImmutable": false
-        }
-      }
-    },
-    "v1.0:verifiedPublisher": {
-      "kind": "ComplexType",
-      "baseType": null,
-      "isAbstract": false,
-      "properties": {
-        "addedDateTime": {
-          "type": "Edm.DateTimeOffset",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "displayName": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
-          "isReadOnly": false,
-          "isImmutable": false
-        },
-        "verifiedPublisherId": {
-          "type": "Edm.String",
-          "isArray": false,
-          "isNavigation": false,
           "isReadOnly": false,
           "isImmutable": false
         }
@@ -66036,6 +65949,66 @@
         "Sort": "System.String[]",
         "Top": "System.Int32",
         "UnifiedRoleDefinitionId": "System.String"
+      }
+    },
+    "Get-MgBetaServicePrincipal": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "All": "System.Management.Automation.SwitchParameter",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "ConsistencyLevel": "System.String",
+        "CountVariable": "System.String",
+        "ExpandProperty": "System.String[]",
+        "Filter": "System.String",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "PageSize": "System.Int32",
+        "Property": "System.String[]",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResponseHeadersVariable": "System.String",
+        "Search": "System.String",
+        "ServicePrincipalId": "System.String",
+        "Skip": "System.Int32",
+        "Sort": "System.String[]",
+        "Top": "System.Int32"
+      }
+    },
+    "Get-MgBetaServicePrincipalAppRoleAssignedTo": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "All": "System.Management.Automation.SwitchParameter",
+        "AppRoleAssignmentId": "System.String",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "CountVariable": "System.String",
+        "ExpandProperty": "System.String[]",
+        "Filter": "System.String",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "PageSize": "System.Int32",
+        "Property": "System.String[]",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResponseHeadersVariable": "System.String",
+        "Search": "System.String",
+        "ServicePrincipalId": "System.String",
+        "Skip": "System.Int32",
+        "Sort": "System.String[]",
+        "Top": "System.Int32"
       }
     },
     "Get-MgBetaSubscribedSku": {
@@ -75386,6 +75359,141 @@
         "RoleDefinitionId": "System.String"
       }
     },
+    "New-MgBetaServicePrincipal": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "AccountEnabled": "System.Management.Automation.SwitchParameter",
+        "AddIns": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAddIn[]",
+        "AdditionalProperties": "System.Collections.Hashtable",
+        "AlternativeNames": "System.String[]",
+        "AppDescription": "System.String",
+        "AppDisplayName": "System.String",
+        "AppId": "System.String",
+        "AppManagementPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppManagementPolicy[]",
+        "AppOwnerOrganizationId": "System.String",
+        "AppRoleAssignedTo": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRoleAssignment[]",
+        "AppRoleAssignmentRequired": "System.Management.Automation.SwitchParameter",
+        "AppRoleAssignments": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRoleAssignment[]",
+        "AppRoles": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRole[]",
+        "ApplicationTemplateId": "System.String",
+        "BodyParameter": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphServicePrincipal",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "ClaimsMappingPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphClaimsMappingPolicy[]",
+        "ClaimsPolicy": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphCustomClaimsPolicy",
+        "CreatedByAppId": "System.String",
+        "CreatedObjects": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "CustomSecurityAttributes": "System.Collections.Hashtable",
+        "DelegatedPermissionClassifications": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDelegatedPermissionClassification[]",
+        "DeletedDateTime": "System.DateTime",
+        "Description": "System.String",
+        "DisabledByMicrosoftStatus": "System.String",
+        "DisplayName": "System.String",
+        "Endpoints": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphEndpoint[]",
+        "ErrorUrl": "System.String",
+        "FederatedIdentityCredentials": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphFederatedIdentityCredential[]",
+        "Headers": "System.Collections.IDictionary",
+        "HomeRealmDiscoveryPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphHomeRealmDiscoveryPolicy[]",
+        "Homepage": "System.String",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "Id": "System.String",
+        "Info": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphInformationalUrl",
+        "IsDisabled": "System.Management.Automation.SwitchParameter",
+        "KeyCredentials": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphKeyCredential[]",
+        "LicenseDetails": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphLicenseDetails[]",
+        "LoginUrl": "System.String",
+        "LogoutUrl": "System.String",
+        "MemberOf": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "Notes": "System.String",
+        "NotificationEmailAddresses": "System.String[]",
+        "Oauth2PermissionGrants": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphOAuth2PermissionGrant[]",
+        "OwnedObjects": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "Owners": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "PasswordCredentials": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPasswordCredential[]",
+        "PasswordSingleSignOnSettings": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPasswordSingleSignOnSettings",
+        "PermissionGrantPreApprovalPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPermissionGrantPreApprovalPolicy[]",
+        "PreferredSingleSignOnMode": "System.String",
+        "PreferredTokenSigningKeyEndDateTime": "System.DateTime",
+        "PreferredTokenSigningKeyThumbprint": "System.String",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "PublishedPermissionScopes": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPermissionScope[]",
+        "PublisherName": "System.String",
+        "RemoteDesktopSecurityConfiguration": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphRemoteDesktopSecurityConfiguration",
+        "ReplyUrls": "System.String[]",
+        "ResponseHeadersVariable": "System.String",
+        "SamlMetadataUrl": "System.String",
+        "SamlSingleSignOnSettings": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphSamlSingleSignOnSettings",
+        "ServicePrincipalNames": "System.String[]",
+        "ServicePrincipalType": "System.String",
+        "SignInAudience": "System.String",
+        "Synchronization": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphSynchronization",
+        "Tags": "System.String[]",
+        "TokenEncryptionKeyId": "System.String",
+        "TokenIssuancePolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphTokenIssuancePolicy[]",
+        "TokenLifetimePolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphTokenLifetimePolicy[]",
+        "TransitiveMemberOf": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "VerifiedPublisher": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphVerifiedPublisher"
+      }
+    },
+    "New-MgBetaServicePrincipalAppRoleAssignedTo": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "AdditionalProperties": "System.Collections.Hashtable",
+        "AppRoleId": "System.String",
+        "BodyParameter": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRoleAssignment",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "CreationTimestamp": "System.DateTime",
+        "DeletedDateTime": "System.DateTime",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "Id": "System.String",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "PrincipalDisplayName": "System.String",
+        "PrincipalId": "System.String",
+        "PrincipalType": "System.String",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResourceDisplayName": "System.String",
+        "ResourceId": "System.String",
+        "ResponseHeadersVariable": "System.String",
+        "ServicePrincipalId": "System.String"
+      }
+    },
+    "New-MgBetaServicePrincipalOwnerByRef": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "AdditionalProperties": "System.Collections.Hashtable",
+        "BodyParameter": "Microsoft.Graph.Beta.PowerShell.Models.IReferenceCreate",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "OdataId": "System.String",
+        "PassThru": "System.Management.Automation.SwitchParameter",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResponseHeadersVariable": "System.String",
+        "ServicePrincipalId": "System.String"
+      }
+    },
     "New-MgBetaTeamChannelTab": {
       "workload": "MicrosoftGraph",
       "module": "Microsoft.Graph.Beta.Teams",
@@ -81202,6 +81310,71 @@
         "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
         "ResponseHeadersVariable": "System.String",
         "UnifiedRoleAssignmentId": "System.String"
+      }
+    },
+    "Remove-MgBetaServicePrincipal": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "Break": "System.Management.Automation.SwitchParameter",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "IfMatch": "System.String",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "PassThru": "System.Management.Automation.SwitchParameter",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResponseHeadersVariable": "System.String",
+        "ServicePrincipalId": "System.String"
+      }
+    },
+    "Remove-MgBetaServicePrincipalAppRoleAssignedTo": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "AppRoleAssignmentId": "System.String",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "IfMatch": "System.String",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "PassThru": "System.Management.Automation.SwitchParameter",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResponseHeadersVariable": "System.String",
+        "ServicePrincipalId": "System.String"
+      }
+    },
+    "Remove-MgBetaServicePrincipalOwnerDirectoryObjectByRef": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "Break": "System.Management.Automation.SwitchParameter",
+        "DirectoryObjectId": "System.String",
+        "Headers": "System.Collections.IDictionary",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "IfMatch": "System.String",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "PassThru": "System.Management.Automation.SwitchParameter",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "ResponseHeadersVariable": "System.String",
+        "ServicePrincipalId": "System.String"
       }
     },
     "Remove-MgBetaTeamChannelTab": {
@@ -92466,6 +92639,90 @@
         "TemplateId": "System.String",
         "UnifiedRoleDefinitionId": "System.String",
         "Version": "System.String"
+      }
+    },
+    "Update-MgBetaServicePrincipal": {
+      "workload": "Support",
+      "module": "Microsoft.Graph.Beta.Applications",
+      "moduleVersion": "2.35.1",
+      "apiVersion": null,
+      "variants": [],
+      "parameters": {
+        "AccountEnabled": "System.Management.Automation.SwitchParameter",
+        "AddIns": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAddIn[]",
+        "AdditionalProperties": "System.Collections.Hashtable",
+        "AlternativeNames": "System.String[]",
+        "AppDescription": "System.String",
+        "AppDisplayName": "System.String",
+        "AppId": "System.String",
+        "AppManagementPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppManagementPolicy[]",
+        "AppOwnerOrganizationId": "System.String",
+        "AppRoleAssignedTo": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRoleAssignment[]",
+        "AppRoleAssignmentRequired": "System.Management.Automation.SwitchParameter",
+        "AppRoleAssignments": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRoleAssignment[]",
+        "AppRoles": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphAppRole[]",
+        "ApplicationTemplateId": "System.String",
+        "BodyParameter": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphServicePrincipal",
+        "Break": "System.Management.Automation.SwitchParameter",
+        "ClaimsMappingPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphClaimsMappingPolicy[]",
+        "ClaimsPolicy": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphCustomClaimsPolicy",
+        "CreatedByAppId": "System.String",
+        "CreatedObjects": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "CustomSecurityAttributes": "System.Collections.Hashtable",
+        "DelegatedPermissionClassifications": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDelegatedPermissionClassification[]",
+        "DeletedDateTime": "System.DateTime",
+        "Description": "System.String",
+        "DisabledByMicrosoftStatus": "System.String",
+        "DisplayName": "System.String",
+        "Endpoints": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphEndpoint[]",
+        "ErrorUrl": "System.String",
+        "FederatedIdentityCredentials": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphFederatedIdentityCredential[]",
+        "Headers": "System.Collections.IDictionary",
+        "HomeRealmDiscoveryPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphHomeRealmDiscoveryPolicy[]",
+        "Homepage": "System.String",
+        "HttpPipelineAppend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "HttpPipelinePrepend": "Microsoft.Graph.Beta.PowerShell.Runtime.SendAsyncStep[]",
+        "Id": "System.String",
+        "Info": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphInformationalUrl",
+        "InputObject": "Microsoft.Graph.Beta.PowerShell.Models.IApplicationsIdentity",
+        "IsDisabled": "System.Management.Automation.SwitchParameter",
+        "KeyCredentials": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphKeyCredential[]",
+        "LicenseDetails": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphLicenseDetails[]",
+        "LoginUrl": "System.String",
+        "LogoutUrl": "System.String",
+        "MemberOf": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "Notes": "System.String",
+        "NotificationEmailAddresses": "System.String[]",
+        "Oauth2PermissionGrants": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphOAuth2PermissionGrant[]",
+        "OwnedObjects": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "Owners": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "PasswordCredentials": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPasswordCredential[]",
+        "PasswordSingleSignOnSettings": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPasswordSingleSignOnSettings",
+        "PermissionGrantPreApprovalPolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPermissionGrantPreApprovalPolicy[]",
+        "PreferredSingleSignOnMode": "System.String",
+        "PreferredTokenSigningKeyEndDateTime": "System.DateTime",
+        "PreferredTokenSigningKeyThumbprint": "System.String",
+        "Proxy": "System.Uri",
+        "ProxyCredential": "System.Management.Automation.PSCredential",
+        "ProxyUseDefaultCredentials": "System.Management.Automation.SwitchParameter",
+        "PublishedPermissionScopes": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphPermissionScope[]",
+        "PublisherName": "System.String",
+        "RemoteDesktopSecurityConfiguration": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphRemoteDesktopSecurityConfiguration",
+        "ReplyUrls": "System.String[]",
+        "ResponseHeadersVariable": "System.String",
+        "SamlMetadataUrl": "System.String",
+        "SamlSingleSignOnSettings": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphSamlSingleSignOnSettings",
+        "ServicePrincipalId": "System.String",
+        "ServicePrincipalNames": "System.String[]",
+        "ServicePrincipalType": "System.String",
+        "SignInAudience": "System.String",
+        "Synchronization": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphSynchronization",
+        "Tags": "System.String[]",
+        "TokenEncryptionKeyId": "System.String",
+        "TokenIssuancePolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphTokenIssuancePolicy[]",
+        "TokenLifetimePolicies": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphTokenLifetimePolicy[]",
+        "TransitiveMemberOf": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphDirectoryObject[]",
+        "VerifiedPublisher": "Microsoft.Graph.Beta.PowerShell.Models.IMicrosoftGraphVerifiedPublisher"
       }
     },
     "Update-MgBetaTeamChannelTab": {

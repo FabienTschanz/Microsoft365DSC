@@ -52,7 +52,6 @@ Configuration Example
             PasswordRequiredType                               = 'numericComplex'
             PasswordSignInFailureCountBeforeFactoryReset       = 10
             RequiredPasswordComplexity                         = 'medium'
-            RestrictedApps                                     = @('com.facebook.katana', 'com.snapchat.android')
             RoleScopeTagIds                                    = @('0')
             ScheduledActionsForRule                            = @(
                 MSFT_ScheduledActionConfigurations{
@@ -60,7 +59,6 @@ Configuration Example
                     gracePeriodHours = 24
                 }
             )
-            SecurityBlockDeviceAdministratorManagedDevices     = $True
             SecurityBlockJailbrokenDevices                     = $True
             SecurityDisableUsbDebugging                        = $True
             SecurityPreventInstallAppsFromUnknownSources       = $True

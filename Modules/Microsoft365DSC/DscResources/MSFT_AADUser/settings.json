@@ -10,7 +10,23 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "LicenseAssignment",
+      "reason": "Deferred",
+      "note": "The SKU part numbers from the licenseDetails batch request property."
+    },
+    {
+      "name": "PhoneNumber",
+      "reason": "Deferred",
+      "note": "The renamed businessPhones value, with the first entry as its value."
+    },
+    {
+      "name": "Roles",
+      "reason": "Deferred",
+      "note": "The unifiedRoleAssignment objects for the user."
+    }
+  ],
   "description": "",
   "roles": {
     "read": [

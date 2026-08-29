@@ -10,7 +10,73 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ApplicationsFilter",
+      "reason": "Deferred",
+      "note": "The flattened conditions.applications.applicationFilter.rule property."
+    },
+    {
+      "name": "ApplicationsFilterMode",
+      "reason": "Deferred",
+      "note": "The flattened conditions.applications.applicationFilter.mode property."
+    },
+    {
+      "name": "AuthenticationContexts",
+      "reason": "Deferred",
+      "note": "The flattened conditions.applications.includeAuthenticationContextClassReferences property."
+    },
+    {
+      "name": "AuthenticationStrength",
+      "reason": "Deferred",
+      "note": "This is grantControls.authenticationStrength which the differ skips because the generatedFrom block sets includeNavigationProperties to false."
+    },
+    {
+      "name": "DisableResilienceDefaultsIsEnabled",
+      "reason": "Deferred",
+      "note": "The flattened sessionControls.disableResilienceDefaults property."
+    },
+    {
+      "name": "ExcludeExternalTenantsMembers",
+      "reason": "Deferred",
+      "note": "The flattened conditions.users.excludeGuestsOrExternalUsers.externalTenants.members property."
+    },
+    {
+      "name": "ExcludeExternalTenantsMembershipKind",
+      "reason": "Deferred",
+      "note": "The flattened conditions.users.excludeGuestsOrExternalUsers.externalTenants.membershipKind property."
+    },
+    {
+      "name": "ExcludeGuestOrExternalUserTypes",
+      "reason": "Deferred",
+      "note": "The flattened conditions.users.excludeGuestsOrExternalUsers.guestOrExternalUserTypes property."
+    },
+    {
+      "name": "IncludeExternalTenantsMembers",
+      "reason": "Deferred",
+      "note": "The flattened conditions.users.includeGuestsOrExternalUsers.externalTenants.members property."
+    },
+    {
+      "name": "IncludeExternalTenantsMembershipKind",
+      "reason": "Deferred",
+      "note": "The flattened conditions.users.includeGuestsOrExternalUsers.externalTenants.membershipKind property."
+    },
+    {
+      "name": "IncludeGuestOrExternalUserTypes",
+      "reason": "Deferred",
+      "note": "The flattened conditions.users.includeGuestsOrExternalUsers.guestOrExternalUserTypes property."
+    },
+    {
+      "name": "ProtocolFlows",
+      "reason": "Deferred",
+      "note": "The beta CSDL carries no protocolFlows on conditionalAccessAuthenticationFlows while the resource still reads and writes the value against live tenants and the gap needs a vendor check before any permanent suppression."
+    },
+    {
+      "name": "SignInFrequencyInterval",
+      "reason": "Deferred",
+      "note": "The flattened sessionControls.signInFrequency.frequencyInterval property."
+    }
+  ],
   "description": "This resource configures an Azure Active Directory Conditional Access Policy.",
   "roles": {
     "read": [

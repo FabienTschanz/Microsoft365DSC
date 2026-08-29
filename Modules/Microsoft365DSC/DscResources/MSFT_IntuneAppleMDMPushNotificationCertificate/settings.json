@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "DataSharingConsetGranted",
+      "reason": "Deferred",
+      "note": "The value lives on the separate dataSharingConsent."
+    }
+  ],
   "description": "Configures a resource for Apple MDM Push notification certificate used for device enrollment.",
   "permissions": {
     "graph": {

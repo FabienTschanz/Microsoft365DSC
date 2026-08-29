@@ -2624,6 +2624,38 @@
       }
     ]
   },
+  "Get-MgBetaServicePrincipal": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "GET",
+        "URI": "/servicePrincipals/{servicePrincipal-id}",
+        "ApiVersion": "beta"
+      },
+      {
+        "Method": "GET",
+        "URI": "/servicePrincipals",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
+  "Get-MgBetaServicePrincipalAppRoleAssignedTo": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "GET",
+        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo/{appRoleAssignment-id}",
+        "ApiVersion": "beta"
+      },
+      {
+        "Method": "GET",
+        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
   "Get-MgBetaSubscribedSku": {
     "SourceModule": "Microsoft.Graph.Beta.Identity.DirectoryManagement",
     "ApiVersion": "beta",
@@ -2969,22 +3001,6 @@
       {
         "Method": "GET",
         "URI": "/servicePrincipals",
-        "ApiVersion": "v1.0"
-      }
-    ]
-  },
-  "Get-MgServicePrincipalAppRoleAssignedTo": {
-    "SourceModule": "Microsoft.Graph.Applications",
-    "ApiVersion": "v1.0",
-    "Variants": [
-      {
-        "Method": "GET",
-        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo/{appRoleAssignment-id}",
-        "ApiVersion": "v1.0"
-      },
-      {
-        "Method": "GET",
-        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo",
         "ApiVersion": "v1.0"
       }
     ]
@@ -4193,6 +4209,39 @@
       }
     ]
   },
+  "New-MgBetaServicePrincipal": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "POST",
+        "URI": "/servicePrincipals",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
+  "New-MgBetaServicePrincipalAppRoleAssignedTo": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "POST",
+        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
+  "New-MgBetaServicePrincipalOwnerByRef": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "POST",
+        "URI": "/servicePrincipals/{servicePrincipal-id}/owners/$ref",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
   "New-MgBetaTeamChannelTab": {
     "SourceModule": "Microsoft.Graph.Beta.Teams",
     "ApiVersion": "beta",
@@ -4332,28 +4381,6 @@
       {
         "Method": "POST",
         "URI": "/servicePrincipals",
-        "ApiVersion": "v1.0"
-      }
-    ]
-  },
-  "New-MgServicePrincipalAppRoleAssignedTo": {
-    "SourceModule": "Microsoft.Graph.Applications",
-    "ApiVersion": "v1.0",
-    "Variants": [
-      {
-        "Method": "POST",
-        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo",
-        "ApiVersion": "v1.0"
-      }
-    ]
-  },
-  "New-MgServicePrincipalOwnerByRef": {
-    "SourceModule": "Microsoft.Graph.Applications",
-    "ApiVersion": "v1.0",
-    "Variants": [
-      {
-        "Method": "POST",
-        "URI": "/servicePrincipals/{servicePrincipal-id}/owners/$ref",
         "ApiVersion": "v1.0"
       }
     ]
@@ -5469,6 +5496,39 @@
       }
     ]
   },
+  "Remove-MgBetaServicePrincipal": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "DELETE",
+        "URI": "/servicePrincipals/{servicePrincipal-id}",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
+  "Remove-MgBetaServicePrincipalAppRoleAssignedTo": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "DELETE",
+        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo/{appRoleAssignment-id}",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
+  "Remove-MgBetaServicePrincipalOwnerDirectoryObjectByRef": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "DELETE",
+        "URI": "/servicePrincipals/{servicePrincipal-id}/owners/{directoryObject-id}/$ref",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
   "Remove-MgBetaTeamChannelTab": {
     "SourceModule": "Microsoft.Graph.Beta.Teams",
     "ApiVersion": "beta",
@@ -5564,39 +5624,6 @@
       {
         "Method": "DELETE",
         "URI": "/planner/tasks/{plannerTask-id}",
-        "ApiVersion": "v1.0"
-      }
-    ]
-  },
-  "Remove-MgServicePrincipal": {
-    "SourceModule": "Microsoft.Graph.Applications",
-    "ApiVersion": "v1.0",
-    "Variants": [
-      {
-        "Method": "DELETE",
-        "URI": "/servicePrincipals/{servicePrincipal-id}",
-        "ApiVersion": "v1.0"
-      }
-    ]
-  },
-  "Remove-MgServicePrincipalAppRoleAssignedTo": {
-    "SourceModule": "Microsoft.Graph.Applications",
-    "ApiVersion": "v1.0",
-    "Variants": [
-      {
-        "Method": "DELETE",
-        "URI": "/servicePrincipals/{servicePrincipal-id}/appRoleAssignedTo/{appRoleAssignment-id}",
-        "ApiVersion": "v1.0"
-      }
-    ]
-  },
-  "Remove-MgServicePrincipalOwnerDirectoryObjectByRef": {
-    "SourceModule": "Microsoft.Graph.Applications",
-    "ApiVersion": "v1.0",
-    "Variants": [
-      {
-        "Method": "DELETE",
-        "URI": "/servicePrincipals/{servicePrincipal-id}/owners/{directoryObject-id}/$ref",
         "ApiVersion": "v1.0"
       }
     ]
@@ -6195,6 +6222,17 @@
       }
     ]
   },
+  "Update-MgBetaDirectoryCustomSecurityAttributeDefinitionAllowedValue": {
+    "SourceModule": "Microsoft.Graph.Beta.Identity.DirectoryManagement",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "PATCH",
+        "URI": "/directory/customSecurityAttributeDefinitions/{customSecurityAttributeDefinition-id}/allowedValues/{allowedValue-id}",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
   "Update-MgBetaDirectorySetting": {
     "SourceModule": "Microsoft.Graph.Beta.Identity.DirectoryManagement",
     "ApiVersion": "beta",
@@ -6774,6 +6812,17 @@
       {
         "Method": "PATCH",
         "URI": "/roleManagement/directory/roleDefinitions/{unifiedRoleDefinition-id}",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
+  "Update-MgBetaServicePrincipal": {
+    "SourceModule": "Microsoft.Graph.Beta.Applications",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "PATCH",
+        "URI": "/servicePrincipals/{servicePrincipal-id}",
         "ApiVersion": "beta"
       }
     ]

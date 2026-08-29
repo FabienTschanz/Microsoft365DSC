@@ -10,7 +10,23 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "AppId",
+      "reason": "Deferred",
+      "note": "From the externalAuthenticationMethodConfiguration entity type."
+    },
+    {
+      "name": "OpenIdConnectSetting",
+      "reason": "Deferred",
+      "note": "From the externalAuthenticationMethodConfiguration entity type."
+    },
+    {
+      "name": "State",
+      "reason": "Deferred",
+      "note": "From the externalAuthenticationMethodConfiguration entity type."
+    }
+  ],
   "description": "This resource configures an Azure AD Authentication Method Policy External.",
   "roles": {
     "read": [

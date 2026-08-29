@@ -3,14 +3,20 @@
   "generatedFrom": {
     "workload": "MicrosoftGraph",
     "apiVersion": "beta",
-    "entityType": "domain",
+    "entityType": "internalDomainFederation",
     "odataSubtype": null,
-    "cmdletNoun": "MgBetaDomain",
-    "cmdletVerb": "Get",
+    "cmdletNoun": "MgBetaDomainFederationConfiguration",
+    "cmdletVerb": "New",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "DomainId",
+      "reason": "Deferred",
+      "note": "The parent domain key from the federationConfiguration route."
+    }
+  ],
   "description": "Manages Azure Active Directory Domain Federation configurations including SAML/WS-Fed settings, signing certificates, and authentication protocols for federated domains.",
   "roles": {
     "read": [

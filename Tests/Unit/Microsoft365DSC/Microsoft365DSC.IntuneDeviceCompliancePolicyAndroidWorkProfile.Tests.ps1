@@ -114,8 +114,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     WorkProfilePreviousPasswordBlockCount              = 5
                     WorkProfileRequiredPasswordComplexity              = "high"
                     WorkProfileRequirePassword                         = $True
-                    SecurityBlockDeviceAdministratorManagedDevices     = $true
-                    RestrictedApps                                     = @('App1', 'App2', 'App3')
                 }
             }
 
@@ -286,8 +284,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                                             = 'Present'
                     Credential                                         = $Credential
                     RequiredPasswordComplexity                         = 'low'
-                    SecurityBlockDeviceAdministratorManagedDevices     = $true
-                    RestrictedApps                                     = @('App1', 'App2', 'App3')
                     ScheduledActionsForRule = @(
                                                 ([MSFT_ScheduledActionConfigurations] @{
                                                     actionType = 'block'
@@ -365,8 +361,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                                             = 'Present'
                     Credential                                         = $Credential
                     RequiredPasswordComplexity                         = 'low'
-                    SecurityBlockDeviceAdministratorManagedDevices     = $true
-                    RestrictedApps                                     = @('App1', 'App2', 'App3')
                     ScheduledActionsForRule = @(
                                                 ([MSFT_ScheduledActionConfigurations] @{
                                                     actionType = 'block'
@@ -425,8 +419,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Ensure                                             = 'Absent'
                     Credential                                         = $Credential
                     RequiredPasswordComplexity                         = 'low'
-                    SecurityBlockDeviceAdministratorManagedDevices     = $true
-                    RestrictedApps                                     = @('App1', 'App2', 'App3')
                     ScheduledActionsForRule = @(
                                                 ([MSFT_ScheduledActionConfigurations] @{
                                                     actionType = 'block'

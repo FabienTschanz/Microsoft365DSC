@@ -35,13 +35,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Update-MgServicePrincipal -MockWith {
+            Mock -CommandName Update-MgBetaServicePrincipal -MockWith {
             }
 
-            Mock -CommandName Remove-MgServicePrincipal -MockWith {
+            Mock -CommandName Remove-MgBetaServicePrincipal -MockWith {
             }
 
-            Mock -CommandName New-MgServicePrincipal -MockWith {
+            Mock -CommandName New-MgBetaServicePrincipal -MockWith {
             }
 
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
@@ -107,21 +107,21 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential                = $Credscredential
                 }
 
-                Mock -CommandName Get-MgServicePrincipal -MockWith {
+                Mock -CommandName Get-MgBetaServicePrincipal -MockWith {
                     return $null
                 }
             }
 
             It 'Should return values from the get method' {
                 ((New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'
-                Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'Get-MgBetaServicePrincipal' -Exactly 1
             }
             It 'Should return false from the test method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Test() | Should -Be $false
             }
             It 'Should create the application from the set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Set()
-                Should -Invoke -CommandName 'New-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'New-MgBetaServicePrincipal' -Exactly 1
             }
         }
 
@@ -169,7 +169,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     return 'Credentials'
                 }
 
-                Mock -CommandName Get-MgServicePrincipal -MockWith {
+                Mock -CommandName Get-MgBetaServicePrincipal -MockWith {
                     $AADSP = New-Object PSCustomObject
                     $AADSP | Add-Member -MemberType NoteProperty -Name AppId -Value 'b4f08c68-7276-4cb8-b9ae-e75fca5ff834'
                     $AADSP | Add-Member -MemberType NoteProperty -Name Id -Value '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
@@ -207,7 +207,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should return values from the get method' {
                 ((New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Present'
-                Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'Get-MgBetaServicePrincipal' -Exactly 1
             }
 
             It 'Should return false from the test method' {
@@ -216,7 +216,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should remove the app from the set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Remove-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'Remove-MgBetaServicePrincipal' -Exactly 1
             }
         }
         Context -Name 'The app exists and values are already in the desired state' -Fixture {
@@ -263,7 +263,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     return 'Credentials'
                 }
 
-                Mock -CommandName Get-MgServicePrincipal -MockWith {
+                Mock -CommandName Get-MgBetaServicePrincipal -MockWith {
                     $AADSP = New-Object PSCustomObject
                     $AADSP | Add-Member -MemberType NoteProperty -Name AppId -Value 'b4f08c68-7276-4cb8-b9ae-e75fca5ff834'
                     $AADSP | Add-Member -MemberType NoteProperty -Name AppDisplayName -Value 'App1'
@@ -302,7 +302,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should return Values from the get method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()
-                Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'Get-MgBetaServicePrincipal' -Exactly 1
             }
 
             It 'Should return true from the test method' {
@@ -337,7 +337,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     return 'Credentials'
                 }
 
-                Mock -CommandName Get-MgServicePrincipal -MockWith {
+                Mock -CommandName Get-MgBetaServicePrincipal -MockWith {
                     $AADSP = New-Object PSCustomObject
                     $AADSP | Add-Member -MemberType NoteProperty -Name AppId -Value 'b4f08c68-7276-4cb8-b9ae-e75fca5ff834'
                     $AADSP | Add-Member -MemberType NoteProperty -Name Id -Value '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
@@ -374,7 +374,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should return values from the get method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Get().ToHashtable()
-                Should -Invoke -CommandName 'Get-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'Get-MgBetaServicePrincipal' -Exactly 1
             }
 
             It 'Should return false from the test method' {
@@ -383,7 +383,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADServicePrincipal' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Update-MgServicePrincipal' -Exactly 1
+                Should -Invoke -CommandName 'Update-MgBetaServicePrincipal' -Exactly 1
             }
         }
 
@@ -399,7 +399,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     return 'Credentials'
                 }
 
-                Mock -CommandName Get-MgServicePrincipal -MockWith {
+                Mock -CommandName Get-MgBetaServicePrincipal -MockWith {
                     $AADSP = New-Object PSCustomObject
                     $AADSP | Add-Member -MemberType NoteProperty -Name AppId -Value 'b4f08c68-7276-4cb8-b9ae-e75fca5ff834'
                     $AADSP | Add-Member -MemberType NoteProperty -Name Id -Value '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'

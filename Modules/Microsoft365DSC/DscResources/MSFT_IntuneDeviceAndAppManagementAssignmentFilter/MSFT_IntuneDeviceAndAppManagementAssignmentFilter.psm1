@@ -11,7 +11,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Key of the Assignment Filter.')]
-    [System.String] $Identity
+    [System.String] $Id
 
     [DscProperty()]
     [System.ComponentModel.Description('Description of the Assignment Filter.')]
@@ -84,7 +84,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
             return $remote
         }
 
-        Write-Verbose -Message "Getting configuration of the Intune Device and App Management Assignment Filter with Id {$($this.Identity)} and DisplayName {$($this.DisplayName)}"
+        Write-Verbose -Message "Getting configuration of the Intune Device and App Management Assignment Filter with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
         try
         {
@@ -104,15 +104,15 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
                     Ensure      = 'Absent'
                 }
 
-                if (-not [System.String]::IsNullOrEmpty($this.Identity))
+                if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    Write-Verbose -Message "Checking if filter exists with identity {$($this.Identity)}."
-                    $assignmentFilter = Get-MgBetaDeviceManagementAssignmentFilter -DeviceAndAppManagementAssignmentFilterId $this.Identity -ErrorAction 'SilentlyContinue'
+                    Write-Verbose -Message "Checking if filter exists with identity {$($this.Id)}."
+                    $assignmentFilter = Get-MgBetaDeviceManagementAssignmentFilter -DeviceAndAppManagementAssignmentFilterId $this.Id -ErrorAction 'SilentlyContinue'
                 }
 
                 if ($null -eq $assignmentFilter)
                 {
-                    Write-Verbose -Message "No assignment filter with Identity {$($this.Identity)} was found."
+                    Write-Verbose -Message "No assignment filter with Id {$($this.Id)} was found."
 
                     Write-Verbose -Message "Checking if filter exists with DisplayName {$($this.DisplayName)}."
                     [array]$assignmentFilter = Get-MgBetaDeviceManagementAssignmentFilter -All | Where-Object -FilterScript { $_.DisplayName -eq $this.DisplayName }
@@ -135,7 +135,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
             Write-Verbose -Message "Found assignment filter {$($assignmentFilter.displayName)}"
 
             $returnHashtable = @{}
-            $returnHashtable.Add('Identity', $assignmentFilter.Id)
+            $returnHashtable.Add('Id', $assignmentFilter.Id)
             $returnHashtable.Add('DisplayName', $assignmentFilter.DisplayName)
             $returnHashtable.Add('Description', $assignmentFilter.Description)
             $returnHashtable.Add('AssignmentFilterManagementType', $assignmentFilter.AssignmentFilterManagementType.ToString())
@@ -201,7 +201,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
             }
 
             Update-MgBetaDeviceManagementAssignmentFilter `
-                -DeviceAndAppManagementAssignmentFilterId $currentPolicy.Identity `
+                -DeviceAndAppManagementAssignmentFilterId $currentPolicy.Id `
                 -DisplayName $this.DisplayName `
                 -Description $this.Description `
                 -Rule $this.Rule `
@@ -211,7 +211,7 @@ class IntuneDeviceAndAppManagementAssignmentFilter : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentPolicy.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing assignment filter {$($this.DisplayName)}"
-            Remove-MgBetaDeviceManagementAssignmentFilter -DeviceAndAppManagementAssignmentFilterId $currentPolicy.Identity | Out-Null
+            Remove-MgBetaDeviceManagementAssignmentFilter -DeviceAndAppManagementAssignmentFilterId $currentPolicy.Id | Out-Null
         }
     }
 

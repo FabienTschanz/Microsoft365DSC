@@ -10,7 +10,13 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "PrincipalType",
+      "reason": "NotConfigurable",
+      "note": "PrincipalType exists only in the DSC model to choose how the Principal name is resolved and it never appears in the request body."
+    }
+  ],
   "description": "This resource configures an Azure Active Directory Privilege Identity Management eligibility request.",
   "roles": {
     "read": [

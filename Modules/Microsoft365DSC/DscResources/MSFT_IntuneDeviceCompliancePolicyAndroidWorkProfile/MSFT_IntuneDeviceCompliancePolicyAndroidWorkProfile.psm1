@@ -27,14 +27,6 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
     [System.String] $RequiredPasswordComplexity
 
     [DscProperty()]
-    [System.ComponentModel.Description('Setting securityBlockDeviceAdministratorManagedDevices to true enhances security by preventing devices managed through the legacy device administrator method from accessing corporate resources.')]
-    [System.Nullable[System.Boolean]] $SecurityBlockDeviceAdministratorManagedDevices
-
-    [DscProperty()]
-    [System.ComponentModel.Description('Specify applications that users are prohibited from installing or using on their devices.')]
-    [System.String[]] $RestrictedApps
-
-    [DscProperty()]
     [System.ComponentModel.Description('Specifies Android Work Profile password type.')]
     [ValidateSet('deviceDefault', 'lowSecurityBiometric', 'required', 'atLeastNumeric', 'numericComplex', 'atLeastAlphabetic', 'atLeastAlphanumeric', 'alphanumericWithSymbols')]
     [System.String] $WorkProfilePasswordRequiredType
@@ -263,7 +255,6 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
             {
                 $devicePolicy = $this.ExportedInstance
             }
-            $resolvedId = $devicePolicy.Id
 
             Write-Verbose -Message "Found Intune Android Work Profile Device Compliance Policy with displayName {$($this.DisplayName)}"
 
@@ -300,8 +291,6 @@ class IntuneDeviceCompliancePolicyAndroidWorkProfile : M365DSCResourceBase
                 Id                                                 = $devicePolicy.Id
                 Description                                        = $devicePolicy.Description
                 RequiredPasswordComplexity                         = $devicePolicy.requiredPasswordComplexity
-                SecurityBlockDeviceAdministratorManagedDevices     = $devicePolicy.securityBlockDeviceAdministratorManagedDevices
-                RestrictedApps                                     = $devicePolicy.restrictedApps
                 WorkProfilePasswordRequiredType                    = $devicePolicy.workProfilePasswordRequiredType
                 WorkProfileRequiredPasswordComplexity              = $devicePolicy.workProfileRequiredPasswordComplexity
                 WorkProfileRequirePassword                         = $devicePolicy.workProfileRequirePassword
