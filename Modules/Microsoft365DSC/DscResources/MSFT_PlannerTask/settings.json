@@ -20,16 +20,6 @@
       "name": "Categories",
       "reason": "Deferred",
       "note": "Categories maps to the appliedCategories property."
-    },
-    {
-      "name": "Checklist",
-      "reason": "Deferred",
-      "note": "Checklist maps to the checklist collection on the plannerTaskDetails entity behind the task details navigation."
-    },
-    {
-      "name": "Description",
-      "reason": "Deferred",
-      "note": "Description maps to the description property of the plannerTaskDetails entity behind the task details navigation."
     }
   ],
   "description": "",
@@ -86,20 +76,12 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Groups",
     "Microsoft.Graph.Planner",
-    "Microsoft.Graph.Users",
-    "MSCloudLoginAssistant"
+    "Microsoft.Graph.Users"
   ],
   "mode": "Data",
   "commands": [
-    {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
     {
       "module": "Microsoft.Graph.Groups",
       "cmdlets": [
@@ -115,19 +97,15 @@
         "Get-MgPlannerTask",
         "Get-MgPlannerTaskDetail",
         "New-MgPlannerTask",
-        "Remove-MgPlannerTask"
+        "Remove-MgPlannerTask",
+        "Update-MgPlannerTask",
+        "Update-MgPlannerTaskDetail"
       ]
     },
     {
       "module": "Microsoft.Graph.Users",
       "cmdlets": [
         "Get-MgUser"
-      ]
-    },
-    {
-      "module": "MSCloudLoginAssistant",
-      "cmdlets": [
-        "Get-MSCloudLoginConnectionProfile"
       ]
     }
   ]

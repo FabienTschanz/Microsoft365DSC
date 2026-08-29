@@ -439,7 +439,7 @@ class AADUser : M365DSCResourceBase
                     $CSAParams = @{
                         customSecurityAttributes = $currentSCAForDelete
                     }
-                    Invoke-MgGraphRequest -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/users/$($this.UserPrincipalName)") -Method Patch -Body $CSAParams
+                    Update-MgUser -UserId $this.UserPrincipalName -BodyParameter $CSAParams
                 }
 
                 Update-MgUser -UserId $this.UserPrincipalName -BodyParameter $creationParams

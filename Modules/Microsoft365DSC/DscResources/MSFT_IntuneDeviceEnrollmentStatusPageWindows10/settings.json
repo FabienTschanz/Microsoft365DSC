@@ -83,12 +83,10 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.DeviceManagement",
     "Microsoft.Graph.Beta.DeviceManagement.Enrollment",
     "Microsoft.Graph.Beta.Devices.CorporateManagement",
-    "Microsoft.Graph.Groups",
-    "MSCloudLoginAssistant"
+    "Microsoft.Graph.Groups"
   ],
   "supportedEnvironments": [
     "Global",
@@ -96,12 +94,6 @@
   ],
   "mode": "Configuration",
   "commands": [
-    {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
     {
       "module": "Microsoft.Graph.Beta.DeviceManagement",
       "cmdlets": [
@@ -115,6 +107,8 @@
         "Get-MgBetaDeviceManagementDeviceEnrollmentConfigurationAssignment",
         "New-MgBetaDeviceManagementDeviceEnrollmentConfiguration",
         "Remove-MgBetaDeviceManagementDeviceEnrollmentConfiguration",
+        "Set-MgBetaDeviceManagementDeviceEnrollmentConfiguration",
+        "Set-MgBetaDeviceManagementDeviceEnrollmentConfigurationPriority",
         "Update-MgBetaDeviceManagementDeviceEnrollmentConfiguration"
       ]
     },
@@ -128,12 +122,6 @@
       "module": "Microsoft.Graph.Groups",
       "cmdlets": [
         "Get-MgGroup"
-      ]
-    },
-    {
-      "module": "MSCloudLoginAssistant",
-      "cmdlets": [
-        "Get-MSCloudLoginConnectionProfile"
       ]
     }
   ]

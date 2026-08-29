@@ -2,8 +2,8 @@
   "resourceName": "IntuneWindowsDataProcessingSettings",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "dataProcessorServiceForWindowsFeaturesOnboarding",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,

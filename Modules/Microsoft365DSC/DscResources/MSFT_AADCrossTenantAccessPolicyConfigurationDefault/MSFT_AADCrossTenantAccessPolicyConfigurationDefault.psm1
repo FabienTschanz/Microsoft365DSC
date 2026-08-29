@@ -490,11 +490,8 @@ class AADCrossTenantAccessPolicyConfigurationDefault : M365DSCResourceBase
 
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
-            $body = ConvertTo-Json $OperationParams -Depth 10
-            Write-Verbose -Message "Updating Cross Tenant Access Policy Configuration Default with:`r`n$body"
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/crossTenantAccessPolicy/default'
-            Invoke-MgGraphRequest -Method 'PATCH' -Uri $uri -Body $body
-            #Update-MgBetaPolicyCrossTenantAccessPolicyDefault @OperationParams
+            Write-Verbose -Message "Updating Cross Tenant Access Policy Configuration Default with:`r`n$(ConvertTo-Json $OperationParams -Depth 10)"
+            Update-MgBetaPolicyCrossTenantAccessPolicyDefault -BodyParameter $OperationParams
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {

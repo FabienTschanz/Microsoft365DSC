@@ -74,6 +74,14 @@ Three things to know.
   name, and `MicrosoftGraph` is a valid key for the settings catalog capture.
 - **A connection failure downgrades the run, it does not fail it.** The message lands in
   `completeness.tenantError` and is rendered above everything else in both reports.
+- **The settings catalog is fetched over the `MicrosoftGraph` connection, not the `Intune` one.**
+  Whatever registration answers for `MicrosoftGraph` must therefore hold
+  `DeviceManagementConfiguration.Read.All`. A registration without it returns 403, the capture
+  drops `settingsCatalog` into `completeness.skippedWorkloads` without failing, and
+  `-UpdateBaseline` then refuses to write because the run saw less than the committed baseline.
+  The symptom is the message `This run saw less than the committed baseline: settingsCatalog`.
+  A directory-only registration is the usual cause: point the `MicrosoftGraph` key at the Intune
+  registration, or grant the permission to the one you already pass.
 
 ### Permissions the application registration needs
 
@@ -88,6 +96,22 @@ machine that runs the check, and its thumbprint registered on the application.
 
 Nothing else needs a tenant. The Graph CSDL, the SDK cmdlet metadata and the shim are read from
 disk or from the public metadata endpoint.
+
+### Regenerate the shim before you capture a baseline
+
+The shim re-exports every Graph SDK cmdlet the resources declare, and the baseline records the
+cmdlet surface it sees. Two rules follow, and getting either wrong produces findings that describe
+the tooling rather than the vendor.
+
+1. **A change to any resource's cmdlet set needs `Utilities/New-M365DSCGraphShimModule.ps1` re-run.**
+   Switching a resource to a beta cmdlet noun leaves the old wrappers behind and the new ones
+   absent, which the check reports as `SHIM-MISSING` at `breaking` severity. The QA test
+   *Every declared Graph cmdlet has a shim wrapper* fails first, so run the QA suite before the
+   check. The generator now warns with the list of cmdlets it could not map.
+2. **Regenerate the shim before `-UpdateBaseline`, never after.** A baseline captured against the
+   old cmdlet surface disagrees with the regenerated `function-signatures.json` on every parameter
+   type, which surfaces as a wave of `VND-PARAM-TYPECHANGED` and `VND-CMDLET-REMOVED` that clears
+   on the next capture.
 
 ## Applying findings from a working copy
 

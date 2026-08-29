@@ -205,6 +205,25 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             $finding[0].evidence.calledBy | Should -Be @('TestPolicy')
         }
 
+        It 'reports a cmdlet no resource calls any more as coverage, not as a vendor removal' {
+            $cmdlet = [ordered]@{
+                'Get-MgBetaTestPolicy' = [ordered]@{
+                    workload = 'MicrosoftGraph'; module = 'Microsoft.Graph.Beta.Test'; moduleVersion = '2.35.1'
+                    apiVersion = 'beta'; variants = @(); parameters = [ordered]@{}
+                }
+            }
+            $before = New-TestSnapshot -Cmdlet $cmdlet
+            $after = New-TestSnapshot
+
+            $result = Invoke-TestCompare -Baseline $before -Current $after -Origin @(New-TestOrigin)
+
+            @($result.Findings | Where-Object { $_.code -eq 'VND-CMDLET-REMOVED' }) | Should -HaveCount 0
+            $finding = @($result.Findings | Where-Object { $_.code -eq 'COV-CMDLET-UNUSED' })
+            $finding | Should -HaveCount 1
+            $finding[0].severity | Should -Be 'info'
+            @($finding[0].evidence.calledBy) | Should -HaveCount 0
+        }
+
         It 'reports a route that moved within its own API version' {
             $before = New-TestSnapshot -Cmdlet ([ordered]@{
                     'Get-MgBetaTestPolicy' = [ordered]@{

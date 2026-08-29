@@ -2,12 +2,12 @@
   "resourceName": "IntuneMobileAppsWebLink",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
     "odataSubtype": null,
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
     "cmdletVerb": "New",
-    "includeNavigationProperties": false,
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
   "excludedProperties": [],

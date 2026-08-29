@@ -2,8 +2,8 @@
   "resourceName": "IntuneDeviceComplianceScriptWindows10",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "deviceComplianceScript",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,

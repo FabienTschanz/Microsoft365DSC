@@ -71,10 +71,16 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            }
+
+            Mock -CommandName Get-MgBetaAdminReportSetting -MockWith {
                 return @{
                     "@odata.type"         = "#microsoft.graph.adminReportSettings"
                     displayConcealedNames = $true
                 }
+            }
+
+            Mock -CommandName Update-MgBetaAdminReportSetting -MockWith {
             }
 
             Mock -CommandName Invoke-RestMethod -MockWith {

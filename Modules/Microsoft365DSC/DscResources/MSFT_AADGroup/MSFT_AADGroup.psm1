@@ -249,7 +249,7 @@ class AADGroup : M365DSCResourceBase
                     $this.ResourceCache['requireGroupMemberFetching'] -eq $true)
                 {
                     # Fetch all group members
-                    $groupMembers = Get-MgGroupMember -GroupId $Group.Id -All -Top 999
+                    $groupMembers = Get-MgBetaGroupMember -GroupId $Group.Id -All -Top 999
                 }
                 foreach ($member in $groupMembers)
                 {
@@ -527,7 +527,7 @@ class AADGroup : M365DSCResourceBase
                 try
                 {
                     Write-Verbose -Message "Creating Group with Values: $(Convert-M365DscHashtableToString -Hashtable $currentParameters)"
-                    $currentGroup = New-MgGroup -BodyParameter $currentParameters
+                    $currentGroup = New-MgBetaGroup -BodyParameter $currentParameters
                     Write-Verbose -Message "Created Group $($currentGroup.id), wait for sync to complete"
                     Invoke-M365DSCCommand -ScriptBlock { Get-MgBetaGroup -GroupId $currentGroup.Id -Property Id -ErrorAction Stop } -RetryOnNotFoundError | Out-Null
                 }
@@ -560,7 +560,7 @@ class AADGroup : M365DSCResourceBase
                     }
 
                     Write-Verbose -Message "Updating existing Group with Values: $(Convert-M365DscHashtableToString -Hashtable $currentParameters)"
-                    Update-MgGroup -GroupId $currentGroup.Id -BodyParameter $currentParameters -ErrorAction Stop
+                    Update-MgBetaGroup -GroupId $currentGroup.Id -BodyParameter $currentParameters -ErrorAction Stop
                 }
 
                 if (($licensesToAdd.Length -gt 0 -or $licensesToRemove.Length -gt 0) -and $this.GetBoundParameters().ContainsKey('AssignedLicenses'))
@@ -588,7 +588,7 @@ class AADGroup : M365DSCResourceBase
         {
             try
             {
-                Remove-MgGroup -GroupId $currentGroup.Id | Out-Null
+                Remove-MgBetaGroup -GroupId $currentGroup.Id | Out-Null
             }
             catch
             {
@@ -714,14 +714,14 @@ class AADGroup : M365DSCResourceBase
                     if ($diff.SideIndicator -eq '=>')
                     {
                         Write-Verbose -Message "Adding new member {$($diff.InputObject)} to AAD Group {$($currentGroup.DisplayName)}"
-                        New-MgGroupMemberByRef -GroupId ($currentGroup.Id) -BodyParameter @{
+                        New-MgBetaGroupMemberByRef -GroupId ($currentGroup.Id) -BodyParameter @{
                             '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/directoryObjects/{$($directoryObject.Id)}"
                         }
                     }
                     elseif ($diff.SideIndicator -eq '<=')
                     {
                         Write-Verbose -Message "Removing new member {$($diff.InputObject)} from AAD Group {$($currentGroup.DisplayName)}"
-                        Remove-MgGroupMemberDirectoryObjectByRef -GroupId ($currentGroup.Id) -DirectoryObjectId ($directoryObject.Id) | Out-Null
+                        Remove-MgBetaGroupMemberDirectoryObjectByRef -GroupId ($currentGroup.Id) -DirectoryObjectId ($directoryObject.Id) | Out-Null
                     }
                 }
             }
@@ -813,7 +813,7 @@ class AADGroup : M365DSCResourceBase
                             if ($memberOfGroup.SecurityEnabled)
                             {
                                 Write-Verbose -Message "Adding AAD group {$($currentGroup.DisplayName)} as member of AAD group {$($memberOfGroup.DisplayName)}"
-                                New-MgGroupMemberByRef -GroupId ($memberOfGroup.Id) -BodyParameter @{
+                                New-MgBetaGroupMemberByRef -GroupId ($memberOfGroup.Id) -BodyParameter @{
                                     '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/directoryObjects/$($currentGroup.Id)"
                                 } | Out-Null
                             }
@@ -827,7 +827,7 @@ class AADGroup : M365DSCResourceBase
                             if ($memberOfGroup.SecurityEnabled)
                             {
                                 Write-Verbose -Message "Removing AAD Group {$($currentGroup.DisplayName)} from AAD group {$($memberOfGroup.DisplayName)}"
-                                Remove-MgGroupMemberDirectoryObjectByRef -GroupId ($memberOfGroup.Id) -DirectoryObjectId ($currentGroup.Id) | Out-Null
+                                Remove-MgBetaGroupMemberDirectoryObjectByRef -GroupId ($memberOfGroup.Id) -DirectoryObjectId ($currentGroup.Id) | Out-Null
                             }
                             else
                             {

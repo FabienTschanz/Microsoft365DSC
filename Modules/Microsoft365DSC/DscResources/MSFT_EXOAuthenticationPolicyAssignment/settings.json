@@ -5,8 +5,8 @@
     "apiVersion": null,
     "entityType": null,
     "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
+    "cmdletNoun": "User",
+    "cmdletVerb": "Set",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },

@@ -32,9 +32,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return 'Credentials'
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                return @{
-                    value = @(
+            Mock -CommandName Import-MgBetaDeviceManagementImportedDeviceIdentityList -MockWith {
+            }
+
+            Mock -CommandName Remove-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+            }
+
+            Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                return @(
                         @{
                             id                         = '12345-67890'
                             importedDeviceIdentifier   = 'ABC123456'
@@ -46,7 +51,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             createdDateTime            = '2024-01-01T00:00:00Z'
                         }
                     )
-                }
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
@@ -73,10 +77,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential       = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @()
-                    }
+                Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                    return @()
                 }
             }
 
@@ -90,9 +92,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should add devices from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneCorporateDeviceIdentifier' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Invoke-MgGraphRequest' -ParameterFilter {
-                    $Method -eq 'POST' -and $Uri -like '*importDeviceIdentityList*'
-                }
+                Should -Invoke -CommandName 'Import-MgBetaDeviceManagementImportedDeviceIdentityList'
             }
         }
 
@@ -112,9 +112,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential       = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @(
+                Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                    return @(
                             @{
                                 id                         = '12345-67890'
                                 importedDeviceIdentifier   = 'ABC123456'
@@ -126,7 +125,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 createdDateTime            = '2024-01-01T00:00:00Z'
                             }
                         )
-                    }
                 }
             }
 
@@ -155,13 +153,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential       = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    param($Method, $Uri)
-
-                    if ($Method -eq 'GET')
-                    {
-                        return @{
-                            value = @(
+                Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                    return @(
                                 @{
                                     id                         = '12345-67890'
                                     importedDeviceIdentifier   = 'ABC123456'
@@ -173,9 +166,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     createdDateTime      = '2024-01-01T00:00:00Z'
                                 }
                             )
-                        }
-                    }
-                    return $null
                 }
             }
 
@@ -185,12 +175,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should add new device and remove old device from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneCorporateDeviceIdentifier' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Invoke-MgGraphRequest' -ParameterFilter {
-                    $Method -eq 'POST' -and $Uri -like '*importDeviceIdentityList*'
-                }
-                Should -Invoke -CommandName 'Invoke-MgGraphRequest' -ParameterFilter {
-                    $Method -eq 'DELETE' -and $Uri -like '*importedDeviceIdentities/*'
-                }
+                Should -Invoke -CommandName 'Import-MgBetaDeviceManagementImportedDeviceIdentityList'
+                Should -Invoke -CommandName 'Remove-MgBetaDeviceManagementImportedDeviceIdentity'
             }
         }
 
@@ -202,13 +188,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential       = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    param($Method, $Uri)
-
-                    if ($Method -eq 'GET')
-                    {
-                        return @{
-                            value = @(
+                Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                    return @(
                                 @{
                                     id                         = '12345-67890'
                                     importedDeviceIdentifier   = 'ABC123456'
@@ -220,9 +201,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                     createdDateTime            = '2024-01-01T00:00:00Z'
                                 }
                             )
-                        }
-                    }
-                    return $null
                 }
             }
 
@@ -232,9 +210,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should remove all devices from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneCorporateDeviceIdentifier' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Invoke-MgGraphRequest' -ParameterFilter {
-                    $Method -eq 'DELETE' -and $Uri -like '*importedDeviceIdentities/*'
-                } -Exactly 1
+                Should -Invoke -CommandName 'Remove-MgBetaDeviceManagementImportedDeviceIdentity' -Exactly 1
             }
         }
 
@@ -246,10 +222,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential       = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @()
-                    }
+                Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                    return @()
                 }
             }
 
@@ -266,9 +240,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @(
+                Mock -CommandName Get-MgBetaDeviceManagementImportedDeviceIdentity -MockWith {
+                    return @(
                             @{
                                 id                         = '12345-67890'
                                 importedDeviceIdentifier   = 'ABC123456'
@@ -280,7 +253,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 createdDateTime            = '2024-01-01T00:00:00Z'
                             }
                         )
-                    }
                 }
             }
 

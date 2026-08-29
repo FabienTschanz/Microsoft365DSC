@@ -262,6 +262,7 @@
     and placed `IsSingleInstance` last although it is the key.
   * Updated the example emitter to name string placeholders after the property they belong to,
     instead of writing `FakeStringValue` into every string property of a published example.
+  * Updated many call sites of `Invoke-MgGraphRequest` to their Graph SDK cmdlet variant.
   * Added many new relations between resources to improve dependency handling during export.
   * Added QA new test to check for unreferenced classes in the schema file.
     FIXES [#3637](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/3637)

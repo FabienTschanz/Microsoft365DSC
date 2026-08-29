@@ -42,6 +42,10 @@ Resources: 1 compared, 1 skipped. Undeclared vendor properties: 7.
 
 None.
 
+## Cmdlets no resource calls any more  (0)
+
+None.
+
 ## Vendor changes since Microsoft.Graph.Authentication 2.34.0 -> 2.35.1  (1)
 
 - `VND-TYPE-PROP-ADDED:beta:testPolicy:extraField`

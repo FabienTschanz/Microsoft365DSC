@@ -141,12 +141,12 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
                 $script:surface.graphTypes.Contains('beta:testUnusedType') | Should -BeFalse
             }
 
-            It 'records a navigation property without following its target' {
+            It 'records a navigation property and captures its target from a seed type' {
                 $owners = $script:surface.graphTypes['beta:testPolicy'].properties['owners']
                 $owners.type | Should -Be 'testOwner'
                 $owners.isNavigation | Should -BeTrue
                 $owners.isArray | Should -BeTrue
-                $script:surface.graphTypes.Contains('beta:testOwner') | Should -BeFalse
+                $script:surface.graphTypes.Contains('beta:testOwner') | Should -BeTrue
             }
 
             It 'marks a Computed property as read only' {

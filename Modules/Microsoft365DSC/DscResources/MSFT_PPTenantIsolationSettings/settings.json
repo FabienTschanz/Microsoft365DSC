@@ -1,7 +1,7 @@
 {
   "resourceName": "PPTenantIsolationSettings",
   "generatedFrom": {
-    "workload": null,
+    "workload": "PowerPlatforms",
     "apiVersion": null,
     "entityType": null,
     "odataSubtype": null,

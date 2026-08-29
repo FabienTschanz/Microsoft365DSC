@@ -1264,9 +1264,8 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
                 $missingAttributes = @()
                 if ($referencedAttributes.Count -gt 0) {
                     try {
-                        $customAttributeResponse = Invoke-MgGraphRequest -Method GET `
-                            -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'v1.0/directory/customSecurityAttributeDefinitions')
-                        $missingAttributes = $referencedAttributes | Where-Object { $_ -notin $customAttributeResponse.value.id }
+                        $customAttributeDefinitions = Get-MgDirectoryCustomSecurityAttributeDefinition -All
+                        $missingAttributes = $referencedAttributes | Where-Object { $_ -notin $customAttributeDefinitions.id }
                     }
                     catch {
                         $message = "Failed to retrieve custom security attribute definitions: $_"
@@ -1664,8 +1663,8 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             {
                 Write-Verbose -Message "Updating existing policy with values: $(Convert-M365DscHashtableToString -Hashtable $NewParameters)"
 
-                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/identity/conditionalAccess/policies/$($currentPolicy.Id)"
-                Invoke-MgGraphRequest -Method PATCH -Uri $Uri -Body $NewParameters
+                Update-MgBetaIdentityConditionalAccessPolicy -ConditionalAccessPolicyId $currentPolicy.Id `
+                    -BodyParameter $NewParameters
             }
             catch
             {
@@ -1684,8 +1683,7 @@ class AADConditionalAccessPolicy : M365DSCResourceBase
             {
                 try
                 {
-                    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/identity/conditionalAccess/policies'
-                    Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $NewParameters
+                    New-MgBetaIdentityConditionalAccessPolicy -BodyParameter $NewParameters
                 }
                 catch
                 {

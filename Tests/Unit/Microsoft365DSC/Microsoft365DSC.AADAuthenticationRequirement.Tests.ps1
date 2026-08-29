@@ -34,7 +34,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Get-MSCloudLoginConnectionProfile -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Update-MgBetaUserAuthenticationRequirement -MockWith {
+            }
+
+            Mock -CommandName Get-MgBetaUserAuthenticationRequirement -MockWith {
                 return @{
                     UserPrincipalName   = "user@test.com"
                     PerUserMfaState     = 'Enabled'
@@ -83,7 +86,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential          = $Credential;
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                Mock -CommandName Get-MgBetaUserAuthenticationRequirement -MockWith {
                     return @{
                         UserPrincipalName   = "user@test.com"
                         PerUserMfaState     = 'Disabled'
@@ -102,7 +105,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADAuthenticationRequirement' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'PATCH' }
+                Should -Invoke -CommandName Update-MgBetaUserAuthenticationRequirement -Exactly 1
             }
         }
 
@@ -125,7 +128,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADAuthenticationRequirement' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'PATCH' }
+                Should -Invoke -CommandName Update-MgBetaUserAuthenticationRequirement -Exactly 1
             }
         }
 

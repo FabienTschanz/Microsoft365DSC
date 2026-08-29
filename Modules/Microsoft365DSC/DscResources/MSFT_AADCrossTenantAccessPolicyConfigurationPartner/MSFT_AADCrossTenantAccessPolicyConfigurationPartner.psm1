@@ -284,7 +284,9 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
             {
                 try
                 {
-                    Invoke-MgGraphRequest -Uri "/beta/policies/crossTenantAccessPolicy/partners/$($newPartner.TenantId)/identitySynchronization" -Method PUT -Body $identitySynchronizationValue
+                    Set-MgBetaPolicyCrossTenantAccessPolicyPartnerIdentitySynchronization `
+                        -CrossTenantAccessPolicyConfigurationPartnerTenantId $newPartner.TenantId `
+                        -BodyParameter $identitySynchronizationValue
                 }
                 catch
                 {
@@ -313,7 +315,9 @@ class AADCrossTenantAccessPolicyConfigurationPartner : M365DSCResourceBase
                     {
                         throw
                     }
-                    Invoke-MgGraphRequest -Uri "/beta/policies/crossTenantAccessPolicy/partners/$($this.PartnerTenantId)/identitySynchronization" -Method PUT -Body $identitySynchronizationValue
+                    Set-MgBetaPolicyCrossTenantAccessPolicyPartnerIdentitySynchronization `
+                        -CrossTenantAccessPolicyConfigurationPartnerTenantId $this.PartnerTenantId `
+                        -BodyParameter $identitySynchronizationValue
                 }
             }
         }

@@ -252,13 +252,7 @@ class AADNamedLocationPolicy : M365DSCResourceBase
             $VerboseAttributes = ($desiredValues | Out-String)
             Write-Verbose -Message "Creating New AAD Named Location {$($this.Displayname)} with attributes: $VerboseAttributes"
 
-            $JSONValue = ConvertTo-Json $desiredValues | Out-String
-            Write-Verbose -Message "JSON: $JSONValue"
-
-            $APIUrl = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'v1.0/identity/conditionalAccess/namedLocations'
-            Invoke-MgGraphRequest -Method POST `
-                -Uri $APIUrl `
-                -Body $JSONValue | Out-Null
+            New-MgBetaIdentityConditionalAccessNamedLocation -BodyParameter $desiredValues | Out-Null
         }
         # Named Location should exist and will be configured to desired state
         elseif ($this.Ensure -eq 'Present' -and $currentAADNamedLocation.Ensure -eq 'Present')
@@ -266,13 +260,8 @@ class AADNamedLocationPolicy : M365DSCResourceBase
             $VerboseAttributes = ($desiredValues | Out-String)
             Write-Verbose -Message "Updating existing AAD Named Location {$($this.Displayname)} with attributes: $VerboseAttributes"
 
-            $JSONValue = ConvertTo-Json $desiredValues | Out-String
-            Write-Verbose -Message "JSON: $JSONValue"
-
-            $APIUrl = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "v1.0/identity/conditionalAccess/namedLocations/$($currentAADNamedLocation.Id)"
-            Invoke-MgGraphRequest -Method PATCH `
-                -Uri $APIUrl `
-                -Body $JSONValue | Out-Null
+            Update-MgBetaIdentityConditionalAccessNamedLocation -NamedLocationId $currentAADNamedLocation.Id `
+                -BodyParameter $desiredValues | Out-Null
         }
         # Named Location exist but should not
         elseif ($this.Ensure -eq 'Absent' -and $CurrentAADNamedLocation.Ensure -eq 'Present')

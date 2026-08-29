@@ -2,11 +2,11 @@
   "resourceName": "IntuneMobileAppsManagedGooglePlayApp",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
-    "odataSubtype": null,
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "androidManagedStoreApp",
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
-    "cmdletVerb": "Get",
+    "cmdletVerb": "Update",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
@@ -53,7 +53,6 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.DeviceManagement",
     "Microsoft.Graph.Beta.Devices.CorporateManagement",
     "Microsoft.Graph.Groups"
@@ -65,14 +64,9 @@
   "mode": "Data",
   "commands": [
     {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
-    {
       "module": "Microsoft.Graph.Beta.DeviceManagement",
       "cmdlets": [
+        "Add-MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSettingApp",
         "Get-MgBetaDeviceManagementAssignmentFilter"
       ]
     },
@@ -81,7 +75,8 @@
       "cmdlets": [
         "Get-MgBetaDeviceAppManagementMobileApp",
         "Get-MgBetaDeviceAppManagementMobileAppAssignment",
-        "Remove-MgBetaDeviceAppManagementMobileApp"
+        "Remove-MgBetaDeviceAppManagementMobileApp",
+        "Update-MgBetaDeviceAppManagementMobileApp"
       ]
     },
     {

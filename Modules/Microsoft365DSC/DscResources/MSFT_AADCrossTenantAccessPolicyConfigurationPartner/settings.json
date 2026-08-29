@@ -78,6 +78,7 @@
         "Get-MgBetaPolicyCrossTenantAccessPolicyPartner",
         "New-MgBetaPolicyCrossTenantAccessPolicyPartner",
         "Remove-MgBetaPolicyCrossTenantAccessPolicyPartner",
+        "Set-MgBetaPolicyCrossTenantAccessPolicyPartnerIdentitySynchronization",
         "Update-MgBetaPolicyCrossTenantAccessPolicyPartner"
       ]
     },

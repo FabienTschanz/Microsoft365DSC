@@ -2,8 +2,8 @@
   "resourceName": "IntuneWindowsUpdateForBusinessHotpatchProfileWindows10",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "windowsQualityUpdatePolicy",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,

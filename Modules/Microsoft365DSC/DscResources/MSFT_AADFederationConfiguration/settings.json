@@ -2,12 +2,12 @@
   "resourceName": "AADFederationConfiguration",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
-    "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
-    "includeNavigationProperties": false,
+    "apiVersion": "beta",
+    "entityType": "identityProviderBase",
+    "odataSubtype": "samlOrWsFedExternalDomainFederation",
+    "cmdletNoun": "MgBetaDirectoryFederationConfiguration",
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
   "excludedProperties": [],

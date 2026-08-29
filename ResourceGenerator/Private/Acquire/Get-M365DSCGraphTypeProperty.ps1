@@ -69,6 +69,11 @@ function Get-M365DSCGraphTypeProperty
 
     $null = $Visited.Add($Entity)
 
+    if ($null -eq $Index)
+    {
+        $Index = New-M365DSCGraphSchemaIndex -Schema $Schema
+    }
+
     $lookup = @{ Schema = $Schema; Entity = $Entity }
     if ($Qualified -and $null -ne $Index)
     {
@@ -110,7 +115,8 @@ function Get-M365DSCGraphTypeProperty
         $description = Get-M365DSCGraphPropertyDescription -Schema $Schema `
             -Property $rawProperty `
             -NamespaceName $rawEntry.DeclaringNamespace `
-            -TypeName $rawEntry.DeclaringType
+            -TypeName $rawEntry.DeclaringType `
+            -Index $Index
 
         if ($rawType -like 'graph.*')
         {
@@ -138,7 +144,8 @@ function Get-M365DSCGraphTypeProperty
             $members = @(Get-M365DSCGraphTypeProperty -Schema $Schema `
                     -Entity $typeName `
                     -ExistingCimClassNames $ExistingCimClassNames `
-                    -Visited $nestedVisited)
+                    -Visited $nestedVisited `
+                    -Index $Index)
 
             if ($members.Count -eq 0)
             {
@@ -194,6 +201,10 @@ function Get-M365DSCGraphTypeProperty
 .PARAMETER TypeName
     Specifies the declaring type. Defaults to the parent node of the property.
 
+.PARAMETER Index
+    Specifies the schema index from New-M365DSCGraphSchemaIndex. Without it the schema-level
+    fallback scans every annotation node of the schema, once per property.
+
 .OUTPUTS
     The description, or an empty string.
 #>
@@ -219,7 +230,11 @@ function Get-M365DSCGraphPropertyDescription
         [Parameter()]
         [AllowEmptyString()]
         [System.String]
-        $TypeName
+        $TypeName,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $Index
     )
 
     $description = Get-M365DSCGraphAnnotationDescription -Annotation $Property.Annotation
@@ -237,7 +252,14 @@ function Get-M365DSCGraphPropertyDescription
         }
 
         $target = "$NamespaceName.$TypeName/$($Property.Name)"
-        $annotation = $Schema.Annotations | Where-Object -FilterScript { $_.Target -like $target }
+        if ($null -ne $Index)
+        {
+            $annotation = $Index.Annotations[$target]
+        }
+        else
+        {
+            $annotation = $Schema.Annotations | Where-Object -FilterScript { $_.Target -like $target }
+        }
         $description = Get-M365DSCGraphAnnotationDescription -Annotation $annotation.Annotation
     }
 

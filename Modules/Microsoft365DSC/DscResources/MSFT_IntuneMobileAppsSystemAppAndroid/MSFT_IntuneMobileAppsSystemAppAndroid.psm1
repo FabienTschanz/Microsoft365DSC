@@ -207,7 +207,7 @@ class IntuneMobileAppsSystemAppAndroid : M365DSCResourceBase
             #region resource generator code
             $createParameters.Add('@odata.type', '#microsoft.graph.androidManagedStoreApp')
             $createParameters.Add('isSystemApp', $true)
-            $policy = Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceAppManagement/mobileApps' -Body $($createParameters | ConvertTo-Json -Depth 10)
+            $policy = New-MgBetaDeviceAppManagementMobileApp -BodyParameter $createParameters
 
             if ($policy.Id)
             {

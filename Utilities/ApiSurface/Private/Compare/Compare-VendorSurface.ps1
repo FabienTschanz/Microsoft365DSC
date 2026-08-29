@@ -88,14 +88,26 @@ function Compare-VendorSurface
 
         if ($null -eq $after)
         {
-            $findings.Add((New-M365DSCApiSurfaceFinding -Code 'VND-CMDLET-REMOVED' `
+            $calledBy = @()
+            if ($callers.ContainsKey($name))
+            {
+                $calledBy = @($callers[$name] | Where-Object { -not [System.String]::IsNullOrEmpty($_) })
+            }
+
+            $code = 'VND-CMDLET-REMOVED'
+            if ($calledBy.Count -eq 0)
+            {
+                $code = 'COV-CMDLET-UNUSED'
+            }
+
+            $findings.Add((New-M365DSCApiSurfaceFinding -Code $code `
                         -Subject $name `
                         -Workload ([System.String] $before.workload) `
                         -From ([ordered]@{ module = [System.String] $before.module; moduleVersion = [System.String] $before.moduleVersion }) `
                         -To $null `
                         -Evidence ([ordered]@{
                             source     = "cmdlet:$name"
-                            calledBy   = @($callers[$name])
+                            calledBy   = $calledBy
                             fromModule = "$([System.String] $before.module) $([System.String] $before.moduleVersion)"
                         })))
             continue

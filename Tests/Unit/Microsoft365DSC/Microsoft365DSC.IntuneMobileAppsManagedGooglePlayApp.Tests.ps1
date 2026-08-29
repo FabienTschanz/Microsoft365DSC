@@ -39,49 +39,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Add-MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSettingApp -MockWith {
             }
 
             Mock -CommandName Update-MgBetaDeviceAppManagementMobileApp -MockWith {
-            }
-
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                return @{
-                    supportsOemConfig = $True
-                    appIdentifier = "FakeStringValue"
-                    isSystemApp = $False
-                    appTracks = @(
-                        @{
-                            trackAlias = "FakeStringValue"
-                            trackId = "FakeStringValue"
-                        }
-                    )
-                    '@odata.type' = "#microsoft.graph.androidManagedStoreApp"
-                    packageId = "FakeStringValue"
-                    appStoreUrl = "FakeStringValue"
-                    usedLicenseCount = 25
-                    isPrivate = $True
-                    totalLicenseCount = 25
-                    dependentAppCount = 25
-                    description = "FakeStringValue"
-                    developer = "FakeStringValue"
-                    displayName = "FakeStringValue"
-                    Id = "FakeStringValue"
-                    informationUrl = "FakeStringValue"
-                    isFeatured = $True
-                    LargeIcon = @{
-                        Type = "FakeStringValue"
-                    }
-                    Notes = "FakeStringValue"
-                    Owner = "FakeStringValue"
-                    PrivacyInformationUrl = "FakeStringValue"
-                    Publisher = "FakeStringValue"
-                    PublishingState = "notPublished"
-                    RoleScopeTagIds = @("FakeStringValue")
-                    SupersededAppCount = 25
-                    SupersedingAppCount = 25
-                    UploadState = 25
-                }
             }
 
             Mock -CommandName Remove-MgBetaDeviceAppManagementMobileApp -MockWith {
@@ -165,7 +126,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsManagedGooglePlayApp' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Add-MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSettingApp -Exactly 1
             }
         }
 
@@ -234,7 +195,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneMobileAppsManagedGooglePlayApp' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaDeviceAppManagementMobileApp -Exactly 1
             }
         }
 

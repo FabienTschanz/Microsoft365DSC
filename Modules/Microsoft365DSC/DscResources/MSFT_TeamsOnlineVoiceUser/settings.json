@@ -1,12 +1,12 @@
 {
   "resourceName": "TeamsOnlineVoiceUser",
   "generatedFrom": {
-    "workload": null,
+    "workload": "MicrosoftTeams",
     "apiVersion": null,
     "entityType": null,
     "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
+    "cmdletNoun": "CsPhoneNumberAssignment",
+    "cmdletVerb": "Set",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },

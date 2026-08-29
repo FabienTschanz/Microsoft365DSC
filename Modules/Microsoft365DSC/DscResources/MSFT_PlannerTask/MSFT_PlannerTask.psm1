@@ -295,11 +295,10 @@ class PlannerTask : M365DSCResourceBase
 
             if ($null -ne $user)
             {
-                $currentValue += @{
-                    '@odata.type' = '#microsoft.graph.plannerAssignment'
-                    orderHint     = ' !'
-                }
-                $assignmentsValue.Add($user.Id, $currentValue)
+                $assignmentsValue.Add($user.Id, @{
+                        '@odata.type' = '#microsoft.graph.plannerAssignment'
+                        orderHint     = ' !'
+                    })
             }
         }
         $setParams.Assignments = $assignmentsValue
@@ -427,25 +426,20 @@ class PlannerTask : M365DSCResourceBase
             $etag = $currentTask.'@odata.etag'
 
             $Headers.Add('If-Match', $etag)
-            $JSONDetails = (ConvertTo-Json $setParams)
-            Write-Verbose -Message "Updating Task with:`r`n$JSONDetails"
-            # Need to continue to rely on Invoke-MgGraphRequest
-            Invoke-MgGraphRequest -Method PATCH `
-                -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/planner/tasks/$($taskIdValue)" `
+            Write-Verbose -Message "Updating Task with:`r`n$(ConvertTo-Json $setParams)"
+            Update-MgPlannerTask -PlannerTaskId $taskIdValue `
                 -Headers $Headers `
-                -Body $JSONDetails
+                -BodyParameter $setParams
 
             # Update Details
             $Headers = @{}
             $currentTaskDetails = Get-MgPlannerTaskDetail -PlannerTaskId $taskIdValue
             $Headers.Add('If-Match', $currentTaskDetails.'@odata.etag')
             $details.Remove('id') | Out-Null
-            $JSONDetails = (ConvertTo-Json $details)
-            Write-Verbose -Message "Updating Task's details with:`r`n$JSONDetails"
-            Invoke-MgGraphRequest -Method PATCH `
-                -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/planner/tasks/$($taskIdValue)/details" `
+            Write-Verbose -Message "Updating Task's details with:`r`n$(ConvertTo-Json $details)"
+            Update-MgPlannerTaskDetail -PlannerTaskId $taskIdValue `
                 -Headers $Headers `
-                -Body $JSONDetails
+                -BodyParameter $details
 
             #endregion
         }

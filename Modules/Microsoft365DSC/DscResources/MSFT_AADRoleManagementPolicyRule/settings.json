@@ -2,8 +2,8 @@
   "resourceName": "AADRoleManagementPolicyRule",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleManagementPolicyRule",
     "odataSubtype": null,
     "cmdletNoun": "MgBetaPolicyRoleManagementPolicyRule",
     "cmdletVerb": "Update",

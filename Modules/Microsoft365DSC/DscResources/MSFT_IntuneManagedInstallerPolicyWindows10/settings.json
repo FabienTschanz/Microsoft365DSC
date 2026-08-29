@@ -2,11 +2,11 @@
   "resourceName": "IntuneManagedInstallerPolicyWindows10",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "deviceHealthScript",
     "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
+    "cmdletNoun": "MgBetaDeviceManagementDeviceHealthScript",
+    "cmdletVerb": "New",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
@@ -53,7 +53,6 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.DeviceManagement",
     "Microsoft.Graph.Groups"
   ],
@@ -64,17 +63,12 @@
   "mode": "Configuration",
   "commands": [
     {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
-    {
       "module": "Microsoft.Graph.Beta.DeviceManagement",
       "cmdlets": [
         "Get-MgBetaDeviceManagementAssignmentFilter",
         "Get-MgBetaDeviceManagementDeviceHealthScript",
         "Get-MgBetaDeviceManagementDeviceHealthScriptAssignment",
+        "New-MgBetaDeviceManagementDeviceHealthScript",
         "Remove-MgBetaDeviceManagementDeviceHealthScript",
         "Update-MgBetaDeviceManagementDeviceHealthScript"
       ]

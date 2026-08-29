@@ -868,9 +868,7 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/reportSettings'
-            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
-            return $results
+            return Get-MgBetaAdminReportSetting -ErrorAction Stop
         }
         catch
         {
@@ -911,12 +909,7 @@ class O365OrgSettings : M365DSCResourceBase
 
     hidden [Void] UpdateOrgSettingsAdminCenterReport([System.Boolean] $DisplayConcealedNames)
     {
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/reportSettings'
-        $body = @{
-            '@odata.context'      = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/$metadata#admin/reportSettings/$entity'
-            displayConcealedNames = $DisplayConcealedNames
-        }
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $body | Out-Null
+        Update-MgBetaAdminReportSetting -DisplayConcealedNames $DisplayConcealedNames | Out-Null
     }
 
     hidden [System.Collections.Hashtable] GetOrgSettingsInstallationOptions([System.String] $AuthenticationOption)

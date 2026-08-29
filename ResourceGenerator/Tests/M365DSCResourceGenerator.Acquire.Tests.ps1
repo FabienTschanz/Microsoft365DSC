@@ -274,6 +274,8 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
 </Edmx>
 '@
             $script:descriptionSchema = ([Xml] $descriptionCsdl).Edmx.DataServices.schema
+            $script:descriptionIndex = New-M365DSCGraphSchemaIndex -Schema $script:descriptionSchema
+            $script:descriptionSchemaWithoutAnnotations = ([Xml] ($descriptionCsdl -replace '(?s)<Annotations.*?</Annotations>', '')).Edmx.DataServices.schema
 
             function Get-TestProperty
             {
@@ -334,6 +336,24 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
             $property = Get-TestProperty -Namespace 'microsoft.graph.testaccess' -Type 'testProfile' -Property 'profileName'
             Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchema -Property $property |
                 Should -BeNullOrEmpty
+        }
+
+        It 'reads the schema-level block off the index instead of scanning the schema' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph' -Type 'testRoot' -Property 'viaFallback'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchemaWithoutAnnotations `
+                -Property $property `
+                -Index $script:descriptionIndex |
+                Should -Be 'Root fallback description.'
+        }
+
+        It 'keys the index by target regardless of the declaring namespace' {
+            $property = Get-TestProperty -Namespace 'microsoft.graph.testaccess' -Type 'testProfile' -Property 'profileName'
+            Get-M365DSCGraphPropertyDescription -Schema $script:descriptionSchemaWithoutAnnotations `
+                -Property $property `
+                -NamespaceName 'microsoft.graph.testaccess' `
+                -TypeName 'testProfile' `
+                -Index $script:descriptionIndex |
+                Should -Be 'Sub-namespace description.'
         }
 
         It 'carries the declaring namespace through Get-M365DSCGraphTypeProperty' {

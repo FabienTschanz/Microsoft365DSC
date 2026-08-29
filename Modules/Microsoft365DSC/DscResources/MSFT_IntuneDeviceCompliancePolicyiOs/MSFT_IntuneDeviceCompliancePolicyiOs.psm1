@@ -397,11 +397,9 @@ class IntuneDeviceCompliancePolicyiOs : M365DSCResourceBase
             Update-MgBetaDeviceManagementDeviceCompliancePolicy -BodyParameter $updateParameters `
                 -DeviceCompliancePolicyId $currentDeviceiOsPolicy.Id
 
-            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceCompliancePolicies/$($currentDeviceiOsPolicy.Id)/scheduleActionsForRules"
-            $mgGraphScheduledActionForRules = @{
-                deviceComplianceScheduledActionForRules = $complexScheduledActionsForRule
-            }
-            Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $($mgGraphScheduledActionForRules | ConvertTo-Json -Depth 10)
+            Invoke-MgBetaScheduleDeviceManagementDeviceCompliancePolicyActionForRule `
+                -DeviceCompliancePolicyId $currentDeviceiOsPolicy.Id `
+                -DeviceComplianceScheduledActionForRules $complexScheduledActionsForRule
 
             #region Assignments
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments

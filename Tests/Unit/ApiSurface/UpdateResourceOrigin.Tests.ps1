@@ -253,7 +253,6 @@ Describe 'Update-ResourceOrigin.ps1' {
             @{ Resource = 'AADPolicyAmbiguous'; Fragment = 'Ambiguous cmdlet noun' }
             @{ Resource = 'AADNoCommands'; Fragment = 'no commands array' }
             @{ Resource = 'AADNoCrud'; Fragment = 'no Get, New, Update, Set or Remove cmdlet' }
-            @{ Resource = 'EXONoCmdlets'; Fragment = 'no Get, New, Update, Set or Remove cmdlet' }
             @{ Resource = 'AzureTwoWorkloads'; Fragment = 'several workloads' }
             @{ Resource = 'M365DSCNoConnect'; Fragment = 'no $this.Connect() call' }
             @{ Resource = 'AADRestWithLookup'; Fragment = 'Get-only lookups' }
@@ -281,11 +280,17 @@ Describe 'Update-ResourceOrigin.ps1' {
         }
 
         It 'counts the unresolved resources per workload' {
-            $script:run.Summary.Unresolved | Should -Be 16
+            $script:run.Summary.Unresolved | Should -Be 15
             $script:run.Summary.UnresolvedByWorkload['Intune'] | Should -Be 3
             $script:run.Summary.UnresolvedByWorkload['MicrosoftGraph'] | Should -Be 9
-            $script:run.Summary.UnresolvedByWorkload['ExchangeOnline'] | Should -Be 1
+            $script:run.Summary.UnresolvedByWorkload['ExchangeOnline'] | Should -BeNullOrEmpty
             $script:run.Summary.UnresolvedByWorkload['(unknown)'] | Should -Be 3
+        }
+
+        It 'resolves a cmdlet workload resource that declares no CRUD cmdlet' {
+            $origin = (Get-FixtureSettings -Root $script:run.Root -Resource 'EXONoCmdlets').generatedFrom
+            $origin.workload | Should -Be 'ExchangeOnline'
+            $origin.cmdletNoun | Should -BeNullOrEmpty
         }
     }
 
@@ -377,6 +382,34 @@ Describe 'Update-ResourceOrigin.ps1' {
             $origin = (Get-FixtureSettings -Root $forced.Root -Resource 'AADPreResolved').generatedFrom
             $origin.entityType | Should -Be 'attributeSet'
             $forced.Summary.Skipped | Should -Be 0
+        }
+    }
+
+    Context 'Protection of hand recorded facts' {
+        BeforeAll {
+            $script:protect = Invoke-OriginFixture -Name 'protect'
+            $script:handPath = Join-Path -Path $script:protect.Root -ChildPath 'MSFT_AADNoCommands/settings.json'
+
+            $settings = Get-Content -Path $script:handPath -Raw | ConvertFrom-Json
+            $settings.generatedFrom.apiVersion = 'beta'
+            $settings.generatedFrom.entityType = 'handRecordedEntity'
+            $settings.generatedFrom.cmdletNoun = 'MgBetaHandRecorded'
+            Set-Content -Path $script:handPath -Value ($settings | ConvertTo-Json -Depth 20) -Encoding utf8NoBOM
+
+            $script:forced = Invoke-OriginFixture -Name 'protect' -Force
+            $script:after = (Get-Content -Path $script:handPath -Raw | ConvertFrom-Json).generatedFrom
+        }
+
+        It 'keeps a recorded entity type that -Force cannot re-derive' {
+            $script:after.entityType | Should -Be 'handRecordedEntity'
+            $script:after.apiVersion | Should -Be 'beta'
+            $script:after.cmdletNoun | Should -Be 'MgBetaHandRecorded'
+        }
+
+        It 'still reports the resource as unresolved and says what it kept' {
+            $row = @($script:forced.Summary.UnresolvedRows | Where-Object { $_.Resource -eq 'AADNoCommands' })
+            $row | Should -HaveCount 1
+            $row[0].Reason | Should -BeLike '*Kept the recorded*'
         }
     }
 }

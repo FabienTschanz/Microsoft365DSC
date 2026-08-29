@@ -492,8 +492,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                }
             }
 
             It 'Should return present from the Get method' {
@@ -511,8 +509,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should remove the existing attributes and update them in the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADUser' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Invoke-MgGraphRequest' -Exactly 1
-                Should -Invoke -CommandName 'Update-MgUser' -Exactly 1
+                Should -Invoke -CommandName 'Update-MgUser' -Exactly 2
             }
         }
 

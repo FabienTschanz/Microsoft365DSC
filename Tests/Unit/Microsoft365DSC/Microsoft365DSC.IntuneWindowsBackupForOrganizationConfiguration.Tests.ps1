@@ -39,7 +39,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Update-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {
             }
 
             Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
@@ -103,7 +103,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsBackupForOrganizationConfiguration' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Exactly 1
             }
         }
 

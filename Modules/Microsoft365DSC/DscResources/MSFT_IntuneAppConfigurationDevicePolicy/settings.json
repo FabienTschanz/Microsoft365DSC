@@ -2,8 +2,8 @@
   "resourceName": "IntuneAppConfigurationDevicePolicy",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "managedDeviceMobileAppConfiguration",
     "odataSubtype": null,
     "cmdletNoun": "MgBetaDeviceAppManagementMobileAppConfiguration",
     "cmdletVerb": "New",

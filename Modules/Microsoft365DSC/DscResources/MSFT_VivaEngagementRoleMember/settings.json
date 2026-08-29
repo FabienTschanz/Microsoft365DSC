@@ -2,12 +2,12 @@
   "resourceName": "VivaEngagementRoleMember",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "engagementRole",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,
-    "includeNavigationProperties": false,
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
   "excludedProperties": [],

@@ -55,7 +55,8 @@
     {
       "module": "Microsoft.Graph.Beta.Identity.SignIns",
       "cmdlets": [
-        "Get-MgBetaPolicyMobileDeviceManagementPolicy"
+        "Get-MgBetaPolicyMobileDeviceManagementPolicy",
+        "Update-MgBetaPolicyMobileDeviceManagementPolicy"
       ]
     },
     {

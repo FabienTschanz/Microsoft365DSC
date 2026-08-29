@@ -2,8 +2,8 @@
   "resourceName": "DefenderRoleDefinition",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "unifiedRoleDefinition",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,

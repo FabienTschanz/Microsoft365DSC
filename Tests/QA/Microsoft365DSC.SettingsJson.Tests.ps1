@@ -9,60 +9,13 @@ BeforeDiscovery {
 
     $generatedFromAllowlist = @(
         'AADAuthenticationRequirement'
-        'AADCustomAuthenticationExtension'
-        'AADFederationConfiguration'
-        'AADFilteringPolicyRule'
-        'AADGroupEligibilitySchedule'
-        'AADGroupEligibilityScheduleSettings'
         'AADIdentityProtectionPolicySettings'
-        'AADNamedLocationPolicy'
-        'AADOnPremisesPublishingProfilesSettings'
-        'AADPIMGroupSetting'
-        'AADRoleManagementPolicyRule'
-        'AADRoleSetting'
-        'AzureBillingAccountsRoleAssignment'
-        'AzureRoleEligibilityScheduleSettings'
-        'AzureVerifiedIdFaceCheck'
-        'DefenderRoleDefinition'
-        'EXOAuthenticationPolicyAssignment'
-        'EXOSmtpDaneInbound'
-        'IntuneAppConfigurationDevicePolicy'
-        'IntuneCorporateDeviceIdentifier'
-        'IntuneDeviceComplianceScriptLinux'
-        'IntuneDeviceComplianceScriptWindows10'
-        'IntuneDeviceConfigurationSCEPCertificatePolicyWindows10'
-        'IntuneDeviceControlPolicySetting'
-        'IntuneDeviceEnrollmentPlatformRestriction'
-        'IntuneEpmCertificatePolicySetting'
-        'IntuneFirewallPolicySetting'
-        'IntuneManagedInstallerPolicyWindows10'
-        'IntuneMobileAppsBuiltInStoreApp'
-        'IntuneMobileAppsBundleMacOS'
-        'IntuneMobileAppsManagedGooglePlayApp'
-        'IntuneMobileAppsMicrosoftEdge'
-        'IntuneMobileAppsStoreApp'
-        'IntuneMobileAppsWebLink'
-        'IntuneWifiConfigurationPolicyAndroidEnterpriseWorkProfile'
-        'IntuneWifiConfigurationPolicyAndroidOpenSourceProject'
-        'IntuneWifiConfigurationPolicyIOS'
-        'IntuneWifiConfigurationPolicyMacOS'
-        'IntuneWindowsBackupForOrganizationConfiguration'
-        'IntuneWindowsDataProcessingSettings'
-        'IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10'
-        'IntuneWindowsUpdateForBusinessHotpatchProfileWindows10'
         'M365DSCGraphAPIRuleEvaluation'
         'M365DSCRuleEvaluation'
         'O365CopilotSettingsPeopleEnhancedPersonalization'
         'O365OrgCustomizationSetting'
         'O365OrgSettings'
         'O365SearchAndIntelligenceConfigurations'
-        'PPDLPPolicyConnectorConfigurations'
-        'PPPowerAppPolicyUrlPatterns'
-        'PPTenantIsolationSettings'
-        'SHSpaceGroup'
-        'SPORetentionLabelsSettings'
-        'TeamsOnlineVoiceUser'
-        'VivaEngagementRoleMember'
     )
 
     $resolvedSettingsFiles = @($settingsFiles | Where-Object {
@@ -181,9 +134,32 @@ Describe -Name 'Every resource records what it was generated from' {
         $knownWorkloads = $graphWorkloads + $cmdletWorkloads + $restWorkloads
         $exclusionReasons = @('ReadOnly', 'NotConfigurable', 'Deprecated', 'OwnedByOtherResource', 'Deferred')
 
+        function Test-SettingsHasCrudCommand
+        {
+            param ($Settings)
+
+            $crudVerbs = @('Get', 'New', 'Update', 'Set', 'Remove')
+            $ignored = @('MSCloudLoginAssistant', 'Microsoft.Graph.Authentication')
+            foreach ($group in @($Settings.commands))
+            {
+                if ($null -eq $group -or $group.module -in $ignored)
+                {
+                    continue
+                }
+                foreach ($cmdlet in @($group.cmdlets))
+                {
+                    if ($cmdlet -match '^([A-Za-z]+)-([A-Za-z0-9]+)$' -and $Matches[1] -in $crudVerbs)
+                    {
+                        return $true
+                    }
+                }
+            }
+            return $false
+        }
+
         function Test-GeneratedFromResolved
         {
-            param ($GeneratedFrom)
+            param ($GeneratedFrom, $HasCrudCommand = $true)
 
             if ($null -eq $GeneratedFrom -or [System.String]::IsNullOrEmpty($GeneratedFrom.workload))
             {
@@ -192,12 +168,15 @@ Describe -Name 'Every resource records what it was generated from' {
             if ($GeneratedFrom.workload -in $graphWorkloads)
             {
                 return -not [System.String]::IsNullOrEmpty($GeneratedFrom.entityType) -and
-                    $GeneratedFrom.apiVersion -in @('v1.0', 'beta') -and
-                    -not [System.String]::IsNullOrEmpty($GeneratedFrom.cmdletNoun)
+                    $GeneratedFrom.apiVersion -in @('v1.0', 'beta')
             }
             if ($GeneratedFrom.workload -in $cmdletWorkloads)
             {
-                return -not [System.String]::IsNullOrEmpty($GeneratedFrom.cmdletNoun)
+                if (-not [System.String]::IsNullOrEmpty($GeneratedFrom.cmdletNoun))
+                {
+                    return $true
+                }
+                return -not $HasCrudCommand
             }
             return $true
         }
@@ -213,13 +192,12 @@ Describe -Name 'Every resource records what it was generated from' {
         {
             $origin.entityType | Should -Not -BeNullOrEmpty -Because "$ResourceName is a Graph resource and must resolve to a CSDL entity type"
             $origin.apiVersion | Should -BeIn @('v1.0', 'beta') -Because "$ResourceName is a Graph resource and must pin its API version"
-            $origin.cmdletNoun | Should -Not -BeNullOrEmpty -Because "$ResourceName is a Graph resource and must name its cmdlet noun"
         }
-        elseif ($origin.workload -in $cmdletWorkloads)
+        elseif ($origin.workload -in $cmdletWorkloads -and (Test-SettingsHasCrudCommand -Settings $settings))
         {
-            $origin.cmdletNoun | Should -Not -BeNullOrEmpty -Because "$ResourceName is a $($origin.workload) resource and must name its cmdlet noun"
+            $origin.cmdletNoun | Should -Not -BeNullOrEmpty -Because "$ResourceName is a $($origin.workload) resource that declares a CRUD cmdlet and must name its cmdlet noun"
         }
-        (Test-GeneratedFromResolved -GeneratedFrom $origin) | Should -BeTrue -Because "$ResourceName is not on the unresolved allowlist"
+        (Test-GeneratedFromResolved -GeneratedFrom $origin -HasCrudCommand (Test-SettingsHasCrudCommand -Settings $settings)) | Should -BeTrue -Because "$ResourceName is not on the unresolved allowlist"
     }
 
     It "'<ResourceName>' carries a well-formed origin block" -TestCases $settingsFiles {
@@ -244,6 +222,85 @@ Describe -Name 'Every resource records what it was generated from' {
     It "allowlisted '<ResourceName>' is still unresolved (remove it from the allowlist otherwise)" -TestCases $allowlistedResources {
         $FullName | Should -Exist -Because "$ResourceName is on the allowlist but no longer exists"
         $settings = Get-Content -Path $FullName -Raw | ConvertFrom-Json
-        (Test-GeneratedFromResolved -GeneratedFrom $settings.generatedFrom) | Should -BeFalse -Because "$ResourceName resolved; drop it from the allowlist so the ratchet keeps tightening"
+        (Test-GeneratedFromResolved -GeneratedFrom $settings.generatedFrom -HasCrudCommand (Test-SettingsHasCrudCommand -Settings $settings)) | Should -BeFalse -Because "$ResourceName resolved; drop it from the allowlist so the ratchet keeps tightening"
+    }
+}
+
+Describe -Name 'Every resource calls one Graph API version per cmdlet noun' {
+    It "'<ResourceName>' does not mix Mg and MgBeta for the same noun" -TestCases $settingsFiles {
+        $settings = Get-Content -Path $FullName -Raw | ConvertFrom-Json
+
+        $byNoun = @{}
+        foreach ($group in @($settings.commands))
+        {
+            foreach ($cmdlet in @($group.cmdlets))
+            {
+                if ($cmdlet -notmatch '^[A-Za-z]+-Mg(Beta)?([A-Za-z0-9]+)$')
+                {
+                    continue
+                }
+
+                $noun = $Matches[2]
+                if (-not $byNoun.ContainsKey($noun))
+                {
+                    $byNoun[$noun] = @{ V1 = @(); Beta = @() }
+                }
+                if ($Matches[1] -eq 'Beta')
+                {
+                    $byNoun[$noun].Beta += $cmdlet
+                }
+                else
+                {
+                    $byNoun[$noun].V1 += $cmdlet
+                }
+            }
+        }
+
+        $twins = @($byNoun.Keys | Where-Object { $byNoun[$_].V1.Count -gt 0 -and $byNoun[$_].Beta.Count -gt 0 } |
+                ForEach-Object { "$($byNoun[$_].V1 -join ', ') next to $($byNoun[$_].Beta -join ', ')" })
+
+        $twins | Should -BeNullOrEmpty -Because "$ResourceName must call one API version per cmdlet noun, beta taking precedence"
+    }
+}
+
+Describe -Name 'The Graph shim covers every cmdlet the resources declare' {
+    BeforeAll {
+        $repoRoot = Join-Path -Path $PSScriptRoot -ChildPath '../..' -Resolve
+        $shimPath = Join-Path -Path $repoRoot -ChildPath 'Modules/Microsoft365DSC/Modules/M365DSCGraphShim.psm1'
+
+        $shimFunctions = @()
+        if (Test-Path -Path $shimPath)
+        {
+            $shimFunctions = @([regex]::Matches(
+                    [System.IO.File]::ReadAllText($shimPath),
+                    '(?m)^function\s+([A-Za-z]+-Mg[A-Za-z0-9]+)') | ForEach-Object { $_.Groups[1].Value })
+        }
+
+        $declared = [System.Collections.Generic.List[System.String]]::new()
+        foreach ($file in (Get-ChildItem -Path (Join-Path -Path $repoRoot -ChildPath 'Modules/Microsoft365DSC/DscResources') -Filter 'settings.json' -Recurse -File))
+        {
+            $settings = Get-Content -Path $file.FullName -Raw | ConvertFrom-Json
+            foreach ($group in @($settings.commands))
+            {
+                if ($group.module -notlike 'Microsoft.Graph*' -or $group.module -eq 'Microsoft.Graph.Authentication')
+                {
+                    continue
+                }
+                foreach ($cmdlet in @($group.cmdlets))
+                {
+                    $declared.Add($cmdlet)
+                }
+            }
+        }
+
+        $uncovered = @(@($declared | Sort-Object -Unique) | Where-Object { $_ -notin $shimFunctions })
+    }
+
+    It 'Shim module exists' {
+        $shimPath | Should -Exist -Because 'the shim is generated by Utilities/New-M365DSCGraphShimModule.ps1'
+    }
+
+    It 'Every declared Graph cmdlet has a shim wrapper' {
+        $uncovered | Should -BeNullOrEmpty -Because 'a resource whose cmdlet set changed needs Utilities/New-M365DSCGraphShimModule.ps1 re-run before the API surface baseline is captured'
     }
 }

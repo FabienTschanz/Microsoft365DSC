@@ -40,7 +40,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Get-MgGroup -MockWith {
             }
 
-            Mock -CommandName Get-MgGroupMember -MockWith {
+            Mock -CommandName Get-MgBetaGroupMember -MockWith {
             }
 
             Mock -CommandName Get-MgBetaGroup -MockWith {
@@ -55,19 +55,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Invoke-MgGraphRequest -MockWith {
             }
 
-            Mock -CommandName Update-MgGroup -MockWith {
+            Mock -CommandName Update-MgBetaGroup -MockWith {
             }
 
-            Mock -CommandName Remove-MgGroup -MockWith {
+            Mock -CommandName Remove-MgBetaGroup -MockWith {
             }
 
-            Mock -CommandName New-MgGroup -MockWith {
+            Mock -CommandName New-MgBetaGroup -MockWith {
             }
 
             Mock -CommandName New-MgGroupOwnerByRef -MockWith {
             }
 
-            Mock -CommandName New-MgGroupMemberByRef -MockWith {
+            Mock -CommandName New-MgBetaGroupMemberByRef -MockWith {
             }
 
             Mock -CommandName New-MgBetaGroupOwnerByRef -MockWith {
@@ -85,7 +85,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgGroupOwnerDirectoryObjectByRef -MockWith {
             }
 
-            Mock -CommandName Remove-MgGroupMemberDirectoryObjectByRef -MockWith {
+            Mock -CommandName Remove-MgBetaGroupMemberDirectoryObjectByRef -MockWith {
             }
 
             Mock -CommandName Invoke-MgGraphRequest -MockWith {
@@ -152,7 +152,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
-                Should -Invoke -CommandName 'New-MgGroup' -Exactly 1
+                Should -Invoke -CommandName 'New-MgBetaGroup' -Exactly 1
             }
         }
 
@@ -193,7 +193,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Remove-MgGroup' -Exactly 1
+                Should -Invoke -CommandName 'Remove-MgBetaGroup' -Exactly 1
             }
         }
 
@@ -284,14 +284,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should not retrieve all group members from the Get method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
-                Should -Invoke -CommandName 'Get-MgGroupMember' -Exactly 0
+                Should -Invoke -CommandName 'Get-MgBetaGroupMember' -Exactly 0
             }
 
             It 'Should return existing group members so empty desired members can detect drift' {
                 $result = (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Get().ToHashtable()
 
                 $result.Members | Should -Contain 'user1.contoso.com'
-                Should -Invoke -CommandName 'Get-MgGroupMember' -Exactly 0
+                Should -Invoke -CommandName 'Get-MgBetaGroupMember' -Exactly 0
             }
         }
 
@@ -466,7 +466,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Update-MgGroup' -Exactly 1
+                Should -Invoke -CommandName 'Update-MgBetaGroup' -Exactly 1
             }
         }
 
@@ -703,7 +703,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
-                Should -Invoke -CommandName 'New-MgGroup' -Exactly 1
+                Should -Invoke -CommandName 'New-MgBetaGroup' -Exactly 1
                 Should -Invoke -CommandName 'Set-MgGroupLicense' -Exactly 1
             }
         }

@@ -684,7 +684,7 @@ class AADApplication : M365DSCResourceBase
             foreach ($KnownClientApplication in $this.KnownClientApplications)
             {
                 $knownAADApp = $null
-                $knownAADApp = Get-MgApplication -Filter "AppID eq '$($KnownClientApplication)'"
+                $knownAADApp = Get-MgBetaApplication -Filter "AppID eq '$($KnownClientApplication)'"
                 if ($null -ne $knownAADApp)
                 {
                     $testedKnownClientApplications.Add($knownAADApp.AppId)
@@ -878,7 +878,7 @@ class AADApplication : M365DSCResourceBase
                         ObjectId    = $deletedApp.Id
                     }
 
-                    $restoredApp = Get-MgApplication -ApplicationId $currentAADApp.Id -ExpandProperty 'owners'
+                    $restoredApp = Get-MgBetaApplication -ApplicationId $currentAADApp.Id -ExpandProperty 'owners'
                     $ownersValues = @()
                     foreach ($owner in $($restoredApp.Owners | Where-Object { -not $_.DeletedDateTime }))
                     {
@@ -924,7 +924,7 @@ class AADApplication : M365DSCResourceBase
             {
                 Write-Verbose -Message 'Waiting for 10 seconds'
                 Start-Sleep -Seconds 10
-                $appEntity = Get-MgApplication -ApplicationId $currentAADApp.AppId -ErrorAction SilentlyContinue
+                $appEntity = Get-MgBetaApplication -ApplicationId $currentAADApp.AppId -ErrorAction SilentlyContinue
                 $tries++
             } until ($null -eq $appEntity -or $tries -le 12)
         }
@@ -937,7 +937,7 @@ class AADApplication : M365DSCResourceBase
             Write-Verbose -Message "Creating New AzureAD Application {$($this.DisplayName)} with values:`r`n$($currentParameters | Out-String)"
 
             Write-Verbose -Message "Parameters with API: $(ConvertTo-Json $currentParameters -Depth 10)"
-            $currentAADApp = New-MgApplication -BodyParameter $currentParameters
+            $currentAADApp = New-MgBetaApplication -BodyParameter $currentParameters
             $currentAADApp = @{
                 AppId       = $currentAADApp.AppId
                 Id          = $currentAADApp.Id
@@ -954,7 +954,7 @@ class AADApplication : M365DSCResourceBase
             {
                 Write-Verbose -Message 'Waiting for 10 seconds'
                 Start-Sleep -Seconds 10
-                $appEntity = Get-MgApplication -ApplicationId $currentAADApp.Id -ErrorAction SilentlyContinue
+                $appEntity = Get-MgBetaApplication -ApplicationId $currentAADApp.Id -ErrorAction SilentlyContinue
                 $tries++
             } until ($null -eq $appEntity -or $tries -le 12)
         }
@@ -967,7 +967,7 @@ class AADApplication : M365DSCResourceBase
             $currentParameters.Remove('TokenLifetimePolicy') | Out-Null
 
             Write-Verbose -Message "Updating existing AzureAD Application {$($this.DisplayName)} with values:`r`n$($currentParameters | Out-String)"
-            Update-MgApplication -ApplicationId $currentAADApp.ObjectId -BodyParameter $currentParameters
+            Update-MgBetaApplication -ApplicationId $currentAADApp.ObjectId -BodyParameter $currentParameters
 
             if (-not $currentAADApp.ContainsKey('Id'))
             {
@@ -1012,7 +1012,7 @@ class AADApplication : M365DSCResourceBase
                 }
 
                 Write-Verbose -Message "Updating AppRoles with the disabled roles to remove: {$($rolesToRemove -join ',')}"
-                Update-MgApplication -ApplicationId $currentAADApp.ObjectId -AppRoles $fixedRoles
+                Update-MgBetaApplication -ApplicationId $currentAADApp.ObjectId -AppRoles $fixedRoles
 
                 Write-Verbose -Message "Updating the app a second time, this time removing the app roles {$($rolesToRemove -join ',')} and updating the others."
                 $resultingAppRoles = @()
@@ -1029,14 +1029,14 @@ class AADApplication : M365DSCResourceBase
                     }
                     $resultingAppRoles += $entry
                 }
-                Update-MgApplication -ApplicationId $currentAADApp.ObjectId -AppRoles $resultingAppRoles
+                Update-MgBetaApplication -ApplicationId $currentAADApp.ObjectId -AppRoles $resultingAppRoles
             }
         }
         # App exists but should not
         elseif ($this.Ensure -eq 'Absent' -and $currentAADApp.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing AzureAD Application {$($this.DisplayName)} by ObjectID {$($currentAADApp.ObjectID)}"
-            Remove-MgApplication -ApplicationId $currentAADApp.ObjectID
+            Remove-MgBetaApplication -ApplicationId $currentAADApp.ObjectID
         }
 
         if ($this.Ensure -ne 'Absent')
@@ -1197,7 +1197,7 @@ class AADApplication : M365DSCResourceBase
             Write-Verbose -Message "Current App Id: $($currentAADApp.AppId)"
             Write-Verbose -Message "Current ObjectId: $($currentAADApp.Id)"
             # Even if the property is named ApplicationId, we need to pass in the ObjectId
-            Update-MgApplication -ApplicationId ($currentAADApp.ObjectId) `
+            Update-MgBetaApplication -ApplicationId ($currentAADApp.ObjectId) `
                 -RequiredResourceAccess $allRequiredAccess | Out-Null
         }
 
@@ -1233,11 +1233,11 @@ class AADApplication : M365DSCResourceBase
 
             if (($currentAADApp.KeyCredentials.Length -eq 0 -and $this.KeyCredentials.Length -eq 1) -or ($currentAADApp.KeyCredentials.Length -eq 1 -and $this.KeyCredentials.Length -eq 0))
             {
-                Update-MgApplication -ApplicationId $currentAADApp.ObjectId -KeyCredentials $this.KeyCredentials | Out-Null
+                Update-MgBetaApplication -ApplicationId $currentAADApp.ObjectId -KeyCredentials $this.KeyCredentials | Out-Null
             }
             else
             {
-                Write-Warning -Message 'KeyCredentials cannot be updated for AAD Applications with more than one KeyCredentials due to technical limitation of Update-MgApplication Cmdlet. Learn more at: https://learn.microsoft.com/en-us/graph/api/application-addkey'
+                Write-Warning -Message 'KeyCredentials cannot be updated for AAD Applications with more than one KeyCredentials due to technical limitation of Update-MgBetaApplication Cmdlet. Learn more at: https://learn.microsoft.com/en-us/graph/api/application-addkey'
             }
         }
 

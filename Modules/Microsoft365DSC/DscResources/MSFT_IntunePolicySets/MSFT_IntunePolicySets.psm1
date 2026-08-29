@@ -284,17 +284,16 @@ class IntunePolicySets : M365DSCResourceBase
             #region resource generator code
             Update-MgBetaDeviceAppManagementPolicySet -PolicySetId $currentInstance.Id -BodyParameter $UpdateParameters
 
-            $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($currentInstance.Id)/update"
             if ($null -ne ($itemamendments = $this.GetItemsAmendmentsObject($this.ResourceCache['itemResultCache'], $this.items)))
             {
                 Write-Verbose $($itemamendments | ConvertTo-Json -Depth 10) -Verbose
-                Invoke-MgGraphRequest -Method POST -Uri $url -Body $itemamendments
+                Update-MgBetaDeviceAppManagementMultiplePolicySet -PolicySetId $currentInstance.Id `
+                    -BodyParameter $itemamendments
             }
 
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
-            Invoke-MgGraphRequest -Method POST -Uri $url -Body @{
-                assignments = $assignmentsHash
-            }
+            Update-MgBetaDeviceAppManagementMultiplePolicySet -PolicySetId $currentInstance.Id `
+                -Assignments $assignmentsHash
             #endregion
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')

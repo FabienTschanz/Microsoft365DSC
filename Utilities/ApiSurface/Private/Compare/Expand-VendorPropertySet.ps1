@@ -124,7 +124,7 @@ function Expand-VendorPropertySet
                 continue
             }
 
-            if ($isNavigation)
+            if ($isNavigation -and -not ($IncludeNavigationProperties -and $item.Level -eq 0))
             {
                 continue
             }

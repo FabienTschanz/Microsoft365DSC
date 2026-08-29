@@ -168,7 +168,8 @@ class AADOrganizationCertificateBasedAuthConfiguration : M365DSCResourceBase
 
         # Delete the old configuration
         Write-Verbose -Message 'Removing the current Azure AD Organization Certificate Based Auth Configuration.'
-        Invoke-MgGraphRequest -Uri "/beta/organization/$($this.OrganizationId)/certificateBasedAuthConfiguration/$CertificateBasedAuthConfigurationId" -Method DELETE
+        Remove-MgBetaOrganizationCertificateBasedAuthConfiguration -OrganizationId $this.OrganizationId `
+            -CertificateBasedAuthConfigurationId $CertificateBasedAuthConfigurationId
 
         if ($this.Ensure -eq 'Present')
         {
@@ -192,12 +193,9 @@ class AADOrganizationCertificateBasedAuthConfiguration : M365DSCResourceBase
                 certificateAuthorities = $createCertAuthorities
             }
 
-            $uri = "/beta/organization/$($this.OrganizationId)/certificateBasedAuthConfiguration/"
-
             Write-Verbose -Message "Creating with Parameters:`r`n$(ConvertTo-Json $params -Depth 10)"
-            Invoke-MgGraphRequest -Uri $uri `
-                -Method 'POST' `
-                -Body $params
+            New-MgBetaOrganizationCertificateBasedAuthConfiguration -OrganizationId $this.OrganizationId `
+                -BodyParameter $params
         }
     }
 

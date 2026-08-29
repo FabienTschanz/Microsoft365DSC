@@ -173,16 +173,14 @@ class IntuneDeviceEnrollmentScopeConfigurationMdm : M365DSCResourceBase
         }
 
         #region resource generator code
-        Invoke-MgGraphRequest -Uri '/beta/policies/mobileDeviceManagementPolicies/0000000a-0000-0000-c000-000000000000' `
-            -Body $urlProps `
-            -Method PATCH `
+        Update-MgBetaPolicyMobileDeviceManagementPolicy -MobileDeviceManagementPolicyId '0000000a-0000-0000-c000-000000000000' `
+            -BodyParameter $urlProps `
             -ErrorAction Stop
 
         if ($nonUrlProps.Keys.Count -gt 0)
         {
-            Invoke-MgGraphRequest -Uri '/beta/policies/mobileDeviceManagementPolicies/0000000a-0000-0000-c000-000000000000' `
-                -Body $nonUrlProps `
-                -Method PATCH `
+            Update-MgBetaPolicyMobileDeviceManagementPolicy -MobileDeviceManagementPolicyId '0000000a-0000-0000-c000-000000000000' `
+                -BodyParameter $nonUrlProps `
                 -ErrorAction Stop
         }
 

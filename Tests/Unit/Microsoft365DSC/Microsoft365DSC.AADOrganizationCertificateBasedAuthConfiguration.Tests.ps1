@@ -60,8 +60,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName New-MgBetaOrganizationCertificateBasedAuthConfiguration -MockWith {
                 return $null
+            }
+
+            Mock -CommandName Remove-MgBetaOrganizationCertificateBasedAuthConfiguration -MockWith {
             }
 
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
@@ -103,7 +106,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADOrganizationCertificateBasedAuthConfiguration' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'POST' } -Exactly 1
+                Should -Invoke -CommandName New-MgBetaOrganizationCertificateBasedAuthConfiguration -Exactly 1
             }
         }
 
@@ -134,7 +137,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADOrganizationCertificateBasedAuthConfiguration' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'DELETE' } -Exactly 1
+                Should -Invoke -CommandName Remove-MgBetaOrganizationCertificateBasedAuthConfiguration -Exactly 1
             }
         }
         Context -Name "The AADOrganizationCertificateBasedAuthConfiguration Exists and Values are already in the desired state" -Fixture {
@@ -186,8 +189,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADOrganizationCertificateBasedAuthConfiguration' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'DELETE' } -Exactly 1
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'POST' } -Exactly 1
+                Should -Invoke -CommandName Remove-MgBetaOrganizationCertificateBasedAuthConfiguration -Exactly 1
+                Should -Invoke -CommandName New-MgBetaOrganizationCertificateBasedAuthConfiguration -Exactly 1
             }
         }
 

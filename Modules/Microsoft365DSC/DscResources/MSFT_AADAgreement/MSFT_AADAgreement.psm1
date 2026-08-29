@@ -222,7 +222,7 @@ class AADAgreement : M365DSCResourceBase
             $CreateParameters = Remove-NullEntriesFromHashtable -Hash $CreateParameters
             Write-Verbose -Message "Creating Azure AD Agreement with DisplayName {$($this.DisplayName)} with:`r`n$(ConvertTo-Json $CreateParameters -Depth 5)"
 
-            Invoke-MgGraphRequest -Uri '/beta/agreements' -Method POST -Body ($CreateParameters | ConvertTo-Json -Depth 5) | Out-Null
+            New-MgBetaAgreement -BodyParameter $CreateParameters | Out-Null
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
@@ -255,9 +255,8 @@ class AADAgreement : M365DSCResourceBase
 
             $UpdateParameters = Remove-NullEntriesFromHashtable -Hash $UpdateParameters
             Write-Verbose -Message "Updating Azure AD Agreement with ID {$($currentInstance.Id)} with:`r`n$(ConvertTo-Json $UpdateParameters -Depth 5)"
-            Invoke-MgGraphRequest -Method PATCH `
-                -Uri "/beta/agreements/$($currentInstance.Id)" `
-                -Body ($UpdateParameters | ConvertTo-Json -Depth 5) | Out-Null
+            Update-MgBetaAgreement -AgreementId $currentInstance.Id `
+                -BodyParameter $UpdateParameters | Out-Null
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {

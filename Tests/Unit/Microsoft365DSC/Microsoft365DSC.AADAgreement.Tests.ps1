@@ -61,7 +61,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName New-MgBetaAgreement -MockWith {
+            }
+
+            Mock -CommandName Update-MgBetaAgreement -MockWith {
             }
 
             Mock -CommandName Remove-MgBetaAgreement -MockWith {
@@ -105,7 +108,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Create the agreement from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADAgreement' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName New-MgBetaAgreement -Exactly 1
             }
         }
 
@@ -175,7 +178,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADAgreement' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaAgreement -Exactly 1
             }
         }
 

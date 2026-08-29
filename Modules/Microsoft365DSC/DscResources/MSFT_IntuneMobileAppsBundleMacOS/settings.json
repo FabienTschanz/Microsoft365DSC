@@ -2,11 +2,11 @@
   "resourceName": "IntuneMobileAppsBundleMacOS",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
-    "odataSubtype": null,
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
+    "odataSubtype": "mobileLobApp",
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
-    "cmdletVerb": "Get",
+    "cmdletVerb": "New",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
@@ -53,7 +53,6 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.DeviceManagement",
     "Microsoft.Graph.Beta.Devices.CorporateManagement",
     "Microsoft.Graph.Groups"
@@ -64,12 +63,6 @@
     "USGov"
   ],
   "commands": [
-    {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
     {
       "module": "Microsoft.Graph.Beta.DeviceManagement",
       "cmdlets": [
@@ -82,7 +75,9 @@
         "Get-MgBetaDeviceAppManagementMobileApp",
         "Get-MgBetaDeviceAppManagementMobileAppAssignment",
         "Get-MgBetaDeviceAppManagementMobileAppCategory",
-        "Remove-MgBetaDeviceAppManagementMobileApp"
+        "New-MgBetaDeviceAppManagementMobileApp",
+        "Remove-MgBetaDeviceAppManagementMobileApp",
+        "Update-MgBetaDeviceAppManagementMobileApp"
       ]
     },
     {

@@ -348,7 +348,7 @@ class IntuneMobileAppsLobAppiOS : M365DSCResourceBase
 
             #region resource generator code
             $createParameters.Add('@odata.type', '#microsoft.graph.iosLobApp')
-            $policy = Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceAppManagement/mobileApps' -Body ($createParameters | ConvertTo-Json -Depth 10)
+            $policy = New-MgBetaDeviceAppManagementMobileApp -BodyParameter $createParameters
 
             Invoke-M365DSCIntuneMobileAppInitialUpload -AppId $policy.Id -OdataType '#microsoft.graph.iosLobApp' -FileExtension 'ipa'
 
@@ -377,7 +377,9 @@ class IntuneMobileAppsLobAppiOS : M365DSCResourceBase
 
             #region resource generator code
             $updateParameters.Add('@odata.type', '#microsoft.graph.iosLobApp')
-            Invoke-MgGraphRequest -Method PATCH -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)" -Body ($updateParameters | ConvertTo-Json -Depth 10)
+            Update-MgBetaDeviceAppManagementMobileApp `
+                -MobileAppId $currentInstance.Id `
+                -BodyParameter $updateParameters
 
             if ($this.GetBoundParameters().ContainsKey('Categories'))
             {

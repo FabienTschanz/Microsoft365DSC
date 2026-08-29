@@ -53,7 +53,6 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.DeviceManagement",
     "Microsoft.Graph.Beta.Devices.CorporateManagement",
     "Microsoft.Graph.Groups"
@@ -65,12 +64,6 @@
   "mode": "Data",
   "commands": [
     {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
-    {
       "module": "Microsoft.Graph.Beta.DeviceManagement",
       "cmdlets": [
         "Get-MgBetaDeviceManagementAssignmentFilter"
@@ -81,6 +74,7 @@
       "cmdlets": [
         "Get-MgBetaDeviceAppManagementMobileApp",
         "Get-MgBetaDeviceAppManagementMobileAppAssignment",
+        "New-MgBetaDeviceAppManagementMobileApp",
         "Remove-MgBetaDeviceAppManagementMobileApp",
         "Update-MgBetaDeviceAppManagementMobileApp"
       ]

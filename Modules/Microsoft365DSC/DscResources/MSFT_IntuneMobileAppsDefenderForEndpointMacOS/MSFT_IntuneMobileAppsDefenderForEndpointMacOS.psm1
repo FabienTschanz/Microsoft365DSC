@@ -264,7 +264,7 @@ class IntuneMobileAppsDefenderForEndpointMacOS : M365DSCResourceBase
 
             #region resource generator code
             $createParameters.Add('@odata.type', '#microsoft.graph.macOSMicrosoftDefenderApp')
-            $policy = Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceAppManagement/mobileApps' -Body $($createParameters | ConvertTo-Json -Depth 10)
+            $policy = New-MgBetaDeviceAppManagementMobileApp -BodyParameter $createParameters
 
             if ($this.GetBoundParameters().ContainsKey('Categories'))
             {
@@ -291,7 +291,9 @@ class IntuneMobileAppsDefenderForEndpointMacOS : M365DSCResourceBase
 
             #region resource generator code
             $updateParameters.Add('@odata.type', '#microsoft.graph.macOSMicrosoftDefenderApp')
-            Invoke-MgGraphRequest -Method PATCH -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)" -Body $($updateParameters | ConvertTo-Json -Depth 10)
+            Update-MgBetaDeviceAppManagementMobileApp `
+                -MobileAppId $currentInstance.Id `
+                -BodyParameter $updateParameters
 
             if ($this.GetBoundParameters().ContainsKey('Categories'))
             {

@@ -38,10 +38,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Update-MgBetaApplication -MockWith {
             }
 
-            Mock -CommandName Update-MgApplication -MockWith {
+            Mock -CommandName Update-MgBetaApplication -MockWith {
             }
 
-            Mock -CommandName Remove-MgApplication -MockWith {
+            Mock -CommandName Remove-MgBetaApplication -MockWith {
             }
 
             Mock -CommandName Get-MgBetaDirectoryDeletedItemAsApplication -MockWith {
@@ -59,7 +59,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgApplicationTokenLifetimePolicyTokenLifetimePolicyByRef -MockWith {
             }
 
-            Mock -CommandName New-MgApplication -MockWith {
+            Mock -CommandName New-MgBetaApplication -MockWith {
                 return @{
                     ID    = '12345-12345-12345-12345-12345'
                     AppId = '12345-12345-12345-12345-12345'
@@ -119,7 +119,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should create the application from the set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADApplication' -Property $testParams).Set()
-                Should -Invoke -CommandName 'New-MgApplication' -Exactly 1
+                Should -Invoke -CommandName 'New-MgBetaApplication' -Exactly 1
             }
         }
 
@@ -170,7 +170,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should remove the app from the set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADApplication' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Remove-MgApplication' -Exactly 1
+                Should -Invoke -CommandName 'Remove-MgBetaApplication' -Exactly 1
             }
         }
 
@@ -420,7 +420,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADApplication' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Update-MgApplication' -Exactly 1
+                Should -Invoke -CommandName 'Update-MgBetaApplication' -Exactly 1
             }
         }
 
@@ -465,7 +465,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the new method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADApplication' -Property $testParams).Set()
-                Should -Invoke -CommandName 'Update-MgBetaApplication' -Exactly 1
+                Should -Invoke -CommandName 'Update-MgBetaApplication' -Exactly 2
             }
         }
 
@@ -519,7 +519,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the new method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADApplication' -Property $testParams).Set()
-                Should -Invoke -CommandName 'New-MgApplication' -Exactly 1
+                Should -Invoke -CommandName 'New-MgBetaApplication' -Exactly 1
             }
         }
 

@@ -195,10 +195,7 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
             Write-Verbose -Message "Creating an Intune Mobile Apps Managed Google Play App with DisplayName {$($this.DisplayName)}"
 
             #region resource generator code
-            $body = @{
-                productIds = @("app:$($this.PackageId)")
-            }
-            Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceManagement/androidManagedStoreAccountEnterpriseSettings/addApps' -Body $body
+            Add-MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSettingApp -ProductIds @("app:$($this.PackageId)")
             $policy = Get-MgBetaDeviceAppManagementMobileApp -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")' and isof('microsoft.graph.androidManagedStoreApp')" -ErrorAction Stop
 
             if ($policy.Id)
@@ -222,7 +219,9 @@ class IntuneMobileAppsManagedGooglePlayApp : M365DSCResourceBase
             $updateParameters.Remove('PackageId') | Out-Null
 
             $updateParameters.Add('@odata.type', '#microsoft.graph.macOSLobApp')
-            Invoke-MgGraphRequest -Method PATCH -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)" -Body $($updateParameters | ConvertTo-Json -Depth 10)
+            Update-MgBetaDeviceAppManagementMobileApp `
+                -MobileAppId $currentInstance.Id `
+                -BodyParameter $updateParameters
 
             #Assignments
             $assignmentsHash = ConvertTo-IntuneMobileAppAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments

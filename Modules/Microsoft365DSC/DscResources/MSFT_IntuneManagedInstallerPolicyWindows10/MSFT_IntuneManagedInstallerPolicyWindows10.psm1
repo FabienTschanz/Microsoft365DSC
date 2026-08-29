@@ -243,20 +243,18 @@ class IntuneManagedInstallerPolicyWindows10 : M365DSCResourceBase
             $createParameters.'@odata.type' = '#microsoft.graph.deviceHealthScript'
 
             #region resource generator code
-            $policy = Invoke-MgGraphRequest -Uri '/beta/deviceManagement/deviceHealthScripts' `
-                -Method POST `
-                -Body $($createParameters | ConvertTo-Json -Depth 10) `
-                -SkipHttpErrorCheck
+            $policy = New-MgBetaDeviceManagementDeviceHealthScript -BodyParameter $createParameters `
+                -ErrorAction SilentlyContinue
 
-            if ($policy.error)
+            if ($null -eq $policy)
             {
-                Write-Warning -Message "Received error while creating Intune Managed Installer Policy for Windows10: $($policy.error.message)"
+                Write-Warning -Message 'Received an error while creating Intune Managed Installer Policy for Windows10.'
                 Write-Verbose -Message 'Check if policy was created despite the error.'
                 $policy = Get-MgBetaDeviceManagementDeviceHealthScript -Filter "displayName eq '$($this.DisplayName)' and deviceHealthScriptType eq 'managedInstallerScript'" -ErrorAction SilentlyContinue
 
                 if ($null -eq $policy)
                 {
-                    throw "Failed to create Intune Managed Installer Policy for Windows10 with DisplayName {$($this.DisplayName)}. Error: $($policy.error.message)"
+                    throw "Failed to create Intune Managed Installer Policy for Windows10 with DisplayName {$($this.DisplayName)}."
                 }
             }
 

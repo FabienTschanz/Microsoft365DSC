@@ -2,8 +2,8 @@
   "resourceName": "IntuneDeviceEnrollmentPlatformRestriction",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "deviceEnrollmentConfiguration",
     "odataSubtype": null,
     "cmdletNoun": "MgBetaDeviceManagementDeviceEnrollmentConfiguration",
     "cmdletVerb": "New",

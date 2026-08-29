@@ -163,9 +163,12 @@
         "Get-MgBetaGroup",
         "Get-MgBetaGroupLifecyclePolicy",
         "Get-MgBetaGroupMember",
+        "New-MgBetaGroup",
         "New-MgBetaGroupMemberByRef",
+        "Remove-MgBetaGroup",
         "Remove-MgBetaGroupFromLifecyclePolicy",
-        "Remove-MgBetaGroupMemberDirectoryObjectByRef"
+        "Remove-MgBetaGroupMemberDirectoryObjectByRef",
+        "Update-MgBetaGroup"
       ]
     },
     {
@@ -187,15 +190,9 @@
     {
       "module": "Microsoft.Graph.Groups",
       "cmdlets": [
-        "Get-MgGroupMember",
-        "New-MgGroup",
-        "New-MgGroupMemberByRef",
         "New-MgGroupOwnerByRef",
-        "Remove-MgGroup",
-        "Remove-MgGroupMemberDirectoryObjectByRef",
         "Remove-MgGroupOwnerDirectoryObjectByRef",
-        "Set-MgGroupLicense",
-        "Update-MgGroup"
+        "Set-MgGroupLicense"
       ]
     },
     {

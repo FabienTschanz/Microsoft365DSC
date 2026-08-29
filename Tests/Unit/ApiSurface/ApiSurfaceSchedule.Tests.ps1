@@ -114,7 +114,7 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         It 'orders the sections the way phase 3 specifies' {
             $headings = @((Get-TestBody) -split "`n" | Where-Object -FilterScript { $_ -like '## *' })
 
-            $headings | Should -HaveCount 10
+            $headings | Should -HaveCount 11
             $headings[0] | Should -BeLike '## Auto-fixable*'
             $headings[1] | Should -BeLike '## Needs a decision*'
             $headings[2] | Should -BeLike '## Graph shim, regenerate to fix*'
@@ -122,9 +122,10 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             $headings[4] | Should -BeLike '## Read-only, suggested for no implementation*'
             $headings[5] | Should -BeLike '## Coverage gaps*'
             $headings[6] | Should -BeLike '## Graph nouns with full CRUD and no resource*'
-            $headings[7] | Should -BeLike '## Vendor changes since *'
-            $headings[8] | Should -BeLike '## Newer dependency versions available*'
-            $headings[9] | Should -BeLike '## Unaccepted breaking findings*'
+            $headings[7] | Should -BeLike '## Cmdlets no resource calls any more*'
+            $headings[8] | Should -BeLike '## Vendor changes since *'
+            $headings[9] | Should -BeLike '## Newer dependency versions available*'
+            $headings[10] | Should -BeLike '## Unaccepted breaking findings*'
         }
 
         It 'gives every finding code a section to render in' {
@@ -134,7 +135,7 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
                     'VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-ADDED', 'VND-PARAM-TYPECHANGED',
                     'VND-TYPE-PROP-ADDED', 'VND-ENUM-MEMBER-ADDED', 'VND-NEWER-VERSION',
                     'RES-PROP-MISSING', 'RES-PROP-READONLY', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH',
-                    'RES-ENUM-STALE', 'SHIM-MISSING', 'SHIM-STALE', 'COV-NO-RESOURCE',
+                    'RES-ENUM-STALE', 'SHIM-MISSING', 'SHIM-STALE', 'COV-NO-RESOURCE', 'COV-CMDLET-UNUSED',
                     'CAT-SETTING-ADDED', 'CAT-SETTING-REMOVED', 'CAT-OPTION-ADDED', 'CAT-TEMPLATE-VERSION',
                     'CAT-TEMPLATE-NEW'))
             {

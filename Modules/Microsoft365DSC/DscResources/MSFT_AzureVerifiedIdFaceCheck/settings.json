@@ -1,7 +1,7 @@
 {
   "resourceName": "AzureVerifiedIdFaceCheck",
   "generatedFrom": {
-    "workload": null,
+    "workload": "Azure",
     "apiVersion": null,
     "entityType": null,
     "odataSubtype": null,

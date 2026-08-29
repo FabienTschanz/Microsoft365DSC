@@ -68,21 +68,16 @@
   "mode": "Configuration",
   "commands": [
     {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
-    {
       "module": "Microsoft.Graph.Beta.Identity.Governance",
       "cmdlets": [
         "Get-MgBetaAgreement",
-        "Remove-MgBetaAgreement"
+        "New-MgBetaAgreement",
+        "Remove-MgBetaAgreement",
+        "Update-MgBetaAgreement"
       ]
     }
   ],
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.Identity.Governance"
   ]
 }

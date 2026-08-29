@@ -2,9 +2,9 @@
   "resourceName": "IntuneWifiConfigurationPolicyMacOS",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
-    "odataSubtype": null,
+    "apiVersion": "beta",
+    "entityType": "deviceConfiguration",
+    "odataSubtype": "macOSWiFiConfiguration",
     "cmdletNoun": "MgBetaDeviceManagementDeviceConfiguration",
     "cmdletVerb": "New",
     "includeNavigationProperties": false,

@@ -79,11 +79,14 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Update-MgBetaPolicyMobileDeviceManagementPolicy -MockWith {
             }
 
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
+            }
+
+            Mock -CommandName Invoke-MgGraphRequest -MockWith {
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
@@ -137,7 +140,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceEnrollmentScopeConfigurationMdm' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 2
+                Should -Invoke -CommandName Update-MgBetaPolicyMobileDeviceManagementPolicy -Exactly 1
             }
         }
 

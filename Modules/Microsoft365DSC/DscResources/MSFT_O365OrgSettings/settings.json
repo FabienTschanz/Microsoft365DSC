@@ -144,6 +144,7 @@
     "ExchangeOnlineManagement",
     "Microsoft.Graph.Applications",
     "Microsoft.Graph.Authentication",
+    "Microsoft.Graph.Beta.Reports",
     "MSCloudLoginAssistant"
   ],
   "mode": "Configuration",
@@ -167,6 +168,13 @@
       "module": "Microsoft.Graph.Authentication",
       "cmdlets": [
         "Invoke-MgGraphRequest"
+      ]
+    },
+    {
+      "module": "Microsoft.Graph.Beta.Reports",
+      "cmdlets": [
+        "Get-MgBetaAdminReportSetting",
+        "Update-MgBetaAdminReportSetting"
       ]
     },
     {

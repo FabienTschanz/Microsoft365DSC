@@ -338,9 +338,9 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
             {
                 $intuneAssignments += ConvertTo-IntunePolicyAssignment -Assignments $this.Assignments
             }
-            $body = @{'enrollmentConfigurationAssignments' = $intuneAssignments } | ConvertTo-Json -Depth 100
-            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$($policy.Id)/assign"
-            Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $body -ErrorAction Stop
+            Set-MgBetaDeviceManagementDeviceEnrollmentConfiguration -DeviceEnrollmentConfigurationId $policy.Id `
+                -EnrollmentConfigurationAssignments $intuneAssignments `
+                -ErrorAction Stop
 
             if ($boundParameters.ContainsKey('Priority') -and $policy.Priority -ne $this.Priority)
             {
@@ -377,9 +377,9 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
                 {
                     $intuneAssignments += ConvertTo-IntunePolicyAssignment -Assignments $this.Assignments
                 }
-                $body = @{'enrollmentConfigurationAssignments' = $intuneAssignments } | ConvertTo-Json -Depth 100
-                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$($currentInstance.Id)/assign"
-                Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $body -ErrorAction Stop
+                Set-MgBetaDeviceManagementDeviceEnrollmentConfiguration -DeviceEnrollmentConfigurationId $currentInstance.Id `
+                    -EnrollmentConfigurationAssignments $intuneAssignments `
+                    -ErrorAction Stop
 
                 if ($boundParameters.ContainsKey('Priority') -and $this.Priority -ne $currentInstance.Priority)
                 {
@@ -544,12 +544,9 @@ class IntuneDeviceEnrollmentStatusPageWindows10 : M365DSCResourceBase
     {
         try
         {
-            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceEnrollmentConfigurations/$DeviceEnrollmentConfigurationId/setpriority"
-            $body = @{'priority' = $Priority } | ConvertTo-Json -Depth 100
-            $null = Invoke-MgGraphRequest `
-                -Method POST `
-                -Body $body `
-                -Uri $Uri `
+            $null = Set-MgBetaDeviceManagementDeviceEnrollmentConfigurationPriority `
+                -DeviceEnrollmentConfigurationId $DeviceEnrollmentConfigurationId `
+                -Priority $Priority `
                 -ErrorAction Stop 4> $null
         }
         catch

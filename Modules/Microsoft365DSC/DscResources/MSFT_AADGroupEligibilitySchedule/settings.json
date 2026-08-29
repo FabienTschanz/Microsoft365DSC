@@ -2,12 +2,12 @@
   "resourceName": "AADGroupEligibilitySchedule",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "privilegedAccessGroupEligibilitySchedule",
     "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
-    "includeNavigationProperties": false,
+    "cmdletNoun": "MgBetaIdentityGovernancePrivilegedAccessGroupEligibilitySchedule",
+    "cmdletVerb": "Get",
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
   "excludedProperties": [],

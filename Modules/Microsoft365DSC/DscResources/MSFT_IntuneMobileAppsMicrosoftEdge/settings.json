@@ -2,12 +2,12 @@
   "resourceName": "IntuneMobileAppsMicrosoftEdge",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "mobileApp",
     "odataSubtype": null,
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
-    "cmdletVerb": "Get",
-    "includeNavigationProperties": false,
+    "cmdletVerb": "New",
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
   "excludedProperties": [],
@@ -53,7 +53,6 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
     "Microsoft.Graph.Beta.DeviceManagement",
     "Microsoft.Graph.Beta.Devices.CorporateManagement",
     "Microsoft.Graph.Groups"
@@ -64,12 +63,6 @@
   ],
   "mode": "Data",
   "commands": [
-    {
-      "module": "Microsoft.Graph.Authentication",
-      "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
     {
       "module": "Microsoft.Graph.Beta.DeviceManagement",
       "cmdlets": [
@@ -82,7 +75,9 @@
         "Get-MgBetaDeviceAppManagementMobileApp",
         "Get-MgBetaDeviceAppManagementMobileAppAssignment",
         "Get-MgBetaDeviceAppManagementMobileAppCategory",
-        "Remove-MgBetaDeviceAppManagementMobileApp"
+        "New-MgBetaDeviceAppManagementMobileApp",
+        "Remove-MgBetaDeviceAppManagementMobileApp",
+        "Update-MgBetaDeviceAppManagementMobileApp"
       ]
     },
     {

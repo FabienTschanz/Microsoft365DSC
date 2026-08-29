@@ -88,6 +88,7 @@
         "Get-MgBetaDeviceManagementDeviceCompliancePolicy",
         "Get-MgBetaDeviceManagementDeviceCompliancePolicyAssignment",
         "Get-MgBetaDeviceManagementNotificationMessageTemplate",
+        "Invoke-MgBetaScheduleDeviceManagementDeviceCompliancePolicyActionForRule",
         "New-MgBetaDeviceManagementDeviceCompliancePolicy",
         "Remove-MgBetaDeviceManagementDeviceCompliancePolicy",
         "Update-MgBetaDeviceManagementDeviceCompliancePolicy"

@@ -58,10 +58,6 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return @{ Id = "new-12345" }
             }
 
-            Mock -Command Invoke-MgGraphRequest -MockWith {
-                return @{ Id = "new-12345" }
-            }
-
             Mock -Command Update-MgBetaDirectoryCertificateAuthorityCertificateBasedApplicationConfiguration -MockWith {
             }
 
@@ -126,7 +122,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should create a new instance from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADCertificateBasedApplicationConfiguration' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'POST' }
+                Should -Invoke -CommandName New-MgBetaDirectoryCertificateAuthorityCertificateBasedApplicationConfiguration -Exactly 1
             }
         }
 
@@ -149,12 +145,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should send certificate data to the trusted CA creation command' {
                 (New-M365DSCResourceInstance -ResourceName 'AADCertificateBasedApplicationConfiguration' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter {
-                    $bodyObj = ($Body | ConvertFrom-Json)
-                    $Method -eq 'POST' -and
-                    $bodyObj.trustedCertificateAuthorities.Count -eq 1 -and
-                    $bodyObj.trustedCertificateAuthorities[0].certificate -eq $script:expectedCert -and
-                    $bodyObj.trustedCertificateAuthorities[0].isRootAuthority -eq $true
+                Should -Invoke -CommandName New-MgBetaDirectoryCertificateAuthorityCertificateBasedApplicationConfiguration -Exactly 1 -ParameterFilter {
+                    $BodyParameter.trustedCertificateAuthorities.Count -eq 1 -and
+                    $BodyParameter.trustedCertificateAuthorities[0].certificate -eq $script:expectedCert -and
+                    $BodyParameter.trustedCertificateAuthorities[0].isRootAuthority -eq $true
                 }
             }
         }

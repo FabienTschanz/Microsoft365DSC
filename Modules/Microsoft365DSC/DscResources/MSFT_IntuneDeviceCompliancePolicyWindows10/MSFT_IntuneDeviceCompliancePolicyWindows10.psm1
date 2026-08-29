@@ -503,10 +503,9 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
             Update-MgBetaDeviceManagementDeviceCompliancePolicy -BodyParameter $updateParameters `
                 -DeviceCompliancePolicyId $currentDeviceWindows10Policy.Id
 
-            $body = @{
-                deviceComplianceScheduledActionForRules = $complexScheduledActionsForRule
-            } | ConvertTo-Json -Depth 10
-            Invoke-MgGraphRequest -Method POST -Uri "beta/deviceManagement/deviceCompliancePolicies/$($currentDeviceWindows10Policy.Id)/scheduleActionsForRules" -Body $body
+            Invoke-MgBetaScheduleDeviceManagementDeviceCompliancePolicyActionForRule `
+                -DeviceCompliancePolicyId $currentDeviceWindows10Policy.Id `
+                -DeviceComplianceScheduledActionForRules $complexScheduledActionsForRule
 
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
             Update-DeviceConfigurationPolicyAssignment -DeviceConfigurationPolicyId $currentDeviceWindows10Policy.id `

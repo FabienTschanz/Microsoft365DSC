@@ -108,12 +108,16 @@
       "cmdlets": [
         "Get-MgBetaServicePrincipal",
         "Get-MgBetaServicePrincipalAppRoleAssignedTo",
+        "Get-MgBetaServicePrincipalDelegatedPermissionClassification",
         "New-MgBetaServicePrincipal",
         "New-MgBetaServicePrincipalAppRoleAssignedTo",
+        "New-MgBetaServicePrincipalDelegatedPermissionClassification",
         "New-MgBetaServicePrincipalOwnerByRef",
         "Remove-MgBetaServicePrincipal",
         "Remove-MgBetaServicePrincipalAppRoleAssignedTo",
+        "Remove-MgBetaServicePrincipalDelegatedPermissionClassification",
         "Remove-MgBetaServicePrincipalOwnerDirectoryObjectByRef",
+        "Set-MgBetaServicePrincipalClaimPolicy",
         "Update-MgBetaServicePrincipal"
       ]
     },

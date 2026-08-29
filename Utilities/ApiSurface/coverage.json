@@ -1461,19 +1461,6 @@
       "score": 25
     },
     {
-      "noun": "ServicePrincipalDelegatedPermissionClassification",
-      "modules": [
-        "Applications",
-        "Beta.Applications"
-      ],
-      "apiVersions": [
-        "beta",
-        "v1.0"
-      ],
-      "uri": "/servicePrincipals/{servicePrincipal-id}/delegatedPermissionClassifications",
-      "score": 25
-    },
-    {
       "noun": "ServicePrincipalEndpoint",
       "modules": [
         "Applications",
@@ -1601,6 +1588,45 @@
         "v1.0"
       ],
       "uri": "/teams/{team-id}/tags",
+      "score": 25
+    },
+    {
+      "noun": "UserAuthenticationEmailMethod",
+      "modules": [
+        "Beta.Identity.SignIns",
+        "Identity.SignIns"
+      ],
+      "apiVersions": [
+        "beta",
+        "v1.0"
+      ],
+      "uri": "/users/{user-id}/authentication/emailMethods",
+      "score": 25
+    },
+    {
+      "noun": "UserAuthenticationOperation",
+      "modules": [
+        "Beta.Identity.SignIns",
+        "Identity.SignIns"
+      ],
+      "apiVersions": [
+        "beta",
+        "v1.0"
+      ],
+      "uri": "/users/{user-id}/authentication/operations",
+      "score": 25
+    },
+    {
+      "noun": "UserAuthenticationPhoneMethod",
+      "modules": [
+        "Beta.Identity.SignIns",
+        "Identity.SignIns"
+      ],
+      "apiVersions": [
+        "beta",
+        "v1.0"
+      ],
+      "uri": "/users/{user-id}/authentication/phoneMethods",
       "score": 25
     },
     {
@@ -6306,45 +6332,6 @@
       "score": 10
     },
     {
-      "noun": "UserAuthenticationEmailMethod",
-      "modules": [
-        "Beta.Identity.SignIns",
-        "Identity.SignIns"
-      ],
-      "apiVersions": [
-        "beta",
-        "v1.0"
-      ],
-      "uri": "/users/{user-id}/authentication/emailMethods",
-      "score": 10
-    },
-    {
-      "noun": "UserAuthenticationOperation",
-      "modules": [
-        "Beta.Identity.SignIns",
-        "Identity.SignIns"
-      ],
-      "apiVersions": [
-        "beta",
-        "v1.0"
-      ],
-      "uri": "/users/{user-id}/authentication/operations",
-      "score": 10
-    },
-    {
-      "noun": "UserAuthenticationPhoneMethod",
-      "modules": [
-        "Beta.Identity.SignIns",
-        "Identity.SignIns"
-      ],
-      "apiVersions": [
-        "beta",
-        "v1.0"
-      ],
-      "uri": "/users/{user-id}/authentication/phoneMethods",
-      "score": 10
-    },
-    {
       "noun": "UserChatInstalledApp",
       "modules": [
         "Beta.Teams",
@@ -9444,6 +9431,28 @@
       "score": 0
     },
     {
+      "noun": "DeviceAppManagementPolicySetAssignment",
+      "modules": [
+        "Beta.Devices.CorporateManagement"
+      ],
+      "apiVersions": [
+        "beta"
+      ],
+      "uri": "/deviceAppManagement/policySets/{policySet-id}/assignments",
+      "score": 0
+    },
+    {
+      "noun": "DeviceAppManagementPolicySetItem",
+      "modules": [
+        "Beta.Devices.CorporateManagement"
+      ],
+      "apiVersions": [
+        "beta"
+      ],
+      "uri": "/deviceAppManagement/policySets/{policySet-id}/items",
+      "score": 0
+    },
+    {
       "noun": "DeviceAppManagementTask",
       "modules": [
         "Beta.Devices.CorporateManagement"
@@ -9749,17 +9758,6 @@
         "beta"
       ],
       "uri": "/deviceManagement/groupPolicyObjectFiles",
-      "score": 0
-    },
-    {
-      "noun": "DeviceManagementImportedDeviceIdentity",
-      "modules": [
-        "Beta.DeviceManagement.Enrollment"
-      ],
-      "apiVersions": [
-        "beta"
-      ],
-      "uri": "/deviceManagement/importedDeviceIdentities",
       "score": 0
     },
     {
@@ -10227,6 +10225,17 @@
         "v1.0"
       ],
       "uri": "/users/{user-id}/appRoleAssignments",
+      "score": 0
+    },
+    {
+      "noun": "UserAuthenticationExternalAuthenticationMethod",
+      "modules": [
+        "Beta.Identity.SignIns"
+      ],
+      "apiVersions": [
+        "beta"
+      ],
+      "uri": "/users/{user-id}/authentication/externalAuthenticationMethods",
       "score": 0
     },
     {
@@ -13410,28 +13419,6 @@
       "score": -15
     },
     {
-      "noun": "DeviceAppManagementPolicySetAssignment",
-      "modules": [
-        "Beta.Devices.CorporateManagement"
-      ],
-      "apiVersions": [
-        "beta"
-      ],
-      "uri": "/deviceAppManagement/policySets/{policySet-id}/assignments",
-      "score": -15
-    },
-    {
-      "noun": "DeviceAppManagementPolicySetItem",
-      "modules": [
-        "Beta.Devices.CorporateManagement"
-      ],
-      "apiVersions": [
-        "beta"
-      ],
-      "uri": "/deviceAppManagement/policySets/{policySet-id}/items",
-      "score": -15
-    },
-    {
       "noun": "DeviceAppManagementWdacSupplementalPolicyAssignment",
       "modules": [
         "Beta.Devices.CorporateManagement"
@@ -15037,17 +15024,6 @@
         "beta"
       ],
       "uri": "/teamwork/teamTemplates/{teamTemplate-id}/definitions",
-      "score": -15
-    },
-    {
-      "noun": "UserAuthenticationExternalAuthenticationMethod",
-      "modules": [
-        "Beta.Identity.SignIns"
-      ],
-      "apiVersions": [
-        "beta"
-      ],
-      "uri": "/users/{user-id}/authentication/externalAuthenticationMethods",
       "score": -15
     },
     {

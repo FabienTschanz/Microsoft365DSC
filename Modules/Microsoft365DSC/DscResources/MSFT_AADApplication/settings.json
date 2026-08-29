@@ -108,15 +108,11 @@
     {
       "module": "Microsoft.Graph.Applications",
       "cmdlets": [
-        "Get-MgApplication",
         "Get-MgServicePrincipal",
-        "New-MgApplication",
         "New-MgApplicationOwnerByRef",
         "New-MgApplicationTokenLifetimePolicyByRef",
-        "Remove-MgApplication",
         "Remove-MgApplicationOwnerDirectoryObjectByRef",
-        "Remove-MgApplicationTokenLifetimePolicyTokenLifetimePolicyByRef",
-        "Update-MgApplication"
+        "Remove-MgApplicationTokenLifetimePolicyTokenLifetimePolicyByRef"
       ]
     },
     {
@@ -130,6 +126,8 @@
       "cmdlets": [
         "Get-MgBetaApplication",
         "Invoke-MgBetaInstantiateApplicationTemplate",
+        "New-MgBetaApplication",
+        "Remove-MgBetaApplication",
         "Update-MgBetaApplication"
       ]
     },

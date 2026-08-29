@@ -42,10 +42,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                return @{
-                    error = "Forbidden"
-                }
+            Mock -CommandName New-MgBetaDeviceManagementDeviceHealthScript -MockWith {
+                return $null
             }
 
             Mock -CommandName Remove-MgBetaDeviceManagementDeviceHealthScript -MockWith {
@@ -142,7 +140,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneManagedInstallerPolicyWindows10' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName New-MgBetaDeviceManagementDeviceHealthScript -Exactly 1
             }
         }
 

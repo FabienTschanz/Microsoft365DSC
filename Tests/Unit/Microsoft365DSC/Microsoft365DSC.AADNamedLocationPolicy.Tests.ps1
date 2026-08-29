@@ -57,7 +57,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return 'Credentials'
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName New-MgBetaIdentityConditionalAccessNamedLocation -MockWith {
+            }
+
+            Mock -CommandName Update-MgBetaIdentityConditionalAccessNamedLocation -MockWith {
             }
 
             # Mock Write-M365DSCHost to hide output during the tests

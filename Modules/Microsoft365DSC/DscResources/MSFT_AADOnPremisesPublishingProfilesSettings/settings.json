@@ -2,11 +2,11 @@
   "resourceName": "AADOnPremisesPublishingProfilesSettings",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "onPremisesPublishingProfile",
     "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
+    "cmdletNoun": "MgBetaOnPremisePublishingProfile",
+    "cmdletVerb": "Update",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },

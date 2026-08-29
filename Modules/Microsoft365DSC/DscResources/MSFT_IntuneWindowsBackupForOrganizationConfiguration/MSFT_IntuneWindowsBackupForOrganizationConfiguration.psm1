@@ -142,12 +142,12 @@ class IntuneWindowsBackupForOrganizationConfiguration : M365DSCResourceBase
         #endregion
 
         #region resource generator code
-        $null = Invoke-MgGraphRequest -Method PATCH `
-            -Uri "/beta/deviceManagement/deviceEnrollmentConfigurations/$($this.ResourceCache['IntuneWindowsBackupForOrganizationConfigurationId'])" `
-            -Body (@{
+        $null = Update-MgBetaDeviceManagementDeviceEnrollmentConfiguration `
+            -DeviceEnrollmentConfigurationId $this.ResourceCache['IntuneWindowsBackupForOrganizationConfigurationId'] `
+            -BodyParameter @{
                 '@odata.type' = '#microsoft.graph.windowsRestoreDeviceEnrollmentConfiguration'
                 state         = $this.State
-            } | ConvertTo-Json -Depth 5) `
+            } `
             -ErrorAction Stop
         #endregion
     }

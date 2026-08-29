@@ -96,6 +96,7 @@
         "Get-MgBetaDeviceAppManagementTargetedManagedAppConfiguration",
         "New-MgBetaDeviceAppManagementPolicySet",
         "Remove-MgBetaDeviceAppManagementPolicySet",
+        "Update-MgBetaDeviceAppManagementMultiplePolicySet",
         "Update-MgBetaDeviceAppManagementPolicySet"
       ]
     },

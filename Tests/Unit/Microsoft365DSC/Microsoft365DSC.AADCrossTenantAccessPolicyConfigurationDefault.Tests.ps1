@@ -108,7 +108,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MGGraphRequest -MockWith {
+            Mock -CommandName Update-MgBetaPolicyCrossTenantAccessPolicyDefault -MockWith {
             }
 
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
@@ -250,7 +250,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should update the instance from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADCrossTenantAccessPolicyConfigurationDefault' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaPolicyCrossTenantAccessPolicyDefault -Exactly 1
             }
         }
 

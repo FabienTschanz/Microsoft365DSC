@@ -74,9 +74,7 @@ class AADAuthenticationRequirement : M365DSCResourceBase
                 $this.AddTelemetry('Get')
                 #endregion
 
-                $getValue = $null
-                $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/users/$($this.UserPrincipalName)/authentication/requirements"
-                $getValue = Invoke-MgGraphRequest -Method Get -Uri $url
+                $getValue = Get-MgBetaUserAuthenticationRequirement -UserId $this.UserPrincipalName
 
                 if ($null -eq $getValue)
                 {
@@ -132,7 +130,6 @@ class AADAuthenticationRequirement : M365DSCResourceBase
         #endregion
 
         $currentInstance = $this.Get().ToHashtable()
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/users/$($this.UserPrincipalName)/authentication/requirements"
 
         $params = @{}
         if ($this.PerUserMfaState -eq 'enabled' -and $currentInstance.PerUserMfaState -eq 'disabled')
@@ -148,9 +145,7 @@ class AADAuthenticationRequirement : M365DSCResourceBase
             }
         }
 
-        $jsonParams = $params | ConvertTo-Json
-
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $jsonParams
+        Update-MgBetaUserAuthenticationRequirement -UserId $this.UserPrincipalName -BodyParameter $params
     }
 
     [bool] Test()

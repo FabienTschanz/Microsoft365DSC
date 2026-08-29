@@ -2,8 +2,8 @@
   "resourceName": "AADCustomAuthenticationExtension",
   "generatedFrom": {
     "workload": "MicrosoftGraph",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "customAuthenticationExtension",
     "odataSubtype": null,
     "cmdletNoun": "MgBetaIdentityCustomAuthenticationExtension",
     "cmdletVerb": "New",

@@ -175,7 +175,13 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName New-MgBetaIdentityConditionalAccessPolicy -MockWith {
+            }
+
+            Mock -CommandName Update-MgBetaIdentityConditionalAccessPolicy -MockWith {
+            }
+
+            Mock -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -MockWith {
             }
 
             Mock -CommandName Remove-MgBetaIdentityConditionalAccessPolicy -MockWith {
@@ -251,7 +257,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should create the policy in the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName New-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 
@@ -315,7 +321,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should update the settings from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 
@@ -339,7 +345,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should update the settings from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 
@@ -497,12 +503,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @(
-                            @{ id = 'AttributeSet_MyAttribute' }
-                        )
-                    }
+                Mock -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -MockWith {
+                    return @(
+                        @{ id = 'AttributeSet_MyAttribute' }
+                    )
                 }
             }
 
@@ -522,10 +526,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Test() | Should -Be $true
             }
 
-            It 'Should call Invoke-MgGraphRequest for validation and update when applying the filter' {
+            It 'Should validate the attributes and update the policy when applying the filter' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'GET' }
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'PATCH' }
+                Should -Invoke -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 
@@ -568,13 +572,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @(
-                            @{ id = 'Set1_AttrA' }
-                            @{ id = 'Set2_AttrB' }
-                        )
-                    }
+                Mock -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -MockWith {
+                    return @(
+                        @{ id = 'Set1_AttrA' }
+                        @{ id = 'Set2_AttrB' }
+                    )
                 }
             }
 
@@ -594,10 +596,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Test() | Should -Be $true
             }
 
-            It 'Should call Invoke-MgGraphRequest for validation and update when applying the filter' {
+            It 'Should validate the attributes and update the policy when applying the filter' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'GET' }
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'PATCH' }
+                Should -Invoke -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 
@@ -618,10 +620,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     return $null
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @()
-                    }
+                Mock -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -MockWith {
+                    return @(
+
+                    )
                 }
             }
 
@@ -673,12 +675,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @(
-                            @{ id = 'AttributeSet_MyAttribute' }
-                        )
-                    }
+                Mock -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -MockWith {
+                    return @(
+                        @{ id = 'AttributeSet_MyAttribute' }
+                    )
                 }
             }
 
@@ -692,8 +692,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should validate attributes and update the policy from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'GET' }
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'PATCH' }
+                Should -Invoke -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 
@@ -736,12 +736,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     }
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
-                    return @{
-                        value = @(
-                            @{ id = 'AttributeSet_MyAttribute' }
-                        )
-                    }
+                Mock -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -MockWith {
+                    return @(
+                        @{ id = 'AttributeSet_MyAttribute' }
+                    )
                 }
             }
 
@@ -755,8 +753,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should validate attributes and update the policy from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADConditionalAccessPolicy' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'GET' }
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1 -ParameterFilter { $Method -eq 'PATCH' }
+                Should -Invoke -CommandName Get-MgDirectoryCustomSecurityAttributeDefinition -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaIdentityConditionalAccessPolicy -Exactly 1
             }
         }
 

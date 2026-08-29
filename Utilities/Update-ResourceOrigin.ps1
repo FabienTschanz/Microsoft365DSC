@@ -31,7 +31,8 @@
     Wildcard on the resource name without MSFT_. A filtered run merges its rows into the worklist.
 
 .PARAMETER Force
-    Recomputes generatedFrom for resources that already carry a resolved block.
+    Recomputes generatedFrom for resources that already carry a resolved block. A recorded fact the
+    run cannot derive again is kept rather than overwritten with a null.
 
 .EXAMPLE
     ./Utilities/Update-ResourceOrigin.ps1 -Verbose
@@ -1264,12 +1265,15 @@ function Test-OriginResolved
     if ($workload -in $script:GraphWorkloads)
     {
         return -not [System.String]::IsNullOrEmpty([System.String] $GeneratedFrom.entityType) -and
-            ([System.String] $GeneratedFrom.apiVersion) -in @('v1.0', 'beta') -and
-            -not [System.String]::IsNullOrEmpty([System.String] $GeneratedFrom.cmdletNoun)
+            ([System.String] $GeneratedFrom.apiVersion) -in @('v1.0', 'beta')
     }
     if ($workload -in $script:CmdletWorkloads)
     {
-        return -not [System.String]::IsNullOrEmpty([System.String] $GeneratedFrom.cmdletNoun)
+        if (-not [System.String]::IsNullOrEmpty([System.String] $GeneratedFrom.cmdletNoun))
+        {
+            return $true
+        }
+        return -not $script:OriginHasCrudCommand
     }
 
     return $true
@@ -1344,7 +1348,8 @@ function Resolve-OriginResource
     }
 
     $isGraph = $generatedFrom.workload -in $script:GraphWorkloads
-    $needsCmdlet = $isGraph -or $generatedFrom.workload -in $script:CmdletWorkloads
+    $needsCmdlet = $isGraph -or
+        ($generatedFrom.workload -in $script:CmdletWorkloads -and $script:OriginHasCrudCommand)
 
     $corroborationNote = $null
     if ($null -eq $selection.Noun -and $null -ne $selection.Candidate)
@@ -1453,6 +1458,23 @@ foreach ($folder in $folders)
     $settings = $raw | ConvertFrom-Json -AsHashtable
     $resourceName = $folder.Name -replace '^MSFT_', ''
 
+    $script:OriginHasCrudCommand = $false
+    foreach ($group in @($settings.commands))
+    {
+        if ($null -eq $group -or $group.module -in $script:IgnoredCommandModules)
+        {
+            continue
+        }
+        foreach ($cmdletName in @($group.cmdlets))
+        {
+            if ($cmdletName -match '^([A-Za-z]+)-([A-Za-z0-9]+)$' -and $Matches[1] -in $script:CrudVerbs)
+            {
+                $script:OriginHasCrudCommand = $true
+                break
+            }
+        }
+    }
+
     if (-not $Force -and $settings.Contains('generatedFrom') -and (Test-OriginResolved -GeneratedFrom $settings.generatedFrom))
     {
         $skipped++
@@ -1467,6 +1489,30 @@ foreach ($folder in $folders)
     }
 
     $result = Resolve-OriginResource -ResourceName $resourceName -Settings $settings -ModulePath $modulePath -Mapping $mapping
+
+    if ($null -ne $result.Reason -and $settings.Contains('generatedFrom') -and $null -ne $settings.generatedFrom)
+    {
+        $existing = $settings.generatedFrom
+        $factKeys = @('workload', 'apiVersion', 'entityType', 'odataSubtype', 'cmdletNoun', 'cmdletVerb')
+        $kept = @($factKeys | Where-Object {
+                -not [System.String]::IsNullOrEmpty([System.String] $existing[$_]) -and
+                [System.String]::IsNullOrEmpty([System.String] $result.GeneratedFrom[$_])
+            })
+
+        if ($kept.Count -gt 0)
+        {
+            foreach ($key in $kept)
+            {
+                $result.GeneratedFrom[$key] = $existing[$key]
+            }
+            if ($null -ne $existing['includeNavigationProperties'])
+            {
+                $result.GeneratedFrom['includeNavigationProperties'] = [System.Boolean] $existing['includeNavigationProperties']
+            }
+
+            $result.Reason = "$($result.Reason) Kept the recorded $($kept -join ', ') this run could not derive."
+        }
+    }
 
     $updated = [ordered]@{}
     $inserted = $false

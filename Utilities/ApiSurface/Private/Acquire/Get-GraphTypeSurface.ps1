@@ -77,6 +77,7 @@ function Get-GraphTypeSurface
     }
 
     $visited = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::Ordinal)
+    $seedSet = [System.Collections.Generic.HashSet[System.String]]::new([System.String[]] $seedKeys, [System.StringComparer]::Ordinal)
 
     while ($queue.Count -gt 0)
     {
@@ -141,6 +142,12 @@ function Get-GraphTypeSurface
                 continue
             }
 
+            $navigationQueue = $null
+            if ($seedSet.Contains($key))
+            {
+                $navigationQueue = $queue
+            }
+
             $properties[$name] = New-GraphPropertySurface -Generator $Generator `
                 -Index $index `
                 -ApiVersion $apiVersion `
@@ -148,7 +155,8 @@ function Get-GraphTypeSurface
                 -IsReadOnly $false `
                 -IsImmutable $false `
                 -IsNavigation $true `
-                -Queue $null
+                -Queue $navigationQueue `
+                -QueueEntityTypes:($null -ne $navigationQueue)
         }
 
         $baseType = $null
@@ -309,7 +317,11 @@ function New-GraphPropertySurface
         [Parameter()]
         [AllowNull()]
         [System.Object]
-        $Queue
+        $Queue,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $QueueEntityTypes
     )
 
     $isArray = $false
@@ -346,7 +358,8 @@ function New-GraphPropertySurface
         else
         {
             $entry['isComplex'] = $true
-            if ($null -ne $Queue -and $target.Kind -eq 'ComplexType')
+            $queueable = $target.Kind -eq 'ComplexType' -or ($QueueEntityTypes.IsPresent -and $target.Kind -eq 'EntityType')
+            if ($null -ne $Queue -and $queueable)
             {
                 $Queue.Enqueue("$ApiVersion|$contractName")
             }

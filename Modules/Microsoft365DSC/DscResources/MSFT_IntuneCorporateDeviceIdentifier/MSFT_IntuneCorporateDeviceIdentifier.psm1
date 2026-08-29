@@ -83,19 +83,7 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
             $nullResult.Ensure = 'Absent'
             $nullResult.Devices = @()
 
-            # Get all imported device identities from Intune
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/deviceManagement/importedDeviceIdentities'
-            $allDevices = @()
-
-            do
-            {
-                $response = Invoke-MgGraphRequest -Method GET -Uri $uri
-                if ($null -ne $response.value)
-                {
-                    $allDevices += $response.value
-                }
-                $uri = $response.'@odata.nextLink'
-            } while ($null -ne $uri)
+            $allDevices = @(Get-MgBetaDeviceManagementImportedDeviceIdentity -All)
 
             if ($allDevices.Count -eq 0)
             {
@@ -274,15 +262,11 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
                     $importList += $deviceToImport
                 }
 
-                $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/deviceManagement/importedDeviceIdentities/importDeviceIdentityList'
-                $body = @{
-                    overwriteImportedDeviceIdentities = $false
-                    importedDeviceIdentities          = $importList
-                }
-
                 try
                 {
-                    Invoke-MgGraphRequest -Method POST -Uri $uri -Body ($body | ConvertTo-Json -Depth 10)
+                    Import-MgBetaDeviceManagementImportedDeviceIdentityList `
+                        -OverwriteImportedDeviceIdentities:$false `
+                        -ImportedDeviceIdentities $importList
                     Write-Verbose -Message "Successfully added $($devicesToAdd.Count) device identifier(s)"
                 }
                 catch
@@ -299,11 +283,10 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
 
                 foreach ($device in $devicesToRemove)
                 {
-                    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/importedDeviceIdentities/$($device.Id)"
 
                     try
                     {
-                        Invoke-MgGraphRequest -Method DELETE -Uri $uri
+                        Remove-MgBetaDeviceManagementImportedDeviceIdentity -ImportedDeviceIdentityId $device.Id
                         Write-Verbose -Message "Successfully removed device identifier with Id: $($device.Id)"
                     }
                     catch
@@ -328,10 +311,9 @@ class IntuneCorporateDeviceIdentifier : M365DSCResourceBase
 
                 foreach ($device in $currentInstance.Devices)
                 {
-                    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/importedDeviceIdentities/$($device.Id)"
                     try
                     {
-                        Invoke-MgGraphRequest -Method DELETE -Uri $uri
+                        Remove-MgBetaDeviceManagementImportedDeviceIdentity -ImportedDeviceIdentityId $device.Id
                         Write-Verbose -Message "Successfully removed device identifier with Id: $($device.Id)"
                     }
                     catch

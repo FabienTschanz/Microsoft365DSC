@@ -2,11 +2,11 @@
   "resourceName": "IntuneCorporateDeviceIdentifier",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "importedDeviceIdentity",
     "odataSubtype": null,
-    "cmdletNoun": null,
-    "cmdletVerb": null,
+    "cmdletNoun": "MgBetaDeviceManagementImportedDeviceIdentity",
+    "cmdletVerb": "Get",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
@@ -53,8 +53,7 @@
     }
   },
   "requiredModules": [
-    "Microsoft.Graph.Authentication",
-    "MSCloudLoginAssistant"
+    "Microsoft.Graph.Beta.DeviceManagement.Enrollment"
   ],
   "supportedEnvironments": [
     "Global",
@@ -63,15 +62,11 @@
   "mode": "Configuration",
   "commands": [
     {
-      "module": "Microsoft.Graph.Authentication",
+      "module": "Microsoft.Graph.Beta.DeviceManagement.Enrollment",
       "cmdlets": [
-        "Invoke-MgGraphRequest"
-      ]
-    },
-    {
-      "module": "MSCloudLoginAssistant",
-      "cmdlets": [
-        "Get-MSCloudLoginConnectionProfile"
+        "Get-MgBetaDeviceManagementImportedDeviceIdentity",
+        "Import-MgBetaDeviceManagementImportedDeviceIdentityList",
+        "Remove-MgBetaDeviceManagementImportedDeviceIdentity"
       ]
     }
   ]

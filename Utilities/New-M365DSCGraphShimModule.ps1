@@ -122,6 +122,13 @@ $functionSignatures = Get-Content $FunctionSignaturesPath -Raw | ConvertFrom-Jso
 
 $cmdletNames = @($cmdletMapping.PSObject.Properties.Name | Sort-Object)
 Write-Host "  $($cmdletNames.Count) cmdlets in mapping"
+
+$uncovered = @(@($map.Keys) | Where-Object { $_ -notin $cmdletNames } | Sort-Object)
+if ($uncovered.Count -gt 0)
+{
+    Write-Warning -Message "$($uncovered.Count) of $(@($map.Keys).Count) cmdlets the resources declare are absent from the mapping and get no wrapper. The API surface check reports each as SHIM-MISSING."
+    $uncovered | ForEach-Object { Write-Warning -Message "  $_ ($($map[$_]))" }
+}
 #endregion
 
 #region Classify parameters

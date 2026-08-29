@@ -216,6 +216,7 @@ function Get-DriftSection
         [PSCustomObject]@{ Name = 'SettingsCatalog'; Title = 'Intune settings catalog, regenerate to fix'; Codes = @('CAT-SETTING-ADDED', 'CAT-SETTING-REMOVED', 'CAT-OPTION-ADDED', 'CAT-TEMPLATE-VERSION', 'CAT-TEMPLATE-NEW') }
         [PSCustomObject]@{ Name = 'ReadOnly'; Title = 'Read-only, suggested for no implementation'; Codes = @('RES-PROP-READONLY') }
         [PSCustomObject]@{ Name = 'Coverage'; Title = 'Graph nouns with full CRUD and no resource'; Codes = @('COV-NO-RESOURCE') }
+        [PSCustomObject]@{ Name = 'UnusedCmdlet'; Title = 'Cmdlets no resource calls any more'; Codes = @('COV-CMDLET-UNUSED') }
         [PSCustomObject]@{ Name = 'VendorChanges'; Title = $vendorTitle; Codes = @('VND-TYPE-PROP-ADDED', 'VND-PARAM-ADDED') }
         [PSCustomObject]@{ Name = 'Versions'; Title = 'Newer dependency versions available'; Codes = @('VND-NEWER-VERSION') }
     )
@@ -254,6 +255,10 @@ function Get-FindingEvidenceLine
         {
             $callers = @($Finding.evidence.calledBy)
             return "$source, called by $($callers.Count) resource(s): $((Get-M365DSCOrderedName -Value ([System.String[]] $callers)) -join ', ')"
+        }
+        'COV-CMDLET-UNUSED'
+        {
+            return "$source, no resource calls it any more, tracked from $([System.String] $Finding.evidence.fromModule)"
         }
         'SHIM-MISSING'
         {

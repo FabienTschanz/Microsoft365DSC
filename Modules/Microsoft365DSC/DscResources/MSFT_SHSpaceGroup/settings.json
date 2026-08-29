@@ -1,7 +1,7 @@
 {
   "resourceName": "SHSpaceGroup",
   "generatedFrom": {
-    "workload": null,
+    "workload": "EngageHub",
     "apiVersion": null,
     "entityType": null,
     "odataSubtype": null,

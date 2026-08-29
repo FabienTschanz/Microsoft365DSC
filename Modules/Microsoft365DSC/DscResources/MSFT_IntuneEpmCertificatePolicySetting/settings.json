@@ -2,8 +2,8 @@
   "resourceName": "IntuneEpmCertificatePolicySetting",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "deviceManagementReusablePolicySetting",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,

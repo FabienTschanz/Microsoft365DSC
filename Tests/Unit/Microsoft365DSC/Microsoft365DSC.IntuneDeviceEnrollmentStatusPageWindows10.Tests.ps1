@@ -82,7 +82,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {}
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {}
+            Mock -CommandName Set-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {}
+
+            Mock -CommandName Set-MgBetaDeviceManagementDeviceEnrollmentConfigurationPriority -MockWith {}
 
             # Mock Write-M365DSCHost to hide output during the tests
             Mock -CommandName Write-M365DSCHost -MockWith {

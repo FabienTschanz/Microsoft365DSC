@@ -551,8 +551,7 @@ class AADServicePrincipal : M365DSCResourceBase
                         classification = $permissionClassification.Classification
                         permissionName = $permissionClassification.permissionName
                     }
-                    $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/servicePrincipals/$($newSP.Id)/delegatedPermissionClassifications"
-                    Invoke-M365DSCCommand -ScriptBlock { Invoke-MgGraphRequest -Uri $Uri -Method Post -Body $params -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
+                    Invoke-M365DSCCommand -ScriptBlock { New-MgBetaServicePrincipalDelegatedPermissionClassification -ServicePrincipalId $newSP.Id -BodyParameter $params -ErrorAction Stop } -RetryOnNotFoundError -MaxRetries 4
                 }
             }
 
@@ -590,7 +589,7 @@ class AADServicePrincipal : M365DSCResourceBase
             {
                 Write-Verbose -Message 'Adding Claims Policy to the Service Principal'
                 $claimsPolicyBody = Rename-M365DSCCimInstanceParameter -Properties $this.ClaimsPolicy
-                Invoke-M365DSCCommand -ScriptBlock { Invoke-MgGraphRequest -Uri "/beta/servicePrincipals/$($newSP.Id)/claimsPolicy" -Method Put -Body $($claimsPolicyBody | ConvertTo-Json -Depth 20) -ErrorAction Stop } -RetryOnNotFoundError
+                Invoke-M365DSCCommand -ScriptBlock { Set-MgBetaServicePrincipalClaimPolicy -ServicePrincipalId $newSP.Id -BodyParameter $claimsPolicyBody -ErrorAction Stop } -RetryOnNotFoundError
             }
         }
         # ServicePrincipal should exist and will be configured to desired state
@@ -620,7 +619,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 $CSAParams = @{
                     customSecurityAttributes = $currentAADServicePrincipal.CustomSecurityAttributes
                 }
-                Invoke-MgGraphRequest -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/servicePrincipals/$($currentAADServicePrincipal.ObjectID)") -Method Patch -Body $CSAParams
+                Update-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -BodyParameter $CSAParams
             }
             Update-MgBetaServicePrincipal -ServicePrincipalId $currentAADServicePrincipal.ObjectID -BodyParameter $currentParameters
 
@@ -628,7 +627,7 @@ class AADServicePrincipal : M365DSCResourceBase
             {
                 Write-Verbose -Message 'Updating Claims Policy on the Service Principal'
                 $claimsPolicyBody = Rename-M365DSCCimInstanceParameter -Properties $this.ClaimsPolicy
-                $null = Invoke-MgGraphRequest -Uri "/beta/servicePrincipals/$($currentAADServicePrincipal.ObjectID)/claimsPolicy" -Method Put -Body $($claimsPolicyBody | ConvertTo-Json -Depth 20)
+                $null = Set-MgBetaServicePrincipalClaimPolicy -ServicePrincipalId $currentAADServicePrincipal.ObjectID -BodyParameter $claimsPolicyBody
             }
 
             if ($IdentifierUris)
@@ -790,11 +789,12 @@ class AADServicePrincipal : M365DSCResourceBase
             if ($null -ne $this.DelegatedPermissionClassifications)
             {
                 # removing old perm classifications
-                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/servicePrincipals/$($currentAADServicePrincipal.ObjectID)/delegatedPermissionClassifications"
-                $permissionClassificationList = Invoke-MgGraphRequest -Uri $Uri -Method Get
-                foreach ($permissionClassification in $permissionClassificationList.Value)
+                $permissionClassificationList = Get-MgBetaServicePrincipalDelegatedPermissionClassification -ServicePrincipalId $currentAADServicePrincipal.ObjectID
+                foreach ($permissionClassification in $permissionClassificationList)
                 {
-                    Invoke-MgGraphRequest -Uri "$($Uri)/$($permissionClassification.Id)" -Method Delete
+                    Remove-MgBetaServicePrincipalDelegatedPermissionClassification `
+                        -ServicePrincipalId $currentAADServicePrincipal.ObjectID `
+                        -DelegatedPermissionClassificationId $permissionClassification.Id
                 }
 
                 # adding new perm classifications
@@ -804,7 +804,9 @@ class AADServicePrincipal : M365DSCResourceBase
                         classification = $permissionClassification.Classification
                         permissionName = $permissionClassification.permissionName
                     }
-                    Invoke-MgGraphRequest -Uri $Uri -Method Post -Body $params
+                    New-MgBetaServicePrincipalDelegatedPermissionClassification `
+                        -ServicePrincipalId $currentAADServicePrincipal.ObjectID `
+                        -BodyParameter $params
                 }
             }
         }

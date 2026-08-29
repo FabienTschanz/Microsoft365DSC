@@ -2,8 +2,8 @@
   "resourceName": "IntuneWindowsUpdateForBusinessDriverUpdateProfileWindows10",
   "generatedFrom": {
     "workload": "Intune",
-    "apiVersion": null,
-    "entityType": null,
+    "apiVersion": "beta",
+    "entityType": "windowsDriverUpdateProfile",
     "odataSubtype": null,
     "cmdletNoun": null,
     "cmdletVerb": null,
