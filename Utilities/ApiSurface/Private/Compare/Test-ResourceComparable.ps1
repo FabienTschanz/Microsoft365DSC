@@ -3,10 +3,7 @@
     Decides whether a resource can be compared against a Graph CSDL type at all.
 
 .DESCRIPTION
-    306 resources have no resolved entityType and 42 sit on deviceManagementConfigurationPolicy,
-    whose real surface is the settings catalog phase 7 covers. Comparing either group produced
-    843 of the 1001 orphans a naive prototype found. A resource that fails here yields one
-    coverage line instead of findings.
+    A resource that fails here yields one coverage line instead of findings.
 
 .PARAMETER Origin
     Specifies one resource row from Get-ResourceOriginSurface.

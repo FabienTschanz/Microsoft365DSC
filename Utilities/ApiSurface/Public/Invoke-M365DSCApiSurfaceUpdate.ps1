@@ -3,9 +3,9 @@
     Applies a set of approved drift findings on a branch, tests them, commits and opens the PR.
 
 .DESCRIPTION
-    Findings come from -FindingId or from the ticked ids in -FromIssue. They are applied without
-    their unit test, then one rebuild and one test pass cover the whole set, since Pester reads the
-    built classes. A resource whose test fails is rolled back and the run continues.
+    Pester reads the built classes, not the resource sources a run edits. Every finding is applied
+    without its unit test, then one rebuild and one test pass cover the whole set. A resource
+    whose tests fail is rolled back and the run continues.
 
 .PARAMETER DriftPath
     Specifies api-drift.json.
@@ -187,9 +187,13 @@ function Invoke-M365DSCApiSurfaceUpdate
     $committed = $false
     if ($PSCmdlet.ShouldProcess($BranchName, "Commit $($applied.Count) finding(s)"))
     {
-        $null = Invoke-RepositoryCommand -RepositoryRoot $RepositoryRoot -Argument @('add', '--all')
-        $null = Invoke-RepositoryCommand -RepositoryRoot $RepositoryRoot -Argument @(
-            'commit', '-m', "Apply $($applied.Count) API surface drift finding(s)")
+        $staged = [System.String[]] @($applied.Path |
+                Where-Object -FilterScript { -not [System.String]::IsNullOrEmpty([System.String] $_) } |
+                Select-Object -Unique)
+
+        $null = Invoke-RepositoryCommand -RepositoryRoot $RepositoryRoot -Argument (@('add', '--') + $staged)
+        $null = Invoke-RepositoryCommand -RepositoryRoot $RepositoryRoot -Argument (@(
+                'commit', '-m', "Apply $($applied.Count) API surface drift finding(s)", '--') + $staged)
         $committed = $true
     }
 
@@ -327,10 +331,6 @@ function Test-AppliedResource
 .SYNOPSIS
     Renders the pull request body.
 
-.DESCRIPTION
-    Lists what was applied and what was attempted and rolled back. A finding that reverted still
-    needs someone to look at it.
-
 .PARAMETER Result
     Specifies the apply results.
 
@@ -431,10 +431,6 @@ function Invoke-RepositoryCommand
 <#
 .SYNOPSIS
     Runs the GitHub CLI.
-
-.DESCRIPTION
-    A separate function lets a test put a stub on the path and assert the argument list without a
-    network call.
 
 .PARAMETER Argument
     Specifies the gh arguments.

@@ -1,8 +1,3 @@
-<#
-    Offline tests for the phase 2 comparison. Snapshots are built in memory, so no test reads
-    the committed api-surface.json, the network or a tenant.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 InModuleScope -ModuleName 'M365DSCApiSurface' {

@@ -3,9 +3,9 @@
     Builds the edit that re-declares a property with the type the vendor offers.
 
 .DESCRIPTION
-    The whole declaration is re-rendered from the generator's model. Type, nullability, ValidateSet
-    and description all become what New-M365DSCResource would emit, which overwrites a hand tuned
-    description. A type change is breaking. A configuration assigning the old type stops compiling.
+    The whole declaration is re-rendered from the generator's model, which overwrites a hand tuned
+    description. A type change is breaking. A configuration that assigns the old type stops
+    compiling.
 
 .PARAMETER ClassEdit
     Specifies the parsed resource from Get-ResourceClassEdit.
@@ -20,7 +20,7 @@
     Specifies the generatedFrom block of the resource.
 
 .OUTPUTS
-    The edit records.
+    The edit record, or nothing when the render matches the declaration.
 #>
 function Update-PropertyType
 {

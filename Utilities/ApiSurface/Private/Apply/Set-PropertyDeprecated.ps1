@@ -68,8 +68,7 @@ function Set-PropertyDeprecated
     Comments out the Get() entry of a deprecated property.
 
 .DESCRIPTION
-    The property stays declared and a configuration that sets it still compiles. Get() stops
-    reporting a value the vendor no longer has.
+    The property stays declared and a configuration that sets it still compiles.
 
 .PARAMETER ClassEdit
     Specifies the parsed resource.

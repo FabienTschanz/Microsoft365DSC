@@ -3,13 +3,9 @@
     Captures the Graph SDK cmdlets the shim is generated from.
 
 .DESCRIPTION
-    Merges the routes in cmdlet-mapping.json with the parameter lists in function-signatures.json.
-    Build-CmdletMapping.ps1 and Extract-FunctionSignatures.ps1 already produce both files from the
-    installed SDK. Reading them avoids loading the SDK sub-modules a second time.
-
-    cmdlet-mapping.json holds what the SDK metadata declares. The shim generator corrects a few of
-    those routes at build time from cmdlet-mapping-overrides.json. Capturing the overrides next to
-    the cmdlets lets a route comparison tell a corrected route from a changed one.
+    Build-CmdletMapping.ps1 and Extract-FunctionSignatures.ps1 produce both files from the
+    installed SDK. Reading them avoids loading the SDK sub-modules a second time. The overrides
+    correct a few routes at build time and are captured next to the cmdlets they change.
 
 .PARAMETER CmdletMappingPath
     Specifies the path of cmdlet-mapping.json.
@@ -122,7 +118,7 @@ function Get-GraphCmdletSurface
 
 <#
 .SYNOPSIS
-    Returns route variants in a sequence two runs both produce.
+    Returns the route variants in a stable order.
 
 .PARAMETER Variant
     Specifies the variants to order.

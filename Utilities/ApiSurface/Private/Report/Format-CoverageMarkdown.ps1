@@ -3,8 +3,7 @@
     Renders the coverage candidates as a roadmap document.
 
 .DESCRIPTION
-    A roadmap rather than a drift report. The top entries are rendered as commands somebody can
-    run, and the rest as a table. No global coverage percentage is published, because the workloads
+    A roadmap rather than a drift report. No global coverage percentage is published. Workloads
     whose cmdlets only exist after a connection cannot be counted the same way.
 
 .PARAMETER Candidate

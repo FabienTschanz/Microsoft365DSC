@@ -3,12 +3,9 @@
     Compares two API surface snapshots and the resource surface, and returns findings.
 
 .DESCRIPTION
-    Pure. Reads no file, opens no connection, imports no module.
-    Invoke-M365DSCApiSurfaceCheck does the I/O and fills in what needs the resource generator.
-
-    An id is built only from the code, the subject and the property. It is the approval token a
-    maintainer ticks and the apply run filters on, so nothing that varies between two runs over
-    identical input may reach it.
+    Reads no file, opens no connection, imports no module. Invoke-M365DSCApiSurfaceCheck does the
+    I/O. A finding id is built from the code, the subject and the property alone. It is the
+    approval token a maintainer ticks and the apply run filters on.
 
 .PARAMETER Baseline
     Specifies the previous snapshot.

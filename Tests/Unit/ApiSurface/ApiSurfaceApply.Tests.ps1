@@ -1,7 +1,6 @@
-<#
-    Offline tests for the phase 4 appliers. Every edit runs against a copy of a fixture resource
-    in the test drive, so no shipped resource is touched and no test needs the network or a tenant.
-#>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '',
+    Justification = 'The stub generator has to carry the generator function names it replaces.')]
+param ()
 
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
@@ -146,6 +145,132 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         }
     }
 
+    Describe 'Get-ResultAccessorPrefix' {
+        BeforeAll {
+            function Get-ProbeHashtablePair
+            {
+                param ($Text)
+
+                $ast = [System.Management.Automation.Language.Parser]::ParseInput($Text, [ref] $null, [ref] $null)
+                $hashtable = $ast.Find({ param ($node) $node -is [System.Management.Automation.Language.HashtableAst] }, $true)
+
+                return @($hashtable.KeyValuePairs)
+            }
+        }
+
+        It 'reads the accessor through a cast' {
+            $text = @'
+class Probe
+{
+    [Probe] Get()
+    {
+        $results = @{
+            IsSingleInstance = 'Yes'
+            Threshold        = $thresholdInDays
+            SecureByDefault  = [Boolean]$settings.secureByDefault
+            AccessTokens     = $this.AccessTokens
+        }
+
+        return $this.AsResult($results)
+    }
+}
+'@
+            Get-ResultAccessorPrefix -Pair (Get-ProbeHashtablePair -Text $text) | Should -BeExactly '$settings.'
+        }
+
+        It 'reports nothing when $this is the only accessor' {
+            $text = @'
+class Probe
+{
+    [Probe] Get()
+    {
+        $results = @{
+            IsSingleInstance = 'Yes'
+            AccessTokens     = $this.AccessTokens
+        }
+
+        return $this.AsResult($results)
+    }
+}
+'@
+            Get-ResultAccessorPrefix -Pair (Get-ProbeHashtablePair -Text $text) | Should -BeExactly ''
+        }
+    }
+
+    Describe 'Get-VendorPropertyModel' {
+        BeforeAll {
+            $script:StubGenerator = New-Module -Name 'ApplyStubGenerator' -ScriptBlock {
+                $script:LastCall = @{}
+
+                function Get-M365DSCGraphCsdlMetadata
+                {
+                    param ($APIVersion)
+
+                    return "schema-$APIVersion"
+                }
+
+                function New-M365DSCGraphSchemaIndex
+                {
+                    param ($Schema)
+
+                    return "index-$Schema"
+                }
+
+                function Get-M365DSCGraphTypeProperty
+                {
+                    param ($Schema, $Entity, $Index, [switch] $Qualified, $IncludeNavigationProperties)
+
+                    $script:LastCall = @{
+                        Schema     = $Schema
+                        Entity     = $Entity
+                        Index      = $Index
+                        Qualified  = [System.Boolean] $Qualified
+                        Navigation = [System.Boolean] $IncludeNavigationProperties
+                    }
+
+                    return @([PSCustomObject]@{ Name = 'Version'; GraphName = 'version' })
+                }
+
+                function Get-ApplyStubCall
+                {
+                    return $script:LastCall
+                }
+
+                Export-ModuleMember -Function 'Get-M365DSCGraphCsdlMetadata', 'New-M365DSCGraphSchemaIndex',
+                    'Get-M365DSCGraphTypeProperty', 'Get-ApplyStubCall'
+            }
+        }
+
+        It 'hands the sub-namespaced type name to the generator unchanged' {
+            $origin = [PSCustomObject]@{
+                apiVersion                  = 'beta'
+                entityType                  = 'networkaccess.filteringPolicy'
+                odataSubtype                = $null
+                includeNavigationProperties = $false
+            }
+
+            (Get-VendorPropertyModel -Name 'Version' -Origin $origin -Generator $script:StubGenerator).Name |
+                Should -BeExactly 'Version'
+
+            $call = & $script:StubGenerator { Get-ApplyStubCall }
+            $call.Entity | Should -BeExactly 'networkaccess.filteringPolicy'
+            $call.Qualified | Should -BeTrue
+            $call.Index | Should -BeExactly 'index-schema-beta'
+        }
+
+        It 'prefers the odata subtype over the entity type' {
+            $origin = [PSCustomObject]@{
+                apiVersion                  = 'beta'
+                entityType                  = 'deviceCompliancePolicy'
+                odataSubtype                = 'windows10CompliancePolicy'
+                includeNavigationProperties = $false
+            }
+
+            $null = Get-VendorPropertyModel -Name 'Version' -Origin $origin -Generator $script:StubGenerator
+            (& $script:StubGenerator { Get-ApplyStubCall }).Entity | Should -BeExactly 'windows10CompliancePolicy'
+        }
+    }
+
     Describe 'Update-ValidateSet' {
         It 'appends the missing member and leaves the rest untouched' {
             $path = New-FixtureResource -Fixture 'TestApplyBasic' -Resource 'TestApplyBasic'
@@ -255,7 +380,6 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         }
 
         It 'fails a property declared on the class but missing from the result hashtable' {
-            # This is the defect that produces a property exporting as null forever.
             $path = New-FixtureResource -Fixture 'TestApplyBasic' -Resource 'TestApplyBasic'
             $text = [System.IO.File]::ReadAllText($path)
             $declaration = "    [DscProperty()]`r`n    [System.ComponentModel.Description('Orphan.')]`r`n    [System.String] `$Orphan`r`n`r`n"

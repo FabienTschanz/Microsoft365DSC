@@ -30,8 +30,8 @@ jobs:
       pull-requests: write
       actions: read
 
-    # A dispatch already requires write access. A comment has to carry the command and sit on an
-    # Issue carrying the label, both conditions and never either.
+    # A dispatch already requires write access. A comment must carry the command and sit on an
+    # Issue with the label.
     if: >-
       github.repository == 'Microsoft365DSC/Microsoft365DSC' &&
       (
@@ -123,8 +123,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
-          # The weekly run and this request can be days apart. The artifact of the last successful
-          # check is the report the approved ids belong to.
+          # The weekly run and this request can be days apart. The last successful check holds the
+          # report the approved ids belong to.
           $runs = gh run list --workflow 'API Surface Check.yml' --status success --limit 1 --json databaseId | ConvertFrom-Json
           if ($runs.Count -eq 0)
           {

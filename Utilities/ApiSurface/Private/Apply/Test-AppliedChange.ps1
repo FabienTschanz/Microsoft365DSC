@@ -3,11 +3,9 @@
     Checks a resource after an edit and says whether the change may stay.
 
 .DESCRIPTION
-    Three gates, in cost order. The file must parse. A declared property must also appear in the
-    Get() result hashtable, because a declaration alone exports as null forever and nothing else
-    reports it. The resource unit test must pass.
-
-    Enum edits skip the hashtable gate, since the entry already exists.
+    Three gates, in cost order. The file parses, the property appears in the Get() result
+    hashtable, the resource unit test passes. A declaration with no hashtable entry exports as
+    null forever.
 
 .PARAMETER Path
     Specifies the resource module.

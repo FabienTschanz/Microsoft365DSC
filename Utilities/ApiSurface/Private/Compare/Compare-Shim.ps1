@@ -3,8 +3,8 @@
     Reports where the generated Graph shim disagrees with the SDK.
 
 .DESCRIPTION
-    Absolute rather than delta scoped. The shim is regenerated as a whole, so a stale wrapper is
-    stale from the day the SDK moves, not from the day a baseline was taken.
+    Absolute rather than delta scoped. The shim is regenerated as a whole. A wrapper goes stale
+    on the day the SDK moves, not on the day a baseline was taken.
 
 .PARAMETER Current
     Specifies the snapshot just taken.
@@ -55,9 +55,9 @@ function Compare-Shim
     Reports a Graph cmdlet a resource calls that the shim does not export.
 
 .DESCRIPTION
-    Reads what the resources call rather than the snapshot's cmdlets map. A cmdlet the SDK metadata
-    has no route for still lands in that map, with no variants, so its absence from the shim would
-    go unnoticed there.
+    Reads what the resources call rather than the snapshot's cmdlets map. A cmdlet the SDK
+    metadata has no route for still lands in that map without variants. Its absence from the
+    shim would go unnoticed there.
 
 .PARAMETER Origin
     Specifies the resource rows.
@@ -144,9 +144,9 @@ function Find-MissingShimCmdlet
     Reports an exported wrapper whose route or parameters differ from the SDK.
 
 .DESCRIPTION
-    A Get wrapper flattens its collection route and its item route into one record, so both are
-    compared. A route matching cmdletOverrides is the correction the shim generator applies and is
-    not stale.
+    A Get wrapper flattens its collection route and its item route into one record. Both routes
+    are compared. A route matching cmdletOverrides is a correction the shim generator applies
+    and is not stale.
 
 .PARAMETER Current
     Specifies the snapshot just taken.
@@ -246,7 +246,7 @@ function Find-StaleShimWrapper
 
 .DESCRIPTION
     The shim names a placeholder after its PowerShell parameter and the SDK after the OData
-    property, so the token text is erased. Literal segments already agree, including their case.
+    property. The token text is erased. Literal segments already agree, including their case.
 
 .PARAMETER Uri
     Specifies the route.

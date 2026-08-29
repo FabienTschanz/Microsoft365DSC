@@ -3,10 +3,9 @@
     Reports what the vendor changed between two snapshots.
 
 .DESCRIPTION
-    A workload or module skipped by EITHER snapshot is dropped entirely, otherwise the first
-    tenant connected run reports every Exchange Online cmdlet as added and the next offline run
-    reports them all as removed. Routes are compared within the resource's own API version, and
-    a route matching cmdletOverrides is a build time correction rather than a vendor change.
+    A workload or module skipped by either snapshot is dropped entirely. Without that, a tenant
+    connected run reports every Exchange Online cmdlet as added and the next offline run reports
+    them all as removed.
 
 .PARAMETER Baseline
     Specifies the previous snapshot.
@@ -164,10 +163,9 @@ function Compare-VendorSurface
     Reports a route that moved within its own API version.
 
 .DESCRIPTION
-    Every variant is keyed by method and URI. A variant present before and absent after, whose
-    API version the resource still uses, is a reroute. A variant that only appears in the other
-    API version is a promotion and is ignored. A route that matches a cmdletOverrides entry is
-    a build time correction rather than a vendor change.
+    A variant present before and absent after, within the API version the resource uses, is a
+    reroute. A variant that only appears in the other API version is a promotion. A route that
+    matches a cmdletOverrides entry is a build time correction rather than a vendor change.
 
 .PARAMETER Name
     Specifies the cmdlet name.
@@ -387,8 +385,7 @@ function Get-AddedEnumMember
 
 .DESCRIPTION
     Reads the dependencies section rather than comparing two snapshots. Every module that is
-    behind is reported. The jump size travels on the finding and the renderer groups by it, so
-    a major bump reads differently from a patch without any module being suppressed.
+    behind is reported, with the jump size on the finding for the renderer to group by.
 
 .PARAMETER Current
     Specifies the snapshot just taken.

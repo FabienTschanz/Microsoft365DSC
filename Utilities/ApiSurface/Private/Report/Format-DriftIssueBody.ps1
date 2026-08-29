@@ -1,17 +1,11 @@
 <#
 .SYNOPSIS
-    Renders a drift result as the body of the weekly tracking Issue, within the size GitHub
-    accepts.
+    Renders a drift result as the body of the weekly tracking Issue.
 
 .DESCRIPTION
     The first section is the approval interface. Each auto-fixable finding is a task list item
-    carrying its id in backticks, one per line, and phase 4 filters on exactly those strings.
-    Nothing carries a timestamp, a run number or a run URL. Unchanged input has to render byte
-    identical, which rules out an age in days on the breaking section as well.
-
-    A body over MaximumLength is rejected by the API outright. The collapsed sections give up
-    entries first and the approval list last, and every section that gave up entries says how
-    many, with a pointer to the artifact that holds them all.
+    carrying its id in backticks, one per line, and Get-DriftIssueTicked reads exactly those back.
+    Nothing carries a timestamp or a run number. Unchanged input renders byte identical.
 
 .PARAMETER Result
     Specifies the output of Compare-M365DSCApiSurface.
@@ -27,8 +21,7 @@
     Specifies the character budget. Defaults to the 65536 GitHub allows an Issue body.
 
 .PARAMETER Warning
-    Specifies a completeness warning, such as a workload that could not be connected. It is
-    rendered above the approval list, because a silent gap reads as a clean report.
+    Specifies a completeness warning, such as a workload that could not be connected.
 
 .OUTPUTS
     The Issue body text.
@@ -182,6 +175,10 @@ function New-DriftIssueBody
             $_.code -in $section['AutoFixable'].Codes -and $_.autoFixable
         })
 
+    $manual = @($findings | Where-Object -FilterScript {
+            $_.code -in $section['AutoFixable'].Codes -and -not $_.autoFixable
+        })
+
     $lines.Add("## $($section['AutoFixable'].Title)  (tick, then comment /apply-drift)  ($($autoFixable.Count))")
     $lines.Add('')
 
@@ -211,10 +208,12 @@ function New-DriftIssueBody
     $lines.Add('<summary>Everything that is not auto-fixable</summary>')
     $lines.Add('')
 
-    $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Decision'] -Finding $findings -Limit $CollapsedLimit))
+    $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Decision'] -Finding $findings -Limit $CollapsedLimit -Extra $manual))
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Shim'] -Finding $findings -Limit $CollapsedLimit))
+    $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['SettingsCatalog'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['ReadOnly'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-CoverageGapSection -Result $Result))
+    $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Coverage'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['VendorChanges'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-DriftIssueSection -Section $section['Versions'] -Finding $findings -Limit $CollapsedLimit))
     $lines.AddRange([System.String[]] @(Format-BreakingSection -Finding $findings -Limit $CollapsedLimit))
@@ -258,8 +257,7 @@ function Measure-DriftIssueBodyLength
     Finds the largest per-section entry limit whose render still fits the budget.
 
 .DESCRIPTION
-    A smaller limit never renders a longer body, so the search is a bisection. Returns -1 when
-    even a limit of zero does not fit.
+    A smaller limit never renders a longer body.
 
 .PARAMETER Result
     Specifies the output of Compare-M365DSCApiSurface.
@@ -276,9 +274,11 @@ function Measure-DriftIssueBodyLength
 .PARAMETER UpperBound
     Specifies the largest limit worth trying.
 
+.PARAMETER Warning
+    Specifies a completeness warning, passed through to every trial render.
+
 .PARAMETER VaryApprovalList
-    Indicates that the limit applies to the approval list, with the collapsed sections already
-    emptied.
+    Indicates that the limit applies to the approval list, with the collapsed sections emptied.
 
 .OUTPUTS
     The limit, or -1.
@@ -358,7 +358,7 @@ function Get-FittingItemLimit
     Names the entries a section could not list.
 
 .DESCRIPTION
-    A cap that says nothing reads as a complete list. Returns no line when nothing was dropped.
+    A cap that says nothing reads as a complete list.
 
 .PARAMETER Total
     Specifies how many entries the section holds.
@@ -406,6 +406,9 @@ function Get-TruncationLine
 .PARAMETER Limit
     Specifies how many entries to list. The heading always states the true count.
 
+.PARAMETER Extra
+    Specifies findings to list here whose code belongs to another section.
+
 .OUTPUTS
     The section lines.
 #>
@@ -426,11 +429,16 @@ function Format-DriftIssueSection
 
         [Parameter()]
         [System.Int32]
-        $Limit = [System.Int32]::MaxValue
+        $Limit = [System.Int32]::MaxValue,
+
+        [Parameter()]
+        [AllowEmptyCollection()]
+        [System.Object[]]
+        $Extra = @()
     )
 
     $lines = [System.Collections.Generic.List[System.String]]::new()
-    $matched = @($Finding | Where-Object -FilterScript { $_.code -in $Section.Codes })
+    $matched = @(@($Finding | Where-Object -FilterScript { $_.code -in $Section.Codes }) + @($Extra))
 
     $lines.Add("## $($Section.Title)  ($($matched.Count))")
     $lines.Add('')
@@ -461,11 +469,11 @@ function Format-DriftIssueSection
 
 <#
 .SYNOPSIS
-    Renders the coverage section, counted on the resources the comparison could not reach.
+    Renders the coverage gap section of the Issue body.
 
 .DESCRIPTION
-    COV-NO-RESOURCE arrives in phase 6. Until then the gap worth reporting is the resource a
-    comparison had to skip, plus the backlog of vendor properties no resource declares.
+    The heading counts the resources the comparison had to skip. The line under it repeats the
+    compared and skipped totals and the backlog of vendor properties no resource declares.
 
 .PARAMETER Result
     Specifies the output of Compare-M365DSCApiSurface.
@@ -497,11 +505,11 @@ function Format-CoverageGapSection
 
 <#
 .SYNOPSIS
-    Renders the breaking findings nobody has accepted yet, oldest first seen date in the heading.
+    Renders the breaking findings nobody has accepted yet.
 
 .DESCRIPTION
-    The heading names a date rather than an age. An age in days changes on every weekly run and
-    would rewrite the Issue when nothing upstream moved.
+    The heading names the oldest first seen date rather than an age. An age in days changes on
+    every weekly run and would rewrite the Issue when nothing upstream moved.
 
 .PARAMETER Finding
     Specifies every finding in the result.
@@ -624,8 +632,8 @@ function Get-DriftVendorSince
     Reads the ticked finding ids back out of an Issue body.
 
 .DESCRIPTION
-    The inverse of the task list Format-DriftIssueBody writes. A body and its parse have to
-    round trip, otherwise a maintainer's approval is lost on the next rewrite.
+    The inverse of the task list Format-DriftIssueBody writes. A body and its parse have to round
+    trip. Without that, the next rewrite drops a maintainer's approval.
 
 .PARAMETER Body
     Specifies the Issue body.

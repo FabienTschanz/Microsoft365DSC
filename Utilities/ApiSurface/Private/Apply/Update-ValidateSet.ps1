@@ -3,9 +3,9 @@
     Builds the edit that appends the vendor members a RES-ENUM-STALE finding names.
 
 .DESCRIPTION
-    Append only. Every declared member keeps its place and its casing, and nothing is removed.
-    A resource may declare a member the vendor has dropped, or declare one in another casing.
-    Replacing the set with the vendor list would reject configurations that work today.
+    Append only. Every declared member keeps its place and its casing. A resource may declare a
+    member the vendor has dropped, and replacing the set would reject configurations that work
+    today.
 
 .PARAMETER ClassEdit
     Specifies the parsed resource from Get-ResourceClassEdit.
@@ -88,8 +88,8 @@ function Update-ValidateSet
     Renders a ValidateSet attribute through the resource generator.
 
 .DESCRIPTION
-    New-M365DSCClassPropertyBlock owns the quoting and the separator. Rendering a second time here
-    would drift from it the first time either changes.
+    New-M365DSCClassPropertyBlock owns the quoting and the separator. A second renderer here would
+    drift from it.
 
 .PARAMETER Member
     Specifies the members.

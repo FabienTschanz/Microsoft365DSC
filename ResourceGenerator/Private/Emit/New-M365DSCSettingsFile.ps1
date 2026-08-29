@@ -1,7 +1,6 @@
 <#
 .SYNOPSIS
-    Emits the resource's settings.json, including the roles, permissions and commands sections
-    that the old generator left out.
+    Builds the settings.json content of a resource.
 
 .PARAMETER ResourceModel
     Specifies the resource model.
@@ -26,7 +25,6 @@ function New-M365DSCSettingsFile
 
     $isGraph = $ResourceModel.Workload -in @('MicrosoftGraph', 'Intune')
 
-    # The resource cmdlets, grouped by the module that ships them.
     $cmdletNames = @(
         $ResourceModel.Cmdlets.GetCmdlet
         $ResourceModel.Cmdlets.NewCmdlet
@@ -101,7 +99,10 @@ function New-M365DSCSettingsFile
 
 <#
 .SYNOPSIS
-    Scrapes the Graph permissions of the resource's cmdlets through Find-MgGraphCommand.
+    Reads the Graph permissions of the resource's cmdlets from Find-MgGraphCommand.
+
+.PARAMETER ResourceModel
+    Specifies the resource model.
 #>
 function Get-M365DSCGraphPermission
 {
@@ -156,14 +157,11 @@ function Get-M365DSCGraphPermission
     Builds the generatedFrom block of settings.json.
 
 .DESCRIPTION
-    Records the vendor surface the resource was generated from (workload, API version, entity
-    type, subtype, cmdlet noun and verb) so the API surface checker can compare the resource
-    against exactly that surface. The generator writes generatedFrom, maintainers write
-    excludedProperties and the checker writes lastVerified, so only generatedFrom is produced
-    here.
+    Polymorphic Graph entities keep the cmdlet's entity type in entityType and the concrete subtype
+    in odataSubtype. Every other resource leaves odataSubtype null.
 
-    Polymorphic Graph entities keep the cmdlet's entity type in entityType and the concrete
-    subtype in odataSubtype. Every other resource leaves odataSubtype null.
+.PARAMETER ResourceModel
+    Specifies the resource model.
 #>
 function Get-M365DSCGeneratedFromBlock
 {

@@ -3,18 +3,9 @@
     Captures the non-Graph cmdlets the resources call.
 
 .DESCRIPTION
-    Reads the commands array of every resource, groups it by module, imports each pinned module
-    once and records every parameter of every requested cmdlet across all parameter sets. The
-    Graph SDK cmdlets are skipped because Get-GraphCmdletSurface already covers them from
-    cmdlet-mapping.json.
-
-    ExchangeOnline and Security and Compliance cmdlets are proxy-generated when
-    Connect-ExchangeOnline runs and do not exist before that. Their modules are reported as skipped
-    rather than empty, unless ConnectedModule carries a live proxy for them.
-
-    Parameters come from Get-Command on an explicitly imported module. A bare Get-Command on a
-    name that does not exist triggers module autodiscovery over every installed module, which
-    takes minutes.
+    Get-GraphCmdletSurface already covers the Graph SDK cmdlets. Exchange Online and Security and
+    Compliance cmdlets are proxy-generated at connect time and are reported as skipped without a
+    live proxy. A bare Get-Command on an unknown name spends minutes on module autodiscovery.
 
 .PARAMETER Origin
     Specifies the resource rows from Get-ResourceOriginSurface.
@@ -34,8 +25,7 @@
 
 .PARAMETER IncludeModule
     Specifies the only modules to process. Empty means all of them. A connection loads assemblies
-    that stop MicrosoftTeams importing, so the offline modules are captured in one call before the
-    connection and the connect-time ones in a second call after it.
+    that stop MicrosoftTeams importing.
 
 .OUTPUTS
     A hashtable with Cmdlets, an ordered map, SkippedModules and MissingCmdlets.
@@ -132,7 +122,7 @@ function Get-WorkloadCmdletSurface
 
         foreach ($cmdletName in (Get-M365DSCOrderedName -Value ([System.String[]] @($requested[$moduleName]))))
         {
-            # The proxies overlap, and the first source to export the name owns it.
+            # The proxies overlap. The first source to export the name owns it.
             $source = @($sources | Where-Object -FilterScript { $_.Module.ExportedCommands.ContainsKey($cmdletName) })[0]
             if ($null -eq $source)
             {
@@ -142,8 +132,7 @@ function Get-WorkloadCmdletSurface
 
             $command = $source.Module.ExportedCommands[$cmdletName]
 
-            # settings.json carries the spelling the resource module uses, which is not always the
-            # vendor's. Record the live one.
+            # settings.json can spell a cmdlet differently from the vendor. Record the live name.
             $cmdlets[$command.Name] = [ordered]@{
                 workload      = $source.Workload
                 module        = $moduleName
@@ -208,10 +197,6 @@ function Resolve-ConnectedSource
 .SYNOPSIS
     Imports one workload module at its pinned version.
 
-.DESCRIPTION
-    Prefers the pinned version, which is what the shipped module declares as its dependency. A
-    machine that only has another version falls back to the newest one it has.
-
 .PARAMETER Name
     Specifies the module name.
 
@@ -270,10 +255,6 @@ function Import-WorkloadModule
 .SYNOPSIS
     Names the workload a module belongs to.
 
-.DESCRIPTION
-    Modules that carry no workload of their own, such as the login helper and the parser, are
-    reported as Support. A removed cmdlet in one of them is still reported rather than dropped.
-
 .PARAMETER Name
     Specifies the module name.
 
@@ -319,8 +300,8 @@ function Get-ModuleWorkload
     Records every parameter of a command across all parameter sets.
 
 .DESCRIPTION
-    Type names come from Type.ToString, which leaves out the assembly version a generic type
-    carries in its FullName and would otherwise change the snapshot on a runtime patch.
+    Type names come from Type.ToString. The FullName of a generic type carries an assembly version
+    that changes the snapshot on a runtime patch.
 
 .PARAMETER Command
     Specifies the command.

@@ -3,15 +3,18 @@
     Returns the Graph cmdlet nouns the resources already claim.
 
 .DESCRIPTION
-    Built from the commands each resource records rather than from generatedFrom. A resource names
-    the cmdlets it calls even when its entity type could not be resolved, so the 55 unresolved
-    blocks cost nothing here.
+    Built from the commands each resource records rather than from generatedFrom. A resource
+    names the cmdlets it calls even when its entity type could not be resolved.
 
 .PARAMETER Origin
     Specifies the resource rows from Get-ResourceOriginSurface.
 
+.PARAMETER Inventory
+    Specifies the noun map from Get-GraphCommandInventory.
+
 .OUTPUTS
-    An ordered dictionary with Noun, Cmdlet and OutputType, each a case-insensitive set.
+    An ordered dictionary with Noun, Cmdlet, ClaimedModule, OutputType and RouteParent, each a
+    case-insensitive set.
 #>
 function Get-CoverageClaimSet
 {
@@ -43,7 +46,7 @@ function Get-CoverageClaimSet
                 continue
             }
 
-            # settings.json spells the full module, the metadata spells the part after the prefix.
+            # settings.json spells the full module name and the metadata only the part after it.
             $null = $modules.Add(($module -replace '^Microsoft\.Graph\.(Beta\.)?', ''))
 
             $name = [System.String] $command.Name

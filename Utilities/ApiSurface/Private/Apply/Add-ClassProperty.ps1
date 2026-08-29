@@ -3,23 +3,9 @@
     Builds the edits that declare a new scalar or enum property on a resource.
 
 .DESCRIPTION
-    Two edits, both required. The declaration alone leaves the property null forever, because
-    Get() fills the instance from the hashtable it hands to AsResult and nothing else writes the
-    property.
-
-    The declaration is rendered by the resource generator's New-M365DSCClassPropertyBlock. It goes
-    before Ensure, or before the first auth property on a singleton, because shipped resources keep
-    their MOF era order and there is no alphabetical slot to aim at.
-
-    The declaration is built from the generator's own CSDL walk rather than from the finding. The
-    snapshot carries no descriptions by design, and every declaration needs one, so the model comes
-    from Get-M365DSCGraphTypeProperty for the entity named in generatedFrom. That also makes the
-    rendered block identical to what New-M365DSCResource would emit.
-
-    The unit test and the examples are NOT touched. A new property needs a value in the API mock,
-    one in every Context of the test file, and an entry in Examples/Resources, which is more than a
-    splice can decide. Per finding verification runs the resource test, so an unfinished addition
-    reverts itself and is reported as scaffold and review.
+    Two edits, both required. A declaration without an entry in the Get() result hashtable exports
+    as null forever. The model comes from the generator's CSDL walk of the entity in generatedFrom,
+    which carries the description the snapshot omits. Tests and examples are not touched.
 
 .PARAMETER ClassEdit
     Specifies the parsed resource from Get-ResourceClassEdit.
@@ -98,11 +84,9 @@ function Add-ClassProperty
     Returns the generator's own property model for a vendor property.
 
 .DESCRIPTION
-    Walks the CSDL entity the resource was generated from and picks the model whose name matches.
-    The walk is the generator's, so the description, the CLR type, the nullability and the
-    ValidateSet are the ones New-M365DSCResource would have emitted. Building a model from the
-    finding instead would ship a declaration with no description, which every resource has and the
-    class convention tests require.
+    The generator's walk gives the description, the CLR type, the nullability and the ValidateSet
+    New-M365DSCResource would emit. The snapshot carries no descriptions and the class convention
+    tests require one.
 
 .PARAMETER Name
     Specifies the declared property name.
@@ -150,10 +134,13 @@ function Get-VendorPropertyModel
         param ($ApiVersion, $Entity, $IncludeNavigation)
 
         $schema = Get-M365DSCGraphCsdlMetadata -APIVersion $ApiVersion
+        $index = New-M365DSCGraphSchemaIndex -Schema $schema
         return @(Get-M365DSCGraphTypeProperty -Schema $schema `
                 -Entity $Entity `
+                -Index $index `
+                -Qualified `
                 -IncludeNavigationProperties $IncludeNavigation)
-    } ([System.String] $Origin.apiVersion) ($entityType -replace '^.*\.', '') ([System.Boolean] $Origin.includeNavigationProperties)
+    } ([System.String] $Origin.apiVersion) $entityType ([System.Boolean] $Origin.includeNavigationProperties)
 
     $model = @($models | Where-Object -FilterScript { $_.Name -eq $Name })[0]
     if ($null -eq $model)
@@ -169,10 +156,8 @@ function Get-VendorPropertyModel
     Builds the edit that adds the property to the Get() result hashtable.
 
 .DESCRIPTION
-    The value expression reuses the accessor the surrounding entries already use, which is
-    $getValue in the generated resources and varies in the hand written ones. Alignment follows
-    the column the block already uses. A name longer than that column widens only its own line,
-    where the generator would have reflowed the whole block.
+    The accessor is the one the surrounding entries use, $getValue in a generated resource and
+    something else in a hand written one. Alignment follows the column the block already uses.
 
 .PARAMETER ClassEdit
     Specifies the parsed resource.
@@ -267,7 +252,7 @@ function Get-ResultAccessorPrefix
     foreach ($item in $Pair)
     {
         $value = [System.String] $item.Item2.Extent.Text
-        if ($value -notmatch '^(\$[A-Za-z_][A-Za-z0-9_]*\.)[A-Za-z_]')
+        if ($value -notmatch '(?<![\w$])(\$[A-Za-z_][A-Za-z0-9_]*\.)[A-Za-z_]')
         {
             continue
         }

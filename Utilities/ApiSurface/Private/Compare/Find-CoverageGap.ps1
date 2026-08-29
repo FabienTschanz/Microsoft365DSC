@@ -3,9 +3,8 @@
     Ranks the Graph cmdlet nouns that offer full CRUD and that no resource covers.
 
 .DESCRIPTION
-    A filter removes a candidate only on conclusive evidence, which is a claim by name or a human
-    written ignore entry. Everything else is a weight. A wrong weight costs a few positions in a
-    sorted list, while a wrong filter hides a gap nobody learns about.
+    A filter removes a candidate only on a claim by name or a written ignore entry. Everything
+    else is a weight.
 
 .PARAMETER Inventory
     Specifies the noun map from Get-GraphCommandInventory.
@@ -94,8 +93,8 @@ function Find-CoverageGap
     Picks the route that best represents a noun.
 
 .DESCRIPTION
-    The shortest route with no trailing placeholder, which is the collection a resource would be
-    generated against.
+    A route without its trailing placeholder is the collection a resource would be generated
+    against.
 
 .PARAMETER Uri
     Specifies the routes the noun carries.
@@ -195,7 +194,7 @@ function Test-IgnoredCandidate
     Scores one candidate and records why.
 
 .DESCRIPTION
-    Every component that fired is named on the candidate, so a maintainer can audit a high rank
+    Every component that fired is named on the candidate. A maintainer can audit a high rank
     rather than trust it.
 
 .PARAMETER Noun
@@ -309,8 +308,6 @@ function New-CoverageCandidate
         $reasons.Add('route reads as telemetry -30')
     }
 
-    # An instance, a schedule and an approval are projections of a request. The request is the
-    # write path and keeps its score.
     if ($Uri -match '(Instance|Instances|Schedule|Schedules|Approval|Approvals)$')
     {
         $score -= 30
@@ -408,8 +405,8 @@ function Test-ClaimedSibling
     Turns the candidates the baseline does not carry into findings.
 
 .DESCRIPTION
-    Delta scoped. The standing list is a roadmap document and never becomes findings, so a
-    self comparison reports nothing.
+    Delta scoped. The standing list is a roadmap document and never becomes findings. A
+    comparison against itself reports nothing.
 
 .PARAMETER Candidate
     Specifies the ranked candidates.

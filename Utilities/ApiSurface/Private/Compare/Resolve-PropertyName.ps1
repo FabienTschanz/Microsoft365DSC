@@ -3,9 +3,8 @@
     Matches a DSC property name against the vendor property set.
 
 .DESCRIPTION
-    A resource that flattens a complex type concatenates the path into one name, so
-    'SignInFrequencyIsEnabled' is 'sessionControls.signInFrequency.isEnabled'. Rules are tried
-    most exact first and the winner is reported.
+    A resource that flattens a complex type concatenates the path into one name.
+    'SignInFrequencyIsEnabled' is 'sessionControls.signInFrequency.isEnabled'.
 
 .PARAMETER Name
     Specifies the declared DSC property name.
@@ -73,8 +72,6 @@ function Resolve-PropertyName
             }
         }
 
-        # A flattening resource usually drops the plural on the container, so grantControls.operator
-        # is declared as GrantControlOperator.
         $singular = @($path -split '\.' | ForEach-Object -Process { $_ -replace 's$', '' }) -join ''
         if ($singular.ToLowerInvariant() -eq $lowered)
         {
@@ -125,7 +122,6 @@ function Get-PropertyNameCandidate
         $candidates.Add([PSCustomObject]@{ Value = '@odata.type'; Rule = 'ODataType' })
     }
 
-    # A leading run of capitals is one acronym, so 'MDMAuthority' answers to 'mdmAuthority'.
     if ($Name -cmatch '^([A-Z]{2,})(?=[A-Z][a-z]|$)')
     {
         $acronym = $Matches[1]

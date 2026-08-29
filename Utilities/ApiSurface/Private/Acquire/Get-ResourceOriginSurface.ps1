@@ -3,10 +3,6 @@
     Reads what every resource says it was generated from.
 
 .DESCRIPTION
-    Collects the generatedFrom block and the commands array of every settings.json under the
-    resource folder. The snapshot captures only the vendor surface these rows point at. Capturing
-    the whole Graph metadata would produce a file no reviewer can diff.
-
     Identity is the folder name without the MSFT_ prefix. Three settings.json files carry a
     resourceName that differs from their folder.
 

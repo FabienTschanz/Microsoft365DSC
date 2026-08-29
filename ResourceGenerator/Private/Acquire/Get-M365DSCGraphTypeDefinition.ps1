@@ -3,9 +3,8 @@
     Builds a lookup index over the Graph CSDL schema nodes.
 
 .DESCRIPTION
-    Walks every schema once and keys every entity type, complex type and enum type by its fully
-    qualified name, plus every schema level annotation block by its target. Callers that resolve
-    many types keep the index instead of scanning the schema per lookup.
+    Types are keyed by their fully qualified name, annotation blocks by their target. Callers that
+    resolve many types keep the index instead of scanning the schema on every lookup.
 
 .PARAMETER Schema
     Specifies the CSDL schema nodes from Get-M365DSCGraphCsdlMetadata.
@@ -80,9 +79,8 @@ function New-M365DSCGraphSchemaIndex
     Turns a CSDL type reference into the name form the generatedFrom contract uses.
 
 .DESCRIPTION
-    Types in the microsoft.graph namespace keep their bare name. Types in a sub-namespace carry
-    that sub-namespace, for example 'networkaccess.filteringProfile'. Bare names collide across
-    sub-namespaces.
+    Types in the microsoft.graph namespace keep their bare name. Types in a sub-namespace carry it
+    in front, for example 'networkaccess.filteringProfile'. Bare names collide across sub-namespaces.
 
 .PARAMETER NamespaceName
     Specifies the declaring namespace, for example 'microsoft.graph.networkaccess'.
@@ -122,10 +120,8 @@ function Get-M365DSCGraphContractTypeName
     Resolves a CSDL type reference against a schema index.
 
 .DESCRIPTION
-    Accepts the three spellings a type reference takes in the metadata and in the generatedFrom
-    contract: the alias form 'graph.group', the full form 'microsoft.graph.group' and the contract
-    form 'group' or 'networkaccess.filteringProfile'. A Collection(...) wrapper must be stripped by
-    the caller.
+    Accepts the alias form 'graph.group', the full form 'microsoft.graph.group' and the bare form
+    'group' or 'networkaccess.filteringProfile'. The caller strips a Collection(...) wrapper.
 
 .PARAMETER Index
     Specifies the schema index from New-M365DSCGraphSchemaIndex.
@@ -187,10 +183,9 @@ function Resolve-M365DSCGraphTypeReference
     Reports whether the service treats a property as read only or as create only.
 
 .DESCRIPTION
-    Reads the schema level annotations of a property. Org.OData.Core.V1.Computed and a
-    Org.OData.Core.V1.Permissions value of Permission/Read both mean the service owns the value.
-    Org.OData.Core.V1.Immutable means the value can be supplied on create but not changed
-    afterwards, which is reported separately because such a property is still configurable.
+    Computed and a Permissions value of Permission/Read both mean the service owns the value.
+    Immutable allows a value on create only. Such a property stays configurable and is reported
+    separately.
 
 .PARAMETER Index
     Specifies the schema index from New-M365DSCGraphSchemaIndex.
@@ -282,24 +277,8 @@ function Get-M365DSCGraphPropertyAccess
     Resolves a Graph CSDL type and flattens its inheritance chain into raw property nodes.
 
 .DESCRIPTION
-    The single place that climbs the CSDL BaseType chain. It returns the raw property and
-    navigation property nodes of the whole chain in declaration order, the type's own node last,
-    so callers only have to project them. The generator turns them into property models, the API
-    surface snapshot records them as the vendor type.
-
-    Two resolution modes exist. The default mode looks a bare name up in the first schema that
-    declares it and keeps the chain inside that schema, which is what resource generation needs.
-    Qualified mode takes an index, accepts a sub-namespaced name such as
-    'networkaccess.filteringProfile' and follows base types across schema boundaries, which a
-    complete surface snapshot needs.
-
-    An abstract complex type resolved by its own name also collects the properties of its direct
-    subtypes. The service surfaces the union on the wire and names the concrete subtype only in the
-    @odata.type discriminator.
-
-    Every property entry records whether its declaring type sits directly below graph.entity. On
-    polymorphic resources the Graph cmdlets surface those properties on the output object itself
-    while subtype properties travel one level deeper.
+    An abstract complex type also collects its direct subtype properties, which the service
+    surfaces as one union on the wire.
 
 .PARAMETER Schema
     Specifies the CSDL schema nodes from Get-M365DSCGraphCsdlMetadata.

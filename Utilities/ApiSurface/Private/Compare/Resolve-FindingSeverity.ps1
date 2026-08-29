@@ -3,9 +3,8 @@
     Builds one finding object.
 
 .DESCRIPTION
-    The id is built only from the code, the subject and the property. Severity and
-    auto-fixability come from the code table in 00-context.md, and a property excluded as
-    Deferred drops to info whatever its code says.
+    Severity and auto-fixability come from Resolve-FindingSeverity unless the caller overrides
+    them.
 
 .PARAMETER Code
     Specifies the finding code.
@@ -26,8 +25,7 @@
     Specifies the previous state.
 
 .PARAMETER To
-    Specifies the new state, carrying raw vendor types. The orchestrator projects it into CLR
-    types afterwards.
+    Specifies the new state, carrying raw vendor types.
 
 .PARAMETER Evidence
     Specifies where the finding came from.
@@ -136,8 +134,7 @@ function New-M365DSCApiSurfaceFinding
     Returns the default severity and auto-fixability of a finding code.
 
 .DESCRIPTION
-    Mirrors the code table in 00-context.md. An unknown code throws rather than defaulting,
-    which would let a typo ship a finding nobody triages.
+    An unknown code throws instead of taking a default.
 
 .PARAMETER Code
     Specifies the finding code.
@@ -181,7 +178,7 @@ function Resolve-FindingSeverity
 
     if (-not $table.ContainsKey($Code))
     {
-        throw "Finding code '$Code' is not in the code table. Add it to 00-context.md and to Resolve-FindingSeverity."
+        throw "Finding code '$Code' is not in the code table. Add it to Resolve-FindingSeverity."
     }
 
     return [ordered]@{
@@ -195,8 +192,8 @@ function Resolve-FindingSeverity
     Applies a resource's excludedProperties list to a candidate finding.
 
 .DESCRIPTION
-    Four reasons suppress a finding outright. Deferred instead drops it to info, which keeps an
-    acknowledged but postponed property on the report.
+    Any reason other than Deferred suppresses the finding. Deferred drops it to info, which
+    keeps a postponed property on the report.
 
 .PARAMETER Exclusion
     Specifies the excludedProperties entries of the resource.

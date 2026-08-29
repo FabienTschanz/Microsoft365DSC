@@ -3,11 +3,8 @@
     Captures the pinned dependency versions and what the gallery publishes today.
 
 .DESCRIPTION
-    Reads the pins from the shipping manifest and the development manifest, records which manifest
-    a module comes from and asks the gallery for the newest published version of each.
-
-    A gallery lookup failure is not fatal. It records latestPublished as null and carries on,
-    leaving the snapshot available without network access.
+    A failed gallery lookup leaves latestPublished null. The snapshot stays available without
+    network access.
 
 .PARAMETER ManifestPath
     Specifies the path of Manifest.psd1.
@@ -19,8 +16,8 @@
     Indicates that latestPublished is left null without contacting the gallery.
 
 .OUTPUTS
-    A hashtable with Dependencies, an ordered map, and PinnedVersion, a plain lookup of module
-    name to pinned version.
+    A hashtable with Dependencies, an ordered map, and PinnedVersion, a map of module name to
+    pinned version.
 #>
 function Get-DependencySurface
 {
@@ -102,8 +99,7 @@ function Get-DependencySurface
     Asks the PowerShell Gallery for the newest published version of a module.
 
 .DESCRIPTION
-    Prefers Find-PSResource, the form CI installs with, and falls back to Find-Module. Any failure
-    returns null and leaves an offline run intact.
+    Prefers Find-PSResource, the form CI installs with, and falls back to Find-Module.
 
 .PARAMETER Name
     Specifies the module name.

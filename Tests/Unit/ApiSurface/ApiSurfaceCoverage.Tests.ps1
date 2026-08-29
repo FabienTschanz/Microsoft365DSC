@@ -1,9 +1,3 @@
-<#
-    Offline tests for the coverage gap report. The inventory rows are built in memory and the
-    metadata file is written to TestDrive, so no test reads the installed Graph SDK or the
-    committed coverage.json.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 InModuleScope -ModuleName 'M365DSCApiSurface' {

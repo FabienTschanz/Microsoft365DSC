@@ -1,7 +1,7 @@
 name: API Surface Check
 on:
   schedule:
-    # Night from Friday to Saturday, 00:00 UTC. Nothing runs nightly.
+    # Night from Friday to Saturday at midnight UTC. Nothing runs nightly.
     - cron: '0 0 * * 6'
   workflow_dispatch:
 
@@ -22,7 +22,6 @@ jobs:
       issues: write
       actions: read
 
-    # Only when run from the main repo
     if: github.repository == 'Microsoft365DSC/Microsoft365DSC'
 
     steps:
@@ -70,7 +69,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # firstSeen is carried forward from the last successful run. api-drift.json is a run
-          # output, never a committed file, so the artifact is the only place it survives.
+          # output and never a committed file. The artifact is the only place it survives.
           $runs = gh run list --workflow 'API Surface Check.yml' --status success --limit 1 --json databaseId | ConvertFrom-Json
           if ($runs.Count -eq 0)
           {
@@ -181,8 +180,8 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          # The run number, the run URL and the timestamp live here. Putting any of them in the
-          # Issue body would rewrite it on every run and destroy its diff.
+          # The run id, the run URL and the timestamp live here. In the Issue body they would
+          # rewrite it on every run.
           $lines = @(
             "# API surface check",
             "",

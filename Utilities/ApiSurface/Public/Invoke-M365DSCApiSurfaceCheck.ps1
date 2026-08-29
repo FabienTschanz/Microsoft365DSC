@@ -4,11 +4,8 @@
 
 .DESCRIPTION
     The only part of this module that reads files, reaches the gallery or imports a module.
-    After the pure comparison it carries firstSeen forward from the previous api-drift.json and
-    projects each raw vendor type into the CLR type the generator would emit.
-
-    api-surface.json is written only with -UpdateBaseline, always through
-    ConvertTo-M365DSCApiSurfaceJson. A second serializer would rewrite the whole file.
+    api-drift.json is written on every run. api-surface.json is replaced only with
+    -UpdateBaseline.
 
 .PARAMETER RepositoryRoot
     Specifies the root of the Microsoft365DSC repository. Defaults to the parent of this module.
@@ -40,6 +37,24 @@
 
 .PARAMETER UpdateBaseline
     Indicates that the current snapshot replaces the committed baseline.
+
+.PARAMETER IncludeTenantConnected
+    Indicates that the workloads which need a tenant connection are captured.
+
+.PARAMETER Credential
+    Specifies the credential to authenticate with.
+
+.PARAMETER ApplicationId
+    Specifies the application registration.
+
+.PARAMETER TenantId
+    Specifies the tenant domain name.
+
+.PARAMETER CertificateThumbprint
+    Specifies the certificate registered on the application.
+
+.PARAMETER WorkloadAuthentication
+    Specifies per-workload ApplicationId and CertificateThumbprint overrides, keyed by workload.
 
 .PARAMETER SkipGalleryLookup
     Indicates that no dependency is looked up in the gallery.
@@ -326,9 +341,9 @@ function Invoke-M365DSCApiSurfaceCheck
     Projects the raw vendor type on each finding into the CLR type the generator would emit.
 
 .DESCRIPTION
-    The finding contract wants System.Boolean with a nullable flag, which only the resource
-    generator's New-M365DSCPropertyModel produces. Doing it here keeps the differ free of module
-    imports. A finding whose 'to' carries no vendor type is left alone.
+    Only the resource generator's New-M365DSCPropertyModel maps a vendor type to the CLR type and
+    the nullable flag the finding contract wants. Doing it here keeps the differ free of module
+    imports.
 
 .PARAMETER Finding
     Specifies the findings to enrich in place.
@@ -463,8 +478,8 @@ function Get-ExcludedPropertyMap
     Reads the resource keywords out of DscSchemaCache.json.
 
 .DESCRIPTION
-    The cache holds 998 keywords. Resource keywords carry nameMode NameRequired and an
-    unprefixed name, while the complex types carry NoName and an MSFT_ prefix.
+    A resource keyword carries nameMode NameRequired. The complex types carry NoName and an
+    MSFT_ prefixed name.
 
 .PARAMETER Path
     Specifies DscSchemaCache.json.
@@ -503,9 +518,8 @@ function Get-SchemaKeywordMap
     Builds the coverage candidates and reads the nouns the committed file already holds.
 
 .DESCRIPTION
-    The inventory is read from the installed Graph SDK rather than committed, so only the derived
-    candidates are stored. An SDK that is not at the pin yields no candidates, because a coverage
-    delta against another release says nothing.
+    The inventory comes from the installed Graph SDK and is not committed. Only the derived
+    candidates are stored. An SDK away from the pinned version yields no candidates.
 
 .PARAMETER Origin
     Specifies the resource rows.

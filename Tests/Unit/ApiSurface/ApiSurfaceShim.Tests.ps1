@@ -1,9 +1,3 @@
-<#
-    Offline tests for the shim comparison. Snapshots are built in memory and the shim fixture is a
-    small generated-looking module, so no test reads the committed api-surface.json or the real
-    50,872 line shim.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 InModuleScope -ModuleName 'M365DSCApiSurface' {

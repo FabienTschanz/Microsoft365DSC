@@ -1,9 +1,3 @@
-<#
-    Offline tests for Utilities/ApiSurface. Every run reads the fixture CSDL, the fixture cmdlet
-    mapping, the fixture shim and the fixture resources under Tests/Unit/ApiSurface/Fixtures/ApiSurface.
-    No network, no tenant, no Graph SDK sub-modules.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 InModuleScope -ModuleName 'M365DSCApiSurface' {

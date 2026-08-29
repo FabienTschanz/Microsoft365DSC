@@ -4,11 +4,11 @@
 
 .DESCRIPTION
     Exchange Online and Security and Compliance cmdlets are generated at connect time into an
-    implicit remoting module whose name is generated too. The module is found by probing the loaded
+    implicit remoting module with a generated name. The module is found by probing the loaded
     modules for a command only that workload exports.
 
 .PARAMETER Workload
-    Specifies the workload to connect, ExchangeOnline or SecurityComplianceCenter.
+    Specifies the workload to connect.
 
 .PARAMETER KnownCommand
     Specifies a command only that workload's proxy exports.
@@ -17,7 +17,7 @@
     Specifies the authentication values for New-M365DSCConnection.
 
 .OUTPUTS
-    The proxy module, or null when the connection produced none.
+    The proxy module. Throws when no loaded module exports KnownCommand.
 #>
 function Get-ConnectedWorkloadModule
 {
@@ -59,8 +59,7 @@ function Get-ConnectedWorkloadModule
 
 .DESCRIPTION
     A failure downgrades the run rather than ending it. The proxies that did connect are kept and
-    the rest stay skipped. The message is carried back for the report to show, because a silent gap
-    reads as a clean report.
+    the message is carried back for the report.
 
 .PARAMETER Workload
     Specifies the workloads the capture was asked for.
@@ -81,9 +80,7 @@ function Get-ConnectedWorkloadModule
     Specifies the certificate registered on the application.
 
 .PARAMETER WorkloadAuthentication
-    Specifies per workload overrides of ApplicationId and CertificateThumbprint. The two workloads
-    usually hold separate application registrations. A registration that lacks the rights for a
-    workload connects without an error and produces no proxy, which the probe reports.
+    Specifies per-workload overrides of ApplicationId and CertificateThumbprint.
 
 .OUTPUTS
     An ordered dictionary with Module, a map of workload to proxy module, and Error.
@@ -215,7 +212,7 @@ function Connect-TenantWorkload
     Specifies the certificate registered on the application.
 
 .PARAMETER WorkloadAuthentication
-    Specifies per-workload ApplicationId and CertificateThumbprint overrides, keyed by workload.
+    Specifies per-workload overrides of ApplicationId and CertificateThumbprint.
 
 .OUTPUTS
     An ordered dictionary with Connected and Error.
@@ -313,7 +310,7 @@ function Get-ConnectedWorkloadProbe
     [OutputType([System.Object[]])]
     param ()
 
-    # Order matters. The proxies overlap, and the first probe to export a cmdlet owns it.
+    # Order matters. The proxies overlap and the first probe to export a cmdlet owns it.
     return @(
         [PSCustomObject]@{ Workload = 'ExchangeOnline'; KnownCommand = 'Get-Mailbox' }
         [PSCustomObject]@{ Workload = 'SecurityComplianceCenter'; KnownCommand = 'Set-ComplianceCase' }
@@ -323,10 +320,6 @@ function Get-ConnectedWorkloadProbe
 <#
 .SYNOPSIS
     Builds the InboundParameters hashtable New-M365DSCConnection expects.
-
-.DESCRIPTION
-    A certificate thumbprint and a credential cannot both be supplied, and TenantId has to be the
-    tenant domain name rather than its GUID.
 
 .PARAMETER Credential
     Specifies the credential to authenticate with.

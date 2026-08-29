@@ -3,9 +3,8 @@
     Renders a drift result as a Markdown report.
 
 .DESCRIPTION
-    Every section states its count even when empty, otherwise two runs cannot be compared by
-    eye. Nothing carries a timestamp or a run number: unchanged input has to render byte
-    identical.
+    Every section states its count even when empty. Nothing carries a timestamp or a run number.
+    Unchanged input renders byte identical.
 
 .PARAMETER Result
     Specifies the output of Compare-M365DSCApiSurface.
@@ -118,9 +117,7 @@ function Format-DriftMarkdown
     Specifies the VND-NEWER-VERSION findings.
 
 .PARAMETER Limit
-    Specifies how many entries to list across all groups. Each group heading states its true
-    count. A major jump is listed before a minor one, which is the order that matters when the
-    budget runs out.
+    Specifies how many entries to list across all groups. Each heading states its true count.
 
 .OUTPUTS
     The Markdown lines.
@@ -178,13 +175,12 @@ function Format-VersionSection
     Returns the report sections and the finding codes each one holds.
 
 .DESCRIPTION
-    Order is by how urgently a maintainer has to act. The auto-fixable section comes first
-    because it is the approval interface phase 4 reads back. Name is the stable key a renderer
-    selects on. Title is display text and carries the dependency move when one is given.
+    Order is by how urgently a maintainer has to act. The auto-fixable section comes first and is
+    the approval interface Get-DriftIssueTicked reads back. Name is the stable key a renderer
+    selects on, Title is display text.
 
 .PARAMETER Since
-    Specifies the dependency move the vendor findings are measured from. An empty value names
-    the baseline snapshot instead.
+    Specifies the dependency move the vendor findings are measured from. Empty names the baseline.
 
 .OUTPUTS
     Objects with Name, Title and Codes.
@@ -217,8 +213,9 @@ function Get-DriftSection
         [PSCustomObject]@{ Name = 'AutoFixable'; Title = 'Auto-fixable'; Codes = @('RES-ENUM-STALE', 'VND-ENUM-MEMBER-ADDED', 'RES-PROP-MISSING') }
         [PSCustomObject]@{ Name = 'Shim'; Title = 'Graph shim, regenerate to fix'; Codes = @('SHIM-MISSING', 'SHIM-STALE') }
         [PSCustomObject]@{ Name = 'Decision'; Title = 'Needs a decision'; Codes = @('VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-TYPECHANGED', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH') }
-        [PSCustomObject]@{ Name = 'SettingsCatalog'; Title = 'Intune settings catalog, regenerate to fix'; Codes = @('CAT-SETTING-ADDED', 'CAT-SETTING-REMOVED', 'CAT-OPTION-ADDED', 'CAT-TEMPLATE-VERSION') }
+        [PSCustomObject]@{ Name = 'SettingsCatalog'; Title = 'Intune settings catalog, regenerate to fix'; Codes = @('CAT-SETTING-ADDED', 'CAT-SETTING-REMOVED', 'CAT-OPTION-ADDED', 'CAT-TEMPLATE-VERSION', 'CAT-TEMPLATE-NEW') }
         [PSCustomObject]@{ Name = 'ReadOnly'; Title = 'Read-only, suggested for no implementation'; Codes = @('RES-PROP-READONLY') }
+        [PSCustomObject]@{ Name = 'Coverage'; Title = 'Graph nouns with full CRUD and no resource'; Codes = @('COV-NO-RESOURCE') }
         [PSCustomObject]@{ Name = 'VendorChanges'; Title = $vendorTitle; Codes = @('VND-TYPE-PROP-ADDED', 'VND-PARAM-ADDED') }
         [PSCustomObject]@{ Name = 'Versions'; Title = 'Newer dependency versions available'; Codes = @('VND-NEWER-VERSION') }
     )

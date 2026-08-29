@@ -451,9 +451,8 @@ function Get-SettingsCatalogAddedOption
     Returns the active template of the family a resource pins, when the pinned one is not it.
 
 .DESCRIPTION
-    The number after the underscore is a revision counter and does not order by recency. Template
-    49b8320f-e179-472e-8e2c-2fde00289ca2_1 is 'Version 24H1' and active while _3 is 'Version 6' and
-    superseded. Only lifecycleState is trustworthy.
+    The number after the underscore is a revision counter and does not order by recency. Only
+    lifecycleState tells which template of a family is current.
 
 .PARAMETER Section
     Specifies the settingsCatalog section.
@@ -511,10 +510,6 @@ function Find-SettingsCatalogActiveTemplate
 .SYNOPSIS
     Splits a template id into its base id and its revision.
 
-.DESCRIPTION
-    A template id is '<guid>_<revision>'. Only the base id is meaningful for grouping. The
-    revision does not order by recency.
-
 .PARAMETER TemplateId
     Specifies the template id.
 
@@ -547,7 +542,7 @@ function Split-SettingsCatalogTemplateId
 
 .DESCRIPTION
     Delta scoped against the baseline. A newer version of a pinned template is reported as
-    CAT-TEMPLATE-VERSION instead, and is not repeated here.
+    CAT-TEMPLATE-VERSION instead.
 
 .PARAMETER Baseline
     Specifies the settingsCatalog section of the previous snapshot.

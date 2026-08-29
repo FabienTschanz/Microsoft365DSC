@@ -3,21 +3,16 @@
     Parses a resource module and returns the anchors an applier needs.
 
 .DESCRIPTION
-    Shipped resources keep their MOF era property order, so a new declaration cannot be placed
-    alphabetically. The stable anchors are the terminal groups: Ensure, then the workload auth
-    block, then the export-only members, which carry no DscProperty attribute.
-
-    The Get() result hashtable is the argument of AsResult, either inline or through a variable.
-    A resource has a second AsResult call for the null result, told apart by the auth keys the
-    real one carries. A resource that resolves to none or to more than one is refused rather than
-    guessed at.
+    Shipped resources keep their MOF era property order. A new declaration anchors on the terminal
+    groups: Ensure, then the workload auth block, then the export-only members. Get() has a second
+    AsResult call for the null result, told apart by the auth keys the real one carries.
 
 .PARAMETER Path
     Specifies the resource module.
 
 .OUTPUTS
-    An object with the text, the class, the DscProperty members, the insertion offset and the
-    result hashtable.
+    An ordered dictionary with the path, the text, the class, its DscProperty members, the
+    insertion offset and the result hashtable.
 #>
 function Get-ResourceClassEdit
 {
@@ -161,8 +156,8 @@ function Get-ResourceAst
     Returns the offset a new declaration is inserted at.
 
 .DESCRIPTION
-    Before Ensure, or before the first auth property when the resource is a singleton without one.
-    The offset points at the start of that member's first attribute, not at the property name.
+    The offset points at the start of the anchor member's first attribute, not at the property
+    name.
 
 .PARAMETER Property
     Specifies the DscProperty members, keyed by name.

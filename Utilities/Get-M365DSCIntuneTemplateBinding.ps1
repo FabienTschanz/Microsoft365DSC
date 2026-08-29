@@ -3,9 +3,9 @@
     Returns the Intune configuration policy template each resource pins.
 
 .DESCRIPTION
-    The binding lives in the resource module as a literal assignment, spelled templateReferenceId
-    in some resources and policyTemplateID in others. Both spellings are read through the AST. A
-    mention in a comment or inside a string does not count.
+    The binding is a literal assignment in the resource module, spelled templateReferenceId in some
+    resources and policyTemplateId in others. A mention in a comment or inside a string does not
+    count.
 
 .PARAMETER ResourcePath
     Specifies the folder holding the MSFT_<Name> resource folders.

@@ -1,19 +1,16 @@
 <#
 .SYNOPSIS
-    Walks the Graph CSDL metadata and returns the property models of an entity or complex type.
+    Returns the property models of a Graph entity or complex type.
 
 .DESCRIPTION
-    Climbs the type's inheritance chain, resolves enums, recurses into complex types and -
-    optionally - navigation properties, and returns ready-to-emit property models. Recursion
-    carries an explicit visited set: a type referencing itself (directly or through a chain) stops
-    the descent instead of looping forever, which is what the old generator's disabled guard
-    allowed with navigation properties.
+    Projects the raw property nodes from Get-M365DSCGraphTypeDefinition into property models and
+    recurses into complex types. A visited set stops a type that references itself.
 
 .PARAMETER Schema
     Specifies the CSDL schema nodes from Get-M365DSCGraphCsdlMetadata.
 
 .PARAMETER Entity
-    Specifies the entity or complex type name, e.g. 'permissionGrantPolicy'.
+    Specifies the entity or complex type name, for example 'permissionGrantPolicy'.
 
 .PARAMETER IncludeNavigationProperties
     Indicates that navigation properties (Graph relationships) are included as complex properties.
@@ -23,6 +20,12 @@
 
 .PARAMETER Visited
     Specifies the set of type names already on the current recursion path.
+
+.PARAMETER Index
+    Specifies the schema index from New-M365DSCGraphSchemaIndex. Needed with Qualified.
+
+.PARAMETER Qualified
+    Indicates that Entity may carry a sub-namespace. Bare names collide across sub-namespaces.
 #>
 function Get-M365DSCGraphTypeProperty
 {
@@ -48,7 +51,15 @@ function Get-M365DSCGraphTypeProperty
 
         [Parameter()]
         [System.Collections.Generic.HashSet[System.String]]
-        $Visited
+        $Visited,
+
+        [Parameter()]
+        [System.Object]
+        $Index,
+
+        [Parameter()]
+        [switch]
+        $Qualified
     )
 
     if ($null -eq $Visited)
@@ -58,7 +69,14 @@ function Get-M365DSCGraphTypeProperty
 
     $null = $Visited.Add($Entity)
 
-    $definition = Get-M365DSCGraphTypeDefinition -Schema $Schema -Entity $Entity
+    $lookup = @{ Schema = $Schema; Entity = $Entity }
+    if ($Qualified -and $null -ne $Index)
+    {
+        $lookup['Index'] = $Index
+        $lookup['Qualified'] = $true
+    }
+
+    $definition = Get-M365DSCGraphTypeDefinition @lookup
     if ($null -eq $definition)
     {
         Write-Warning -Message "Type '$Entity' was not found in the Graph metadata."
@@ -74,7 +92,6 @@ function Get-M365DSCGraphTypeProperty
         $rawEntries += @($definition.NavigationProperties)
     }
 
-    # Project the raw nodes into property models.
     $models = @()
 
     foreach ($rawEntry in $rawEntries)
@@ -111,7 +128,6 @@ function Get-M365DSCGraphTypeProperty
                 continue
             }
 
-            # Complex type (or navigation target): recurse unless this closes a cycle.
             if ($Visited.Contains($typeName))
             {
                 Write-Warning -Message "Skipping property '$($rawProperty.Name)' on '$Entity': type '$typeName' is already part of the current type chain (cycle)."
@@ -142,7 +158,6 @@ function Get-M365DSCGraphTypeProperty
             continue
         }
 
-        # Scalar Edm type.
         $models += New-M365DSCPropertyModel -Name $rawProperty.Name `
             -GraphName $rawProperty.Name `
             -Type $rawType `
@@ -151,7 +166,7 @@ function Get-M365DSCGraphTypeProperty
             -IsFromAdditionalProperties $isFromAdditionalProperties
     }
 
-    # Discriminator for abstract complex types: which concrete subtype an instance is.
+    # The @odata.type discriminator names the concrete subtype an instance carries.
     if ($derivedSubtypeNames.Count -gt 0)
     {
         $models += New-M365DSCPropertyModel -Name 'ODataType' `
@@ -165,8 +180,7 @@ function Get-M365DSCGraphTypeProperty
 
 <#
 .SYNOPSIS
-    Extracts a property description from its CSDL annotation, falling back to the schema-level
-    annotations block.
+    Returns the description of a CSDL property, or the schema level annotation as a fallback.
 
 .PARAMETER Schema
     Specifies the CSDL schema nodes.
@@ -233,7 +247,7 @@ function Get-M365DSCGraphPropertyDescription
     }
 
     $description = $description.Replace('"', "'")
-    # Keep letters, digits and basic punctuation only - Description attributes choke on the rest.
+    # MOF Description attributes accept letters, digits and basic punctuation only.
     return ($description -replace '[^\p{L}\p{Nd}/(/}/_ -.,=:)'']', '')
 }
 
@@ -281,8 +295,16 @@ function Get-M365DSCGraphAnnotationDescription
 
 <#
 .SYNOPSIS
-    Builds the MSFT_MicrosoftGraph* CIM class name for a complex type, suffixing on collision
-    with classes already shipped by other resources.
+    Builds the MSFT_MicrosoftGraph CIM class name of a complex type.
+
+.DESCRIPTION
+    A name that clashes with a class shipped by another resource gets a counter suffix.
+
+.PARAMETER TypeName
+    Specifies the Graph complex type name.
+
+.PARAMETER ExistingCimClassNames
+    Specifies the CIM class names already used by shipped resources.
 #>
 function Get-M365DSCUniqueCimClassName
 {

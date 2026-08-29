@@ -1,9 +1,3 @@
-<#
-    Offline tests for Utilities/Update-ResourceOrigin.ps1. The script runs against copies of the
-    fixture resources under Tests/Unit/ApiSurface/Fixtures with a fixture CSDL and cmdlet mapping.
-    No network, no tenant, no Graph SDK sub-modules.
-#>
-
 BeforeAll {
     $script:repositoryRoot = Join-Path -Path $PSScriptRoot -ChildPath '../../..' -Resolve
     $script:scriptPath = Join-Path -Path $script:repositoryRoot -ChildPath 'Utilities/Update-ResourceOrigin.ps1' -Resolve

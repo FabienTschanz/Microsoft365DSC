@@ -3,10 +3,9 @@
     Splices a set of offset edits into a file and proves the result still parses.
 
 .DESCRIPTION
-    Follows Utilities/Convert-M365DSCResourceToClass.ps1: an edit fully inside another is dropped
-    and the outer one wins, edits are then applied from the highest offset down so earlier offsets
-    stay valid, and the rewritten text is re-parsed before it reaches disk. Formatting varies
-    across the 531 resources, which is why nothing here matches on text.
+    Follows Utilities/Convert-M365DSCResourceToClass.ps1. The file is written, re-parsed from disk
+    and restored when the parse fails. Formatting varies across the 531 resources and nothing here
+    matches on text.
 
 .PARAMETER Path
     Specifies the file.
@@ -46,8 +45,7 @@ function Write-ResourceEdit
         return $result
     }
 
-    # The parse has to happen on disk. A resource resolves its base type through a relative
-    # 'using module', which only works when the parser is given the path.
+    # The parse has to happen on disk. A relative 'using module' only resolves from the file path.
     [System.IO.File]::WriteAllText($Path, $result, [System.Text.UTF8Encoding]::new($false))
 
     try
@@ -138,8 +136,7 @@ function Merge-ResourceEdit
     Specifies what the edit is for, reported when a run is inspected.
 
 .OUTPUTS
-    The edit record. A PSCustomObject, because Sort-Object reads a property and a dictionary
-    exposes keys.
+    The edit record, a PSCustomObject that Sort-Object can order by property.
 #>
 function New-ResourceEdit
 {

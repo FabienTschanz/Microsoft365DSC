@@ -246,8 +246,7 @@ function Compare-ResourceSurface
     Compares one declared property against the vendor property it matched.
 
 .DESCRIPTION
-    Map the MOF typeConstraint from DscSchemaCache.json onto the
-    CSDL type.
+    unknownFutureValue is an OData sentinel and is not expected in a declared ValidateSet.
 
 .PARAMETER Resource
     Specifies the resource row.
@@ -329,7 +328,6 @@ function Compare-DeclaredProperty
                     -Evidence ([ordered]@{ source = "csdl:$($TypeKey -replace ':', '/')/$($Vendor.Name)" })))
     }
 
-    # unknownFutureValue is an OData sentinel and does not belong in a ValidateSet
     $vendorMembers = @($Vendor.Enum | Where-Object -FilterScript { $null -ne $_ -and $_ -ne 'unknownFutureValue' })
     if ($vendorMembers.Count -gt 0)
     {
@@ -378,7 +376,7 @@ function Compare-DeclaredProperty
     Indicates a complex or navigation type.
 
 .OUTPUTS
-    The accepted typeConstraint values, empty when no opinion can be formed.
+    The accepted typeConstraint values, or an empty array when the vendor type has no mapping.
 #>
 function ConvertTo-MofTypeConstraint
 {

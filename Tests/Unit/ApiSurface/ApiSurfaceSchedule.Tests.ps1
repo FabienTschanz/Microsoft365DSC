@@ -1,8 +1,3 @@
-<#
-    Offline tests for the phase 3 tracking Issue. The drift result is a fixture, so no test
-    reads the committed api-surface.json, the network or a tenant.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 InModuleScope -ModuleName 'M365DSCApiSurface' {
@@ -119,15 +114,52 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         It 'orders the sections the way phase 3 specifies' {
             $headings = @((Get-TestBody) -split "`n" | Where-Object -FilterScript { $_ -like '## *' })
 
-            $headings | Should -HaveCount 8
+            $headings | Should -HaveCount 10
             $headings[0] | Should -BeLike '## Auto-fixable*'
             $headings[1] | Should -BeLike '## Needs a decision*'
             $headings[2] | Should -BeLike '## Graph shim, regenerate to fix*'
-            $headings[3] | Should -BeLike '## Read-only, suggested for no implementation*'
-            $headings[4] | Should -BeLike '## Coverage gaps*'
-            $headings[5] | Should -BeLike '## Vendor changes since *'
-            $headings[6] | Should -BeLike '## Newer dependency versions available*'
-            $headings[7] | Should -BeLike '## Unaccepted breaking findings*'
+            $headings[3] | Should -BeLike '## Intune settings catalog, regenerate to fix*'
+            $headings[4] | Should -BeLike '## Read-only, suggested for no implementation*'
+            $headings[5] | Should -BeLike '## Coverage gaps*'
+            $headings[6] | Should -BeLike '## Graph nouns with full CRUD and no resource*'
+            $headings[7] | Should -BeLike '## Vendor changes since *'
+            $headings[8] | Should -BeLike '## Newer dependency versions available*'
+            $headings[9] | Should -BeLike '## Unaccepted breaking findings*'
+        }
+
+        It 'gives every finding code a section to render in' {
+            $covered = @((Get-DriftSection).Codes)
+
+            foreach ($code in @(
+                    'VND-CMDLET-REMOVED', 'VND-CMDLET-REROUTED', 'VND-PARAM-ADDED', 'VND-PARAM-TYPECHANGED',
+                    'VND-TYPE-PROP-ADDED', 'VND-ENUM-MEMBER-ADDED', 'VND-NEWER-VERSION',
+                    'RES-PROP-MISSING', 'RES-PROP-READONLY', 'RES-PROP-ORPHANED', 'RES-TYPE-MISMATCH',
+                    'RES-ENUM-STALE', 'SHIM-MISSING', 'SHIM-STALE', 'COV-NO-RESOURCE',
+                    'CAT-SETTING-ADDED', 'CAT-SETTING-REMOVED', 'CAT-OPTION-ADDED', 'CAT-TEMPLATE-VERSION',
+                    'CAT-TEMPLATE-NEW'))
+            {
+                $covered | Should -Contain $code -Because "$code would be counted and never shown"
+            }
+        }
+
+        It 'lists a finding of an auto-fixable code that is not auto-fixable' {
+            $result = [PSCustomObject]@{
+                summary  = [PSCustomObject]@{ total = 1 }
+                coverage = @()
+                findings = @([PSCustomObject]@{
+                        id         = 'RES-PROP-MISSING:TestPolicy:Conditions'
+                        code       = 'RES-PROP-MISSING'
+                        severity   = 'warning'
+                        autoFixable = $false
+                        resource   = 'TestPolicy'
+                        property   = 'Conditions'
+                        evidence   = [PSCustomObject]@{ source = 'csdl:beta/testPolicy/conditions' }
+                    })
+            }
+
+            $body = Format-DriftIssueBody -Result $result -Ticked @() -Since ''
+            $body | Should -BeLike '*RES-PROP-MISSING:TestPolicy:Conditions*'
+            $body | Should -Not -BeLike "*- [ ] ``RES-PROP-MISSING:TestPolicy:Conditions``*"
         }
 
         It 'names the dependency move in the vendor section' {
@@ -213,8 +245,7 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         }
 
         It 'renders when the parse of an empty body collapsed to null' {
-            # An empty Issue body parses to an empty array, which PowerShell unrolls to $null on
-            # assignment. The renderer has to survive that on the very first run.
+            # An empty Issue body parses to an empty array, which PowerShell unrolls to $null.
             $ticked = Get-DriftIssueTicked -Body ''
             $ticked | Should -BeNullOrEmpty
 
@@ -228,8 +259,8 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             $script:full = New-DriftIssueBody -Result $script:bulk
             $script:fullLength = Measure-DriftIssueBodyLength -Body $script:full
 
-            # Just above the body an intact approval list needs on its own, so the collapsed
-            # sections have to give up entries and the approval list does not.
+            # A budget just above what an intact approval list needs on its own. The collapsed
+            # sections give up entries and the approval list does not.
             $script:collapsedBudget = 2000 + (Measure-DriftIssueBodyLength -Body (
                     New-DriftIssueBody -Result $script:bulk -CollapsedLimit 0))
         }
@@ -324,7 +355,7 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         }
 
         It 'returns the largest limit that still fits and rejects the next one up' {
-            $budget = 4000
+            $budget = 4300
             $limit = Get-FittingItemLimit -Result $script:bisect -MaximumLength $budget -UpperBound 60
 
             $limit | Should -BeGreaterThan 0
@@ -384,7 +415,7 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             $script:workflow | Should -Match 'Utilities/ApiSurface/api-drift\.json'
         }
 
-        It 'updates one labelled Issue rather than opening a new one per run' {
+        It 'updates one labeled Issue rather than opening a new one per run' {
             $script:workflow | Should -Match 'gh issue list --label \$env:DRIFT_ISSUE_LABEL'
             $script:workflow | Should -Match 'gh issue edit \$env:ISSUE_NUMBER --body-file'
         }

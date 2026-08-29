@@ -94,8 +94,8 @@ Describe -Name 'Successfully validate all used permissions in Settings.json file
         $settings = ConvertFrom-Json -InputObject $json
         foreach ($permission in $settings.permissions.graph.application.read)
         {
-            # Only validate non-GUID (hidden) permissions.
-            # There is an issue where the GUI shows Tasks.Read.All but the OAuth value is actually Tasks.Read
+            # GUID names are hidden permissions.
+            # The portal shows Tasks.Read.All while the OAuth value is Tasks.Read.
             if (-not [System.Guid]::TryParse($permission.Name, [ref][System.Guid]::Empty) -and
                 $permission.Name -ne 'Tasks.Read.All')
             {
@@ -104,7 +104,7 @@ Describe -Name 'Successfully validate all used permissions in Settings.json file
         }
         foreach ($permission in $settings.permissions.graph.application.write)
         {
-            # Only validate non-GUID (hidden) permissions.
+            # GUID names are hidden permissions.
             if (-not [System.Guid]::TryParse($permission.Name, [ref][System.Guid]::Empty))
             {
                 $permission.Name | Should -BeIn $roles -ErrorAction Continue
@@ -163,7 +163,7 @@ Describe -Name 'Successfully validate all used permissions in Settings.json file
 
         foreach ($permission in $settings.permissions.graph.application.read)
         {
-            # There is an issue where the GUI shows Tasks.Read.All but the OAuth value is actually Tasks.Read
+            # The portal shows Tasks.Read.All while the OAuth value is Tasks.Read.
             if (-not [System.Guid]::TryParse($permission.Name, [ref][System.Guid]::Empty) -and
                 $permission.Name -ne 'Tasks.Read.All' -and -not ($permission.Name -in $allowedPermissions))
             {

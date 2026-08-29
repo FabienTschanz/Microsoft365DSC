@@ -3,10 +3,9 @@
     Captures the Intune setting templates the configuration policy resources are built on.
 
 .DESCRIPTION
-    Setting definitions are served by Graph and exist in no offline metadata. This section is only
-    filled on a connected run. Every tenant template is recorded thinly, which is what a retired
-    template and an uncovered one are measured against, and the templates a resource pins are
-    recorded with their settings.
+    Setting definitions are served by Graph and exist in no offline metadata. The section is only
+    filled on a connected run. Every tenant template is recorded thinly and the templates a
+    resource pins are recorded with their settings.
 
 .PARAMETER Generator
     Specifies the resource generator module, which owns the setting tree walk.
@@ -304,7 +303,7 @@ function Get-SettingsCatalogTreeName
 
 <#
 .SYNOPSIS
-    Records the setting definitions of one template as vendor truth.
+    Records the setting definitions of one template as the service declares them.
 
 .PARAMETER SettingTemplate
     Specifies the setting templates of one configuration policy template.
@@ -361,7 +360,7 @@ function ConvertTo-SettingsCatalogSetting
 
 <#
 .SYNOPSIS
-    Returns the setting a definition hangs off, or null when it is a root.
+    Returns the parent setting of a definition, or null when it is a root.
 
 .PARAMETER Definition
     Specifies the setting definition.

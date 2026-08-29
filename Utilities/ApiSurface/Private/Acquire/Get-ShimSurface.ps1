@@ -3,13 +3,9 @@
     Captures the routes and parameters the generated Graph shim exposes.
 
 .DESCRIPTION
-    Parses M365DSCGraphShim.psm1 with the PowerShell parser. The file is over fifty thousand lines.
-    Importing it to read metadata is slow and loads the whole Graph request stack, and the abstract
-    syntax tree answers the same question.
-
-    The manifest decides which functions are public. Four internal helpers do not carry the shim
-    prefix the other five do. Every public function ends in one call to a shim helper that carries
-    the route, and Get wrappers assign a second route to a local first.
+    Parses M365DSCGraphShim.psm1 with the PowerShell parser. The file is over fifty thousand lines
+    and importing it loads the whole Graph request stack. The manifest names the public functions.
+    Four internal helpers do not carry the shim prefix the other five do.
 
 .PARAMETER ModulePath
     Specifies the path of M365DSCGraphShim.psm1.
@@ -90,16 +86,6 @@ function Get-ShimSurface
 <#
 .SYNOPSIS
     Reads the route, the method and the parameters of one generated shim function.
-
-.DESCRIPTION
-    The helper call carries the route. Invoke-M365DSCGraphShimGetResource takes a collection route
-    and an optional single item route, the write helper takes one route and a literal method, and
-    the delete helper takes one route. A route argument is either a string or the local a Get
-    wrapper assigned it to.
-
-    Routes are recorded without their version segment and with the parameter name in braces where
-    the generated code interpolates a value. That form lines up with the URI the SDK metadata
-    declares.
 
 .PARAMETER Function
     Specifies the function definition node.
@@ -241,8 +227,9 @@ function Get-CommandArgumentMap
     Turns a route argument into its version and its parameter template.
 
 .DESCRIPTION
-    A route reaches the helper either as a string or as the local a Get wrapper assigned it to. In
-    both cases the value is the only string in scope that starts with an API version segment.
+    A route reaches the helper as a string or as the local a Get wrapper assigned it to. It is the
+    only string in scope that starts with an API version segment. The recorded route drops that
+    segment and puts every interpolated value in braces, the form the SDK metadata declares.
 
 .PARAMETER Function
     Specifies the function definition node the argument belongs to.

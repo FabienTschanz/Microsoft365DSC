@@ -5,35 +5,15 @@
     Writes the commands and requiredModules sections of every resource's settings.json.
 
 .DESCRIPTION
-    Walks each resource module with the PowerShell AST, collects every command it invokes
-    (module-scope functions and class methods) and groups the commands by the module that
-    ships them.
-
-    Commands that Get-Command resolves to one of the dependency modules fill both sections.
-    They are grouped into commands and their modules become requiredModules.
-
-    Exchange Online and Security and Compliance cmdlets are proxy functions that only exist after
-    Connect-ExchangeOnline or Connect-IPPSSession, so Get-Command cannot see them offline. Those
-    names are attributed through the unit test stub module (Tests/Unit/Stubs/Microsoft365.psm1)
-    and only through the regions that hold ExchangeOnlineManagement proxies
-    (ExchangeOnlineManagement, SecurityComplianceCenter, M365DataAtRestEncryptionPolicy).
-    Stub-attributed names go into commands only. requiredModules stays as it is for them.
-    M365DSCModuleMgmt.psm1 uses commands as an Import-Module function filter and requiredModules
-    as a per-resource dependency check.
-
-    A resource whose commands cannot be attributed to any module gets an empty commands array.
-    No cmdlet name is invented. A name has to come from the resource module and be known to
-    either Get-Command or the stub file.
-
-    The script refuses to run while the Graph shim or a connected Exchange session is loaded.
-    Get-Command would then resolve Graph cmdlets to the shim and proxies to the session module,
-    and both would drop out of the dependency groups.
+    Collects every command a resource module invokes through the AST and groups them by the module
+    that ships them. Exchange Online and Security and Compliance names are proxies that exist only
+    after a connection. They come from the unit test stub file and fill the commands section alone.
 
 .PARAMETER ResourceFilter
-    One or more wildcards on the resource module file name, e.g. 'MSFT_EXO*'.
+    One or more wildcards on the resource module file name, for example 'MSFT_EXO*'.
 
 .PARAMETER StubFilePath
-    Path to the unit-test stub module used to attribute connect-time proxy cmdlets.
+    Path to the unit test stub module used to attribute connect-time proxy cmdlets.
 
 .EXAMPLE
     ./Utilities/Build-DscResourceCmdletsByModule.ps1
@@ -59,6 +39,9 @@ param
 <#
 .SYNOPSIS
     Maps every stub function of the proxy-cmdlet regions to the module that creates the proxy.
+
+.PARAMETER Path
+    Specifies the path of the unit test stub module.
 #>
 function Get-StubCmdletModule
 {
@@ -143,7 +126,7 @@ foreach ($file in $resourceFiles)
     $content = Get-Content -Path $file.FullName -Raw
     $resourceCmdlets = @()
 
-    # Get all custom Microsoft365DSC functions that use a Graph cmdlet
+    # These cmdlets are reached through helper functions, which the AST walk does not follow.
     if ($content -like '*Convert*-*Intune*Assignment*')
     {
         $resourceCmdlets += @('Get-MgGroup', 'Get-MgBetaDeviceManagementAssignmentFilter')
@@ -252,7 +235,6 @@ foreach ($file in (Get-ChildItem -Path "$workingDir\Modules\Microsoft365DSC\Modu
     Write-Verbose -Message "Processing file: $($file.FullName)"
     $content = Get-Content -Path $file.FullName -Raw
 
-    # Get all used cmdlets that have *-Mg* in their name that can appear anywhere in the file
     $resourceCmdlets = @()
     $resourceCmdlets += [regex]::Matches($content, '\w+-Mg\w+') | ForEach-Object { $_.Value } | Sort-Object -Unique
     if ($resourceCmdlets.Count -gt 0)
@@ -280,7 +262,6 @@ foreach ($file in (Get-ChildItem -Path "$workingDir\Modules\Microsoft365DSC\Modu
     }
 }
 
-# Output the cmdletsGroupMap to a JSON file
 $settingsFilePath = Join-Path -Path "$workingDir\Modules\Microsoft365DSC" -ChildPath 'config2.json'
 $settingsJson = @{
     requiredModules = @{}

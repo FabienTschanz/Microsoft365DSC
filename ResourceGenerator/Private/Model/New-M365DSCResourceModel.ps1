@@ -3,12 +3,11 @@
     Assembles the complete intermediate representation of a resource to generate.
 
 .DESCRIPTION
-    Combines the acquired cmdlet information, the property models, the Ensure property and the
-    workload's auth property set into one object. Every emitter (class module, unit test,
-    example, settings, readme) is a projection of the object returned here.
+    Every emitter (class module, unit test, example, settings, readme) is a projection of the
+    object returned here.
 
 .PARAMETER ResourceName
-    Specifies the resource name, e.g. 'AADPermissionGrantPolicy'.
+    Specifies the resource name, for example 'AADPermissionGrantPolicy'.
 
 .PARAMETER Workload
     Specifies the workload.
@@ -17,7 +16,7 @@
     Specifies the hashtable produced by Get-M365DSCGraphCmdletInfo or Get-M365DSCGenericCmdletInfo.
 
 .PARAMETER Properties
-    Specifies the schema property models (auth and Ensure excluded - they are appended here).
+    Specifies the schema property models. The auth and Ensure properties are appended here.
 
 .PARAMETER ParametersToSkip
     Specifies property names to leave out of the generated resource.
@@ -32,8 +31,8 @@
     Indicates a singleton resource (gets an IsSingleInstance key instead of Id).
 
 .PARAMETER CmdLetNoun
-    Specifies the cmdlet noun the resource was generated from. Recorded in settings.json
-    under generatedFrom so the API surface checker can trace the resource back to its origin.
+    Specifies the cmdlet noun the resource was generated from. Recorded in settings.json under
+    generatedFrom.
 
 .PARAMETER CmdLetVerb
     Specifies the verb of the cmdlet whose parameters describe the resource (non-Graph workloads).
@@ -113,7 +112,7 @@ function New-M365DSCResourceModel
         }
     }
 
-    # Primary key: acquisition-provided, else Id, else the first property.
+    # Primary key precedence is the acquired value, then Id, then the first property.
     $primaryKey = $CmdletInfo.PrimaryKey
     if ([System.String]::IsNullOrEmpty($primaryKey))
     {
@@ -171,7 +170,7 @@ function New-M365DSCResourceModel
         $schemaProperties = @($schemaProperties) + (Get-M365DSCAssignmentPropertyModel)
     }
 
-    # Alphabetical for readability; every downstream artifact renders in model order.
+    # Every downstream artifact renders in model order. Alphabetical keeps it readable.
     $schemaProperties = @($schemaProperties | Sort-Object -Property Name)
 
     $allProperties = @($schemaProperties)
@@ -215,8 +214,11 @@ function New-M365DSCResourceModel
 
 .DESCRIPTION
     'IntuneDeviceCompliancePolicyWindows10' becomes 'Intune Device Compliance Policy for
-    Windows10', and the short descriptor - used in the Ensure description - is the last
-    non-platform noun, e.g. 'policy'.
+    Windows10'. The short descriptor used in the Ensure description is the last non platform
+    noun, for example 'policy'.
+
+.PARAMETER ResourceName
+    Specifies the resource name.
 #>
 function Get-M365DSCResourceDescriptor
 {
@@ -265,8 +267,16 @@ function Get-M365DSCResourceDescriptor
 
 <#
 .SYNOPSIS
-    Flattens the unique CIM classes declared by a property tree, depth-first so nested classes
-    are declared before the classes that reference them.
+    Flattens the unique CIM classes declared by a property tree.
+
+.DESCRIPTION
+    Depth first order puts a nested class before the class that references it.
+
+.PARAMETER Properties
+    Specifies the property models to walk.
+
+.PARAMETER Seen
+    Specifies the CIM class names already collected on the current walk.
 #>
 function Get-M365DSCComplexTypeClass
 {

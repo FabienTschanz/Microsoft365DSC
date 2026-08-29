@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Rewrites IntuneTemplateRegistry.json from the template each resource defines in the code.
+    Rewrites IntuneTemplateRegistry.json from the template each resource pins.
 #>
 [CmdletBinding()]
 param ()

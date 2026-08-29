@@ -1,28 +1,21 @@
 <#
 .SYNOPSIS
-    Discovers everything about the Graph cmdlets backing a resource.
-
-.DESCRIPTION
-    Locates the Get cmdlet through Find-MgGraphCommand (falling back from v1.0 to beta), imports
-    its module, resolves the entity type behind the cmdlet's output type, picks the concrete OData
-    subtype when the entity is polymorphic (auto-picked by name similarity, overridable through
-    -AdditionalPropertiesType), and reads the key parameters of the Get/New/Update/Remove
-    parameter sets.
+    Collects the cmdlet names, key parameters and entity type behind a Graph resource.
 
 .PARAMETER CmdLetNoun
-    Specifies the Graph cmdlet noun, e.g. 'MgBetaPolicyPermissionGrantPolicy'.
+    Specifies the Graph cmdlet noun, for example 'MgBetaPolicyPermissionGrantPolicy'.
 
 .PARAMETER APIVersion
-    Specifies the initial API version; falls back to beta when the cmdlet is not found in v1.0.
+    Specifies the API version to search first. A missing cmdlet falls back to beta.
 
 .PARAMETER ResourceName
-    Specifies the resource name, used by the subtype auto-pick scoring.
+    Specifies the resource name that scores the output type candidates.
 
 .PARAMETER FixActualType
     Specifies the entity type explicitly when the cmdlet's output type name does not match it.
 
 .PARAMETER AllowPrompt
-    Indicates that interactive prompts are allowed when auto-picking stays ambiguous.
+    Indicates that interactive prompts are allowed while the scoring stays ambiguous.
 #>
 function Get-M365DSCGraphCmdletInfo
 {
@@ -74,7 +67,7 @@ function Get-M365DSCGraphCmdletInfo
     $graphModule = $getCommand.ModuleName
     Import-Module -Name $graphModule -ErrorAction Stop
 
-    # Output type: several output types means the URI is ambiguous - score them by name.
+    # Several output types mean the URI is ambiguous. Scoring by name picks one.
     $outputTypes = @($commandDetails.OutputType | Sort-Object -Unique | Where-Object { -not [System.String]::IsNullOrEmpty($_) })
     if ($outputTypes.Count -gt 1)
     {
@@ -131,7 +124,7 @@ function Get-M365DSCGraphCmdletInfo
     $result.SupportsAll = @($listParameterSet.Parameters.Name) -contains 'All'
     $result.SupportsFilter = @($listParameterSet.Parameters.Name) -contains 'Filter'
 
-    # Intune-style assignments: a Get-<Noun>Assignment cmdlet plus the policy's REST repository.
+    # Intune style assignments need a Get-<Noun>Assignment cmdlet and the policy's REST repository.
     $result.HasAssignments = $false
     $assignmentCommand = Get-Command -Name "$getCmdletName`Assignment" -Module $graphModule -ErrorAction SilentlyContinue
     if ($null -ne $assignmentCommand)
@@ -154,11 +147,29 @@ function Get-M365DSCGraphCmdletInfo
 
 <#
 .SYNOPSIS
-    Resolves the concrete OData subtype for a polymorphic entity type.
+    Resolves the concrete OData subtype of a polymorphic entity type.
 
-.DESCRIPTION
-    Returns a hashtable with SelectedODataType and IsAdditionalProperty. When only the entity
-    itself exists, the entity is the selection and IsAdditionalProperty stays false.
+.PARAMETER Schema
+    Specifies the CSDL schema nodes from Get-M365DSCGraphCsdlMetadata.
+
+.PARAMETER ActualType
+    Specifies the entity type behind the cmdlet.
+
+.PARAMETER ResourceName
+    Specifies the resource name that scores the subtype candidates.
+
+.PARAMETER CmdLetNoun
+    Specifies the Graph cmdlet noun that scores the subtype candidates.
+
+.PARAMETER AdditionalPropertiesType
+    Specifies the subtype to take instead of the scored one.
+
+.PARAMETER AllowPrompt
+    Indicates that interactive prompts are allowed while the scoring stays ambiguous.
+
+.OUTPUTS
+    A hashtable with SelectedODataType and IsAdditionalProperty. An entity without subtypes
+    selects itself and IsAdditionalProperty stays false.
 #>
 function Resolve-M365DSCGraphODataSubtype
 {
@@ -191,7 +202,7 @@ function Resolve-M365DSCGraphODataSubtype
         $AllowPrompt = $true
     )
 
-    # Direct and abstract-intermediate derivations of the entity type.
+    # An abstract type between the entity and its concrete subtypes adds one level to the search.
     [array] $abstractTypes = @($Schema.EntityType | Where-Object -FilterScript {
             $_.BaseType -eq "graph.$ActualType" -and $_.Abstract -eq 'true'
         }).Name
@@ -227,10 +238,17 @@ function Resolve-M365DSCGraphODataSubtype
 
 <#
 .SYNOPSIS
-    Returns the name of a CSDL type as settings.json records it. Types in the microsoft.graph
-    namespace keep the bare name ('group'). Types in a sub-namespace carry it
-    ('networkaccess.filteringProfile'). The first namespace that declares the name wins, which
-    is also the namespace the generator reads the type from.
+    Returns a CSDL type name in the form settings.json records it.
+
+.DESCRIPTION
+    Types in the microsoft.graph namespace keep the bare name. A sub-namespace stays in front, for
+    example 'networkaccess.filteringProfile'. The first namespace that declares a bare name wins.
+
+.PARAMETER Schema
+    Specifies the CSDL schema nodes from Get-M365DSCGraphCsdlMetadata.
+
+.PARAMETER TypeName
+    Specifies the bare type name.
 #>
 function Get-M365DSCGraphQualifiedTypeName
 {
@@ -266,8 +284,16 @@ function Get-M365DSCGraphQualifiedTypeName
 
 <#
 .SYNOPSIS
-    Returns the mandatory parameters of a cmdlet's named parameter set, falling back to the
-    default set when none of the named sets exist.
+    Returns the mandatory parameters of a cmdlet's parameter set.
+
+.DESCRIPTION
+    The default parameter set answers when none of the named sets exist.
+
+.PARAMETER CmdletName
+    Specifies the cmdlet to read.
+
+.PARAMETER ParameterSetNames
+    Specifies the parameter set names to try in order.
 #>
 function Get-M365DSCCmdletKeyParameter
 {

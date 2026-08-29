@@ -4,8 +4,8 @@
 
 .DESCRIPTION
     The CSDL walking lives in the resource generator, which keeps generated resources and the API
-    surface snapshot on one type graph. Those functions are private to that module and calls go
-    through the module object.
+    surface snapshot on one type graph. Its functions are private and every call goes through the
+    module object.
 
 .PARAMETER RepositoryRoot
     Specifies the root of the Microsoft365DSC repository.

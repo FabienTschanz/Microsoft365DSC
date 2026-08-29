@@ -3,10 +3,9 @@
     Builds the vendor property set one resource is compared against.
 
 .DESCRIPTION
-    Resources flatten complex properties into scalars. AADConditionalAccessPolicy turns three
-    complex types into 52 of them, and admitting the members of every referenced complex type
-    is what stops those reading as orphaned. Navigation targets are not in the snapshot and are
-    never followed.
+    Resources flatten complex properties into scalars. Admitting the members of every referenced
+    complex type keeps those flattened names from reading as orphaned. Navigation targets are
+    not in the snapshot and are never followed.
 
 .PARAMETER GraphType
     Specifies the graphTypes section of a snapshot.
@@ -151,10 +150,6 @@ function Expand-VendorPropertySet
 .SYNOPSIS
     Reads one member of a snapshot section, whether it arrived as a hashtable or as parsed JSON.
 
-.DESCRIPTION
-    A caller may pass the ordered dictionaries Get-M365DSCApiSurface returns or the
-    PSCustomObject tree ConvertFrom-Json produces.
-
 .PARAMETER Container
     Specifies the map to read.
 
@@ -209,8 +204,7 @@ function Get-SurfaceMember
     Lists the member names of a snapshot section, whether hashtable or parsed JSON.
 
 .DESCRIPTION
-    Seventeen CSDL types declare no properties, and reading Name off an empty collection yields
-    a single null.
+    Reading Name off an empty collection yields a single null.
 
 .PARAMETER Container
     Specifies the map to read.

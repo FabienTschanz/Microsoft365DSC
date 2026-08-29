@@ -3,12 +3,9 @@
     Reads the Graph SDK command metadata and groups it by cmdlet noun.
 
 .DESCRIPTION
-    MgCommandMetadata.json ships inside Microsoft.Graph.Authentication and carries the method, the
-    route and the output type of every SDK command. Enumerating ExportedCommands across the pinned
-    modules would cost 39 imports and would not carry the routes.
-
-    A version other than the pin is recorded as a fallback. Comparing a coverage list against a
-    different SDK release says nothing.
+    MgCommandMetadata.json ships inside Microsoft.Graph.Authentication and carries the route of
+    every SDK command. Enumerating ExportedCommands would cost 39 module imports and would not
+    carry the routes. A version other than the pinned one is marked as a fallback.
 
 .PARAMETER PinnedVersion
     Specifies the version Manifest.psd1 pins.

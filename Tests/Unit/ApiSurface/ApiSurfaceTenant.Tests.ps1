@@ -1,8 +1,3 @@
-<#
-    Offline tests for the tenant connected capture. The proxy modules are built in memory with
-    New-Module, so no test opens a connection.
-#>
-
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '',
     Justification = 'The credential is a fixture that never authenticates against anything.')]
 param ()

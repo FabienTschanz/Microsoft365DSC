@@ -1,9 +1,3 @@
-<#
-    Offline tests for the settings catalog. Snapshots and setting templates are built in memory and
-    the resource modules are fixtures, so no test reaches Graph or reads the committed
-    api-surface.json.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 Describe 'Get-M365DSCIntuneTemplateBinding' {

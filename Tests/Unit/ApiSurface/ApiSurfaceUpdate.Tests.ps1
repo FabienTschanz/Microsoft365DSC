@@ -1,9 +1,3 @@
-<#
-    Offline tests for the phase 4b scaffolds and orchestrator. Nothing here runs git, opens a
-    network connection or touches a shipped resource. The branch, commit and pull request path is
-    exercised for real against a throwaway clone, recorded in the run summary.
-#>
-
 Import-Module -Name (Join-Path -Path $PSScriptRoot -ChildPath '..\..\..\Utilities\ApiSurface\M365DSCApiSurface.psd1') -Force
 
 InModuleScope -ModuleName 'M365DSCApiSurface' {
@@ -258,6 +252,43 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
 
             { Invoke-M365DSCApiSurfaceUpdate -DriftPath $path -FromIssue $issue -Confirm:$false } |
                 Should -Throw '*None of the named findings*'
+        }
+
+        It 'stages only the resources it applied, never the whole working tree' {
+            $script:gitCalls = [System.Collections.Generic.List[System.String[]]]::new()
+
+            Mock -CommandName Invoke-RepositoryCommand -MockWith {
+                $script:gitCalls.Add([System.String[]] $Argument)
+                return [System.String[]] @()
+            }
+
+            Mock -CommandName Test-AppliedResource -MockWith { return [System.String[]] @() }
+            Mock -CommandName Update-M365DSCResourceFromDrift -MockWith {
+                return [ordered]@{
+                    Id       = 'RES-ENUM-STALE:TestPolicy:State'
+                    Code     = 'RES-ENUM-STALE'
+                    Resource = 'TestPolicy'
+                    Property = 'State'
+                    Applied  = $true
+                    Reverted = $false
+                    Reason   = 'applied'
+                    Edit     = @('ValidateSet on TestPolicy.State')
+                    Path     = 'Modules/Microsoft365DSC/DscResources/MSFT_TestPolicy/MSFT_TestPolicy.psm1'
+                }
+            }
+
+            $path = New-DriftFile -Finding @([PSCustomObject]@{
+                    id = 'RES-ENUM-STALE:TestPolicy:State'; code = 'RES-ENUM-STALE'; resource = 'TestPolicy'
+                })
+
+            $null = Invoke-M365DSCApiSurfaceUpdate -DriftPath $path `
+                -FindingId 'RES-ENUM-STALE:TestPolicy:State' `
+                -NoPullRequest -SkipBuild -Confirm:$false
+
+            $add = @($script:gitCalls | Where-Object -FilterScript { $_[0] -eq 'add' })
+            $add.Count | Should -Be 1
+            $add[0] | Should -Not -Contain '--all'
+            $add[0][-1] | Should -BeExactly 'Modules/Microsoft365DSC/DscResources/MSFT_TestPolicy/MSFT_TestPolicy.psm1'
         }
     }
 

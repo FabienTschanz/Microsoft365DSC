@@ -3,14 +3,9 @@
     Captures the Graph CSDL types the resources are built on.
 
 .DESCRIPTION
-    Seeds from the entityType and odataSubtype of every generatedFrom block, then follows the
-    complex types those entities reference until the set closes. Enum members are recorded on the
-    property that uses them rather than as their own entries. Navigation properties are recorded
-    with their target type name but the target is not followed, which would otherwise pull in most
-    of the Graph entity graph.
-
-    Every type is flattened over its inheritance chain. A comparison against a resource never has
-    to resolve base types a second time.
+    Seeds from the entityType and odataSubtype of every resource and follows the complex types
+    they reference until the set closes. A navigation target is recorded by name but not followed,
+    which would pull in most of the Graph entity graph. Types are flattened over inheritance.
 
 .PARAMETER Generator
     Specifies the resource generator module, which owns the CSDL walking.
@@ -19,12 +14,11 @@
     Specifies the resource rows from Get-ResourceOriginSurface.
 
 .PARAMETER CsdlPath
-    Specifies a map of API version to CSDL file. An absent entry falls back to the generator's
-    cached download.
+    Specifies a map of API version to CSDL file. An absent entry uses the cached download.
 
 .OUTPUTS
-    A hashtable with Types, an ordered map keyed '<apiVersion>:<typeName>', and Missing, the seed
-    keys that do not exist in the metadata.
+    A hashtable with Types, an ordered map keyed by API version and type name, Missing, the seed
+    keys the metadata does not define, and Seeds, the keys the walk started from.
 #>
 function Get-GraphTypeSurface
 {
@@ -197,7 +191,7 @@ function Get-GraphTypeSurface
 
 .DESCRIPTION
     Delegates to the generator, which keeps the download, the seven day cache and the byte order
-    mark handling in one place. A path makes the call offline.
+    mark handling in one place.
 
 .PARAMETER Generator
     Specifies the resource generator module.
@@ -246,9 +240,9 @@ function Get-GraphCsdlSchema
     Projects one CSDL property node into its snapshot entry.
 
 .DESCRIPTION
-    Records the vendor type name rather than the CLR type the generator would emit. The entry then
-    reads as the service contract. An enum records its members inline. A complex type records its
-    name and, unless it is reached through a navigation property, is queued for capture.
+    Records the vendor type name rather than the CLR type the generator would emit. An enum
+    records its members inline. A complex type is queued for capture unless it is reached through
+    a navigation property.
 
 .PARAMETER Generator
     Specifies the resource generator module.

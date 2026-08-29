@@ -3,18 +3,9 @@
     Applies one drift finding to the resource it names, verifies it, and reverts it on failure.
 
 .DESCRIPTION
-    One finding at a time. The original bytes are held for the whole call, so a failed verification
-    restores the file exactly rather than leaving it half edited.
-
-    Only a stale ValidateSet and a missing scalar or enum property are applied unattended.
-    Everything else needs -AllowNonAutomatic and a working copy, and comes out as a scaffold a
-    human finishes. A property is never deleted, even then: a removal marks it deprecated, the
-    convention MSFT_TeamsUpgradePolicy already uses.
-
-    The unit test gate reads the built classes under Modules/Microsoft365DSC/Classes, not the
-    resource source this function edits. Run Utilities/Build-Microsoft365DSC.ps1 between the edit
-    and the test, or pass -SkipUnitTest and batch one rebuild and one test pass over a set of
-    findings.
+    The original bytes are held for the whole call. A failed verification restores the file
+    exactly. A removal marks the property deprecated rather than deleting it. The unit test gate
+    reads the built classes under Modules/Microsoft365DSC/Classes, not the source edited here.
 
 .PARAMETER Finding
     Specifies one finding from api-drift.json.
@@ -316,7 +307,7 @@ function Test-ApplyAllowed
     Specifies the file that changed.
 
 .OUTPUTS
-    The result.
+    An ordered dictionary describing the attempt.
 #>
 function New-ApplyResult
 {

@@ -25,6 +25,10 @@
 
 None.
 
+## Intune settings catalog, regenerate to fix  (0)
+
+None.
+
 ## Read-only, suggested for no implementation  (1)
 
 - `RES-PROP-READONLY:TestPolicy:CreatedDateTime`
@@ -33,6 +37,10 @@ None.
 ## Coverage gaps  (1)
 
 Resources: 1 compared, 1 skipped. Undeclared vendor properties: 7.
+
+## Graph nouns with full CRUD and no resource  (0)
+
+None.
 
 ## Vendor changes since Microsoft.Graph.Authentication 2.34.0 -> 2.35.1  (1)
 
