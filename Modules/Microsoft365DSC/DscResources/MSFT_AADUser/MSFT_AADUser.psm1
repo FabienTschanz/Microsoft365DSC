@@ -19,11 +19,11 @@ class AADUser : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The first name of the user')]
-    [System.String] $FirstName
+    [System.String] $GivenName
 
     [DscProperty()]
     [System.ComponentModel.Description('The last name of the user')]
-    [System.String] $LastName
+    [System.String] $Surname
 
     [DscProperty()]
     [System.ComponentModel.Description('The list of Azure Active Directory roles assigned to the user.')]
@@ -55,7 +55,7 @@ class AADUser : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The Fax Number of the user')]
-    [System.String] $Fax
+    [System.String] $FaxNumber
 
     [DscProperty()]
     [System.ComponentModel.Description('The Groups that the user is a direct member of')]
@@ -67,7 +67,7 @@ class AADUser : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The Office Name of the user')]
-    [System.String] $Office
+    [System.String] $OfficeLocation
 
     [DscProperty()]
     [System.ComponentModel.Description('The mail address of the user')]
@@ -103,7 +103,7 @@ class AADUser : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the title of the user')]
-    [System.String] $Title
+    [System.String] $JobTitle
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the title of the user')]
@@ -161,7 +161,7 @@ class AADUser : M365DSCResourceBase
     AADUser() : base()
     {
         $this.ResourceCache['propertiesToRetrieve'] = @('Id', 'AccountEnabled', 'UserPrincipalName', 'DisplayName', 'GivenName', 'Surname', 'UsageLocation', 'City', 'Country', 'Department', 'FaxNumber', 'MobilePhone', 'OfficeLocation', 'Mail', 'OtherMails', 'BusinessPhones', 'PostalCode', 'PreferredLanguage', 'State', 'StreetAddress', 'JobTitle', 'UserType', 'PasswordPolicies', 'customSecurityAttributes')
-        $this.ResourceCache['creationParamsMap'] = @{AccountEnabled = 'AccountEnabled'; City = 'City'; Country = 'Country'; Department = 'Department'; DisplayName = 'DisplayName'; FaxNumber = 'Fax'; GivenName = 'FirstName'; JobTitle = 'Title'; MobilePhone = 'MobilePhone'; OfficeLocation = 'Office'; Mail = 'Mail'; OtherMails = 'OtherMails'; PostalCode = 'PostalCode'; PreferredLanguage = 'PreferredLanguage'; State = 'State'; StreetAddress = 'StreetAddress'; Surname = 'LastName'; BusinessPhones = 'PhoneNumber'; UsageLocation = 'UsageLocation'; UserPrincipalName = 'UserPrincipalName'; UserType = 'UserType'; PasswordPolicies = 'PasswordPolicies'}
+        $this.ResourceCache['creationParamsMap'] = @{AccountEnabled = 'AccountEnabled'; City = 'City'; Country = 'Country'; Department = 'Department'; DisplayName = 'DisplayName'; FaxNumber = 'FaxNumber'; GivenName = 'GivenName'; JobTitle = 'JobTitle'; MobilePhone = 'MobilePhone'; OfficeLocation = 'OfficeLocation'; Mail = 'Mail'; OtherMails = 'OtherMails'; PostalCode = 'PostalCode'; PreferredLanguage = 'PreferredLanguage'; State = 'State'; StreetAddress = 'StreetAddress'; Surname = 'Surname'; BusinessPhones = 'PhoneNumber'; UsageLocation = 'UsageLocation'; UserPrincipalName = 'UserPrincipalName'; UserType = 'UserType'; PasswordPolicies = 'PasswordPolicies'}
     }
 
     [AADUser] Get()
@@ -192,8 +192,8 @@ class AADUser : M365DSCResourceBase
                     UserPrincipalName     = $null
                     AccountEnabled        = $null
                     DisplayName           = $null
-                    FirstName             = $null
-                    LastName              = $null
+                    GivenName             = $null
+                    Surname               = $null
                     UsageLocation         = $null
                     LicenseAssignment     = $null
                     MemberOf              = $null
@@ -290,8 +290,8 @@ class AADUser : M365DSCResourceBase
                 UserPrincipalName        = $this.UserPrincipalName
                 AccountEnabled           = $user.AccountEnabled
                 DisplayName              = $user.DisplayName
-                FirstName                = $user.GivenName
-                LastName                 = $user.Surname
+                GivenName                = $user.GivenName
+                Surname                  = $user.Surname
                 UsageLocation            = $user.UsageLocation
                 LicenseAssignment        = $currentLicenseAssignment
                 MemberOf                 = $currentMemberOf
@@ -299,9 +299,9 @@ class AADUser : M365DSCResourceBase
                 City                     = $user.City
                 Country                  = $user.Country
                 Department               = $user.Department
-                Fax                      = $user.FaxNumber
+                FaxNumber                = $user.FaxNumber
                 MobilePhone              = $user.MobilePhone
-                Office                   = $user.OfficeLocation
+                OfficeLocation           = $user.OfficeLocation
                 Mail                     = $user.Mail
                 OtherMails               = $user.OtherMails
                 PasswordPolicies         = $user.PasswordPolicies
@@ -310,7 +310,7 @@ class AADUser : M365DSCResourceBase
                 PreferredLanguage        = $user.PreferredLanguage
                 State                    = $user.State
                 StreetAddress            = $user.StreetAddress
-                Title                    = $user.JobTitle
+                JobTitle                 = $user.JobTitle
                 UserType                 = $user.UserType
                 Roles                    = $rolesValue
                 CustomSecurityAttributes = $complexCustomSecurityAttributes

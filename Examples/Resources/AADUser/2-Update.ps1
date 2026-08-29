@@ -27,12 +27,12 @@ Configuration Example
         AADUser 'AADUser-Example'
         {
             UserPrincipalName     = "John.Smith@$TenantId"
-            FirstName             = "John"
-            LastName              = "Smith"
+            GivenName             = "John"
+            Surname               = "Smith"
             DisplayName           = "John J. Smith"
             City                  = "Ottawa" # Updated Property
             Country               = "Canada"
-            Office                = "Ottawa - Queen"
+            OfficeLocation        = "Ottawa - Queen"
             UsageLocation         = "US"
             CustomSecurityAttributes = @(
                 MSFT_AADUserAttributeSet{
@@ -51,13 +51,13 @@ Configuration Example
             )
             AccountEnabled        = $true
             Department            = "Human Resources"
-            Title                 = "Senior Program Manager"
+            JobTitle              = "Senior Program Manager"
             StreetAddress         = "100 Rue Principale"
             State                 = "Quebec"
             PostalCode            = "K1A 0B1"
             PhoneNumber           = "+1 613 555 0100"
             MobilePhone           = "+1 613 555 0177"
-            Fax                   = "+1 613 555 0143"
+            FaxNumber             = "+1 613 555 0143"
             OtherMails            = @("john.smith.contoso@outlook.com")
             PreferredLanguage     = "en-US"
             PasswordPolicies      = "DisablePasswordExpiration"

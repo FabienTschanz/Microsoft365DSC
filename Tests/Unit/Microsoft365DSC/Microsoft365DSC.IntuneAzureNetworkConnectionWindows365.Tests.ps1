@@ -137,7 +137,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     OrganizationalUnit = "FakeStringValue"
                     ResourceGroupId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     SubnetId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue/subnets/FakeStringValue"
                     SubscriptionName = "FakeStringValue"
                     VirtualNetworkId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue"
@@ -171,7 +171,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     OrganizationalUnit = "FakeStringValue"
                     ResourceGroupId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     SubnetId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue/subnets/FakeStringValue"
                     SubscriptionName = "FakeStringValue"
                     VirtualNetworkId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue"
@@ -204,7 +204,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     OrganizationalUnit = "FakeStringValue"
                     ResourceGroupId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     SubnetId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue/subnets/FakeStringValue"
                     SubscriptionName = "FakeStringValue"
                     VirtualNetworkId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue"
@@ -228,7 +228,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Id = "FakeStringValue"
                     OrganizationalUnit = "FakeStringValue"
                     ResourceGroupId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     SubnetId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue-2/subnets/FakeStringValue" # Drift
                     SubscriptionName = "FakeStringValue"
                     VirtualNetworkId = "/subscriptions/FakeStringValue/resourceGroups/FakeStringValue/providers/Microsoft.Network/virtualNetworks/FakeStringValue-2" # Drift

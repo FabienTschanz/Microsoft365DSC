@@ -35,6 +35,9 @@
 .PARAMETER Current
     Specifies an already-taken snapshot, which skips the acquire step.
 
+.PARAMETER Force
+    Indicates that the baseline is written even when this run saw less than it holds.
+
 .PARAMETER UpdateBaseline
     Indicates that the current snapshot replaces the committed baseline.
 
@@ -117,6 +120,10 @@ function Invoke-M365DSCApiSurfaceCheck
         [Parameter()]
         [switch]
         $UpdateBaseline,
+
+        [Parameter()]
+        [switch]
+        $Force,
 
         [Parameter()]
         [switch]
@@ -297,6 +304,18 @@ function Invoke-M365DSCApiSurfaceCheck
 
     if ($UpdateBaseline)
     {
+        $lost = @()
+        if (-not $Force)
+        {
+            $lost = @(Get-BaselineRegression -Baseline $baseline -Current $Current)
+        }
+
+        if ($lost.Count -gt 0)
+        {
+            throw ("The baseline was not updated. This run saw less than the committed baseline: $($lost -join ', '). " +
+                'Connect the missing workloads, or pass -Force to overwrite anyway.')
+        }
+
         [System.IO.File]::WriteAllText($BaselinePath, (ConvertTo-M365DSCApiSurfaceJson -Surface $Current), [System.Text.UTF8Encoding]::new($false))
 
         if (@($coverage.Candidate).Count -gt 0)
@@ -388,6 +407,44 @@ function Add-FindingClrType
         $item.to['clrType'] = [System.String] $model.ClrType
         $item.to['nullable'] = $model.ClrType -like 'System.Nullable*'
     }
+}
+
+<#
+.SYNOPSIS
+    Names the workloads the committed baseline holds and this run could not see.
+
+.DESCRIPTION
+    A downgraded run writes a smaller snapshot. Overwriting the baseline with it drops the
+    tenant sections, and the next comparison then reads the gap as removals.
+
+.PARAMETER Baseline
+    Specifies the committed snapshot.
+
+.PARAMETER Current
+    Specifies the snapshot this run captured.
+
+.OUTPUTS
+    The workload names that were captured before and are skipped now.
+#>
+function Get-BaselineRegression
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Baseline,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Current
+    )
+
+    $before = [System.String[]] @($Baseline.completeness.skippedWorkloads)
+    $now = [System.String[]] @($Current.completeness.skippedWorkloads)
+
+    return [System.String[]] @($now | Where-Object -FilterScript { $_ -notin $before })
 }
 
 <#

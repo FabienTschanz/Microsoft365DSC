@@ -660,7 +660,7 @@ class AADApplication : M365DSCResourceBase
         # or IdentifierUris
         if ($this.PublicClient -and ($this.Permissions.Length -gt 0 -or $this.IdentifierUris.Length -gt 0))
         {
-            $ErrorMessage = 'It is not possible set Permissions or IdentifierUris when the PublicClient property is ' + `
+            $ErrorMessage = 'It is not possible to set Permissions or IdentifierUris when the PublicClient property is ' + `
                 "set to `$true. Application will not be created. To fix this, modify the configuration to set the " + `
                 "PublicClient property to `$false, or remove the Permissions and IdentifierUris properties from your configuration."
             Add-M365DSCEvent -Message $ErrorMessage -EntryType 'Error' `

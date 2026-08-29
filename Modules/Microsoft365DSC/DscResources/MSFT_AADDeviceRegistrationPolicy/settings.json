@@ -10,7 +10,33 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "AzureADAllowedToJoin",
+      "reason": "Deferred",
+      "note": "The flattened azureADJoin.allowedToJoin property."
+    },
+    {
+      "name": "AzureADAllowedToJoinGroups",
+      "reason": "Deferred",
+      "note": "The flattened azureADJoin.allowedToJoin.groups property."
+    },
+    {
+      "name": "AzureADAllowedToJoinUsers",
+      "reason": "Deferred",
+      "note": "The flattened azureADJoin.allowedToJoin.users property."
+    },
+    {
+      "name": "AzureAdJoinLocalAdminsRegisteringGroups",
+      "reason": "Deferred",
+      "note": "The flattened azureADJoin.localAdmins.registeringUsers.groups property."
+    },
+    {
+      "name": "AzureAdJoinLocalAdminsRegisteringMode",
+      "reason": "Deferred",
+      "note": "The flattened azureADJoin.localAdmins.registeringUsers property."
+    }
+  ],
   "description": "Represents the policy scope that controls quota restrictions, additional authentication, and authorization policies to register device identities to your organization.",
   "roles": {
     "read": [

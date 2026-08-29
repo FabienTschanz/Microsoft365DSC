@@ -10,7 +10,18 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "AzurePortalTimeOut",
+      "reason": "Deferred",
+      "note": "This is the WebSessionIdleTimeout for app c44b4083-3bb0-49c1-b47d-974e53cbdf3c inside the Graph object."
+    },
+    {
+      "name": "DefaultTimeOut",
+      "reason": "Deferred",
+      "note": "This is the WebSessionIdleTimeout for the default application policy inside the Graph object."
+    }
+  ],
   "description": "This resource configures an Azure AD Activity Based Timeout Policy.",
   "permissions": {
     "graph": {

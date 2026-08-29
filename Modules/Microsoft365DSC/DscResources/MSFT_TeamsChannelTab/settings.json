@@ -10,7 +10,23 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ChannelName",
+      "reason": "OwnedByOtherResource",
+      "note": "ChannelName is the display name of the parent channel. Used to locate the channel that holds the tab"
+    },
+    {
+      "name": "TeamId",
+      "reason": "OwnedByOtherResource",
+      "note": "TeamId is the team id of the parent team. Used to address the tab under that team"
+    },
+    {
+      "name": "TeamName",
+      "reason": "OwnedByOtherResource",
+      "note": "TeamName is the display name of the parent team. Used to locate the team that holds the tab"
+    }
+  ],
   "description": "",
   "roles": {
     "read": [],

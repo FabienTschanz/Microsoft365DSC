@@ -57,7 +57,7 @@ Configuration Example
                 QueryType = "MicrosoftGraph"
                 odataType = "#microsoft.graph.accessReviewQueryScope"
             };
-            SettingsValue                    = MSFT_MicrosoftGraphaccessReviewScheduleSettings{
+            Settings                         = MSFT_MicrosoftGraphaccessReviewScheduleSettings{
                 ApplyActions                         = @(
                     MSFT_MicrosoftGraphAccessReviewApplyAction{
                         odataType = "#microsoft.graph.removeAccessApplyAction"

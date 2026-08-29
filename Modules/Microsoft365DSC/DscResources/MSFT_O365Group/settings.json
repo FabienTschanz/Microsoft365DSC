@@ -10,7 +10,13 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ManagedBy",
+      "reason": "Deferred",
+      "note": "ManagedBy is a custom property for the group owners."
+    }
+  ],
   "description": "",
   "permissions": {
     "graph": {

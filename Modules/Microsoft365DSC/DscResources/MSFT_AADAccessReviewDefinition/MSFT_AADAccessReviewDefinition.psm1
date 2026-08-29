@@ -43,7 +43,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The settings for an access review series, see type definition below. Supports $select. Required on create.')]
-    [MSFT_MicrosoftGraphaccessReviewScheduleSettings] $SettingsValue
+    [MSFT_MicrosoftGraphaccessReviewScheduleSettings] $Settings
 
     [DscProperty()]
     [System.ComponentModel.Description('Required only for a multi-stage access review to define the stages and their settings. You can break down each review instance into up to three sequential stages, where each stage can have a different set of reviewers, fallback reviewers, and settings. Stages are created sequentially based on the dependsOn property. Optional.  When this property is defined, its settings are used instead of the corresponding settings in the accessReviewScheduleDefinition object and its settings, reviewers, and fallbackReviewers properties.')]
@@ -512,7 +512,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                 InstanceEnumerationScope         = $complexInstanceEnumerationScope
                 Reviewers                        = $complexReviewers
                 ScopeValue                       = $complexScope
-                SettingsValue                    = $complexSettings
+                Settings                         = $complexSettings
                 StageSettings                    = $complexStageSettings
                 Id                               = $getValue.Id
                 Ensure                           = 'Present'
@@ -793,8 +793,9 @@ class AADAccessReviewDefinition : M365DSCResourceBase
         $boundParameters.Add('scope', $boundParameters.ScopeValue)
         $boundParameters.Remove('ScopeValue') | Out-Null
 
-        $boundParameters.Add('settings', $boundParameters.SettingsValue)
-        $boundParameters.Remove('SettingsValue') | Out-Null
+        $settingsPayload = $boundParameters.Settings
+        $boundParameters.Remove('Settings') | Out-Null
+        $boundParameters.Add('settings', $settingsPayload)
 
         if ($null -ne $this.StageSettings)
         {
@@ -1026,11 +1027,11 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                         $Results.Remove('InstanceEnumerationScope') | Out-Null
                     }
                 }
-                if ($null -ne $Results.SettingsValue)
+                if ($null -ne $Results.Settings)
                 {
                     $complexMapping = @(
                         @{
-                            Name            = 'SettingsValue'
+                            Name            = 'Settings'
                             CimInstanceName = 'MicrosoftGraphAccessReviewScheduleSettings'
                             IsRequired      = $False
                         }
@@ -1061,17 +1062,17 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                         }
                     )
                     $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                        -ComplexObject $Results.SettingsValue `
+                        -ComplexObject $Results.Settings `
                         -CIMInstanceName 'MicrosoftGraphAccessReviewScheduleSettings' `
                         -ComplexTypeMapping $complexMapping
 
                     if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
                     {
-                        $Results.SettingsValue = $complexTypeStringResult
+                        $Results.Settings = $complexTypeStringResult
                     }
                     else
                     {
-                        $Results.Remove('SettingsValue') | Out-Null
+                        $Results.Remove('Settings') | Out-Null
                     }
                 }
                 if ($null -ne $Results.StageSettings)
@@ -1173,7 +1174,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                     -ModulePath $this.GetModulePath() `
                     -Results $Results `
                     -Credential $this.Credential `
-                    -NoEscape @('ScopeValue', 'InstanceEnumerationScope', 'SettingsValue', 'StageSettings', 'AdditionalNotificationRecipients', 'FallbackReviewers', 'Reviewers')
+                    -NoEscape @('ScopeValue', 'InstanceEnumerationScope', 'Settings', 'StageSettings', 'AdditionalNotificationRecipients', 'FallbackReviewers', 'Reviewers')
 
                 [void]$dscContent.Append($currentDSCBlock)
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
@@ -1196,13 +1197,13 @@ class AADAccessReviewDefinition : M365DSCResourceBase
         return @{
             PostProcessing = {
                 param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
-                if (-not [System.String]::IsNullOrEmpty($DesiredValues.SettingsValue.Recurrence.Range.StartDate))
+                if (-not [System.String]::IsNullOrEmpty($DesiredValues.Settings.Recurrence.Range.StartDate))
                 {
                     $parsedDesiredDate = [System.DateTime]::MinValue
-                    $parseResultDesired = [System.DateTime]::TryParse($DesiredValues.SettingsValue.Recurrence.Range.StartDate, [ref]$parsedDesiredDate)
+                    $parseResultDesired = [System.DateTime]::TryParse($DesiredValues.Settings.Recurrence.Range.StartDate, [ref]$parsedDesiredDate)
 
                     $parsedCurrentDate = [System.DateTime]::MinValue
-                    $parseResultCurrent = [System.DateTime]::TryParse($CurrentValues.SettingsValue.Recurrence.Range.StartDate, [ref]$parsedCurrentDate)
+                    $parseResultCurrent = [System.DateTime]::TryParse($CurrentValues.Settings.Recurrence.Range.StartDate, [ref]$parsedCurrentDate)
 
                     if ($parseResultDesired -and $parseResultCurrent)
                     {
@@ -1211,7 +1212,7 @@ class AADAccessReviewDefinition : M365DSCResourceBase
                         {
                             Write-Verbose -Message 'Ignoring StartDateTime in ScheduleInfo as it is in the past. StartDateTime cannot be set to a past date.'
                             Write-Verbose -Message 'Aligning the Desired and Current StartDateTime values for comparison.'
-                            $DesiredValues.SettingsValue.Recurrence.Range.StartDate = $CurrentValues.SettingsValue.Recurrence.Range.StartDate
+                            $DesiredValues.Settings.Recurrence.Range.StartDate = $CurrentValues.Settings.Recurrence.Range.StartDate
                         }
                     }
                 }

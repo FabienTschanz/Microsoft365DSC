@@ -10,7 +10,13 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "PrincipalType",
+      "reason": "NotConfigurable",
+      "note": "PrincipalType does not exist on the entity. It is used to choose how the Principal name is resolved."
+    }
+  ],
   "description": "This resource configures an Azure Active Directory Privilege Identity Management assignment.",
   "roles": {
     "read": [

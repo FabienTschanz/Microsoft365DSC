@@ -76,25 +76,20 @@ function Get-M365DSCSettingsCatalogInfo
     # buckets themselves classify by scope: a setting is user-scoped when its definition id
     # carries the user_ prefix or its baseUri starts with ./User. Everything else - including
     # settings whose baseUri goes straight to ./Vendor/MSFT without a device_ prefix.
-    $prefixedDeviceTemplates = @($SettingTemplates | Where-Object -FilterScript { $_.SettingInstanceTemplate.SettingDefinitionId.StartsWith('device_') })
-    $userTemplates = @($SettingTemplates | Where-Object -FilterScript { Test-M365DSCUserScopedSettingTemplate -SettingTemplate $_ })
-
-    $containsDeviceAndUserSettings = $prefixedDeviceTemplates.Count -gt 0 -and $userTemplates.Count -gt 0
+    $buckets = @(Get-M365DSCSettingsCatalogTemplateBucket -SettingTemplates $SettingTemplates)
 
     $properties = @()
-    if ($containsDeviceAndUserSettings)
+    if ($buckets.Count -eq 1)
     {
-        $deviceTemplates = @($SettingTemplates | Where-Object -FilterScript { -not (Test-M365DSCUserScopedSettingTemplate -SettingTemplate $_) })
-
-        $deviceModels = Get-M365DSCSettingsCatalogGroupPropertyModel -SettingTemplates $deviceTemplates
-        $userModels = Get-M365DSCSettingsCatalogGroupPropertyModel -SettingTemplates $userTemplates
-
-        $properties += New-M365DSCSettingsWrapperPropertyModel -Name 'DeviceSettings' -ResourceName $ResourceName -Members $deviceModels
-        $properties += New-M365DSCSettingsWrapperPropertyModel -Name 'UserSettings' -ResourceName $ResourceName -Members $userModels
+        $properties += Get-M365DSCSettingsCatalogGroupPropertyModel -SettingTemplates $buckets[0].Templates
     }
     else
     {
-        $properties += Get-M365DSCSettingsCatalogGroupPropertyModel -SettingTemplates $SettingTemplates
+        foreach ($bucket in $buckets)
+        {
+            $members = Get-M365DSCSettingsCatalogGroupPropertyModel -SettingTemplates $bucket.Templates
+            $properties += New-M365DSCSettingsWrapperPropertyModel -Name $bucket.Name -ResourceName $ResourceName -Members $members
+        }
     }
 
     if ($SkipPlatformsAndTechnologies)
@@ -157,6 +152,57 @@ function Test-M365DSCUserScopedSettingTemplate
         }) | Select-Object -First 1
 
     return ($null -ne $rootDefinition -and $rootDefinition.baseUri -like './User*')
+}
+
+<#
+.SYNOPSIS
+    Groups setting templates the way a name is disambiguated.
+
+.DESCRIPTION
+    A setting name is unique within a bucket, not within one setting template. The compiled
+    helper prefixes a name only when the bucket holds a second definition carrying it, so a
+    caller that scopes the check to a single setting template never sees a collision.
+
+.PARAMETER SettingTemplates
+    Specifies every setting template of one policy template.
+
+.OUTPUTS
+    Objects with Name, Templates and Definitions, the flattened definition union of the bucket.
+#>
+function Get-M365DSCSettingsCatalogTemplateBucket
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter()]
+        [System.Array]
+        $SettingTemplates = @()
+    )
+
+    if ($SettingTemplates.Count -eq 0)
+    {
+        return @()
+    }
+
+    $prefixedDeviceTemplates = @($SettingTemplates | Where-Object -FilterScript { $_.SettingInstanceTemplate.SettingDefinitionId.StartsWith('device_') })
+    $userTemplates = @($SettingTemplates | Where-Object -FilterScript { Test-M365DSCUserScopedSettingTemplate -SettingTemplate $_ })
+
+    if ($prefixedDeviceTemplates.Count -eq 0 -or $userTemplates.Count -eq 0)
+    {
+        return @([PSCustomObject]@{
+                Name        = 'All'
+                Templates   = $SettingTemplates
+                Definitions = $SettingTemplates.SettingDefinitions
+            })
+    }
+
+    $deviceTemplates = @($SettingTemplates | Where-Object -FilterScript { -not (Test-M365DSCUserScopedSettingTemplate -SettingTemplate $_) })
+
+    return @(
+        [PSCustomObject]@{ Name = 'DeviceSettings'; Templates = $deviceTemplates; Definitions = $deviceTemplates.SettingDefinitions }
+        [PSCustomObject]@{ Name = 'UserSettings'; Templates = $userTemplates; Definitions = $userTemplates.SettingDefinitions }
+    )
 }
 
 <#

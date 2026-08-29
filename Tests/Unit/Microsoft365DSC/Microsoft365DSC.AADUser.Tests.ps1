@@ -83,8 +83,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName       = 'John Smith'
-                    FirstName         = 'John'
-                    LastName          = 'Smith'
+                    GivenName         = 'John'
+                    Surname           = 'Smith'
                     UsageLocation     = 'US'
                     LicenseAssignment = @('ENTERPRISE_PREMIUM')
                     Password          = $Credential
@@ -123,8 +123,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName       = 'John Smith'
-                    FirstName         = 'John'
-                    LastName          = 'Smith'
+                    GivenName         = 'John'
+                    Surname           = 'Smith'
                     UsageLocation     = 'US'
                     LicenseAssignment = @('ENTERPRISE_PREMIUM')
                     Password          = $Credential
@@ -180,8 +180,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName    = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName          = 'John Smith'
-                    FirstName            = 'John'
-                    LastName             = 'Smith'
+                    GivenName            = 'John'
+                    Surname              = 'Smith'
                     UsageLocation        = 'US'
                     LicenseAssignment    = @()
                     Password             = $Credential
@@ -240,8 +240,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName    = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName          = 'John Smith'
-                    FirstName            = 'John'
-                    LastName             = 'Smith'
+                    GivenName            = 'John'
+                    Surname              = 'Smith'
                     UsageLocation        = 'US'
                     MemberOf             = 'TestGroup'
                     Password             = $Credential
@@ -301,8 +301,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName    = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName          = 'John Smith'
-                    FirstName            = 'John'
-                    LastName             = 'Smith'
+                    GivenName            = 'John'
+                    Surname              = 'Smith'
                     UsageLocation        = 'US'
                     #MemberOf             = @('TestGroup')
                     Password             = $Credential
@@ -368,8 +368,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName    = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName          = 'John Smith'
-                    FirstName            = 'John'
-                    LastName             = 'Smith'
+                    GivenName            = 'John'
+                    Surname              = 'Smith'
                     UsageLocation        = 'US'
                     MemberOf             = 'TestGroup'
                     Password             = $Credential
@@ -448,8 +448,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName        = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName              = 'John Smith'
-                    FirstName                = 'John'
-                    LastName                 = 'Smith'
+                    GivenName                = 'John'
+                    Surname                  = 'Smith'
                     UsageLocation            = 'US'
                     Password                 = $Credential
                     Ensure                   = 'Present'
@@ -521,8 +521,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $testParams = @{
                     UserPrincipalName        = 'JohnSmith@contoso.onmicrosoft.com'
                     DisplayName              = 'John Smith'
-                    FirstName                = 'John'
-                    LastName                 = 'Smith'
+                    GivenName                = 'John'
+                    Surname                  = 'Smith'
                     UsageLocation            = 'US'
                     Password                 = $Credential
                     Ensure                   = 'Present'

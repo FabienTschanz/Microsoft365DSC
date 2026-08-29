@@ -87,7 +87,7 @@ Configuration Example
                     PrefixSize        = 12
                 }
             );
-            ServerCollection                           = @(
+            Servers                                    = @(
                 MSFT_MicrosoftGraphvpnServer{
                     IsDefaultServer = $True
                     Description     = 'gateway1'

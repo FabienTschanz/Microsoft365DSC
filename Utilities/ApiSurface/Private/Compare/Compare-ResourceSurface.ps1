@@ -129,7 +129,7 @@ function Compare-ResourceSurface
 
         foreach ($name in $declared.Keys)
         {
-            $match = Resolve-PropertyName -Name $name -VendorProperty $vendor.Properties
+            $match = Resolve-PropertyName -Name $name -VendorProperty $vendor.Properties -LeafIndex $vendor.ByLeaf
 
             if (-not $match.Matched)
             {
@@ -325,7 +325,7 @@ function Compare-DeclaredProperty
                     -Severity $suppression.Severity `
                     -From ([ordered]@{ typeConstraint = $actual }) `
                     -To ([ordered]@{ vendorType = $Vendor.Type; isArray = $Vendor.IsArray; expected = $expected }) `
-                    -Evidence ([ordered]@{ source = "csdl:$($TypeKey -replace ':', '/')/$($Vendor.Name)" })))
+                    -Evidence ([ordered]@{ source = "csdl:$($TypeKey -replace ':', '/')/$($Vendor.Path)" })))
     }
 
     $vendorMembers = @($Vendor.Enum | Where-Object -FilterScript { $null -ne $_ -and $_ -ne 'unknownFutureValue' })
@@ -348,7 +348,7 @@ function Compare-DeclaredProperty
                             -Severity $suppression.Severity `
                             -From ([ordered]@{ values = @($Declared.values) }) `
                             -To ([ordered]@{ values = $vendorMembers; added = $missingMembers }) `
-                            -Evidence ([ordered]@{ source = "csdl:$($TypeKey -replace ':', '/')/$($Vendor.Name)" })))
+                            -Evidence ([ordered]@{ source = "csdl:$($TypeKey -replace ':', '/')/$($Vendor.Path)" })))
             }
         }
     }

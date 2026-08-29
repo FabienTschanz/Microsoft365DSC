@@ -225,7 +225,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             destinationPrefix = "FakeStringValue"
                         })
                     )
-                    serverCollection = @(
+                    servers = @(
                         ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer = $True
                             description = "FakeStringValue"
@@ -355,7 +355,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             destinationPrefix = "FakeStringValue"
                         })
                     )
-                    serverCollection = @(
+                    servers = @(
                         ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer = $True
                             description = "FakeStringValue"
@@ -483,7 +483,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             destinationPrefix = "FakeStringValue"
                         })
                     )
-                    serverCollection = @(
+                    servers = @(
                         ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer = $True
                             description = "FakeStringValue"
@@ -604,7 +604,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                             destinationPrefix = "FakeStringValue"
                         })
                     )
-                    serverCollection = @(
+                    servers = @(
                         ([MSFT_MicrosoftGraphvpnServer] @{
                             isDefaultServer = $True
                             description = "FakeStringValue"

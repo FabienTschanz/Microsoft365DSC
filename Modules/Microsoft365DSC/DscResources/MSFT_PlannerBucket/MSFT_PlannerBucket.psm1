@@ -15,7 +15,7 @@ class PlannerBucket : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Id of the Bucket, if known.')]
-    [System.String] $BucketId
+    [System.String] $Id
 
     [DscProperty()]
     [System.ComponentModel.Description('Present ensures the Plan exists, absent ensures it is removed')]
@@ -86,9 +86,9 @@ class PlannerBucket : M365DSCResourceBase
             $nullReturn = $this.GetBoundParameters()
             $nullReturn.Ensure = 'Absent'
 
-            if (-not [System.String]::IsNullOrEmpty($this.BucketId))
+            if (-not [System.String]::IsNullOrEmpty($this.Id))
             {
-                [Array]$bucket = Get-MgPlannerPlanBucket -PlannerPlanId $this.PlanId | Where-Object -FilterScript { $_.Id -eq $this.BucketId }
+                [Array]$bucket = Get-MgPlannerPlanBucket -PlannerPlanId $this.PlanId | Where-Object -FilterScript { $_.Id -eq $this.Id }
             }
             else
             {
@@ -97,7 +97,7 @@ class PlannerBucket : M365DSCResourceBase
                 if ($bucket.Length -gt 1)
                 {
                     throw ("Multiple Buckets with Name {$($this.Name)} were found for Plan with ID {$($this.PlanID)}." + `
-                            ' Please use the BucketId property to identify the exact bucket.')
+                            ' Please use the Id property to identify the exact bucket.')
                 }
             }
 
@@ -109,7 +109,7 @@ class PlannerBucket : M365DSCResourceBase
             $results = @{
                 Name                  = $this.Name
                 PlanId                = $this.PlanId
-                BucketId              = $bucket[0].Id
+                Id                    = $bucket[0].Id
                 Ensure                = 'Present'
                 Credential            = $this.Credential
                 ApplicationId         = $this.ApplicationId
@@ -224,7 +224,7 @@ class PlannerBucket : M365DSCResourceBase
                             $params = @{
                                 Name                  = $bucket.Name
                                 PlanId                = $plan.Id
-                                BucketId              = $Bucket.Id
+                                Id                    = $bucket.Id
                                 Credential            = $this.Credential
                                 ApplicationId         = $this.ApplicationId
                                 TenantId              = $this.TenantId

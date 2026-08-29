@@ -578,8 +578,16 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             $script:vendor = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::Ordinal)
             $script:vendor['displayName'] = [ordered]@{ Name = 'displayName'; Path = 'displayName' }
             $script:vendor['@odata.type'] = [ordered]@{ Name = '@odata.type'; Path = '@odata.type' }
-            $script:vendor['mdmAuthority'] = [ordered]@{ Name = 'mdmAuthority'; Path = 'mdmAuthority' }
-            $script:vendor['isEnabled'] = [ordered]@{ Name = 'isEnabled'; Path = 'signInFrequency.isEnabled' }
+            $script:vendor['mdmAuthority'] = [ordered]@{ Name = 'mdmAuthority'; Path = 'mdmAuthority'; Level = 0 }
+            $script:vendor['sessionControls.signInFrequency.isEnabled'] = [ordered]@{
+                Name = 'isEnabled'; Path = 'sessionControls.signInFrequency.isEnabled'; Level = 2
+            }
+            $script:vendor['sessionControls.persistentBrowser.mode'] = [ordered]@{
+                Name = 'mode'; Path = 'sessionControls.persistentBrowser.mode'; Level = 2
+            }
+            $script:vendor['grantControls.operator'] = [ordered]@{
+                Name = 'operator'; Path = 'grantControls.operator'; Level = 1
+            }
         }
 
         It 'matches <Name> by the <Rule> rule' -TestCases @(
@@ -587,10 +595,57 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             @{ Name = 'ODataType'; Rule = 'ODataType' }
             @{ Name = 'MDMAuthority'; Rule = 'Acronym' }
             @{ Name = 'SignInFrequencyIsEnabled'; Rule = 'FlattenedPath' }
+            @{ Name = 'PersistentBrowserMode'; Rule = 'FlattenedPath' }
+            @{ Name = 'GrantControlOperator'; Rule = 'FlattenedPathSingular' }
         ) {
             $result = Resolve-PropertyName -Name $Name -VendorProperty $script:vendor
             $result.Matched | Should -BeTrue
             $result.Rule | Should -Be $Rule
+        }
+
+        It 'matches a singular DSC name against a plural vendor collection' {
+            $vendor = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::Ordinal)
+            $vendor['tokenLifetimePolicies'] = [ordered]@{
+                Name = 'tokenLifetimePolicies'; Path = 'tokenLifetimePolicies'; Level = 0
+            }
+
+            $result = Resolve-PropertyName -Name 'TokenLifetimePolicy' -VendorProperty $vendor
+            $result.Matched | Should -BeTrue
+            $result.Rule | Should -Be 'Plural'
+            $result.VendorName | Should -BeExactly 'tokenLifetimePolicies'
+        }
+
+        It 'pluralizes <Name> to <Expected>' -TestCases @(
+            @{ Name = 'TokenLifetimePolicy'; Expected = 'TokenLifetimePolicies' }
+            @{ Name = 'Key'; Expected = 'Keys' }
+            @{ Name = 'ServerCollection'; Expected = 'ServerCollections' }
+            @{ Name = 'Roles'; Expected = 'Roles' }
+            @{ Name = 'Branch'; Expected = 'Branch' }
+        ) {
+            Get-PluralName -Name $Name | Should -BeExactly $Expected
+        }
+
+        It 'prefers an exact vendor name over its plural' {
+            $vendor = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::Ordinal)
+            $vendor['policy'] = [ordered]@{ Name = 'policy'; Path = 'policy'; Level = 0 }
+            $vendor['policies'] = [ordered]@{ Name = 'policies'; Path = 'policies'; Level = 0 }
+
+            $result = Resolve-PropertyName -Name 'Policy' -VendorProperty $vendor
+            $result.Rule | Should -Be 'Camel'
+            $result.VendorName | Should -BeExactly 'policy'
+        }
+
+        It 'resolves a flattened name that drops the root container to its full path' {
+            $result = Resolve-PropertyName -Name 'SignInFrequencyIsEnabled' -VendorProperty $script:vendor
+            $result.VendorName | Should -BeExactly 'sessionControls.signInFrequency.isEnabled'
+        }
+
+        It 'prefers the shallowest path when a leaf name repeats' {
+            $vendor = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::Ordinal)
+            $vendor['nested.state'] = [ordered]@{ Name = 'state'; Path = 'nested.state'; Level = 1 }
+            $vendor['state'] = [ordered]@{ Name = 'state'; Path = 'state'; Level = 0 }
+
+            (Resolve-PropertyName -Name 'State' -VendorProperty $vendor).VendorName | Should -BeExactly 'state'
         }
 
         It 'reports no match for a name the vendor does not have' {
@@ -606,9 +661,46 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             }
 
             $result = Expand-VendorPropertySet -GraphType $types -ApiVersion 'beta' -TypeName 'a'
-            $result.Properties.Contains('leaf') | Should -BeTrue
-            $result.Properties['leaf'].Path | Should -Be 'nested.leaf'
+            $result.Properties.Contains('nested.leaf') | Should -BeTrue
+            $result.Properties['nested.leaf'].Path | Should -Be 'nested.leaf'
+            $result.Properties['nested.leaf'].Name | Should -Be 'leaf'
             $result.TopLevelCount | Should -Be 1
+        }
+
+        It 'keeps every member that shares a leaf name' {
+            $types = [ordered]@{
+                'beta:a' = [ordered]@{
+                    properties = [ordered]@{
+                        signInFrequency  = New-TestProperty -Type 'b' -IsComplex $true
+                        persistentBrowser = New-TestProperty -Type 'c' -IsComplex $true
+                    }
+                }
+                'beta:b' = [ordered]@{ properties = [ordered]@{ isEnabled = New-TestProperty -Type 'Edm.Boolean' } }
+                'beta:c' = [ordered]@{ properties = [ordered]@{ isEnabled = New-TestProperty -Type 'Edm.Boolean' } }
+            }
+
+            $result = Expand-VendorPropertySet -GraphType $types -ApiVersion 'beta' -TypeName 'a'
+
+            $result.Properties.Contains('signInFrequency.isEnabled') | Should -BeTrue
+            $result.Properties.Contains('persistentBrowser.isEnabled') | Should -BeTrue
+            @($result.ByLeaf['isEnabled']) | Should -HaveCount 2
+        }
+
+        It 'expands a complex type reached from two parents under both paths' {
+            $types = [ordered]@{
+                'beta:a' = [ordered]@{
+                    properties = [ordered]@{
+                        applicationFilter = New-TestProperty -Type 'filter' -IsComplex $true
+                        deviceFilter      = New-TestProperty -Type 'filter' -IsComplex $true
+                    }
+                }
+                'beta:filter' = [ordered]@{ properties = [ordered]@{ mode = New-TestProperty } }
+            }
+
+            $result = Expand-VendorPropertySet -GraphType $types -ApiVersion 'beta' -TypeName 'a'
+
+            $result.Properties.Contains('applicationFilter.mode') | Should -BeTrue
+            $result.Properties.Contains('deviceFilter.mode') | Should -BeTrue
         }
 
         It 'leaves a navigation property out unless the resource asks for it' {

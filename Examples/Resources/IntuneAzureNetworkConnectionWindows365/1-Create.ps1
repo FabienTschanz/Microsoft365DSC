@@ -34,7 +34,7 @@ Configuration Example
             Ensure                = "Present";
             OrganizationalUnit    = "OU=CloudPCs,OU=Devices,DC=contoso,DC=com";
             ResourceGroupId       = "/subscriptions/subscription-name/resourceGroups/resource-group-name";
-            RoleScopeTagIds       = @("0");
+            ScopeIds              = @("0");
             SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name/subnets/default";
             SubscriptionName      = "subscription-name";
             VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name";
@@ -48,7 +48,7 @@ Configuration Example
             DisplayName           = "IntuneWindows365AzureNetworkConnection_Entra_1";
             Ensure                = "Present";
             ResourceGroupId       = "/subscriptions/subscription-name/resourceGroups/resource-group-name";
-            RoleScopeTagIds       = @("0");
+            ScopeIds              = @("0");
             SubnetId              = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name/subnets/default";
             SubscriptionName      = "subscription-name";
             VirtualNetworkId      = "/subscriptions/subscription-name/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/virtual-network-name";

@@ -134,19 +134,14 @@ class O365Group : M365DSCResourceBase
                 $ownersUPN = @()
                 if ($null -ne $owners)
                 {
-                    # Need to cast as an array for the test to properly compare cases with
-                    # a single owner;
                     $ownersUPN = [System.String[]]$owners.userPrincipalName
-
-                    # Also need to remove the owners from the members list for Test
-                    # to handle the validation properly;
                     $newMemberList = @()
 
                     foreach ($member in $membersList)
                     {
                         if ($null -ne $ownersUPN -and $ownersUPN.Length -ge 1 -and `
                                 -not [System.String]::IsNullOrEmpty($member.userPrincipalName) -and `
-                                -not $ownersUPN.Contains($member.sserPrincipalName))
+                                -not $ownersUPN.Contains($member.userPrincipalName))
                         {
                             $newMemberList += $member.userPrincipalName
                         }
@@ -193,9 +188,7 @@ class O365Group : M365DSCResourceBase
 
     [void] Set()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
         $existingO365Group = $null
-        # Declared up front: assigned conditionally below, which class methods reject.
         $ADGroup = $null
         if ($this.RequiresPowerShellCore())
         {

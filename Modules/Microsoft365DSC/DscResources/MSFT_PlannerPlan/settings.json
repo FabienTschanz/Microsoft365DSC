@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "OwnerGroup",
+      "reason": "Deferred",
+      "note": "OwnerGroup is the id or display name of the owning group."
+    }
+  ],
   "description": "",
   "permissions": {
     "graph": {

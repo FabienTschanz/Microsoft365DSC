@@ -149,7 +149,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ImageType = "gallery"
                     LocalAdminEnabled = $True
                     ProvisioningType = "dedicated"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     WindowsSetting = ([MSFT_MicrosoftGraphcloudPcWindowsSetting] @{
                         Locale = "en-US"
                     })
@@ -206,7 +206,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ImageType = "gallery"
                     LocalAdminEnabled = $True
                     ProvisioningType = "dedicated"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     WindowsSetting = ([MSFT_MicrosoftGraphcloudPcWindowsSetting] @{
                         Locale = "en-US"
                     })
@@ -262,7 +262,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ImageType = "gallery"
                     LocalAdminEnabled = $True
                     ProvisioningType = "dedicated"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     WindowsSetting = ([MSFT_MicrosoftGraphcloudPcWindowsSetting] @{
                         Locale = "en-US"
                     })
@@ -309,7 +309,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     ImageType = "gallery"
                     LocalAdminEnabled = $True
                     ProvisioningType = "dedicated"
-                    RoleScopeTagIds = @("FakeStringValue")
+                    ScopeIds        = @("FakeStringValue")
                     WindowsSetting = ([MSFT_MicrosoftGraphcloudPcWindowsSetting] @{
                         Locale = "en-US"
                     })

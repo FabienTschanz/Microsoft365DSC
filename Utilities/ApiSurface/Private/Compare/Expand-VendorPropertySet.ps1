@@ -23,7 +23,8 @@
     Specifies how many levels of complex type the walk admits.
 
 .OUTPUTS
-    An ordered dictionary with Properties, TopLevelCount, Truncated and MaxDepth.
+    An ordered dictionary with Properties keyed by full path, ByLeaf, the paths carrying each
+    leaf name, plus TopLevelCount, Truncated and MaxDepth.
 #>
 function Expand-VendorPropertySet
 {
@@ -53,24 +54,21 @@ function Expand-VendorPropertySet
     )
 
     $properties = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::Ordinal)
-    $visited = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::Ordinal)
+    $byLeaf = [System.Collections.Specialized.OrderedDictionary]::new([System.StringComparer]::Ordinal)
     $queue = [System.Collections.Generic.Queue[System.Object]]::new()
     $truncated = $false
     $topLevelCount = 0
 
     $queue.Enqueue([PSCustomObject]@{
-            Key   = "${ApiVersion}:$TypeName"
-            Level = 0
-            Path  = ''
+            Key      = "${ApiVersion}:$TypeName"
+            Level    = 0
+            Path     = ''
+            Ancestor = [System.String[]] @("${ApiVersion}:$TypeName")
         })
 
     while ($queue.Count -gt 0)
     {
         $item = $queue.Dequeue()
-        if (-not $visited.Add($item.Key))
-        {
-            continue
-        }
 
         $entry = Get-SurfaceMember -Container $GraphType -Name $item.Key
         if ($null -eq $entry)
@@ -94,9 +92,9 @@ function Expand-VendorPropertySet
                 $path = "$($item.Path).$member"
             }
 
-            if (-not $properties.Contains($member))
+            if (-not $properties.Contains($path))
             {
-                $properties[$member] = [ordered]@{
+                $properties[$path] = [ordered]@{
                     Name       = $member
                     Path       = $path
                     Level      = $item.Level
@@ -107,6 +105,13 @@ function Expand-VendorPropertySet
                     IsFlags    = [System.Boolean] $value.isFlags
                     Enum       = [System.String[]] @(@($value.enum) | Where-Object -FilterScript { -not [System.String]::IsNullOrEmpty($_) })
                 }
+
+                if (-not $byLeaf.Contains($member))
+                {
+                    $byLeaf[$member] = [System.Collections.Generic.List[System.String]]::new()
+                }
+
+                $byLeaf[$member].Add($path)
 
                 if ($item.Level -eq 0)
                 {
@@ -124,6 +129,12 @@ function Expand-VendorPropertySet
                 continue
             }
 
+            $childKey = "${ApiVersion}:$([System.String] $value.type)"
+            if ($item.Ancestor -contains $childKey)
+            {
+                continue
+            }
+
             if ($item.Level -ge $MaxDepth)
             {
                 $truncated = $true
@@ -131,15 +142,17 @@ function Expand-VendorPropertySet
             }
 
             $queue.Enqueue([PSCustomObject]@{
-                    Key   = "${ApiVersion}:$([System.String] $value.type)"
-                    Level = $item.Level + 1
-                    Path  = $path
+                    Key      = $childKey
+                    Level    = $item.Level + 1
+                    Path     = $path
+                    Ancestor = [System.String[]] @($item.Ancestor + $childKey)
                 })
         }
     }
 
     return [ordered]@{
         Properties    = $properties
+        ByLeaf        = $byLeaf
         TopLevelCount = $topLevelCount
         Truncated     = $truncated
         MaxDepth      = $MaxDepth

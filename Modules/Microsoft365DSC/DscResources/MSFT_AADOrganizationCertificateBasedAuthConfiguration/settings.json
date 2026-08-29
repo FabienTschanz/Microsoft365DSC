@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "OrganizationId",
+      "reason": "Deferred",
+      "note": "This is the parent organization identifier used to identify the authentication configuration."
+    }
+  ],
   "description": "This resource configures an Azure AD Organization Certificate Based Auth Configuration.",
   "permissions": {
     "graph": {

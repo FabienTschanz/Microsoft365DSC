@@ -188,6 +188,11 @@ function Get-SettingsCatalogSettingTemplate
 .SYNOPSIS
     Maps every setting definition of a template to the DSC property name it produces.
 
+.DESCRIPTION
+    A name is disambiguated against the whole bucket the setting template belongs to, never
+    against one setting template. Scoping it narrower leaves every name bare, and the three
+    firewall profiles then collapse onto one.
+
 .PARAMETER Generator
     Specifies the resource generator module.
 
@@ -217,9 +222,15 @@ function Get-SettingsCatalogProjection
     $names = @{}
     $exposed = [System.Collections.Generic.HashSet[System.String]]::new([System.StringComparer]::OrdinalIgnoreCase)
 
-    foreach ($template in $SettingTemplate)
+    $buckets = & $Generator {
+        param ($Templates)
+
+        return @(Get-M365DSCSettingsCatalogTemplateBucket -SettingTemplates $Templates)
+    } $SettingTemplate
+
+    foreach ($bucket in $buckets)
     {
-        $all = @($template.settingDefinitions)
+        $all = @($bucket.Definitions)
 
         foreach ($definition in $all)
         {
@@ -241,17 +252,20 @@ function Get-SettingsCatalogProjection
             } $raw
         }
 
-        $tree = & $Generator {
-            param ($Template, $All)
-            New-SettingsCatalogSettingDefinitionSettingsFromTemplate -SettingTemplate $Template -FromRoot -AllSettingDefinitions $All
-        } $template $all
-
-        foreach ($name in (Get-SettingsCatalogTreeName -Setting @($tree)))
+        foreach ($template in $bucket.Templates)
         {
-            $null = $exposed.Add(( & $Generator {
-                        param ($Value)
-                        Get-StringFirstCharacterToUpper -Value $Value
-                    } $name))
+            $tree = & $Generator {
+                param ($Template, $All)
+                New-SettingsCatalogSettingDefinitionSettingsFromTemplate -SettingTemplate $Template -FromRoot -AllSettingDefinitions $All
+            } $template $all
+
+            foreach ($name in (Get-SettingsCatalogTreeName -Setting @($tree)))
+            {
+                $null = $exposed.Add(( & $Generator {
+                            param ($Value)
+                            Get-StringFirstCharacterToUpper -Value $Value
+                        } $name))
+            }
         }
     }
 

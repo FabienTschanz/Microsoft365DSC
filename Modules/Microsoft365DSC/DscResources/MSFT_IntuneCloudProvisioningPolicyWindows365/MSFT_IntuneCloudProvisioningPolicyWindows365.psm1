@@ -57,7 +57,7 @@ class IntuneCloudProvisioningPolicyWindows365 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('The Role Scope Tag Ids')]
-    [System.String[]] $RoleScopeTagIds
+    [System.String[]] $ScopeIds
 
     [DscProperty()]
     [System.ComponentModel.Description('Specifies the type of cloud object the end user can access. Possible values are: cloudPc, cloudApp. cloudPc indicates that the end user can access the entire desktop. cloudApp indicates that the end user can only access apps published under this provisioning policy. The type can''t be changed once the provisioning policy is created. If not specified during creation, the default value is cloudPc. When cloudApp is selected, the provisioningType must be sharedByEntraGroup. Cannot be changed after creation.')]
@@ -285,7 +285,7 @@ class IntuneCloudProvisioningPolicyWindows365 : M365DSCResourceBase
                 ImageType                = $enumImageType
                 LocalAdminEnabled        = $getValue.LocalAdminEnabled
                 ProvisioningType         = $enumProvisioningType
-                RoleScopeTagIds          = $getValue.ScopeIds
+                ScopeIds                 = $getValue.ScopeIds
                 UserExperienceType       = $enumUserExperienceType
                 WindowsSetting           = $complexWindowsSetting
                 WindowsSettings          = $complexWindowsSettings
@@ -343,11 +343,6 @@ class IntuneCloudProvisioningPolicyWindows365 : M365DSCResourceBase
 
         $currentInstance = $this.Get().ToHashtable()
         $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
-        if ($boundParameters.ContainsKey('RoleScopeTagIds'))
-        {
-            $boundParameters.Add('ScopeIds', $boundParameters['RoleScopeTagIds'])
-            $boundParameters.Remove('RoleScopeTagIds') | Out-Null
-        }
         $managedDesktopType = 'notManaged'
         if ($boundParameters.ContainsKey('Autopatch') -and -not [System.String]::IsNullOrEmpty($boundParameters.Autopatch.AutopatchGroupId))
         {

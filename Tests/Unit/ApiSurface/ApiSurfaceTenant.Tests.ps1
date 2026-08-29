@@ -235,4 +235,34 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             Format-DriftMarkdown -Result $script:result | Should -Not -Match 'Incomplete run'
         }
     }
+
+    Describe 'Get-BaselineRegression' {
+        BeforeAll {
+            function New-CompletenessSnapshot
+            {
+                param ([System.String[]] $Skipped = @())
+
+                return [PSCustomObject]@{ completeness = [PSCustomObject]@{ skippedWorkloads = $Skipped } }
+            }
+        }
+
+        It 'Names a workload the baseline holds and the run could not see' {
+            $lost = @(Get-BaselineRegression `
+                    -Baseline (New-CompletenessSnapshot) `
+                    -Current (New-CompletenessSnapshot -Skipped @('ExchangeOnline', 'settingsCatalog')))
+
+            $lost | Should -HaveCount 2
+            $lost | Should -Contain 'settingsCatalog'
+        }
+
+        It 'Reports nothing when the run saw at least as much as the baseline' {
+            @(Get-BaselineRegression `
+                    -Baseline (New-CompletenessSnapshot -Skipped @('ExchangeOnline')) `
+                    -Current (New-CompletenessSnapshot -Skipped @('ExchangeOnline'))) | Should -HaveCount 0
+
+            @(Get-BaselineRegression `
+                    -Baseline (New-CompletenessSnapshot -Skipped @('ExchangeOnline')) `
+                    -Current (New-CompletenessSnapshot)) | Should -HaveCount 0
+        }
+    }
 }

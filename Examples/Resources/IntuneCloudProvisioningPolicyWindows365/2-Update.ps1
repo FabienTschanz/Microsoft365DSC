@@ -52,7 +52,7 @@ Configuration Example
             ImageId                  = "microsoftwindowsdesktop_windows-ent-cpc_win11-25h2-ent-cpc";
             ImageType                = "gallery";
             ProvisioningType         = "dedicated";
-            RoleScopeTagIds          = @("0");
+            ScopeIds                 = @("0");
             WindowsSetting           = MSFT_MicrosoftGraphCloudPcWindowsSetting{
                 Locale = "en-US"
             };

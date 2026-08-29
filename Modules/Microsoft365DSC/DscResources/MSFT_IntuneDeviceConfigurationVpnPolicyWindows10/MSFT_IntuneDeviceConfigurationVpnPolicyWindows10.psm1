@@ -114,7 +114,7 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('List of VPN Servers on the network. Make sure end users can access these network locations. This collection can contain a maximum of 500 elements.')]
-    [MSFT_MicrosoftGraphvpnServer[]] $ServerCollection
+    [MSFT_MicrosoftGraphvpnServer[]] $Servers
 
     [DscProperty()]
     [System.ComponentModel.Description('Admin provided description of the Device Configuration.')]
@@ -482,7 +482,7 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
                 WindowsInformationProtectionDomain         = $getValue.windowsInformationProtectionDomain
                 ConnectionName                             = $getValue.connectionName
                 CustomXml                                  = $getValue.customXml
-                ServerCollection                           = $complexServers
+                Servers                                    = $complexServers
                 Description                                = $getValue.Description
                 DisplayName                                = $getValue.DisplayName
                 Id                                         = $getValue.Id
@@ -542,8 +542,7 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
         $currentInstance = $this.Get().ToHashtable()
         $BoundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
         $keyToRename = @{
-            'odataType'        = '@odata.type'
-            'ServerCollection' = 'servers'
+            'odataType' = '@odata.type'
         }
         if ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Absent')
         {
@@ -795,18 +794,18 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
                         $Results.Remove('TrafficRules') | Out-Null
                     }
                 }
-                if ($null -ne $Results.ServerCollection)
+                if ($null -ne $Results.Servers)
                 {
                     $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
-                        -ComplexObject $Results.ServerCollection `
+                        -ComplexObject $Results.Servers `
                         -CIMInstanceName 'MicrosoftGraphvpnServer'
                     if (-not [String]::IsNullOrWhiteSpace($complexTypeStringResult))
                     {
-                        $Results.ServerCollection = $complexTypeStringResult
+                        $Results.Servers = $complexTypeStringResult
                     }
                     else
                     {
-                        $Results.Remove('ServerCollection') | Out-Null
+                        $Results.Remove('Servers') | Out-Null
                     }
                 }
                 if ($Results.Assignments)
@@ -827,7 +826,7 @@ class IntuneDeviceConfigurationVpnPolicyWindows10 : M365DSCResourceBase
                     -Results $Results `
                     -Credential $this.Credential `
                     -NoEscape @('AssociatedApps', 'CryptographySuite', 'DnsRules', 'ProxyServer', 'Routes',
-                    'SingleSignOnEku', 'TrafficRules', 'ServerCollection', 'Assignments') `
+                    'SingleSignOnEku', 'TrafficRules', 'Servers', 'Assignments') `
                     -RawResults $rawResults
 
                 [void]$dscContent.Append($currentDSCBlock)

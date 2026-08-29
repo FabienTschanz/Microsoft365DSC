@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ScopeValue",
+      "reason": "Deferred",
+      "note": "The Graph entity property is named scope, which cannot be a DSC property name because Scope is a reserved MOF keyword."
+    }
+  ],
   "description": "This resource configures an Azure AD Access Review Definition.",
   "permissions": {
     "graph": {

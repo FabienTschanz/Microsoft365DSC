@@ -216,6 +216,117 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
         }
     }
 
+    Describe 'Get-SettingsCatalogProjection' {
+        BeforeAll {
+            function New-ProjectionTemplate
+            {
+                param ($RootId, $ChildId, $ChildName, $BaseUri)
+
+                $definitions = @(
+                    [ordered]@{ id = $RootId; name = 'Root'; baseUri = $BaseUri }
+                    [ordered]@{ id = $ChildId; name = $ChildName; baseUri = $BaseUri }
+                )
+
+                return [PSCustomObject]@{
+                    SettingInstanceTemplate = [PSCustomObject]@{ SettingDefinitionId = $RootId }
+                    SettingDefinitions      = $definitions
+                }
+            }
+
+            $script:seenCount = [System.Collections.Generic.List[System.Int32]]::new()
+        }
+
+        BeforeEach {
+            $script:seenCount.Clear()
+
+            Mock -CommandName Get-SettingsCatalogSettingName -MockWith {
+                $script:seenCount.Add(@($AllSettingDefinitions).Count)
+                return [System.String] $SettingDefinition.name
+            }
+        }
+
+        It 'Disambiguates against every definition of the bucket, not one setting template' {
+            $generator = New-Module -Name 'ProjectionStubGenerator' -ScriptBlock {
+                function Get-M365DSCSettingsCatalogTemplateBucket
+                {
+                    param ($SettingTemplates)
+
+                    return @([PSCustomObject]@{
+                            Name        = 'All'
+                            Templates   = $SettingTemplates
+                            Definitions = $SettingTemplates.SettingDefinitions
+                        })
+                }
+
+                function Get-StringFirstCharacterToUpper
+                {
+                    param ($Value)
+
+                    return $Value
+                }
+
+                function New-SettingsCatalogSettingDefinitionSettingsFromTemplate
+                {
+                    param ($SettingTemplate, [switch] $FromRoot, $AllSettingDefinitions)
+
+                    $null = $SettingTemplate, $FromRoot, $AllSettingDefinitions
+                    return @()
+                }
+
+                Export-ModuleMember -Function 'Get-M365DSCSettingsCatalogTemplateBucket',
+                    'Get-StringFirstCharacterToUpper', 'New-SettingsCatalogSettingDefinitionSettingsFromTemplate'
+            }
+
+            $null = Get-SettingsCatalogProjection -Generator $generator -SettingTemplate @(
+                (New-ProjectionTemplate -RootId 'vendor_domainprofile' -ChildId 'vendor_domainprofile_merge' -ChildName 'AllowLocalIpsecPolicyMerge' -BaseUri './Vendor/MSFT')
+                (New-ProjectionTemplate -RootId 'vendor_privateprofile' -ChildId 'vendor_privateprofile_merge' -ChildName 'AllowLocalIpsecPolicyMerge' -BaseUri './Vendor/MSFT')
+            )
+
+            @($script:seenCount) | Should -HaveCount 4
+            @($script:seenCount | Sort-Object -Unique) | Should -Be @(4)
+        }
+
+        It 'Keeps the two scopes apart when the template splits device and user settings' {
+            $generator = New-Module -Name 'ProjectionSplitStubGenerator' -ScriptBlock {
+                function Get-M365DSCSettingsCatalogTemplateBucket
+                {
+                    param ($SettingTemplates)
+
+                    return @(
+                        [PSCustomObject]@{ Name = 'DeviceSettings'; Templates = @($SettingTemplates[0]); Definitions = $SettingTemplates[0].SettingDefinitions }
+                        [PSCustomObject]@{ Name = 'UserSettings'; Templates = @($SettingTemplates[1]); Definitions = $SettingTemplates[1].SettingDefinitions }
+                    )
+                }
+
+                function Get-StringFirstCharacterToUpper
+                {
+                    param ($Value)
+
+                    return $Value
+                }
+
+                function New-SettingsCatalogSettingDefinitionSettingsFromTemplate
+                {
+                    param ($SettingTemplate, [switch] $FromRoot, $AllSettingDefinitions)
+
+                    $null = $SettingTemplate, $FromRoot, $AllSettingDefinitions
+                    return @()
+                }
+
+                Export-ModuleMember -Function 'Get-M365DSCSettingsCatalogTemplateBucket',
+                    'Get-StringFirstCharacterToUpper', 'New-SettingsCatalogSettingDefinitionSettingsFromTemplate'
+            }
+
+            $null = Get-SettingsCatalogProjection -Generator $generator -SettingTemplate @(
+                (New-ProjectionTemplate -RootId 'device_passportforwork' -ChildId 'device_passportforwork_pin' -ChildName 'EnablePinRecovery' -BaseUri './Device/Vendor/MSFT')
+                (New-ProjectionTemplate -RootId 'user_passportforwork' -ChildId 'user_passportforwork_pin' -ChildName 'EnablePinRecovery' -BaseUri './User/Vendor/MSFT')
+            )
+
+            @($script:seenCount) | Should -HaveCount 4
+            @($script:seenCount | Sort-Object -Unique) | Should -Be @(2)
+        }
+    }
+
     Describe 'Compare-SettingsCatalog' {
         It 'Reports a setting the template gained that the resource does not declare' {
             $baseline = New-CatalogSnapshot -Pinned ([ordered]@{ $script:templateId = New-PinnedTemplate -Setting ([ordered]@{

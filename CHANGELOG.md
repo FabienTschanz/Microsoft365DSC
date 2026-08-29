@@ -2,10 +2,11 @@
 
 # UNRELEASED
 
+* AADAccessReviewDefinition
+  * [BREAKING CHANGE] Renamed property `SettingsValue` to `Settings` to match the
+    name Microsoft Graph uses.
 * AADApplication
   * Updated `Owners` to use `DisplayName` for Service Principal objects.
-* AADAuthenticationMethodPolicyExternal
-  * Added value `default` to property `State`.
 * AADConditionalAccessPolicy
   * Added value `hidden` to property `ServicePrincipalRiskLevels`.
 * AADEntitlementManagementAccessPackageAssignmentPolicy
@@ -27,6 +28,9 @@
 * AADRoleEligibilityScheduleRequest
   * [BREAKING CHANGE] Removed deprecated properties `Action` and `IsValidationOnly`.
 * AADUser
+  * [BREAKING CHANGE] Renamed properties `Fax` to `FaxNumber`, `FirstName` to
+    `GivenName`, `LastName` to `Surname`, `Office` to `OfficeLocation` and `Title`
+    to `JobTitle` to match the names Microsoft Graph uses.
   * [BREAKING CHANGE] Removed deprecated property `PasswordNeverExpires`.
     Please use `PasswordPolicies` instead with `DisablePasswordExpiration`.
   * Updated the password generation routine to work with PowerShell 7.
@@ -69,7 +73,12 @@
 * IntuneAppProtectionPolicyWindows10
   * Added value `selectedApps` to property `AllowedInboundDataTransferSources`.
   * Added value `selectedApps` to property `AllowedOutboundDataTransferDestinations`.
+* IntuneAzureNetworkConnectionWindows365
+  * [BREAKING CHANGE] Renamed property `RoleScopeTagIds` to `ScopeIds` to match the
+    name Microsoft Graph uses.
 * IntuneCloudProvisioningPolicyWindows365
+  * [BREAKING CHANGE] Renamed property `RoleScopeTagIds` to `ScopeIds` to match the
+    name Microsoft Graph uses.
   * Removed unused class reference `MSFT_MicrosoftGraphMicrosoftManagedDesktop`.
 * IntuneDeviceAndAppManagementAssignmentFilter
   * Added value `windowsMobileApplicationManagement` to property `Platform`.
@@ -78,6 +87,9 @@
 * IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDeviceConfigurationDeliveryOptimizationPolicyWindows10V2` instead.
+* IntuneDeviceConfigurationVpnPolicyWindows10
+  * [BREAKING CHANGE] Renamed property `ServerCollection` to `Servers` to match the
+    name Microsoft Graph uses.
 * IntuneDiskEncryptionMacOS
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDiskEncryptionFileVaultPolicyMacOS` instead.
@@ -105,6 +117,8 @@
   * Added value `wpa3Personal` to property `WifiSecurityType`.
 * O365OrgCustomizationSetting
   * [BREAKING CHANGE] Renamed the property `Ensure` to `State`.
+* PlannerBucket
+  * [BREAKING CHANGE] Renamed the property `BucketId` to `Id`.
 * SCComplianceTag
   * Fixed an issue where `EventType` was never exported.
 * SPOAccessControlSettings

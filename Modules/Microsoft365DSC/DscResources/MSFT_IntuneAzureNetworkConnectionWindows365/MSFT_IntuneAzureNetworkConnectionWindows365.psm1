@@ -36,7 +36,7 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('List of Scope Tags for this Entity instance.')]
-    [System.String[]] $RoleScopeTagIds
+    [System.String[]] $ScopeIds
 
     [DscProperty(Mandatory)]
     [System.ComponentModel.Description('The ID of the target subnet. Required format: /subscriptions/{subscription-id}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkId}/subnets/{subnetName}.')]
@@ -175,7 +175,7 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
                 DisplayName           = $getValue.DisplayName
                 OrganizationalUnit    = $getValue.OrganizationalUnit
                 ResourceGroupId       = $getValue.ResourceGroupId.Replace("/subscriptions/$($getValue.SubscriptionId)/", "/subscriptions/$($getValue.SubscriptionName)/")
-                RoleScopeTagIds       = $getValue.ScopeIds
+                ScopeIds              = $getValue.ScopeIds
                 SubnetId              = $getValue.SubnetId.Replace("/subscriptions/$($getValue.SubscriptionId)/", "/subscriptions/$($getValue.SubscriptionName)/")
                 SubscriptionName      = $getValue.SubscriptionName
                 VirtualNetworkId      = $getValue.VirtualNetworkId.Replace("/subscriptions/$($getValue.SubscriptionId)/", "/subscriptions/$($getValue.SubscriptionName)/")
@@ -246,12 +246,6 @@ class IntuneAzureNetworkConnectionWindows365 : M365DSCResourceBase
         $boundParameters.ResourceGroupId = $boundParameters.ResourceGroupId.Replace("/subscriptions/$($this.SubscriptionName)/", "/subscriptions/$($subscription.Id)/")
         $boundParameters.SubnetId = $boundParameters.SubnetId.Replace("/subscriptions/$($this.SubscriptionName)/", "/subscriptions/$($subscription.Id)/")
         $boundParameters.VirtualNetworkId = $boundParameters.VirtualNetworkId.Replace("/subscriptions/$($this.SubscriptionName)/", "/subscriptions/$($subscription.Id)/")
-
-        if ($boundParameters.ContainsKey('RoleScopeTagIds'))
-        {
-            $boundParameters.Add('ScopeIds', $boundParameters['RoleScopeTagIds'])
-            $boundParameters.Remove('RoleScopeTagIds') | Out-Null
-        }
 
         if ($Type -eq 'azureADJoin')
         {

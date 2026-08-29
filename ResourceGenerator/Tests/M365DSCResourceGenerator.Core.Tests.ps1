@@ -229,4 +229,61 @@ InModuleScope -ModuleName 'M365DSCResourceGenerator' {
                 Should -Be @('aad', 'group', 'policy')
         }
     }
+
+    Describe 'Get-M365DSCSettingsCatalogTemplateBucket' {
+        BeforeAll {
+            function New-BucketTemplate
+            {
+                param ($RootId, $DefinitionId, $BaseUri)
+
+                $definitions = @(
+                    @{ id = $RootId; baseUri = $BaseUri }
+                    @{ id = $DefinitionId; baseUri = $BaseUri }
+                )
+
+                return [PSCustomObject]@{
+                    SettingInstanceTemplate = [PSCustomObject]@{ SettingDefinitionId = $RootId }
+                    SettingDefinitions      = $definitions
+                }
+            }
+        }
+
+        It 'returns no bucket for no template' {
+            @(Get-M365DSCSettingsCatalogTemplateBucket -SettingTemplates @()) | Should -HaveCount 0
+        }
+
+        It 'returns one bucket carrying every definition when nothing is user scoped' {
+            $buckets = @(Get-M365DSCSettingsCatalogTemplateBucket -SettingTemplates @(
+                    (New-BucketTemplate -RootId 'vendor_domainprofile' -DefinitionId 'vendor_domainprofile_merge' -BaseUri './Vendor/MSFT')
+                    (New-BucketTemplate -RootId 'vendor_privateprofile' -DefinitionId 'vendor_privateprofile_merge' -BaseUri './Vendor/MSFT')
+                ))
+
+            $buckets | Should -HaveCount 1
+            $buckets[0].Name | Should -BeExactly 'All'
+            @($buckets[0].Definitions) | Should -HaveCount 4
+        }
+
+        It 'splits the device and the user scope into their own buckets' {
+            $buckets = @(Get-M365DSCSettingsCatalogTemplateBucket -SettingTemplates @(
+                    (New-BucketTemplate -RootId 'device_passportforwork_enablepinrecovery' -DefinitionId 'device_passportforwork_child' -BaseUri './Device/Vendor/MSFT')
+                    (New-BucketTemplate -RootId 'user_passportforwork_enablepinrecovery' -DefinitionId 'user_passportforwork_child' -BaseUri './User/Vendor/MSFT')
+                ))
+
+            $buckets | Should -HaveCount 2
+            $buckets[0].Name | Should -BeExactly 'DeviceSettings'
+            $buckets[1].Name | Should -BeExactly 'UserSettings'
+            @($buckets[0].Definitions) | Should -HaveCount 2
+            @($buckets[1].Definitions) | Should -HaveCount 2
+        }
+
+        It 'classifies a user scoped template by its base uri when the id carries no prefix' {
+            $buckets = @(Get-M365DSCSettingsCatalogTemplateBucket -SettingTemplates @(
+                    (New-BucketTemplate -RootId 'device_thing' -DefinitionId 'device_thing_child' -BaseUri './Device/Vendor/MSFT')
+                    (New-BucketTemplate -RootId 'scoped_thing' -DefinitionId 'scoped_thing_child' -BaseUri './User/Vendor/MSFT')
+                ))
+
+            $buckets | Should -HaveCount 2
+            @($buckets[1].Templates)[0].SettingInstanceTemplate.SettingDefinitionId | Should -BeExactly 'scoped_thing'
+        }
+    }
 }

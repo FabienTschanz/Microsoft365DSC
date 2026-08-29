@@ -10,7 +10,18 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ApplicationDisplayName",
+      "reason": "OwnedByOtherResource",
+      "note": "The display name belongs to the parent application. Used to locate the owning app."
+    },
+    {
+      "name": "ApplicationObjectId",
+      "reason": "OwnedByOtherResource",
+      "note": "The object id belongs to the parent application. Used to address the credential collection."
+    }
+  ],
   "description": "This resource configures federated identity credentials for Azure AD applications.",
   "roles": {
     "read": [],

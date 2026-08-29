@@ -10,7 +10,13 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "PartnerTenantId",
+      "reason": "Deferred",
+      "note": "Defined as tenantId on the entity. Renamed to avoid clashing with the authentication TenantId parameter."
+    }
+  ],
   "description": "This resource configures an Azure AD Authentication Method Policy Configuration Partner.",
   "roles": {
     "read": [
