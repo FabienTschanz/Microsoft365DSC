@@ -34,9 +34,11 @@ Configuration Example
             AllowedToSignUpEmailBasedSubscriptions            = $true
             AllowedToUseSspr                                  = $true
             BlockMsolPowerShell                               = $false
-            DefaultUserRoleAllowedToCreateApps                = $true
-            DefaultUserRoleAllowedToCreateSecurityGroups      = $true
-            DefaultUserRoleAllowedToReadOtherUsers            = $true
+            DefaultUserRolePermissions                        = MSFT_DefaultUserRolePermissions{
+                AllowedToCreateApps           = $true
+                AllowedToCreateSecurityGroups = $true
+                AllowedToReadOtherUsers       = $true
+            }
             GuestUserRole                                     = 'Guest'
             PermissionGrantPolicyIdsAssignedToDefaultUserRole = @()
             Ensure                                            = 'Present'

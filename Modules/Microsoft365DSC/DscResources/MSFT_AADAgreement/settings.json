@@ -7,7 +7,7 @@
     "odataSubtype": null,
     "cmdletNoun": "MgBetaAgreement",
     "cmdletVerb": "Get",
-    "includeNavigationProperties": false,
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
   "excludedProperties": [
@@ -15,21 +15,6 @@
       "name": "AcceptanceStatement",
       "reason": "Deferred",
       "note": "Set writes acceptanceStatement to the agreements endpoint even though no Graph CSDL version declares the property anywhere."
-    },
-    {
-      "name": "FileData",
-      "reason": "Deferred",
-      "note": "Flattened from the agreement file navigation property where the CSDL declares fileData."
-    },
-    {
-      "name": "FileName",
-      "reason": "Deferred",
-      "note": "Flattened from the agreement file navigation property where the CSDL declares fileName."
-    },
-    {
-      "name": "Language",
-      "reason": "Deferred",
-      "note": "Flattened from the agreement file navigation property where the CSDL declares language."
     }
   ],
   "description": "This resource configures Azure AD Terms of Use Agreements in Entra ID.",

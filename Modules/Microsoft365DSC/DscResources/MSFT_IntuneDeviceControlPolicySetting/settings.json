@@ -10,7 +10,23 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "MatchType",
+      "reason": "Deferred",
+      "note": "A flattened value from the settingInstance property."
+    },
+    {
+      "name": "PrinterPolicySettings",
+      "reason": "Deferred",
+      "note": "A flattened value from the settingInstance property."
+    },
+    {
+      "name": "StoragePolicySettings",
+      "reason": "Deferred",
+      "note": "A flattened value from the settingInstance property."
+    }
+  ],
   "description": "This resource configures an Intune Device Control Policy Setting.",
   "permissions": {
     "graph": {

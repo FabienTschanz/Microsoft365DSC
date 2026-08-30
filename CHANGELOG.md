@@ -7,6 +7,9 @@
     name Microsoft Graph uses.
 * AADApplication
   * Updated `Owners` to use `DisplayName` for Service Principal objects.
+* AADAuthorizationPolicy
+  * [BREAKING CHANGE] Moved all `DefaultUserRole*` properties to the new
+    `DefaultUserRolePermissions` complex property type for separation.
 * AADConditionalAccessPolicy
   * Added value `hidden` to property `ServicePrincipalRiskLevels`.
 * AADCustomAuthenticationExtension

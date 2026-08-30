@@ -69,6 +69,13 @@ function Compare-ResourceSurface
         $nonVendorProperty = Get-DefaultNonVendorProperty
     }
 
+    $serviceManagedProperty = [System.String[]] @(@(Get-SurfaceMember -Container $Exclusion -Name 'serviceManagedProperties') |
+            Where-Object { -not [System.String]::IsNullOrEmpty($_) })
+    if ($serviceManagedProperty.Count -eq 0)
+    {
+        $serviceManagedProperty = Get-DefaultServiceManagedProperty
+    }
+
     $backlogTotal = 0
 
     foreach ($row in $Origin)
@@ -191,7 +198,7 @@ function Compare-ResourceSurface
 
             $code = 'RES-PROP-MISSING'
             $autoFixable = -not $vendorProperty.IsComplex
-            if ($vendorProperty.IsReadOnly)
+            if ($vendorProperty.IsReadOnly -or $vendorProperty.Name -in $serviceManagedProperty)
             {
                 $code = 'RES-PROP-READONLY'
                 $autoFixable = $false
@@ -475,5 +482,27 @@ function Get-DefaultNonVendorProperty
         'AccessTokens', 'ApplicationId', 'ApplicationSecret', 'Assignments', 'CertificatePassword',
         'CertificatePath', 'CertificateThumbprint', 'Credential', 'DependsOn', 'Ensure',
         'IsSingleInstance', 'ManagedIdentity', 'PsDscRunAsCredential', 'TenantId'
+    )
+}
+
+<#
+.SYNOPSIS
+    Returns the vendor property names the service owns and a resource never writes.
+
+.DESCRIPTION
+    The CSDL annotates most of these as read only, but not on every type. Without the list the
+    same property is reported as read only on one entity and as an auto fixable gap on another.
+
+.OUTPUTS
+    The property names, matched against the vendor name.
+#>
+function Get-DefaultServiceManagedProperty
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param ()
+
+    return [System.String[]] @(
+        'createdDateTime', 'deletedDateTime', 'lastModifiedDateTime', 'modifiedDateTime', 'version'
     )
 }

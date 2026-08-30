@@ -86,9 +86,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     allowEmailVerifiedUsersToJoinOrganization         = $true
                     AllowInvitesFrom                                  = 'Everyone'
                     blockMsolPowerShell                               = $false
-                    DefaultuserRoleAllowedToCreateApps                = $true
-                    DefaultUserRoleAllowedToCreateSecurityGroups      = $true
-                    DefaultUserRoleAllowedToReadOtherUsers            = $true
+                    DefaultUserRolePermissions                        = @{
+                        AllowedToCreateApps           = $true
+                        AllowedToCreateSecurityGroups = $true
+                        AllowedToReadOtherUsers       = $true
+                    }
                     PermissionGrantPolicyIdsAssignedToDefaultUserRole = [string[]]@()
                     GuestUserRole                                     = 'Guest'
                     Ensure                                            = 'Present'
@@ -117,9 +119,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     allowEmailVerifiedUsersToJoinOrganization         = $false
                     AllowInvitesFrom                                  = 'AdminsAndGuestInviters'
                     blockMsolPowerShell                               = $false
-                    DefaultuserRoleAllowedToCreateApps                = $true
-                    DefaultUserRoleAllowedToCreateSecurityGroups      = $true
-                    DefaultUserRoleAllowedToReadOtherUsers            = $true
+                    DefaultUserRolePermissions                        = @{
+                        AllowedToCreateApps           = $true
+                        AllowedToCreateSecurityGroups = $true
+                        AllowedToReadOtherUsers       = $true
+                    }
                     PermissionGrantPolicyIdsAssignedToDefaultUserRole = [string[]]@()
                     GuestUserRole                                     = 'RestrictedGuest' # Drift
                     Ensure                                            = 'Present'

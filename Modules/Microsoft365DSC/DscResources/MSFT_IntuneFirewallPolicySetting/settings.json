@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "PolicySettings",
+      "reason": "Deferred",
+      "note": "A flattened value from the settingInstance property."
+    }
+  ],
   "description": "This resource configures an Intune Firewall Policy Setting.",
   "permissions": {
     "graph": {

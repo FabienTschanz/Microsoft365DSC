@@ -12,31 +12,6 @@
   },
   "excludedProperties": [
     {
-      "name": "DefaultUserRoleAllowedToCreateApps",
-      "reason": "Deferred",
-      "note": "The flattened defaultUserRolePermissions.allowedToCreateApps property."
-    },
-    {
-      "name": "DefaultUserRoleAllowedToCreateSecurityGroups",
-      "reason": "Deferred",
-      "note": "The flattened defaultUserRolePermissions.allowedToCreateSecurityGroups property."
-    },
-    {
-      "name": "DefaultUserRoleAllowedToCreateTenants",
-      "reason": "Deferred",
-      "note": "The flattened defaultUserRolePermissions.allowedToCreateTenants property."
-    },
-    {
-      "name": "DefaultUserRoleAllowedToReadBitlockerKeysForOwnedDevice",
-      "reason": "Deferred",
-      "note": "The flattened defaultUserRolePermissions.allowedToReadBitlockerKeysForOwnedDevice property."
-    },
-    {
-      "name": "DefaultUserRoleAllowedToReadOtherUsers",
-      "reason": "Deferred",
-      "note": "The flattened defaultUserRolePermissions.allowedToReadOtherUsers property."
-    },
-    {
       "name": "GuestUserRole",
       "reason": "Deferred",
       "note": "Friendly-name alias for the configurable guestUserRoleId that Set translates back to the role GUID and the real fix is a name mapping rather than a suppression."

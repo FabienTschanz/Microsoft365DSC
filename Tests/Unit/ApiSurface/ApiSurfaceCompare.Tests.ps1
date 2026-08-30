@@ -546,6 +546,18 @@ InModuleScope -ModuleName 'M365DSCApiSurface' {
             $findings | Should -HaveCount 1
             $findings[0].severity | Should -Be 'info'
         }
+
+        It 'drops an Accepted exclusion from the report' {
+            $snapshot = New-TestSnapshot -GraphType $script:policyType
+            $keyword = New-TestKeyword -Property @{
+                DisplayName = @{ typeConstraint = 'String' }
+                Invented    = @{ typeConstraint = 'String' }
+            }
+            $excluded = @{ TestPolicy = @([PSCustomObject]@{ name = 'Invented'; reason = 'Accepted' }) }
+
+            (Invoke-TestCompare -Current $snapshot -Origin @(New-TestOrigin) -SchemaKeyword $keyword -ExcludedProperty $excluded).Findings |
+                Should -HaveCount 0
+        }
     }
 
     Describe 'Finding identity' {

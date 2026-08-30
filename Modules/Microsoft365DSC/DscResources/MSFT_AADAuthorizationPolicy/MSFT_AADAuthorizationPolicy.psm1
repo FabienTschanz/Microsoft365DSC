@@ -44,24 +44,8 @@ class AADAuthorizationPolicy : M365DSCResourceBase
     [System.Nullable[System.Boolean]] $BlockMsolPowershell
 
     [DscProperty()]
-    [System.ComponentModel.Description('Boolean Indicates whether the default user role can create applications.')]
-    [System.Nullable[System.Boolean]] $DefaultUserRoleAllowedToCreateApps
-
-    [DscProperty()]
-    [System.ComponentModel.Description('Boolean Indicates whether the default user role can create security groups.')]
-    [System.Nullable[System.Boolean]] $DefaultUserRoleAllowedToCreateSecurityGroups
-
-    [DscProperty()]
-    [System.ComponentModel.Description('Indicates whether the registered owners of a device can read their own BitLocker recovery keys with default user role.')]
-    [System.Nullable[System.Boolean]] $DefaultUserRoleAllowedToReadBitlockerKeysForOwnedDevice
-
-    [DscProperty()]
-    [System.ComponentModel.Description('Indicates whether the default user role can create tenants. This setting corresponds to the Restrict non-admin users from creating tenants setting in the User settings menu in the Azure portal. When this setting is false, users assigned the Tenant Creator role can still create tenants.')]
-    [System.Nullable[System.Boolean]] $DefaultUserRoleAllowedToCreateTenants
-
-    [DscProperty()]
-    [System.ComponentModel.Description('Boolean Indicates whether the default user role can read other users.')]
-    [System.Nullable[System.Boolean]] $DefaultUserRoleAllowedToReadOtherUsers
+    [System.ComponentModel.Description('The permissions the default user role holds.')]
+    [MSFT_DefaultUserRolePermissions] $DefaultUserRolePermissions
 
     [DscProperty()]
     [System.ComponentModel.Description('The role that should be granted to guest users. Refer to List unifiedRoleDefinitions to find the list of available role templates. Only supported roles today are User, Guest User, and Restricted Guest User (2af84b1e-32c8-42b7-82bc-daa82404023b).')]
@@ -137,6 +121,14 @@ class AADAuthorizationPolicy : M365DSCResourceBase
 
             $Policy = Get-MgBetaPolicyAuthorizationPolicy -ErrorAction Stop
 
+            $complexDefaultUserRolePermissions = @{
+                AllowedToCreateApps                      = $Policy.DefaultUserRolePermissions.AllowedToCreateApps
+                AllowedToCreateSecurityGroups            = $Policy.DefaultUserRolePermissions.AllowedToCreateSecurityGroups
+                AllowedToCreateTenants                   = $Policy.DefaultUserRolePermissions.AllowedToCreateTenants
+                AllowedToReadBitlockerKeysForOwnedDevice = $Policy.DefaultUserRolePermissions.AllowedToReadBitlockerKeysForOwnedDevice
+                AllowedToReadOtherUsers                  = $Policy.DefaultUserRolePermissions.AllowedToReadOtherUsers
+            }
+
             $result = @{
                 IsSingleInstance                                        = 'Yes'
                 DisplayName                                             = $Policy.DisplayName
@@ -147,11 +139,7 @@ class AADAuthorizationPolicy : M365DSCResourceBase
                 AllowInvitesFrom                                        = $Policy.AllowInvitesFrom
                 AllowUserConsentForRiskyApps                            = $Policy.AllowUserConsentForRiskyApps
                 BlockMsolPowerShell                                     = $Policy.BlockMsolPowerShell
-                DefaultUserRoleAllowedToCreateApps                      = $Policy.DefaultUserRolePermissions.AllowedToCreateApps
-                DefaultUserRoleAllowedToCreateSecurityGroups            = $Policy.DefaultUserRolePermissions.AllowedToCreateSecurityGroups
-                DefaultUserRoleAllowedToReadOtherUsers                  = $Policy.DefaultUserRolePermissions.AllowedToReadOtherUsers
-                DefaultUserRoleAllowedToReadBitlockerKeysForOwnedDevice = $Policy.DefaultUserRolePermissions.AllowedToReadBitlockerKeysForOwnedDevice
-                DefaultUserRoleAllowedToCreateTenants                   = $Policy.DefaultUserRolePermissions.AllowedToCreateTenants
+                DefaultUserRolePermissions                              = $complexDefaultUserRolePermissions
                 PermissionGrantPolicyIdsAssignedToDefaultUserRole       = $Policy.PermissionGrantPolicyIdsAssignedToDefaultUserRole
                 GuestUserRole                                           = $this.GetGuestUserRoleNameFromId($Policy.GuestUserRoleId)
                 Ensure                                                  = 'Present'
@@ -199,8 +187,6 @@ class AADAuthorizationPolicy : M365DSCResourceBase
 
         $UpdateParameters = @{}
 
-        # prepare object for default user role permissions
-        $defaultUserRolePermissions = @{}
         foreach ($param in $desiredParameters.Keys)
         {
             $desiredParam = $desiredParameters.$param
@@ -211,36 +197,15 @@ class AADAuthorizationPolicy : M365DSCResourceBase
                 ($null -eq $desiredParam -and $null -ne $currentParam) -or
                 ($null -ne $desiredParam -and $null -eq $currentParam))
             {
-                if ($param.ToLower() -match 'defaultuserrole')
+                if ($param -eq 'GuestUserRole')
                 {
-                    if ($param -like 'Permission*')
-                    {
-                        $UpdateParameters.Add($param, $desiredParam)
-                    }
-                    else
-                    {
-                        $defaultUserRolePermissions.Add(($param -replace '^DefaultUserRole'), $desiredParam)
-                    }
+                    $UpdateParameters.Add('GuestUserRoleId', $this.GetGuestUserRoleIdFromName($desiredParam))
                 }
                 else
                 {
-                    if ($param -eq 'GuestUserRole')
-                    {
-                        # translate displayvalue to corresponding GUID
-                        $guestUserRoleId = $this.GetGuestUserRoleIdFromName($desiredParam)
-                        $UpdateParameters.Add('GuestUserRoleId', $guestUserRoleId)
-                    }
-                    else
-                    {
-                        $UpdateParameters.Add($param, $desiredParam)
-                    }
+                    $UpdateParameters.Add($param, $desiredParam)
                 }
             }
-        }
-
-        if ($defaultUserRolePermissions.Keys.Count -gt 0)
-        {
-            $UpdateParameters.Add('DefaultUserRolePermissions', $defaultUserRolePermissions.Clone())
         }
 
         try
@@ -264,7 +229,6 @@ class AADAuthorizationPolicy : M365DSCResourceBase
 
     [string] Export()
     {
-        # Declared up front: assigned conditionally below, which class methods reject.
         $currentDSCBlock = $null
         if ($this.RequiresPowerShellCore())
         {
@@ -304,11 +268,29 @@ class AADAuthorizationPolicy : M365DSCResourceBase
             {
                 Write-M365DSCHost -Message "`r`n" -DeferWrite
                 Write-M365DSCHost -Message "    |---[1/1] $($results.DisplayName)" -DeferWrite
+
+                if ($null -ne $Results.DefaultUserRolePermissions)
+                {
+                    $complexTypeStringResult = Get-M365DSCDRGComplexTypeToString `
+                        -ComplexObject $Results.DefaultUserRolePermissions `
+                        -CIMInstanceName 'MSFT_DefaultUserRolePermissions'
+
+                    if ([System.String]::IsNullOrWhiteSpace($complexTypeStringResult))
+                    {
+                        $Results.Remove('DefaultUserRolePermissions') | Out-Null
+                    }
+                    else
+                    {
+                        $Results.DefaultUserRolePermissions = $complexTypeStringResult
+                    }
+                }
+
                 $currentDSCBlock = Get-M365DSCExportContentForResource -ResourceName $this.GetResourceName() `
                     -ConnectionMode $ConnectionMode `
                     -ModulePath $this.GetModulePath() `
                     -Results $results `
-                    -Credential $this.Credential
+                    -Credential $this.Credential `
+                    -NoEscape @('DefaultUserRolePermissions')
                 Save-M365DSCPartialExport -Content $currentDSCBlock `
                     -FileName $Global:PartialExportFileName
 
@@ -382,4 +364,27 @@ class AADAuthorizationPolicy : M365DSCResourceBase
 
         return $result
     }
+}
+
+class MSFT_DefaultUserRolePermissions
+{
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the default user role can create applications. This setting corresponds to the Users can register applications setting in the User settings menu in the Microsoft Entra admin center.')]
+    [System.Nullable[System.Boolean]] $AllowedToCreateApps
+
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the default user role can create security groups. This setting corresponds to the following menus in the Microsoft Entra admin center: - The Users can create security groups in Microsoft Entra admin centers, API or PowerShell setting in the Group settings menu. - Users can create security groups setting in the User settings menu.')]
+    [System.Nullable[System.Boolean]] $AllowedToCreateSecurityGroups
+
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the default user role can create tenants. This setting corresponds to the Restrict non-admin users from creating tenants setting in the User settings menu in the Microsoft Entra admin center. When this setting is false, users assigned the Tenant Creator role can still create tenants.')]
+    [System.Nullable[System.Boolean]] $AllowedToCreateTenants
+
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the registered owners of a device can read their own BitLocker recovery keys with default user role.')]
+    [System.Nullable[System.Boolean]] $AllowedToReadBitlockerKeysForOwnedDevice
+
+    [DscProperty()]
+    [System.ComponentModel.Description('Indicates whether the default user role can read other users. DO NOT SET THIS VALUE TO false.')]
+    [System.Nullable[System.Boolean]] $AllowedToReadOtherUsers
 }

@@ -10,7 +10,48 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "ApprovalRule",
+      "reason": "Deferred",
+      "note": "A flattened value from the unifiedRoleManagementPolicyApprovalRule property."
+    },
+    {
+      "name": "AuthenticationContextRule",
+      "reason": "Deferred",
+      "note": "A flattened value from the unifiedRoleManagementPolicyAuthenticationContextRule property."
+    },
+    {
+      "name": "EnablementRule",
+      "reason": "Deferred",
+      "note": "A flattened value from the unifiedRoleManagementPolicyEnablementRule property."
+    },
+    {
+      "name": "ExpirationRule",
+      "reason": "Deferred",
+      "note": "A flattened value from the unifiedRoleManagementPolicyExpirationRule property."
+    },
+    {
+      "name": "GroupDisplayName",
+      "reason": "Deferred",
+      "note": "The display name of the group the policy applies to."
+    },
+    {
+      "name": "NotificationRule",
+      "reason": "Deferred",
+      "note": "A flattened value from the unifiedRoleManagementPolicyNotificationRule property."
+    },
+    {
+      "name": "PIMGroupRole",
+      "reason": "Deferred",
+      "note": "The group role the policy applies to."
+    },
+    {
+      "name": "RuleType",
+      "reason": "Deferred",
+      "note": "The type of the policy rule. Used to differentiate between their types."
+    }
+  ],
   "description": "This resource configures an Azure AD Group Eligibility Schedule Settings.",
   "permissions": {
     "graph": {

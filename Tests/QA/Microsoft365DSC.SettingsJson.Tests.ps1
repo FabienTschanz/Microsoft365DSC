@@ -132,7 +132,7 @@ Describe -Name 'Every resource records what it was generated from' {
         $cmdletWorkloads = @('ExchangeOnline', 'SecurityComplianceCenter', 'MicrosoftTeams', 'PnP', 'PowerPlatforms')
         $restWorkloads = @('Azure', 'AzureDevOPS', 'PowerPlatformREST', 'AdminAPI', 'DefenderForEndpoint', 'EngageHub', 'Fabric', 'Licensing', 'Tasks')
         $knownWorkloads = $graphWorkloads + $cmdletWorkloads + $restWorkloads
-        $exclusionReasons = @('ReadOnly', 'NotConfigurable', 'Deprecated', 'OwnedByOtherResource', 'Deferred')
+        $exclusionReasons = @('ReadOnly', 'NotConfigurable', 'Deprecated', 'OwnedByOtherResource', 'Deferred', 'Accepted')
 
         function Test-SettingsHasCrudCommand
         {
