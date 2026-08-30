@@ -6,7 +6,6 @@ Purpose: concise, enforceable rules for AI coding agents editing this repository
 - Workflow: open a todo via `manage_todo_list`, mark `in-progress`, apply focused patches, rethink your changes, present to the user for approval, mark `completed`.
 - Always present the changes to the user before marking work completed.
 - Never add secrets or credentials to commits. If a change requires secrets, create a placeholder and document required manual steps in the PR.
-- Do not use em-dashes or other non-ASCII characters in code or comments. Use standard ASCII characters only.
 
 Generated files (do not edit):
 
@@ -20,6 +19,18 @@ Resource definitions (manually authored):
 - The repository ships no MOF schema. `.github/workflows/Validation Checks.yml` fails the build when any `.schema.mof` file is present, when a resource does not declare `[DscResource()]`, or when a resource still declares a `Get-`, `Set-`, `Test-` or `Export-TargetResource` function.
 
 Class-specific rules covering `$Script:` variables, `$this.ResourceCache` and `$this` inside nested script blocks live in [.github/copilot-instructions.md](./.github/copilot-instructions.md). Rules for authoring the files under `Examples/` live in [.github/instructions/m365dsc-examples.instructions.md](./.github/instructions/m365dsc-examples.instructions.md).
+
+## Comment Guidelines
+
+- Do not use em-dash or en-dash in comments, variable names, or function names. Use a hyphen instead.
+- Do not use non-ASCII characters in comments, variable names, or function names. Use ASCII characters only.
+- Do not add any comments to code. If a comment is required, rewrite the code to make it self-documenting instead. Exceptions may occur, then comment only what the code cannot say itself. If a name, a signature, or a test already conveys it, do not repeat it in prose.
+- Do not use semicolons or colons. Colons are only allowed when a list of items follows.
+- Never narrate history. Do not write what a previous version did, which bug was fixed, or what the symptom looked like. Write for the next reader of the file, who does not know a change happened.
+- Prefer deleting a stale comment to updating it. A comment that has drifted from the code is worse than none.
+- Use en-US writing style instead of en-GB for spelling in code, comments, and documentation.
+- When writing an architecture documentation or a blog, use the present tense and a lively, active voice. Avoid passive voice, future tense, and past tense. Write as if the reader is reading it now, not in the past or future.
+- Overly usage of `..., so ...` and other forms of connecting clauses is discouraged. Either use separate sentences or another way of connecting.
 
 ## Coding Rules for DSC Resources
 

@@ -4,13 +4,22 @@
     "workload": "Intune",
     "apiVersion": "beta",
     "entityType": "mobileApp",
-    "odataSubtype": null,
+    "odataSubtype": [
+      "windowsMicrosoftEdgeApp",
+      "macOSMicrosoftEdgeApp"
+    ],
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
     "cmdletVerb": "New",
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "TargetPlatform",
+      "reason": "Deferred",
+      "note": "The platform the app targets. Used to differentiate between their types."
+    }
+  ],
   "description": "This resource configures an Intune Mobile Apps Microsoft Edge for the Windows and MacOS platform.",
   "permissions": {
     "graph": {

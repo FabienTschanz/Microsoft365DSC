@@ -64,7 +64,7 @@ function Get-ResourceOriginSurface
             Workload                    = [System.String] $origin.workload
             ApiVersion                  = [System.String] $origin.apiVersion
             EntityType                  = [System.String] $origin.entityType
-            ODataSubtype                = [System.String] $origin.odataSubtype
+            ODataSubtype                = [System.String[]] @(@($origin.odataSubtype) | Where-Object { -not [System.String]::IsNullOrEmpty($_) })
             CmdletNoun                  = [System.String] $origin.cmdletNoun
             CmdletVerb                  = [System.String] $origin.cmdletVerb
             IncludeNavigationProperties = [System.Boolean] $origin.includeNavigationProperties

@@ -92,11 +92,7 @@ function Compare-ResourceSurface
             continue
         }
 
-        $typeName = $row.ODataSubtype
-        if ([System.String]::IsNullOrEmpty($typeName))
-        {
-            $typeName = $row.EntityType
-        }
+        $typeName = @($gate.TypeName)
 
         $vendor = Expand-VendorPropertySet -GraphType $currentTypes `
             -ApiVersion $gate.ApiVersion `
@@ -175,7 +171,7 @@ function Compare-ResourceSurface
             }
 
             $dscName = ConvertTo-DscPropertyName -Name $vendorName
-            if ($declared.Contains($dscName))
+            if ($declared.Contains($dscName) -or $dscName -in $nonVendorProperty)
             {
                 continue
             }

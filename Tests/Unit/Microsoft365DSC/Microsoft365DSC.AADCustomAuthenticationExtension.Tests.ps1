@@ -97,7 +97,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     CustomAuthenticationExtensionType = "#microsoft.graph.onTokenIssuanceStartCustomExtension"
                     AuthenticationConfigurationType = "#microsoft.graph.azureAdTokenAuthentication"
                     AuthenticationConfigurationResourceId = "api://microsoft365dsc.com/a5352e69-55c0-4160-b4b5-03d034d842f"
-                    ClientConfigurationTimeoutMilliseconds = 2000
+                    ClientConfigurationTimeoutInMilliseconds = 2000
                     ClientConfigurationMaximumRetries = 1
                     Id = "1f0c894f-d068-4f9c-af71-81d602569ad1"
                     ClaimsForTokenConfiguration = @()

@@ -10,7 +10,13 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "Role",
+      "reason": "Deferred",
+      "note": "The parent engagement role. Used to determine the associated role."
+    }
+  ],
   "description": "Manage a Viva Engage role assigned to a user.",
   "roles": {
     "read": [],

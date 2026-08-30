@@ -4,13 +4,22 @@
     "workload": "Intune",
     "apiVersion": "beta",
     "entityType": "mobileApp",
-    "odataSubtype": "managedApp",
+    "odataSubtype": [
+      "managedAndroidStoreApp",
+      "managedIOSStoreApp"
+    ],
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
     "cmdletVerb": "New",
-    "includeNavigationProperties": false,
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "TargetPlatform",
+      "reason": "Deferred",
+      "note": "The platform the app targets. Used to differentiate between their types."
+    }
+  ],
   "description": "This resource configures an Intune Mobile Apps Built In Store App for Android and iOS.",
   "permissions": {
     "graph": {

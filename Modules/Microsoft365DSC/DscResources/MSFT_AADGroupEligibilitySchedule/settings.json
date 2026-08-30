@@ -10,7 +10,13 @@
     "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "PrincipalType",
+      "reason": "Deferred",
+      "note": "The type of the Principal. Used to differentiate between their types."
+    }
+  ],
   "description": "This resource configures an Azure AD Group Eligibility Schedule.",
   "permissions": {
     "graph": {

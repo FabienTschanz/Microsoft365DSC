@@ -4,13 +4,23 @@
     "workload": "MicrosoftGraph",
     "apiVersion": "beta",
     "entityType": "namedLocation",
-    "odataSubtype": null,
+    "odataSubtype": [
+      "countryNamedLocation",
+      "ipNamedLocation",
+      "compliantNetworkNamedLocation"
+    ],
     "cmdletNoun": "MgBetaIdentityConditionalAccessNamedLocation",
     "cmdletVerb": "New",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "OdataType",
+      "reason": "Deferred",
+      "note": "The type of the named location. Used to differentiate between their types."
+    }
+  ],
   "description": "This resource configures the Azure AD Named Location Policies in Azure Active Directory.",
   "roles": {
     "read": [

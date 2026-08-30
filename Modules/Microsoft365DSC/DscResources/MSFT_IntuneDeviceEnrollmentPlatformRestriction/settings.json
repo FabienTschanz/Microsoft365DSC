@@ -4,7 +4,10 @@
     "workload": "Intune",
     "apiVersion": "beta",
     "entityType": "deviceEnrollmentConfiguration",
-    "odataSubtype": null,
+    "odataSubtype": [
+      "deviceEnrollmentPlatformRestrictionConfiguration",
+      "deviceEnrollmentPlatformRestrictionsConfiguration"
+    ],
     "cmdletNoun": "MgBetaDeviceManagementDeviceEnrollmentConfiguration",
     "cmdletVerb": "New",
     "includeNavigationProperties": false,

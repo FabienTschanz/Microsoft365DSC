@@ -57,9 +57,9 @@ function Get-GraphTypeSurface
         }
 
         $seeds.Add("$apiVersion|$($row.EntityType)")
-        if (-not [System.String]::IsNullOrEmpty($row.ODataSubtype))
+        foreach ($subtype in @($row.ODataSubtype | Where-Object { -not [System.String]::IsNullOrEmpty($_) }))
         {
-            $seeds.Add("$apiVersion|$($row.ODataSubtype)")
+            $seeds.Add("$apiVersion|$subtype")
         }
     }
 

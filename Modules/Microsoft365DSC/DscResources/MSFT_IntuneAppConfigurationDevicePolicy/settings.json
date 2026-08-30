@@ -4,7 +4,10 @@
     "workload": "Intune",
     "apiVersion": "beta",
     "entityType": "managedDeviceMobileAppConfiguration",
-    "odataSubtype": null,
+    "odataSubtype": [
+      "androidManagedStoreAppConfiguration",
+      "iosMobileAppConfiguration"
+    ],
     "cmdletNoun": "MgBetaDeviceAppManagementMobileAppConfiguration",
     "cmdletVerb": "New",
     "includeNavigationProperties": false,

@@ -4,13 +4,22 @@
     "workload": "Intune",
     "apiVersion": "beta",
     "entityType": "mobileApp",
-    "odataSubtype": "mobileLobApp",
+    "odataSubtype": [
+      "macOSDmgApp",
+      "macOSPkgApp"
+    ],
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
     "cmdletVerb": "New",
-    "includeNavigationProperties": false,
+    "includeNavigationProperties": true,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "PackageFileType",
+      "reason": "Deferred",
+      "note": "The package file type. Used to differentiate between their types."
+    }
+  ],
   "description": "This resource configures an Intune Mobile Apps Bundle types Dmg and Pkg for macOS.",
   "permissions": {
     "graph": {

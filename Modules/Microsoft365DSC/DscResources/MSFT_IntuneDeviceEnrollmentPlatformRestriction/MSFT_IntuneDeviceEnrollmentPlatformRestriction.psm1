@@ -6,8 +6,8 @@ using module ..\_Base\M365DSCResourceBase.psm1
 class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
 {
     [DscProperty(Key)]
-    [System.ComponentModel.Description('Identity of the device enrollment platform restriction.')]
-    [System.String] $Identity
+    [System.ComponentModel.Description('Id of the device enrollment platform restriction.')]
+    [System.String] $Id
 
     [DscProperty(Key)]
     [System.ComponentModel.Description('Display name of the device enrollment platform restriction.')]
@@ -127,7 +127,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
             return $remote
         }
 
-        Write-Verbose -Message "Getting configuration of the Intune Device Enrollment Restriction with Id {$($this.Identity)} and DisplayName {$($this.DisplayName)}"
+        Write-Verbose -Message "Getting configuration of the Intune Device Enrollment Restriction with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
         try
         {
@@ -160,14 +160,14 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
                 }
 
                 $config = $null
-                if (-not [string]::IsNullOrEmpty($this.Identity))
+                if (-not [string]::IsNullOrEmpty($this.Id))
                 {
-                    $config = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -DeviceEnrollmentConfigurationId $this.Identity -ErrorAction SilentlyContinue
+                    $config = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -DeviceEnrollmentConfigurationId $this.Id -ErrorAction SilentlyContinue
                 }
 
                 if ($null -eq $config)
                 {
-                    Write-Verbose -Message "Could not find an Intune Device Enrollment Platform Restriction with Id {$($this.Identity)}"
+                    Write-Verbose -Message "Could not find an Intune Device Enrollment Platform Restriction with Id {$($this.Id)}"
                     $config = Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -All -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")' and isof('microsoft.graph.deviceEnrollmentPlatformRestrictionConfiguration')" `
                         -ErrorAction SilentlyContinue | Where-Object -FilterScript {
                         if ($null -ne $_.platformType)
@@ -194,7 +194,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
 
             Write-Verbose -Message "Found Intune Device Enrollment Platform Restriction with Name {$($config.DisplayName)}"
             $results = @{
-                Identity                          = $config.Id
+                Id                                = $config.Id
                 DisplayName                       = $config.DisplayName
                 Description                       = $config.Description
                 RoleScopeTagIds                   = $config.RoleScopeTagIds
@@ -251,7 +251,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
             return
         }
 
-        Write-Verbose -Message "Setting configuration of the Intune Device Enrollment Platform Restriction with Id {$($this.Identity)} and DisplayName {$($this.DisplayName)}"
+        Write-Verbose -Message "Setting configuration of the Intune Device Enrollment Platform Restriction with Id {$($this.Id)} and DisplayName {$($this.DisplayName)}"
 
         #Ensure the proper dependencies are installed in the current environment.
         Confirm-M365DSCDependencies
@@ -260,7 +260,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
         $this.AddTelemetry('Set')
         #endregion
 
-        if ($this.Ensure -eq 'Absent' -and $this.Identity -like '*_DefaultPlatformRestrictions')
+        if ($this.Ensure -eq 'Absent' -and $this.Id -like '*_DefaultPlatformRestrictions')
         {
             throw 'Cannot delete the default platform restriction policy.'
         }
@@ -268,7 +268,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
         $currentInstance = $this.Get().ToHashtable()
         $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
         $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
-        $boundParameters.Remove('Identity') | Out-Null
+        $boundParameters.Remove('Id') | Out-Null
         $PriorityPresent = $false
         if ($boundParameters.Keys.Contains('Priority'))
         {
@@ -378,22 +378,22 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
             $boundParameters.Add('@odata.type', $policyType)
 
             Update-MgBetaDeviceManagementDeviceEnrollmentConfiguration `
-                -DeviceEnrollmentConfigurationId $currentInstance.Identity `
+                -DeviceEnrollmentConfigurationId $currentInstance.Id `
                 -BodyParameter ([hashtable]$boundParameters)
 
             # Assignments from DefaultPolicy are not editable and will raise an alert
-            if ($currentInstance.Identity -notlike '*_DefaultPlatformRestrictions')
+            if ($currentInstance.Id -notlike '*_DefaultPlatformRestrictions')
             {
                 $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
                 Update-DeviceConfigurationPolicyAssignment `
-                    -DeviceConfigurationPolicyId $currentInstance.Identity `
+                    -DeviceConfigurationPolicyId $currentInstance.Id `
                     -Targets $assignmentsHash `
                     -Repository 'deviceManagement/deviceEnrollmentConfigurations' `
                     -RootIdentifier 'enrollmentConfigurationAssignments'
 
                 if ($PriorityPresent -and $this.Priority -ne $currentInstance.Priority)
                 {
-                    $Uri = '/beta/deviceManagement/deviceEnrollmentConfigurations/{0}/setPriority' -f $currentInstance.Identity
+                    $Uri = '/beta/deviceManagement/deviceEnrollmentConfigurations/{0}/setPriority' -f $currentInstance.Id
                     $Body = @{
                         priority = $this.Priority
                     }
@@ -404,7 +404,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing the Intune Device Enrollment Platform Restriction with DisplayName {$($this.DisplayName)}"
-            Remove-MgBetaDeviceManagementDeviceEnrollmentConfiguration -DeviceEnrollmentConfigurationId $currentInstance.Identity
+            Remove-MgBetaDeviceManagementDeviceEnrollmentConfiguration -DeviceEnrollmentConfigurationId $currentInstance.Id
         }
     }
 
@@ -454,7 +454,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
 
                 Write-M365DSCHost -Message "    |---[$i/$($configs.Count)] $($config.displayName)" -DeferWrite
                 $params = @{
-                    Identity              = $config.id
+                    Id                    = $config.id
                     DisplayName           = $config.displayName
                     Ensure                = 'Present'
                     Credential            = $this.Credential

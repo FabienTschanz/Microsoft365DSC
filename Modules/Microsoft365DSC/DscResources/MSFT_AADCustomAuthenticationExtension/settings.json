@@ -4,13 +4,31 @@
     "workload": "MicrosoftGraph",
     "apiVersion": "beta",
     "entityType": "customAuthenticationExtension",
-    "odataSubtype": null,
+    "odataSubtype": [
+      "onTokenIssuanceStartCustomExtension",
+      "onAttributeCollectionStartCustomExtension",
+      "onAttributeCollectionSubmitCustomExtension",
+      "onOtpSendCustomExtension",
+      "onPasswordSubmitCustomExtension",
+      "onVerifiedIdClaimValidationCustomExtension"
+    ],
     "cmdletNoun": "MgBetaIdentityCustomAuthenticationExtension",
     "cmdletVerb": "New",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "AuthenticationConfigurationType",
+      "reason": "Deferred",
+      "note": "The type of the authentication configuration. Used to differentiate between their types."
+    },
+    {
+      "name": "CustomAuthenticationExtensionType",
+      "reason": "Deferred",
+      "note": "The type of the custom authentication extension. Used to differentiate between their types."
+    }
+  ],
   "description": "Custom authentication extensions define interactions with external systems during a user authentication session. ",
   "roles": {
     "read": [

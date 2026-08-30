@@ -1,6 +1,6 @@
 # Claude Code Instructions for Microsoft365DSC
 
-The repository coding rules live in [AGENTS.md](./AGENTS.md). Read that file first. Rules scoped to a path, including the contract for the files under `Examples/`, live in [.github/instructions/](./.github/instructions/).
+The repository coding and comment rules live in [AGENTS.md](./AGENTS.md). Read that file first. Rules scoped to a path, including the contract for the files under `Examples/`, live in [.github/instructions/](./.github/instructions/).
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph

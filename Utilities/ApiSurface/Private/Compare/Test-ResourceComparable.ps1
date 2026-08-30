@@ -54,6 +54,7 @@ function Test-ResourceComparable
         Comparable = $false
         Reason     = $null
         TypeKey    = $null
+        TypeName   = [System.String[]] @()
         ApiVersion = $apiVersion
     }
 
@@ -75,21 +76,24 @@ function Test-ResourceComparable
         return $result
     }
 
-    $typeName = $Origin.ODataSubtype
-    if ([System.String]::IsNullOrEmpty($typeName))
+    $typeName = @($Origin.ODataSubtype | Where-Object { -not [System.String]::IsNullOrEmpty($_) })
+    if ($typeName.Count -eq 0)
     {
-        $typeName = $Origin.EntityType
+        $typeName = @($Origin.EntityType)
     }
 
-    $typeKey = "${apiVersion}:$typeName"
-    if ($null -eq (Get-SurfaceMember -Container $GraphType -Name $typeKey))
+    $missing = @($typeName | Where-Object {
+            $null -eq (Get-SurfaceMember -Container $GraphType -Name "${apiVersion}:$_")
+        })
+    if ($missing.Count -gt 0)
     {
-        $result.Reason = "type '$typeKey' is not in the snapshot"
+        $result.Reason = "type '${apiVersion}:$($missing[0])' is not in the snapshot"
         return $result
     }
 
     $result.Comparable = $true
-    $result.TypeKey = $typeKey
+    $result.TypeKey = "${apiVersion}:$($typeName[0])"
+    $result.TypeName = [System.String[]] $typeName
 
     return $result
 }

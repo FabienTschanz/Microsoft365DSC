@@ -9,6 +9,9 @@
   * Updated `Owners` to use `DisplayName` for Service Principal objects.
 * AADConditionalAccessPolicy
   * Added value `hidden` to property `ServicePrincipalRiskLevels`.
+* AADCustomAuthenticationExtension
+  * [BREAKING CHANGE] Renamed the property `ClientConfigurationTimeoutMilliseconds` to
+    `ClientConfigurationTimeoutInMilliseconds` to match the name Microsoft Graph uses.
 * AADEntitlementManagementAccessPackageAssignmentPolicy
   * [BREAKING CHANGE] Renamed sub-property `Sequence` to `SequencePosition` to
     avoid a conflict with a reserved PowerShell keyword.
@@ -102,6 +105,9 @@
 * IntuneDeviceConfigurationVpnPolicyWindows10
   * [BREAKING CHANGE] Renamed property `ServerCollection` to `Servers` to match the
     name Microsoft Graph uses.
+* IntuneDeviceEnrollmentPlatformRestriction
+  * [BREAKING CHANGE] Renamed the key property `Identity` to `Id` to match the name
+    Microsoft Graph uses.
 * IntuneDiskEncryptionMacOS
   * [BREAKING CHANGE] Removed resource. Please use the resource
     `IntuneDiskEncryptionFileVaultPolicyMacOS` instead.

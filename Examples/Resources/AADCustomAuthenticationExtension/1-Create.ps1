@@ -26,9 +26,9 @@ Configuration Example
     {
         AADCustomAuthenticationExtension "AADCustomAuthenticationExtension-Example"
         {
-            AuthenticationConfigurationResourceId  = "api://contoso.com/a5352e69-55c0-4160-b4b5-03d034d842fd"
-            AuthenticationConfigurationType        = "#microsoft.graph.azureAdTokenAuthentication"
-            ClaimsForTokenConfiguration            = @(
+            AuthenticationConfigurationResourceId    = "api://contoso.com/a5352e69-55c0-4160-b4b5-03d034d842fd"
+            AuthenticationConfigurationType          = "#microsoft.graph.azureAdTokenAuthentication"
+            ClaimsForTokenConfiguration              = @(
                 MSFT_AADCustomAuthenticationExtensionClaimForTokenConfiguration{
                     ClaimIdInApiResponse = 'MyClaim'
                 }
@@ -36,19 +36,19 @@ Configuration Example
                     ClaimIdInApiResponse = 'My2ndClaim'
                 }
             )
-            ClientConfigurationMaximumRetries      = 1
-            ClientConfigurationTimeoutMilliseconds = 2000
-            CustomAuthenticationExtensionType      = "#microsoft.graph.onTokenIssuanceStartCustomExtension"
-            Description                            = "Adds employee cost centre claims at token issuance"
-            DisplayName                            = "TokenEnrichmentExtension"
-            EndPointConfiguration                  = MSFT_AADCustomAuthenticationExtensionEndPointConfiguration{
+            ClientConfigurationMaximumRetries        = 1
+            ClientConfigurationTimeoutInMilliseconds = 2000
+            CustomAuthenticationExtensionType        = "#microsoft.graph.onTokenIssuanceStartCustomExtension"
+            Description                              = "Adds employee cost centre claims at token issuance"
+            DisplayName                              = "TokenEnrichmentExtension"
+            EndPointConfiguration                    = MSFT_AADCustomAuthenticationExtensionEndPointConfiguration{
                 EndpointType = '#microsoft.graph.httpRequestEndpoint'
                 TargetUrl    = 'https://api.contoso.com/tokenenrichment'
             }
-            Ensure                                 = "Present";
-            ApplicationId                          = $ApplicationId
-            TenantId                               = $TenantId
-            CertificateThumbprint                  = $CertificateThumbprint
+            Ensure                                   = "Present";
+            ApplicationId                            = $ApplicationId
+            TenantId                                 = $TenantId
+            CertificateThumbprint                    = $CertificateThumbprint
         }
     }
 }

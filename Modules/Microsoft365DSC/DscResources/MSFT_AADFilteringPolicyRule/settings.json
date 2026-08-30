@@ -4,13 +4,22 @@
     "workload": "MicrosoftGraph",
     "apiVersion": "beta",
     "entityType": "networkaccess.policyRule",
-    "odataSubtype": "networkaccess.filteringRule",
+    "odataSubtype": [
+      "networkaccess.webCategoryFilteringRule",
+      "networkaccess.fqdnFilteringRule"
+    ],
     "cmdletNoun": "MgBetaNetworkAccessFilteringPolicyRule",
     "cmdletVerb": "New",
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "Policy",
+      "reason": "Deferred",
+      "note": "The parent filtering policy taken from the request route."
+    }
+  ],
   "description": "Configures filtering rules in Entra Id.",
   "roles": {
     "read": [],

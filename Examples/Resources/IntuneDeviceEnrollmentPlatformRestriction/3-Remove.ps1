@@ -27,7 +27,7 @@ Configuration Example
         {
             DisplayName           = "All users and all devices";
             Ensure                = "Absent";
-            Identity              = "3868d43e-873e-4416-8fd1-fc3d67c7c15c_DefaultPlatformRestrictions";
+            Id                    = "3868d43e-873e-4416-8fd1-fc3d67c7c15c_DefaultPlatformRestrictions";
             ApplicationId         = $ApplicationId;
             TenantId              = $TenantId;
             CertificateThumbprint = $CertificateThumbprint;

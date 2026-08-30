@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "IsIntuneManagedInstaller",
+      "reason": "Deferred",
+      "note": "Whether the Intune managed installer is enabled."
+    }
+  ],
   "description": "This resource configures an Intune Managed Installer Policy for Windows 10.",
   "permissions": {
     "graph": {

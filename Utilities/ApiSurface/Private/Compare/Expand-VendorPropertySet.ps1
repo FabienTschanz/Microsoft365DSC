@@ -41,7 +41,7 @@ function Expand-VendorPropertySet
         $ApiVersion,
 
         [Parameter(Mandatory = $true)]
-        [System.String]
+        [System.String[]]
         $TypeName,
 
         [Parameter()]
@@ -59,12 +59,15 @@ function Expand-VendorPropertySet
     $truncated = $false
     $topLevelCount = 0
 
-    $queue.Enqueue([PSCustomObject]@{
-            Key      = "${ApiVersion}:$TypeName"
-            Level    = 0
-            Path     = ''
-            Ancestor = [System.String[]] @("${ApiVersion}:$TypeName")
-        })
+    foreach ($seedType in @($TypeName | Where-Object { -not [System.String]::IsNullOrEmpty($_) }))
+    {
+        $queue.Enqueue([PSCustomObject]@{
+                Key      = "${ApiVersion}:$seedType"
+                Level    = 0
+                Path     = ''
+                Ancestor = [System.String[]] @("${ApiVersion}:$seedType")
+            })
+    }
 
     while ($queue.Count -gt 0)
     {

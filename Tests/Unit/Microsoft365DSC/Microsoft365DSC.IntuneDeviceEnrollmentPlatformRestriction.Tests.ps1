@@ -73,7 +73,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name "When the restriction doesn't already exist" -Fixture {
             BeforeAll {
                 $testParams = @{
-                    Identity                          = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
+                    Id                                = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
                     Description                       = ''
                     DisplayName                       = 'My DSC Restriction'
                     Ensure                            = 'Present'
@@ -124,7 +124,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'When the restriction already exists and is in the Desired State' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    Identity                          = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
+                    Id                                = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
                     Description                       = ''
                     DisplayName                       = 'My DSC Restriction'
                     Ensure                            = 'Present'
@@ -146,7 +146,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'When the restriction already exists and is NOT in the Desired State' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    Identity                          = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
+                    Id                                = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
                     Description                       = ''
                     DisplayName                       = 'My DSC Restriction'
                     Ensure                            = 'Present'
@@ -168,7 +168,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
         Context -Name 'When the restriction exists and it SHOULD NOT' -Fixture {
             BeforeAll {
                 $testParams = @{
-                    Identity                          = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
+                    Id                                = '12345-12345-12345-12345-12345_SinglePlatformRestriction'
                     Description                       = ''
                     DisplayName                       = 'My DSC Restriction'
                     Ensure                            = 'Absent'

@@ -31,7 +31,7 @@ class AADCustomAuthenticationExtension : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Defines the client configuration timeout in milliseconds')]
-    [System.Nullable[System.UInt32]] $ClientConfigurationTimeoutMilliseconds
+    [System.Nullable[System.UInt32]] $ClientConfigurationTimeoutInMilliseconds
 
     [DscProperty()]
     [System.ComponentModel.Description('Defines the client configuration max retries')]
@@ -171,7 +171,7 @@ class AADCustomAuthenticationExtension : M365DSCResourceBase
 
             if ($null -ne $instance.ClientConfiguration)
             {
-                $results.Add('ClientConfigurationTimeoutMilliseconds', $instance.ClientConfiguration.TimeoutInMilliseconds)
+                $results.Add('ClientConfigurationTimeoutInMilliseconds', $instance.ClientConfiguration.TimeoutInMilliseconds)
                 $results.Add('ClientConfigurationMaximumRetries', $instance.ClientConfiguration.MaximumRetries)
             }
 
@@ -251,7 +251,7 @@ class AADCustomAuthenticationExtension : M365DSCResourceBase
                 resourceId    = $setParameters.AuthenticationConfigurationResourceId
             }
             clientConfiguration         = @{
-                timeoutInMilliseconds = $setParameters['ClientConfigurationTimeoutMilliseconds']
+                timeoutInMilliseconds = $setParameters['ClientConfigurationTimeoutInMilliseconds']
                 maximumRetries        = $setParameters['ClientConfigurationMaximumRetries']
             }
         }

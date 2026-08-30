@@ -119,30 +119,38 @@ function Get-VendorPropertyModel
         $Generator
     )
 
-    $entityType = [System.String] $Origin.entityType
-    if (-not [System.String]::IsNullOrEmpty([System.String] $Origin.odataSubtype))
+    $entityType = @(@($Origin.odataSubtype) | Where-Object { -not [System.String]::IsNullOrEmpty($_) })
+    if ($entityType.Count -eq 0)
     {
-        $entityType = [System.String] $Origin.odataSubtype
+        $entityType = @([System.String] $Origin.entityType | Where-Object { -not [System.String]::IsNullOrEmpty($_) })
     }
 
-    if ([System.String]::IsNullOrEmpty($entityType))
+    if ($entityType.Count -eq 0)
     {
-        throw 'generatedFrom names no entity type, so the vendor description cannot be resolved.'
+        throw 'generatedFrom names no entity type. The vendor description cannot be resolved.'
     }
 
-    $models = & $Generator {
-        param ($ApiVersion, $Entity, $IncludeNavigation)
+    $model = $null
+    foreach ($candidate in $entityType)
+    {
+        $models = & $Generator {
+            param ($ApiVersion, $Entity, $IncludeNavigation)
 
-        $schema = Get-M365DSCGraphCsdlMetadata -APIVersion $ApiVersion
-        $index = New-M365DSCGraphSchemaIndex -Schema $schema
-        return @(Get-M365DSCGraphTypeProperty -Schema $schema `
-                -Entity $Entity `
-                -Index $index `
-                -Qualified `
-                -IncludeNavigationProperties $IncludeNavigation)
-    } ([System.String] $Origin.apiVersion) $entityType ([System.Boolean] $Origin.includeNavigationProperties)
+            $schema = Get-M365DSCGraphCsdlMetadata -APIVersion $ApiVersion
+            $index = New-M365DSCGraphSchemaIndex -Schema $schema
+            return @(Get-M365DSCGraphTypeProperty -Schema $schema `
+                    -Entity $Entity `
+                    -Index $index `
+                    -Qualified `
+                    -IncludeNavigationProperties $IncludeNavigation)
+        } ([System.String] $Origin.apiVersion) $candidate ([System.Boolean] $Origin.includeNavigationProperties)
 
-    $model = @($models | Where-Object -FilterScript { $_.Name -eq $Name })[0]
+        $model = @($models | Where-Object -FilterScript { $_.Name -eq $Name })[0]
+        if ($null -ne $model)
+        {
+            break
+        }
+    }
     if ($null -eq $model)
     {
         throw "'$Name' was not found on the CSDL type '$entityType'."

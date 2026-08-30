@@ -10,7 +10,13 @@
     "includeNavigationProperties": false,
     "generatorVersion": "2.0.0"
   },
-  "excludedProperties": [],
+  "excludedProperties": [
+    {
+      "name": "Devices",
+      "reason": "Deferred",
+      "note": "The imported device identities this resource writes through the import route."
+    }
+  ],
   "description": "This resource manages Intune corporate device identifiers for pre-registering devices as corporate-owned.",
   "permissions": {
     "graph": {

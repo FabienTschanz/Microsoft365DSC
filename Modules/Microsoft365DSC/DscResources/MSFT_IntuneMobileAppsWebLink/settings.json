@@ -4,7 +4,12 @@
     "workload": "Intune",
     "apiVersion": "beta",
     "entityType": "mobileApp",
-    "odataSubtype": null,
+    "odataSubtype": [
+      "iosiPadOSWebClip",
+      "macOSWebClip",
+      "windowsWebApp",
+      "webApp"
+    ],
     "cmdletNoun": "MgBetaDeviceAppManagementMobileApp",
     "cmdletVerb": "New",
     "includeNavigationProperties": true,
