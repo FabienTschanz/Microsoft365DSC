@@ -15,7 +15,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Represented the type of principal to assign the request to. Accepted values are: Group and User.')]
-    [ValidateSet('Group', 'User', 'ServicePrincipal')]
+    [ValidateSet('agentUser', 'Group', 'User', 'ServicePrincipal')]
     [System.String] $PrincipalType
 
     [DscProperty(Key)]
@@ -145,7 +145,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
 
             Write-Verbose -Message 'Getting Role Eligibility by PrincipalId and RoleDefinitionId'
             $PrincipalValue = $null
-            if ($this.PrincipalType -eq 'User')
+            if ($this.PrincipalType -eq 'User' -or $this.PrincipalType -eq 'agentUser')
             {
                 Write-Verbose -Message "Retrieving Principal by UserPrincipalName {$($this.Principal)}"
                 $PrincipalInstance = Get-MgUser -Filter "UserPrincipalName eq '$($this.Principal -replace "'", "''")'" -ErrorAction SilentlyContinue
@@ -311,7 +311,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
         $currentInstance = $this.Get().ToHashtable()
 
         $PrincipalId = $null
-        if ($this.PrincipalType -eq 'User')
+        if ($this.PrincipalType -eq 'User' -or $this.PrincipalType -eq 'agentUser')
         {
             Write-Verbose -Message "Retrieving Principal by UserPrincipalName {$($this.Principal)}"
             $PrincipalInstance = Get-MgUser -Filter "UserPrincipalName eq '$($this.Principal -replace "'", "''")'" -ErrorAction SilentlyContinue
@@ -487,6 +487,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
 
                 $displayedKey = $config.Id
                 Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
+
                 # Find the Principal Type
                 $principalTypeValue = 'User'
                 $userInfo = $config.Principal
@@ -495,7 +496,7 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
                     $userInfo = Get-MgBetaDirectoryObjectById -Ids $config.PrincipalId -ErrorAction SilentlyContinue
                 }
                 $principalTypeValue = $userInfo['@odata.type'].Split('.')[2]
-                $PrincipalValue = if ($principalTypeValue -eq 'user' )
+                $PrincipalValue = if ($principalTypeValue -eq 'user' -or $principalTypeValue -eq 'agentUser')
                 {
                     $userInfo['userPrincipalName']
                 }

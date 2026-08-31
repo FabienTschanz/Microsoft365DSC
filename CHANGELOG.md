@@ -308,6 +308,23 @@
 
 # UNRELEASED
 
+* M365DSCGraphShim
+  * Changed how an object is returned from Graph if both `value` and
+    `presentation` properties are present. This fixes an issue with the resource
+    `IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10`.
+* MISC
+  * Fixed an issue when building the Windows docker image.
+
+# 1.26.826.1
+
+* AADRoleAssignmentScheduleRequest
+  * Added `agentUser` to `PrincipalType` to support the new agent user capability in Entra.
+* AADRoleEligibilityScheduleRequest
+  * Added `agentUser` to `PrincipalType` to support the new agent user capability in Entra.
+* EXOIntraOrganizationConnector
+  * Fixed an issue where `DiscoveryEndpoint` did not end with a trailing slash `/`.
+  * Fixed a regression regarding Url to String conversion.
+    FIXES [#7425](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/7425)
 * SPOSite
   * Fixed an issue where a site collection that could not be retrieved aborted the entire export.
 * M365DSCReverse

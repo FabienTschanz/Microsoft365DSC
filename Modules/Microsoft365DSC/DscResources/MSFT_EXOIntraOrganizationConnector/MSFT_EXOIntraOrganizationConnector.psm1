@@ -103,22 +103,23 @@ class EXOIntraOrganizationConnector : M365DSCResourceBase
 
             Write-Verbose -Message "Found IntraOrganizationConnector $($this.Identity)"
 
-            $DiscoveryEndpointValue = $IntraOrganizationConnector.DiscoveryEndpoint
-            if (-not $DiscoveryEndpointValue.EndsWith('/'))
+            $DiscoveryEndpointValue = $null
+            if ($null -ne $IntraOrganizationConnector.DiscoveryEndpoint)
             {
-                $DiscoveryEndpointValue += '/'
+                $DiscoveryEndpointValue = $IntraOrganizationConnector.DiscoveryEndpoint.ToString()
+                if (-not $DiscoveryEndpointValue.EndsWith('/'))
+                {
+                    $DiscoveryEndpointValue = $DiscoveryEndpointValue + '/'
+                }
             }
-            if ($IntraOrganizationConnector.TargetSharingEpr)
+            $TargetSharingEprValue = ''
+            if ($null -ne $IntraOrganizationConnector.TargetSharingEpr)
             {
-                $TargetSharingEprValue = $IntraOrganizationConnector.TargetSharingEpr
-            }
-            else
-            {
-                $TargetSharingEprValue = ''
+                $TargetSharingEprValue = $IntraOrganizationConnector.TargetSharingEpr.ToString()
             }
             $result = @{
                 Identity              = $this.Identity
-                DiscoveryEndpoint     = $IntraOrganizationConnector.DiscoveryEndpoint.ToString()
+                DiscoveryEndpoint     = $DiscoveryEndpointValue
                 Enabled               = $IntraOrganizationConnector.Enabled
                 TargetAddressDomains  = $IntraOrganizationConnector.TargetAddressDomains
                 TargetSharingEpr      = $TargetSharingEprValue

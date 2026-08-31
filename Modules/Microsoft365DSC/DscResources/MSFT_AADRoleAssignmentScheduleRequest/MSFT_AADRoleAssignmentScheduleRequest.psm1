@@ -15,7 +15,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
 
     [DscProperty()]
     [System.ComponentModel.Description('Represented the type of principal to assign the request to. Accepted values are: Group and User.')]
-    [ValidateSet('Group', 'User', 'ServicePrincipal')]
+    [ValidateSet('agentUser', 'User', 'Group', 'ServicePrincipal')]
     [System.String] $PrincipalType
 
     [DscProperty(Key)]
@@ -146,7 +146,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
 
             Write-Verbose -Message 'Getting Role Assignment by PrincipalId and RoleDefinitionId'
             $PrincipalValue = $null
-            if ($this.PrincipalType -eq 'User')
+            if ($this.PrincipalType -eq 'User' -or $PrincipalType -eq 'agentUser')
             {
                 Write-Verbose -Message "Retrieving Principal by UserPrincipalName {$($this.Principal)}"
                 $PrincipalInstance = Get-MgUser -Filter "UserPrincipalName eq '$($this.Principal -replace "'", "''")'" -ErrorAction SilentlyContinue
@@ -165,7 +165,8 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
                 $PrincipalValue = $PrincipalInstance.DisplayName
             }
 
-            if ([System.String]::IsNullOrEmpty($PrincipalValue)) {
+            if ([System.String]::IsNullOrEmpty($PrincipalValue))
+            {
                 return $this.AsResult($nullResult)
             }
 
@@ -321,7 +322,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         $currentInstance = $this.Get().ToHashtable()
         $ParametersOps = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
-        if ($this.PrincipalType -eq 'User')
+        if ($this.PrincipalType -eq 'User' -or $PrincipalType -eq 'agentUser')
         {
             Write-Verbose -Message "Retrieving Principal by UserPrincipalName {$($this.Principal)}"
             [Array]$PrincipalIdValue = (Get-MgUser -Filter "UserPrincipalName eq '$($this.Principal -replace "'", "''")'").Id
@@ -509,7 +510,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
                     $userInfo = Get-MgBetaDirectoryObjectById -Ids $request.PrincipalId -ErrorAction SilentlyContinue
                 }
                 $principalTypeValue = $userInfo['@odata.type'].Split('.')[2]
-                $PrincipalValue = if ($principalTypeValue -eq 'user')
+                $PrincipalValue = if ($principalTypeValue -eq 'user' -or $principalTypeValue -eq 'agentUser')
                 {
                     $userInfo['userPrincipalName']
                 }
