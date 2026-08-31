@@ -80,8 +80,8 @@ class O365CopilotSettingsPeopleEnhancedPersonalization : M365DSCResourceBase
 
             $nullResult = $this.GetBoundParameters()
 
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/copilot/settings/people/enhancedpersonalization'
-            $instance = Invoke-MgGraphRequest -Uri $uri -Method Get
+            $uri = '/beta/copilot/settings/people/enhancedpersonalization'
+            $instance = Invoke-M365DSCGraphRequest -Uri $uri -Method Get
             if ($null -eq $instance)
             {
                 return $this.AsResult($nullResult)
@@ -174,8 +174,8 @@ class O365CopilotSettingsPeopleEnhancedPersonalization : M365DSCResourceBase
             }
         }
         $body = ConvertTo-Json $settings
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/copilot/settings/people/enhancedpersonalization'
-        Invoke-MgGraphRequest -Uri $uri -Method PATCH -Body $Body | Out-Null
+        $uri = '/beta/copilot/settings/people/enhancedpersonalization'
+        Invoke-M365DSCGraphRequest -Uri $uri -Method PATCH -Body $Body | Out-Null
     }
 
     [bool] Test()

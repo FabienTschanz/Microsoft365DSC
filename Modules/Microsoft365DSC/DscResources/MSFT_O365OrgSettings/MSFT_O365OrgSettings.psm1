@@ -780,8 +780,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/dynamics/customerVoice'
-            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            $url = '/beta/admin/dynamics/customerVoice'
+            $results = Invoke-M365DSCGraphRequest -Method GET -Uri $url -ErrorAction Stop
             return $results
         }
         catch
@@ -799,8 +799,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/todo/settings'
-            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            $url = '/beta/admin/todo/settings'
+            $results = Invoke-M365DSCGraphRequest -Method GET -Uri $url -ErrorAction Stop
             return $results
         }
         catch
@@ -818,8 +818,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/appsAndServices/settings'
-            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+            $url = '/beta/admin/appsAndServices/settings'
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
         }
         catch
         {
@@ -833,8 +833,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/forms/settings'
-            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            $url = '/beta/admin/forms/settings'
+            $results = Invoke-M365DSCGraphRequest -Method GET -Uri $url -ErrorAction Stop
             return $results
         }
         catch
@@ -853,8 +853,8 @@ class O365OrgSettings : M365DSCResourceBase
         try
         {
             Write-Verbose -Message 'Updating Forms Settings'
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/forms/settings'
-            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+            $url = '/beta/admin/forms/settings'
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
         }
         catch
         {
@@ -916,8 +916,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/microsoft365Apps/installationOptions'
-            $results = Invoke-MgGraphRequest -Method GET -Uri $url
+            $url = '/beta/admin/microsoft365Apps/installationOptions'
+            $results = Invoke-M365DSCGraphRequest -Method GET -Uri $url
             return $results
         }
         catch
@@ -935,8 +935,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/microsoft365Apps/installationOptions'
-            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+            $url = '/beta/admin/microsoft365Apps/installationOptions'
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
         }
         catch
         {
@@ -957,8 +957,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/todo/settings'
-            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+            $url = '/beta/admin/todo/settings'
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
         }
         catch
         {
@@ -973,8 +973,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/appsAndServices/settings'
-            $results = Invoke-MgGraphRequest -Method GET -Uri $url -ErrorAction Stop
+            $url = '/beta/admin/appsAndServices/settings'
+            $results = Invoke-M365DSCGraphRequest -Method GET -Uri $url -ErrorAction Stop
             return $results
         }
         catch
@@ -1021,8 +1021,8 @@ class O365OrgSettings : M365DSCResourceBase
     {
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/admin/dynamics/customerVoice'
-            Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
+            $url = '/beta/admin/dynamics/customerVoice'
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri $url -Body $Options | Out-Null
         }
         catch
         {

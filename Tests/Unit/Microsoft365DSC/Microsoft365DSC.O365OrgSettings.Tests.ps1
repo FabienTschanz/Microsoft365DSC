@@ -53,7 +53,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Set-DefaultTenantMyAnalyticsFeatureConfig -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -like '*installationOptions*' } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Uri -like '*installationOptions*' } -MockWith {
                 return @{
                     '@odata.context' = 'https://graph.microsoft.com/beta/$metadata#admin/microsoft365Apps/installationOptions/$entity'
                     updateChannel = 'current'
@@ -70,7 +70,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
             }
 
             Mock -CommandName Get-MgBetaAdminReportSetting -MockWith {

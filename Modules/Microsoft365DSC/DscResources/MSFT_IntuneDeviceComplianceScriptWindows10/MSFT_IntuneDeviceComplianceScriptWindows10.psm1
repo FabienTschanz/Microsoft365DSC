@@ -113,7 +113,7 @@ class IntuneDeviceComplianceScriptWindows10 : M365DSCResourceBase
 
             $getValue = $null
             #region resource generator code
-            $getValue = Invoke-MgGraphRequest -Method GET -Uri "/beta/deviceManagement/deviceComplianceScripts/$($this.Id)" -SkipHttpErrorCheck
+            $getValue = Invoke-M365DSCGraphRequest -Method GET -Uri "/beta/deviceManagement/deviceComplianceScripts/$($this.Id)" -SkipHttpErrorCheck
 
             if ($null -eq $getValue -or $null -ne $getValue.error)
             {
@@ -121,11 +121,11 @@ class IntuneDeviceComplianceScriptWindows10 : M365DSCResourceBase
 
                 if (-not [string]::IsNullOrEmpty($this.DisplayName))
                 {
-                    $getValue = (Invoke-MgGraphRequest -Method GET `
+                    $getValue = (Invoke-M365DSCGraphRequest -Method GET `
                         -Uri "/beta/deviceManagement/deviceComplianceScripts?`$filter=DisplayName eq '$($this.DisplayName -replace "'", "''")'").value
                     if ($getValue.Count -gt 0)
                     {
-                        $getValue = Invoke-MgGraphRequest -Method GET -Uri "/beta/deviceManagement/deviceComplianceScripts/$($getValue.id)"
+                        $getValue = Invoke-M365DSCGraphRequest -Method GET -Uri "/beta/deviceManagement/deviceComplianceScripts/$($getValue.id)"
                     }
                 }
             }
@@ -212,19 +212,19 @@ class IntuneDeviceComplianceScriptWindows10 : M365DSCResourceBase
         {
             Write-Verbose -Message "Creating an Intune Device Compliance Script for Windows10 with DisplayName {$($this.DisplayName)}"
             $scriptBody.Remove('Id') | Out-Null
-            Invoke-MgGraphRequest -Method POST -Uri '/beta/deviceManagement/deviceComplianceScripts' -Body $($scriptBody | ConvertTo-Json)
+            Invoke-M365DSCGraphRequest -Method POST -Uri '/beta/deviceManagement/deviceComplianceScripts' -Body $($scriptBody | ConvertTo-Json)
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Intune Device Compliance Script for Windows10 with Id {$($currentInstance.Id)}"
-            Invoke-MgGraphRequest -Method PATCH -Uri "/beta/deviceManagement/deviceComplianceScripts/$($currentInstance.Id)" -Body $($scriptBody | ConvertTo-Json)
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri "/beta/deviceManagement/deviceComplianceScripts/$($currentInstance.Id)" -Body $($scriptBody | ConvertTo-Json)
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing the Intune Device Compliance Script for Windows10 with Id {$($currentInstance.Id)}"
             try
             {
-                Invoke-MgGraphRequest -Method DELETE -Uri "/beta/deviceManagement/deviceComplianceScripts/$($currentInstance.Id)" -ErrorAction Stop
+                Invoke-M365DSCGraphRequest -Method DELETE -Uri "/beta/deviceManagement/deviceComplianceScripts/$($currentInstance.Id)" -ErrorAction Stop
             }
             catch
             {
@@ -262,7 +262,7 @@ class IntuneDeviceComplianceScriptWindows10 : M365DSCResourceBase
             {
                 $uri += "?`$filter=$($this.Filter)"
             }
-            [array]$getValue = (Invoke-MgGraphRequest `
+            [array]$getValue = (Invoke-M365DSCGraphRequest `
                     -Method GET `
                     -Uri $uri `
                     -ErrorAction Stop).value

@@ -276,7 +276,7 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
             if ($null -ne $devicePolicy.deviceCompliancePolicyScript)
             {
                 Write-Verbose -Message "Resolving Device Compliance Policy Script with Id {$($devicePolicy.deviceCompliancePolicyScript.deviceComplianceScriptId)}"
-                $policyScript = Invoke-MgGraphRequest -Uri "/beta/deviceManagement/deviceComplianceScripts/$($devicePolicy.deviceCompliancePolicyScript.deviceComplianceScriptId)" -Method GET
+                $policyScript = Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/deviceComplianceScripts/$($devicePolicy.deviceCompliancePolicyScript.deviceComplianceScriptId)" -Method GET
                 $complexDeviceCompliancePolicyScript.Add('DisplayName', $policyScript.displayName)
                 $complexDeviceCompliancePolicyScript.Add('RulesContent', [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($devicePolicy.deviceCompliancePolicyScript.rulesContent)))
             }
@@ -417,7 +417,7 @@ class IntuneDeviceCompliancePolicyWindows10 : M365DSCResourceBase
             $scriptName = $script.Displayname
             $scriptRulesContent = $script.RulesContent
 
-            $complianceScript = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/deviceComplianceScripts?`$filter=DisplayName eq '$($scriptName -replace "'", "''")'" -Method GET).value
+            $complianceScript = (Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/deviceComplianceScripts?`$filter=DisplayName eq '$($scriptName -replace "'", "''")'" -Method GET).value
             if ($complianceScript.Count -eq 0)
             {
                 throw "The referenced Intune Device Compliance Script with DisplayName {$scriptName} was not found"

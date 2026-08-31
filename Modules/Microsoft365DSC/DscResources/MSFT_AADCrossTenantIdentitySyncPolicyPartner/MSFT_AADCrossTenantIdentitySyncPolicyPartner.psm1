@@ -165,7 +165,7 @@ class AADCrossTenantIdentitySyncPolicyPartner : M365DSCResourceBase
             }
             $body = $params | ConvertTo-Json -Depth 10
             Write-Verbose -Message "Updating Cross-Tenant Identity Sync Policy for Tenant {$($this.CrossTenantAccessPolicyConfigurationPartnerTenantId)} with:`r`n$body"
-            Invoke-MgGraphRequest 'PATCH' `
+            Invoke-M365DSCGraphRequest -Method 'PATCH' `
                 -Uri "/beta/policies/crossTenantAccessPolicy/partners/$($this.CrossTenantAccessPolicyConfigurationPartnerTenantId)/identitySynchronization" `
                 -Body $body -ErrorAction Stop | Out-Null
         }

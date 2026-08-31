@@ -108,7 +108,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             Mock -CommandName Update-DeviceConfigurationPolicyAssignment -MockWith {
             }
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
             }
 
             $Script:exportedInstance = $null
@@ -353,7 +353,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10' -Property $testParams).Set()
                 Should -Invoke -CommandName Update-MgBetaDeviceManagementGroupPolicyConfiguration -Exactly 1
                 Should -Invoke -CommandName Update-DeviceConfigurationPolicyAssignment -Exactly 1
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 1
             }
         }
 

@@ -110,8 +110,7 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
         #endregion
 
         $ResourceTypeName = $CurrentResourceName
-
-        $ConnectionMode = $this.Connect('MicrosoftGraph')
+        $null = $this.Connect('MicrosoftGraph')
 
         Write-Verbose -Message "Invoking GET {$($this.APIUrl)}"
         $uri = $this.APIUrl
@@ -119,7 +118,7 @@ class M365DSCGraphAPIRuleEvaluation : M365DSCResourceBase
         do
         {
             # Make the API request
-            $response = Invoke-MgGraphRequest -Uri $uri -Method GET
+            $response = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
 
             # Add the current page of results to the array
             $DSCConvertedInstances += $response.($this.InstancesProperty)

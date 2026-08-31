@@ -303,8 +303,8 @@ class O365Group : M365DSCResourceBase
                         $userId = (Get-MgUser -UserId $member).Id
 
                         # There are no cmldet to remove members from group available at the time of writing this resource (March 8th 2022)
-                        $url = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/groups/$($ADGroup[0].Id)/members/$userId/`$ref"
-                        Invoke-MgGraphRequest -Method DELETE -Uri $url | Out-Null
+                        $url = "/v1.0/groups/$($ADGroup[0].Id)/members/$userId/`$ref"
+                        Invoke-M365DSCGraphRequest -Method DELETE -Uri $url | Out-Null
                     }
                 }
             }
@@ -361,8 +361,8 @@ class O365Group : M365DSCResourceBase
                         $userId = (Get-MgUser -UserId $owner).Id
 
                         # There are no cmldet to remove members from group available at the time of writing this resource (March 8th 2022)
-                        $url = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)v1.0/groups/$($ADGroup[0].Id)/owners/$userId/`$ref"
-                        Invoke-MgGraphRequest -Method DELETE -Uri $url | Out-Null
+                        $url = "/v1.0/groups/$($ADGroup[0].Id)/owners/$userId/`$ref"
+                        Invoke-M365DSCGraphRequest -Method DELETE -Uri $url | Out-Null
                     }
                 }
             }

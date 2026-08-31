@@ -315,8 +315,6 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
             }
             $boundParameters.Add('@odata.type', $policyType)
 
-            #Write-Verbose ($boundParameters | ConvertTo-Json -Depth 20)
-
             $policy = New-MgBetaDeviceManagementDeviceEnrollmentConfiguration `
                 -BodyParameter ([hashtable]$boundParameters)
 
@@ -336,7 +334,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
                     $Body = @{
                         priority = $this.Priority
                     }
-                    Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $Body
+                    Invoke-M365DSCGraphRequest -Method POST -Uri $Uri -Body $Body
                 }
             }
         }
@@ -397,7 +395,7 @@ class IntuneDeviceEnrollmentPlatformRestriction : M365DSCResourceBase
                     $Body = @{
                         priority = $this.Priority
                     }
-                    Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $Body
+                    Invoke-M365DSCGraphRequest -Method POST -Uri $Uri -Body $Body
                 }
             }
         }

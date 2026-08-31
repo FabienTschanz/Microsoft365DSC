@@ -238,7 +238,7 @@ class IntuneDeviceEnrollmentLimitRestriction : M365DSCResourceBase
                     $body = @{
                         priority = $this.Priority
                     }
-                    Invoke-MgGraphRequest -Method POST -Uri $uri -Body $body
+                    Invoke-M365DSCGraphRequest -Method POST -Uri $uri -Body $body
                 }
             }
         }
@@ -268,7 +268,7 @@ class IntuneDeviceEnrollmentLimitRestriction : M365DSCResourceBase
                     $body = @{
                         priority = $this.Priority
                     }
-                    Invoke-MgGraphRequest -Method POST -Uri $uri -Body $body
+                    Invoke-M365DSCGraphRequest -Method POST -Uri $uri -Body $body
                 }
             }
         }

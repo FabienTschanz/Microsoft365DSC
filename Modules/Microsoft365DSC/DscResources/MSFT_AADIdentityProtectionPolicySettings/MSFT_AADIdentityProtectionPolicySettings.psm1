@@ -76,8 +76,8 @@ class AADIdentityProtectionPolicySettings : M365DSCResourceBase
 
                 $this.ExportedInstance = $null
 
-                $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/identityProtection/policy'
-                $instance = Invoke-MgGraphRequest -Method Get -Uri $url
+                $url = '/beta/identityProtection/policy'
+                $instance = Invoke-M365DSCGraphRequest -Method Get -Uri $url
             }
             else
             {
@@ -135,9 +135,8 @@ class AADIdentityProtectionPolicySettings : M365DSCResourceBase
 
         $updateJSON = ConvertTo-Json $updateParameters
         Write-Verbose -Message "Updating the AAD Identity Protection Policy settings with values: $updateJSON"
-        $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/identityProtection/policy'
-
-        Invoke-MgGraphRequest -Method PATCH -Uri $url -Body $updateJSON
+        $url = '/beta/identityProtection/policy'
+        Invoke-M365DSCGraphRequest -Method PATCH -Uri $url -Body $updateJSON
     }
 
     [bool] Test()
@@ -163,8 +162,8 @@ class AADIdentityProtectionPolicySettings : M365DSCResourceBase
 
         try
         {
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/identityProtection/policy'
-            [array] $exportedInstances = Invoke-MgGraphRequest -Method Get -Uri $url
+            $url = '/beta/identityProtection/policy'
+            [array] $exportedInstances = Invoke-M365DSCGraphRequest -Method Get -Uri $url
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

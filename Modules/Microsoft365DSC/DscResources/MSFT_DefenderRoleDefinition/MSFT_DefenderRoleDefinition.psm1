@@ -92,15 +92,15 @@ class DefenderRoleDefinition : M365DSCResourceBase
 
                 if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/roleManagement/defender/roleDefinitions/$($this.Id)"
-                    $response = Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction Stop
+                    $uri = "/beta/roleManagement/defender/roleDefinitions/$($this.Id)"
+                    $response = Invoke-M365DSCGraphRequest -Method GET -Uri $uri -ErrorAction Stop
                     [array]$definition = $response.value
                 }
                 if ($null -eq $definition -or $definition.Length -eq 0)
                 {
                     Write-Verbose -Message "No Defender Role Definition {$($this.Id)} was found by Identity. Trying to retrieve by DisplayName"
-                    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/roleManagement/defender/roleDefinitions/?`$filter=displayName eq '$($this.DisplayName)'"
-                    $response = Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction SilentlyContinue
+                    $uri = "/beta/roleManagement/defender/roleDefinitions/?`$filter=displayName eq '$($this.DisplayName)'"
+                    $response = Invoke-M365DSCGraphRequest -Method GET -Uri $uri -ErrorAction SilentlyContinue
                     [Array]$definition = $response.value
                 }
 
@@ -186,8 +186,8 @@ class DefenderRoleDefinition : M365DSCResourceBase
                 )
             }
 
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/roleManagement/defender/roleDefinitions"
-            $response = Invoke-MgGraphRequest -Method POST -Uri $uri -Body $newParams
+            $uri = "/beta/roleManagement/defender/roleDefinitions"
+            $response = Invoke-M365DSCGraphRequest -Method POST -Uri $uri -Body $newParams
         }
         elseif ($this.Ensure -eq 'Present' -and $currentDefinition.Ensure -eq 'Present')
         {
@@ -203,14 +203,14 @@ class DefenderRoleDefinition : M365DSCResourceBase
                 )
             }
 
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/roleManagement/defender/roleDefinitions/$($currentDefinition.Id)"
-            $response = Invoke-MgGraphRequest -Method PATCH -Uri $uri -Body $updateParams
+            $uri = "/beta/roleManagement/defender/roleDefinitions/$($currentDefinition.Id)"
+            $response = Invoke-M365DSCGraphRequest -Method PATCH -Uri $uri -Body $updateParams
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentDefinition.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing Defender Role Definition {$($this.DisplayName)}"
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/roleManagement/defender/roleDefinitions/$($currentDefinition.Id)"
-            $response = Invoke-MgGraphRequest -Method DELETE -Uri $uri
+            $uri = "/beta/roleManagement/defender/roleDefinitions/$($currentDefinition.Id)"
+            $response = Invoke-M365DSCGraphRequest -Method DELETE -Uri $uri
         }
     }
 
@@ -237,8 +237,8 @@ class DefenderRoleDefinition : M365DSCResourceBase
 
         try
         {
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/roleManagement/defender/roleDefinitions"
-            [array]$roleDefinitions = (Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction Stop).value
+            $uri = "/beta/roleManagement/defender/roleDefinitions"
+            [array]$roleDefinitions = (Invoke-M365DSCGraphRequest -Method GET -Uri $uri -ErrorAction Stop).value
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

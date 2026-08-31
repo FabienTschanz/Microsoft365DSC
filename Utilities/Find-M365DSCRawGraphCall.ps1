@@ -76,7 +76,7 @@ param
 
 $ErrorActionPreference = 'Stop'
 
-$script:RawCommandNames = @('Invoke-MgGraphRequest')
+$script:RawCommandNames = @('Invoke-MgGraphRequest', 'Invoke-M365DSCGraphRequest')
 
 <#
 .SYNOPSIS

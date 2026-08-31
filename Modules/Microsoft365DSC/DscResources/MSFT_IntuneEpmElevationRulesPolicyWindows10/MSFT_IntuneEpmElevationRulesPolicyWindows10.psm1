@@ -171,7 +171,7 @@ class IntuneEpmElevationRulesPolicyWindows10 : M365DSCResourceBase
                 if (-not [System.String]::IsNullOrEmpty($rule.certificatePayloadWithReusableSetting))
                 {
                     $certificatePolicyId = $rule.certificatePayloadWithReusableSetting
-                    $certificatePolicy = Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$certificatePolicyId" -Method GET -SkipHttpErrorCheck -ErrorAction SilentlyContinue
+                    $certificatePolicy = Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$certificatePolicyId" -Method GET -SkipHttpErrorCheck -ErrorAction SilentlyContinue
                     if ($certificatePolicy -is [hashtable] -and $certificatePolicy.ContainsKey('error'))
                     {
                         throw "Could not retrieve the certificate policy with id '$certificatePolicyId' as a reusable Setting for the Elevation Rule with DisplayName '$($rule.name)' in policy '$($getValue.Name)'."
@@ -269,7 +269,7 @@ class IntuneEpmElevationRulesPolicyWindows10 : M365DSCResourceBase
             # Resolve certificate policy display name back to id
             if (-not [System.String]::IsNullOrEmpty($rule.CertificatePayloadWithReusableSetting))
             {
-                $certificatePolicy = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$filter=displayName eq '$($rule.CertificatePayloadWithReusableSetting)'").value
+                $certificatePolicy = (Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$filter=displayName eq '$($rule.CertificatePayloadWithReusableSetting)'").value
                 if ($null -eq $certificatePolicy -or $certificatePolicy.Count -eq 0)
                 {
                     throw "Could not find a certificate policy with display name '$($rule.CertificatePayloadWithReusableSetting)'. Please create the certificate policy first and use its display name in the ElevationRuleName.CertificatePayloadWithReusableSetting property."

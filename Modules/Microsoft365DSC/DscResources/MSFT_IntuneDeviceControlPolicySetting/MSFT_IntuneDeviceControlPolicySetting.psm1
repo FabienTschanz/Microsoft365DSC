@@ -110,7 +110,7 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
                 #region resource generator code
                 if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    $getValue = Invoke-MgGraphRequest `
+                    $getValue = Invoke-M365DSCGraphRequest `
                         -Uri "/beta/deviceManagement/reusablePolicySettings/$($this.Id)?`$select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')" `
                         -Method GET `
                         -SkipHttpErrorCheck `
@@ -128,7 +128,7 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
 
                     if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
                     {
-                        $getValue = (Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$filter=DisplayName eq '$($this.DisplayName -replace "'", "''")' and settingDefinitionId eq 'device_vendor_msft_defender_configuration_devicecontrol_policygroups_{groupid}_groupdata'&select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')" `
+                        $getValue = (Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings?`$filter=DisplayName eq '$($this.DisplayName -replace "'", "''")' and settingDefinitionId eq 'device_vendor_msft_defender_configuration_devicecontrol_policygroups_{groupid}_groupdata'&select=$($this.ResourceCache['PropertiesToRetrieve'] -join ',')" `
                             -Method GET `
                             -SkipHttpErrorCheck `
                             -ErrorAction SilentlyContinue).value
@@ -374,7 +374,7 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
             $createParameters.Remove('Id') | Out-Null
 
             #region resource generator code
-            $null = Invoke-MgGraphRequest -Uri '/beta/deviceManagement/reusablePolicySettings' -Method POST -Body $($createParameters | ConvertTo-Json -Depth 20)
+            $null = Invoke-M365DSCGraphRequest -Uri '/beta/deviceManagement/reusablePolicySettings' -Method POST -Body $($createParameters | ConvertTo-Json -Depth 20)
             #endregion
         }
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
@@ -384,7 +384,7 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
             $updateParameters.Remove('Id') | Out-Null
 
             #region resource generator code
-            Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method PUT -Body $($updateParameters | ConvertTo-Json -Depth 20)
+            Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method PUT -Body $($updateParameters | ConvertTo-Json -Depth 20)
             #endregion
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
@@ -393,7 +393,7 @@ class IntuneDeviceControlPolicySetting : M365DSCResourceBase
             #region resource generator code
             try
             {
-                Invoke-MgGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method DELETE
+                Invoke-M365DSCGraphRequest -Uri "/beta/deviceManagement/reusablePolicySettings/$($currentInstance.Id)" -Method DELETE
             }
             catch
             {

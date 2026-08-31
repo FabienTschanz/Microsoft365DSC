@@ -2755,6 +2755,251 @@ function Invoke-M365DSCLegacyBatchRequest
 
 <#
 .SYNOPSIS
+    Normalizes a Graph request URI to the leading-slash, version-prefixed form.
+
+.DESCRIPTION
+    Resources build Graph URIs two ways: an absolute URL, usually by concatenating the connection
+    profile's ResourceUrl with 'beta/...', or a relative '/beta/...' path. This function normalizes
+    both forms to the latter in order for the batch request to be built consistently.
+
+.PARAMETER Uri
+    The URI to normalize.
+
+.OUTPUTS
+    System.String
+#>
+function ConvertTo-M365DSCGraphRelativeUri
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Uri
+    )
+
+    $relative = $Uri
+    if ($relative -match '^[a-z][a-z0-9+.-]*://')
+    {
+        $parsed = $null
+        if ([System.Uri]::TryCreate($relative, [System.UriKind]::Absolute, [ref] $parsed))
+        {
+            $relative = $parsed.PathAndQuery
+        }
+    }
+
+    if (-not $relative.StartsWith('/'))
+    {
+        $relative = '/' + $relative
+    }
+
+    return $relative
+}
+
+<#
+.SYNOPSIS
+    Resolves Invoke-MgxRequest once per session and caches the CommandInfo.
+
+.DESCRIPTION
+    Returns $null on PowerShell versions below 7.6 and when M365DSC.mgx is not installed for callers
+    to fall back to the Microsoft Graph SDK.
+
+.OUTPUTS
+    System.Management.Automation.CommandInfo
+#>
+function Get-M365DSCMgxRequestCommand
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.CommandInfo])]
+    param ()
+
+    if (-not $Script:M365DSCMgxRequestCommandResolved)
+    {
+        $Script:M365DSCMgxRequestCommandResolved = $true
+        if ($PSVersionTable.PSVersion -ge [Version] '7.6')
+        {
+            $Script:M365DSCMgxRequestCommand = Get-Command -Name 'Invoke-MgxRequest' -ErrorAction SilentlyContinue
+        }
+    }
+
+    return $Script:M365DSCMgxRequestCommand
+}
+
+<#
+.SYNOPSIS
+    Sends a single Microsoft Graph request through Mgx when it is available.
+
+.DESCRIPTION
+    Normalizes the URI, then sends the request through Mgx on PowerShell 7.6 or later and through
+    the Microsoft Graph SDK otherwise.
+
+.PARAMETER Method
+    The HTTP method to use.
+
+.PARAMETER Uri
+    The request URI, absolute or relative.
+
+.PARAMETER Body
+    The request body. Serialized to JSON for Mgx unless it is already a string.
+
+.PARAMETER Headers
+    Additional request headers.
+
+.PARAMETER ContentType
+    The request content type. Mgx exposes no content type parameter, so supplying this sends the
+    request through the Microsoft Graph SDK.
+
+.PARAMETER SkipHttpErrorCheck
+    Returns the response for an error status instead of throwing. Mgx exposes no equivalent that
+    preserves the error body, so supplying this sends the request through the Microsoft Graph SDK.
+
+.PARAMETER All
+    Follows '@odata.nextLink' until the collection is complete and returns the first page with its
+    value replaced by every item.
+
+.OUTPUTS
+    System.Object
+#>
+function Invoke-M365DSCGraphRequest
+{
+    [CmdletBinding()]
+    [OutputType([System.Object])]
+    param
+    (
+        [Parameter()]
+        [ValidateSet('GET', 'POST', 'PATCH', 'PUT', 'DELETE')]
+        [System.String]
+        $Method = 'GET',
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Uri,
+
+        [Parameter()]
+        [System.Object]
+        $Body,
+
+        [Parameter()]
+        [System.Collections.IDictionary]
+        $Headers,
+
+        [Parameter()]
+        [System.String]
+        $ContentType,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $SkipHttpErrorCheck,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $All
+    )
+
+    $relativeUri = ConvertTo-M365DSCGraphRelativeUri -Uri $Uri
+    $mgxCommand = Get-M365DSCMgxRequestCommand
+    $useMgx = $null -ne $mgxCommand -and
+        -not $PSBoundParameters.ContainsKey('ContentType') -and
+        -not $SkipHttpErrorCheck
+
+    $firstPage = $null
+    $items = $null
+    $currentUri = $relativeUri
+
+    while ($true)
+    {
+        if ($useMgx)
+        {
+            $invokeParams = @{
+                ApiVersion  = if ($currentUri -match '^/beta') { 'beta' } else { 'v1.0' }
+                Method      = $Method
+                Uri         = [regex]::Replace($currentUri, '^/beta|^/v1.0', '')
+                ErrorAction = $ErrorActionPreference
+            }
+
+            if ($PSBoundParameters.ContainsKey('Body') -and $null -ne $Body)
+            {
+                $invokeParams['Body'] = if ($Body -is [System.String]) { $Body } else { $Body | ConvertTo-Json -Depth 99 -Compress }
+            }
+            if ($PSBoundParameters.ContainsKey('Headers') -and $null -ne $Headers -and $Headers.Keys.Count -gt 0)
+            {
+                $invokeParams['Headers'] = $Headers
+            }
+
+            $response = & $mgxCommand @invokeParams
+        }
+        else
+        {
+            $invokeParams = @{
+                Method      = $Method
+                Uri         = $currentUri
+                ErrorAction = $ErrorActionPreference
+            }
+
+            if ($PSBoundParameters.ContainsKey('Body') -and $null -ne $Body)
+            {
+                $invokeParams['Body'] = $Body
+            }
+            if ($PSBoundParameters.ContainsKey('Headers') -and $null -ne $Headers -and $Headers.Keys.Count -gt 0)
+            {
+                $invokeParams['Headers'] = $Headers
+            }
+            if ($PSBoundParameters.ContainsKey('ContentType'))
+            {
+                $invokeParams['ContentType'] = $ContentType
+            }
+            if ($SkipHttpErrorCheck)
+            {
+                $invokeParams['SkipHttpErrorCheck'] = $true
+            }
+
+            $response = Invoke-MgGraphRequest @invokeParams
+        }
+
+        if (-not $All)
+        {
+            return $response
+        }
+
+        if ($null -eq $response)
+        {
+            break
+        }
+
+        if ($null -eq $firstPage)
+        {
+            $firstPage = $response
+            $items = [System.Collections.Generic.List[System.Object]]::new()
+        }
+
+        foreach ($item in $response.value)
+        {
+            $items.Add($item)
+        }
+
+        $nextLink = $response.'@odata.nextLink'
+        if ([System.String]::IsNullOrEmpty($nextLink))
+        {
+            break
+        }
+
+        $currentUri = ConvertTo-M365DSCGraphRelativeUri -Uri $nextLink
+    }
+
+    if ($null -eq $firstPage)
+    {
+        return $null
+    }
+
+    $firstPage['value'] = $items.ToArray()
+    $firstPage.Remove('@odata.nextLink') | Out-Null
+
+    return $firstPage
+}
+
+<#
+.SYNOPSIS
     Sends Microsoft Graph batch requests with throttling backoff handling.
 
 .DESCRIPTION
@@ -3443,6 +3688,7 @@ Export-ModuleMember -Function @(
     'Install-M365DSCDevBranch',
     'Invoke-M365DSCClassResourceInPowerShellCore',
     'Invoke-M365DSCGraphBatchRequest',
+    'Invoke-M365DSCGraphRequest',
     'New-M365DSCCmdletDocumentation',
     'New-M365DSCMissingResourcesExample',
     'Remove-M365DSCAuthenticationParameter',

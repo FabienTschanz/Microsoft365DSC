@@ -233,7 +233,7 @@ class AADRemoteNetwork : M365DSCResourceBase
                 '@context' = '#$delta'
                 value      = @(@{})
             }
-            Invoke-MgGraphRequest -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
+            Invoke-M365DSCGraphRequest -Uri "/beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
 
             #adding forwarding profiles if required
             if ($forwardingProfilesList.Count -gt 0)
@@ -242,7 +242,7 @@ class AADRemoteNetwork : M365DSCResourceBase
                     '@context' = '#$delta'
                     value      = $forwardingProfilesList
                 }
-                Invoke-MgGraphRequest -Uri "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
+                Invoke-M365DSCGraphRequest -Uri "/beta/networkAccess/connectivity/remoteNetworks/$($currentInstance.Id)/forwardingProfiles" -Method Patch -Body $params
             }
         }
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')

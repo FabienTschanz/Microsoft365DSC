@@ -22,9 +22,9 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith { return "Credentials" }
 
             Mock -CommandName Get-MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSetting -MockWith {}
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {}
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {}
             Mock -CommandName Remove-MgBetaDeviceManagementAndroidManagedStoreAccountEnterpriseSetting -MockWith {}
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                 @{ status = "Success" }
             }
             # Hide Write-M365DSCHost output during the tests
@@ -90,8 +90,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 # Retrieve current instance to verify bindStatus and ensure values
                 $currentInstance = (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceManagementEnrollmentAndroidGooglePlay' -Property $testParams).Get().ToHashtable()
 
-                # Mock to simulate the unbind action with Invoke-MgGraphRequest
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                # Mock to simulate the unbind action with Invoke-M365DSCGraphRequest
+                Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     @{ status = "Success" }
                 }
             }
@@ -115,11 +115,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceManagementEnrollmentAndroidGooglePlay' -Property $testParams).Test() | Should -Be $false
             }
 
-            It '2.5 Should call Invoke-MgGraphRequest to remove the instance from Set method' {
+            It '2.5 Should call Invoke-M365DSCGraphRequest to remove the instance from Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceManagementEnrollmentAndroidGooglePlay' -Property $testParams).Set()
 
                 # Verify if unbind was called
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 0
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 0
             }
         }
 

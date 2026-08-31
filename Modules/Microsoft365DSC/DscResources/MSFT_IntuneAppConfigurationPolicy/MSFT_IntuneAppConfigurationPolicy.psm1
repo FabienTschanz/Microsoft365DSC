@@ -376,8 +376,8 @@ class IntuneAppConfigurationPolicy : M365DSCResourceBase
                 }
                 #apps handled separately as not supported by Update-MgBetaDeviceAppManagementTargetedManagedAppConfiguration
                 Write-Verbose -Message "Updating Apps for Intune App Configuration Policy {$($this.DisplayName)}"
-                $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/targetedManagedAppConfigurations('$($currentconfigPolicy.Id)')/targetApps"
-                Invoke-MgGraphRequest -Method POST -Uri $Uri -Body $($appsBody | ConvertTo-Json -Depth 10)
+                $Uri = "/beta/deviceAppManagement/targetedManagedAppConfigurations('$($currentconfigPolicy.Id)')/targetApps"
+                Invoke-M365DSCGraphRequest -Method POST -Uri $Uri -Body $($appsBody | ConvertTo-Json -Depth 10)
             }
 
             Update-MgBetaDeviceAppManagementTargetedManagedAppConfiguration -TargetedManagedAppConfigurationId $currentconfigPolicy.Id -BodyParameter $updateParams

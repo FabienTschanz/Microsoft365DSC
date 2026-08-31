@@ -172,7 +172,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -like "*privilegedAccess/aadGroups/resources*" } -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Uri -like "*privilegedAccess/aadGroups/resources*" } -MockWith {
                     return @(
                         @{
                             Value = @{

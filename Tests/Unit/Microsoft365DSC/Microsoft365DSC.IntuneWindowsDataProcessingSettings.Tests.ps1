@@ -35,10 +35,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return 'Credentials'
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'PATCH' } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'PATCH' } -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                 return @{
                     areDataProcessorServiceForWindowsFeaturesEnabled = $true
                     hasValidWindowsLicense = $true
@@ -95,7 +95,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Update cmdlet from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsDataProcessingSettings' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 1
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 1
             }
         }
 

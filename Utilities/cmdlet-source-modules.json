@@ -204,6 +204,7 @@
   "Remove-MgBetaGroupFromLifecyclePolicy": "Microsoft.Graph.Beta.Groups",
   "Remove-MgBetaGroupMemberDirectoryObjectByRef": "Microsoft.Graph.Beta.Groups",
   "Update-MgBetaGroup": "Microsoft.Graph.Beta.Groups",
+  "Get-MgBetaDirectoryDeletedItemAsGroup": "Microsoft.Graph.Beta.Identity.DirectoryManagement",
   "Get-MgBetaSubscribedSku": "Microsoft.Graph.Beta.Identity.DirectoryManagement",
   "Get-MgBetaRoleManagementDirectoryRoleAssignment": "Microsoft.Graph.Beta.Identity.Governance",
   "New-MgBetaRoleManagementDirectoryRoleAssignment": "Microsoft.Graph.Beta.Identity.Governance",

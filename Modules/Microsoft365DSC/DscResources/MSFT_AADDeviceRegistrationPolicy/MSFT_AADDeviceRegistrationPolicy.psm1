@@ -354,9 +354,9 @@ class AADDeviceRegistrationPolicy : M365DSCResourceBase
                 }
             }
         }
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/deviceRegistrationPolicy'
+        $uri = '/beta/policies/deviceRegistrationPolicy'
         Write-Verbose -Message "Updating Device Registration Policy with payload:`r`n$(ConvertTo-Json $updateParameters -Depth 10)"
-        Invoke-MgGraphRequest -Method PUT -Uri $uri -Body $updateParameters
+        Invoke-M365DSCGraphRequest -Method PUT -Uri $uri -Body $updateParameters
     }
 
     [bool] Test()

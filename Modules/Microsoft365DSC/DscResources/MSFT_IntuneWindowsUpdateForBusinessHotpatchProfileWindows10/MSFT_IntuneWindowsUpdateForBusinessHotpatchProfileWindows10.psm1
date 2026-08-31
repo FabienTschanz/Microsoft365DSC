@@ -110,7 +110,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
                 #region resource generator code
                 if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
-                    $getValue = Invoke-MgGraphRequest -Method GET -Uri "$($this.ResourceCache['BaseUrl'])/$($this.Id)" -SkipHttpErrorCheck -ErrorAction SilentlyContinue
+                    $getValue = Invoke-M365DSCGraphRequest -Method GET -Uri "$($this.ResourceCache['BaseUrl'])/$($this.Id)" -SkipHttpErrorCheck -ErrorAction SilentlyContinue
                     if ($getValue -is [hashtable] -and $getValue.ContainsKey('error'))
                     {
                         $getValue = $null
@@ -123,7 +123,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
 
                     if (-not [System.String]::IsNullOrEmpty($this.DisplayName))
                     {
-                        $getValue = (Invoke-MgGraphRequest -Method GET -Uri $this.ResourceCache['BaseUrl']).value | Where-Object -FilterScript {
+                        $getValue = (Invoke-M365DSCGraphRequest -Method GET -Uri $this.ResourceCache['BaseUrl']).value | Where-Object -FilterScript {
                             $_.displayName -eq $($this.DisplayName -replace "'", "''")
                         }
                     }
@@ -164,7 +164,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
             $assignmentsValues = Get-M365DSCIntuneExpandedAssignments -Instance $getValue
             if ($null -eq $assignmentsValues)
             {
-                $assignmentsValues = (Invoke-MgGraphRequest -Uri "$($this.ResourceCache['BaseUrl'])/$($resolvedId)/assignments").value
+                $assignmentsValues = (Invoke-M365DSCGraphRequest -Uri "$($this.ResourceCache['BaseUrl'])/$($resolvedId)/assignments").value
             }
             $assignmentResult = @()
             if ($assignmentsValues.Count -gt 0)
@@ -213,7 +213,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
             $createParameters.Remove('Id') | Out-Null
 
             #region resource generator code
-            $policy = Invoke-MgGraphRequest -Method POST -Uri $this.ResourceCache['BaseUrl'] `
+            $policy = Invoke-M365DSCGraphRequest -Method POST -Uri $this.ResourceCache['BaseUrl'] `
                 -Body $($createParameters | ConvertTo-Json -Depth 10)
 
             if ($policy.Id)
@@ -235,7 +235,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
             $updateParameters.Remove('Id') | Out-Null
 
             #region resource generator code
-            Invoke-MgGraphRequest -Method PATCH -Uri "$($this.ResourceCache['BaseUrl'])/$($currentInstance.Id)" `
+            Invoke-M365DSCGraphRequest -Method PATCH -Uri "$($this.ResourceCache['BaseUrl'])/$($currentInstance.Id)" `
                 -Body $($updateParameters | ConvertTo-Json -Depth 10)
 
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
@@ -250,7 +250,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
         {
             Write-Verbose -Message "Removing the Intune Windows Update For Business Hotpatch Profile for Windows10 with Id {$($currentInstance.Id)}"
             #region resource generator code
-            Invoke-MgGraphRequest -Method DELETE -Uri "$($this.ResourceCache['BaseUrl'])/$($currentInstance.Id)"
+            Invoke-M365DSCGraphRequest -Method DELETE -Uri "$($this.ResourceCache['BaseUrl'])/$($currentInstance.Id)"
             #endregion
         }
     }
@@ -284,7 +284,7 @@ class IntuneWindowsUpdateForBusinessHotpatchProfileWindows10 : M365DSCResourceBa
             {
                 $filterQuery += "&`$filter=$($this.Filter)"
             }
-            [array]$getValue = (Invoke-MgGraphRequest -Method GET -Uri "/beta/deviceManagement/windowsQualityUpdatePolicies$filterQuery" -ErrorAction Stop).value
+            [array]$getValue = (Invoke-M365DSCGraphRequest -Method GET -Uri "/beta/deviceManagement/windowsQualityUpdatePolicies$filterQuery" -ErrorAction Stop).value
             #endregion
 
             $i = 1

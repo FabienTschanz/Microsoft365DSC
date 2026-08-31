@@ -39,7 +39,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -like "*/reusablePolicySettings/*" } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Uri -like "*/reusablePolicySettings/*" } -MockWith {
                 return @{
                     id = 'FakeStringValue'
                     displayName = 'FakeStringValue'
@@ -55,7 +55,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                 return @{
                     value = @(
                         @{
@@ -117,11 +117,11 @@ echo false'
                     Credential = $Credential;
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     return $null
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -like "*/reusablePolicySettings?*" } -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Uri -like "*/reusablePolicySettings?*" } -MockWith {
                     return $null
                 }
             }
@@ -133,7 +133,7 @@ echo false'
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceComplianceScriptLinux' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 3
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 3
             }
         }
 
@@ -160,7 +160,7 @@ echo false'
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceComplianceScriptLinux' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 2
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 2
             }
         }
 
@@ -205,7 +205,7 @@ echo true'
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceComplianceScriptLinux' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 2
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 2
             }
         }
 

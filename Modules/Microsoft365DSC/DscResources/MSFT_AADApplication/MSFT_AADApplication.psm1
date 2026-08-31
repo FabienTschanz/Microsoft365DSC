@@ -1115,7 +1115,7 @@ class AADApplication : M365DSCResourceBase
 
         if ($this.GetBoundParameters().ContainsKey('Logo'))
         {
-            Invoke-MgGraphRequest -Uri "/beta/applications/$($currentAADApp.ObjectId)/logo" -Method PUT -Body ([System.Convert]::FromBase64String($this.Logo)) -ContentType 'image/*'
+            Invoke-M365DSCGraphRequest -Uri "/beta/applications/$($currentAADApp.ObjectId)/logo" -Method PUT -Body ([System.Convert]::FromBase64String($this.Logo)) -ContentType 'image/*'
         }
 
         if ($needToUpdatePermissions -and $null -ne $this.Permissions)
@@ -1309,8 +1309,8 @@ class AADApplication : M365DSCResourceBase
             $onPremisesPayload = ConvertTo-Json $onPremisesPublishingValue -Depth 10 -Compress
             Write-Verbose -Message "Updating the OnPremisesPublishing settings for application {$($currentAADApp.DisplayName)} with payload: $onPremisesPayload"
 
-            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/applications/$($currentAADApp.ObjectId)/onPremisesPublishing"
-            Invoke-MgGraphRequest -Method 'PATCH' `
+            $Uri = "/beta/applications/$($currentAADApp.ObjectId)/onPremisesPublishing"
+            Invoke-M365DSCGraphRequest -Method 'PATCH' `
                 -Uri $Uri `
                 -Body $onPremisesPayload
         }

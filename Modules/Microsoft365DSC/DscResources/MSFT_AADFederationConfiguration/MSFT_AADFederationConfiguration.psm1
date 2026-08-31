@@ -113,7 +113,7 @@ class AADFederationConfiguration : M365DSCResourceBase
                 $nullResult.Ensure = 'Absent'
 
                 $uri = '/beta/directory/federationConfigurations/microsoft.graph.samlOrWsFedExternalDomainFederation'
-                $instances = Invoke-MgGraphRequest $uri -Method Get
+                $instances = Invoke-M365DSCGraphRequest -Uri $uri -Method Get -All
                 if (-not [System.String]::IsNullOrEmpty($this.Id))
                 {
                     $instance = $instances.value | Where-Object -FilterScript { $_.id -eq $this.Id }
@@ -215,7 +215,7 @@ class AADFederationConfiguration : M365DSCResourceBase
             $uri = '/beta/directory/federationConfigurations/microsoft.graph.samlOrWsFedExternalDomainFederation'
             $body = ConvertTo-Json $instanceParams -Depth 10 -Compress
             Write-Verbose -Message "Creating federation configuration {$($this.DisplayName)} with:`r`n$body"
-            Invoke-MgGraphRequest -Uri $uri -Method POST -Body $body
+            Invoke-M365DSCGraphRequest -Uri $uri -Method POST -Body $body
         }
         # UPDATE
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
@@ -223,14 +223,14 @@ class AADFederationConfiguration : M365DSCResourceBase
             $uri = "/beta/directory/federationConfigurations/microsoft.graph.samlOrWsFedExternalDomainFederation/$($currentInstance.Id)"
             $body = ConvertTo-Json $instanceParams -Depth 10 -Compress
             Write-Verbose -Message "Updating federation configuration {$($this.DisplayName)} with:`r`n$body"
-            Invoke-MgGraphRequest -Uri $uri -Method PATCH -Body $body
+            Invoke-M365DSCGraphRequest -Uri $uri -Method PATCH -Body $body
         }
         # REMOVE
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             $uri = "/beta/directory/federationConfigurations/microsoft.graph.samlOrWsFedExternalDomainFederation/$($currentInstance.Id)"
             Write-Verbose -Message "Removing federation configuration {$($this.DisplayName)}"
-            Invoke-MgGraphRequest -Uri $uri -Method DELETE
+            Invoke-M365DSCGraphRequest -Uri $uri -Method DELETE
         }
     }
 
@@ -257,12 +257,12 @@ class AADFederationConfiguration : M365DSCResourceBase
 
         try
         {
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/directory/federationConfigurations/microsoft.graph.samlOrWsFedExternalDomainFederation'
+            $uri = '/beta/directory/federationConfigurations/microsoft.graph.samlOrWsFedExternalDomainFederation'
             if (-not [System.String]::IsNullOrEmpty($this.Filter))
             {
                 $uri += "?`$filter=$($this.Filter)"
             }
-            [array] $exportedInstances = Invoke-MgGraphRequest $uri -Method Get
+            [array] $exportedInstances = Invoke-M365DSCGraphRequest -Uri $uri -Method Get -All
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

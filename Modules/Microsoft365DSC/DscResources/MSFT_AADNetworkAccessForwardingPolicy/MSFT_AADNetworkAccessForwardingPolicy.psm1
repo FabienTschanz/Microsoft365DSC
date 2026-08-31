@@ -200,7 +200,7 @@ class AADNetworkAccessForwardingPolicy : M365DSCResourceBase
                 rules = $rulesParam
             }
 
-            Invoke-MgGraphRequest -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/networkAccess/forwardingPolicies/$($currentPolicy.ID)/updatePolicyRules") -Method Post -Body $updateParams
+            Invoke-M365DSCGraphRequest -Uri "/beta/networkAccess/forwardingPolicies/$($currentPolicy.ID)/updatePolicyRules" -Method Post -Body $updateParams
         }
         else
         {

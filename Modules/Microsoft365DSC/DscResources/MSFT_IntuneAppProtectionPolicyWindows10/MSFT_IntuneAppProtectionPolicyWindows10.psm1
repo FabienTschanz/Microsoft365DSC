@@ -393,7 +393,7 @@ class IntuneAppProtectionPolicyWindows10 : M365DSCResourceBase
                     apps = $updateParameters.apps
                 }
                 $updateParameters.Remove('apps') | Out-Null
-                Invoke-MgGraphRequest -Method POST `
+                Invoke-M365DSCGraphRequest -Method POST `
                     -Uri "beta/deviceAppManagement/windowsManagedAppProtections('$($currentInstance.Id)')/targetApps" `
                     -Body $($targetAppsBody | ConvertTo-Json -Depth 10)
             }

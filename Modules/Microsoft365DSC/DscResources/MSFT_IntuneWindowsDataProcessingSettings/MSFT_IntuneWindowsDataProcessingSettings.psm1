@@ -79,7 +79,7 @@ class IntuneWindowsDataProcessingSettings : M365DSCResourceBase
             $this.AddTelemetry('Get')
             #endregion
 
-            $settings = Invoke-MgGraphRequest -Method GET -Uri '/beta/deviceManagement/dataProcessorServiceForWindowsFeaturesOnboarding'
+            $settings = Invoke-M365DSCGraphRequest -Method GET -Uri '/beta/deviceManagement/dataProcessorServiceForWindowsFeaturesOnboarding'
 
             $results = @{
                 IsSingleInstance                                 = 'Yes'
@@ -127,7 +127,7 @@ class IntuneWindowsDataProcessingSettings : M365DSCResourceBase
 
         $boundParameters = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
         $boundParameters = Rename-M365DSCCimInstanceParameter -Properties $boundParameters
-        Invoke-MgGraphRequest -Method PATCH -Uri '/beta/deviceManagement/dataProcessorServiceForWindowsFeaturesOnboarding' -Body $boundParameters
+        Invoke-M365DSCGraphRequest -Method PATCH -Uri '/beta/deviceManagement/dataProcessorServiceForWindowsFeaturesOnboarding' -Body $boundParameters
     }
 
     [bool] Test()

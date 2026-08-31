@@ -167,7 +167,7 @@ class IntuneAppleMDMPushNotificationCertificate : M365DSCResourceBase
             $consentInstance = Get-MgBetaDeviceManagementDataSharingConsent -DataSharingConsentId 'appleMDMPushCertificate'
             if ($consentInstance.Granted -eq $False)
             {
-                Invoke-MgGraphRequest -Method POST -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/deviceManagement/dataSharingConsents/appleMDMPushCertificate/consentToDataSharing') -Headers @{ 'Content-Type' = 'application/json' }
+                Invoke-M365DSCGraphRequest -Method POST -Uri '/beta/deviceManagement/dataSharingConsents/appleMDMPushCertificate/consentToDataSharing' -Headers @{ 'Content-Type' = 'application/json' }
             }
             else
             {

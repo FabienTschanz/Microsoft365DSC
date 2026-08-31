@@ -72,8 +72,8 @@ class VivaEngagementRoleMember : M365DSCResourceBase
                 $this.AddTelemetry('Get')
                 #endregion
 
-                $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/employeeExperience/roles'
-                $roles = Invoke-MgGraphRequest -Uri $uri -Method GET
+                $uri = '/beta/employeeExperience/roles'
+                $roles = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
                 $roleInstance = $roles.value | Where-Object -FilterScript { $_.displayName -eq $this.role }
 
                 if ([System.String]::IsNullOrEmpty($roleInstance))
@@ -86,8 +86,8 @@ class VivaEngagementRoleMember : M365DSCResourceBase
                 $roleInstance = $this.ExportedInstance
             }
 
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/employeeExperience/roles/$($roleInstance.id)/members"
-            $idsOfMembers = Invoke-MgGraphRequest -Uri $uri -Method GET
+            $uri = "/beta/employeeExperience/roles/$($roleInstance.id)/members"
+            $idsOfMembers = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
 
             $membersValue = @()
             foreach ($memberId in $idsOfMembers.value)
@@ -137,8 +137,8 @@ class VivaEngagementRoleMember : M365DSCResourceBase
 
         $currentInstance = $this.Get().ToHashtable()
 
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/employeeExperience/roles'
-        $roles = Invoke-MgGraphRequest -Uri $uri -Method GET
+        $uri = '/beta/employeeExperience/roles'
+        $roles = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
         $roleInstance = $roles.value | Where-Object -FilterScript { $_.displayName -eq $this.role }
 
         $membersDiff = Compare-Object -ReferenceObject $currentInstance.Members -DifferenceObject $this.Members
@@ -151,18 +151,18 @@ class VivaEngagementRoleMember : M365DSCResourceBase
                 if ($member.SideIndicator -eq '=>')
                 {
                     Write-Verbose -Message "Adding user {$($member.InputObject)} to role {$($this.Role)}"
-                    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/employeeExperience/roles/$($roleInstance.id)/members"
+                    $uri = "/beta/employeeExperience/roles/$($roleInstance.id)/members"
                     $body = @{
                         'user@odata.bind' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/users('" + $userInfo.Id + "')"
                     }
                     Write-Verbose -Message "POST request to $uri with:`r`n$(ConvertTo-Json $body -Depth 10)"
-                    Invoke-MgGraphRequest -Uri $uri -Method POST -Body $body
+                    Invoke-M365DSCGraphRequest -Uri $uri -Method POST -Body $body
                 }
                 else
                 {
                     Write-Verbose -Message "Removing user {$($member.InputObject)} from role {$($this.Role)}"
-                    $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/employeeExperience/roles/$($roleInstance.id)/members/$($userInfo.Id)"
-                    Invoke-MgGraphRequest -Uri $uri -Method DELETE
+                    $uri = "/beta/employeeExperience/roles/$($roleInstance.id)/members/$($userInfo.Id)"
+                    Invoke-M365DSCGraphRequest -Uri $uri -Method DELETE
                 }
             }
             else
@@ -195,9 +195,8 @@ class VivaEngagementRoleMember : M365DSCResourceBase
 
         try
         {
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/employeeExperience/roles'
-
-            [array]$roles = (Invoke-MgGraphRequest -Uri $uri -Method Get -ErrorAction Stop).value
+            $uri = '/beta/employeeExperience/roles'
+            [array]$roles = (Invoke-M365DSCGraphRequest -Uri $uri -Method Get -ErrorAction Stop).value
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

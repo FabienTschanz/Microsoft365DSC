@@ -100,8 +100,8 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
                 $nullResult = $this.GetBoundParameters()
                 $nullResult.Ensure = 'Absent'
 
-                $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
-                $instance = Invoke-MgGraphRequest -Uri $uri -Method GET
+                $uri = '/beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
+                $instance = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
             }
             else
             {
@@ -269,8 +269,8 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
 
         try
         {
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
-            $response = Invoke-MgGraphRequest -Uri $uri -Method GET
+            $uri = '/beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
+            $response = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
             [array] $exportedInstances = $response
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

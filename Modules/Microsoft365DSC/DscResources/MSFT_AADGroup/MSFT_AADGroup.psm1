@@ -504,8 +504,7 @@ class AADGroup : M365DSCResourceBase
         {
             Write-Verbose -Message "Checking to see if an existing deleted group exists with DisplayName {$($this.DisplayName)}"
             $restoringExisting = $false
-            # Not using Get-MgBetaDirectoryDeletedItemAsGroup because the URI from Find-MgGraphCommand is not correct
-            [Array]$groups = (Invoke-MgGraphRequest -Uri "/beta/directory/deletedItems/microsoft.graph.group?`$filter=DisplayName eq '$($this.DisplayName -replace "'", "''")'").value
+            [Array]$groups = Get-MgBetaDirectoryDeletedItemAsGroup -Filter "DisplayName eq '$($this.DisplayName -replace "'", "''")'"
             if ($groups.Length -gt 1)
             {
                 throw "Multiple deleted groups with the name {$($this.DisplayName)} were found. Cannot restore the existing group. Please ensure that you either have no instance of the group in the deleted list or that you have a single one."

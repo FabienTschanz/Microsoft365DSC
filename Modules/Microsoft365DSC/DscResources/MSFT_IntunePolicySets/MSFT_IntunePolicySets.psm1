@@ -263,8 +263,8 @@ class IntunePolicySets : M365DSCResourceBase
             if ($policy.id)
             {
                 $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
-                $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/policySets/$($policy.Id)/update"
-                Invoke-MgGraphRequest -Method POST -Uri ($url) -Body @{
+                $url = "/beta/deviceAppManagement/policySets/$($policy.Id)/update"
+                Invoke-M365DSCGraphRequest -Method POST -Uri $url -Body @{
                     assignments = $assignmentsHash
                 }
             }

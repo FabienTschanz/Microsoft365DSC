@@ -789,10 +789,10 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
 
     hidden [System.Object] GetDeviceConfigurationPolicyCertificate([System.String] $DeviceConfigurationPolicyId, [System.String] $CertificateName)
     {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName"
         try
         {
-            $result = Invoke-MgGraphRequest -Method Get -Uri $Uri 4>$null
+            $uri = "/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName"
+            $result = Invoke-M365DSCGraphRequest -Method Get -Uri $uri 4>$null
 
             if ($result.value)
             {
@@ -811,18 +811,16 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
     {
         foreach ($certificateId in $CertificateIds)
         {
-            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/$certificateId/`$ref"
+            $uri = "/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/$certificateId/`$ref"
             $ref = @{
                 '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$certificateId')"
             }
-            $null = Invoke-MgGraphRequest -Method DELETE -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
+            $null = Invoke-M365DSCGraphRequest -Method DELETE -Uri $uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
         }
     }
 
     hidden [void] UpdateDeviceConfigurationPolicyCertificateId([System.String] $DeviceConfigurationPolicyId, [System.String[]] $CertificateIds, [System.String] $CertificateName)
     {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/`$ref"
-
         if ($CertificateName -eq 'rootCertificatesForServerValidation')
         {
             $method = 'POST'
@@ -838,7 +836,8 @@ class IntuneDeviceConfigurationWiredNetworkPolicyWindows10 : M365DSCResourceBase
                 '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceManagement/deviceConfigurations('$certificateId')"
             }
 
-            $null = Invoke-MgGraphRequest -Method $method -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
+            $uri = "/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windowsWiredNetworkConfiguration/$CertificateName/`$ref"
+            $null = Invoke-M365DSCGraphRequest -Method $method -Uri $uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop 4>$null
         }
     }
 

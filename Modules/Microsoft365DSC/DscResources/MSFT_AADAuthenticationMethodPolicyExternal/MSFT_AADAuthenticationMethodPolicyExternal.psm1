@@ -102,7 +102,7 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
 
                 if (-not [string]::IsNullOrEmpty($this.DisplayName))
                 {
-                    $response = Invoke-MgGraphRequest -Method Get -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/authenticationMethodsPolicy/')
+                    $response = Invoke-M365DSCGraphRequest -Method Get -Uri '/beta/policies/authenticationMethodsPolicy/'
                     $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript { $_.DisplayName -eq $this.DisplayName }
                 }
 
@@ -260,7 +260,7 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Azure AD Authentication Method Policy External with name {$($currentInstance.displayName)}"
-            $response = Invoke-MgGraphRequest -Method Get -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/authenticationMethodsPolicy/')
+            $response = Invoke-M365DSCGraphRequest -Method Get -Uri '/beta/policies/authenticationMethodsPolicy/'
             $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript { $_.displayName -eq $currentInstance.displayName }
 
             $params.Remove('displayName') | Out-Null
@@ -271,7 +271,7 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing the Azure AD Authentication Method Policy External with Id {$($currentInstance.displayName)}"
-            $response = Invoke-MgGraphRequest -Method Get -Uri ((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/authenticationMethodsPolicy/')
+            $response = Invoke-M365DSCGraphRequest -Method Get -Uri '/beta/policies/authenticationMethodsPolicy/'
             $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript { $_.displayName -eq $currentInstance.displayName }
             Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $getValue.Id
         }

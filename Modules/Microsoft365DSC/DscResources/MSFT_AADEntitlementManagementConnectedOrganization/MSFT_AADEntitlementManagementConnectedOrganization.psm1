@@ -358,8 +358,8 @@ class AADEntitlementManagementConnectedOrganization : M365DSCResourceBase
 
             Write-Verbose -Message "Create Parameters: $(Convert-M365DscHashtableToString -Hashtable $CreateParameters)"
             $TenantIdValue = $CreateParameters.IdentitySources.TenantId
-            $url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/tenantRelationships/microsoft.graph.findTenantInformationByTenantId(tenantId='$TenantIdValue')"
-            $DomainName = (Invoke-MgGraphRequest -Method 'GET' -Uri $url).defaultDomainName
+            $url = "/beta/tenantRelationships/microsoft.graph.findTenantInformationByTenantId(tenantId='$TenantIdValue')"
+            $DomainName = (Invoke-M365DSCGraphRequest -Method 'GET' -Uri $url).defaultDomainName
             $newConnectedOrganization = New-MgBetaEntitlementManagementConnectedOrganization -Description $CreateParameters.Description -DisplayName $CreateParameters.DisplayName -State $CreateParameters.State -DomainName $DomainName
 
             foreach ($sponsor in $ExternalSponsorsValues)

@@ -39,7 +39,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-PSSession -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
             }
 
             $baseBody = @{
@@ -151,11 +151,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -match "reusablePolicySettings\/FakeStringValue\?*" -and $Method -eq 'GET' } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Uri -match "reusablePolicySettings\/FakeStringValue\?*" -and $Method -eq 'GET' } -MockWith {
                 return $baseBody
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Uri -match "reusablePolicySettings\?" -and $Method -eq 'GET' } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Uri -match "reusablePolicySettings\?" -and $Method -eq 'GET' } -MockWith {
                 return @{
                     value = @($baseBody)
                 }
@@ -203,7 +203,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential;
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' } -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'GET' } -MockWith {
                     return $null
                 }
             }
@@ -215,7 +215,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceControlPolicySetting' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'POST' } -Exactly 1
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'POST' } -Exactly 1
             }
         }
 
@@ -256,7 +256,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceControlPolicySetting' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'DELETE' } -Exactly 1
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'DELETE' } -Exactly 1
             }
         }
 
@@ -329,7 +329,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneDeviceControlPolicySetting' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'PUT' } -Exactly 1
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'PUT' } -Exactly 1
             }
         }
 

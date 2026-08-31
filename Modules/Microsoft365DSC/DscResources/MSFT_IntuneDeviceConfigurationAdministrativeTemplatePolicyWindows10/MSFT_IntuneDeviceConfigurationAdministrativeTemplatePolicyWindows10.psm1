@@ -671,8 +671,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
     {
         try
         {
-            $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/groupPolicyConfigurations/$DeviceConfigurationPolicyId/updateDefinitionValues"
-
+            $Uri = "/beta/deviceManagement/groupPolicyConfigurations/$DeviceConfigurationPolicyId/updateDefinitionValues"
             $body = @{}
             $DefinitionValueToRemoveIds = @()
             if ($null -ne $DefinitionValueToRemove -and $DefinitionValueToRemove.Count -gt 0)
@@ -684,7 +683,7 @@ class IntuneDeviceConfigurationAdministrativeTemplatePolicyWindows10 : M365DSCRe
                 'updated'    = $DefinitionValueToUpdate
                 'deletedIds' = $DefinitionValueToRemoveIds
             }
-            Invoke-MgGraphRequest -Method POST -Uri $Uri -Body ($body | ConvertTo-Json -Depth 20) -ErrorAction Stop 4> $null
+            Invoke-M365DSCGraphRequest -Method POST -Uri $Uri -Body ($body | ConvertTo-Json -Depth 20) -ErrorAction Stop 4> $null
         }
         catch
         {

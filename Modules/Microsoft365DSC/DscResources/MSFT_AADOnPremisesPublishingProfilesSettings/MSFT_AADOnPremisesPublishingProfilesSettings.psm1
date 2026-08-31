@@ -72,8 +72,8 @@ class AADOnPremisesPublishingProfilesSettings : M365DSCResourceBase
             $this.AddTelemetry('Get')
             #endregion
 
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/onPremisesPublishingProfiles('applicationProxy')"
-            $instance = Invoke-MgGraphRequest -Uri $uri -Method Get
+            $uri = "/beta/onPremisesPublishingProfiles('applicationProxy')"
+            $instance = Invoke-M365DSCGraphRequest -Uri $uri -Method Get
 
             $results = @{
                 IsSingleInstance      = 'Yes'
@@ -122,8 +122,8 @@ class AADOnPremisesPublishingProfilesSettings : M365DSCResourceBase
             isEnabled = $this.IsEnabled
         }
         $body = ConvertTo-Json $settings
-        $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/onPremisesPublishingProfiles('applicationProxy')"
-        Invoke-MgGraphRequest -Uri $uri -Method PATCH -Body $Body | Out-Null
+        $uri = "/beta/onPremisesPublishingProfiles('applicationProxy')"
+        Invoke-M365DSCGraphRequest -Uri $uri -Method PATCH -Body $Body | Out-Null
     }
 
     [bool] Test()

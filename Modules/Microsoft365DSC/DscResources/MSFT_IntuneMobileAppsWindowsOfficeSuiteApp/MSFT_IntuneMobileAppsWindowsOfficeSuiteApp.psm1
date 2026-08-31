@@ -347,7 +347,7 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
                     throw "Mobile App Category with DisplayName $($category.DisplayName) not found."
                 }
 
-                Invoke-MgGraphRequest -Uri "/beta/deviceAppManagement/mobileApps/$($app.Id)/categories/`$ref" -Method 'POST' -Body @{
+                Invoke-M365DSCGraphRequest -Uri "/beta/deviceAppManagement/mobileApps/$($app.Id)/categories/`$ref" -Method 'POST' -Body @{
                     '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceAppManagement/mobileAppCategories/$($currentCategory.Id)"
                 }
             }
@@ -409,14 +409,14 @@ class IntuneMobileAppsWindowsOfficeSuiteApp : M365DSCResourceBase
                         throw "Mobile App Category with DisplayName $($category.DisplayName) not found."
                     }
 
-                    Invoke-MgGraphRequest -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)/categories/`$ref" -Method 'POST' -Body @{
+                    Invoke-M365DSCGraphRequest -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)/categories/`$ref" -Method 'POST' -Body @{
                         '@odata.id' = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)beta/deviceAppManagement/mobileAppCategories/$($currentCategory.Id)"
                     }
                 }
                 else
                 {
                     $category = $currentInstance.Categories | Where-Object { $_.DisplayName -eq $diff }
-                    Invoke-MgGraphRequest -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)/categories/$($category.Id)/`$ref" -Method 'DELETE'
+                    Invoke-M365DSCGraphRequest -Uri "/beta/deviceAppManagement/mobileApps/$($currentInstance.Id)/categories/$($category.Id)/`$ref" -Method 'DELETE'
                 }
             }
 

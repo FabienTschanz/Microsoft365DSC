@@ -647,18 +647,18 @@ class IntuneDeviceConfigurationSCEPCertificatePolicyWindows10 : M365DSCResourceB
 
     hidden [void] UpdateDeviceConfigurationPolicyRootCertificateId([System.String] $DeviceConfigurationPolicyId, [System.String] $RootCertificateId)
     {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate/`$ref"
+        $Uri = "/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate/`$ref"
         $ref = @{
             '@odata.id' = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$RootCertificateId')"
         }
 
-        $null = Invoke-MgGraphRequest -Method PUT -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop
+        $null = Invoke-M365DSCGraphRequest -Method PUT -Uri $Uri -Body ($ref | ConvertTo-Json) -ErrorAction Stop
     }
 
     hidden [System.Object] GetDeviceConfigurationPolicyRootCertificate([System.String] $DeviceConfigurationPolicyId)
     {
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate"
-        $result = Invoke-MgGraphRequest -Method Get -Uri $Uri -ErrorAction Stop
+        $Uri = "/beta/deviceManagement/deviceConfigurations('$DeviceConfigurationPolicyId')/microsoft.graph.windows81SCEPCertificateProfile/rootCertificate"
+        $result = Invoke-M365DSCGraphRequest -Method Get -Uri $Uri -ErrorAction Stop
 
         return $result
     }

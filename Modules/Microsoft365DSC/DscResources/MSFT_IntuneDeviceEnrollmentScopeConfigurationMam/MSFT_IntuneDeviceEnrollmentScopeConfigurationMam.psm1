@@ -208,7 +208,7 @@ class IntuneDeviceEnrollmentScopeConfigurationMam : M365DSCResourceBase
                     $request.Add('Body', @{ "@odata.id" = "$((Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl)odata/groups('$($group.Id)')" })
                     $request.Add('Uri', "/beta/policies/mobileAppManagementPolicies/0000000a-0000-0000-c000-000000000000/includedGroups/`$ref")
                 }
-                Invoke-MgGraphRequest @request -ErrorAction Stop
+                Invoke-M365DSCGraphRequest @request -ErrorAction Stop
             }
         }
         #endregion

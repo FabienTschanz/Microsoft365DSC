@@ -61,7 +61,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
                 ##TODO - Mock the Get-Cmdlet to return the desired values
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     if ($callCount -eq 0)
                     {
                         $callCount++
@@ -104,7 +104,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
                 ##TODO - Mock the Get-Cmdlet to return the desired values
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     if ($callCount -eq 0)
                     {
                         $callCount++
@@ -138,7 +138,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'VivaEngagementRoleMember' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 5
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 5
             }
         }
 
@@ -151,7 +151,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
 
                 $callCount = 0
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     if ($callCount -eq 0)
                     {
                         $callCount++

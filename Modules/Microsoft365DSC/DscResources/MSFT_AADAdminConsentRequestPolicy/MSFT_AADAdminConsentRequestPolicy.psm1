@@ -245,8 +245,8 @@ class AADAdminConsentRequestPolicy : M365DSCResourceBase
 
         $updateJSON = ConvertTo-Json $updateParameters
         Write-Verbose -Message "Updating the Entra Id Admin Consent Request Policy with values: $updateJSON"
-        $Uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/policies/adminConsentRequestPolicy'
-        Invoke-MgGraphRequest -Method 'PUT' `
+        $Uri = '/beta/policies/adminConsentRequestPolicy'
+        Invoke-M365DSCGraphRequest -Method 'PUT' `
             -Uri $Uri `
             -Body $updateJSON | Out-Null
     }

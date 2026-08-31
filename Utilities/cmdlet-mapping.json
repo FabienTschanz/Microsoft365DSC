@@ -1314,6 +1314,22 @@
       }
     ]
   },
+  "Get-MgBetaDirectoryDeletedItemAsGroup": {
+    "SourceModule": "Microsoft.Graph.Beta.Identity.DirectoryManagement",
+    "ApiVersion": "beta",
+    "Variants": [
+      {
+        "Method": "GET",
+        "URI": "/directory/deletedItems/{directoryObject-id}/group",
+        "ApiVersion": "beta"
+      },
+      {
+        "Method": "GET",
+        "URI": "/directory/deletedItems/group",
+        "ApiVersion": "beta"
+      }
+    ]
+  },
   "Get-MgBetaDirectoryObject": {
     "SourceModule": "Microsoft.Graph.Beta.DirectoryObjects",
     "ApiVersion": "beta",

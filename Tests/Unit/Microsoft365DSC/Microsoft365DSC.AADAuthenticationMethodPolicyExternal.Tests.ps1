@@ -66,7 +66,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith $scriptBlock
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith $scriptBlock
             Mock -CommandName Get-MgBetaPolicyAuthenticationMethodPolicy -MockWith $scriptBlock
 
             Mock -CommandName Get-MgGroup -ModuleName M365DSCUtil -MockWith {
@@ -113,7 +113,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential;
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     return $null
                 }
             }

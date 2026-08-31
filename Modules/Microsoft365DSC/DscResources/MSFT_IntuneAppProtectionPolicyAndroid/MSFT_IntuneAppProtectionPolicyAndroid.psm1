@@ -652,8 +652,8 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
             {
                 Write-Verbose -Message "Update targetApps for Android App Protection Policy with Id {$($newPolicy.Id)} and DisplayName {$($this.DisplayName)}"
                 $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
-                $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/androidManagedAppProtections('$($newPolicy.Id)')/targetApps"
-                Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
+                $Url = "/beta/deviceAppManagement/androidManagedAppProtections('$($newPolicy.Id)')/targetApps"
+                Invoke-M365DSCGraphRequest -Method POST -Uri $Url -Body $targetApps
 
                 $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
                 Update-DeviceConfigurationPolicyAssignment `
@@ -674,8 +674,8 @@ class IntuneAppProtectionPolicyAndroid : M365DSCResourceBase
 
             Write-Verbose -Message "Update targetApps for Android App Protection Policy with Id {$($currentPolicy.Id)} and DisplayName {$($this.DisplayName)}"
             $targetApps = $this.GetAppsToHashtable($this.Apps, $this.AppGroupType)
-            $Url = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + "beta/deviceAppManagement/androidManagedAppProtections('$($currentPolicy.Id)')/targetApps"
-            Invoke-MgGraphRequest -Method POST -Uri $Url -Body $targetApps
+            $Url = "/beta/deviceAppManagement/androidManagedAppProtections('$($currentPolicy.Id)')/targetApps"
+            Invoke-M365DSCGraphRequest -Method POST -Uri $Url -Body $targetApps
 
             $assignmentsHash = ConvertTo-IntunePolicyAssignment -IncludeDeviceFilter:$true -Assignments $this.Assignments
             Update-DeviceConfigurationPolicyAssignment `

@@ -80,8 +80,8 @@ class IntuneDeviceManagementComplianceSettings : M365DSCResourceBase
             $this.AddTelemetry('Get')
             #endregion
 
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/deviceManagement/settings'
-            $settings = Invoke-MgGraphRequest -Method 'GET' -Uri $uri
+            $uri = '/beta/deviceManagement/settings'
+            $settings = Invoke-M365DSCGraphRequest -Method 'GET' -Uri $uri
 
             $thresholdInDays = $settings.deviceComplianceCheckinThresholdDays
             if ($thresholdInDays -eq 0)

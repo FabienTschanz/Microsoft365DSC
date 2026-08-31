@@ -6785,6 +6785,88 @@
       "Type": "System.String"
     }
   ],
+  "Get-MgBetaDirectoryDeletedItemAsGroup": [
+    {
+      "Name": "DirectoryObjectId",
+      "Type": "System.String"
+    },
+    {
+      "Name": "InputObject",
+      "Type": "System.Object"
+    },
+    {
+      "Name": "ExpandProperty",
+      "Type": "System.String[]"
+    },
+    {
+      "Name": "Property",
+      "Type": "System.String[]"
+    },
+    {
+      "Name": "Filter",
+      "Type": "System.String"
+    },
+    {
+      "Name": "Search",
+      "Type": "System.String"
+    },
+    {
+      "Name": "Skip",
+      "Type": "System.Int32"
+    },
+    {
+      "Name": "Sort",
+      "Type": "System.String[]"
+    },
+    {
+      "Name": "Top",
+      "Type": "System.Int32"
+    },
+    {
+      "Name": "ResponseHeadersVariable",
+      "Type": "System.String"
+    },
+    {
+      "Name": "Break",
+      "Type": "System.Management.Automation.SwitchParameter"
+    },
+    {
+      "Name": "Headers",
+      "Type": "System.Collections.IDictionary"
+    },
+    {
+      "Name": "HttpPipelineAppend",
+      "Type": "System.Object[]"
+    },
+    {
+      "Name": "HttpPipelinePrepend",
+      "Type": "System.Object[]"
+    },
+    {
+      "Name": "Proxy",
+      "Type": "System.Uri"
+    },
+    {
+      "Name": "ProxyCredential",
+      "Type": "System.Management.Automation.PSCredential"
+    },
+    {
+      "Name": "ProxyUseDefaultCredentials",
+      "Type": "System.Management.Automation.SwitchParameter"
+    },
+    {
+      "Name": "PageSize",
+      "Type": "System.Int32"
+    },
+    {
+      "Name": "All",
+      "Type": "System.Management.Automation.SwitchParameter"
+    },
+    {
+      "Name": "CountVariable",
+      "Type": "System.String"
+    }
+  ],
   "Get-MgBetaDirectoryObject": [
     {
       "Name": "DirectoryObjectId",

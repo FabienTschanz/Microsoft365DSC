@@ -84,10 +84,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                 return @{
                     value = @(@{
                         Id = 'a485d322-13cd-43ef-beda-733f656f48ea'
@@ -96,7 +96,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             } -ParameterFilter { $Method -eq 'Get' -and $Uri -like '*/rootCertificatesForServerValidation' }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                 return @{
                     Id = '0b9aef2f-1671-4260-8eb9-3ab3138e176a'
                     DisplayName = 'ClientCertificate'

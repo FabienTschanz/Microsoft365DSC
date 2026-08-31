@@ -280,8 +280,8 @@ class AADGroupEligibilityScheduleSettings : M365DSCResourceBase
         try
         {
             $this.ResourceCache['ExportMode'] = $true
-            $uri = (Get-MSCloudLoginConnectionProfile -Workload MicrosoftGraph).ResourceUrl + 'beta/privilegedAccess/aadGroups/resources'
-            [array]$groups = (Invoke-MgGraphRequest -Method GET -Uri $uri -ErrorAction SilentlyContinue).value
+            $uri = '/beta/privilegedAccess/aadGroups/resources'
+            [array]$groups = (Invoke-M365DSCGraphRequest -Method GET -Uri $uri -All -ErrorAction SilentlyContinue).value
 
             $dscContent = [System.Text.StringBuilder]::new()
             Write-M365DSCHost -Message "`r`n" -DeferWrite

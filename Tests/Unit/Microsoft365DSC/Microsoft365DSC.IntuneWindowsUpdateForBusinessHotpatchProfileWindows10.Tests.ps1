@@ -45,10 +45,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             Mock -CommandName Remove-MgBetaDeviceManagementManagedDeviceCleanupRule -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies/FakeStringValue" } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies/FakeStringValue" } -MockWith {
                 return @{
                     Description = "FakeStringValue"
                     HotpatchEnabled = $True
@@ -58,7 +58,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
-            Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies*" -and $Uri -notlike "*FakeStringValue*" } -MockWith {
+            Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies*" -and $Uri -notlike "*FakeStringValue*" } -MockWith {
                 return @{
                     value = @(
                         @{
@@ -96,11 +96,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                     Credential = $Credential;
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies*" -and $Uri -notlike "*FakeStringValue*" } -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies*" -and $Uri -notlike "*FakeStringValue*" } -MockWith {
                     return $null
                 }
 
-                Mock -CommandName Invoke-MgGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies/FakeStringValue" } -MockWith {
+                Mock -CommandName Invoke-M365DSCGraphRequest -ParameterFilter { $Method -eq 'GET' -and $Uri -like "*windowsQualityUpdatePolicies/FakeStringValue" } -MockWith {
                     return $null
                 }
             }
@@ -112,7 +112,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
             It 'Should Create the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessHotpatchProfileWindows10' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 3
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 3
             }
         }
 
@@ -139,7 +139,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should Remove the group from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessHotpatchProfileWindows10' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 3
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 3
             }
         }
 
@@ -184,7 +184,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'IntuneWindowsUpdateForBusinessHotpatchProfileWindows10' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-MgGraphRequest -Exactly 3
+                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 3
             }
         }
 
