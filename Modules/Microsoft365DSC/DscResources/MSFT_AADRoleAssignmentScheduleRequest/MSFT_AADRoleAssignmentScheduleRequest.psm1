@@ -146,7 +146,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
 
             Write-Verbose -Message 'Getting Role Assignment by PrincipalId and RoleDefinitionId'
             $PrincipalValue = $null
-            if ($this.PrincipalType -eq 'User' -or $PrincipalType -eq 'agentUser')
+            if ($this.PrincipalType -eq 'User' -or $this.PrincipalType -eq 'agentUser')
             {
                 Write-Verbose -Message "Retrieving Principal by UserPrincipalName {$($this.Principal)}"
                 $PrincipalInstance = Get-MgUser -Filter "UserPrincipalName eq '$($this.Principal -replace "'", "''")'" -ErrorAction SilentlyContinue
@@ -322,7 +322,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         $currentInstance = $this.Get().ToHashtable()
         $ParametersOps = Remove-M365DSCAuthenticationParameter -BoundParameters $this.GetBoundParameters()
 
-        if ($this.PrincipalType -eq 'User' -or $PrincipalType -eq 'agentUser')
+        if ($this.PrincipalType -eq 'User' -or $this.PrincipalType -eq 'agentUser')
         {
             Write-Verbose -Message "Retrieving Principal by UserPrincipalName {$($this.Principal)}"
             [Array]$PrincipalIdValue = (Get-MgUser -Filter "UserPrincipalName eq '$($this.Principal -replace "'", "''")'").Id
