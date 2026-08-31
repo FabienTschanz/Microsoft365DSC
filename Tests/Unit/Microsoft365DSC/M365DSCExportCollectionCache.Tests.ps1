@@ -34,7 +34,7 @@ BeforeAll {
         param ([switch] $All)
     }
 
-    $Script:Cache = [Microsoft365DSC.Intune.ExportCollectionCache]
+    $Script:Cache = [Microsoft365DSC.Cache.ExportCollectionCache]
 }
 
 AfterAll {
@@ -43,7 +43,7 @@ AfterAll {
 
 Describe 'M365DSCExportCollectionCache' {
     AfterEach {
-        [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+        [Microsoft365DSC.Cache.ExportCollectionCache]::Reset()
         [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
     }
 
@@ -162,12 +162,12 @@ Describe 'M365DSCExportCollectionCache' {
         }
 
         It 'merges a user filter and bypasses the cache' {
-            [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
+            [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
             $null = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration' -Filter "displayName eq 'x'"
             Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
                 $Filter -eq "(isof('microsoft.graph.windowsKioskConfiguration')) and (displayName eq 'x')"
             }
-            [Microsoft365DSC.Intune.ExportCollectionCache]::ShouldPopulate('deviceConfigurations') | Should -BeTrue
+            [Microsoft365DSC.Cache.ExportCollectionCache]::ShouldPopulate('deviceConfigurations') | Should -BeTrue
         }
 
         It 'filters enrollment configurations client-side' {
@@ -179,7 +179,7 @@ Describe 'M365DSCExportCollectionCache' {
         }
 
         It 'downloads once and serves later types from the cache' {
-            [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
+            [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
             $kiosk = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration'
             $wifi = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsWifiConfiguration' -ExcludeODataType 'microsoft.graph.windowsWifiEnterpriseEAPConfiguration'
             Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
@@ -223,22 +223,22 @@ Describe 'M365DSCExportCollectionCache' {
 
     Context 'Export collection consumers' {
         It 'registers and releases consumers per collection' {
-            [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
+            [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
             Register-M365DSCExportCollectionConsumers -ResourceNames @('IntuneDeviceConfigurationKioskPolicyWindows10', 'IntuneDeviceEnrollmentLimitRestriction', 'AADUser')
-            [Microsoft365DSC.Intune.ExportCollectionCache]::GetConsumerCount('deviceConfigurations') | Should -Be 1
-            [Microsoft365DSC.Intune.ExportCollectionCache]::GetConsumerCount('deviceEnrollmentConfigurations') | Should -Be 1
-            [Microsoft365DSC.Intune.ExportCollectionCache]::GetConsumerCount('deviceCompliancePolicies') | Should -Be 0
+            [Microsoft365DSC.Cache.ExportCollectionCache]::GetConsumerCount('deviceConfigurations') | Should -Be 1
+            [Microsoft365DSC.Cache.ExportCollectionCache]::GetConsumerCount('deviceEnrollmentConfigurations') | Should -Be 1
+            [Microsoft365DSC.Cache.ExportCollectionCache]::GetConsumerCount('deviceCompliancePolicies') | Should -Be 0
             Complete-M365DSCExportCollectionConsumer -ResourceName 'AADUser'
-            [Microsoft365DSC.Intune.ExportCollectionCache]::GetConsumerCount('deviceConfigurations') | Should -Be 1
+            [Microsoft365DSC.Cache.ExportCollectionCache]::GetConsumerCount('deviceConfigurations') | Should -Be 1
             Complete-M365DSCExportCollectionConsumer -ResourceName 'IntuneDeviceConfigurationKioskPolicyWindows10'
-            [Microsoft365DSC.Intune.ExportCollectionCache]::Keys | Should -Not -Contain 'deviceConfigurations'
+            [Microsoft365DSC.Cache.ExportCollectionCache]::Keys | Should -Not -Contain 'deviceConfigurations'
         }
 
         It 'initializes an enabled empty cache' {
             Initialize-M365DSCExportCollectionCache
-            [Microsoft365DSC.Intune.ExportCollectionCache]::IsEnabled | Should -BeTrue
+            [Microsoft365DSC.Cache.ExportCollectionCache]::IsEnabled | Should -BeTrue
             Reset-M365DSCExportCollectionCache
-            [Microsoft365DSC.Intune.ExportCollectionCache]::IsEnabled | Should -BeFalse
+            [Microsoft365DSC.Cache.ExportCollectionCache]::IsEnabled | Should -BeFalse
         }
     }
 

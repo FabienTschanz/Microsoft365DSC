@@ -432,7 +432,7 @@ class EXOCalendarProcessing : M365DSCResourceBase
         try
         {
             $dscContent = [System.Text.StringBuilder]::new()
-            $mailboxes = Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
 
             if ($null -eq $mailboxes)
             {
@@ -446,8 +446,10 @@ class EXOCalendarProcessing : M365DSCResourceBase
 
             Write-Verbose -Message 'Fetching all users for caching purposes'
             $this.ResourceCache['UsersCache'] = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
-            Get-User -ResultSize 'Unlimited' | ForEach-Object {
-                $this.ResourceCache['UsersCache'][$_.Identity] = $_.UserPrincipalName
+            [array]$exoUsers = Get-M365DSCExportCachedCollection -Collection 'exoUsers'
+            foreach ($exoUser in $exoUsers)
+            {
+                $this.ResourceCache['UsersCache'][$exoUser.Identity] = $exoUser.UserPrincipalName
             }
             Write-Verbose -Message 'Fetching all recipients for caching purposes'
             Get-Recipient -ResultSize 'Unlimited' | ForEach-Object {

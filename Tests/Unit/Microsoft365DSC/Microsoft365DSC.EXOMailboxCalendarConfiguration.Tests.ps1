@@ -92,6 +92,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
+            Mock -CommandName Get-M365DSCExportCachedCollection -MockWith {
+                switch ($Collection)
+                {
+                    'exoMailboxes'
+                    {
+                        return @(Get-Mailbox -ResultSize 'Unlimited')
+                    }
+                    'exoUsers'
+                    {
+                        return @(Get-User -ResultSize 'Unlimited')
+                    }
+                }
+            }
             Mock -CommandName Write-M365DSCHost -MockWith {
             }
             $Script:exportedInstances =$null

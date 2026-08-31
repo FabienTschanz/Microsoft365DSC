@@ -169,7 +169,7 @@ class EXOFocusedInbox : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-Mailbox -ResultSize Unlimited -ErrorAction Stop
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

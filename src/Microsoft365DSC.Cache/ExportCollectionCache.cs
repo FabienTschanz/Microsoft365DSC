@@ -6,7 +6,7 @@ using System.Management.Automation;
 using System.Threading;
 using Microsoft365DSC.Utilities;
 
-namespace Microsoft365DSC.Intune
+namespace Microsoft365DSC.Cache
 {
     /// <summary>
     /// Thread-safe, export-scoped cache of whole Microsoft Graph collections, filtered client-side on

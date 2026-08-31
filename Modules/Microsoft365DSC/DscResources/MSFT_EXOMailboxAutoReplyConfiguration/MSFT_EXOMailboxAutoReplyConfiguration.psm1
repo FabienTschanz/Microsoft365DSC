@@ -229,7 +229,7 @@ class EXOMailboxAutoReplyConfiguration : M365DSCResourceBase
 
         try
         {
-            $mailboxes = Get-Mailbox -ResultSize 'Unlimited'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
             $dscContent = [System.Text.StringBuilder]::new()
             $i = 1
 

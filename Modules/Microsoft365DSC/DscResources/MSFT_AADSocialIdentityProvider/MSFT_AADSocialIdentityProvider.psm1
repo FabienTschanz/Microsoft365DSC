@@ -79,7 +79,7 @@ class AADSocialIdentityProvider : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.ClientId -ne $this.ClientId)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.Id -ne $this.ClientId)
             {
                 $null = $this.Connect('MicrosoftGraph')
 

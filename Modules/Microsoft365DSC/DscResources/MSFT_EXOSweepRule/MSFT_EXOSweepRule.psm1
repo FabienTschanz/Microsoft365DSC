@@ -228,7 +228,7 @@ class EXOSweepRule : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-Mailbox -ResultSize Unlimited -ErrorAction Stop
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
             $j = 1
             if ($mailboxes.Count -eq 0)
             {

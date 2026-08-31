@@ -87,7 +87,7 @@ class SPOHubSite : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Url -ne $this.Url)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.SiteUrl -ne $this.Url)
             {
                 $null = $this.Connect('MicrosoftGraph')
 

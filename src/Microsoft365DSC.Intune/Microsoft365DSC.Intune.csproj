@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft365DSC.Cache\Microsoft365DSC.Cache.csproj" />
     <ProjectReference Include="..\Microsoft365DSC.Utilities\Microsoft365DSC.Utilities.csproj" />
   </ItemGroup>
 

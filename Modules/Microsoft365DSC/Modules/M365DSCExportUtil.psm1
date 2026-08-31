@@ -1914,6 +1914,22 @@ function Get-M365DSCExportCollectionConsumerMap
             'IntuneWindowsBackupForOrganizationConfiguration',
             'IntuneWindowsHelloForBusinessGlobalPolicy'
         )
+        exoMailboxes                   = @(
+            'EXOCalendarProcessing',
+            'EXOFocusedInbox',
+            'EXOMailboxAutoReplyConfiguration',
+            'EXOMailboxCalendarConfiguration',
+            'EXOMailboxCalendarFolder',
+            'EXOMailboxIRMAccess',
+            'EXOMailboxPermission',
+            'EXOMailboxSettings',
+            'EXOSweepRule'
+        )
+        exoUsers                       = @(
+            'EXOCalendarProcessing',
+            'EXOMailboxPermission',
+            'EXORecipientPermission'
+        )
         reusablePolicySettings         = @(
             'IntuneDeviceComplianceScriptLinux',
             'IntuneDeviceControlPolicySetting',
@@ -1936,10 +1952,10 @@ function Initialize-M365DSCExportCollectionCache
     [CmdletBinding()]
     param ()
 
-    [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+    [Microsoft365DSC.Cache.ExportCollectionCache]::Reset()
     [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
     $Script:IntuneAssignmentFilters = $null
-    [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
+    [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
 }
 
 <#
@@ -1955,9 +1971,9 @@ function Reset-M365DSCExportCollectionCache
     param ()
 
     $Script:IntuneAssignmentFilters = $null
-    if ($null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
+    if ($null -ne ('Microsoft365DSC.Cache.ExportCollectionCache' -as [System.Type]))
     {
-        [Microsoft365DSC.Intune.ExportCollectionCache]::Reset()
+        [Microsoft365DSC.Cache.ExportCollectionCache]::Reset()
         [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
     }
 }
@@ -1989,7 +2005,7 @@ function Register-M365DSCExportCollectionConsumers
         $count = @($map[$key] | Where-Object -FilterScript { $ResourceNames -contains $_ }).Count
         if ($count -gt 0)
         {
-            [Microsoft365DSC.Intune.ExportCollectionCache]::RegisterConsumers($key, $count)
+            [Microsoft365DSC.Cache.ExportCollectionCache]::RegisterConsumers($key, $count)
         }
     }
 }
@@ -2014,7 +2030,7 @@ function Complete-M365DSCExportCollectionConsumer
         $ResourceName
     )
 
-    if ($null -eq ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
+    if ($null -eq ('Microsoft365DSC.Cache.ExportCollectionCache' -as [System.Type]))
     {
         return
     }
@@ -2024,7 +2040,7 @@ function Complete-M365DSCExportCollectionConsumer
     {
         if ($map[$key] -contains $ResourceName)
         {
-            $null = [Microsoft365DSC.Intune.ExportCollectionCache]::Release($key)
+            $null = [Microsoft365DSC.Cache.ExportCollectionCache]::Release($key)
         }
     }
 }
@@ -2067,7 +2083,7 @@ function Get-M365DSCExportCachedCollection
     [OutputType([System.Object[]])]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('deviceConfigurations', 'deviceCompliancePolicies', 'deviceEnrollmentConfigurations', 'reusablePolicySettings')]
+        [ValidateSet('deviceConfigurations', 'deviceCompliancePolicies', 'deviceEnrollmentConfigurations', 'reusablePolicySettings', 'exoMailboxes', 'exoUsers')]
         [System.String]
         $Collection,
 
@@ -2097,23 +2113,43 @@ function Get-M365DSCExportCachedCollection
         deviceCompliancePolicies       = @{ Expand = @('scheduledActionsForRule($expand=scheduledActionConfigurations)', 'assignments'); ServerSideTypeFilter = $true }
         deviceEnrollmentConfigurations = @{ Expand = @('assignments'); ServerSideTypeFilter = $false }
         reusablePolicySettings         = @{ Expand = @(); ServerSideTypeFilter = $false; Select = @('id', 'displayName', 'description', 'settingDefinitionId', 'settingInstance') }
+        exoMailboxes                   = @{ Fetch = { Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop } }
+        exoUsers                       = @{ Fetch = { Get-User -ResultSize 'Unlimited' } }
     }
     $descriptor = $descriptors[$Collection]
 
-    $cacheAvailable = $null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]) -and
-        [Microsoft365DSC.Intune.ExportCollectionCache]::IsEnabled
+    $cacheAvailable = $null -ne ('Microsoft365DSC.Cache.ExportCollectionCache' -as [System.Type]) -and
+        [Microsoft365DSC.Cache.ExportCollectionCache]::IsEnabled
+
+    if ($null -ne $descriptor -and $null -ne $descriptor.Fetch)
+    {
+        if (-not $cacheAvailable)
+        {
+            return , [System.Object[]]@(& $descriptor.Fetch)
+        }
+
+        $items = $null
+        if ([Microsoft365DSC.Cache.ExportCollectionCache]::TryGet($Collection, [ref] $items))
+        {
+            return , [System.Object[]]@($items)
+        }
+
+        $fetched = @(& $descriptor.Fetch)
+        $null = [Microsoft365DSC.Cache.ExportCollectionCache]::TrySet($Collection, [System.Object[]]$fetched)
+        return , [System.Object[]]$fetched
+    }
 
     if ($cacheAvailable -and [System.String]::IsNullOrEmpty($Filter))
     {
-        $cached = [Microsoft365DSC.Intune.ExportCollectionCache]::GetByODataType($Collection, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+        $cached = [Microsoft365DSC.Cache.ExportCollectionCache]::GetByODataType($Collection, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
         if ($null -eq $cached)
         {
             $all = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand -Property $descriptor.Select
-            $null = [Microsoft365DSC.Intune.ExportCollectionCache]::TrySet($Collection, [System.Object[]]$all)
-            $cached = [Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$all, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+            $null = [Microsoft365DSC.Cache.ExportCollectionCache]::TrySet($Collection, [System.Object[]]$all)
+            $cached = [Microsoft365DSC.Cache.ExportCollectionCache]::FilterByODataType([System.Object[]]$all, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
         }
 
-        return , [System.Object[]][Microsoft365DSC.Intune.ExportCollectionCache]::FilterByProperty([System.Object[]]$cached, $PropertyName, [System.String[]]$PropertyValue)
+        return , [System.Object[]][Microsoft365DSC.Cache.ExportCollectionCache]::FilterByProperty([System.Object[]]$cached, $PropertyName, [System.String[]]$PropertyValue)
     }
 
     $typeFilter = ''
@@ -2147,9 +2183,9 @@ function Get-M365DSCExportCachedCollection
     }
 
     $items = Invoke-M365DSCExportCollectionList -Collection $Collection -ExpandProperty $descriptor.Expand -Property $descriptor.Select -Filter $mergedFilter
-    if (-not $descriptor.ServerSideTypeFilter -and $null -ne ('Microsoft365DSC.Intune.ExportCollectionCache' -as [System.Type]))
+    if (-not $descriptor.ServerSideTypeFilter -and $null -ne ('Microsoft365DSC.Cache.ExportCollectionCache' -as [System.Type]))
     {
-        $items = [Microsoft365DSC.Intune.ExportCollectionCache]::FilterByODataType([System.Object[]]$items, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
+        $items = [Microsoft365DSC.Cache.ExportCollectionCache]::FilterByODataType([System.Object[]]$items, [System.String[]]$ODataType, [System.String[]]$ExcludeODataType)
     }
     elseif (-not $descriptor.ServerSideTypeFilter -and $ODataType.Count -gt 0)
     {

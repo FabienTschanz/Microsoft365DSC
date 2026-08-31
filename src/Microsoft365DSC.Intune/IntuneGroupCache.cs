@@ -1,4 +1,5 @@
 using System;
+using Microsoft365DSC.Cache;
 using System.Collections.Concurrent;
 
 namespace Microsoft365DSC.Intune

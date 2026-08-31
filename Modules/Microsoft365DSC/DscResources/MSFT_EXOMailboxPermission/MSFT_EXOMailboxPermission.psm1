@@ -197,7 +197,7 @@ class EXOMailboxPermission : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
             if ($mailboxes.Count -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
@@ -211,8 +211,10 @@ class EXOMailboxPermission : M365DSCResourceBase
             if ($null -eq $this.ResourceCache['UsersCache'])
             {
                 $this.ResourceCache['UsersCache'] = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
-                Get-User -ResultSize Unlimited | ForEach-Object {
-                    $this.ResourceCache['UsersCache'][$_.Identity] = $_.UserPrincipalName
+                [array]$exoUsers = Get-M365DSCExportCachedCollection -Collection 'exoUsers'
+                foreach ($exoUser in $exoUsers)
+                {
+                    $this.ResourceCache['UsersCache'][$exoUser.Identity] = $exoUser.UserPrincipalName
                 }
             }
             foreach ($mailbox in $mailboxes)

@@ -86,7 +86,7 @@ class DefenderSubscriptionPlan : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Id -ne $this.SubscriptionId)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.SubscriptionId -ne $this.SubscriptionId)
             {
                 $null = $this.Connect('Azure')
 

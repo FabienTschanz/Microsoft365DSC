@@ -228,7 +228,7 @@ class EXOMailboxSettings : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-Mailbox -ResultSize 'Unlimited'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
 
             $i = 1
             if ($mailboxes.Length -eq 0)

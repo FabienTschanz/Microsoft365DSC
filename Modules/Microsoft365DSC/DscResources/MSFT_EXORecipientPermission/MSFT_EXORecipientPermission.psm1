@@ -206,10 +206,12 @@ class EXORecipientPermission : M365DSCResourceBase
             if ($null -eq $this.ResourceCache['UsersCache'])
             {
                 $this.ResourceCache['UsersCache'] = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
-                Get-User -ResultSize Unlimited | ForEach-Object {
-                    $this.ResourceCache['UsersCache'][$_.Identity] = @{
-                        Identity          = $_.Identity
-                        UserPrincipalName = $_.UserPrincipalName
+                [array]$exoUsers = Get-M365DSCExportCachedCollection -Collection 'exoUsers'
+                foreach ($exoUser in $exoUsers)
+                {
+                    $this.ResourceCache['UsersCache'][$exoUser.Identity] = @{
+                        Identity          = $exoUser.Identity
+                        UserPrincipalName = $exoUser.UserPrincipalName
                     }
                 }
             }
