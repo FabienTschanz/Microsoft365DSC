@@ -589,18 +589,29 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
                 Mock -CommandName Invoke-M365DSCGraphBatchRequest -MockWith {
                     return @(
-                        @{
-                            id = "License"
-                            body = @{
-                                value = @{
-                                    SkuPartNumber = 'ENTERPRISE_PREMIUM'
+                        $Requests | ForEach-Object -Process {
+                            $navigationName = ([System.String]$_.id).Substring(([System.String]$_.id).LastIndexOf('|') + 1)
+                            if ($navigationName -eq 'License')
+                            {
+                                @{
+                                    id     = $_.id
+                                    status = 200
+                                    body   = @{
+                                        value = @{
+                                            SkuPartNumber = 'ENTERPRISE_PREMIUM'
+                                        }
+                                    }
                                 }
                             }
-                        },
-                        @{
-                            id = "MemberOf"
-                            body = @{
-                                value = @()
+                            else
+                            {
+                                @{
+                                    id     = $_.id
+                                    status = 200
+                                    body   = @{
+                                        value = @()
+                                    }
+                                }
                             }
                         }
                     )
@@ -617,6 +628,12 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             It 'Should Reverse Engineer resource from the Export method' {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'AADUser' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
+            }
+
+            It 'Should prefetch the navigation properties in a single batch instead of one per user' {
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'AADUser' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Invoke-M365DSCGraphBatchRequest -Exactly 1
+                $result | Should -Match 'ENTERPRISE_PREMIUM'
             }
         }
     }

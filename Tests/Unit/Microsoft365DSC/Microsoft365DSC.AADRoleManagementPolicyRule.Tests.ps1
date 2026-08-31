@@ -80,6 +80,37 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
+            Mock -CommandName Get-MgBetaPolicyRoleManagementPolicy -MockWith {
+                return @{
+                    Id    = "FakeStringValue"
+                    Rules = @(
+                        @{
+                            '@odata.type' = "#microsoft.graph.unifiedRoleManagementPolicyApprovalRule"
+                            setting       = @{
+                                approvalStages                   = @(
+                                    @{
+                                        approvalStageTimeOutInDays      = 1
+                                        escalationApprovers             = @(
+                                            @{
+                                                '@odata.type' = "FakeStringValue"
+                                            }
+                                        )
+                                        isEscalationEnabled             = $True
+                                        isApproverJustificationRequired = $True
+                                        escalationTimeInMinutes         = 1
+                                    }
+                                )
+                                isApprovalRequired               = $True
+                                isApprovalRequiredForExtension   = $True
+                                approvalMode                     = "FakeStringValue"
+                                isRequestorJustificationRequired = $True
+                            }
+                            Id            = "FakeStringValue"
+                        }
+                    )
+                }
+            }
+
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }

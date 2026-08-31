@@ -274,6 +274,30 @@ class M365DSCResourceBase
         $this._info = $info
     }
 
+    # Graph caps an $expand'ed collection at 20 entries. Returns $null when the caller has to fetch the
+    # navigation property itself, and the items otherwise.
+    hidden [System.Object] ResolveExpandedNavigation([System.Object] $Instance, [System.String] $Name)
+    {
+        if ($null -eq $Instance)
+        {
+            return $null
+        }
+
+        $value = $Instance.$Name
+        if ($null -eq $value)
+        {
+            return $null
+        }
+
+        $items = @($value)
+        if ($items.Count -ge 20)
+        {
+            return $null
+        }
+
+        return $items
+    }
+
     #region Property plumbing
 
     hidden [PropertyInfo] _FindProperty([System.String] $Name)

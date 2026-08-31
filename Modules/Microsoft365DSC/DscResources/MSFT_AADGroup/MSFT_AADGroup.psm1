@@ -196,32 +196,38 @@ class AADGroup : M365DSCResourceBase
             }
 
             Write-Verbose -Message 'Found existing AzureAD Group'
-            $batchRequests = @(
-                @{
-                    id     = 'Owners'
-                    method = 'GET'
-                    url    = "/groups/$($Group.Id)/owners"
-                }
-                @{
-                    id     = 'MemberOf'
-                    method = 'GET'
-                    url    = "/groups/$($Group.Id)/memberOf"
-                }
-                @{
-                    id     = 'Licenses'
-                    method = 'GET'
-                    url    = "/groups/$($Group.Id)/assignedLicenses"
-                }
-                @{
-                    id     = 'GroupLifecyclePolicies'
-                    method = 'GET'
-                    url    = "/groups/$($Group.Id)/groupLifecyclePolicies"
-                }
-            )
-            $batchResponse = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+            $prefetched = $null
+            $navigationCache = $this.ResourceCache['NavigationCache']
+            if ($null -ne $navigationCache -and $navigationCache.ContainsKey($Group.Id))
+            {
+                $prefetched = $navigationCache[$Group.Id]
+            }
+
+            $batchResponse = @()
+            if ($null -eq $prefetched)
+            {
+                $batchRequests = @(
+                    @{
+                        id     = 'Owners'
+                        method = 'GET'
+                        url    = "/groups/$($Group.Id)/owners"
+                    }
+                    @{
+                        id     = 'MemberOf'
+                        method = 'GET'
+                        url    = "/groups/$($Group.Id)/memberOf"
+                    }
+                    @{
+                        id     = 'GroupLifecyclePolicies'
+                        method = 'GET'
+                        url    = "/groups/$($Group.Id)/groupLifecyclePolicies"
+                    }
+                )
+                $batchResponse = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+            }
 
             # Owners
-            [Array]$ownersResponse = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Owners' }).body.value
+            [Array]$ownersResponse = if ($null -ne $prefetched) { $prefetched.Owners } else { ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Owners' }).body.value }
             $OwnersValues = @()
             foreach ($owner in $ownersResponse)
             {
@@ -276,7 +282,7 @@ class AADGroup : M365DSCResourceBase
             }
 
             # MemberOf
-            [Array]$memberOfResponse = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'MemberOf' }).body.value
+            [Array]$memberOfResponse = if ($null -ne $prefetched) { $prefetched.MemberOf } else { ($batchResponse | Where-Object -FilterScript { $_.id -eq 'MemberOf' }).body.value }
             $MemberOfValues = @()
             # Note: only process security-groups that this group is a member of and not directory roles (if any)
             foreach ($member in ($memberOfResponse | Where-Object -FilterScript { $_.'@odata.type' -eq '#microsoft.graph.group' }))
@@ -289,7 +295,7 @@ class AADGroup : M365DSCResourceBase
 
             if ($null -eq $this.ResourceCache['DirectoryRoleDefinitions'])
             {
-                $this.ResourceCache['DirectoryRoleDefinitions'] = [System.Collections.Generic.Dictionary[string, string]]::new()
+                $this.ResourceCache['DirectoryRoleDefinitions'] = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
                 $allRoleDefinitions = Get-MgBetaRoleManagementDirectoryRoleDefinition -All
                 foreach ($roleDefinition in $allRoleDefinitions)
                 {
@@ -304,21 +310,24 @@ class AADGroup : M365DSCResourceBase
                 $roleAssignments = Get-MgBetaRoleManagementDirectoryRoleAssignment -Filter "PrincipalId eq '$($Group.Id)'"
                 foreach ($assignment in $roleAssignments)
                 {
-                    $roleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $assignment.RoleDefinitionId
-                    $AssignedToRoleValues += $roleDefinition.DisplayName
+                    $roleDisplayName = $null
+                    if (-not $this.ResourceCache['DirectoryRoleDefinitions'].TryGetValue($assignment.RoleDefinitionId, [ref] $roleDisplayName))
+                    {
+                        $roleDisplayName = (Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $assignment.RoleDefinitionId).DisplayName
+                    }
+                    $AssignedToRoleValues += $roleDisplayName
                 }
             }
 
             # Licenses
             $assignedLicensesValues = @()
-            $assignedLicensesRequest = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Licenses' }).body
-            if ($assignedLicensesRequest.value.Length -gt 0)
+            if ($Group.AssignedLicenses.Count -gt 0)
             {
-                [Array]$assignedLicensesValues = $this.GetGroupLicenses($assignedLicensesRequest.value)
+                [Array]$assignedLicensesValues = $this.GetGroupLicenses($Group.AssignedLicenses)
             }
 
             # GroupLifecyclePolicies
-            $groupLifecyclePoliciesRequest = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'GroupLifecyclePolicies' }).body.value
+            $groupLifecyclePoliciesRequest = if ($null -ne $prefetched) { $prefetched.GroupLifecyclePolicies } else { ($batchResponse | Where-Object -FilterScript { $_.id -eq 'GroupLifecyclePolicies' }).body.value }
             $isGroupLifecyclePoliciesEnabled = $null -ne $groupLifecyclePoliciesRequest -and `
                 $groupLifecyclePoliciesRequest.managedGroupTypes -eq 'selected'
 
@@ -942,6 +951,7 @@ class AADGroup : M365DSCResourceBase
                 Filter         = $this.Filter
                 All            = [switch]$true
                 ExpandProperty = 'members'
+                Property       = 'id', 'displayName', 'description', 'mailNickname', 'mail', 'mailEnabled', 'securityEnabled', 'groupTypes', 'membershipRule', 'membershipRuleProcessingState', 'isAssignableToRole', 'visibility', 'assignedLicenses'
                 ErrorAction    = 'Stop'
                 Sort           = 'DisplayName'
             }
@@ -986,6 +996,57 @@ class AADGroup : M365DSCResourceBase
                 -not ($_.MailEnabled -and ($null -eq $_.GroupTypes -or $_.GroupTypes.Count -eq 0)) -and `
                     -not ($_.MailEnabled -and $_.SecurityEnabled -and ($null -eq $_.GroupTypes -or $_.GroupTypes.Count -eq 0))
             } | Sort-Object -Property DisplayName
+
+            $navigationCache = @{}
+            $navigationRequests = @()
+            foreach ($exportedGroup in $this.ResourceCache['exportedGroups'])
+            {
+                $navigationCache[$exportedGroup.Id] = @{
+                    Owners                 = @()
+                    MemberOf               = @()
+                    GroupLifecyclePolicies = @()
+                }
+                $navigationRequests += @{
+                    id     = "$($exportedGroup.Id)|Owners"
+                    method = 'GET'
+                    url    = "/groups/$($exportedGroup.Id)/owners"
+                }
+                $navigationRequests += @{
+                    id     = "$($exportedGroup.Id)|MemberOf"
+                    method = 'GET'
+                    url    = "/groups/$($exportedGroup.Id)/memberOf"
+                }
+                $navigationRequests += @{
+                    id     = "$($exportedGroup.Id)|GroupLifecyclePolicies"
+                    method = 'GET'
+                    url    = "/groups/$($exportedGroup.Id)/groupLifecyclePolicies"
+                }
+            }
+            if ($navigationRequests.Count -gt 0)
+            {
+                $navigationResponses = Invoke-M365DSCGraphBatchRequest -Requests $navigationRequests
+                foreach ($navigationResponse in $navigationResponses)
+                {
+                    if ($navigationResponse.status -ne 200 -or $null -eq $navigationResponse.body)
+                    {
+                        continue
+                    }
+
+                    $separatorIndex = ([System.String]$navigationResponse.id).LastIndexOf('|')
+                    if ($separatorIndex -lt 0)
+                    {
+                        continue
+                    }
+
+                    $groupId = ([System.String]$navigationResponse.id).Substring(0, $separatorIndex)
+                    $navigationName = ([System.String]$navigationResponse.id).Substring($separatorIndex + 1)
+                    if ($navigationCache.ContainsKey($groupId))
+                    {
+                        $navigationCache[$groupId][$navigationName] = @($navigationResponse.body.value)
+                    }
+                }
+            }
+            $this.ResourceCache['NavigationCache'] = $navigationCache
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

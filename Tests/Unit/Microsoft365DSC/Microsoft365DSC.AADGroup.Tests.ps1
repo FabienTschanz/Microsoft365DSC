@@ -646,7 +646,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADGroup' -Property $testParams).Set()
                 Should -Invoke -CommandName 'Get-MgBetaGroup' -Exactly 1
-                Should -Invoke -CommandName 'Get-MgBetaRoleManagementDirectoryRoleDefinition' -Exactly 3
+                Should -Invoke -CommandName 'Get-MgBetaRoleManagementDirectoryRoleDefinition' -Exactly 2
                 Should -Invoke -CommandName 'Remove-MgBetaRoleManagementDirectoryRoleAssignment' -Exactly 1
             }
         }
@@ -742,21 +742,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         GroupTypes         = @()
                         MailNickname       = 'M365DSC'
                         IsAssignableToRole = $false
+                        AssignedLicenses   = @(
+                            @{
+                                DisabledPlans = @()
+                                SkuId         = '12345-12345-12345'
+                            }
+                        )
                     }
                 }
 
                 Mock -CommandName Invoke-M365DSCGraphBatchRequest -MockWith {
-                    return @(
-                        @{
-                            id   = 'Licenses'
-                            body = @{
-                                value = @{
-                                    DisabledPlans = @()
-                                    SkuId         = '12345-12345-12345'
-                                }
-                            }
-                        }
-                    )
+                    return @()
                 }
 
                 Mock -CommandName Get-MgBetaSubscribedSku -MockWith {
@@ -879,21 +875,17 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                         GroupTypes         = @()
                         MailNickname       = 'M365DSC'
                         IsAssignableToRole = $false
+                        AssignedLicenses   = @(
+                            @{
+                                DisabledPlans = @()
+                                SkuId         = '12345-12345-12345'
+                            }
+                        )
                     }
                 }
 
                 Mock -CommandName Invoke-M365DSCGraphBatchRequest -MockWith {
-                    return @(
-                        @{
-                            id   = 'Licenses'
-                            body = @{
-                                value = @{
-                                    DisabledPlans = @()
-                                    SkuId         = '12345-12345-12345'
-                                }
-                            }
-                        }
-                    )
+                    return @()
                 }
 
                 Mock -CommandName Get-MgBetaSubscribedSku -MockWith {

@@ -53,6 +53,18 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 }
             }
 
+            Mock -CommandName Invoke-M365DSCGraphBatchRequest -MockWith {
+                return @(
+                    @{
+                        id     = "user@test.com"
+                        status = 200
+                        body   = @{
+                            perUserMfaState = 'Enabled'
+                        }
+                    }
+                )
+            }
+
             Mock -CommandName New-M365DSCConnection -ModuleName '_Shared' -MockWith {
                 return "Credentials"
             }

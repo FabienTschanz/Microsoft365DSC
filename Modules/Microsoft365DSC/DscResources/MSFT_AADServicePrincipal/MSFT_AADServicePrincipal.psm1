@@ -148,6 +148,7 @@ class AADServicePrincipal : M365DSCResourceBase
     AADServicePrincipal() : base()
     {
         $this.ResourceCache['PropertiesToExport'] = 'AppDisplayName', 'AppId', 'Id', 'DisplayName', 'CustomSecurityAttributes', 'AlternativeNames', 'AccountEnabled', 'AppRoleAssignmentRequired', 'ErrorUrl', 'Homepage', 'LogoutUrl', 'Notes', 'PreferredSingleSignOnMode', 'PublisherName', 'ReplyUrls', 'SamlMetadataUrl', 'ServicePrincipalNames', 'ServicePrincipalType', 'Tags', 'KeyCredentials', 'PasswordCredentials'
+        $this.ResourceCache['NavigationsToExpand'] = 'AppRoleAssignedTo'
     }
 
     [AADServicePrincipal] Get()
@@ -167,7 +168,7 @@ class AADServicePrincipal : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.AppId -ne $this.AppId)
+            if (-not $this.ExportedInstance -or ($this.ExportedInstance.AppId -ne $this.AppId -and $this.ExportedInstance.DisplayName -ne $this.AppId))
             {
                 $null = $this.Connect('MicrosoftGraph')
 
@@ -185,7 +186,7 @@ class AADServicePrincipal : M365DSCResourceBase
                 {
                     $AADServicePrincipal = Get-MgBetaServicePrincipal -ServicePrincipalId $this.ObjectId `
                         -Property $this.ResourceCache['PropertiesToExport'] `
-                        -ExpandProperty 'AppRoleAssignedTo' `
+                        -ExpandProperty $this.ResourceCache['NavigationsToExpand'] `
                         -ErrorAction SilentlyContinue
                 }
 
@@ -195,7 +196,7 @@ class AADServicePrincipal : M365DSCResourceBase
                     {
                         $AADServicePrincipal = [Array](Get-MgBetaServicePrincipal -Filter "DisplayName eq '$($this.AppId -replace "'", "''")'" `
                                 -Property $this.ResourceCache['PropertiesToExport'] `
-                                -Expand 'AppRoleAssignedTo')
+                                -Expand $this.ResourceCache['NavigationsToExpand'])
                         if ($null -ne $AADServicePrincipal -and $AADServicePrincipal.Count -gt 1)
                         {
                             throw "Multiple Service Principal with the DisplayName $($this.AppId) exist in the tenant."
@@ -205,7 +206,7 @@ class AADServicePrincipal : M365DSCResourceBase
                     {
                         $AADServicePrincipal = Get-MgBetaServicePrincipal -Filter "AppID eq '$($this.AppId)'" `
                             -Property $this.ResourceCache['PropertiesToExport'] `
-                            -Expand 'AppRoleAssignedTo'
+                            -Expand $this.ResourceCache['NavigationsToExpand']
                     }
                 }
                 if ($null -eq $AADServicePrincipal)
@@ -219,32 +220,62 @@ class AADServicePrincipal : M365DSCResourceBase
                 $AADServicePrincipal = $this.ExportedInstance
             }
 
-            $batchRequests = @(
-                @{
+            $batchRequests = @()
+            $assignmentsValue = $this.ResolveExpandedNavigation($AADServicePrincipal, 'AppRoleAssignedTo')
+            if ($null -eq $assignmentsValue)
+            {
+                $batchRequests += @{
                     id     = 'AppRoleAssignedTo'
                     method = 'GET'
                     url    = "/servicePrincipals/$($AADServicePrincipal.Id)/appRoleAssignedTo"
                 }
-                @{
+            }
+            $prefetched = $null
+            $navigationCache = $this.ResourceCache['NavigationCache']
+            if ($null -ne $navigationCache -and $navigationCache.ContainsKey($AADServicePrincipal.Id))
+            {
+                $prefetched = $navigationCache[$AADServicePrincipal.Id]
+            }
+
+            $ownersInfo = $null
+            $permissionClassifications = $null
+            $claimsPolicyBody = $null
+            if ($null -ne $prefetched)
+            {
+                $ownersInfo = $prefetched.Owners
+                $permissionClassifications = $prefetched.DelegatedPermissionClassifications
+                $claimsPolicyBody = $prefetched.ClaimsPolicy
+            }
+            else
+            {
+                $batchRequests += @{
                     id     = 'Owners'
                     method = 'GET'
                     url    = "/servicePrincipals/$($AADServicePrincipal.Id)/owners"
                 }
-                @{
+                $batchRequests += @{
                     id     = 'delegatedPermissionClassifications'
                     method = 'GET'
                     url    = "/servicePrincipals/$($AADServicePrincipal.Id)/delegatedPermissionClassifications"
                 }
-                @{
+                $batchRequests += @{
                     id     = 'claimsPolicy'
                     method = 'GET'
                     url    = "/servicePrincipals/$($AADServicePrincipal.Id)/claimsPolicy"
                 }
-            )
-            $batchResponse = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests -ErrorAction SilentlyContinue
+            }
+
+            $batchResponse = @()
+            if ($batchRequests.Count -gt 0)
+            {
+                $batchResponse = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests -ErrorAction SilentlyContinue
+            }
 
             $AppRoleAssignedToValues = @()
-            $assignmentsValue = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'AppRoleAssignedTo' }).body.value
+            if ($null -eq $assignmentsValue)
+            {
+                $assignmentsValue = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'AppRoleAssignedTo' }).body.value
+            }
             foreach ($principal in $assignmentsValue)
             {
                 $currentAssignment = @{
@@ -268,7 +299,10 @@ class AADServicePrincipal : M365DSCResourceBase
             }
 
             $ownersValues = @()
-            $ownersInfo = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Owners' }).body.value
+            if ($null -eq $ownersInfo)
+            {
+                $ownersInfo = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'Owners' }).body.value
+            }
             foreach ($ownerInfo in $ownersInfo)
             {
                 if ($ownerInfo.'@odata.type' -eq '#microsoft.graph.user')
@@ -282,26 +316,38 @@ class AADServicePrincipal : M365DSCResourceBase
             }
 
             $claimsPolicyValue = $null
-            $claimsPolicyResponse = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'claimsPolicy' })
-            if ($claimsPolicyResponse -and $claimsPolicyResponse.status -eq 200 -and $claimsPolicyResponse.body)
+            if ($null -eq $claimsPolicyBody)
             {
-                $claimsPolicyValue = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $claimsPolicyResponse.body
+                $claimsPolicyResponse = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'claimsPolicy' })
+                if ($claimsPolicyResponse -and $claimsPolicyResponse.status -eq 200 -and $claimsPolicyResponse.body)
+                {
+                    $claimsPolicyBody = $claimsPolicyResponse.body
+                }
+            }
+            if ($null -ne $claimsPolicyBody)
+            {
+                $claimsPolicyValue = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $claimsPolicyBody
                 $claimsPolicyValue.Remove('@odata.context') | Out-Null
                 $claimsPolicyValue.Remove('id') | Out-Null
+                $claimsPolicyValue = Rename-M365DSCCimInstanceParameter -Properties $claimsPolicyValue `
+                    -KeyMapping @{ '@odata.type' = 'odataType' }
             }
 
             #Managed Identities in AzureGov return exception when pulling delegatedPermissionClassifications
             [Array]$complexDelegatedPermissionClassifications = @()
             try
             {
-                $permissionClassifications = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'delegatedPermissionClassifications' }).body.value
+                if ($null -eq $permissionClassifications)
+                {
+                    $permissionClassifications = ($batchResponse | Where-Object -FilterScript { $_.id -eq 'delegatedPermissionClassifications' }).body.value
+                }
             }
             catch
             {
                 Write-Verbose -Message "Service Principal didn't return delegated permission classifications. Expected for Managed Identities."
             }
 
-            foreach ($permissionClassification in $permissionClassifications.Value)
+            foreach ($permissionClassification in $permissionClassifications)
             {
                 $hashtable = @{
                     classification = $permissionClassification.Classification
@@ -846,9 +892,70 @@ class AADServicePrincipal : M365DSCResourceBase
             Write-M365DSCHost -Message "`r`n" -DeferWrite
             [array] $exportedInstances = Get-MgBetaServicePrincipal -All `
                 -Filter $this.Filter `
-                -Expand 'AppRoleAssignedTo' `
+                -Expand $this.ResourceCache['NavigationsToExpand'] `
                 -Property $this.ResourceCache['PropertiesToExport'] `
                 -ErrorAction Stop
+
+            $navigationCache = @{}
+            $navigationRequests = @()
+            foreach ($AADServicePrincipal in $exportedInstances)
+            {
+                $navigationCache[$AADServicePrincipal.Id] = @{
+                    Owners                             = @()
+                    DelegatedPermissionClassifications = @()
+                    ClaimsPolicy                       = $null
+                }
+                $navigationRequests += @{
+                    id     = "$($AADServicePrincipal.Id)|Owners"
+                    method = 'GET'
+                    url    = "/servicePrincipals/$($AADServicePrincipal.Id)/owners"
+                }
+                $navigationRequests += @{
+                    id     = "$($AADServicePrincipal.Id)|DelegatedPermissionClassifications"
+                    method = 'GET'
+                    url    = "/servicePrincipals/$($AADServicePrincipal.Id)/delegatedPermissionClassifications"
+                }
+                $navigationRequests += @{
+                    id     = "$($AADServicePrincipal.Id)|ClaimsPolicy"
+                    method = 'GET'
+                    url    = "/servicePrincipals/$($AADServicePrincipal.Id)/claimsPolicy"
+                }
+            }
+            if ($navigationRequests.Count -gt 0)
+            {
+                $navigationResponses = Invoke-M365DSCGraphBatchRequest -Requests $navigationRequests -ErrorAction SilentlyContinue
+                foreach ($navigationResponse in $navigationResponses)
+                {
+                    if ($navigationResponse.status -ne 200 -or $null -eq $navigationResponse.body)
+                    {
+                        continue
+                    }
+
+                    $separatorIndex = ([System.String]$navigationResponse.id).LastIndexOf('|')
+                    if ($separatorIndex -lt 0)
+                    {
+                        continue
+                    }
+
+                    $principalId = ([System.String]$navigationResponse.id).Substring(0, $separatorIndex)
+                    $navigationName = ([System.String]$navigationResponse.id).Substring($separatorIndex + 1)
+                    if (-not $navigationCache.ContainsKey($principalId))
+                    {
+                        continue
+                    }
+
+                    if ($navigationName -eq 'ClaimsPolicy')
+                    {
+                        $navigationCache[$principalId][$navigationName] = $navigationResponse.body
+                    }
+                    else
+                    {
+                        $navigationCache[$principalId][$navigationName] = @($navigationResponse.body.value)
+                    }
+                }
+            }
+            $this.ResourceCache['NavigationCache'] = $navigationCache
+
             foreach ($AADServicePrincipal in $exportedInstances)
             {
                 if ($null -ne $Global:M365DSCExportResourceInstancesCount)

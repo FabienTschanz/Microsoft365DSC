@@ -443,7 +443,12 @@ class AADApplication : M365DSCResourceBase
             }
 
             $OwnersValues = @()
-            foreach ($Owner in $($AADApp.Owners | Where-Object { -not $_.DeletedDateTime }))
+            $appOwners = $this.ResolveExpandedNavigation($AADApp, 'Owners')
+            if ($null -eq $appOwners)
+            {
+                $appOwners = Get-MgApplicationOwner -ApplicationId $AADApp.Id -All
+            }
+            foreach ($Owner in $($appOwners | Where-Object { -not $_.DeletedDateTime }))
             {
                 if ($Owner.userPrincipalName)
                 {
@@ -486,7 +491,7 @@ class AADApplication : M365DSCResourceBase
 
                 if (-not [System.String]::IsNullOrEmpty($AADApp.Info.LogoUrl))
                 {
-                    $logoResponse = Invoke-WebRequest -Uri $AADApp.Info.LogoUrl -Method Get -UseBasicParsing -ErrorAction SilentlyContinue
+                    $logoResponse = Invoke-WebRequest -Uri $AADApp.Info.LogoUrl -Method Get -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
                     $logoResponse = [System.Convert]::ToBase64String($logoResponse.Content)
                 }
             }
@@ -1745,13 +1750,25 @@ class AADApplication : M365DSCResourceBase
                 $roleAssignments = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'roleAssignments' }).body.value
             }
 
+            $scopesById = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+            foreach ($publishedScope in $SourceAPI.publishedPermissionScopes)
+            {
+                $scopesById[[System.String]$publishedScope.Id] = $publishedScope
+            }
+            $rolesById = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+            foreach ($appRole in $SourceAPI.AppRoles)
+            {
+                $rolesById[[System.String]$appRole.Id] = $appRole
+            }
+
             foreach ($resourceAccess in $requiredAccess.ResourceAccess)
             {
                 $currentPermission = @{}
                 $currentPermission.Add('SourceAPI', $SourceAPI.DisplayName)
                 if ($resourceAccess.Type -eq 'Scope')
                 {
-                    $scopeInfo = $SourceAPI.publishedPermissionScopes | Where-Object -FilterScript { $_.Id -eq $resourceAccess.Id }
+                    $scopeInfo = $null
+                    $null = $scopesById.TryGetValue([System.String]$resourceAccess.Id, [ref] $scopeInfo)
                     $scopeInfoValue = $null
                     if ($null -eq $scopeInfo)
                     {
@@ -1783,7 +1800,8 @@ class AADApplication : M365DSCResourceBase
                 elseif ($resourceAccess.Type -eq 'Role' -or $resourceAccess.Type -eq 'Role,Scope')
                 {
                     $currentPermission.Add('Type', 'AppOnly')
-                    $role = $SourceAPI.AppRoles | Where-Object -FilterScript { $_.Id -eq $resourceAccess.Id }
+                    $role = $null
+                    $null = $rolesById.TryGetValue([System.String]$resourceAccess.Id, [ref] $role)
                     $roleValue = $null
                     if ($null -eq $role)
                     {

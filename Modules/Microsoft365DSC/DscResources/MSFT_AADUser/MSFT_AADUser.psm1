@@ -241,7 +241,17 @@ class AADUser : M365DSCResourceBase
                     }
                 }
             )
-            $batchResponse = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+            $batchResponse = $null
+            $navigationCache = $this.ResourceCache['NavigationCache']
+            if ($null -ne $navigationCache -and $navigationCache.ContainsKey($this.UserPrincipalName))
+            {
+                $batchResponse = $navigationCache[$this.UserPrincipalName]
+            }
+
+            if ($null -eq $batchResponse)
+            {
+                $batchResponse = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+            }
 
             # If the user was deleted in the meantime, then return an empty hashtable
             # This only happens during Export because we cache the user objects
@@ -782,6 +792,57 @@ class AADUser : M365DSCResourceBase
                 $ExportParameters.Add('ConsistencyLevel', 'eventual')
             }
             $this.ResourceCache['M365DSCExportInstances'] = Get-MgUser @ExportParameters
+
+            $navigationRequests = [System.Collections.Generic.List[System.Object]]::new(@($this.ResourceCache['M365DSCExportInstances']).Count * 2)
+            foreach ($exportedUser in $this.ResourceCache['M365DSCExportInstances'])
+            {
+                if ([System.String]::IsNullOrEmpty($exportedUser.UserPrincipalName))
+                {
+                    continue
+                }
+
+                $navigationRequests.Add(@{
+                        id     = "$($exportedUser.UserPrincipalName)|License"
+                        method = 'GET'
+                        url    = "/users/$($exportedUser.UserPrincipalName)/licenseDetails?`$select=skuPartNumber"
+                    })
+                $navigationRequests.Add(@{
+                        id      = "$($exportedUser.UserPrincipalName)|MemberOf"
+                        method  = 'GET'
+                        url     = "/users/$($exportedUser.UserPrincipalName)/memberOf/microsoft.graph.group?`$select=displayName&`$filter=not(groupTypes/any(c:c eq 'DynamicMembership'))"
+                        headers = @{
+                            'ConsistencyLevel' = 'eventual'
+                        }
+                    })
+            }
+
+            $navigationCache = @{}
+            if ($navigationRequests.Count -gt 0)
+            {
+                $navigationResponses = Invoke-M365DSCGraphBatchRequest -Requests $navigationRequests -AsList
+                foreach ($navigationResponse in $navigationResponses)
+                {
+                    $responseId = [System.String] $navigationResponse.id
+                    $separatorIndex = $responseId.LastIndexOf('|')
+                    if ($separatorIndex -lt 0)
+                    {
+                        continue
+                    }
+
+                    $principalName = $responseId.Substring(0, $separatorIndex)
+                    if (-not $navigationCache.ContainsKey($principalName))
+                    {
+                        $navigationCache[$principalName] = [System.Collections.Generic.List[System.Object]]::new(2)
+                    }
+
+                    $navigationCache[$principalName].Add(@{
+                            id     = $responseId.Substring($separatorIndex + 1)
+                            status = $navigationResponse.status
+                            body   = $navigationResponse.body
+                        })
+                }
+            }
+            $this.ResourceCache['NavigationCache'] = $navigationCache
 
             $dscContent = [System.Text.StringBuilder]::new()
             $i = 1

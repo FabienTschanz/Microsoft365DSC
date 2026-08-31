@@ -439,6 +439,48 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'AADServicePrincipal' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should convert a claims policy that carries @odata.type discriminators' {
+                Mock -CommandName Invoke-M365DSCGraphBatchRequest -MockWith {
+                    return @(
+                        @{
+                            id     = '5dcb2237-c61b-4258-9c85-eae2aaeba9d6|ClaimsPolicy'
+                            status = 200
+                            body   = @{
+                                '@odata.context'       = 'https://graph.microsoft.com/beta/$metadata#servicePrincipals'
+                                'id'                   = '5dcb2237-c61b-4258-9c85-eae2aaeba9d6'
+                                'includeBasicClaimSet' = $true
+                                'groupFilter'          = @{
+                                    '@odata.type' = '#microsoft.graph.groupClaimFilter'
+                                    'type'        = 'displayName'
+                                    'matchOn'     = 'prefix'
+                                    'value'       = 'DSC'
+                                }
+                                'claims'               = @(
+                                    @{
+                                        '@odata.type'    = '#microsoft.graph.customClaim'
+                                        'name'           = 'employeeid'
+                                        'tokenFormat'    = @('saml')
+                                        'configurations' = @(
+                                            @{
+                                                'attribute' = @{
+                                                    '@odata.type' = '#microsoft.graph.sourcedAttribute'
+                                                    'id'          = 'employeeid'
+                                                }
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'AADServicePrincipal' -MethodName 'Export' -Parameters $testParams
+                $result | Should -Not -BeNullOrEmpty
+                $result | Should -Match 'employeeid'
+                $result | Should -Match 'groupClaimFilter'
+            }
         }
 
         Context -Name 'AppRoleAssignedTo AppRoleId resolution' -Fixture {

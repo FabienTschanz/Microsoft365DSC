@@ -116,7 +116,7 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
 
                 if ($null -eq $this.ResourceCache['allPolicyAssignments'])
                 {
-                    $this.ResourceCache['allPolicyAssignments'] = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '/' and scopeType eq 'DirectoryRole'"
+                    $this.ResourceCache['allPolicyAssignments'] = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '/' and scopeType eq 'DirectoryRole'" -All -Property 'roleDefinitionId,policyId'
                 }
 
                 $getValue = $null
@@ -362,16 +362,32 @@ class AADRoleManagementPolicyRule : M365DSCResourceBase
         try
         {
             [array] $roles = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter $this.Filter -All
-            [array]$this.ResourceCache['allPolicyAssignments'] = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '/' and scopeType eq 'DirectoryRole'"
+            [array]$this.ResourceCache['allPolicyAssignments'] = Get-MgBetaPolicyRoleManagementPolicyAssignment -Filter "scopeId eq '/' and scopeType eq 'DirectoryRole'" -All -Property 'roleDefinitionId,policyId'
+
+            $assignmentByRole = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+            foreach ($policyAssignment in $this.ResourceCache['allPolicyAssignments'])
+            {
+                $assignmentByRole[$policyAssignment.RoleDefinitionId] = $policyAssignment
+            }
+            $rulesByPolicy = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+            $allPolicies = Get-MgBetaPolicyRoleManagementPolicy -Filter "scopeId eq '/' and scopeType eq 'DirectoryRole'" -ExpandProperty 'rules' -Property 'Id,rules' -All
+            foreach ($policy in $allPolicies)
+            {
+                $rulesByPolicy[$policy.Id] = $policy.Rules
+            }
 
             $j = 1
             foreach ($role in $roles)
             {
-                $assignment = $this.ResourceCache['allPolicyAssignments'] | Where-Object { $_.RoleDefinitionId -eq $role.Id }
+                $assignment = $null
+                $null = $assignmentByRole.TryGetValue($role.Id, [ref] $assignment)
                 $exportPolicyId = $assignment.PolicyId
                 $this.ResourceCache['ResolvedPolicyId'] = $exportPolicyId
-                $rules = Get-MgBetaPolicyRoleManagementPolicyRule `
-                    -UnifiedRoleManagementPolicyId $exportPolicyId
+                $rules = $null
+                if ($null -ne $exportPolicyId)
+                {
+                    $null = $rulesByPolicy.TryGetValue($exportPolicyId, [ref] $rules)
+                }
 
                 Write-M365DSCHost -Message "    |---[$j/$($roles.Count)] $($role.displayName)"
                 $i = 1

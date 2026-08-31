@@ -1027,7 +1027,7 @@ class AADRoleSetting : M365DSCResourceBase
         }
         try
         {
-            [array] $exportedInstances = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter $this.Filter -Sort DisplayName -ErrorAction Stop
+            [array] $exportedInstances = Get-MgBetaRoleManagementDirectoryRoleDefinition -Filter $this.Filter -All -Sort DisplayName -ErrorAction Stop
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             Write-M365DSCHost -Message "`r`n" -DeferWrite

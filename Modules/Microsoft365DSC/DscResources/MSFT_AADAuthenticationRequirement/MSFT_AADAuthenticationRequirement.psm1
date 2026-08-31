@@ -83,7 +83,17 @@ class AADAuthenticationRequirement : M365DSCResourceBase
             }
             else
             {
-                $getValue = $this.ExportedInstance
+                $getValue = $null
+                $requirementCache = $this.ResourceCache['AuthenticationRequirements']
+                if ($null -ne $requirementCache -and $requirementCache.ContainsKey($this.UserPrincipalName))
+                {
+                    $getValue = $requirementCache[$this.UserPrincipalName]
+                }
+
+                if ($null -eq $getValue)
+                {
+                    $getValue = Get-MgBetaUserAuthenticationRequirement -UserId $this.UserPrincipalName
+                }
             }
 
             Write-Verbose -Message "An Azure AD Authentication Method Policy Requirement for a user with UPN {$($this.UserPrincipalName)} was found."
@@ -171,9 +181,32 @@ class AADAuthenticationRequirement : M365DSCResourceBase
 
         try
         {
-            [array]$getValue = Get-MgUser -Filter "userType eq 'member'" -All -ErrorAction Stop | Where-Object -FilterScript {
+            [array]$getValue = Get-MgUser -Filter "userType eq 'member'" -All -Property 'id', 'userPrincipalName', 'displayName' -ErrorAction Stop | Where-Object -FilterScript {
                 $null -ne $_.Id -and $_.UserPrincipalName -notlike '*#EXT#*'
             }
+
+            $requirementCache = @{}
+            $requirementRequests = @()
+            foreach ($config in $getValue)
+            {
+                $requirementRequests += @{
+                    id     = $config.UserPrincipalName
+                    method = 'GET'
+                    url    = "/users/$($config.Id)/authentication/requirements"
+                }
+            }
+            if ($requirementRequests.Count -gt 0)
+            {
+                $requirementResponses = Invoke-M365DSCGraphBatchRequest -Requests $requirementRequests -ErrorAction SilentlyContinue
+                foreach ($requirementResponse in $requirementResponses)
+                {
+                    if ($requirementResponse.status -eq 200 -and $null -ne $requirementResponse.body)
+                    {
+                        $requirementCache[[System.String]$requirementResponse.id] = $requirementResponse.body
+                    }
+                }
+            }
+            $this.ResourceCache['AuthenticationRequirements'] = $requirementCache
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
