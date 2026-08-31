@@ -322,7 +322,8 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
         $dscContent = [System.Text.StringBuilder]::new()
         try
         {
-            [array]$applications = Get-MgApplication -All -Filter $this.Filter -Property @('id', 'displayName') -ErrorAction Stop
+            [array]$applications = Get-MgApplication -All -Filter $this.Filter -Property @('id', 'displayName') `
+                -ExpandProperty 'federatedIdentityCredentials' -ErrorAction Stop
             if ($applications.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite
@@ -334,10 +335,14 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
 
             foreach ($application in $applications)
             {
-                [array]$federatedIdentityCredentials = Get-MgApplicationFederatedIdentityCredential `
-                    -ApplicationId $application.Id `
-                    -All `
-                    -ErrorAction Stop
+                [array]$federatedIdentityCredentials = $this.ResolveExpandedNavigation($application, 'FederatedIdentityCredentials')
+                if ($null -eq $federatedIdentityCredentials)
+                {
+                    [array]$federatedIdentityCredentials = Get-MgApplicationFederatedIdentityCredential `
+                        -ApplicationId $application.Id `
+                        -All `
+                        -ErrorAction Stop
+                }
 
                 $i = 1
                 foreach ($federatedIdentityCredential in $federatedIdentityCredentials)

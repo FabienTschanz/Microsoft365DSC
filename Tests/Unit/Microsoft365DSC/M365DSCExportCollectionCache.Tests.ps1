@@ -2,6 +2,7 @@ BeforeAll {
     Import-Module "$PSScriptRoot/../../../Modules/Microsoft365DSC/Modules/M365DSCDllLoader.psm1" -Force -Global
     Initialize-M365DSCDllLoader
     Import-Module "$PSScriptRoot/../../../Modules/Microsoft365DSC/Modules/M365DSCIntuneUtil.psm1" -Force -Global
+    Import-Module "$PSScriptRoot/../../../Modules/Microsoft365DSC/Modules/M365DSCExportUtil.psm1" -Force -Global
 
     function global:Get-MgBetaDeviceManagementDeviceConfiguration
     {
@@ -126,14 +127,14 @@ Describe 'M365DSCExportCollectionCache' {
 
     Context 'Get-M365DSCExportCachedCollection' {
         BeforeEach {
-            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
+            Mock -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith {
                 return @(
                     @{ id = '1'; '@odata.type' = '#microsoft.graph.windowsKioskConfiguration' },
                     @{ id = '2'; '@odata.type' = '#microsoft.graph.windowsWifiConfiguration' },
                     @{ id = '3'; '@odata.type' = '#microsoft.graph.windowsWifiEnterpriseEAPConfiguration' }
                 )
             }
-            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {
+            Mock -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -MockWith {
                 return @(
                     @{ id = '1'; '@odata.type' = '#microsoft.graph.deviceEnrollmentLimitConfiguration' },
                     @{ id = '2'; '@odata.type' = '#microsoft.graph.windows10EnrollmentCompletionPageConfiguration' }
@@ -143,7 +144,7 @@ Describe 'M365DSCExportCollectionCache' {
 
         It 'performs the isof request with assignments expanded while the cache is disabled' {
             $result = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration'
-            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
                 $Filter -eq "isof('microsoft.graph.windowsKioskConfiguration')" -and $ExpandProperty -contains 'assignments' -and $All
             }
             $result.Count | Should -Be 3
@@ -151,11 +152,11 @@ Describe 'M365DSCExportCollectionCache' {
 
         It 'builds the exclusion and multi-type filters' {
             $null = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsWifiConfiguration' -ExcludeODataType 'microsoft.graph.windowsWifiEnterpriseEAPConfiguration'
-            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
                 $Filter -eq "isof('microsoft.graph.windowsWifiConfiguration') and not isof('microsoft.graph.windowsWifiEnterpriseEAPConfiguration')"
             }
             $null = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType @('microsoft.graph.iosVpnConfiguration', 'microsoft.graph.iosikEv2VpnConfiguration')
-            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
                 $Filter -eq "(isof('microsoft.graph.iosVpnConfiguration') or isof('microsoft.graph.iosikEv2VpnConfiguration'))"
             }
         }
@@ -163,7 +164,7 @@ Describe 'M365DSCExportCollectionCache' {
         It 'merges a user filter and bypasses the cache' {
             [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
             $null = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration' -Filter "displayName eq 'x'"
-            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
                 $Filter -eq "(isof('microsoft.graph.windowsKioskConfiguration')) and (displayName eq 'x')"
             }
             [Microsoft365DSC.Intune.ExportCollectionCache]::ShouldPopulate('deviceConfigurations') | Should -BeTrue
@@ -171,7 +172,7 @@ Describe 'M365DSCExportCollectionCache' {
 
         It 'filters enrollment configurations client-side' {
             $result = Get-M365DSCExportCachedCollection -Collection 'deviceEnrollmentConfigurations' -ODataType 'microsoft.graph.deviceEnrollmentLimitConfiguration'
-            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Times 1 -Exactly -ParameterFilter {
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceEnrollmentConfiguration -Times 1 -Exactly -ParameterFilter {
                 $null -eq $Filter -and $ExpandProperty -contains 'assignments'
             }
             @($result).id | Should -Be '1'
@@ -181,7 +182,7 @@ Describe 'M365DSCExportCollectionCache' {
             [Microsoft365DSC.Intune.ExportCollectionCache]::Enable()
             $kiosk = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration'
             $wifi = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsWifiConfiguration' -ExcludeODataType 'microsoft.graph.windowsWifiEnterpriseEAPConfiguration'
-            Should -Invoke -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -Times 1 -Exactly -ParameterFilter {
                 $null -eq $Filter -and $ExpandProperty -contains 'assignments'
             }
             @($kiosk).id | Should -Be '1'
@@ -189,7 +190,7 @@ Describe 'M365DSCExportCollectionCache' {
         }
 
         It 'returns an empty array when nothing matches' {
-            Mock -ModuleName M365DSCIntuneUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith { }
+            Mock -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith { }
             $result = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration'
             $result.Length | Should -Be 0
         }

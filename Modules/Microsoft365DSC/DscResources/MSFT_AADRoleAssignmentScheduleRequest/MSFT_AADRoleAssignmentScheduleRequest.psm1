@@ -470,7 +470,7 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
         try
         {
             #region resource generator code
-            [array] $this.ResourceCache['exportedInstances'] = Get-MgBetaRoleManagementDirectoryRoleAssignmentSchedule -All -Filter $this.Filter -ErrorAction SilentlyContinue
+            [array] $this.ResourceCache['exportedInstances'] = Get-MgBetaRoleManagementDirectoryRoleAssignmentSchedule -All -Filter $this.Filter -ExpandProperty 'principal', 'roleDefinition' -ErrorAction SilentlyContinue
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
@@ -503,7 +503,11 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
 
                 # Find the Principal Type
                 $principalTypeValue = 'User'
-                $userInfo = Get-MgBetaDirectoryObjectById -Ids $request.PrincipalId -ErrorAction SilentlyContinue
+                $userInfo = $request.Principal
+                if ($null -eq $userInfo)
+                {
+                    $userInfo = Get-MgBetaDirectoryObjectById -Ids $request.PrincipalId -ErrorAction SilentlyContinue
+                }
                 $principalTypeValue = $userInfo['@odata.type'].Split('.')[2]
                 $PrincipalValue = if ($principalTypeValue -eq 'user')
                 {
@@ -521,7 +525,11 @@ class AADRoleAssignmentScheduleRequest : M365DSCResourceBase
                     continue
                 }
 
-                $currentRoleDefinition = $this.ResourceCache['RoleDefinitions'][$request.RoleDefinitionId]
+                $currentRoleDefinition = $request.RoleDefinition
+                if ($null -eq $currentRoleDefinition)
+                {
+                    $currentRoleDefinition = $this.ResourceCache['RoleDefinitions'][$request.RoleDefinitionId]
+                }
                 if ($null -eq $currentRoleDefinition)
                 {
                     $currentRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $request.RoleDefinitionId `

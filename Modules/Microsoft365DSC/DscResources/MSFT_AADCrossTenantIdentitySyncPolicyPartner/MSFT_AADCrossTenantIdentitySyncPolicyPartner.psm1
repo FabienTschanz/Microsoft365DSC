@@ -204,6 +204,7 @@ class AADCrossTenantIdentitySyncPolicyPartner : M365DSCResourceBase
             $policyPartners = Get-MgBetaPolicyCrossTenantAccessPolicyPartner `
                 -All `
                 -Filter $this.Filter `
+                -ExpandProperty 'identitySynchronization' `
                 -ErrorAction Stop
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
@@ -217,12 +218,15 @@ class AADCrossTenantIdentitySyncPolicyPartner : M365DSCResourceBase
             }
             foreach ($partner in $policyPartners)
             {
-                $config = $null
+                $config = $partner.IdentitySynchronization
                 try
                 {
-                    $config = Get-MgBetaPolicyCrossTenantAccessPolicyPartnerIdentitySynchronization `
-                        -CrossTenantAccessPolicyConfigurationPartnerTenantId $partner.TenantId `
-                        -ErrorAction Stop
+                    if ($null -eq $config)
+                    {
+                        $config = Get-MgBetaPolicyCrossTenantAccessPolicyPartnerIdentitySynchronization `
+                            -CrossTenantAccessPolicyConfigurationPartnerTenantId $partner.TenantId `
+                            -ErrorAction Stop
+                    }
                 }
                 catch
                 {

@@ -456,7 +456,8 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
 
         try
         {
-            [array] $exportedInstances = Get-MgBetaRoleManagementDirectoryRoleEligibilitySchedule -All -Filter $this.Filter -ErrorAction SilentlyContinue
+            [array] $exportedInstances = Get-MgBetaRoleManagementDirectoryRoleEligibilitySchedule -All -Filter $this.Filter `
+                -ExpandProperty 'principal', 'roleDefinition' -ErrorAction SilentlyContinue
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
@@ -488,7 +489,11 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
                 Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
                 # Find the Principal Type
                 $principalTypeValue = 'User'
-                $userInfo = Get-MgBetaDirectoryObjectById -Ids $config.PrincipalId -ErrorAction SilentlyContinue
+                $userInfo = $config.Principal
+                if ($null -eq $userInfo)
+                {
+                    $userInfo = Get-MgBetaDirectoryObjectById -Ids $config.PrincipalId -ErrorAction SilentlyContinue
+                }
                 $principalTypeValue = $userInfo['@odata.type'].Split('.')[2]
                 $PrincipalValue = if ($principalTypeValue -eq 'user' )
                 {
@@ -506,7 +511,11 @@ class AADRoleEligibilityScheduleRequest : M365DSCResourceBase
                     continue
                 }
 
-                $currentRoleDefinition = $this.ResourceCache['RoleDefinitions'][$config.RoleDefinitionId]
+                $currentRoleDefinition = $config.RoleDefinition
+                if ($null -eq $currentRoleDefinition)
+                {
+                    $currentRoleDefinition = $this.ResourceCache['RoleDefinitions'][$config.RoleDefinitionId]
+                }
                 if ($null -eq $currentRoleDefinition)
                 {
                     $currentRoleDefinition = Get-MgBetaRoleManagementDirectoryRoleDefinition -UnifiedRoleDefinitionId $config.RoleDefinitionId `

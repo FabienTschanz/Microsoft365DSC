@@ -102,8 +102,8 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
 
                 if (-not [string]::IsNullOrEmpty($this.DisplayName))
                 {
-                    $response = Invoke-M365DSCGraphRequest -Method Get -Uri '/beta/policies/authenticationMethodsPolicy/'
-                    $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript { $_.DisplayName -eq $this.DisplayName }
+                    $getValue = (Get-MgBetaPolicyAuthenticationMethodPolicy).AuthenticationMethodConfigurations |
+                        Where-Object -FilterScript { $_.DisplayName -eq $this.DisplayName }
                 }
 
                 #endregion
@@ -260,8 +260,8 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Present' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Updating the Azure AD Authentication Method Policy External with name {$($currentInstance.displayName)}"
-            $response = Invoke-M365DSCGraphRequest -Method Get -Uri '/beta/policies/authenticationMethodsPolicy/'
-            $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript { $_.displayName -eq $currentInstance.displayName }
+            $getValue = (Get-MgBetaPolicyAuthenticationMethodPolicy).AuthenticationMethodConfigurations |
+                Where-Object -FilterScript { $_.displayName -eq $currentInstance.displayName }
 
             $params.Remove('displayName') | Out-Null
             Update-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
@@ -271,8 +271,8 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
         elseif ($this.Ensure -eq 'Absent' -and $currentInstance.Ensure -eq 'Present')
         {
             Write-Verbose -Message "Removing the Azure AD Authentication Method Policy External with Id {$($currentInstance.displayName)}"
-            $response = Invoke-M365DSCGraphRequest -Method Get -Uri '/beta/policies/authenticationMethodsPolicy/'
-            $getValue = $response.authenticationMethodConfigurations | Where-Object -FilterScript { $_.displayName -eq $currentInstance.displayName }
+            $getValue = (Get-MgBetaPolicyAuthenticationMethodPolicy).AuthenticationMethodConfigurations |
+                Where-Object -FilterScript { $_.displayName -eq $currentInstance.displayName }
             Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -AuthenticationMethodConfigurationId $getValue.Id
         }
     }
@@ -301,9 +301,9 @@ class AADAuthenticationMethodPolicyExternal : M365DSCResourceBase
         try
         {
             #region resource generator code
-            $getPolicy = Get-MgBetaPolicyAuthenticationMethodPolicy
             $desiredType = '#microsoft.graph.externalAuthenticationMethodConfiguration'
-            $getValue = $getPolicy.AuthenticationMethodConfigurations | Where-Object -FilterScript { $_.'@odata.type' -eq $desiredType }
+            $getValue = (Get-MgBetaPolicyAuthenticationMethodPolicy).AuthenticationMethodConfigurations |
+                Where-Object -FilterScript { $_.'@odata.type' -eq $desiredType }
             #endregion
 
             $i = 1

@@ -34,6 +34,9 @@
 * AADRoleEligibilityScheduleRequest
   * [BREAKING CHANGE] Removed deprecated properties `Action` and `IsValidationOnly`.
 * AADServicePrincipal
+  * [BREAKING CHANGE] Fixed an issue where the allowed values for the
+    `MSFT_AADServicePrincipalClaimsPolicyGroupFilter` properties `type` and `matchOn`
+    were inverted.
   * Switched the resource to the Microsoft Graph beta endpoint, which is where
     the `ClaimsPolicy`, `ErrorUrl`, `PublisherName` and `SamlMetadataUrl`
     properties are defined.

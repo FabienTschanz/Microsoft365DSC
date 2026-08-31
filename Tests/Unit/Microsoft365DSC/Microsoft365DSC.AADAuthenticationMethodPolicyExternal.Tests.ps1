@@ -116,6 +116,10 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
                     return $null
                 }
+
+                Mock -CommandName Get-MgBetaPolicyAuthenticationMethodPolicy -MockWith {
+                    return $null
+                }
             }
             It 'Should return Values from the Get method' {
                 ((New-M365DSCResourceInstance -ResourceName 'AADAuthenticationMethodPolicyExternal' -Property $testParams).Get().ToHashtable()).Ensure | Should -Be 'Absent'

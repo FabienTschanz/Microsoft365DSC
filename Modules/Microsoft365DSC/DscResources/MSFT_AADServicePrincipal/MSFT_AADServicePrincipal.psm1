@@ -1481,13 +1481,13 @@ class MSFT_AADServicePrincipalClaimsPolicyGroupFilter
     [System.String] $odataType
 
     [DscProperty()]
-    [System.ComponentModel.Description('Identifies the group attribute on which the filter would be applied. The possible values are: displayName, samAccountName.')]
-    [ValidateSet('displayName', 'samAccountName')]
+    [System.ComponentModel.Description('Selects the type of filter to apply to the attribute selected by the matchOn property. The possible values are: prefix, suffix, contains.')]
+    [ValidateSet('prefix', 'suffix', 'contains')]
     [System.String] $type
 
     [DscProperty()]
-    [System.ComponentModel.Description('Selects the type of filter you wish to apply to the attribute selected by the matchOn property. The possible values are: prefix, suffix, contains.')]
-    [ValidateSet('prefix', 'suffix', 'contains')]
+    [System.ComponentModel.Description('Identifies the group attribute on which the filter would be applied. The possible values are: displayName, samAccountName.')]
+    [ValidateSet('displayName', 'samAccountName')]
     [System.String] $matchOn
 
     [DscProperty()]

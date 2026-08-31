@@ -311,7 +311,19 @@ class AADApplication : M365DSCResourceBase
             foreach ($currentPreAuthorizedApplications in $AADApp.api.preAuthorizedApplications)
             {
                 $myPreAuthorizedApplications = [ordered]@{}
-                $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$($currentPreAuthorizedApplications.appId)'" -Property "displayName"
+                $servicePrincipal = $null
+                $servicePrincipalsByAppId = $this.ResourceCache['ServicePrincipalsByAppId']
+                if ($null -ne $servicePrincipalsByAppId)
+                {
+                    if ($servicePrincipalsByAppId.ContainsKey([System.String]$currentPreAuthorizedApplications.appId))
+                    {
+                        $servicePrincipal = $servicePrincipalsByAppId[[System.String]$currentPreAuthorizedApplications.appId]
+                    }
+                }
+                else
+                {
+                    $servicePrincipal = Get-MgServicePrincipal -Filter "AppId eq '$($currentPreAuthorizedApplications.appId)'" -Property "displayName"
+                }
                 if ($null -eq $servicePrincipal)
                 {
                     Write-Warning -Message "Could not find service principal with AppId {$($currentPreAuthorizedApplications.appId)} for pre-authorized application. DisplayName will not be included in the configuration."
@@ -484,7 +496,16 @@ class AADApplication : M365DSCResourceBase
                         url    = "/applications/$($AADApp.Id)/tokenLifetimePolicies"
                     }
                 )
-                $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+                $batchResponses = $null
+                $navigationCache = $this.ResourceCache['NavigationCache']
+                if ($null -ne $navigationCache -and $navigationCache.ContainsKey([System.String]$AADApp.Id))
+                {
+                    $batchResponses = $navigationCache[[System.String]$AADApp.Id]
+                }
+                if ($null -eq $batchResponses)
+                {
+                    $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+                }
 
                 $oppInfo = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'onPremisesPublishing' }).body.value
                 $lifetimePolicy = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'tokenLifetimePolicies' }).body.value | Select-Object -First 1
@@ -1390,8 +1411,20 @@ class AADApplication : M365DSCResourceBase
                 -ExpandProperty 'owners' `
                 -All `
                 -ErrorAction Stop
+
+            $this.BuildServicePrincipalMap($exportedInstances)
+
+            # Use a windowing approach to prefetch the next 250 instances to pre-load the next set of apps at once
+            # instead of for one app at a time
+            $windowIndex = 0
             foreach ($AADApp in $exportedInstances)
             {
+                if (($windowIndex % 250) -eq 0)
+                {
+                    $this.PrefetchNavigationWindow($exportedInstances, $windowIndex, 250)
+                }
+                $windowIndex++
+
                 if ($null -ne $Global:M365DSCExportResourceInstancesCount)
                 {
                     $Global:M365DSCExportResourceInstancesCount++
@@ -1694,6 +1727,138 @@ class AADApplication : M365DSCResourceBase
         }
     }
 
+    hidden [void] BuildServicePrincipalMap([System.Object[]] $Instances)
+    {
+        $this.ResourceCache['ServicePrincipalsByAppId'] = $null
+        if ($null -eq $Instances -or $Instances.Count -eq 0)
+        {
+            return
+        }
+
+        $distinctApiIds = [System.Collections.Generic.HashSet[System.String]]::new()
+        $preAuthorizedCount = 0
+        foreach ($instance in $Instances)
+        {
+            foreach ($requiredAccess in $instance.RequiredResourceAccess)
+            {
+                $null = $distinctApiIds.Add([System.String]$requiredAccess.ResourceAppId)
+            }
+            $preAuthorizedCount += @($instance.Api.PreAuthorizedApplications).Count
+        }
+        $lookupsSaved = $Instances.Count + $distinctApiIds.Count + $preAuthorizedCount
+        if ($Instances.Count -lt 25)
+        {
+            Write-Verbose -Message "Skipping the service principal map: only $($Instances.Count) applications found."
+            return
+        }
+
+        Write-Verbose -Message "Building the service principal map to serve $lookupsSaved lookups."
+        $map = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+        try
+        {
+            $response = Invoke-M365DSCGraphRequest -Uri '/beta/servicePrincipals?$select=id,appId,displayName' -All
+        }
+        catch
+        {
+            Write-Verbose -Message 'Could not list the service principals in the tenant. Falling back to per-application lookups.'
+            return
+        }
+
+        foreach ($servicePrincipal in $response.value)
+        {
+            $map[[System.String]$servicePrincipal.appId] = @{
+                Id          = [System.String]$servicePrincipal.id
+                DisplayName = [System.String]$servicePrincipal.displayName
+            }
+        }
+        $this.ResourceCache['ServicePrincipalsByAppId'] = $map
+    }
+
+    hidden [void] PrefetchNavigationWindow([System.Object[]] $Instances, [System.Int32] $Start, [System.Int32] $Size)
+    {
+        $this.ResourceCache['NavigationCache'] = $null
+
+        $servicePrincipalsByAppId = $this.ResourceCache['ServicePrincipalsByAppId']
+        if ($null -eq $Instances -or $Instances.Count -eq 0)
+        {
+            return
+        }
+
+        $requests = [System.Collections.Generic.List[System.Object]]::new()
+        $end = [System.Math]::Min($Start + $Size, $Instances.Count)
+        for ($index = $Start; $index -lt $end; $index++)
+        {
+            $instance = $Instances[$index]
+            $applicationKey = [System.String]$instance.Id
+            $requests.Add(@{
+                    id     = "$applicationKey|onPremisesPublishing"
+                    method = 'GET'
+                    url    = "/applications/$applicationKey/onPremisesPublishing"
+                })
+            $requests.Add(@{
+                    id     = "$applicationKey|tokenLifetimePolicies"
+                    method = 'GET'
+                    url    = "/applications/$applicationKey/tokenLifetimePolicies"
+                })
+
+            if ($null -eq $servicePrincipalsByAppId -or -not $servicePrincipalsByAppId.ContainsKey([System.String]$instance.AppId))
+            {
+                continue
+            }
+            $servicePrincipalId = $servicePrincipalsByAppId[[System.String]$instance.AppId].Id
+            $requests.Add(@{
+                    id     = "$applicationKey|oAuth2grant"
+                    method = 'GET'
+                    url    = "/oauth2PermissionGrants?`$filter=clientId eq '$servicePrincipalId'"
+                })
+            $requests.Add(@{
+                    id     = "$applicationKey|roleAssignments"
+                    method = 'GET'
+                    url    = "/servicePrincipals/$servicePrincipalId/appRoleAssignments"
+                })
+        }
+
+        if ($requests.Count -eq 0)
+        {
+            return
+        }
+
+        $responses = $null
+        try
+        {
+            $responses = Invoke-M365DSCGraphBatchRequest -Requests $requests.ToArray()
+        }
+        catch
+        {
+            Write-Verbose -Message 'Could not prefetch the navigation properties for this window. Falling back to per-application requests.'
+            return
+        }
+
+        $cache = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+        foreach ($response in $responses)
+        {
+            $responseId = [System.String]$response.id
+            $separator = $responseId.LastIndexOf('|')
+            if ($separator -lt 0)
+            {
+                continue
+            }
+            $applicationKey = $responseId.Substring(0, $separator)
+            $entry = $null
+            if (-not $cache.TryGetValue($applicationKey, [ref] $entry))
+            {
+                $entry = [System.Collections.Generic.List[System.Object]]::new()
+                $cache[$applicationKey] = $entry
+            }
+            $entry.Add(@{
+                    id     = $responseId.Substring($separator + 1)
+                    status = $response.status
+                    body   = $response.body
+                })
+        }
+        $this.ResourceCache['NavigationCache'] = $cache
+    }
+
     hidden [System.Object] GetAzureADAppPermissions([System.Object] $App)
     {
         Write-Verbose -Message "Retrieving permissions for Azure AD Application {$($App.DisplayName)}"
@@ -1702,36 +1867,108 @@ class AADApplication : M365DSCResourceBase
         $permissionResults = @()
         $oAuth2grant = $null
         $roleAssignments = $null
-        $i = 1
-        foreach ($requiredAccess in $requiredAccesses)
-        {
-            Write-Verbose -Message "[$i/$($requiredAccesses.Length)]Obtaining information for App's Permission for {$($requiredAccess.ResourceAppId)}"
-            $batchRequests = @(
-                @{
-                    id     = 'SourceAPI'
-                    method = 'GET'
-                    url    = "/servicePrincipals?`$filter=appId eq '$($requiredAccess.ResourceAppId)'"
-                }
-                @{
-                    id     = 'AppServicePrincipal'
-                    method = 'GET'
-                    url    = "/servicePrincipals?`$filter=appId eq '$($App.AppId)'"
-                }
-            )
-            $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
+        $appServicePrincipal = $null
+        $grantedAppRoleIds = [System.Collections.Generic.HashSet[System.String]]::new()
 
-            $SourceAPI = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'SourceAPI' }).body.value
-            if ([System.String]::IsNullOrEmpty($SourceAPI))
+        if ($null -eq $this.ResourceCache['SourceApiNames'])
+        {
+            $this.ResourceCache['SourceApiNames'] = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
+            $this.ResourceCache['SourceApiScopes'] = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+            $this.ResourceCache['SourceApiRoles'] = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
+        }
+        $apiNames = $this.ResourceCache['SourceApiNames']
+        $apiScopes = $this.ResourceCache['SourceApiScopes']
+        $apiRoles = $this.ResourceCache['SourceApiRoles']
+        $servicePrincipalsByAppId = $this.ResourceCache['ServicePrincipalsByAppId']
+
+        $batchRequests = [System.Collections.Generic.List[System.Object]]::new()
+        $pendingApiIds = [System.Collections.Generic.List[System.String]]::new()
+        if ($requiredAccesses.Length -gt 0)
+        {
+            $resolvedOwnServicePrincipal = $false
+            if ($null -ne $servicePrincipalsByAppId -and $servicePrincipalsByAppId.ContainsKey([System.String]$App.AppId))
             {
-                Write-Warning -Message "Could not find the Service Principal for API with AppId {$($requiredAccess.ResourceAppId)}. Using ResourceAppId as the identifier in the exported configuration."
-                $SourceAPI = @{
-                    AppId = $requiredAccess.ResourceAppId
-                    DisplayName = $requiredAccess.ResourceAppId
-                    Id = $requiredAccess.ResourceAppId
+                $resolvedOwnServicePrincipal = $true
+                $appServicePrincipal = $servicePrincipalsByAppId[[System.String]$App.AppId]
+            }
+            else
+            {
+                $batchRequests.Add(@{
+                        id     = 'AppServicePrincipal'
+                        method = 'GET'
+                        url    = "/servicePrincipals?`$filter=appId eq '$($App.AppId)'"
+                    })
+            }
+
+            foreach ($requiredAccess in $requiredAccesses)
+            {
+                $sourceApiKey = [System.String]$requiredAccess.ResourceAppId
+                if ($apiNames.ContainsKey($sourceApiKey) -or $pendingApiIds.Contains($sourceApiKey))
+                {
+                    continue
+                }
+                $pendingApiIds.Add($sourceApiKey)
+                $batchRequests.Add(@{
+                        id     = "SourceAPI|$sourceApiKey"
+                        method = 'GET'
+                        url    = "/servicePrincipals?`$filter=appId eq '$sourceApiKey'&`$select=displayName,appRoles,publishedPermissionScopes"
+                    })
+            }
+
+            if ($batchRequests.Count -gt 0)
+            {
+                $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests.ToArray()
+                if (-not $resolvedOwnServicePrincipal)
+                {
+                    $appServicePrincipal = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'AppServicePrincipal' }).body.value
+                }
+
+                foreach ($pendingApiId in $pendingApiIds)
+                {
+                    $sourceApi = ($batchResponses | Where-Object -FilterScript { $_.id -eq "SourceAPI|$pendingApiId" }).body.value
+                    if ([System.String]::IsNullOrEmpty($sourceApi))
+                    {
+                        Write-Warning -Message "Could not find the Service Principal for API with AppId {$pendingApiId}. Using ResourceAppId as the identifier in the exported configuration."
+                        $sourceApi = @{
+                            AppId       = $pendingApiId
+                            DisplayName = $pendingApiId
+                            Id          = $pendingApiId
+                        }
+                    }
+
+                    $apiNames[$pendingApiId] = [System.String]$sourceApi.DisplayName
+
+                    $scopesById = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
+                    foreach ($publishedScope in $sourceApi.publishedPermissionScopes)
+                    {
+                        $scopesById[[System.String]$publishedScope.Id] = [System.String]$publishedScope.Value
+                    }
+                    $apiScopes[$pendingApiId] = $scopesById
+
+                    $rolesById = [System.Collections.Generic.Dictionary[System.String, System.String]]::new()
+                    foreach ($appRole in $sourceApi.AppRoles)
+                    {
+                        $rolesById[[System.String]$appRole.Id] = [System.String]$appRole.Value
+                    }
+                    $apiRoles[$pendingApiId] = $rolesById
                 }
             }
-            $appServicePrincipal = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'AppServicePrincipal' }).body.value
-            if ($null -ne $appServicePrincipal)
+        }
+
+        if ($null -ne $appServicePrincipal)
+        {
+            $navigationResponses = $null
+            $navigationCache = $this.ResourceCache['NavigationCache']
+            if ($null -ne $navigationCache -and $navigationCache.ContainsKey([System.String]$App.Id))
+            {
+                $navigationResponses = $navigationCache[[System.String]$App.Id]
+                if ($null -eq ($navigationResponses | Where-Object -FilterScript { $_.id -eq 'oAuth2grant' }))
+                {
+                    $navigationResponses = $null
+                }
+            }
+
+            if ($null -eq $navigationResponses)
             {
                 $batchRequests = @(
                     @{
@@ -1745,41 +1982,41 @@ class AADApplication : M365DSCResourceBase
                         url    = "/servicePrincipals/$($appServicePrincipal.Id)/appRoleAssignments"
                     }
                 )
-                $batchResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
-                $oAuth2grant = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'oAuth2grant' }).body.value
-                $roleAssignments = ($batchResponses | Where-Object -FilterScript { $_.id -eq 'roleAssignments' }).body.value
+                $navigationResponses = Invoke-M365DSCGraphBatchRequest -Requests $batchRequests
             }
 
-            $scopesById = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
-            foreach ($publishedScope in $SourceAPI.publishedPermissionScopes)
+            $oAuth2grant = ($navigationResponses | Where-Object -FilterScript { $_.id -eq 'oAuth2grant' }).body.value
+            $roleAssignments = ($navigationResponses | Where-Object -FilterScript { $_.id -eq 'roleAssignments' }).body.value
+
+            foreach ($roleAssignment in $roleAssignments)
             {
-                $scopesById[[System.String]$publishedScope.Id] = $publishedScope
+                $null = $grantedAppRoleIds.Add([System.String]$roleAssignment.AppRoleId)
             }
-            $rolesById = [System.Collections.Generic.Dictionary[System.String, System.Object]]::new()
-            foreach ($appRole in $SourceAPI.AppRoles)
-            {
-                $rolesById[[System.String]$appRole.Id] = $appRole
-            }
+        }
+
+        $i = 1
+        foreach ($requiredAccess in $requiredAccesses)
+        {
+            Write-Verbose -Message "[$i/$($requiredAccesses.Length)]Obtaining information for App's Permission for {$($requiredAccess.ResourceAppId)}"
+            $sourceApiKey = [System.String]$requiredAccess.ResourceAppId
+            $sourceApiName = $apiNames[$sourceApiKey]
+            $scopesById = $apiScopes[$sourceApiKey]
+            $rolesById = $apiRoles[$sourceApiKey]
 
             foreach ($resourceAccess in $requiredAccess.ResourceAccess)
             {
                 $currentPermission = @{}
-                $currentPermission.Add('SourceAPI', $SourceAPI.DisplayName)
+                $currentPermission.Add('SourceAPI', $sourceApiName)
                 if ($resourceAccess.Type -eq 'Scope')
                 {
-                    $scopeInfo = $null
-                    $null = $scopesById.TryGetValue([System.String]$resourceAccess.Id, [ref] $scopeInfo)
                     $scopeInfoValue = $null
-                    if ($null -eq $scopeInfo)
+                    if ($scopesById.ContainsKey([System.String]$resourceAccess.Id))
                     {
-                        if ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
-                        {
-                            $scopeInfoValue = $resourceAccess.Id
-                        }
+                        $scopeInfoValue = $scopesById[[System.String]$resourceAccess.Id]
                     }
-                    else
+                    elseif ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
                     {
-                        $scopeInfoValue = $scopeInfo.Value
+                        $scopeInfoValue = $resourceAccess.Id
                     }
                     $currentPermission.Add('Type', 'Delegated')
                     $currentPermission.Add('Name', $scopeInfoValue)
@@ -1800,27 +2037,21 @@ class AADApplication : M365DSCResourceBase
                 elseif ($resourceAccess.Type -eq 'Role' -or $resourceAccess.Type -eq 'Role,Scope')
                 {
                     $currentPermission.Add('Type', 'AppOnly')
-                    $role = $null
-                    $null = $rolesById.TryGetValue([System.String]$resourceAccess.Id, [ref] $role)
                     $roleValue = $null
-                    if ($null -eq $role)
+                    if ($rolesById.ContainsKey([System.String]$resourceAccess.Id))
                     {
-                        if ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
-                        {
-                            $roleValue = $resourceAccess.Id
-                        }
+                        $roleValue = $rolesById[[System.String]$resourceAccess.Id]
                     }
-                    else
+                    elseif ([System.Guid]::TryParse($resourceAccess.Id, [ref][System.Guid]::Empty))
                     {
-                        $roleValue = $role.Value
+                        $roleValue = $resourceAccess.Id
                     }
                     $currentPermission.Add('Name', $roleValue)
                     $currentPermission.Add('AdminConsentGranted', $false)
 
                     if ($null -ne $appServicePrincipal)
                     {
-                        $foundPermission = $roleAssignments | Where-Object -FilterScript { $_.AppRoleId -eq $resourceAccess.Id }
-                        if ($foundPermission)
+                        if ($grantedAppRoleIds.Contains([System.String]$resourceAccess.Id))
                         {
                             $currentPermission.AdminConsentGranted = $true
                         }

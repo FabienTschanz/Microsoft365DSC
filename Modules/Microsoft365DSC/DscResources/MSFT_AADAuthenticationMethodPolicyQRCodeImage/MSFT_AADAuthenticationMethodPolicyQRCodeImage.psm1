@@ -100,8 +100,9 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
                 $nullResult = $this.GetBoundParameters()
                 $nullResult.Ensure = 'Absent'
 
-                $uri = '/beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
-                $instance = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
+                $instance = Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
+                    -AuthenticationMethodConfigurationId 'qrCodePin' `
+                    -ErrorAction SilentlyContinue
             }
             else
             {
@@ -269,9 +270,9 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
 
         try
         {
-            $uri = '/beta/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/qrCodePin'
-            $response = Invoke-M365DSCGraphRequest -Uri $uri -Method GET
-            [array] $exportedInstances = $response
+            [array] $exportedInstances = Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration `
+                -AuthenticationMethodConfigurationId 'qrCodePin' `
+                -ErrorAction Stop
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             if ($exportedInstances.Length -eq 0)
@@ -292,7 +293,7 @@ class AADAuthenticationMethodPolicyQRCodeImage : M365DSCResourceBase
                 $displayedKey = $config.Id
                 Write-M365DSCHost -Message "    |---[$i/$($exportedInstances.Count)] $displayedKey" -DeferWrite
                 $params = @{
-                    Id                    = $response.Id
+                    Id                    = $config.Id
                     Credential            = $this.Credential
                     ApplicationId         = $this.ApplicationId
                     TenantId              = $this.TenantId

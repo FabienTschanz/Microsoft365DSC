@@ -268,7 +268,7 @@ class AADFilteringPolicyRule : M365DSCResourceBase
 
         try
         {
-            [array]$policies = Get-MgBetaNetworkAccessFilteringPolicy -All -Filter $this.Filter -ErrorAction Stop
+            [array]$policies = Get-MgBetaNetworkAccessFilteringPolicy -All -Filter $this.Filter -ExpandProperty 'policyRules' -ErrorAction Stop
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
@@ -284,8 +284,12 @@ class AADFilteringPolicyRule : M365DSCResourceBase
             {
                 $displayedKey = $policy.Name
                 Write-M365DSCHost -Message "    |---[$i/$($policies.Count)] $displayedKey" -DeferWrite
-                [array]$rules = Get-MgBetaNetworkAccessFilteringPolicyRule -FilteringPolicyId $policy.Id `
-                    -ErrorAction SilentlyContinue
+                [array]$rules = $this.ResolveExpandedNavigation($policy, 'PolicyRules')
+                if ($null -eq $rules)
+                {
+                    [array]$rules = Get-MgBetaNetworkAccessFilteringPolicyRule -FilteringPolicyId $policy.Id `
+                        -ErrorAction SilentlyContinue
+                }
                 if ($rules.Length -eq 0)
                 {
                     Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite

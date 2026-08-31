@@ -2858,6 +2858,10 @@ function Get-M365DSCMgxRequestCommand
     Follows '@odata.nextLink' until the collection is complete and returns the first page with its
     value replaced by every item.
 
+.NOTES
+    Mgx returns the items of a collection directly while the Microsoft Graph SDK returns them under a
+    'value' key. A collection from Mgx is wrapped so that both paths hand callers the same shape.
+
 .OUTPUTS
     System.Object
 #>
@@ -2927,7 +2931,17 @@ function Invoke-M365DSCGraphRequest
                 $invokeParams['Headers'] = $Headers
             }
 
+            if ($All)
+            {
+                $invokeParams['All'] = $true
+            }
+
             $response = & $mgxCommand @invokeParams
+
+            if ($All)
+            {
+                return @{ value = @($response) }
+            }
         }
         else
         {
@@ -2959,6 +2973,11 @@ function Invoke-M365DSCGraphRequest
 
         if (-not $All)
         {
+            if ($useMgx -and $null -ne $response -and $response -isnot [System.Collections.IDictionary] -and $response -is [System.Collections.IEnumerable] -and $response -isnot [System.String])
+            {
+                return @{ value = @($response) }
+            }
+
             return $response
         }
 
@@ -2967,18 +2986,24 @@ function Invoke-M365DSCGraphRequest
             break
         }
 
-        if ($null -eq $firstPage)
+        if ($null -eq $items)
         {
-            $firstPage = $response
             $items = [System.Collections.Generic.List[System.Object]]::new()
         }
 
-        foreach ($item in $response.value)
+        $isDictionary = $response -is [System.Collections.IDictionary]
+        if ($null -eq $firstPage -and $isDictionary)
+        {
+            $firstPage = $response
+        }
+
+        $page = if ($isDictionary -and $response.Contains('value')) { $response['value'] } elseif ($isDictionary) { $null } else { $response }
+        foreach ($item in $page)
         {
             $items.Add($item)
         }
 
-        $nextLink = $response.'@odata.nextLink'
+        $nextLink = if ($isDictionary -and $response.Contains('@odata.nextLink')) { $response['@odata.nextLink'] } else { $null }
         if ([System.String]::IsNullOrEmpty($nextLink))
         {
             break
@@ -2987,15 +3012,25 @@ function Invoke-M365DSCGraphRequest
         $currentUri = ConvertTo-M365DSCGraphRelativeUri -Uri $nextLink
     }
 
-    if ($null -eq $firstPage)
+    if ($null -eq $items)
     {
         return $null
     }
 
-    $firstPage['value'] = $items.ToArray()
-    $firstPage.Remove('@odata.nextLink') | Out-Null
+    $result = @{}
+    if ($null -ne $firstPage)
+    {
+        foreach ($key in $firstPage.Keys)
+        {
+            if ($key -ne 'value' -and $key -ne '@odata.nextLink')
+            {
+                $result[$key] = $firstPage[$key]
+            }
+        }
+    }
+    $result['value'] = $items.ToArray()
 
-    return $firstPage
+    return $result
 }
 
 <#

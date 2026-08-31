@@ -452,8 +452,8 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                                 'includeBasicClaimSet' = $true
                                 'groupFilter'          = @{
                                     '@odata.type' = '#microsoft.graph.groupClaimFilter'
-                                    'type'        = 'displayName'
-                                    'matchOn'     = 'prefix'
+                                    'type'        = 'prefix'
+                                    'matchOn'     = 'samAccountName'
                                     'value'       = 'DSC'
                                 }
                                 'claims'               = @(

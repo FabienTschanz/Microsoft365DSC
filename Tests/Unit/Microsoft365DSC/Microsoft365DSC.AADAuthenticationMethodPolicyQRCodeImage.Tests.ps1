@@ -35,13 +35,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 return "Credentials"
             }
 
-            Mock -CommandName Invoke-M365DSCGraphRequest -MockWith {
+            Mock -CommandName Get-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -MockWith {
                 return @{
                     Id        = 'QRCodePin'
                     pinLength = 9
                     standardQRCodeLifetimeInDays = 365
                     state = 'disabled'
                 }
+            }
+
+            Mock -CommandName Update-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -MockWith {
+            }
+
+            Mock -CommandName Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -MockWith {
             }
 
             # Mock Write-M365DSCHost to hide output during the tests
@@ -71,7 +77,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should remove the instance from the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADAuthenticationMethodPolicyQRCodeImage' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 1
+                Should -Invoke -CommandName Remove-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -Exactly 1
             }
         }
 
@@ -114,7 +120,7 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
 
             It 'Should call the Set method' {
                 (New-M365DSCResourceInstance -ResourceName 'AADAuthenticationMethodPolicyQRCodeImage' -Property $testParams).Set()
-                Should -Invoke -CommandName Invoke-M365DSCGraphRequest -Exactly 1
+                Should -Invoke -CommandName Update-MgBetaPolicyAuthenticationMethodPolicyAuthenticationMethodConfiguration -Exactly 1
             }
         }
 
