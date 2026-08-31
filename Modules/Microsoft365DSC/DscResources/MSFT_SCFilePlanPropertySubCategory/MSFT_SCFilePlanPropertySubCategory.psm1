@@ -203,6 +203,7 @@ class SCFilePlanPropertySubCategory : M365DSCResourceBase
         try
         {
             [array]$Properties = Get-FilePlanPropertySubCategory -ErrorAction Stop
+            [array]$categories = Get-FilePlanPropertyCategory
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
@@ -221,7 +222,7 @@ class SCFilePlanPropertySubCategory : M365DSCResourceBase
                     $Global:M365DSCExportResourceInstancesCount++
                 }
 
-                $parent = Get-FilePlanPropertyCategory | Where-Object -FilterScript { $_.Guid -like "*$($property.ParentId)*" }
+                $parent = $categories | Where-Object -FilterScript { $_.Guid -like "*$($property.ParentId)*" }
                 Write-M365DSCHost -Message "    |---[$i/$($Properties.Length)] $($Property.Name)" -DeferWrite
 
                 $this.ExportedInstance = $Property

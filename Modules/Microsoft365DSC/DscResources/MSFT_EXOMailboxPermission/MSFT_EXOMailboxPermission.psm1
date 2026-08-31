@@ -80,7 +80,7 @@ class EXOMailboxPermission : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
+            if (-not $this.ExportedInstance -or $null -eq $this.ResourceCache['UsersCache'] -or $this.ResourceCache['UsersCache'][$this.ExportedInstance.Identity] -ne $this.Identity)
             {
                 $null = $this.Connect('ExchangeOnline')
 

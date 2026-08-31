@@ -97,7 +97,11 @@ class SCRoleGroupMember : M365DSCResourceBase
             }
 
             # Get RoleGroup Members if RoleGroup exists.
-            $roleGroupMembers = Get-RoleGroupMember -Identity $RoleGroup.Name -ErrorAction Stop | Select-Object -Property @("Alias", "Name")
+            $roleGroupMembers = @()
+            if (@($RoleGroup.Members).Count -gt 0)
+            {
+                $roleGroupMembers = Get-RoleGroupMember -Identity $RoleGroup.Name -ErrorAction Stop | Select-Object -Property @("Alias", "Name")
+            }
             $roleGroupMembersValue = @()
             foreach ($member in $roleGroupMembers)
             {

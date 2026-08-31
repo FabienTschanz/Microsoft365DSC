@@ -70,7 +70,7 @@ class EXOManagementRoleEntry : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
+            if (-not $this.ExportedInstance -or ($this.ExportedInstance.Identity + '\' + $this.ExportedInstance.Name) -ne $this.Identity)
             {
                 $null = $this.Connect('ExchangeOnline')
 

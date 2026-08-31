@@ -406,7 +406,7 @@ class SCSensitivityLabel : M365DSCResourceBase
             $parentLabelID = $null
             if ($null -ne $label.ParentId)
             {
-                $parentLabel = $this.ResourceCache['AllLabels'] | Where-Object { $_.Name -eq $label.ParentId }
+                $parentLabel = $this.ResourceCache['AllLabels'] | Where-Object { "$($_.Guid)" -eq "$($label.ParentId)" -or "$($_.ImmutableId)" -eq "$($label.ParentId)" -or $_.Name -eq $label.ParentId }
                 if ($null -eq $parentLabel)
                 {
                     $parentLabel = Get-Label -Identity $label.ParentId -IncludeDetailedLabelActions -ErrorAction SilentlyContinue

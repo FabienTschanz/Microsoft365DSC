@@ -71,7 +71,7 @@ class EXOMailboxIRMAccess : M365DSCResourceBase
 
         try
         {
-            if (-not $this.ExportedInstance -or $this.ExportedInstance.Identity -ne $this.Identity)
+            if (-not $this.ExportedInstance -or $this.ExportedInstance.User -ne $this.User)
             {
                 $null = $this.Connect('ExchangeOnline')
 
