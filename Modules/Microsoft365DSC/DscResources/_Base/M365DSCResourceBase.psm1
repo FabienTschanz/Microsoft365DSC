@@ -122,6 +122,38 @@ class M365DSCResourceInfo
     hidden static [Dictionary[String, ScriptBlock[]]] $_accessors = `
         [Dictionary[String, ScriptBlock[]]]::new([StringComparer]::OrdinalIgnoreCase)
 
+    hidden static [System.UInt32] $SerializationDepth = 25
+
+    hidden static [HashSet[Type]] $_depthRegistered = [HashSet[Type]]::new()
+
+    hidden static [void] RegisterSerializationDepth([Type] $Type)
+    {
+        $element = $Type
+        if ($null -ne $element -and $element.IsArray)
+        {
+            $element = $element.GetElementType()
+        }
+
+        if ($null -eq $element -or -not $element.IsClass -or $element.Name -notlike 'MSFT_*')
+        {
+            return
+        }
+
+        if (-not [M365DSCResourceInfo]::_depthRegistered.Add($element))
+        {
+            return
+        }
+
+        $typeData = [TypeData]::new($element.Name)
+        $typeData.SerializationDepth = [M365DSCResourceInfo]::SerializationDepth
+        Update-TypeData -TypeData $typeData -Force -ErrorAction Stop
+
+        foreach ($property in $element.GetProperties())
+        {
+            [M365DSCResourceInfo]::RegisterSerializationDepth($property.PropertyType)
+        }
+    }
+
     hidden static [ScriptBlock[]] GetAccessors([String] $Name)
     {
         $accessors = $null
@@ -171,6 +203,8 @@ class M365DSCResourceInfo
                 $required.Add($property.Name)
             }
 
+            [M365DSCResourceInfo]::RegisterSerializationDepth($property.PropertyType)
+
             $accessors = [M365DSCResourceInfo]::GetAccessors($property.Name)
             $typeData.Members.Add($property.Name, [ScriptPropertyData]::new($property.Name, $accessors[0], $accessors[1]))
         }
@@ -179,6 +213,7 @@ class M365DSCResourceInfo
 
         if ($typeData.Members.Count -gt 0)
         {
+            $typeData.SerializationDepth = [M365DSCResourceInfo]::SerializationDepth
             Update-TypeData -TypeData $typeData -Force -ErrorAction Stop
         }
     }
