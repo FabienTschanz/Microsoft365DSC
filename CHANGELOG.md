@@ -235,7 +235,7 @@
 * M365DSCReport
   * Moved `Get-M365DSCResourceKey` and other conversion logic entirely to C#.
 * DEPENDENCIES
-  * Added `M365DSC.Mgx` with version 2.0.4.
+  * Added `M365DSC.Mgx` with version 2.1.1.
   * Added `M365DSC.PSDesiredStateConfiguration` with version 3.1.5.
   * Updated `MSCloudLoginAssistant` to version 1.2.6.
   * Updated `PnP.PowerShell` to version 3.3.0.
