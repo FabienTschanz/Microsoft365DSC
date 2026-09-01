@@ -299,7 +299,7 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             if ($CreateParameters.WallpaperImage)
             {
                 $CreateParameters['WallpaperImage'] = $CreateParameters.WallpaperImage[0] #needs the hashtable not embedded in array
-                $CreateParameters.WallpaperImage['value'] = [Convert]::FromBase64String($CreateParameters.WallpaperImage['value'])
+                $CreateParameters.WallpaperImage['value'] = [System.Convert]::FromBase64String($CreateParameters.WallpaperImage['value'])
             }
             if ($CreateParameters.HomeScreenPages)
             {
@@ -374,7 +374,7 @@ class IntuneDeviceFeaturesConfigurationPolicyIOS : M365DSCResourceBase
             if ($UpdateParameters.WallpaperImage)
             {
                 $UpdateParameters['WallpaperImage'] = $UpdateParameters.WallpaperImage[0] #needs the hashtable not embedded in array
-                $UpdateParameters.WallpaperImage['value'] = [Convert]::FromBase64String($UpdateParameters.WallpaperImage['value'])
+                $UpdateParameters.WallpaperImage['value'] = [System.Convert]::FromBase64String($UpdateParameters.WallpaperImage['value'])
             }
             if ($UpdateParameters.HomeScreenPages)
             {

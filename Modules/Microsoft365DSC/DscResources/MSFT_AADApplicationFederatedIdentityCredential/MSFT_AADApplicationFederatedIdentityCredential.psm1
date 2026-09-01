@@ -112,7 +112,7 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
                 {
                     if (-not [System.String]::IsNullOrEmpty($this.ApplicationObjectId))
                     {
-                        $application = Get-MgApplication `
+                        [array]$application = Get-MgApplication `
                             -ApplicationId $this.ApplicationObjectId `
                             -Property @('id', 'displayName') `
                             -ErrorAction Stop
@@ -158,7 +158,7 @@ class AADApplicationFederatedIdentityCredential : M365DSCResourceBase
                 {
                     if (-not [System.String]::IsNullOrEmpty($this.Id))
                     {
-                        $federatedIdentityCredential = Get-MgApplicationFederatedIdentityCredential `
+                        [array]$federatedIdentityCredential = Get-MgApplicationFederatedIdentityCredential `
                             -ApplicationId $applicationObjectIdValue `
                             -FederatedIdentityCredentialId $this.Id `
                             -ErrorAction Stop
