@@ -332,7 +332,16 @@ function Invoke-M365DSCResourceMethod
     }
 
     $instance = New-M365DSCResourceInstance -ResourceName $ResourceName -Property $known
-    $result = $instance.$MethodName()
+
+    $previousVerbosePreference = Set-M365DSCVerboseScope
+    try
+    {
+        $result = $instance.$MethodName()
+    }
+    finally
+    {
+        $null = Set-M365DSCVerboseScope -Restore $previousVerbosePreference
+    }
 
     if ($result -is [M365DSCResourceBase])
     {

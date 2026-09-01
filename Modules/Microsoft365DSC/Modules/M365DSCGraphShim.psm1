@@ -78,7 +78,7 @@ function Invoke-M365DSCGraphShimRequest
     {
         try
         {
-            $returnValue = Invoke-MgGraphRequest @invokeParams -Verbose:$false
+            $returnValue = Invoke-MgGraphRequest @invokeParams
             if ($null -ne $returnValue -and $returnValue.ContainsKey('value') -and -not $PassThru)
             {
                 $returnValue = $returnValue.value

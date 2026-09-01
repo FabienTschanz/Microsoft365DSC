@@ -2,6 +2,7 @@ $Script:IsPowerShellCore = $PSVersionTable.PSEdition -eq 'Core'
 $Script:IsPsResourceGetAvailable = $null -ne (Get-Module -Name Microsoft.PowerShell.PSResourceGet -ListAvailable)
 $Script:M365DSCDependenciesValidated = $false
 $Script:M365DSCGraphShimLoaded = $false
+$Script:M365DSCVerboseScopeDepth = 0
 
 <#
 .DESCRIPTION
@@ -319,6 +320,188 @@ function Confirm-M365DSCDependencies
 
 <#
 .SYNOPSIS
+    Assigns $VerbosePreference inside a set of module scopes.
+
+.DESCRIPTION
+    Skips any scope that refuses the assignment instead of failing the caller.
+
+.PARAMETER Scope
+    Specifies the modules whose session state receives the value.
+
+.PARAMETER Preference
+    Specifies the value to assign.
+
+.FUNCTIONALITY
+    Internal
+#>
+function Set-M365DSCVerbosePreferenceInScope
+{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [System.Management.Automation.PSModuleInfo[]]
+        $Scope,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Preference
+    )
+
+    foreach ($module in $Scope)
+    {
+        if ($null -eq $module.SessionState)
+        {
+            continue
+        }
+
+        try
+        {
+            $module.SessionState.PSVariable.Set('VerbosePreference', $Preference)
+        }
+        catch
+        {
+            continue
+        }
+    }
+}
+
+<#
+.SYNOPSIS
+    Confines the verbose stream to the Microsoft365DSC module scopes.
+
+.DESCRIPTION
+    Write-Verbose resolves $VerbosePreference through the scope chain of the module it runs in.
+    Silencing the global scope and raising it again inside the Microsoft365DSC scopes keeps the
+    messages Microsoft365DSC writes and drops those of every dependency.
+
+    The ambient value comes from the global scope. The caller's own $VerbosePreference is unusable
+    as the source because an outer call has already overridden it in every Microsoft365DSC scope.
+
+    Restore levels the per-scope values with the global one. An optimized module scope refuses
+    variable removal, so the values stay in place.
+
+.PARAMETER Preference
+    Specifies the preference the Microsoft365DSC scopes run with. Defaults to the global scope.
+
+.PARAMETER ModuleName
+    Specifies which module scopes keep the preference. Defaults to every Microsoft365DSC scope.
+
+.EXAMPLE
+    PS> $previous = Set-M365DSCVerboseScope
+    PS> try { Invoke-Something } finally { $null = Set-M365DSCVerboseScope -Restore $previous }
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.String
+#>
+function Set-M365DSCVerboseScope
+{
+    [CmdletBinding(DefaultParameterSetName = 'Apply')]
+    [OutputType([System.String])]
+    param(
+        [Parameter(ParameterSetName = 'Apply')]
+        [System.String]
+        $Preference,
+
+        [Parameter(ParameterSetName = 'Apply')]
+        [System.String[]]
+        $ModuleName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'Restore')]
+        [AllowNull()]
+        [System.String]
+        $Restore
+    )
+
+    $rootModule = Get-Module -Name 'Microsoft365DSC'
+    if ($null -eq $rootModule)
+    {
+        return $global:VerbosePreference
+    }
+
+    $scopes = @($rootModule) + @($rootModule.NestedModules)
+
+    if ($PSCmdlet.ParameterSetName -eq 'Restore')
+    {
+        $Script:M365DSCVerboseScopeDepth--
+        if ($Script:M365DSCVerboseScopeDepth -gt 0)
+        {
+            return $Restore
+        }
+
+        $global:VerbosePreference = $Restore
+        Set-M365DSCVerbosePreferenceInScope -Scope $scopes -Preference $Restore
+        return $Restore
+    }
+
+    if ($PSBoundParameters.ContainsKey('ModuleName') -and $ModuleName.Count -gt 0)
+    {
+        $scopes = $scopes | Where-Object -FilterScript { $ModuleName -contains $_.Name }
+    }
+
+    $Script:M365DSCVerboseScopeDepth++
+    if ($Script:M365DSCVerboseScopeDepth -gt 1)
+    {
+        return $global:VerbosePreference
+    }
+
+    $previous = $global:VerbosePreference
+    if (-not $PSBoundParameters.ContainsKey('Preference'))
+    {
+        $Preference = $previous
+    }
+
+    $global:VerbosePreference = 'SilentlyContinue'
+    Set-M365DSCVerbosePreferenceInScope -Scope $scopes -Preference $Preference
+
+    return $previous
+}
+
+<#
+.SYNOPSIS
+    Imports a module without its load-time output reaching the verbose stream.
+
+.DESCRIPTION
+    An imported module resolves $VerbosePreference from the global scope, so -Verbose:$false on
+    Import-Module leaves every "Importing cmdlet" and "Exporting function" line in place. Lowering
+    the global preference for the duration of the call is the only thing that silences them.
+
+.PARAMETER Parameters
+    Specifies the parameters to splat onto Import-Module.
+
+.EXAMPLE
+    PS> Import-M365DSCDependencyModule -Parameters @{ Name = 'Microsoft.Graph.Authentication' }
+
+.FUNCTIONALITY
+    Internal
+#>
+function Import-M365DSCDependencyModule
+{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $Parameters
+    )
+
+    $VerbosePreference = 'SilentlyContinue'
+    $previousVerbosePreference = $global:VerbosePreference
+    $global:VerbosePreference = 'SilentlyContinue'
+    try
+    {
+        Import-Module @Parameters
+    }
+    finally
+    {
+        $global:VerbosePreference = $previousVerbosePreference
+    }
+}
+
+<#
+.SYNOPSIS
     Ensures a dependency module is loaded at the required version.
 
 .DESCRIPTION
@@ -362,7 +545,16 @@ function Confirm-M365DSCLoadedModule
             # Ensure Microsoft.Graph.Authentication is loaded first
             Confirm-M365DSCLoadedModule -ModuleName 'Microsoft.Graph.Authentication'
 
-            Import-Module -Name "$PSScriptRoot/M365DSCGraphShim.psd1" -Global -Force -DisableNameChecking -Function * -Cmdlet @() -Variable @() -Alias @() -Verbose:$false
+            Import-M365DSCDependencyModule -Parameters @{
+                Name                = "$PSScriptRoot/M365DSCGraphShim.psd1"
+                Global              = $true
+                Force               = $true
+                DisableNameChecking = $true
+                Function            = '*'
+                Cmdlet              = @()
+                Variable            = @()
+                Alias               = @()
+            }
             $Script:M365DSCGraphShimLoaded = $true
         }
         else
@@ -397,14 +589,13 @@ function Confirm-M365DSCLoadedModule
             Cmdlet           = @()
             Variable         = @()
             DisableNameChecking = $true
-            Verbose          = $false
         }
         if ($manifestModule.Commands.Count -gt 0)
         {
             $importModuleSplat.Add('Function', $manifestModule.Commands)
             $importModuleSplat.Cmdlet = $manifestModule.Commands
         }
-        Import-Module @importModuleSplat
+        Import-M365DSCDependencyModule -Parameters $importModuleSplat
         Write-Verbose -Message "Module '$ModuleName' with version '$($manifestModule.RequiredVersion)' has been imported."
     }
     elseif ($loadedModule.Version -ne $manifestModule.RequiredVersion)
@@ -412,7 +603,15 @@ function Confirm-M365DSCLoadedModule
         Write-Verbose -Message "Module '$ModuleName' is loaded but the version '$($loadedModule.Version)' does not match the required version '$($manifestModule.RequiredVersion)'."
         Remove-Module -Name $ModuleName -Force -ErrorAction SilentlyContinue
         Write-Verbose -Message "Unloaded module '$ModuleName' with version '$($loadedModule.Version)'."
-        Import-Module -Name $ModuleName -RequiredVersion $manifestModule.RequiredVersion -Global -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -Verbose:$false
+        Import-M365DSCDependencyModule -Parameters @{
+            Name                = $ModuleName
+            RequiredVersion     = $manifestModule.RequiredVersion
+            Global              = $true
+            Alias               = @()
+            Cmdlet              = @()
+            Variable            = @()
+            DisableNameChecking = $true
+        }
         Write-Verbose -Message "Re-imported module '$ModuleName' with version '$($manifestModule.RequiredVersion)'."
     }
     else
@@ -975,11 +1174,25 @@ function Update-M365DSCDependencies
                     Remove-Module $dependency.ModuleName -Force -ErrorAction SilentlyContinue
                     if ($dependency.Prefix)
                     {
-                        Import-Module $dependency.ModuleName -Global -Prefix $dependency.Prefix -Force -DisableNameChecking -Verbose:$false
+                        Import-M365DSCDependencyModule -Parameters @{
+                            Name                = $dependency.ModuleName
+                            Global              = $true
+                            Prefix              = $dependency.Prefix
+                            Force               = $true
+                            DisableNameChecking = $true
+                        }
                     }
                     else
                     {
-                        Import-Module $dependency.ModuleName -Global -Force -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -Verbose:$false
+                        Import-M365DSCDependencyModule -Parameters @{
+                            Name                = $dependency.ModuleName
+                            Global              = $true
+                            Force               = $true
+                            Alias               = @()
+                            Cmdlet              = @()
+                            Variable            = @()
+                            DisableNameChecking = $true
+                        }
                     }
                 }
 
@@ -1181,6 +1394,8 @@ Export-ModuleMember -Function @(
     'Get-M365DSCRequiredModules',
     'Get-M365DSCResourceSetting',
     'Get-M365DSCResourceSettings',
+    'Import-M365DSCDependencyModule',
+    'Set-M365DSCVerboseScope',
     'Set-M365DSCModuleConfiguration',
     'Set-M365DSCRequiredModulesLoaded',
     'Test-IsM365DSCRequiredModulesLoaded',

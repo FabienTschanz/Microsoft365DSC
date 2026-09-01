@@ -918,13 +918,21 @@ class M365DSCResourceBase
     # desired snapshot is taken before Get() runs.
     [bool] Test()
     {
-        $this.AddTelemetry('Test')
+        $previousVerbosePreference = Set-M365DSCVerboseScope
+        try
+        {
+            $this.AddTelemetry('Test')
 
-        $compareParameters = $this.GetCompareParameters()
-        return (Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
-                -ResourceName $this.GetResourceName() `
-                @compareParameters `
-                -CurrentValues $this.Get().ToHashtable())
+            $compareParameters = $this.GetCompareParameters()
+            return (Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
+                    -ResourceName $this.GetResourceName() `
+                    @compareParameters `
+                    -CurrentValues $this.Get().ToHashtable())
+        }
+        finally
+        {
+            $null = Set-M365DSCVerboseScope -Restore $previousVerbosePreference
+        }
     }
 
     # Overridden by resources that need custom comparison parameters
@@ -1035,9 +1043,17 @@ class M365DSCResourceBase
 
     [System.Object] InvokeInPowerShellCore([System.String] $MethodName)
     {
-        return (Invoke-M365DSCClassResourceInPowerShellCore -ClassName $this.GetResourceName() `
-                -MethodName $MethodName `
-                -Parameters $this.GetAllParameters())
+        $previousVerbosePreference = Set-M365DSCVerboseScope
+        try
+        {
+            return (Invoke-M365DSCClassResourceInPowerShellCore -ClassName $this.GetResourceName() `
+                    -MethodName $MethodName `
+                    -Parameters $this.GetAllParameters())
+        }
+        finally
+        {
+            $null = Set-M365DSCVerboseScope -Restore $previousVerbosePreference
+        }
     }
 
     #endregion

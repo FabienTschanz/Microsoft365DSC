@@ -45,7 +45,7 @@ function Get-M365DSCApplicationInsightsTelemetryClient
     [CmdletBinding()]
     param()
 
-    if ($null -eq $Global:M365DSCTelemetryEngine)
+    if ($null -eq $Script:M365DSCTelemetryEngine)
     {
         $AI = "$PSScriptRoot/../Dependencies/Microsoft.ApplicationInsights.dll"
         [Reflection.Assembly]::LoadFile($AI) | Out-Null
@@ -70,9 +70,9 @@ function Get-M365DSCApplicationInsightsTelemetryClient
             $TelClient.InstrumentationKey = $InstrumentationKey
         }
 
-        $Global:M365DSCTelemetryEngine = $TelClient
+        $Script:M365DSCTelemetryEngine = $TelClient
     }
-    return $Global:M365DSCTelemetryEngine
+    return $Script:M365DSCTelemetryEngine
 }
 
 <#
@@ -434,11 +434,11 @@ function Add-M365DSCTelemetryEvent
             # OS Version
             try
             {
-                if ($null -eq $Global:M365DSCOSInfo)
+                if ($null -eq $Script:M365DSCOSInfo)
                 {
-                    $Global:M365DSCOSInfo = (Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption -ErrorAction SilentlyContinue).Caption
+                    $Script:M365DSCOSInfo = (Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption -ErrorAction SilentlyContinue -Verbose:$false).Caption
                 }
-                $dataNew.Add('M365DSCOSVersion', $Global:M365DSCOSInfo)
+                $dataNew.Add('M365DSCOSVersion', $Script:M365DSCOSInfo)
             }
             catch
             {

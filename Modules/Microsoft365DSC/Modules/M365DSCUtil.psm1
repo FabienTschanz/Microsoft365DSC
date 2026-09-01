@@ -617,7 +617,10 @@ function Test-M365DSCTargetResource
     if ($null -eq (Get-Module -Name 'M365DSCCompare'))
     {
         $compareModulePath = Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCCompare.psm1'
-        Import-Module -Name $compareModulePath -Force -Verbose:$false
+        Import-M365DSCDependencyModule -Parameters @{
+            Name  = $compareModulePath
+            Force = $true
+        }
     }
 
     # Retrieve the primary keys of the given resource and remove them from the list of values to check.
@@ -633,9 +636,7 @@ function Test-M365DSCTargetResource
     }
     $finalString = $keyStrings -join ' and '
 
-    $Verbose = ($DesiredValues.Verbose -eq $true) -or ($VerbosePreference -eq 'Continue')
-
-    Write-Verbose -Message "Testing configuration of the $ResourceName with $finalString" -Verbose:$Verbose
+    Write-Verbose -Message "Testing configuration of the $ResourceName with $finalString"
 
     $testTargetResource = Compare-M365DSCResourceState -ResourceName $ResourceName `
         -DesiredValues $DesiredValues `
@@ -652,11 +653,10 @@ function Test-M365DSCTargetResource
             -ResourceName $ResourceName `
             -TenantName $TenantName `
             -CurrentValues $CurrentValues `
-            -DesiredValues $DesiredValues `
-            -Verbose:$Verbose
+            -DesiredValues $DesiredValues
     }
 
-    Write-Verbose -Message "Test-M365DSCTargetResource returned $testTargetResource" -Verbose:$Verbose
+    Write-Verbose -Message "Test-M365DSCTargetResource returned $testTargetResource"
 
     if ($PassThru)
     {
@@ -2331,7 +2331,16 @@ function Initialize-PowerShellCoreSession
         $script:PSCoreSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess -ErrorAction Stop
         $lcmConfig = Get-DscLocalConfigurationManager
         Invoke-Command -Session $script:PSCoreSession -ScriptBlock {
-            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck -Verbose:$false
+            $previousVerbosePreference = $global:VerbosePreference
+            $global:VerbosePreference = 'SilentlyContinue'
+            try
+            {
+                Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
+            }
+            finally
+            {
+                $global:VerbosePreference = $previousVerbosePreference
+            }
             Set-M365DSCLCMConfiguration -LCMConfig $using:lcmConfig
         }
         $script:PSCoreSessionInitialized = $true
@@ -2380,7 +2389,16 @@ function Initialize-WindowsPowerShellSession
     {
         $script:WinPSSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess -ErrorAction Stop
         Invoke-Command -Session $script:WinPSSession -ScriptBlock {
-            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck -Verbose:$false
+            $previousVerbosePreference = $global:VerbosePreference
+            $global:VerbosePreference = 'SilentlyContinue'
+            try
+            {
+                Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
+            }
+            finally
+            {
+                $global:VerbosePreference = $previousVerbosePreference
+            }
         }
         $script:WinPSSessionInitialized = $true
     }

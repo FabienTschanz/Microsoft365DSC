@@ -12,27 +12,58 @@ $Script:M365DSCAuthenticationParameterSet = @{
     AccessTokens = @('AccessTokens', 'TenantId')
 }
 $Script:M365DSCRelationIndex = $null
-$allResourcesArgumentCompleter = @()
-$dscResourcesFolder = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources/'
+$Script:M365DSCExportComponentNames = $null
 
-if (Test-Path -Path $dscResourcesFolder)
-{
-    $allResourcesArgumentCompleter = @(Get-ChildItem -Path $dscResourcesFolder -Recurse -Filter 'MSFT_*.psm1' -File | ForEach-Object {
-        $_.Name -replace 'MSFT_', '' -replace '.psm1', ''
-    })
-}
+<#
+.SYNOPSIS
+    Returns the resource names offered by the Components argument completer.
 
-if ($allResourcesArgumentCompleter.Count -eq 0)
+.DESCRIPTION
+    Resolved on first completion rather than at import, because the manifest reader lives in a
+    module that loads after this one.
+
+.FUNCTIONALITY
+    Internal
+
+.OUTPUTS
+    System.String[]
+#>
+function Get-M365DSCExportComponentName
 {
-    $manifestPath = Join-Path -Path $PSScriptRoot -ChildPath '../Microsoft365DSC.psd1'
-    if (Test-Path -Path $manifestPath)
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param()
+
+    if ($null -ne $Script:M365DSCExportComponentNames)
     {
-        $allResourcesArgumentCompleter = @((Import-PowerShellDataFile -Path $manifestPath).DscResourcesToExport)
+        return $Script:M365DSCExportComponentNames
     }
+
+    $names = @()
+    $dscResourcesFolder = Join-Path -Path $PSScriptRoot -ChildPath '../DscResources/'
+    if (Test-Path -Path $dscResourcesFolder)
+    {
+        $names = @(Get-ChildItem -Path $dscResourcesFolder -Recurse -Filter 'MSFT_*.psm1' -File | ForEach-Object {
+            $_.Name -replace 'MSFT_', '' -replace '.psm1', ''
+        })
+    }
+
+    if ($names.Count -eq 0)
+    {
+        $manifestPath = Join-Path -Path $PSScriptRoot -ChildPath '../Microsoft365DSC.psd1'
+        if (Test-Path -Path $manifestPath)
+        {
+            $names = @((Import-PowerShellDataFile -Path $manifestPath).DscResourcesToExport)
+        }
+    }
+
+    $Script:M365DSCExportComponentNames = [System.String[]] $names
+    return $Script:M365DSCExportComponentNames
 }
+
 Register-ArgumentCompleter -CommandName Export-M365DSCConfiguration -ParameterName Components -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-    $resources = $allResourcesArgumentCompleter -like "$wordToComplete*"
+    $resources = (Get-M365DSCExportComponentName) -like "$wordToComplete*"
     foreach ($resource in $resources)
     {
         [System.Management.Automation.CompletionResult]::new($resource, $resource, 'ParameterValue', $resource)
