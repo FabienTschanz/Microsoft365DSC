@@ -36,7 +36,7 @@ function Initialize-M365DSCDllLoader
 
     if ($Script:AssembliesInitialized)
     {
-        Write-Verbose "Microsoft365DSC C# dll files are already initialized."
+        Write-Debug -Message 'Microsoft365DSC C# dll files are already initialized.'
         return
     }
 

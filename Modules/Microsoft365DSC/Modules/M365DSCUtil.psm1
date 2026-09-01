@@ -617,7 +617,7 @@ function Test-M365DSCTargetResource
     if ($null -eq (Get-Module -Name 'M365DSCCompare'))
     {
         $compareModulePath = Join-Path -Path $PSScriptRoot -ChildPath 'M365DSCCompare.psm1'
-        Import-Module -Name $compareModulePath -Force
+        Import-Module -Name $compareModulePath -Force -Verbose:$false
     }
 
     # Retrieve the primary keys of the given resource and remove them from the list of values to check.
@@ -633,11 +633,7 @@ function Test-M365DSCTargetResource
     }
     $finalString = $keyStrings -join ' and '
 
-    $Verbose = $false
-    if ($DesiredValues.Verbose -eq $true)
-    {
-        $Verbose = $true
-    }
+    $Verbose = ($DesiredValues.Verbose -eq $true) -or ($VerbosePreference -eq 'Continue')
 
     Write-Verbose -Message "Testing configuration of the $ResourceName with $finalString" -Verbose:$Verbose
 
@@ -2335,7 +2331,7 @@ function Initialize-PowerShellCoreSession
         $script:PSCoreSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess -ErrorAction Stop
         $lcmConfig = Get-DscLocalConfigurationManager
         Invoke-Command -Session $script:PSCoreSession -ScriptBlock {
-            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
+            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck -Verbose:$false
             Set-M365DSCLCMConfiguration -LCMConfig $using:lcmConfig
         }
         $script:PSCoreSessionInitialized = $true
@@ -2384,7 +2380,7 @@ function Initialize-WindowsPowerShellSession
     {
         $script:WinPSSession = New-PSSession -ComputerName localhost -ConfigurationName PowerShell.7 -EnableNetworkAccess -ErrorAction Stop
         Invoke-Command -Session $script:WinPSSession -ScriptBlock {
-            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck
+            Import-Module -Name Microsoft365DSC -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -SkipEditionCheck -Verbose:$false
         }
         $script:WinPSSessionInitialized = $true
     }

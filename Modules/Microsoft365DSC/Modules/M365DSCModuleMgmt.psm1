@@ -313,7 +313,7 @@ function Confirm-M365DSCDependencies
     }
     else
     {
-        Write-Verbose -Message 'Dependencies were already successfully validated.'
+        Write-Debug -Message 'Dependencies were already successfully validated.'
     }
 }
 
@@ -362,7 +362,7 @@ function Confirm-M365DSCLoadedModule
             # Ensure Microsoft.Graph.Authentication is loaded first
             Confirm-M365DSCLoadedModule -ModuleName 'Microsoft.Graph.Authentication'
 
-            Import-Module -Name "$PSScriptRoot/M365DSCGraphShim.psd1" -Global -Force -DisableNameChecking -Function * -Cmdlet @() -Variable @() -Alias @()
+            Import-Module -Name "$PSScriptRoot/M365DSCGraphShim.psd1" -Global -Force -DisableNameChecking -Function * -Cmdlet @() -Variable @() -Alias @() -Verbose:$false
             $Script:M365DSCGraphShimLoaded = $true
         }
         else
@@ -397,6 +397,7 @@ function Confirm-M365DSCLoadedModule
             Cmdlet           = @()
             Variable         = @()
             DisableNameChecking = $true
+            Verbose          = $false
         }
         if ($manifestModule.Commands.Count -gt 0)
         {
@@ -411,7 +412,7 @@ function Confirm-M365DSCLoadedModule
         Write-Verbose -Message "Module '$ModuleName' is loaded but the version '$($loadedModule.Version)' does not match the required version '$($manifestModule.RequiredVersion)'."
         Remove-Module -Name $ModuleName -Force -ErrorAction SilentlyContinue
         Write-Verbose -Message "Unloaded module '$ModuleName' with version '$($loadedModule.Version)'."
-        Import-Module -Name $ModuleName -RequiredVersion $manifestModule.RequiredVersion -Global -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking
+        Import-Module -Name $ModuleName -RequiredVersion $manifestModule.RequiredVersion -Global -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -Verbose:$false
         Write-Verbose -Message "Re-imported module '$ModuleName' with version '$($manifestModule.RequiredVersion)'."
     }
     else
@@ -974,11 +975,11 @@ function Update-M365DSCDependencies
                     Remove-Module $dependency.ModuleName -Force -ErrorAction SilentlyContinue
                     if ($dependency.Prefix)
                     {
-                        Import-Module $dependency.ModuleName -Global -Prefix $dependency.Prefix -Force -DisableNameChecking
+                        Import-Module $dependency.ModuleName -Global -Prefix $dependency.Prefix -Force -DisableNameChecking -Verbose:$false
                     }
                     else
                     {
-                        Import-Module $dependency.ModuleName -Global -Force -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking
+                        Import-Module $dependency.ModuleName -Global -Force -Alias @() -Cmdlet @() -Variable @() -DisableNameChecking -Verbose:$false
                     }
                 }
 

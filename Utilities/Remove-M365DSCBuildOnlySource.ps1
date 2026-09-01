@@ -2,41 +2,59 @@
 
 <#
 .SYNOPSIS
-    Deletes the per-resource source files that the packaged module does not need.
+    Deletes the DscResources tree that the packaged module does not need.
 
 .DESCRIPTION
-    DscResources/MSFT_*/MSFT_*.psm1 are the editing surface for the class-based resources.
-    Build-Microsoft365DSC.ps1 compiles them into Classes/*.psm1, so shipping both duplicates
-    roughly 12 MB into every install, and DSC discovery walks the folder on top of that. Nothing
-    reads them at runtime, so all of them go.
-
-    settings.json and readme.md are always kept: the first drives permissions and module
-    requirements at runtime, the second is the source of the resource descriptions in
-    SchemaDefinition.json.
-
-    Meant for a publishing checkout, not for a development one - it deletes source files.
+    DscResources/MSFT_*/ is the editing surface for the class-based resources.
+    Build-Microsoft365DSC.ps1 compiles MSFT_*/MSFT_*.psm1 into Classes/Part*.psm1 and _Base into
+    Classes/_Shared.psm1, folds every settings.json into ResourcePermissions.json, and turns every
+    readme.md into the descriptions in SchemaDefinition.json.
 
 .PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository. Defaults to the parent of this script's folder.
+
+.PARAMETER ModuleRoot
+    Root of an already installed module, the folder holding Microsoft365DSC.psd1. Use this to trim
+    a copy under a module path instead of a checkout.
 
 .EXAMPLE
     .\Remove-M365DSCBuildOnlySource.ps1 -WhatIf
 
 .EXAMPLE
     .\Remove-M365DSCBuildOnlySource.ps1
+
+.EXAMPLE
+    .\Remove-M365DSCBuildOnlySource.ps1 -ModuleRoot 'C:\Program Files\WindowsPowerShell\Modules\Microsoft365DSC\1.26.1007.1'
 #>
 
-[CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+[CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High', DefaultParameterSetName = 'Repository')]
 param
 (
-    [Parameter()]
+    [Parameter(ParameterSetName = 'Repository')]
     [System.String]
-    $RepositoryRoot = (Split-Path -Path $PSScriptRoot -Parent)
+    $RepositoryRoot,
+
+    [Parameter(Mandatory, ParameterSetName = 'Module')]
+    [System.String]
+    $ModuleRoot
 )
 
 $ErrorActionPreference = 'Stop'
 
-$moduleRoot = Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
+$moduleRoot = if ($PSCmdlet.ParameterSetName -eq 'Module')
+{
+    (Resolve-Path -Path $ModuleRoot).ProviderPath
+}
+else
+{
+    if ([System.String]::IsNullOrEmpty($RepositoryRoot))
+    {
+        $RepositoryRoot = Split-Path -Path (Split-Path -Path $PSCommandPath -Parent) -Parent
+    }
+
+    Join-Path -Path $RepositoryRoot -ChildPath 'Modules/Microsoft365DSC'
+}
+
 $sourceRoot = Join-Path -Path $moduleRoot -ChildPath 'DscResources'
 $classRoot = Join-Path -Path $moduleRoot -ChildPath 'Classes'
 
@@ -45,24 +63,28 @@ if (-not (Test-Path -Path $classRoot))
     throw "Classes folder not found at '$classRoot'. Run Build-Microsoft365DSC.ps1 first - removing the sources before they are compiled would leave nothing to ship."
 }
 
-$removed = 0
-$freed = 0
-
-foreach ($directory in (Get-ChildItem -Path $sourceRoot -Directory -Filter 'MSFT_*'))
+foreach ($product in 'ResourcePermissions.json', 'SchemaDefinition.json')
 {
-    $sourceFile = Join-Path -Path $directory.FullName -ChildPath "$($directory.Name).psm1"
-    if (-not (Test-Path -Path $sourceFile))
+    $productPath = Join-Path -Path $moduleRoot -ChildPath $product
+    if (-not (Test-Path -Path $productPath))
     {
-        continue
+        throw "$product not found at '$productPath'. The tree carries the only copy of what it holds, so removing it now would drop that data."
     }
-
-    $freed += (Get-Item -Path $sourceFile).Length
-    if ($PSCmdlet.ShouldProcess($sourceFile, 'Remove build-only source'))
-    {
-        Remove-Item -Path $sourceFile -Force
-    }
-
-    $removed++
 }
 
-Write-Host ("[trim] Removed {0} source file(s), {1} MB" -f $removed, [System.Math]::Round($freed / 1MB, 1)) -ForegroundColor Green
+if (-not (Test-Path -Path $sourceRoot))
+{
+    Write-Host "[trim] No DscResources folder at '$sourceRoot', nothing to remove." -ForegroundColor Green
+    return
+}
+
+$files = @(Get-ChildItem -Path $sourceRoot -Recurse -File)
+$freed = ($files | Measure-Object -Property Length -Sum).Sum
+$directories = @(Get-ChildItem -Path $sourceRoot -Directory).Count
+
+if ($PSCmdlet.ShouldProcess($sourceRoot, 'Remove build-only source tree'))
+{
+    Remove-Item -Path $sourceRoot -Recurse -Force
+}
+
+Write-Host ("[trim] Removed {0} directory(ies), {1} file(s), {2} MB" -f $directories, $files.Count, [System.Math]::Round($freed / 1MB, 1)) -ForegroundColor Green

@@ -78,7 +78,7 @@ function Invoke-M365DSCGraphShimRequest
     {
         try
         {
-            $returnValue = Invoke-MgGraphRequest @invokeParams
+            $returnValue = Invoke-MgGraphRequest @invokeParams -Verbose:$false
             if ($null -ne $returnValue -and $returnValue.ContainsKey('value') -and -not $PassThru)
             {
                 $returnValue = $returnValue.value
@@ -213,7 +213,7 @@ function Invoke-M365DSCGraphShimRequestV76
 
     try
     {
-        return Invoke-MgxRequest @invokeParams
+        return Invoke-MgxRequest @invokeParams -Verbose:$false
     }
     catch
     {
@@ -624,7 +624,9 @@ function Invoke-M365DSCGraphShimGetResource
         $response = Invoke-M365DSCGraphShimRequest -Method GET -Uri $uri -Headers $requestHeaders -ErrorAction $ErrorActionPreference
     }
 
-    if ($null -ne $response -and $response -is [hashtable] -and $response.ContainsKey('value'))
+    # Get-MgBetaDeviceManagementGroupPolicyConfigurationDefinitionValuePresentationValue might return an object with the 'value' property,
+    # but we also need the values inside 'presentation'. Return the whole object inside $response instead of $response.value
+    if ($null -ne $response -and $response -is [hashtable] -and $response.ContainsKey('value') -and -not $response.ContainsKey('presentation'))
     {
         return $response.value
     }
