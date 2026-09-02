@@ -207,4 +207,153 @@ function Measure-Median
     return $sorted[[System.Math]::Floor($sorted.Count / 2)]
 }
 
-Export-ModuleMember -Function New-M365DSCProbeStage, Remove-M365DSCProbeStage, Write-MeasureLog, Invoke-InFreshProcess, Measure-Median
+<#
+.SYNOPSIS
+    Compares two compiled MOF documents for equivalence.
+
+.DESCRIPTION
+    Both documents are split into their instance blocks. Whitespace, the banner comment, property
+    order inside a block, block order, character case and the volatile document properties
+    (GenerationDate, GenerationHost, Author, ContentType, ModuleVersion, SourceInfo) do not count.
+
+.PARAMETER ReferencePath
+    The reference MOF file.
+
+.PARAMETER CandidatePath
+    The MOF file to compare against the reference.
+
+.PARAMETER IgnoreClassPrefix
+    Treats a class name with and without the MSFT_ prefix as the same class, which lets a MOF from
+    the schema-based module compare against one from the class-based module.
+
+.EXAMPLE
+    Compare-M365DSCMofDocument -ReferencePath .\a.mof -CandidatePath .\b.mof
+
+.OUTPUTS
+    System.Management.Automation.PSCustomObject
+#>
+function Compare-M365DSCMofDocument
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ReferencePath,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $CandidatePath,
+
+        [Parameter()]
+        [Switch]
+        $IgnoreClassPrefix
+    )
+
+    $reference = Get-M365DSCMofBlock -Path $ReferencePath -IgnoreClassPrefix:$IgnoreClassPrefix
+    $candidate = Get-M365DSCMofBlock -Path $CandidatePath -IgnoreClassPrefix:$IgnoreClassPrefix
+    $counts = [System.Collections.Generic.Dictionary[System.String, System.Int32]]::new()
+    foreach ($block in $candidate)
+    {
+        if ($counts.ContainsKey($block)) { $counts[$block]++ } else { $counts[$block] = 1 }
+    }
+
+    $onlyReference = 0
+    foreach ($block in $reference)
+    {
+        if ($counts.ContainsKey($block) -and $counts[$block] -gt 0) { $counts[$block]-- } else { $onlyReference++ }
+    }
+    $onlyCandidate = ($counts.Values | Measure-Object -Sum).Sum
+
+    return [PSCustomObject] @{
+        Equal          = ($onlyReference -eq 0 -and $onlyCandidate -eq 0)
+        ReferenceCount = $reference.Count
+        CandidateCount = $candidate.Count
+        OnlyReference  = $onlyReference
+        OnlyCandidate  = [System.Int32] $onlyCandidate
+    }
+}
+
+function Get-M365DSCMofBlock
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Path,
+
+        [Parameter()]
+        [Switch]
+        $IgnoreClassPrefix
+    )
+
+    $text = [System.IO.File]::ReadAllText($Path)
+    $text = [regex]::Replace($text, '^\s*/\*.*?\*/', '', 'Singleline')
+    $blocks = [regex]::Split($text, '(?=instance of )') | Where-Object { $_ -match '^instance of ' }
+    $normalized = foreach ($block in $blocks)
+    {
+        $collapsed = [regex]::Replace($block, '\s+', ' ').Trim().ToLowerInvariant()
+        if ($IgnoreClassPrefix)
+        {
+            $collapsed = [regex]::Replace($collapsed, 'instance of msft_', 'instance of ')
+            $collapsed = [regex]::Replace($collapsed, '\$msft_([a-z0-9_]+ref)', '$$$1')
+        }
+        $open = $collapsed.IndexOf('{')
+        $close = $collapsed.LastIndexOf('}')
+        if ($open -lt 0 -or $close -lt $open)
+        {
+            $collapsed
+            continue
+        }
+        $properties = @(Split-M365DSCMofProperty -Body $collapsed.Substring($open + 1, $close - $open - 1)) |
+            Where-Object { $_ -notmatch '^(generationdate|generationhost|author|contenttype|moduleversion|sourceinfo)\s*=' } |
+            Sort-Object
+        $collapsed.Substring(0, $open).Trim() + ' { ' + ($properties -join '; ') + ' }'
+    }
+
+    return @($normalized | Sort-Object)
+}
+
+function Split-M365DSCMofProperty
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [System.String]
+        $Body
+    )
+
+    $parts = [System.Collections.Generic.List[System.String]]::new()
+    $depth = 0
+    $inString = $false
+    $start = 0
+    for ($i = 0; $i -lt $Body.Length; $i++)
+    {
+        $character = $Body[$i]
+        if ($inString)
+        {
+            if ($character -eq '\') { $i++ } elseif ($character -eq '"') { $inString = $false }
+            continue
+        }
+        if ($character -eq '"') { $inString = $true }
+        elseif ($character -eq '{') { $depth++ }
+        elseif ($character -eq '}') { $depth-- }
+        elseif ($character -eq ';' -and $depth -eq 0)
+        {
+            $piece = $Body.Substring($start, $i - $start).Trim()
+            if ($piece) { $parts.Add($piece) }
+            $start = $i + 1
+        }
+    }
+    $tail = $Body.Substring($start).Trim()
+    if ($tail) { $parts.Add($tail) }
+
+    return $parts.ToArray()
+}
+Export-ModuleMember -Function New-M365DSCProbeStage, Remove-M365DSCProbeStage, Write-MeasureLog, Invoke-InFreshProcess, Measure-Median, Compare-M365DSCMofDocument

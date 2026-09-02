@@ -558,8 +558,10 @@ function Get-SchemaKeywordMap
 
     $map = [System.Collections.Hashtable]::new([System.StringComparer]::OrdinalIgnoreCase)
 
-    foreach ($keyword in (Get-Content -Path $Path -Raw | ConvertFrom-Json).keywords)
+    $lines = [System.IO.File]::ReadAllLines($Path)
+    for ($index = 2; $index -lt $lines.Count; $index++)
     {
+        $keyword = ConvertFrom-Json -InputObject $lines[$index]
         if ($keyword.nameMode -ne 'NameRequired')
         {
             continue

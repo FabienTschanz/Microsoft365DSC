@@ -22,9 +22,10 @@
 
 8. [Stage 3: Schema cache and keyword registration](#stage-3-schema-cache-and-keyword-registration)
 
-    1. [Resolution order](#resolution-order)
-    2. [Cache content](#cache-content)
-    3. [Registration](#registration)
+    1. [Module resolution](#module-resolution)
+    2. [Resolution order](#resolution-order)
+    3. [Cache content](#cache-content)
+    4. [Registration](#registration)
 
 9. [Stage 4: Execution](#stage-4-execution)
 
@@ -32,15 +33,16 @@
     2. [The driver](#the-driver)
 
 10. [Stage 5: Document assembly and MOF emission](#stage-5-document-assembly-and-mof-emission)
-11. [Difference to the classic PSDesiredStateConfiguration path](#difference-to-the-classic-psdesiredstateconfiguration-path)
-12. [Fallback](#fallback)
-13. [Building and shipping the schema cache](#building-and-shipping-the-schema-cache)
-14. [What to take into account](#what-to-take-into-account)
-15. [Running it by hand](#running-it-by-hand)
+11. [Stage timing](#stage-timing)
+12. [Difference to the classic PSDesiredStateConfiguration path](#difference-to-the-classic-psdesiredstateconfiguration-path)
+13. [Fallback](#fallback)
+14. [Building and shipping the schema cache](#building-and-shipping-the-schema-cache)
+15. [What to take into account](#what-to-take-into-account)
+16. [Running it by hand](#running-it-by-hand)
 
     1. [Compile an export](#compile-an-export)
     2. [Compile a script that only declares a configuration](#compile-a-script-that-only-declares-a-configuration)
-    3. [Keep the cache honest](#keep-the-cache-honest)
+    3. [Keep the cache up-to-date](#keep-the-cache-up-to-date)
     4. [When something looks wrong](#when-something-looks-wrong)
 
 ## Introduction
@@ -53,15 +55,18 @@ Manager can act on stands one step: compiling it into MOF documents.
 Almost nothing about that step is genuinely hard work. Writing a few hundred instances of MOF text is
 milliseconds. What costs real time is DSC resource discovery. Before the parser can accept
 `AADGroup 'MyGroup' { ... }` as a resource statement, somebody has to have told the engine what an
-`AADGroup` is, and the classic way of telling it is to import all 530 plus class based resources of
+`AADGroup` is, and the classic way of telling it is to import all 531 class based resources of
 Microsoft365DSC. The engine does that while parsing, then the `Configuration` function does it again
-at runtime, and a compile that produces a few hundred kilobytes of text takes 30 to 90 seconds.
+at runtime, and a compile of a 726 instance export takes 30 to 55 seconds, 16 to 22 of them in the
+parser alone.
 
 The fast compile host removes that cost by never asking the question. It reads the keyword
-definitions out of a JSON cache that was written once at build time, keeps the resource module out of
-the process entirely, and produces byte identical MOF. `Invoke-M365DSCConfigurationBuild` is the
-command Microsoft365DSC exposes for it, and it picks the fast path on its own when the engine is
-installed.
+definitions out of a line based JSON cache that was written once at build time, keeps the resource
+module out of the process entirely, and produces MOF that is equivalent to the classic path after
+normalization. The same 726 instance export compiles in 5 to 7 seconds in a fresh process and in 2 to
+6 seconds in a session that has compiled before, with a working set of 190 to 320 MB instead of 0.5
+to 1.2 GB. `Invoke-M365DSCConfigurationBuild` is the command Microsoft365DSC exposes for it, and it
+picks the fast path on its own when the engine is installed.
 
 This document follows a configuration document from that command to the written `.mof`, names the
 component that owns each step, and points out where the fast path and the classic one part ways. It
@@ -74,17 +79,20 @@ where resource keywords come from, and everything else in the table follows from
 
 | | Classic path | Fast compile path |
 | --- | --- | --- |
-| Keyword source | Live import of every class based resource in the module | JSON schema cache holding the same keyword definitions |
-| Parse time cost | The parser sees `Import-DscResource` and imports the module while parsing, 28 to 41 seconds for Microsoft365DSC | The statement is removed before the text is ever parsed for real |
+| Keyword source | Live import of every class based resource in the module | Line based JSON schema cache holding the same keyword definitions, one keyword deserialized on first use |
+| Parse time cost | The parser sees `Import-DscResource` and imports the module while parsing, 16 to 22 seconds for Microsoft365DSC | The statement is removed before the text is ever parsed for real |
 | Runtime cost | The `Configuration` function imports the same modules a second time | No import at all |
 | Resource statement | A real `DynamicKeyword` the parser recognizes | An ordinary command call routed to an adapter function |
 | Property block | The parser reads it as a hashtable, because the keyword declares `BodyMode = Hashtable` | Rewritten to a hashtable literal in the text |
 | MOF validation | `ValidateInstanceText` runs against the live CIM classes | Skipped unless `-ValidateMof` is passed |
-| Typical wall clock | 30 to 90 seconds per configuration | Around 0.2 seconds per configuration |
+| Wall clock, 726 instances | 30 to 55 seconds | 5.2 seconds on PowerShell 7 and 7.4 seconds on Windows PowerShell in a fresh process, 2.1 and 5.6 seconds in a warm session |
+| Wall clock, one instance | 40 to 50 seconds | 0.9 to 1.3 seconds in a fresh process, 0.2 seconds in a warm session |
 
 **Important.** The saving has nothing to do with MOF generation. Producing the text is not the
 expensive part. The saving is in never paying for resource discovery, which in a module of this size
-dwarfs everything else a compile does, and which the classic path pays twice per run.
+dwarfs everything else a compile does, and which the classic path pays twice per run. What remains
+on the fast path is the keyword driver, which runs the same code on both paths and costs the same
+per instance.
 
 ## Components
 
@@ -138,8 +146,8 @@ only to own a name.
 | File | Responsibility |
 | --- | --- |
 | `M365DSC.PSDesiredStateConfiguration.psm1` | `Configuration` and `Node` keywords, node state, MOF instance text, document assembly, file writing |
-| `FastHost.ps1` | `Invoke-DscFastCompile`, text transformation, keyword registration, adapter functions |
-| `SchemaCache.ps1` | `Export-DscSchemaCache`, `Test-DscSchemaCache`, cache lookup and fingerprinting |
+| `FastHost.ps1` | `Invoke-DscFastCompile`, `Get-DscFastCompileTiming`, module resolution, text transformation, keyword registration, adapter functions |
+| `SchemaCache.ps1` | `Export-DscSchemaCache`, `Test-DscSchemaCache`, line based cache reader, cache lookup and fingerprinting |
 | `CimKeywordImplementationFunction.ps1` | The driver that validates and canonicalizes one resource instance and emits its MOF text |
 | `Compat/PSDesiredStateConfiguration` | Carries the legacy module name and forwards to the engine |
 
@@ -225,13 +233,14 @@ sequenceDiagram
     U->>W: -Path .\M365TenantConfig.ps1
     W->>W: resolve engine by M365DSCFastHost tag
     W->>F: path, configuration data, parameters
-    F->>F: mask, parse the copy, strip Import-DscResource
-    F->>S: resolve cache per imported module
+    F->>F: mask, parse the copy once, collect Import-DscResource
+    F->>F: resolve each module by a PSModulePath manifest scan
+    F->>S: resolve cache per module
     alt no valid cache
         S->>S: generate live once, persist to user cache
     end
-    F->>F: rebuild DynamicKeyword objects, register adapters
-    F->>F: join next line braces, rewrite bodies to hashtables
+    F->>F: register keyword names and adapters
+    F->>F: one edit pass: strip imports, join braces, insert @
     F->>C: create scriptblock and dot source it
     Note over C: no Import-DscResource left,<br/>so no module import fires
     C->>C: merge adapters into functionsToDefine
@@ -299,20 +308,28 @@ parameters reach the configuration only for scripts that declare one without inv
 
 ## Stage 2: Text transformation
 
-The fast host never hands the original text to the parser as a configuration. It rewrites the text
-four times first, and every one of those rewrites is steered by an AST taken from a masked copy
-rather than from the text itself.
+The fast host never hands the original text to the parser as a configuration. It parses a masked
+copy once, collects every edit that copy calls for, and applies all of them to the original text in a
+single pass.
 
 ```mermaid
 flowchart LR
     src["original text"] --> mask1["mask 'Configuration'<br/>in a copy"]
-    mask1 --> parse1["Parser.ParseInput<br/><i>about 8 ms</i>"]
-    parse1 --> collect["collect configuration names<br/>and Import-DscResource ASTs"]
-    collect --> strip["remove import extents<br/>from the original text"]
-    strip --> merge["Merge-FastHostResourceStatements<br/><i>join next line braces</i>"]
-    merge --> hash["Convert-FastHostBodyToHashtable<br/><i>insert @ before the body</i>"]
-    hash --> sb["scriptblock::Create"]
+    mask1 --> parse1["Parser.ParseInput<br/><i>0.3 to 0.5 s for 726 instances</i>"]
+    parse1 --> collect["collect configuration names,<br/>Import-DscResource ASTs,<br/>module specs"]
+    collect --> edits["ConvertTo-FastHostCompileText<br/><i>edit list: import extents,<br/>brace gaps, @ prefixes</i>"]
+    edits --> apply["Invoke-FastHostTextEdit<br/><i>one StringBuilder pass</i>"]
+    apply --> sb["scriptblock::Create"]
 ```
+
+`ConvertTo-FastHostCompileText` takes the text, the masked AST, the import statements and the set of
+known keyword names, and returns the compile text. Every edit is a start offset, a length and a
+replacement. `Invoke-FastHostTextEdit` sorts the edits by offset, throws on an overlap, and copies
+the untouched stretches between them with `Substring` into one `StringBuilder`. The `Substring`
+call matters on PowerShell 7, where `StringBuilder.Append(string, int, int)` binds to the `char[]`
+overload and copies the whole text on every call. `Merge-FastHostResourceStatements` and
+`Convert-FastHostBodyToHashtable` are wrappers over the same function that apply one edit kind each.
+The whole rewrite stage takes 0.4 to 0.9 seconds for a 726 instance export.
 
 ### Masking instead of parsing
 
@@ -325,9 +342,11 @@ to make the text stop looking like one.
 
 Masking does exactly that, and it does it without moving a single character. Every occurrence of the
 word `Configuration` becomes `C0nfiguration` in a **copy** of the text. The parser no longer sees a
-configuration statement, so no import runs and the parse costs about 8 milliseconds. The replacement
-is the same length as the original, which is the whole trick: every extent offset the AST reports for
-the masked copy points at exactly the same character in the untouched original.
+configuration statement, so no import runs and the parse costs milliseconds for a small script and
+0.3 to 0.5 seconds for a 726 instance export. The replacement is the same length as the original,
+which is the whole trick: every extent offset the AST reports for the masked copy points at exactly
+the same character in the untouched original. `Get-FastHostMaskedAst` produces that AST, and the
+same AST steers the import collection and every later edit, so the text is parsed once per compile.
 
 ### Stripping the imports
 
@@ -338,8 +357,10 @@ string literals and array literals of string literals. A computed module name wo
 executed to be known, and executing the script is what this whole path avoids, so such a script falls
 back instead.
 
-The import statements are then cut out of the original text by extent. What remains is a script with
-no DSC specific syntax left in it at all.
+Each import statement becomes an edit that replaces its extent with nothing. The result holds the
+module specifications, the configuration names, the AST and the import statements, so the later
+stages work from the same parse. What remains after the edit pass is a script with no DSC specific
+syntax left in it at all.
 
 ### Joining next line braces
 
@@ -352,10 +373,11 @@ AADGroup 'MyGroup'
 }
 ```
 
-The parser reads a command call, then an unrelated scriptblock, and the resource is lost.
-`Merge-FastHostResourceStatements` finds those pairs in the masked AST and splices the gap between
-them down to a single space, which makes the block the last argument of the command again. Two shapes
-qualify. One is the resource statement `KeywordName [InstanceName]`. The other is a nested CIM
+The parser reads a command call, then an unrelated scriptblock, and the resource is lost. The merge
+edit finds those statement pairs in every statement block of the masked AST, checks that the first
+statement names a known keyword and the second is a lone scriptblock or hashtable expression, and
+replaces the gap between them with a single space, which makes the block the last argument of the
+command again. Two shapes qualify. One is the resource statement `KeywordName [InstanceName]`. The other is a nested CIM
 instance inside a resource body, written as `PropertyName = KeywordName`, which despite the equals
 sign is not an assignment at all but a single command whose three elements are the property name, a
 literal `=` and the keyword.
@@ -367,9 +389,11 @@ the parser reads a resource body as a hashtable and a property is free to be cal
 `Settings` or `Script`. Leave that same body as a scriptblock and those names are live built in
 keywords again, which turns an ordinary property assignment into a syntax error.
 
-`Convert-FastHostBodyToHashtable` closes that gap by inserting an `@` in front of every keyword body,
-turning `{ ... }` into `@{ ... }` and adding a separator where the source had none. The result is a
-script the parser can take at face value, in which every resource is a command call whose last
+The convert edit closes that gap by inserting an `@` in front of every scriptblock that is the last
+element of a command whose name is a known keyword, turning `{ ... }` into `@{ ... }` and adding a
+separator where the source had none, because `MSFT_Type@{` does not parse. A body that the merge
+edit joined gets its prefix in the same pass, and a start offset is edited at most once. The result
+is a script the parser can take at face value, in which every resource is a command call whose last
 argument happens to be a hashtable literal.
 
 ## Stage 3: Schema cache and keyword registration
@@ -378,55 +402,95 @@ For each module named by a stripped import, the fast host resolves a module and 
 
 ```mermaid
 flowchart TB
-    q(["module spec from Import-DscResource"]) --> res{"module installed<br/>and version matches?"}
+    q(["module spec from Import-DscResource"]) --> res{"Resolve-FastHostModule:<br/>manifest on PSModulePath<br/>and version matches?"}
     res -->|no| fb1["fallback"]
-    res -->|yes| comp{"DscResources contains<br/>*.schema.mof or *.schema.psm1?"}
-    comp -->|yes| fb2["fallback:<br/>script based or composite resources"]
-    comp -->|no| a{"-SchemaCachePath given<br/>and valid?"}
-    a -->|yes| use(["register keywords"])
-    a -->|no| b{"ModuleBase DscSchemaCache.json<br/>name, version, fingerprint match?"}
+    res -->|yes| comp{"DscResources contains<br/>*.schema.psm1?"}
+    comp -->|yes| fb2["fallback:<br/>composite resources"]
+    comp -->|no| reg{"module and version<br/>registered in this session<br/>and no -Force?"}
+    reg -->|yes| use(["keywords available"])
+    reg -->|no| a{"-SchemaCachePath given<br/>and valid?"}
+    a -->|yes| use
+    a -->|no| b{"ModuleBase DscSchemaCache.json<br/>format, name, version,<br/>fingerprint match?"}
     b -->|yes| use
     b -->|no| c{"user cache under<br/>LOCALAPPDATA matches?"}
     c -->|yes| use
-    c -->|no| gen["Export-DscSchemaCache:<br/>one time live discovery, about 6 s"]
+    c -->|no| gen["Export-DscSchemaCache:<br/>one time live discovery, about 10 s"]
     gen --> persist["persist to the user cache"] --> use
 ```
+
+### Module resolution
+
+`Resolve-FastHostModule` walks every entry of `PSModulePath` and looks for `<Name>\<Name>.psd1` and
+`<Name>\<version>\<Name>.psd1`. It reads `ModuleVersion` from each manifest with
+`Import-PowerShellDataFile`, drops candidates whose folder or manifest version differs from a
+requested `-ModuleVersion`, and keeps the highest version. The result carries the name, the version,
+the module base and the manifest path. It is cached per module specification for the life of the
+session, so the scan runs once per process. `Get-Module -ListAvailable` is not used on this path,
+because it analyzes all 54 nested modules of Microsoft365DSC and costs 1.1 to 1.3 seconds per call.
+The resolution stage measures 10 to 90 milliseconds.
 
 ### Resolution order
 
 1. Paths given through `-SchemaCachePath`.
 2. `<ModuleBase>\DscSchemaCache.json`, shipped inside the resource module package.
 3. `%LOCALAPPDATA%\M365DSC.PSDesiredStateConfiguration\SchemaCache\<Name>_<Version>_<fingerprint>.json`,
-   written after a live generation.
+   written after a live generation, with the colons of the fingerprint replaced by underscores.
 4. Live generation, then persisted to 3.
 
-A cache has to earn its place before any of its keywords are used. Its format version may not be
-newer than the reader knows, its module name and version have to match, and so does its fingerprint.
-That fingerprint is `fileCount:maxLastWriteTimeUtcTicks` over `*.psm1`, `*.psd1` and `*.mof` below the
-module base, which lets any added, removed or rewritten file invalidate the cache without hashing a
-single byte at compile time. When accuracy matters more than speed, `Test-DscSchemaCache -Detailed`
-re-hashes every file recorded in `sourceHash`, which is what belongs in a CI drift gate.
+`-Force` skips steps 1 to 3 and regenerates the user cache.
+
+A cache has to earn its place before any of its keywords are used. Its format version has to be 2,
+its module name and version have to match, and so does its fingerprint. That fingerprint is
+`fileCount:totalBytes:hash`, where the hash is the first eight bytes of a SHA-256 over the sorted
+lower cased relative paths and sizes of every `*.psm1`, `*.psd1` and `*.mof` file below the module
+base, one `path|length` per line. It carries no write times, so the cache shipped in the package
+stays valid after `Install-Module` or a plain copy. When the fingerprint of the module tree differs,
+the reader recomputes it over the files the cache recorded and accepts the cache when that matches,
+so a file that appears next to the module later does not invalidate it. When accuracy matters more
+than speed, `Test-DscSchemaCache -Detailed` re-hashes every recorded file against the SHA-256 the
+cache stores, which is what belongs in a CI drift gate. Without `-Detailed` it checks the format
+version, the module version and the presence of every recorded file.
 
 ### Cache content
 
-The cache is a JSON serialization of the very `DynamicKeyword` definitions a live import would have
+The cache holds one JSON document per line.
+
+| Line | Content |
+| --- | --- |
+| 1 | Header: `formatVersion`, `generator` with the engine and PowerShell versions, `module` with name, version and fingerprint, `resourceCount`, `keywordCount`, and `index`, a map from keyword name to the zero based line number that holds it |
+| 2 | Sources: relative path of every fingerprinted file with its `length` and `sha256` |
+| 3 and later | One keyword each |
+
+`resourceCount` counts the keywords whose name mode is `NameRequired`, which are the resources. Each
+keyword line is a serialization of the very `DynamicKeyword` definition a live import would have
 produced. It records the keyword name, the resource name, the implementing module and version, the
 name and body modes, and for every property its type constraint, its key and mandatory flags, its
 allowed values and its value map. Embedded complex types sit in the same flat list as ordinary no
 name keywords. Value maps are arrays of key and value pairs rather than JSON objects, because DSC
-permits an empty string as a map key and no JSON object can carry that portably.
+permits an empty string as a map key and no JSON object can carry that portably. Keywords of
+`*.schema.mof` resources under `DscResources` are in the same list, imported through
+`ImportCimKeywordsFromModule` at generation time.
 
-For Microsoft365DSC the shipped cache is roughly 3.6 MB and covers 531 resources in 998 keywords.
+The reader loads the file with `ReadAllLines`, parses line 1, and keeps the rest as text. A keyword
+is deserialized the first time a compile asks for it by name, through the index. The file is
+written as UTF-8 without a byte order mark.
+
+For Microsoft365DSC the shipped cache is 3.7 MB and covers 531 resources in 999 keywords on 1001
+lines. Reading it and registering its names costs 0.2 to 0.3 seconds per process.
 
 ### Registration
 
-`Register-DscCachedKeywords` rehydrates each entry into a real `DynamicKeyword` object and stores it
-in a case insensitive dictionary. Every keyword gets the same shared adapter scriptblock, registered
-twice, under the bare name and under the `Microsoft365DSC\<Keyword>` qualified name, because a
-configuration body may call it either way.
+`Register-DscSchemaCache` adds the cache object to the keyword source list and registers the
+adapters. Every name in the index gets the same shared adapter scriptblock, registered twice, under
+the bare name and under the `Microsoft365DSC\<Keyword>` qualified name, because a configuration body
+may call it either way. `Get-FastHostKeyword` looks a name up in a case insensitive dictionary
+first, then in the index of each registered cache, deserializes the line on a hit and stores the
+`DynamicKeyword` in the dictionary. `Get-FastHostKeywordName` returns the union of both as a case
+insensitive set, which is what the text rewrite uses to recognize resource statements.
 
-Registration is remembered per module and version for the life of the session, so a second compile in
-the same process reuses the keyword table and touches no JSON.
+Registration is remembered per module name and version for the life of the session, so a second
+compile in the same process skips the cache stage and reuses the keywords built so far. `-Force`
+bypasses that memory.
 
 **Important.** These keywords live only in the fast host's own dictionary. They never enter the
 parser keyword table, and no CIM classes are registered with the MI layer. Two consequences follow
@@ -513,9 +577,11 @@ immediately unless `-ValidateMof` was passed, because MI validation needs the li
 path never registers. `-ValidateMof` brings the check back at the price of the import the fast path
 exists to avoid, which makes it a diagnostic switch rather than something to leave on.
 
-The file goes through a single writer as UTF-8 without a byte order mark, and the document body
-carries LF line endings because the instance text is assembled with `\n`. There is no generated by
-banner and there are no `Author`, `GenerationDate` or `GenerationHost` fields. Together that makes the
+The file goes through a single writer as UTF-16LE with a byte order mark, which is the encoding the
+MI MOF parser expects. A document without the mark is decoded as Latin-1 and every non-ASCII
+character in it is corrupted. The document body carries LF line endings because the instance text is
+assembled with `\n`, and the writer appends one CRLF at the end. There is no generated by banner and
+there are no `Author`, `GenerationDate` or `GenerationHost` fields. Together that makes the
 same configuration compile to the same bytes on every run, machine, user and PowerShell edition,
 which is what allows the two paths to be compared against each other at all. Property order inside an
 instance is the one thing that still moves, since it follows hashtable enumeration.
@@ -523,6 +589,36 @@ instance is the one thing that still moves, since it follows hashtable enumerati
 Compilation state is torn down in a `finally` block. The fast host flags are cleared and
 `[DynamicKeyword]::Reset()` runs, so a session that compiles one configuration after another does not
 accumulate keyword state from the previous run.
+
+## Stage timing
+
+`Invoke-DscFastCompile` records the wall clock of each stage in milliseconds, and
+`Get-DscFastCompileTiming` returns them as an ordered dictionary for the last compile in the session.
+
+| Key | Covers |
+| --- | --- |
+| `parse` | Masking, the single parse, import collection |
+| `resolve` | Module resolution and the composite resource check |
+| `cache` | Cache lookup or generation, registration |
+| `rewrite` | The edit pass |
+| `compile` | Dot sourcing the compile text, the configuration run, document assembly and the MOF write |
+| `total` | Everything above |
+
+Medians of three for a 726 instance Exchange Online export, one Microsoft365DSC version on
+`PSModulePath`, in seconds.
+
+| Stage | Windows PowerShell, fresh process | Windows PowerShell, warm session | PowerShell 7, fresh process | PowerShell 7, warm session |
+| --- | --- | --- | --- | --- |
+| `parse` | 0.33 | 0.25 | 0.46 | 0.31 |
+| `resolve` | 0.09 | 0.04 | 0.05 | 0.01 |
+| `cache` | 0.27 | 0.00 | 0.19 | 0.00 |
+| `rewrite` | 0.82 | 0.66 | 0.72 | 0.42 |
+| `compile` | 5.88 | 4.66 | 3.78 | 1.32 |
+| `total` | 7.39 | 5.61 | 5.20 | 2.06 |
+
+The `compile` stage is the keyword driver plus the MOF writer, the same code the classic path runs
+after its imports. A single instance script measures 0.9 to 1.3 seconds in a fresh process and 0.2
+seconds warm.
 
 ## Difference to the classic PSDesiredStateConfiguration path
 
@@ -536,7 +632,7 @@ sequenceDiagram
     participant M as MOF writer
 
     U->>E: parse the configuration statement
-    E->>E: import every resource of every Import-DscResource module<br/>28 to 41 s for Microsoft365DSC
+    E->>E: import every resource of every Import-DscResource module<br/>16 to 22 s for Microsoft365DSC
     U->>C: invoke through PSDesiredStateConfiguration\Configuration
     C->>E: ImportClassResourcesFromModule, highest version only
     C->>C: InvokeWithContext(body, functionsToDefine)
@@ -558,13 +654,16 @@ things differ.
   reads the body as a hashtable by itself, so none of the text transformation is needed.
 - **CIM classes are registered**, which is what lets `ValidateInstanceText` check the assembled
   document.
-- **Composite and script based resources work.** They rely on the engine's own import. The fast path
-  takes that away.
+- **Composite resources work.** They rely on the engine's own import. The fast path takes that
+  away. Script based resources with a `*.schema.mof` compile on both paths, because the cache holds
+  their keywords too.
 
 Run the same script on the inbox 1.1 or gallery 2.x module and it still compiles, at the same cost,
 but that module has no fast host, no schema cache and no deterministic writer, and its documents
 arrive stamped with a banner and volatile metadata fields. Which module you get is settled by the
-name claim described earlier, not by which module you imported last.
+name claim described earlier, not by which module you imported last. The gallery 2.0.7 module on
+PowerShell 7 also drops properties whose value is an empty array, where the inbox 1.1 module and this
+engine both write `Prop = { }`.
 
 ## Fallback
 
@@ -576,8 +675,8 @@ the reason.
 | --- | --- |
 | `Import-DscResource` with non constant arguments | The module set cannot be determined without executing the script |
 | `-Name` without `-ModuleName` | Would require scanning every installed module |
-| The named module is not installed, or not in the requested version | Nothing to resolve a cache against |
-| The module contains `*.schema.mof` or `*.schema.psm1` under `DscResources` | Script based and composite resources need the engine's own import |
+| The named module has no manifest on `PSModulePath`, or not in the requested version | Nothing to resolve a cache against |
+| The module contains `*.schema.psm1` under `DscResources` | Composite resources need the engine's own import |
 | No usable schema cache and none can be generated | Nothing to register keywords from |
 
 `-NoFallback` turns each of these into a terminating error. Continuous integration should use it,
@@ -599,9 +698,11 @@ flowchart LR
 ```
 
 `Export-DscSchemaCache` resets the keyword state, snapshots the default keywords, imports the
-module's class based resources once through `DscClassCache::ImportClassResourcesFromModule`, and
-serializes everything that was not already a default. That discovery costs about 6 seconds for
-Microsoft365DSC. This is a build step during the module build, not a compile step on the local machine.
+module's class based resources once through `DscClassCache::ImportClassResourcesFromModule`, imports
+every `DscResources\<Name>\<Name>.schema.mof` through `ImportCimKeywordsFromModule`, and serializes
+everything that was not already a default. It then hashes every fingerprinted file for the sources
+line. That discovery costs about 10 seconds for Microsoft365DSC. This is a build step during the
+module build, not a compile step on the local machine.
 
 Two decisions in the build wrapper are worth knowing about. It runs the export in a **child process**
 whose `PSModulePath` contains nothing but the staged module, so the one time import neither pollutes
@@ -611,9 +712,9 @@ manifest exports and throws when they disagree, which is what catches a cache ge
 half built module tree.
 
 **Important.** Generate the cache **after** any build step that adds or trims files in the module
-tree. The fingerprint is a file count and the newest write time, so a file operation that happens
-later invalidates a cache that was perfectly correct when it was written, and the next compile
-quietly regenerates it instead of using the shipped one.
+tree. The fingerprint is a file count, the total size and a hash of the path and size list, so a
+file added or resized later invalidates a cache that was perfectly correct when it was written, and
+the next compile quietly regenerates it instead of using the shipped one.
 
 ## What to take into account
 
@@ -621,10 +722,6 @@ quietly regenerates it instead of using the shipped one.
 `DscSchemaCache.json`. A property that exists in the source tree but not in the cache does not exist
 as far as compilation is concerned, and the fingerprint check is the only thing keeping the two
 honest.
-
-**Composite and script based resources are out of scope.** The fast path is fast because it can skip
-the engine import. A module that genuinely needs that import gets the classic path, by design, and
-that is not a gap waiting to be closed.
 
 **Validation is traded away deliberately.** MOF validation is off by default. `-ValidateMof` brings
 it back for a diagnostic run, and the real coverage comes from compiling every example in CI rather
@@ -636,7 +733,19 @@ whichever one won the name claim, which is not a thing you want to debug.
 
 **Determinism is a feature to preserve.** Reintroduce a volatile field, a banner or a platform
 dependent encoding and the two paths stop comparing byte for byte, which removes the main evidence
-that the fast path is still equivalent to the slow one.
+that the fast path is still equivalent to the slow one. `Compare-M365DSCMofDocument` in
+`Utilities/M365DSCBuildHelpers.psm1` compares two documents after normalizing whitespace, property
+and block order, character case, the `MSFT_` class prefix, `ModuleVersion` and `SourceInfo`, which
+is the comparison the benchmark harness runs against the inbox engine.
+
+**The first compile in a process pays for the module.** A fresh process reads the cache and
+deserializes each keyword the configuration uses on first touch, which is the difference between
+the fresh process and warm session columns in the timing table. A fresh copy or installation of
+Microsoft365DSC also carries new write times, and the first `Import-Module` after that re-analyzes
+all nested modules, which does not affect the fast host because it never imports the module.
+
+**Composite resources stay on the classic path.** Every other resource kind, class based or
+`*.schema.mof` based, compiles from the cache.
 
 ## Running it by hand
 
@@ -677,6 +786,12 @@ Test-DscSchemaCache -ModulePath $moduleBase -CachePath $cacheJson -Detailed
 
 # Fails instead of degrading to a slow compile.
 Invoke-DscFastCompile -Path .\M365TenantConfig.ps1 -NoFallback
+
+# Regenerates the user cache and ignores the shipped one.
+Invoke-DscFastCompile -Path .\M365TenantConfig.ps1 -Force
+
+# Stage split of the last compile in this session, in milliseconds.
+Get-DscFastCompileTiming
 ```
 
 In this repository the cache is a build artifact. After changing a resource class or a
@@ -689,7 +804,9 @@ common reason a property you just added does not show up in the MOF.
 | Symptom | Cause |
 | --- | --- |
 | Compiles are slow and the MOF carries `GenerationDate` | Compilation went through the inbox or gallery module. `(Get-Module PSDesiredStateConfiguration).Path` must point at the engine's `Compat` folder |
-| `Falling back to standard compilation` | See the fallback table; the warning names the trigger |
+| `Falling back to standard compilation` | See the fallback table. The warning names the trigger |
 | A resource property change is ignored | Stale schema cache. Rebuild the module, or pass `-Force` |
+| Every compile in a fresh process reports a live cache generation | No cache matches the module tree. `Test-DscSchemaCache -Detailed` names the file that differs |
+| `compile` dominates `Get-DscFastCompileTiming` | Expected. The keyword driver costs the same per instance on both paths |
 | `Undefined DSC resource` inside the fast host | The configuration uses a statement shape the transformation does not cover. A fallback warning normally precedes this |
 | `-OutputPath` had no effect | The script invokes its own configuration, so the trailer decided. Edit the trailer, or compile a script that only declares the configuration |

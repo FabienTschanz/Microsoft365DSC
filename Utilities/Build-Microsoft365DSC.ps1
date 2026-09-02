@@ -18,9 +18,10 @@
     Why this shape?
 
       - PowerShell type creation is superlinear in the number of classes in ONE parse unit, and
-        each NestedModules entry is its own parse unit. Parsing itself is never the cost, it only
-        totals to about ~10% of the import time. Everything else is creating the typed classes.
-        Having several different parse units improves import time, but only up to ~16 parts.
+        each NestedModules entry is its own parse unit. On the real tree the import splits into
+        type creation (about 5.5 ms per resource class plus 0.5 ms per method) and parsing of the
+        method bodies (about 20% of the import on PowerShell 7, about 50% on Windows PowerShell).
+        Any layout from 8 to 32 parts lands in the same noise band, measured 2026-09-02.
 
       - Class types do not cross module boundaries, and `using module` does not re-export what the
         module it names imported in turn. So each part opens with `using module .\_Shared.psm1` for
@@ -35,24 +36,28 @@
         with `$Name -as [System.Type]`. Each part therefore ends with
         [M365DSCResourceBase]::Register([X]) and the factory resolves through that registry.
 
-      - The manifest's FunctionsToExport key MUST stay absent or '*'. An explicit list silently
-        drops every class-based resource from Get-DscResource, on both editions, with no error
-        raised. This script never writes that key.
+      - The manifest's FunctionsToExport key MUST stay absent or '*'. When FunctionsToExport,
+        CmdletsToExport and AliasesToExport are all explicit, Get-Module -ListAvailable returns
+        from its manifest analysis before it records DscResourcesToExport, so ExportedDscResources
+        is empty and every DSC engine reports zero resources. A wildcard in one of the three keys
+        keeps the resources but not the analysis savings. This script never writes that key.
 
 .PARAMETER RepositoryRoot
     Root of the Microsoft365DSC repository. Defaults to the parent of this script's folder.
 
 .PARAMETER BucketCount
-    Number of Part<NN>.psm1 files to spread the resource classes across. Import time flattens out
-    from 8 upwards and 16 sits inside the noise band of 12 to 32; below 8 it climbs steeply, and
-    48 starts to regress. Re-measure with Utilities/Measure-M365DSCLoadPerformance.ps1 before
-    changing it.
+    Number of Part<NN>.psm1 files to spread the resource classes across. Import time is flat
+    from 8 to 32 parts on the real tree. Re-measure with Utilities/Measure-M365DSCLoadPerformance.ps1
+    before changing it.
 
 .PARAMETER TypeBucketCount
-    Number of _Types<NN>.psm1 files to spread the complex types across. All of them in one parse
-    unit costs about 25-30% of import time. Having eight buckets brings that to ~15% and the per-bucket
-    times are flat, so the superlinearity is per parse unit and not per session. Re-measure with
+    Number of _Types<NN>.psm1 files to spread the complex types across. Four, eight and sixteen
+    buckets measure the same on the real tree. Re-measure with
     Utilities/Measure-M365DSCLoadPerformance.ps1 before changing it.
+
+.PARAMETER BalanceBy
+    Whether a bucket holds an equal number of classes (Count) or an equal amount of source text
+    (Bytes). Measure with Utilities/Measure-M365DSCLoadPerformance.ps1 before changing it.
 
 .PARAMETER KeepDescriptions
     Emit the [System.ComponentModel.Description()] attributes into the generated files. They are
@@ -98,6 +103,11 @@ param
     [ValidateRange(1, 64)]
     [System.Int32]
     $TypeBucketCount = 8,
+
+    [Parameter()]
+    [ValidateSet('Count', 'Bytes')]
+    [System.String]
+    $BalanceBy = 'Count',
 
     [Parameter()]
     [Switch]
@@ -775,8 +785,15 @@ foreach ($name in ($complexText.Keys | Sort-Object))
 
 $orderedComponents = @($componentMembers.Keys | Sort-Object @{ Expression = { $componentMembers[$_][0] } })
 
+$typeWeight = @{}
+foreach ($name in $complexText.Keys)
+{
+    $typeWeight[$name] = if ($BalanceBy -eq 'Bytes') { $complexText[$name].Length } else { 1 }
+}
+$totalTypeWeight = ($typeWeight.Values | Measure-Object -Sum).Sum
 $effectiveTypeBuckets = [System.Math]::Min($TypeBucketCount, $componentMembers.Count)
-$perTypeBucket = [System.Math]::Ceiling($complexText.Count / $effectiveTypeBuckets)
+$perTypeBucket = [System.Math]::Ceiling($totalTypeWeight / $effectiveTypeBuckets)
+$pendingWeight = 0
 
 $typeBuckets = [System.Collections.Generic.List[Object]]::new()
 $typeBucketByName = [System.Collections.Generic.Dictionary[String, Int32]]::new([StringComparer]::OrdinalIgnoreCase)
@@ -786,13 +803,16 @@ foreach ($id in $orderedComponents)
 {
     $members = $componentMembers[$id]
 
-    if ($pending.Count -gt 0 -and ($pending.Count + $members.Count) -gt $perTypeBucket)
+    $membersWeight = ($members | ForEach-Object { $typeWeight[$_] } | Measure-Object -Sum).Sum
+    if ($pending.Count -gt 0 -and ($pendingWeight + $membersWeight) -gt $perTypeBucket)
     {
         $typeBuckets.Add($pending.ToArray())
         $pending = [System.Collections.Generic.List[String]]::new()
+        $pendingWeight = 0
     }
 
     $pending.AddRange($members)
+    $pendingWeight += $membersWeight
 }
 
 if ($pending.Count -gt 0)
@@ -848,15 +868,38 @@ Write-BuildLog "Flattened $flattened derived complex type(s)" -Level Detail
 # --- Part<NN>.psm1 ----------------------------------------------------------------------------
 $sortedResources = @($resourceEntries | Sort-Object Name)
 $effectiveBuckets = [System.Math]::Min($BucketCount, $sortedResources.Count)
-$perBucket = [System.Math]::Ceiling($sortedResources.Count / $effectiveBuckets)
-
-for ($bucket = 0; $bucket -lt $effectiveBuckets; $bucket++)
+$resourceWeight = @{}
+foreach ($resource in $sortedResources)
 {
-    $slice = @($sortedResources | Select-Object -Skip ($bucket * $perBucket) -First $perBucket)
-    if ($slice.Count -eq 0)
+    $resourceWeight[$resource.Name] = if ($BalanceBy -eq 'Bytes') { $resource.Text.Length + (@($resource.Helpers) -join '').Length } else { 1 }
+}
+$perBucket = [System.Math]::Ceiling((($resourceWeight.Values | Measure-Object -Sum).Sum) / $effectiveBuckets)
+
+$partSlices = [System.Collections.Generic.List[Object]]::new()
+$pendingResources = [System.Collections.Generic.List[Object]]::new()
+$pendingResourceWeight = 0
+foreach ($resource in $sortedResources)
+{
+    $weight = $resourceWeight[$resource.Name]
+    if ($pendingResources.Count -gt 0 -and ($pendingResourceWeight + $weight) -gt $perBucket -and $partSlices.Count -lt ($effectiveBuckets - 1))
     {
-        continue
+        $partSlices.Add($pendingResources.ToArray())
+        $pendingResources = [System.Collections.Generic.List[Object]]::new()
+        $pendingResourceWeight = 0
     }
+
+    $pendingResources.Add($resource)
+    $pendingResourceWeight += $weight
+}
+
+if ($pendingResources.Count -gt 0)
+{
+    $partSlices.Add($pendingResources.ToArray())
+}
+
+for ($bucket = 0; $bucket -lt $partSlices.Count; $bucket++)
+{
+    $slice = @($partSlices[$bucket])
 
     $sliceText = (@($slice | ForEach-Object { $_.Text; $_.Helpers }) -join "`n")
     $required = [System.Collections.Generic.SortedSet[Int32]]::new()
@@ -919,7 +962,7 @@ for ($bucket = 0; $bucket -lt $effectiveBuckets; $bucket++)
     $generatedFiles.Add("Classes/$fileName")
 }
 
-Write-BuildLog "Wrote $($generatedFiles.Count - $typeBuckets.Count - 1) part file(s), $perBucket resource(s) each at most"
+Write-BuildLog "Wrote $($partSlices.Count) part file(s) balanced by $BalanceBy"
 
 #endregion
 
@@ -997,8 +1040,9 @@ function Update-M365DSCBuildManifest
         $content = $content.Insert($insertAt, "`r`n`r`n  # DSC resources to export from this module.`r`n$exportBlock")
     }
 
-    # 4. FunctionsToExport is deliberately untouched. An explicit list silently reduces
-    #    Get-DscResource to zero resources on both editions - see Spike 1d.
+    # 4. FunctionsToExport is deliberately untouched. With every export key explicit the engine
+    #    skips the manifest analysis that records DscResourcesToExport, and Get-DscResource
+    #    reports zero resources on both editions.
 
     if ($PSCmdlet.ShouldProcess($Path, 'Update manifest'))
     {

@@ -1,4 +1,4 @@
-# From Script-Based to Class-Based: Rebuilding Every Microsoft365DSC Resource
+# From Script-Based to Class-Based: Rebuilding Every Microsoft365DSC Resource (Part 1)
 
 <img src="../../../images/FabienTschanz.jpg" style="width:75px;border-radius:50%;border:3px solid black;float:left;" />
 <div style="position:inherit;padding-top:15px;"><span style="float:left;padding-left:15px;"><b>by <a href="https://www.linkedin.com/in/fabien-tschanz">Fabien Tschanz</a><br />
@@ -9,9 +9,15 @@ October 7th, 2026</b></span></div>
 
 ## Introduction
 
-Microsoft365DSC ships more than 530 resource types across a dozen workloads, and until this release, every single one of them was a script-based DSC resource: a `.psm1` file with `Get-TargetResource`, `Set-TargetResource` and `Test-TargetResource` functions, plus a (semi-)hand-written `.schema.mof` file describing the schema. That design served the project for over seven years. With the October 2026 release, it is gone: all 530+ resources are now class-based DSC resources, the MOF schema files have been deleted, and the module integrates nicely with DSCv3.
+Microsoft365DSC ships more than 530 resource types across a dozen workloads, and until this release, every single one of them was a script-based DSC resource: a `.psm1` file with `Get-TargetResource`, `Set-TargetResource` and `Test-TargetResource` functions, plus a (semi-)hand-written `.schema.mof` file describing the schema. That design served the project for over seven years. With the October 2026 release, it is gone: all 530+ resources are now class-based DSC resources, the MOF schema files have been deleted, and the module is ready for the PowerShell 7 and DSCv3 world.
 
-This was the largest architectural change in the history of the project. It touched almost 450,000 lines of resource code, removed roughly 114,000 of them, and surfaced defects that had been sitting invisibly in the module for years. In this post, I will walk through why we made the change, how we approached an automated conversion at this scale, the numbers we measured along the way, and the discussions in the community that shaped the outcome. If you have never written a class-based DSC resource before, don't worry: the first section explains the difference with a real example from the module.
+This was the largest architectural change in the history of the project. It touched almost 450,000 lines of resource code, removed roughly 114,000 of them, and surfaced defects that had been sitting invisibly in the module for years. It also made two things noticeably slower, importing the module and compiling a configuration, and getting those back to where they belong turned into a second project of its own. So this story comes in three parts:
+
+- **Part 1 (this post)** is about why we made the change, how we approached an automated conversion at this scale, the traps we ran into with the DSC engine, and what the conversion found in our own code.
+- **[Part 2](./class-based-resources-part-2.md)** is about making the module fast again at runtime. Import time, resource discovery, the DSCParser rewrite and the compiled comparison engine, along with every layout we evaluated and rejected on the way.
+- **[Part 3](./class-based-resources-part-3.md)** is about compiling configurations. Why MOF compilation broke, the fast compile host we built to fix it, the tricks behind it, the rebuilt examples, what DSCv3 makes of all this, and the final numbers.
+
+For everybody being intimidated by the complex introduction, don't sweat it. Even if you have never written a class-based DSC resource before, don't worry. We will start gradually so you'll get used to it.
 
 ## Table of Contents
 
@@ -26,13 +32,9 @@ This was the largest architectural change in the history of the project. It touc
 9. [Keeping the LCM alive](#keeping-the-lcm-alive)
 10. [Converting 530+ resources without going insane](#converting-530-resources-without-going-insane)
 11. [What the conversion found in our own code](#what-the-conversion-found-in-our-own-code)
-12. [Issue #5: Compiling a configuration became the slow part](#issue-5-compiling-a-configuration-became-the-slow-part)
-13. [Rebuilding the examples on top of it](#rebuilding-the-examples-on-top-of-it)
-14. [The rest of the toolchain](#the-rest-of-the-toolchain)
-15. [The numbers](#the-numbers)
-16. [What this means for you](#what-this-means-for-you)
-17. [The effort behind it](#the-effort-behind-it)
-18. [Wrapping up](#wrapping-up)
+12. [The rest of the toolchain](#the-rest-of-the-toolchain)
+13. [Where part 1 leaves us](#where-part-1-leaves-us)
+14. [The effort behind it](#the-effort-behind-it)
 
 ## What is the difference, actually?
 
@@ -87,7 +89,7 @@ Three concrete problems drove this, and all three came out of GitHub issues rath
 
 **Triple property definitions.** As raised in the original proposal ([#6202](https://github.com/Microsoft365DSC/Microsoft365DSC/issues/6202)), every property was defined four times: once in the MOF and once per `*-TargetResource` function. Beyond the maintenance burden, this is where an entire class of "MOF and psm1 drifted apart" bugs came from - more on what we found later in this post.
 
-**The PowerShell 7 and DSCv3 future.** DSCv3 has no Local Configuration Manager, but it can drive class-based PowerShell resources through the `Microsoft.DSC/PowerShell` adapter running on PowerShell 7. Script-based MOF resources are a legacy path there. Combined with our Docker images and the C# core engine we shipped earlier this year, class-based resources are the piece that lets the whole module run cross-platform on PowerShell 7 - which is what we strived for with this release.
+**The PowerShell 7 and DSCv3 future.** DSCv3 has no Local Configuration Manager, but it can drive class-based PowerShell resources through its PowerShell adapter (`Microsoft.Adapter/PowerShell` since DSC 3.2) running on PowerShell 7. Script-based MOF resources only run through the Windows PowerShell adapter there, which needs an elevated Windows PowerShell 5.1 and WinRM. Combined with our Docker images and the C# core engine we shipped earlier this year, class-based resources are the piece that lets the whole module run cross-platform on PowerShell 7 - the ultimate goal we strived for with this release. How far DSCv3 actually gets with the module today is a story of its own. Keep reading, that story will be told in part 3.
 
 ## The community discussion
 
@@ -117,6 +119,7 @@ flowchart TD
     P3 --> P4["Phase 4 - Bulk conversion<br/>all resources, workload by workload"]
     P4 --> P5["Phase 5 - Ecosystem<br/>export engine, docs, QA, CI"]
     P5 --> P6["Phase 6 - Cutover<br/>delete all MOF files, major version"]
+    P6 --> P7["Phase 7 - Performance<br/>import, compile, compare, DSCv3<br/>(parts 2 and 3)"]
 ```
 
 The four proof-of-concept resources in Phase 2 were chosen to span the difficulty range: `AADAttributeSet` (simple), `AADGroup` (complex types), `AADAccessReviewDefinition` (deeply nested complex types) and `IntuneSettingCatalogCustomPolicyWindows10` (the settings catalog shape). The converter in Phase 3 was then built *against those four known-good outputs as fixtures* - every converter change had to reproduce them byte-for-byte before it was allowed near the other resources.
@@ -125,17 +128,19 @@ The spikes earned their keep immediately, because two of them invalidated the or
 
 ## Issue #1: How DSC actually discovers class-based resources
 
-Our first attempt placed each class in its own file under `DscResources/MSFT_<Name>/`, mirroring the script-based layout. `Get-DscResource` found nothing. Not an error - just zero resources.
+Our first attempt placed each class in its own file under `DscResources/MSFT_<Name>/`, mirroring the script-based layout, which felt like the natural thing to do and took about an hour to set up. `Get-DscResource` found nothing. Not an error, not a warning, just zero resources, and I remember staring at that empty output for a good while before I believed it.
 
 The reason lives in the PowerShell engine source (`CimDSCParser.cs`): DSC only looks for `[DscResource()]` classes in a module's `RootModule` and in the entries of `NestedModules`, exactly one level deep. There is no filesystem walk for classes; the `DscResources\*` directory scan that does exist only ever looks for `.schema.mof` files. On top of that, `DscResourcesToExport` in the manifest is mandatory - if it is absent, discovery returns immediately with zero resources - and each file is parsed in complete isolation, so a class in file A cannot see a class in file B at discovery time.
 
-One more discovery rule cost us the most debugging time of the entire project, and I want it written down where search engines can find it: **if your module manifest has an explicit `FunctionsToExport` list, every class-based resource silently disappears from `Get-DscResource`.** Not an error, not a warning, just zero resources, on both PowerShell editions. The key must be absent or `'*'`. We measured this precisely:
+One more discovery rule cost us the most debugging time of the entire project, and I want it written down where search engines can find it: **if your module manifest has an explicit `FunctionsToExport` list, every class-based resource silently disappears from `Get-DscResource`.** Not an error, not a warning, just zero resources, on both PowerShell editions. The key must be absent or `'*'`. Of course we verified this:
 
 | `FunctionsToExport` | `Get-DscResource` result |
 | --- | --- |
 | key absent | all resources found |
 | `'*'` | all resources found |
 | an explicit list | **0 resources, no error** |
+
+Because it was so absurd we couldn't believe it at first, we went back to it in September with the engine source open. The reason was that an explicit export list is one of the things every module author is told to write, and it makes `Get-Module -ListAvailable` a lot faster. The mechanism, the exact cost of leaving the key out, and why `Get-DscResourceV2` does not rescue you either from this strange issue, are in [part 2](./class-based-resources-part-2.md#the-functionstoexport-trap-revisited).
 
 > **[Image placeholder: Screenshot of a terminal showing `Get-DscResource -Module Microsoft365DSC` returning the full resource list, next to the manifest's commented-out `FunctionsToExport` line.]**
 
@@ -210,7 +215,7 @@ The original plan concatenated all 530+ classes into one big root module at buil
 | **Split across 16 nested modules** | **6.95 s** | 11.95 s |
 | Split across 32 nested modules | 8.92 s | 16.52 s |
 
-41 seconds to import the module was obviously unshippable. Profiling showed the time was not parsing (0.47 s for the full set) but .NET type creation, which grows roughly with the *cube* of the number of classes in a single parse unit: 522 classes in one file import in 5.4 s, 772 in 21 s, 1007 in 41 s. We tried the obvious diets first - dropping every description attribute saved 9 of the 41 seconds, dropping `[ValidateSet]` saved nothing, removing the base class saved nothing. The only lever that works is splitting the parse unit.
+41 seconds to import the module was obviously unshippable, and for a day or two it looked like the whole project might end right there. Profiling showed the time was not parsing, which took 0.47 s for the full set, but .NET type creation, and that grows roughly with the *cube* of the number of classes in a single parse unit: 522 classes in one file import in 5.4 s, 772 in 21 s, 1007 in 41 s. We tried the obvious diets first, and they were humbling. Dropping every description attribute saved 9 of the 41 seconds, dropping `[ValidateSet]` saved nothing, and removing the base class saved nothing either. The only lever that works is splitting the parse unit.
 
 So the shipping layout splits the generated classes across nested modules, grouped by workload, which lands at 6.95 s against the 4.50 s script-based baseline - a price we considered acceptable for what we get in return:
 
@@ -249,7 +254,9 @@ flowchart LR
     PN -. "using module" .-> T
 ```
 
-The per-resource source files stay in git, so diffs, history and pull requests remain per-resource, exactly as before. Only the shipped part files are generated. If you contribute a resource, you still edit one file in one folder - the build system does the rest.
+The per-resource source files stay in git, so diffs, history and pull requests remain per-resource, exactly the same as before. Only the shipped part files are generated. If you contribute a resource, you still edit one file in one folder - the build system does the rest.
+
+This blog wouldn't exist if there was not something else going on... That's where [part 2](./class-based-resources-part-2.md) will pick up later.
 
 ## Issue #3: There is no $PSBoundParameters in a class
 
@@ -257,11 +264,11 @@ This one is the heart of the conversion, and the part where class-based resource
 
 A script-based resource gets `$PSBoundParameters` for free: the set of parameters the caller actually passed. Microsoft365DSC leans on that heavily - almost 7'000 call sites across the module depend on it, because drift detection must only compare the properties a configuration actually specifies. A class has no such thing. PowerShell materializes *every* property on instantiation: value types become `0` or `$false`, reference types become `$null`. The class cannot natively tell "the user did not specify `MaxAttributesPerSet`" (which is an Int32) apart from "the user specified `0`".
 
-Worse, the obvious workaround does not survive contact with the DSC engine. My first working prototype tracked assignments through PowerShell script properties - and it worked beautifully in every test, then returned empty objects the moment the real LCM drove it. The reason, which took weeks to isolate in the summer of 2025: **DSC populates class-resource instances by writing the CLR backing fields directly through reflection.** The PowerShell member layer - where any tracking logic would live - is never invoked. This is the "99%" breakthrough moment from issue #6202: once we understood that reflection is the transport, the design falls out of it.
+Worse, the obvious workaround does not survive contact with the DSC engine. My first working prototype tracked assignments through PowerShell script properties, and it worked beautifully in every test I could think of, right up until the real LCM drove it and got back empty objects every single time. It took weeks of the summer of 2025 to isolate the reason, and those were not pleasant weeks: **DSC populates class-resource instances by writing the CLR backing fields directly through reflection.** The PowerShell member layer, where any tracking logic would live, is simply never invoked. This is the "99%" breakthrough moment from issue #6202, and once we understood that reflection is the transport, the whole design fell out of it almost on its own.
 
 The shipping mechanism has two halves:
 
-1. **Value-type properties are nullable.** Every `[System.Boolean]` became `[System.Nullable[System.Boolean]]`, every `[UInt32]` became `[System.Nullable[System.UInt32]]`. Reflection cannot be observed, so nullability carries the signal instead: a property that is `$null` was not specified, anything else was. DSC accepts `Nullable[T]` on both editions and still reports the property as its underlying type. We of course verified this before committing to it.
+1. **Value-type properties are nullable.** Every `[System.Boolean]` became `[System.Nullable[System.Boolean]]`, every `[UInt32]` became `[System.Nullable[System.UInt32]]`. Reflection cannot be observed, so nullability carries the signal instead: a property that is `$null` was not specified, anything else was. DSC accepts `Nullable[T]` on both editions and still reports the property as its underlying type. There is one exception, and the engine enforces it the moment the class is defined: A `[DscProperty(Key)]` cannot be nullable, and a single nullable key makes the whole module refuse to load.
 
 2. **`GetBoundParameters()` on the base class** returns every DSC property that is not `$null`, which behaves identically whether the value arrived through reflection (from the LCM) or through direct assignment (from our export engine or tests). It is the drop-in replacement for `$PSBoundParameters` at all ~7'000 call sites.
 
@@ -273,7 +280,7 @@ There is one behavioral consequence worth knowing as a user: a `[bool]` property
 
 I want to tell this one in detail because it is the best argument I know for testing at the right boundary.
 
-Our 530+ converted unit test suites all run inside the module's scope - they have to, because PowerShell class types are not visible outside the module that defines them. During the conversion, every suite went green, and everything looked done. Then we ran a resource through `Invoke-DscResource`, the way the real engine does, and got back empty strings for every property.
+Our 530+ converted unit test suites all run inside the module's scope, since PowerShell class types are not visible outside the module that defines them. During the conversion, every suite went green, and for a happy afternoon everything looked done. Then we ran a single resource through `Invoke-DscResource`, the way the real engine does, and got back empty strings for every property. Every single one.
 
 The cause was the interaction from Issue #3: an intermediate version of the base class still routed property access through a private backing store. Called from inside the module, the PowerShell member layer was engaged and everything worked. Called by the DSC engine, reflection wrote the CLR fields directly - a place the class never read - and read them back from a place the class never wrote:
 
@@ -282,7 +289,9 @@ The cause was the interaction from Issue #3: an intermediate version of the base
 | Called from inside the module (like every unit test) | `Id='abc-123' DisplayName='resolved'` |
 | Called through the DSC engine | `Id='' DisplayName=''` |
 
-Every converted resource was silently non-functional under the LCM while passing its entire test suite. The fix was to make the property layer write through to the real CLR properties with no private store - and, more importantly, our QA suite now round-trips a resource through `Invoke-DscResource` on every run. That is the test that would have caught it, so now it exists.
+Every converted resource was silently non-functional under the LCM while passing its entire test suite. The fix was to make the property layer write through to the real CLR properties with no private store - and, more importantly, our QA suite now round-trips a resource through `Invoke-DscResource` on every run.
+
+There is a related lesson for anyone writing tests against generated modules. Pester loads the *built* `Classes/Part*.psm1` files, not the per-resource sources under `DscResources`. Edit a resource, forget to build, and you are happily testing last week's code with a green result. Our test helper now refuses to run against a stale build.
 
 ## Keeping the LCM alive
 
@@ -323,7 +332,7 @@ This is also why resource names did not change. For a class-based resource the c
 
 Hand-converting 530 resources was never an option; at even 10 resources a day that is almost two months of work. The conversion is done by `Convert-M365DSCResourceToClass.ps1`, and the single most important decision in that script is that it operates on the PowerShell **abstract syntax tree**, not on regular expressions.
 
-An earlier regex-based prototype looked like it worked, and that is also what made it dangerous. Its failures were silent: the property regex read MOF array markers on the type instead of the name, so every array property quietly became a scalar; the variable rewrite `$ApplicationId` -> `$this.ApplicationId` had no word boundary, so `$ApplicationIdValue` silently became `$this.ApplicationIdValue`. With AST transformation, the converter walks real language elements - a `VariableExpressionAst` whose name matches a schema property becomes a `$this.` member access, the telemetry region becomes `$this.AddTelemetry('Get')`, the 2,130 shim blocks become the single base-class guard - and anything it does not positively recognize lands in a per-resource JSON report for human review instead of being guessed at.
+An earlier regex-based prototype looked like it worked, and that is exactly what made it dangerous. Its failures were silent, and we only found them by reading the output line by line. The property regex read MOF array markers on the type instead of the name, so every array property quietly became a scalar, and the variable rewrite `$ApplicationId` -> `$this.ApplicationId` had no word boundary, so `$ApplicationIdValue` silently became `$this.ApplicationIdValue`. Two bugs like that in a prototype are a warning about the approach, not about the bugs. With AST transformation, the converter walks real language elements - a `VariableExpressionAst` whose name matches a schema property becomes a `$this.` member access, the telemetry region becomes `$this.AddTelemetry('Get')`, the 2,130 shim blocks become the single base-class guard - and anything it does not positively recognize lands in a per-resource JSON report for human review instead of being guessed at.
 
 The subtleties the AST approach caught earned it. My favorite: `Get-TargetResource` is called in three different shapes in the codebase, and they must convert differently. The export path calls it with a per-item key (`Get-TargetResource @params` inside a loop over all groups in a tenant), and rewriting that to a bare `$this.Get()` - the "obvious" conversion - would have made 18 resources silently export with a `$null` key, querying the workload with nothing. The converter distinguishes the shapes and emits `$this.GetForExport($params)` where the loop context requires it.
 
@@ -341,7 +350,7 @@ Without it, opening any resource in VS Code shows parser errors on the entire fi
 
 ## What the conversion found in our own code
 
-Here is the part I did not expect when we started: converting to classes was, among other things, the most effective audit the codebase has ever had. A MOF tolerates almost anything silently. A class either compiles and validates, or it does not. The conversion surfaced defects that had been shipping for years:
+Here is the part I did not expect when we started, and the part I now enjoy telling the most: converting to classes was, among other things, the most effective audit the codebase has ever had. A MOF tolerates almost anything silently, while a class either compiles and validates or it does not, and there is no in-between to hide in. The conversion surfaced defects that had been shipping for years, some of them since before I joined the project:
 
 - **16 resources could never say "Absent".** Their MOF declared `ValueMap{"Present"}` for `Ensure`, but their code assigns `'Absent'` on the not-found path. As a function, nothing validated a value assigned into a result hashtable, so it worked by accident. As a class property, the `[ValidateSet]` fired immediately. The MOFs were wrong; the code was right; the MOFs got fixed.
 - **Two resources were silently invisible.** Our MOF-parsing schema generator split quoted ValueMap entries on their internal commas, so `ValueMap{"companyPortal,email"}` produced duplicate values - and DSC responds to a duplicate `[ValidateSet]` by silently dropping the entire resource from `Get-DscResource`. `IntuneDerivedCredential` had this defect.
@@ -349,64 +358,6 @@ Here is the part I did not expect when we started: converting to classes was, am
 - **93 drift tests were passing for the wrong reason.** Before the conversion work on the comparison engine, 93 tests asserted "drift detected" and got a `$true` that came from complex-object drift not being detected at all - the comparer fell through on unknown types and reported whatever the test wanted to hear. After the conversion and comparer fixes, that number is now 0 since we fixed everything.
 
 This is the pattern throughout: the class conversion did not primarily *create* problems, it made existing ones loud. I will happily pay a two-second import penalty for that.
-
-## Issue #5: Compiling a configuration became the slow part
-
-Everything above is about loading resources. Compiling a configuration against them turned out to be a separate problem, which only became visible once every resource was converted to a class.
-
-When PowerShell parses the `Import-DscResource -ModuleName Microsoft365DSC` line in a file, the DSC engine imports the module right there at parse time and builds a `DynamicKeyword` for every resource it finds. With script-based resources that work is reading MOF files, which is fairly cheap. With class-based resources it is .NET type creation again, the same curve from Issue #2, except now it runs on every single compile instead of once per session. One example configuration went from a second or two to somewhere between 30 and 90 seconds. Our example suite holds more than 1000 files, meaning that a full run was closer to a workday than to a coffee break.
-
-The answer is great and insane at the same time: a fork of `PSDesiredStateConfiguration` that we maintain and publish as `M365DSC.PSDesiredStateConfiguration`, carrying an `M365DSCFastHost` tag that the module probes for. Its compile host changes two things:
-
-- It strips `Import-DscResource` out of the script before the parser sees it, which removes the parse-time module import.
-- It then registers the resource keywords from a persistent schema cache rather than discovering them from the module.
-
-That cache ships inside the Microsoft365DSC module as `DscSchemaCache.json`, roughly 3.6 MB covering all >500 resources and ~1000 keywords. `Utilities/Build-Microsoft365DSC.ps1` regenerates it in a child process at the end of every build and stamps it with a fingerprint, which means a cache that no longer matches the built classes is detected instead of silently used.
-
-| Compile path | What happens at compile time | Per configuration |
-| --- | --- | --- |
-| Standard pipeline | module imported at parse time, every keyword built from the classes | 30-90 s |
-| Fast host | `Import-DscResource` stripped, keywords read from `DscSchemaCache.json` | around 0.2 s |
-
-That is roughly 99 percent of the compile time gone. Compiling the full examples suite before we migrated to class-based resources was in the vicinity of ~20 minutes. With this change, we're down in the region of ~6 minutes, even faster than before. This developemtn was very unexpected for us since from the start on when we discovered these compile issues, we expected to publish the Microsoft365DSC module with the flaw and no way for us to improve the situation.
-
-```mermaid
-flowchart LR
-    C["Configuration script"] --> W["Invoke-M365DSCConfigurationBuild"]
-    W --> D{"M365DSCFastHost<br/>engine available?"}
-    D -- yes --> F["Fast host<br/>strip Import-DscResource,<br/>register keywords from cache"]
-    D -- no --> S["Standard pipeline<br/>parse-time module import"]
-    SC["DscSchemaCache.json<br/>531 resources, 998 keywords"] -.-> F
-    F --> M["MOF"]
-    S --> M
-```
-
-Users do not have to know any of this. `Invoke-M365DSCConfigurationBuild` wraps the whole decision and takes three modes on its `-Engine` parameter:
-
-- `Auto` picks the fast host when the engine is installed and warns when it falls back.
-- `FastHost` fails loudly instead of falling back.
-- `Standard` always takes the classic route.
-
-The examples QA gate, the workload integration pipelines and anyone compiling their own tenant configuration all go through the same wrapper.
-
-> **[Image placeholder: Bar chart comparing compile time per configuration on the standard pipeline against the fast host, with the suite total of 1,169 examples underneath.]**
-
-## Rebuilding the examples on top of it
-
-After the compilation got cheap, we re-examined what was worth doing with the examples. Verifying every example against the real schema had never been practical before, and once a full run took only several minutes we pointed it at the whole `Examples` folder and looked at what came back.
-
-Of course it couldn't be any different... Plenty came back. The examples had accumulated over years of hand editing, and the QA gate turned quiet inconsistencies into failures. Each resource carries up to three examples, and the rules they now have to satisfy are these:
-
-- `1-Create.ps1` sets every configurable non-authentication property, with values a real tenant would plausibly hold.
-- `2-Update.ps1` keeps the same coverage and differs from create in at least one property, with each differing line marked `# Updated Property`.
-- `3-Remove.ps1` carries keys, mandatory properties, authentication and `Ensure = 'Absent'`, and nothing beyond that.
-- Across all three, the keys are byte-identical, no property is undeclared, and no enum value is invalid.
-
-Alongside the gate there is now `Utilities/Measure-M365DSCExampleCoverage.ps1`, a read-only analyzer that reports how much of each resource's schema its examples actually configure, whether the update example drifts, and what the remove example carries beyond the allowed set. It is the report we use to decide whether a workload is done. We also moved the examples to certificate authentication, which is what we recommend for all workloads (or if you're managing several workloads in one go), and reordered the authentication properties to the end of every block so the interesting part of an example comes first.
-
-The generator that emits new examples got the same scrutiny because a fixed emitter is worth way more than a fixed example. It used to drop mandatory properties from the remove example, which made those examples uncompilable the moment `[DscProperty(Mandatory)]` started rendering as `Required`, it  placed `IsSingleInstance` last even though it is the key, and string placeholders were all called `FakeStringValue`, which told a reader nothing. Those are fixed at the source now.
-
-> **[Image placeholder: Terminal output of `Measure-M365DSCExampleCoverage.ps1` showing a workload with coverage percentages, drift counts and an empty `UnknownProperties` column.]**
 
 ## The rest of the toolchain
 
@@ -416,57 +367,25 @@ A conversion of this size leaves a trail of supporting parts that all had to mov
 
 **Relations moved into C#.** Export dependency handling used to walk PowerShell objects and scaled quadratically with the number of exported instances. It now lives in the `Microsoft365DSC.Relations` assembly, along with `DependsOn` injection and the rewrite of the generated configuration. On the way we added a pile of new relations between resources, support for `like` and `notlike` in relation conditions, and `$_` as a condition subject so a rule can test a value inside a simple array rather than a property of an object. Several long-standing defects fell out of that work, including relations resolving even without `-IncludeDependencies` and hashtable-valued properties never matching because they were walked as a sequence.
 
-**Helper functions became class methods.** A converted resource that still carried private helper functions kept them at module scope, which is a shared namespace across every resource in the same generated part file. Those helpers are moving to hidden class methods, where they belong to the instance and can reach `$this`. `Get-CompareParameters` went the same way and every call site follows the class now.
+**Helper functions became class methods.** A converted resource that still carried private helper functions kept them at module scope, which is a shared namespace across every resource in the same generated part file. Those helpers are moving to hidden class methods, where they belong to the instance and can reach `$this`. `Get-CompareParameters` went the same way and every call site follows the class now. Part 2 has a surprise in store about what those hidden methods cost at import time, and it was not a pleasant one.
 
 **CI knows about the build.** Every workflow that touches the module builds the class modules first, then the C# assemblies, then the schema cache. Validation gained two guards that the QA suite could not provide: no `.schema.mof` file may reappear under `DscResources`, and every resource file must declare a `[DscResource()]` class and carry no `*-TargetResource` functions. The old wiki workflow, which generated its pages from MOF files, was retired.
 
 **New properties land in one place.** This one is mostly invisible but equally important or even more important regarding maintainability of the module. For example, adding `EwsAllowedAppIDs` to `EXOOrganizationConfig` or `CustomSecurityAttributes` to `AADUser` used to mean a MOF edit plus three parameter blocks. It is now a property declaration and, where a complex type is involved, a small class next to the resource. That's really it. No more three copies of the same property, no more MOF to keep in sync, no more chance of a typo in one of the three places.
 
-## The numbers
+## Where part 1 leaves us
 
-A summary of the project in figures, because I know some of you scroll straight here:
+At the end of the cutover, the module was *correct*. Every resource was a class, every unit test suite was green for the right reasons, the LCM round trip worked, and existing configurations compiled. I remember the relief. It lasted about as long as the first benchmark, since the module was also slower in two places that matter every single day:
 
-| Metric | Value |
-| --- | --- |
-| Resources converted | 535 (every one) |
-| Unit test suites converted | 534, ~5,500 tests |
-| Resource code before | 455,474 lines / ~16 MB |
-| Resource code after | 340,921 lines (−114,553 lines, ≈ 25%) |
-| `.schema.mof` files deleted at cutover | 530+ |
-| `$PSBoundParameters` call sites replaced | 6,949 |
-| PowerShell edition shim blocks collapsed into one base-class guard | 2,132 |
-| Script-scope cache variables moved to instance state | 1,707 `$Script:exportedInstance` sites alone |
-| Complex-type classes generated and deduplicated | ~470, with 543 inheritance edges preserved |
-| Cold import: consolidated single module (rejected) | 41.1 s |
-| Cold import: shipping split layout | 6.95 s (baseline was 4.50 s) |
-| Compile per configuration: standard pipeline | 30-90 s |
-| Compile per configuration: fast host | around 0.2 s, roughly 99% less |
-| Schema cache shipped with the module | ~3.6 MB, 531 resources, 998 keywords |
-| Example files verified by the QA compile gate | 1,169 (hours down to minutes for a full run) |
-| Time from proposal to release | June 20th, 2025 -> October 2026 |
+- `Import-Module Microsoft365DSC` took about 5 seconds on PowerShell 7 and closer to 6 on Windows PowerShell, against 1.7 and 2.0 seconds for the last script-based release. Worse, every additional runspace paid roughly 3 seconds again, and the LCM opens one per resource call.
+- Compiling a configuration went from seconds to somewhere between 30 and 55 seconds for a real tenant export, and to 40 to 50 seconds even for a single-resource example. The DSC engine now had to create 1,000 .NET types before it could parse a single resource statement, and it insisted on doing so every time.
 
-## What this means for you
-
-For most users, remarkably little. That was the design goal.
-
-- **Your configurations keep working.** Existing `Configuration` scripts, including complex embedded-instance properties, compile unchanged. Resource names are identical.
-- **PowerShell 7 is now a requirement**, as announced in July. The classic LCM on Windows PowerShell 5.1 continues to work through the built-in relay, so hybrid environments that depend on the LCM for drift remediation are not left behind.
-- **`Get-DscConfiguration` with nested properties works now** (issue #6120) - typed classes fixed the CIM inference failure structurally.
-- **Drift on `$false`:** a boolean you explicitly set to `$false` is now compared like any other specified value. If you see new drift reports on such properties, the report is correct.
-- **Compiling is much faster with the fast host installed.** `M365DSC.PSDesiredStateConfiguration` comes down with the module dependencies, and `Invoke-M365DSCConfigurationBuild` picks it up on its own. Compiling a configuration the classic way still works and still produces the same MOF, it is simply the slow route now.
-- **The examples are worth reading again.** Every resource has a create, an update and a remove example that compile, cover the schema and use certificate authentication.
-- **For contributors:** you still edit one file per resource, in the same folder as before. It is now a class instead of three functions, roughly 40% shorter, and your editor shows zero errors while you work on it.
+Both of these made the module unshippable as it stood. Both needed real engineering rather than a bit of tuning. And both are what [part 2](./class-based-resources-part-2.md) and [part 3](./class-based-resources-part-3.md) are about.
 
 ## The effort behind it
 
-From the first comment in the PowerShell Core thread in November 2024 to this release is just under two years of discussion, prototyping and implementation. The proposal itself is from June 20th, 2025. What I want to emphasize is how much of that time was *not* writing the converter: the spikes that killed the consolidated-module layout, the weeks isolating why the LCM received empty objects, the discovery that two ordinary manifest keys - `FunctionsToExport` and `ScriptsToProcess` - silently break class-based resources in two entirely different ways - each of these findings is a paragraph in this post and was days or weeks in real life. The conversion itself, once the foundation was measured and solid, went from first hand-converted resource to all 535 converting and running cleanly in a matter of weeks.
+From the first comment in the PowerShell Core thread in November 2024 to this release is just under two years of discussion, prototyping and implementation, and the proposal itself is from June 20th, 2025. What I want to emphasize is how much of that time was *not* writing the converter. The spikes that killed the consolidated-module layout, the weeks isolating why the LCM received empty objects, the discovery that two ordinary manifest keys, `FunctionsToExport` and `ScriptsToProcess`, silently break class-based resources in two entirely different ways, each of these is a paragraph in this post and was days or weeks in real life, most of them spent being confused. The conversion itself, once the foundation was measured and solid, went from the first hand-converted resource to all 535 converting and running cleanly in a matter of weeks, which still surprises me a little when I write it down.
 
 None of it would have happened this way without the community. Borgquite's insistence on LCM support shaped the dispatch design; ykuijs and salbeck-sit stress-tested the proposal early; indented-automation's code review made the base class better; ricmestre root-caused and fixed a DSCv3 adapter bug upstream in the middle of it all. Thank you - this is what an open-source project is supposed to look like.
 
-## Wrapping up
-
-Microsoft365DSC now runs all 530+ class-based DSC resources: one definition per property, one shared base class instead of almost half a million lines of repeated boilerplate, no MOF files, native PowerShell 7, and a comparison engine that reports real drift instead of comfortable silence. Rewrites of this size are rightly treated with suspicion - Borgquite was correct that they are a classic sinkhole - and the way through was to measure everything, spike every risk before committing, and let an AST-based converter do the mechanical work while humans reviewed what it could not prove.
-
-If you hit anything unexpected after upgrading, like a configuration that no longer compiles, new drift you believe is wrong, an import-time regression on your hardware, or anything else, the best thing you can do is open an issue with the resource name and details, and we'll dig in from there.
-
-That's all for now. Thanks for staying with me through this blog, and especially thank you for using Microsoft365DSC!
+Continue with [part 2: making the class-based module fast again](./class-based-resources-part-2.md).
