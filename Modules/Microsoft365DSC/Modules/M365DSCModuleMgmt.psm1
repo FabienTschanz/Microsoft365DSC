@@ -348,6 +348,13 @@ function Set-M365DSCVerbosePreferenceInScope
         $Preference
     )
 
+    $value = $Preference
+    $parsed = [System.Management.Automation.ActionPreference]::SilentlyContinue
+    if ([System.Enum]::TryParse([System.Management.Automation.ActionPreference], $Preference, $true, [ref] $parsed))
+    {
+        $value = $parsed
+    }
+
     foreach ($module in $Scope)
     {
         if ($null -eq $module.SessionState)
@@ -357,7 +364,7 @@ function Set-M365DSCVerbosePreferenceInScope
 
         try
         {
-            $module.SessionState.PSVariable.Set('VerbosePreference', $Preference)
+            $module.SessionState.PSVariable.Set('VerbosePreference', $value)
         }
         catch
         {

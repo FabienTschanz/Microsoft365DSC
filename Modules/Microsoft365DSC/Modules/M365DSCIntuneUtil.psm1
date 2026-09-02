@@ -1316,11 +1316,7 @@ function Get-IntuneSettingCatalogPolicySetting
 
     if ($PSCmdlet.ParameterSetName -eq 'Start')
     {
-        # Prepare setting definitions mapping
-        $SettingTemplates = Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate `
-            -DeviceManagementConfigurationPolicyTemplateId $TemplateId `
-            -ExpandProperty 'SettingDefinitions' `
-            -All
+        $SettingTemplates = Get-M365DSCSettingCatalogTemplate -TemplateId $TemplateId
     }
 
     Initialize-M365DSCDllLoader -ErrorAction Stop
@@ -1329,6 +1325,111 @@ function Get-IntuneSettingCatalogPolicySetting
         [System.Collections.Generic.List[object]]@($SettingTemplates),
         $DSCParams,
         $ContainsDeviceAndUserSettings.IsPresent)
+}
+
+<#
+.SYNOPSIS
+    Returns the setting templates of a Settings Catalog template, with their setting definitions.
+
+.DESCRIPTION
+    Fetches the template once per process and serves every later request for the same template id
+    from the cache. The payload of a security baseline runs to several megabytes, and every Set of
+    every instance would otherwise download it again.
+
+.PARAMETER TemplateId
+    Specifies the configuration policy template id, including its version suffix.
+
+.EXAMPLE
+    Get-M365DSCSettingCatalogTemplate -TemplateId '66df8dce-0166-4b82-92f7-1f74e3ca17a3_4'
+
+.OUTPUTS
+    System.Object[]
+#>
+function Get-M365DSCSettingCatalogTemplate
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TemplateId
+    )
+
+    $templates = Get-M365DSCCachedSettingCatalogTemplate -TemplateId $TemplateId
+    if ($null -ne $templates)
+    {
+        return , $templates
+    }
+
+    $templates = [System.Object[]] @(Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate `
+            -DeviceManagementConfigurationPolicyTemplateId $TemplateId `
+            -ExpandProperty 'settingDefinitions' `
+            -All `
+            -ErrorAction Stop)
+    Set-M365DSCCachedSettingCatalogTemplate -TemplateId $TemplateId -Templates $templates
+
+    return , $templates
+}
+
+<#
+.SYNOPSIS
+    Returns the cached setting templates of a Settings Catalog template, or null on a miss.
+
+.PARAMETER TemplateId
+    Specifies the configuration policy template id, including its version suffix.
+
+.OUTPUTS
+    System.Object[]
+#>
+function Get-M365DSCCachedSettingCatalogTemplate
+{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TemplateId
+    )
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+
+    $templates = $null
+    if ([Microsoft365DSC.Intune.SettingTemplateCache]::TryGet($TemplateId, [ref] $templates))
+    {
+        return , $templates
+    }
+
+    return $null
+}
+
+<#
+.SYNOPSIS
+    Stores the setting templates of a Settings Catalog template for the rest of the process.
+
+.PARAMETER TemplateId
+    Specifies the configuration policy template id, including its version suffix.
+
+.PARAMETER Templates
+    Specifies the setting templates, each carrying its setting definitions.
+#>
+function Set-M365DSCCachedSettingCatalogTemplate
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $TemplateId,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $Templates
+    )
+
+    Initialize-M365DSCDllLoader -ErrorAction Stop
+    [Microsoft365DSC.Intune.SettingTemplateCache]::Set($TemplateId, $Templates)
 }
 
 <#
@@ -1882,6 +1983,9 @@ Export-ModuleMember -Function @(
     'Get-ComplexFunctionsFromFilterQuery',
     'Get-IntuneSettingCatalogPolicySetting',
     'Get-M365DSCExportCachedConfigurationPolicies',
+    'Get-M365DSCCachedSettingCatalogTemplate',
+    'Get-M365DSCSettingCatalogTemplate',
+    'Set-M365DSCCachedSettingCatalogTemplate',
     'Get-M365DSCIntuneDeviceConfigurationSettings',
     'Get-M365DSCIntuneExpandedAssignments',
     'Get-M365DSCIntuneGroup',

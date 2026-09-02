@@ -112,4 +112,99 @@ function Remove-M365DSCProbeStage
     Remove-Item -Path $Stage.Root -Recurse -Force -ErrorAction SilentlyContinue
 }
 
-Export-ModuleMember -Function New-M365DSCProbeStage, Remove-M365DSCProbeStage
+function Write-MeasureLog
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Message,
+
+        [Parameter()]
+        [ValidateSet('Info', 'Detail', 'Success', 'Warning')]
+        [System.String]
+        $Level = 'Info'
+    )
+
+    $color = switch ($Level)
+    {
+        'Info' { 'Cyan' }
+        'Detail' { 'DarkGray' }
+        'Success' { 'Green' }
+        'Warning' { 'Yellow' }
+    }
+
+    Write-Host "[measure] $Message" -ForegroundColor $color
+}
+
+function Invoke-InFreshProcess
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('pwsh', 'powershell')]
+        [System.String]
+        $Executable,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Script
+    )
+
+    $output = & $Executable -NoProfile -NonInteractive -Command $Script 2>$null
+
+    return @($output |
+            Where-Object { $_ -is [System.String] -and $_.Trim().Length -gt 0 } |
+            ForEach-Object { $_.Trim() })
+}
+
+function Measure-Median
+{
+    [CmdletBinding()]
+    [OutputType([System.Nullable[System.Int32]])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Executable,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Script,
+
+        [Parameter(Mandatory = $true)]
+        [System.Int32]
+        $Count
+    )
+
+    $null = Invoke-InFreshProcess -Executable $Executable -Script $Script
+
+    $samples = [System.Collections.Generic.List[System.Int32]]::new()
+    for ($i = 0; $i -lt $Count; $i++)
+    {
+        $lines = @(Invoke-InFreshProcess -Executable $Executable -Script $Script)
+        $value = if ($lines.Count -gt 0) { $lines[-1] } else { $null }
+        $parsed = 0
+        if ([System.Int32]::TryParse($value, [ref] $parsed))
+        {
+            $samples.Add($parsed)
+        }
+        else
+        {
+            Write-MeasureLog "Unusable sample from ${Executable}: '$value'" -Level Warning
+        }
+    }
+
+    if ($samples.Count -eq 0)
+    {
+        return $null
+    }
+
+    $sorted = @($samples | Sort-Object)
+    return $sorted[[System.Math]::Floor($sorted.Count / 2)]
+}
+
+Export-ModuleMember -Function New-M365DSCProbeStage, Remove-M365DSCProbeStage, Write-MeasureLog, Invoke-InFreshProcess, Measure-Median

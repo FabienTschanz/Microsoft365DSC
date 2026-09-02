@@ -16,8 +16,7 @@ namespace Microsoft365DSC.Compare
     {
         private const string ClassNamePrefix = "MSFT_";
 
-        private static readonly ConditionalWeakTable<IEnumerable<object>, SchemaIndex> Indexes = [];
-
+        private static readonly ConditionalWeakTable<IEnumerable<object>, SchemaIndex> Indexes = new();
         private readonly Dictionary<string, object> _byClassName = new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, ClassDefinition> _classes = new(StringComparer.OrdinalIgnoreCase);
 

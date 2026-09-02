@@ -1234,7 +1234,8 @@ class SCSensitivityLabel : M365DSCResourceBase
     {
         return @{
             PostProcessing = {
-                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
+                $logDrift = -not [M365DSCResourceBase]::IsReportContext($PostProcessingArgs)
                 $ValuesToCheck.Remove('AdvancedSettings') | Out-Null
                 $ValuesToCheck.Remove('LocaleSettings') | Out-Null
                 $ValuesToCheck.Remove('AutoLabelingSettings') | Out-Null
@@ -1242,7 +1243,7 @@ class SCSensitivityLabel : M365DSCResourceBase
                 if ($null -ne $DesiredValues.AdvancedSettings -and $null -ne $CurrentValues.AdvancedSettings)
                 {
                     Write-Verbose -Message 'Testing AdvancedSettings'
-                    $TestAdvancedSettings = [SCSensitivityLabel]::TestAdvancedSettings($DesiredValues.AdvancedSettings, $CurrentValues.AdvancedSettings)
+                    $TestAdvancedSettings = [SCSensitivityLabel]::TestAdvancedSettings($DesiredValues.AdvancedSettings, $CurrentValues.AdvancedSettings, $logDrift)
                     if ($false -eq $TestAdvancedSettings)
                     {
                         $DesiredValues['AdvancedSettings'] = 'AdvancedSettings drift detected'
@@ -1254,7 +1255,7 @@ class SCSensitivityLabel : M365DSCResourceBase
                 if ($null -ne $DesiredValues.LocaleSettings -and $null -ne $CurrentValues.LocaleSettings)
                 {
                     Write-Verbose -Message 'Testing LocaleSettings'
-                    $localeSettingsSame = [SCSensitivityLabel]::TestLocaleSettings($DesiredValues.LocaleSettings, $CurrentValues.LocaleSettings)
+                    $localeSettingsSame = [SCSensitivityLabel]::TestLocaleSettings($DesiredValues.LocaleSettings, $CurrentValues.LocaleSettings, $logDrift)
                     if ($false -eq $localeSettingsSame)
                     {
                         $DesiredValues['LocaleSettings'] = 'LocaleSettings drift detected'
@@ -1266,11 +1267,8 @@ class SCSensitivityLabel : M365DSCResourceBase
                 if ($null -ne $DesiredValues.AutoLabelingSettings -and $null -ne $CurrentValues.AutoLabelingSettings)
                 {
                     Write-Verbose -Message 'Testing AutoLabelingSettings'
-
-                    # Convert the AutoLabelingSettings to the correct JSON format, ready to be inserted into the label cmdlets
                     $autoLabelingSettingsHT = Convert-M365DSCDRGComplexTypeToHashtable -ComplexObject $DesiredValues.AutoLabelingSettings
-
-                    $autoLabelSettingsSame = [SCSensitivityLabel]::TestAutoLabelingSettings($autoLabelingSettingsHT, $CurrentValues.AutoLabelingSettings)
+                    $autoLabelSettingsSame = [SCSensitivityLabel]::TestAutoLabelingSettings($autoLabelingSettingsHT, $CurrentValues.AutoLabelingSettings, $logDrift)
                     if ($false -eq $autoLabelSettingsSame)
                     {
                         $DesiredValues['AutoLabelingSettings'] = 'AutoLabelingSettings drift detected'
@@ -1397,50 +1395,148 @@ class SCSensitivityLabel : M365DSCResourceBase
         return $settings
     }
 
-    hidden static [System.Boolean] TestLocaleSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    hidden static [System.Boolean] HasMember([System.Object] $Object, [System.String] $Name)
     {
-        $driftedSetting = @()
-        $foundSettings = $true
-        foreach ($desiredSetting in $DesiredProperty)
+        if ($null -eq $Object)
         {
-            $foundKey = $CurrentProperty | Where-Object { $_.LocaleKey -eq $desiredSetting.localeKey }
-            foreach ($setting in $desiredSetting.LabelSettings)
+            return $false
+        }
+
+        if ($Object -is [System.Collections.IDictionary])
+        {
+            return ([System.Collections.IDictionary] $Object).Contains($Name)
+        }
+
+        return $null -ne $Object.PSObject.Properties[$Name]
+    }
+
+    hidden static [System.Boolean] IsSettingValueEqual([System.Object] $DesiredValue, [System.Object] $CurrentValue)
+    {
+        $desiredTexts = [System.Collections.Generic.List[System.String]]::new()
+        foreach ($entry in @($DesiredValue))
+        {
+            $text = [System.String] $entry
+            if ($text.Length -gt 0)
             {
-                $myLabel = $null
-                if ($null -ne $foundKey)
+                $desiredTexts.Add($text)
+            }
+        }
+
+        $currentTexts = [System.Collections.Generic.List[System.String]]::new()
+        foreach ($entry in @($CurrentValue))
+        {
+            $text = [System.String] $entry
+            if ($text.Length -gt 0)
+            {
+                $currentTexts.Add($text)
+            }
+        }
+
+        if ($desiredTexts.Count -ne $currentTexts.Count)
+        {
+            return $false
+        }
+
+        if ($desiredTexts.Count -gt 1)
+        {
+            $desiredTexts.Sort([System.StringComparer]::OrdinalIgnoreCase)
+            $currentTexts.Sort([System.StringComparer]::OrdinalIgnoreCase)
+        }
+
+        for ($index = 0; $index -lt $desiredTexts.Count; $index++)
+        {
+            if ($desiredTexts[$index] -ne $currentTexts[$index])
+            {
+                return $false
+            }
+        }
+
+        return $true
+    }
+
+    hidden static [System.Collections.Hashtable] NewMemberLookup([System.Object] $Items, [System.String] $MemberName)
+    {
+        $lookup = @{}
+        foreach ($item in @($Items))
+        {
+            if ($null -eq $item)
+            {
+                continue
+            }
+
+            $key = [System.String] $item.$MemberName
+            if (-not $lookup.ContainsKey($key))
+            {
+                $lookup[$key] = $item
+            }
+        }
+
+        return $lookup
+    }
+
+    hidden static [System.Boolean] TestLocaleSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty, [System.Boolean] $LogDrift)
+    {
+        $driftedSetting = [System.Collections.Generic.List[System.String]]::new()
+        $currentLocales = [SCSensitivityLabel]::NewMemberLookup($CurrentProperty, 'LocaleKey')
+        foreach ($desiredLocale in @($DesiredProperty))
+        {
+            if ($null -eq $desiredLocale)
+            {
+                continue
+            }
+
+            $localeKey = [System.String] $desiredLocale.LocaleKey
+            $currentSettings = @{}
+            $currentLocale = $currentLocales[$localeKey]
+            if ($null -ne $currentLocale)
+            {
+                $currentSettings = [SCSensitivityLabel]::NewMemberLookup($currentLocale.LabelSettings, 'Key')
+            }
+
+            foreach ($desiredSetting in @($desiredLocale.LabelSettings))
+            {
+                if ($null -eq $desiredSetting)
                 {
-                    if ($setting.Value -is [Array])
+                    continue
+                }
+
+                $settingKey = [System.String] $desiredSetting.Key
+                $desiredValue = $desiredSetting.Value
+                if ($desiredValue -is [System.Array])
+                {
+                    if ($desiredValue.Count -ne 1)
                     {
-                        if ($setting.Value.Count -eq 1)
-                        {
-                            $myLabel = $foundKey.LabelSettings | Where-Object { $_.Key -eq $setting.Key -and $_.Value -eq $setting.Value[0] }
-                        }
-                        else
-                        {
-                            $foundSettings = $false
-                            $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
-                        }
-                    }
-                    else
-                    {
-                        $myLabel = $foundKey.LabelSettings | Where-Object { $_.Key -eq $setting.Key -and $_.Value -eq $setting.Value }
+                        $driftedSetting.Add("$localeKey ($settingKey)")
+                        continue
                     }
 
-                    if ($null -eq $myLabel)
+                    $desiredValue = $desiredValue[0]
+                }
+
+                $desiredText = [System.String] $desiredValue
+                $found = $false
+                $currentSetting = $currentSettings[$settingKey]
+                if ($null -ne $currentSetting)
+                {
+                    foreach ($candidate in @($currentSetting.Value))
                     {
-                        $foundSettings = $false
-                        $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
+                        if ([System.String] $candidate -eq $desiredText)
+                        {
+                            $found = $true
+                            break
+                        }
                     }
                 }
-                else
+
+                if (-not $found)
                 {
-                    $foundSettings = $false
-                    $driftedSetting += "$($desiredSetting.localeKey) ($($setting.Key))"
+                    $driftedSetting.Add("$localeKey ($settingKey)")
                 }
             }
         }
 
-        if ($foundSettings -eq $false)
+        $foundSettings = $driftedSetting.Count -eq 0
+        if (-not $foundSettings -and $LogDrift)
         {
             New-M365DSCLogEntry -Message "LocaleSettings do not match: $($driftedSetting -join ', ')" `
                 -Source 'SCSensitivityLabel'
@@ -1451,126 +1547,150 @@ class SCSensitivityLabel : M365DSCResourceBase
         return $foundSettings
     }
 
-    hidden static [System.Boolean] TestAutoLabelingSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    hidden static [System.Boolean] TestAutoLabelingSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty, [System.Boolean] $LogDrift)
     {
-        $foundSettings = $true
-        $driftedSetting = New-Object System.Collections.ArrayList
+        $driftedSetting = [System.Collections.Generic.List[System.String]]::new()
 
-        if ($DesiredProperty.Operator -ne $CurrentProperty.Operator)
+        foreach ($propertyName in @('Operator', 'AutoApplyType', 'PolicyTip'))
         {
-            $null = $driftedSetting.Add("Parameter 'Operator' does not match. Current: '$($CurrentProperty.Operator)'. Desired: '$($DesiredProperty.Operator)'.")
-            $foundSettings = $false
+            if ($propertyName -eq 'PolicyTip' -and -not [SCSensitivityLabel]::HasMember($DesiredProperty, $propertyName))
+            {
+                continue
+            }
+
+            $desiredValue = $DesiredProperty.$propertyName
+            $currentValue = $CurrentProperty.$propertyName
+            if ([System.String] $desiredValue -ne [System.String] $currentValue)
+            {
+                $driftedSetting.Add("Parameter '$propertyName' does not match. Current: '$currentValue'. Desired: '$desiredValue'.")
+            }
         }
 
-        if ($DesiredProperty.AutoApplyType -ne $CurrentProperty.AutoApplyType)
-        {
-            $null = $driftedSetting.Add("Parameter 'AutoApplyType' does not match. Current: '$($CurrentProperty.AutoApplyType)'. Desired: '$($DesiredProperty.AutoApplyType)'.")
-            $foundSettings = $false
-        }
+        $desiredGroups = @($DesiredProperty.Groups)
+        $currentGroups = @($CurrentProperty.Groups)
+        $desiredGroupLookup = [SCSensitivityLabel]::NewMemberLookup($desiredGroups, 'Name')
+        $currentGroupLookup = [SCSensitivityLabel]::NewMemberLookup($currentGroups, 'Name')
 
-        if ($DesiredProperty.ContainsKey('PolicyTip') -and $DesiredProperty.PolicyTip -ne $CurrentProperty.PolicyTip)
+        foreach ($group in $desiredGroups)
         {
-            $null = $driftedSetting.Add("Parameter 'PolicyTip' does not match. Current: '$($CurrentProperty.PolicyTip)'. Desired: '$($DesiredProperty.PolicyTip)'.")
-            $foundSettings = $false
-        }
+            if ($null -eq $group)
+            {
+                continue
+            }
 
-        foreach ($group in $DesiredProperty.Groups)
-        {
-            $currentGroup = $CurrentProperty.Groups | Where-Object { $_.Name -eq $group.Name }
+            $groupName = [System.String] $group.Name
+            $currentGroup = $currentGroupLookup[$groupName]
             if ($null -eq $currentGroup)
             {
-                $null = $driftedSetting.Add("Group '$($group.Name)' not found in the current settings.")
-                $foundSettings = $false
+                $driftedSetting.Add("Group '$groupName' not found in the current settings.")
                 continue
             }
 
-            if ($group.Operator -ne $currentGroup.Operator)
+            $desiredOperator = $group.Operator
+            $currentOperator = $currentGroup.Operator
+            if ([System.String] $desiredOperator -ne [System.String] $currentOperator)
             {
-                $null = $driftedSetting.Add("Parameter 'Groups\$($group.Name)\Operator' does not match. Current: '$($currentGroup.Operator)'. Desired: '$($group.Operator)'.")
-                $foundSettings = $false
+                $driftedSetting.Add("Parameter 'Groups\$groupName\Operator' does not match. Current: '$currentOperator'. Desired: '$desiredOperator'.")
             }
 
-            foreach ($sensitiveinfotype in $group.SensitiveInformationType)
+            $currentTypes = [SCSensitivityLabel]::NewMemberLookup($currentGroup.SensitiveInformationType, 'name')
+            foreach ($sensitiveInfoType in @($group.SensitiveInformationType))
             {
-                $currentSensitiveInfoType = $currentGroup.SensitiveInformationType | Where-Object { $_.name -eq $sensitiveinfotype.name }
-                if ($null -eq $currentSensitiveInfoType)
+                if ($null -eq $sensitiveInfoType)
                 {
-                    $null = $driftedSetting.Add("Sensitive Information Type '$($sensitiveinfotype.name)' not found in the current settings for group '$($group.Name)'.")
-                    $foundSettings = $false
                     continue
                 }
 
-                if ($sensitiveinfotype.ContainsKey('confidencelevel') -and $sensitiveinfotype.confidencelevel -ne $currentSensitiveInfoType.confidencelevel)
+                $typeName = [System.String] $sensitiveInfoType.name
+                $currentType = $currentTypes[$typeName]
+                if ($null -eq $currentType)
                 {
-                    $null = $driftedSetting.Add("Parameter 'confidencelevel' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.confidencelevel)'. Desired: '$($sensitiveinfotype.confidencelevel)'.")
-                    $foundSettings = $false
+                    $driftedSetting.Add("Sensitive Information Type '$typeName' not found in the current settings for group '$groupName'.")
+                    continue
                 }
 
-                if ($sensitiveinfotype.ContainsKey('classifiertype') -and $sensitiveinfotype.classifiertype -ne $currentSensitiveInfoType.classifiertype)
+                foreach ($propertyName in @('confidencelevel', 'classifiertype', 'mincount', 'maxcount'))
                 {
-                    $null = $driftedSetting.Add("Parameter 'classifiertype' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.classifiertype)'. Desired: '$($sensitiveinfotype.classifiertype)'.")
-                    $foundSettings = $false
-                }
+                    if (-not [SCSensitivityLabel]::HasMember($sensitiveInfoType, $propertyName))
+                    {
+                        continue
+                    }
 
-                if ($sensitiveinfotype.ContainsKey('mincount') -and $sensitiveinfotype.mincount -ne $currentSensitiveInfoType.mincount)
-                {
-                    $null = $driftedSetting.Add("Parameter 'mincount' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.mincount)'. Desired: '$($sensitiveinfotype.mincount)'.")
-                    $foundSettings = $false
-                }
-
-                if ($sensitiveinfotype.ContainsKey('maxcount') -and $sensitiveinfotype.maxcount -ne $currentSensitiveInfoType.maxcount)
-                {
-                    $null = $driftedSetting.Add("Parameter 'maxcount' does not match for Sensitive Information Type '$($sensitiveinfotype.name)' in group '$($group.Name)'. Current: '$($currentSensitiveInfoType.maxcount)'. Desired: '$($sensitiveinfotype.maxcount)'.")
-                    $foundSettings = $false
+                    $desiredValue = $sensitiveInfoType.$propertyName
+                    $currentValue = $currentType.$propertyName
+                    if ([System.String] $desiredValue -ne [System.String] $currentValue)
+                    {
+                        $driftedSetting.Add("Parameter '$propertyName' does not match for Sensitive Information Type '$typeName' in group '$groupName'. Current: '$currentValue'. Desired: '$desiredValue'.")
+                    }
                 }
             }
-            foreach ($trainableClassifier in $group.TrainableClassifier)
+
+            $currentClassifiers = [SCSensitivityLabel]::NewMemberLookup($currentGroup.TrainableClassifier, 'name')
+            foreach ($trainableClassifier in @($group.TrainableClassifier))
             {
-                $currentTrainableClassifier = $currentGroup.trainableClassifier | Where-Object { $_.name -eq $trainableClassifier.name }
-                if ($null -eq $currentTrainableClassifier)
+                if ($null -eq $trainableClassifier)
                 {
-                    $null = $driftedSetting.Add("Trainable Classifier '$($trainableClassifier.name)' not found in the current settings for group '$($group.Name)'.")
-                    $foundSettings = $false
                     continue
+                }
+
+                $classifierName = [System.String] $trainableClassifier.name
+                if (-not $currentClassifiers.ContainsKey($classifierName))
+                {
+                    $driftedSetting.Add("Trainable Classifier '$classifierName' not found in the current settings for group '$groupName'.")
                 }
             }
         }
 
-        foreach ($group in $CurrentProperty.Groups)
+        foreach ($group in $currentGroups)
         {
-            $desiredGroup = $DesiredProperty.Groups | Where-Object { $_.Name -eq $group.Name }
+            if ($null -eq $group)
+            {
+                continue
+            }
+
+            $groupName = [System.String] $group.Name
+            $desiredGroup = $desiredGroupLookup[$groupName]
             if ($null -eq $desiredGroup)
             {
-                $null = $driftedSetting.Add("Group '$($group.Name)' not found in the desired settings.")
-                $foundSettings = $false
+                $driftedSetting.Add("Group '$groupName' not found in the desired settings.")
                 continue
             }
 
-            foreach ($sensitiveinfotype in $group.SensitiveInformationType)
+            $desiredTypes = [SCSensitivityLabel]::NewMemberLookup($desiredGroup.SensitiveInformationType, 'name')
+            foreach ($sensitiveInfoType in @($group.SensitiveInformationType))
             {
-                $desiredSensitiveInfoType = $desiredGroup.SensitiveInformationType | Where-Object { $_.name -eq $sensitiveinfotype.name }
-                if ($null -eq $desiredSensitiveInfoType)
+                if ($null -eq $sensitiveInfoType)
                 {
-                    $null = $driftedSetting.Add("Sensitive Information Type '$($sensitiveinfotype.name)' not found in the desired settings for group '$($group.Name)'.")
-                    $foundSettings = $false
                     continue
                 }
-            }
-            foreach ($trainableClassifier in $group.TrainableClassifier)
-            {
-                $desiredTrainableClassifier = $desiredGroup.trainableClassifier | Where-Object { $_.name -eq $trainableClassifier.name }
-                if ($null -eq $desiredTrainableClassifier)
+
+                $typeName = [System.String] $sensitiveInfoType.name
+                if (-not $desiredTypes.ContainsKey($typeName))
                 {
-                    $null = $driftedSetting.Add("Trainable Classifier '$($trainableClassifier.name)' not found in the desired settings for group '$($group.Name)'.")
-                    $foundSettings = $false
+                    $driftedSetting.Add("Sensitive Information Type '$typeName' not found in the desired settings for group '$groupName'.")
+                }
+            }
+
+            $desiredClassifiers = [SCSensitivityLabel]::NewMemberLookup($desiredGroup.TrainableClassifier, 'name')
+            foreach ($trainableClassifier in @($group.TrainableClassifier))
+            {
+                if ($null -eq $trainableClassifier)
+                {
                     continue
+                }
+
+                $classifierName = [System.String] $trainableClassifier.name
+                if (-not $desiredClassifiers.ContainsKey($classifierName))
+                {
+                    $driftedSetting.Add("Trainable Classifier '$classifierName' not found in the desired settings for group '$groupName'.")
                 }
             }
         }
 
-        if ($foundSettings -eq $false)
+        $foundSettings = $driftedSetting.Count -eq 0
+        if (-not $foundSettings -and $LogDrift)
         {
-            New-M365DSCLogEntry -Message "AutoLabelingSettings do not match: `r`n- $($driftedSetting -join '`r`n- ')" `
+            New-M365DSCLogEntry -Message "AutoLabelingSettings do not match: `r`n- $($driftedSetting -join "`r`n- ")" `
                 -Source 'SCSensitivityLabel'
         }
 
@@ -1579,65 +1699,27 @@ class SCSensitivityLabel : M365DSCResourceBase
         return $foundSettings
     }
 
-    hidden static [System.Boolean] TestAdvancedSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
+    hidden static [System.Boolean] TestAdvancedSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty, [System.Boolean] $LogDrift)
     {
-        $driftedSetting = @()
-        $foundSettings = $true
-        foreach ($desiredSetting in $DesiredProperty)
+        $driftedSetting = [System.Collections.Generic.List[System.String]]::new()
+        $currentSettings = [SCSensitivityLabel]::NewMemberLookup($CurrentProperty, 'Key')
+        foreach ($desiredSetting in @($DesiredProperty))
         {
-            $foundKey = $CurrentProperty | Where-Object { $_.Key -eq $desiredSetting.Key }
-            if ($null -ne $foundKey)
+            if ($null -eq $desiredSetting)
             {
-                if ($desiredSetting.Value -is [Array])
-                {
-                    if ($foundKey.Value -is [Array])
-                    {
-                        $diff = Compare-Object -ReferenceObject $foundKey.Value -DifferenceObject $desiredSetting.Value
-                        if ($diff.Count -ne 0)
-                        {
-                            $foundSettings = $false
-                            $driftedSetting += $desiredSetting.Key
-                        }
-                    }
-                    else
-                    {
-                        if ($desiredSetting.Value.Count -ne 1 -or `
-                                $foundKey.Value.ToString() -ne $desiredSetting.Value[0].ToString())
-                        {
-                            $foundSettings = $false
-                            $driftedSetting += $desiredSetting.Key
-                        }
-                    }
-                }
-                else
-                {
-                    if ($foundKey.Value -is [Array])
-                    {
-                        if ($foundKey.Value.Count -ne 1 -or `
-                                $foundKey.Value[0].ToString() -ne $desiredSetting.Value.ToString())
-                        {
-                            $foundSettings = $false
-                            $driftedSetting += $desiredSetting.Key
-                        }
-                    }
-                    else
-                    {
-                        if ($foundKey.Value.ToString() -ne $desiredSetting.Value.ToString())
-                        {
-                            $foundSettings = $false
-                            $driftedSetting += $desiredSetting.Key
-                        }
-                    }
-                }
+                continue
             }
-            else
+
+            $settingKey = [System.String] $desiredSetting.Key
+            $currentSetting = $currentSettings[$settingKey]
+            if ($null -eq $currentSetting -or -not [SCSensitivityLabel]::IsSettingValueEqual($desiredSetting.Value, $currentSetting.Value))
             {
-                $foundSettings = $false
-                $driftedSetting += $desiredSetting.Key
+                $driftedSetting.Add($settingKey)
             }
         }
 
-        if ($foundSettings -eq $false)
+        $foundSettings = $driftedSetting.Count -eq 0
+        if (-not $foundSettings -and $LogDrift)
         {
             New-M365DSCLogEntry -Message "AdvancedSettings do not match: $($driftedSetting -join ', ')" `
                 -Source 'SCSensitivityLabel'

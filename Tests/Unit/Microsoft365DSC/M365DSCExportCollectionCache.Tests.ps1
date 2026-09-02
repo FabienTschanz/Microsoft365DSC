@@ -321,3 +321,54 @@ Describe 'M365DSCExportCollectionCache' {
         }
     }
 }
+
+Describe 'SettingTemplateCache' {
+    BeforeAll {
+        function global:Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate
+        {
+            [CmdletBinding()]
+            param ($DeviceManagementConfigurationPolicyTemplateId, $ExpandProperty, [switch] $All)
+        }
+    }
+
+    AfterEach {
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Reset()
+    }
+
+    It 'Misses an unknown template and serves a stored one case-insensitively' {
+        $templates = $null
+        [Microsoft365DSC.Intune.SettingTemplateCache]::TryGet('abc_1', [ref] $templates) | Should -BeFalse
+
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Set('abc_1', [object[]] @(@{ Id = 'first' }))
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Set('ABC_1', [object[]] @(@{ Id = 'second' }))
+
+        [Microsoft365DSC.Intune.SettingTemplateCache]::TryGet('ABC_1', [ref] $templates) | Should -BeTrue
+        $templates[0].Id | Should -Be 'first'
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Count | Should -Be 1
+    }
+
+    It 'Ignores empty ids and null payloads' {
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Set('', [object[]] @(@{ Id = 'x' }))
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Set('abc_1', $null)
+
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Count | Should -Be 0
+    }
+
+    It 'Fetches a template once per process through Get-M365DSCSettingCatalogTemplate' {
+        Mock -CommandName Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate -ModuleName M365DSCIntuneUtil -MockWith {
+            return @(@{ Id = '0'; SettingDefinitions = @(@{ Id = 'def_1'; Name = 'one' }) })
+        }
+
+        $first = Get-M365DSCSettingCatalogTemplate -TemplateId 'tmpl_1'
+        $second = Get-M365DSCSettingCatalogTemplate -TemplateId 'tmpl_1'
+
+        Should -Invoke -CommandName Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate -ModuleName M365DSCIntuneUtil -Times 1 -Exactly
+        $first.Count | Should -Be 1
+        $first[0].SettingDefinitions[0].Id | Should -Be 'def_1'
+        [object]::ReferenceEquals($first, $second) | Should -BeTrue
+
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Reset()
+        $null = Get-M365DSCSettingCatalogTemplate -TemplateId 'tmpl_1'
+        Should -Invoke -CommandName Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate -ModuleName M365DSCIntuneUtil -Times 2 -Exactly
+    }
+}

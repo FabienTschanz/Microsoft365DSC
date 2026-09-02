@@ -330,11 +330,17 @@ class IntuneAntivirusPolicyLinux : M365DSCResourceBase
                     -All `
                     -ErrorAction Stop
             }
-            [array]$settingDefinitions = (Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate `
-                -DeviceManagementConfigurationPolicyTemplateId $getValue.TemplateReference.TemplateId `
-                -ExpandProperty 'settingDefinitions' `
-                -All `
-                -ErrorAction Stop).SettingDefinitions
+            $settingTemplates = Get-M365DSCCachedSettingCatalogTemplate -TemplateId $getValue.TemplateReference.TemplateId
+            if ($null -eq $settingTemplates)
+            {
+                $settingTemplates = [System.Object[]] @(Get-MgBetaDeviceManagementConfigurationPolicyTemplateSettingTemplate `
+                        -DeviceManagementConfigurationPolicyTemplateId $getValue.TemplateReference.TemplateId `
+                        -ExpandProperty 'settingDefinitions' `
+                        -All `
+                        -ErrorAction Stop)
+                Set-M365DSCCachedSettingCatalogTemplate -TemplateId $getValue.TemplateReference.TemplateId -Templates $settingTemplates
+            }
+            [array]$settingDefinitions = $settingTemplates.SettingDefinitions
 
             $policySettings = @{}
             $policySettings = Export-IntuneSettingCatalogPolicySettings -Settings $settings -ReturnHashtable $policySettings -AllSettingDefinitions $settingDefinitions

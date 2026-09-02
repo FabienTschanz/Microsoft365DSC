@@ -1985,6 +1985,7 @@ function Initialize-M365DSCExportCollectionCache
 
     [Microsoft365DSC.Cache.ExportCollectionCache]::Reset()
     [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
+    [Microsoft365DSC.Intune.SettingTemplateCache]::Reset()
     $Script:IntuneAssignmentFilters = $null
     [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
 }
@@ -2006,6 +2007,8 @@ function Reset-M365DSCExportCollectionCache
     {
         [Microsoft365DSC.Cache.ExportCollectionCache]::Reset()
         [Microsoft365DSC.Intune.IntuneGroupCache]::Reset()
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Reset()
+        [Microsoft365DSC.Intune.ConfigurationPolicyCache]::Reset()
     }
 }
 

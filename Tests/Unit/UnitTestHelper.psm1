@@ -30,6 +30,10 @@ function New-M365DscUnitTestHelper
     $mainModule = Join-Path -Path $moduleRoot -ChildPath "Microsoft365DSC.psd1"
     Remove-Module -Name "AzureAD" -Force -ErrorAction SilentlyContinue
     Import-Module -Name $mainModule -Global
+    if ($null -ne ('Microsoft365DSC.Intune.SettingTemplateCache' -as [System.Type]))
+    {
+        [Microsoft365DSC.Intune.SettingTemplateCache]::Reset()
+    }
 
     if ($PSBoundParameters.ContainsKey("SubModulePath") -eq $true)
     {

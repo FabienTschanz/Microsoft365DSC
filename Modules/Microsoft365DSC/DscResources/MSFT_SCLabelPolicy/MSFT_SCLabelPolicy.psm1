@@ -552,7 +552,7 @@ class SCLabelPolicy : M365DSCResourceBase
                 'RemoveModernGroupLocationException'
             )
             PostProcessing     = {
-                param($DesiredValues, $CurrentValues, $ValuesToCheck, $ignore)
+                param($DesiredValues, $CurrentValues, $ValuesToCheck, $PostProcessingArgs)
                 if ($null -ne $DesiredValues.AdvancedSettings)
                 {
                     $TestAdvancedSettings = [SCLabelPolicy]::TestAdvancedSettings($DesiredValues.AdvancedSettings, $CurrentValues.AdvancedSettings)
@@ -734,24 +734,91 @@ class SCLabelPolicy : M365DSCResourceBase
         return $desiredData
     }
 
+    hidden static [System.Boolean] IsSettingValueEqual([System.Object] $DesiredValue, [System.Object] $CurrentValue)
+    {
+        $desiredTexts = [System.Collections.Generic.List[System.String]]::new()
+        foreach ($entry in @($DesiredValue))
+        {
+            $text = [System.String] $entry
+            if ($text.Length -gt 0)
+            {
+                $desiredTexts.Add($text)
+            }
+        }
+
+        $currentTexts = [System.Collections.Generic.List[System.String]]::new()
+        foreach ($entry in @($CurrentValue))
+        {
+            $text = [System.String] $entry
+            if ($text.Length -gt 0)
+            {
+                $currentTexts.Add($text)
+            }
+        }
+
+        if ($desiredTexts.Count -ne $currentTexts.Count)
+        {
+            return $false
+        }
+
+        if ($desiredTexts.Count -gt 1)
+        {
+            $desiredTexts.Sort([System.StringComparer]::OrdinalIgnoreCase)
+            $currentTexts.Sort([System.StringComparer]::OrdinalIgnoreCase)
+        }
+
+        for ($index = 0; $index -lt $desiredTexts.Count; $index++)
+        {
+            if ($desiredTexts[$index] -ne $currentTexts[$index])
+            {
+                return $false
+            }
+        }
+
+        return $true
+    }
+
+    hidden static [System.Collections.Hashtable] NewMemberLookup([System.Object] $Items, [System.String] $MemberName)
+    {
+        $lookup = @{}
+        foreach ($item in @($Items))
+        {
+            if ($null -eq $item)
+            {
+                continue
+            }
+
+            $key = [System.String] $item.$MemberName
+            if (-not $lookup.ContainsKey($key))
+            {
+                $lookup[$key] = $item
+            }
+        }
+
+        return $lookup
+    }
+
     hidden static [System.Boolean] TestAdvancedSettings([System.Object] $DesiredProperty, [System.Object] $CurrentProperty)
     {
         $foundSettings = $true
-        foreach ($desiredSetting in $DesiredProperty)
+        $currentSettings = [SCLabelPolicy]::NewMemberLookup($CurrentProperty, 'Key')
+        foreach ($desiredSetting in @($DesiredProperty))
         {
-            $foundKey = $CurrentProperty | Where-Object -FilterScript { $_.Key -eq $desiredSetting.Key }
-            if ($null -ne $foundKey)
+            if ($null -eq $desiredSetting)
             {
-                $checkValue = $desiredSetting.Value
-                if ($checkValue.GetType().BaseType -eq 'array' -or $checkValue.GetType().Name -contains 'string[]')
-                {
-                    $checkValue = $desiredSetting.Value[0]
-                }
-                if ($foundKey.Value.ToString() -ne $checkValue.ToString())
-                {
-                    $foundSettings = $false
-                    break
-                }
+                continue
+            }
+
+            $currentSetting = $currentSettings[[System.String] $desiredSetting.Key]
+            if ($null -eq $currentSetting)
+            {
+                continue
+            }
+
+            if (-not [SCLabelPolicy]::IsSettingValueEqual($desiredSetting.Value, $currentSetting.Value))
+            {
+                $foundSettings = $false
+                break
             }
         }
 

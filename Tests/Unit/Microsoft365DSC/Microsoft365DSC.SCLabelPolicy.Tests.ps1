@@ -432,6 +432,40 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
         }
 
+        Context -Name 'AdvancedSettings comparison' -Fixture {
+            BeforeAll {
+                $postProcessing = (New-M365DSCResourceInstance -ResourceName 'SCLabelPolicy' -Property @{
+                        Name       = 'TestLabelPolicy'
+                        Credential = $Credential
+                    }).GetCompareParameters().PostProcessing
+            }
+
+            It 'Should compare array valued advanced settings as sets' {
+                $desired = @(@{ Key = 'attachmentaction'; Value = @('a', 'b') })
+                [SCLabelPolicy]::TestAdvancedSettings($desired, @(@{ Key = 'AttachmentAction'; Value = @('b', 'a') })) | Should -BeTrue
+                [SCLabelPolicy]::TestAdvancedSettings($desired, @(@{ Key = 'attachmentaction'; Value = @('a') })) | Should -BeFalse
+                [SCLabelPolicy]::TestAdvancedSettings(@(@{ Key = 'attachmentaction'; Value = [System.String[]] @('a') }), @(@{ Key = 'attachmentaction'; Value = 'a' })) | Should -BeTrue
+                [SCLabelPolicy]::TestAdvancedSettings(@(@{ Key = 'attachmentaction'; Value = 'a' }), @(@{ Key = 'attachmentaction'; Value = @('a', 'b') })) | Should -BeFalse
+            }
+
+            It 'Should ignore desired settings the current side does not carry' {
+                [SCLabelPolicy]::TestAdvancedSettings(@(@{ Key = 'missing'; Value = 'x' }), @()) | Should -BeTrue
+                [SCLabelPolicy]::TestAdvancedSettings(@(@{ Key = 'missing'; Value = 'x' }), $null) | Should -BeTrue
+            }
+
+            It 'Should flag drift through PostProcessing only when array valued advanced settings differ' {
+                $desiredValues = @{ AdvancedSettings = @(@{ Key = 'attachmentaction'; Value = @('a', 'b') }) }
+                $currentValues = @{ AdvancedSettings = @(@{ Key = 'attachmentaction'; Value = @('a') }) }
+                $drifted = $postProcessing.Invoke($desiredValues, $currentValues, $desiredValues.Clone(), @(@{ IsReport = $true }))
+                $drifted.Item3.AdvancedSettings | Should -Be 'AdvancedSettings drift detected'
+
+                $desiredValues = @{ AdvancedSettings = @(@{ Key = 'attachmentaction'; Value = @('a', 'b') }) }
+                $currentValues = @{ AdvancedSettings = @(@{ Key = 'attachmentaction'; Value = @('b', 'a') }) }
+                $matching = $postProcessing.Invoke($desiredValues, $currentValues, $desiredValues.Clone(), @())
+                $matching.Item3.ContainsKey('AdvancedSettings') | Should -BeFalse
+            }
+        }
+
         Context -Name 'ReverseDSC Tests' -Fixture {
             BeforeAll {
                 $Global:CurrentModeIsExport = $true
