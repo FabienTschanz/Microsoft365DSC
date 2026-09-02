@@ -73,7 +73,7 @@
       "latestPublished": null
     },
     "DSCParser": {
-      "pinned": "3.1.0.3",
+      "pinned": "3.1.0.4",
       "manifests": [
         "Manifest"
       ],
@@ -99937,7 +99937,7 @@
     "ConvertTo-DSCObject": {
       "workload": "Support",
       "module": "DSCParser",
-      "moduleVersion": "3.1.0.3",
+      "moduleVersion": "3.1.0.4",
       "apiVersion": null,
       "variants": [],
       "parameters": {
