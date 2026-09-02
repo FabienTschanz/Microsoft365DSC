@@ -1280,11 +1280,6 @@ function New-M365DSCDeltaReport
     Confirm-M365DSCDependencies
     Initialize-M365DSCDllLoader -ErrorAction Stop
 
-    if ($null -eq (Get-Module -Name 'M365DSCCompare'))
-    {
-        Import-Module -Name "$PSScriptRoot\M365DSCCompare.psm1" -Force
-    }
-
     #region Telemetry
     $data = [System.Collections.Generic.Dictionary[[System.String], [System.Object]]]::new()
     $data.Add('Event', 'DeltaReport')
@@ -1473,6 +1468,12 @@ function New-M365DSCDeltaReport
                 continue
             }
 
+            $schemaEntry = [Microsoft365DSC.Cache.CacheManager]::FilterLoadedCimClassesByName("MSFT_$resourceName")
+            if ($null -eq $schemaEntry -or -not $schemaEntry['HasPostProcessing'])
+            {
+                continue
+            }
+
             try
             {
                 $customCompareParams = Get-M365DSCResourceComparisonParameters -ResourceName $resourceName
@@ -1639,39 +1640,25 @@ function New-M365DSCDeltaReport
         if ($resourcesInDrift.Count -gt 0)
         {
             # Combine resources instances together to make sure multiple drifts within the same resource don't appear as separate entries
-            $combinedResourcesInDrift = [System.Collections.Generic.List[System.Object]]::new()
+            $combinedResourcesInDrift = [System.Collections.Generic.LinkedList[System.Object]]::new()
+            $nodesByInstance = [System.Collections.Generic.Dictionary[System.String, System.Collections.Generic.LinkedListNode[System.Object]]]::new([System.StringComparer]::OrdinalIgnoreCase)
             foreach ($resource in $resourcesInDrift)
             {
-                $existingInstance = $combinedResourcesInDrift | `
-                    Where-Object -FilterScript {
-                        $_.ResourceName -eq $resource.ResourceName -and `
-                        $_.ResourceInstanceName -eq $resource.ResourceInstanceName
-                    }
-                if ($null -ne $existingInstance)
+                $instanceKey = "$($resource.ResourceName)|$($resource.ResourceInstanceName)"
+                $existingNode = $null
+                if ($nodesByInstance.TryGetValue($instanceKey, [ref] $existingNode))
                 {
-                    # Loop through all entries in the combinedResourcesInDrift and remove the entry for the current resource.
-                    $foundAt = -1
-                    for ($i = 0; $i -lt $combinedResourcesInDrift.Count; $i++)
-                    {
-                        if ($combinedResourcesInDrift[$i].ResourceName -eq $resource.ResourceName -and `
-                                $combinedResourcesInDrift[$i].ResourceInstanceName -eq $resource.ResourceInstanceName)
-                        {
-                            $foundAt = $i
-                            break
-                        }
-                    }
-                    $combinedResourcesInDrift = [System.Collections.Generic.List[System.Object]]$combinedResourcesInDrift
-                    $combinedResourcesInDrift.RemoveAt($foundAt)
-
+                    $existingInstance = $existingNode.Value
+                    $combinedResourcesInDrift.Remove($existingNode)
                     $existingInstance.Properties += $resource.Properties
-                    $combinedResourcesInDrift += $existingInstance
+                    $nodesByInstance[$instanceKey] = $combinedResourcesInDrift.AddLast($existingInstance)
                 }
                 else
                 {
-                    $combinedResourcesInDrift += $resource
+                    $nodesByInstance[$instanceKey] = $combinedResourcesInDrift.AddLast($resource)
                 }
             }
-            $resourcesInDrift = $combinedResourcesInDrift
+            $resourcesInDrift = @($combinedResourcesInDrift)
 
             [void]$reportSB.AppendLine('<br /><hr /><br />')
             [void]$reportSB.AppendLine("<a id='Drift'></a><h2>Resources with differences</h2>")

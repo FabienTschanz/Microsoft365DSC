@@ -57,13 +57,6 @@ namespace Microsoft365DSC.Relations
         ];
 
         /// <summary>
-        /// Authentication properties, which the stub emits from the connection mode rather
-        /// than from the resource's mandatory properties.
-        /// </summary>
-        private static readonly HashSet<string> AllAuthenticationProperties =
-            new(Utilities.Utilities.AuthenticationPropertyNames, StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
         /// Rewrites exported content with DependsOn declarations and dependency stubs.
         /// </summary>
         /// <param name="content">The concatenated resource blocks.</param>
@@ -417,8 +410,8 @@ namespace Microsoft365DSC.Relations
                 return true;
             }
 
-            return authenticationProperties.Any(p => string.Equals(p, name, StringComparison.OrdinalIgnoreCase)) ||
-                AllAuthenticationProperties.Contains(name);
+            return Utilities.Utilities.IsAuthenticationProperty(name) ||
+                authenticationProperties.Any(p => string.Equals(p, name, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

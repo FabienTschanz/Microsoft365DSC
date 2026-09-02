@@ -237,6 +237,11 @@ namespace Microsoft365DSC.Intune
         /// </summary>
         private static string? FindKeyIgnoreCase(Hashtable hashtable, string key)
         {
+            if (hashtable.ContainsKey(key))
+            {
+                return key;
+            }
+
             foreach (var k in hashtable.Keys)
             {
                 if (string.Equals(k?.ToString(), key, StringComparison.OrdinalIgnoreCase))

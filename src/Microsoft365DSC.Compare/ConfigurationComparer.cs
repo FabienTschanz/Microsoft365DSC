@@ -18,10 +18,7 @@ namespace Microsoft365DSC.Compare
         public const string PresenceMarker = "_IsInConfiguration_";
 
         private static readonly string[] AlwaysExcludedProperties =
-        [
-            "ResourceInstanceName", "Credential", "ManagedIdentity", "ApplicationId", "TenantId",
-            "CertificatePath", "CertificatePassword", "CertificateThumbprint", "ApplicationSecret"
-        ];
+            [.. Microsoft365DSC.Utilities.Utilities.AuthenticationPropertyNames.Prepend("ResourceInstanceName")];
 
         /// <summary>
         /// Compares a source configuration against a destination configuration.
@@ -52,7 +49,8 @@ namespace Microsoft365DSC.Compare
             if (schema is null)
                 throw new ArgumentNullException(nameof(schema));
 
-            SchemaIndex index = SchemaIndex.Create(schema);
+            SchemaIndex index = SchemaIndex.For(schema);
+            Dictionary<string, string[]> keysByResource = new(StringComparer.OrdinalIgnoreCase);
 
             var excludedResourceSet = new HashSet<string>(
                 excludedResources ?? [], StringComparer.OrdinalIgnoreCase);
@@ -64,36 +62,134 @@ namespace Microsoft365DSC.Compare
 
             List<ConfigurationDelta> delta = [];
 
+            List<KeyedInstance> sources = new(sourceResources.Count);
             foreach (Hashtable resource in sourceResources)
             {
-                string resourceName = resource["ResourceName"]?.ToString() ?? string.Empty;
-                string[] keys = ResourceKeyResolver.Resolve(resource, index);
+                sources.Add(KeyedInstance.From(resource, index, keysByResource));
+            }
 
-                Hashtable? match = FindCounterpart(destinationResources, resource, resourceName, keys);
-                string keyName = KeyName(keys);
-                string keyValue = KeyValue(resource, keys);
-
-                if (match is null)
+            List<KeyedInstance> destinations = new(destinationResources.Count);
+            Dictionary<InstanceKey, Hashtable> firstDestinationByKey = [];
+            foreach (Hashtable resource in destinationResources)
+            {
+                KeyedInstance instance = KeyedInstance.From(resource, index, keysByResource);
+                destinations.Add(instance);
+                if (instance.Key is { } key && !firstDestinationByKey.ContainsKey(key))
                 {
-                    delta.Add(Presence(resource, keyName, keyValue, inSource: "Present", inDestination: "Absent"));
+                    firstDestinationByKey[key] = resource;
+                }
+            }
+
+            HashSet<InstanceKey> sourceKeys = [];
+            foreach (KeyedInstance sourceInstance in sources)
+            {
+                if (sourceInstance.Key is { } key)
+                {
+                    sourceKeys.Add(key);
+                }
+
+                string keyName = KeyName(sourceInstance.Keys);
+                string keyValue = KeyValue(sourceInstance.Resource, sourceInstance.Keys);
+
+                if (sourceInstance.Key is null || !firstDestinationByKey.TryGetValue(sourceInstance.Key.Value, out Hashtable? match))
+                {
+                    delta.Add(Presence(sourceInstance.Resource, keyName, keyValue, inSource: "Present", inDestination: "Absent"));
                     continue;
                 }
 
-                AddPropertyDeltas(delta, resource, match, resourceName, keyName, keyValue, index, globalExclusions, compareParameters);
+                AddPropertyDeltas(delta, sourceInstance.Resource, match, sourceInstance.ResourceName, keyName, keyValue, index, globalExclusions, compareParameters);
             }
 
-            foreach (Hashtable resource in destinationResources)
+            foreach (KeyedInstance destinationInstance in destinations)
             {
-                string resourceName = resource["ResourceName"]?.ToString() ?? string.Empty;
-                string[] keys = ResourceKeyResolver.Resolve(resource, index);
-
-                if (FindCounterpart(sourceResources, resource, resourceName, keys) is null)
+                if (destinationInstance.Key is null || !sourceKeys.Contains(destinationInstance.Key.Value))
                 {
-                    delta.Add(Presence(resource, KeyName(keys), KeyValue(resource, keys), inSource: "Absent", inDestination: "Present"));
+                    delta.Add(Presence(destinationInstance.Resource, KeyName(destinationInstance.Keys), KeyValue(destinationInstance.Resource, destinationInstance.Keys), inSource: "Absent", inDestination: "Present"));
                 }
             }
 
             return delta;
+        }
+
+        private sealed class KeyedInstance
+        {
+            private KeyedInstance(Hashtable resource, string resourceName, string[] keys, InstanceKey? key)
+            {
+                Resource = resource;
+                ResourceName = resourceName;
+                Keys = keys;
+                Key = key;
+            }
+
+            public Hashtable Resource { get; }
+
+            public string ResourceName { get; }
+
+            public string[] Keys { get; }
+
+            public InstanceKey? Key { get; }
+
+            public static KeyedInstance From(Hashtable resource, SchemaIndex index, Dictionary<string, string[]> keysByResource)
+            {
+                string resourceName = resource["ResourceName"]?.ToString() ?? string.Empty;
+                string[] keys = ResourceKeyResolver.Resolve(resource, index, keysByResource);
+                InstanceKey? key = keys.Length == 0 ? null : InstanceKey.From(resource, resourceName, keys);
+                return new KeyedInstance(resource, resourceName, keys, key);
+            }
+        }
+
+        private readonly struct InstanceKey : IEquatable<InstanceKey>
+        {
+            private readonly string _resourceName;
+            private readonly string?[] _values;
+
+            private InstanceKey(string resourceName, string?[] values)
+            {
+                _resourceName = resourceName;
+                _values = values;
+            }
+
+            public static InstanceKey From(Hashtable resource, string resourceName, string[] keys)
+            {
+                string?[] values = new string?[keys.Length];
+                for (int i = 0; i < keys.Length; i++)
+                {
+                    values[i] = resource[keys[i]]?.ToString();
+                }
+
+                return new InstanceKey(resourceName, values);
+            }
+
+            public bool Equals(InstanceKey other)
+            {
+                if (!string.Equals(_resourceName, other._resourceName, StringComparison.Ordinal) || _values.Length != other._values.Length)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < _values.Length; i++)
+                {
+                    if (!string.Equals(_values[i], other._values[i], StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public override bool Equals(object? obj) => obj is InstanceKey other && Equals(other);
+
+            public override int GetHashCode()
+            {
+                int hash = StringComparer.Ordinal.GetHashCode(_resourceName);
+                foreach (string? value in _values)
+                {
+                    hash = unchecked((hash * 31) + (value is null ? 0 : StringComparer.Ordinal.GetHashCode(value)));
+                }
+
+                return hash;
+            }
         }
 
         private static void AddPropertyDeltas(
@@ -119,6 +215,8 @@ namespace Microsoft365DSC.Compare
 
             if (overrides?.PostProcessing is { } postProcessing)
             {
+                desiredValues = (Hashtable)destination.Clone();
+                currentValues = (Hashtable)source.Clone();
                 Tuple<Hashtable, Hashtable, Hashtable>? processed = postProcessing(
                     desiredValues, currentValues, valuesToCheck, overrides.PostProcessingArgs ?? []);
 
@@ -134,7 +232,7 @@ namespace Microsoft365DSC.Compare
                 desiredValues,
                 currentValues,
                 valuesToCheck,
-                index.Schema,
+                index,
                 resourceName,
                 excluded,
                 overrides?.IncludedProperties);
@@ -201,29 +299,6 @@ namespace Microsoft365DSC.Compare
             }
 
             return index.GetCompareParameters(resourceName);
-        }
-
-        /// <summary>
-        /// Finds the instance of the same resource carrying the same key values, or null.
-        /// </summary>
-        private static Hashtable? FindCounterpart(
-            List<Hashtable> candidates, Hashtable resource, string resourceName, string[] keys)
-        {
-            if (keys.Length == 0)
-            {
-                return null;
-            }
-
-            List<Hashtable> matches = Microsoft365DSC.Utilities.Utilities.FilterHashtablesByResourceAndKey(
-                candidates, resourceName, keys[0], resource[keys[0]]?.ToString());
-
-            for (int i = 1; i < keys.Length && matches.Count > 0; i++)
-            {
-                string? expected = resource[keys[i]]?.ToString();
-                matches = [.. matches.Where(candidate => candidate[keys[i]]?.ToString() == expected)];
-            }
-
-            return matches.Count > 0 ? matches[0] : null;
         }
 
         private static ConfigurationDelta Presence(

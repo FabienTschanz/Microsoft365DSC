@@ -1,30 +1,28 @@
 using Microsoft365DSC.Utilities;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft365DSC.Compare
 {
     /// <summary>
-    /// Random access over a deserialized SchemaDefinition.json, so a comparison of two whole
-    /// configurations does not rescan the schema array once per resource instance.
+    /// Random access over a deserialized SchemaDefinition.json. One index is built per schema list
+    /// and shared by every comparison that receives that same list.
     /// </summary>
     internal sealed class SchemaIndex
     {
-        private readonly Dictionary<string, object> _byClassName = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, MandatoryParameters> _mandatory = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, string[]> _keys = new(StringComparer.OrdinalIgnoreCase);
+        private const string ClassNamePrefix = "MSFT_";
 
-        /// <summary>
-        /// The schema as handed in, for the calls that scan it themselves.
-        /// </summary>
-        public IEnumerable<object> Schema { get; }
+        private static readonly ConditionalWeakTable<IEnumerable<object>, SchemaIndex> Indexes = [];
+
+        private readonly Dictionary<string, object> _byClassName = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, ClassDefinition> _classes = new(StringComparer.OrdinalIgnoreCase);
 
         private SchemaIndex(IEnumerable<object> schema)
         {
-            Schema = schema;
-
             foreach (object entry in schema)
             {
                 string? className = MemberAccessor.GetMemberAsString(entry, "ClassName");
@@ -35,74 +33,41 @@ namespace Microsoft365DSC.Compare
             }
         }
 
-        public static SchemaIndex Create(IEnumerable<object> schema)
+        public static SchemaIndex For(IEnumerable<object> schema)
         {
-            return schema is null ? throw new ArgumentNullException(nameof(schema)) : new SchemaIndex(schema);
+            if (schema is null)
+            {
+                throw new ArgumentNullException(nameof(schema));
+            }
+
+            return Indexes.GetValue(schema, static s => new SchemaIndex(s));
         }
 
-        /// <summary>
-        /// The names of the parameters a resource declares as Key or Required, in schema order.
-        /// Empty when the resource is not in the schema.
-        /// </summary>
+        public bool TryGetClass(string? className, out ClassDefinition definition)
+        {
+            definition = null!;
+            if (string.IsNullOrEmpty(className) || !_byClassName.TryGetValue(className!, out object entry))
+            {
+                return false;
+            }
+
+            definition = _classes.GetOrAdd(className!, name => ClassDefinition.From(name, entry));
+            return true;
+        }
+
+        public bool TryGetResource(string resourceName, out ClassDefinition definition)
+        {
+            return TryGetClass(ClassNamePrefix + resourceName, out definition);
+        }
+
         public MandatoryParameters GetMandatory(string resourceName)
         {
-            if (_mandatory.TryGetValue(resourceName, out MandatoryParameters cached))
-            {
-                return cached;
-            }
-
-            List<string> names = [];
-
-            if (_byClassName.TryGetValue("MSFT_" + resourceName, out object? definition) &&
-                MemberAccessor.TryGetMember(definition, "Parameters", out object? parameters))
-            {
-                foreach (object parameter in AsSequence(parameters))
-                {
-                    string? option = MemberAccessor.GetMemberAsString(parameter, "Option");
-                    if (!string.Equals(option, "Key", StringComparison.OrdinalIgnoreCase) &&
-                        !string.Equals(option, "Required", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    string? name = MemberAccessor.GetMemberAsString(parameter, "Name");
-                    if (!string.IsNullOrEmpty(name))
-                    {
-                        names.Add(name!);
-                    }
-                }
-            }
-
-            MandatoryParameters result = new(names);
-            _mandatory[resourceName] = result;
-            return result;
+            return TryGetResource(resourceName, out ClassDefinition definition) ? definition.Mandatory : MandatoryParameters.Empty;
         }
 
-        /// <summary>
-        /// The key property names resolved for a resource, computed once per comparison.
-        /// </summary>
-        /// <remarks>
-        /// The first instance of a resource decides the key for every later instance of it. Two
-        /// instances of the same resource must be keyed the same way or they cannot be paired
-        /// against a single destination lookup.
-        /// </remarks>
-        public string[] GetKeys(string resourceName, Func<string[]> resolve)
-        {
-            if (!_keys.TryGetValue(resourceName, out string[] keys))
-            {
-                keys = resolve();
-                _keys[resourceName] = keys;
-            }
-
-            return keys;
-        }
-
-        /// <summary>
-        /// The compare parameters a resource declares in the schema, or null when it declares none.
-        /// </summary>
         public ResourceCompareParameters? GetCompareParameters(string resourceName)
         {
-            if (!_byClassName.TryGetValue("MSFT_" + resourceName, out object? definition) ||
+            if (!_byClassName.TryGetValue(ClassNamePrefix + resourceName, out object? definition) ||
                 !MemberAccessor.TryGetMember(definition, "CompareParameters", out object? declared) ||
                 declared is null)
             {
@@ -135,7 +100,7 @@ namespace Microsoft365DSC.Compare
             return result.Count == 0 ? null : [.. result];
         }
 
-        private static IEnumerable<object> AsSequence(object? value)
+        internal static IEnumerable<object> AsSequence(object? value)
         {
             return value switch
             {
@@ -148,14 +113,105 @@ namespace Microsoft365DSC.Compare
         }
     }
 
-    /// <summary>
-    /// The Key and Required parameters of one resource, with membership lookup.
-    /// </summary>
-    internal readonly struct MandatoryParameters(List<string> names)
+    internal sealed class ClassDefinition
     {
-        private readonly HashSet<string> _lookup = new(names, StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ParameterDefinition> _parameters;
 
-        public List<string> Names { get; } = names;
+        private ClassDefinition(string className, Dictionary<string, ParameterDefinition> parameters, MandatoryParameters mandatory)
+        {
+            ClassName = className;
+            _parameters = parameters;
+            Mandatory = mandatory;
+        }
+
+        public string ClassName { get; }
+
+        public MandatoryParameters Mandatory { get; }
+
+        public bool TryGetParameter(string name, out ParameterDefinition parameter)
+        {
+            return _parameters.TryGetValue(name, out parameter);
+        }
+
+        public static ClassDefinition From(string className, object entry)
+        {
+            Dictionary<string, ParameterDefinition> parameters = new(StringComparer.OrdinalIgnoreCase);
+            List<string> mandatory = [];
+
+            if (MemberAccessor.TryGetMember(entry, "Parameters", out object? declared))
+            {
+                foreach (object parameter in SchemaIndex.AsSequence(declared))
+                {
+                    string? name = MemberAccessor.GetMemberAsString(parameter, "Name");
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        continue;
+                    }
+
+                    ParameterDefinition definition = new(
+                        name!,
+                        MemberAccessor.GetMemberAsString(parameter, "CIMType"),
+                        MemberAccessor.GetMemberAsString(parameter, "Option"));
+                    parameters[name!] = definition;
+
+                    if (definition.IsKey || definition.IsRequired)
+                    {
+                        mandatory.Add(name!);
+                    }
+                }
+            }
+
+            return new ClassDefinition(className, parameters, new MandatoryParameters(mandatory));
+        }
+    }
+
+    internal sealed class ParameterDefinition
+    {
+        private const string ComplexTypeMarker = "MSFT_";
+        private const string ArraySuffix = "[]";
+
+        public ParameterDefinition(string name, string? cimType, string? option)
+        {
+            Name = name;
+            CimType = cimType;
+            Option = option;
+            IsKey = string.Equals(option, "Key", StringComparison.OrdinalIgnoreCase);
+            IsRequired = string.Equals(option, "Required", StringComparison.OrdinalIgnoreCase);
+            IsCredential = string.Equals(cimType, "PSCredential", StringComparison.OrdinalIgnoreCase);
+            IsComplex = cimType?.IndexOf(ComplexTypeMarker, StringComparison.OrdinalIgnoreCase) > -1;
+            ElementClassName = cimType?.Replace(ArraySuffix, string.Empty) ?? string.Empty;
+        }
+
+        public string Name { get; }
+
+        public string? CimType { get; }
+
+        public string? Option { get; }
+
+        public bool IsKey { get; }
+
+        public bool IsRequired { get; }
+
+        public bool IsCredential { get; }
+
+        public bool IsComplex { get; }
+
+        public string ElementClassName { get; }
+    }
+
+    internal readonly struct MandatoryParameters
+    {
+        private readonly HashSet<string> _lookup;
+
+        public MandatoryParameters(List<string> names)
+        {
+            Names = names;
+            _lookup = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public static MandatoryParameters Empty { get; } = new([]);
+
+        public List<string> Names { get; }
 
         public int Count => Names.Count;
 

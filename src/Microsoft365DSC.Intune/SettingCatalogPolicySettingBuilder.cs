@@ -70,7 +70,7 @@ namespace Microsoft365DSC.Intune
             // Collect all definitions across all templates
             List<SettingDefinitionInfo> allDefinitions = settingTemplates.SelectMany(t => t.SettingDefinitions).ToList();
             List<Hashtable> settingInstances = [];
-            List<string> processedSettingDefinitionIds = [];
+            HashSet<string> processedSettingDefinitionIds = new(StringComparer.Ordinal);
 
             foreach (var settingTemplate in settingTemplates)
             {
@@ -280,6 +280,7 @@ namespace Microsoft365DSC.Intune
             string cimParamName = null;
             Hashtable effectiveDscParams = dscParams;
             List<SettingDefinitionInfo> effectiveAllDefinitions = allDefinitions;
+            string childInstanceName = settingInstanceName;
 
             // Multi-instance detection
             bool isMultiInstance =
@@ -291,6 +292,7 @@ namespace Microsoft365DSC.Intune
             {
                 string settingName = SettingsCatalogHelper.GetSettingName(settingDefinition, allDefinitions);
                 string fullClassName = settingInstanceName + settingName;
+                childInstanceName = fullClassName;
 
                 var (paramName, cimInstances) = FindCimInstancesByClassName(dscParams, fullClassName);
                 cimParamName = paramName;
@@ -353,7 +355,7 @@ namespace Microsoft365DSC.Intune
                         childSettingValueName,
                         childSettingValueType,
                         childValueTemplateId,
-                        settingInstanceName + (isMultiInstance ? SettingsCatalogHelper.GetSettingName(settingDefinition, allDefinitions) : string.Empty),
+                        childInstanceName,
                         level + 1);
 
                     if (childValue is null || childValue.Count == 0)
@@ -711,11 +713,7 @@ namespace Microsoft365DSC.Intune
             List<SettingDefinitionInfo> definitions,
             string parentSettingId)
         {
-            return definitions
-                .Where(d =>
-                    (d.DependentOnParentSettingIds.Count > 0 && d.DependentOnParentSettingIds.Contains(parentSettingId)) ||
-                    (d.OptionsDependentOnParentSettingIds.Count > 0 && d.OptionsDependentOnParentSettingIds.Contains(parentSettingId)))
-                .ToList();
+            return SettingsCatalogHelper.DefinitionLookups.For(definitions).ChildrenOf(parentSettingId);
         }
 
         /// <summary>

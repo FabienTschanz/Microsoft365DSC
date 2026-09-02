@@ -18,6 +18,19 @@ namespace Microsoft365DSC.Utilities
             "CertificatePath", "CertificatePassword", "ManagedIdentity", "AccessTokens"
         ];
 
+        private static readonly HashSet<string> AuthenticationPropertySet =
+            new(AuthenticationPropertyNames, StringComparer.OrdinalIgnoreCase);
+
+        public static bool IsAuthenticationProperty(string name)
+        {
+            return AuthenticationPropertySet.Contains(name);
+        }
+
+        public static string NormalizeLineEndings(string text)
+        {
+            return text.IndexOf('\r') < 0 ? text : text.Replace("\r\n", "\n");
+        }
+
         /// <summary>
         /// Method to update special characters in strings.
         /// This method handles the conversion of special characters similar to Update-M365DSCSpecialCharacters.

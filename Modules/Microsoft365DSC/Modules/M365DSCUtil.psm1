@@ -644,7 +644,8 @@ function Test-M365DSCTargetResource
         -ExcludedProperties $ExcludedProperties `
         -IncludedProperties $IncludedProperties `
         -PostProcessing $PostProcessing `
-        -PostProcessingArgs $PostProcessingArgs
+        -PostProcessingArgs $PostProcessingArgs `
+        -Verbose:$VerbosePreference
 
     if (-not $testTargetResource)
     {

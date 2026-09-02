@@ -39,8 +39,7 @@ namespace Microsoft365DSC.Converter
                 obj = psObject.BaseObject;
             }
 
-            // Primitives and well-known leaf types: return directly
-            if (IsLeafType(obj))
+            if (ValueClassifier.IsLeaf(obj))
                 return obj;
 
             // Arrays (including CimInstance[], object[], string[]): normalize each element
@@ -55,7 +54,7 @@ namespace Microsoft365DSC.Converter
             // model. Both decompose by reflection. The test is deliberately narrow rather than
             // "any object with properties", so Uri, Version, PSCredential and the like keep their
             // leaf behaviour.
-            if (IsReflectableComplexType(obj.GetType()))
+            if (ValueClassifier.IsReflectableComplex(obj.GetType()))
                 return ComplexObjectConverter.ToHashtable(obj);
 
             // IEnumerable but not primitive/array/dictionary: treat as array
@@ -65,52 +64,6 @@ namespace Microsoft365DSC.Converter
 
             // Truly unknown leaf: return as-is (ToString will be used downstream)
             return obj;
-        }
-
-        /// <summary>
-        /// Returns true if the object is a leaf type that should not be decomposed further.
-        /// </summary>
-        private static bool IsLeafType(object obj)
-        {
-            if (obj is null)
-                return true;
-
-            Type type = obj.GetType();
-
-            // All .NET primitive types (bool, int, long, double, etc.)
-            if (type.IsPrimitive)
-                return true;
-
-            // Common non-primitive leaf types
-            if (type == typeof(string) ||
-                type == typeof(DateTime) ||
-                type == typeof(DateTimeOffset) ||
-                type == typeof(decimal) ||
-                type == typeof(Guid) ||
-                type == typeof(TimeSpan))
-                return true;
-
-            // Enum values are leaf types
-            if (type.IsEnum)
-                return true;
-
-            // SwitchParameter from PowerShell
-            if (type == typeof(SwitchParameter))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Returns true if the type is a complex type whose state must be read by reflection:
-        /// a PowerShell-defined class (PowerShell classes have no namespace) or a Graph SDK model.
-        /// </summary>
-        private static bool IsReflectableComplexType(Type type)
-        {
-            if (type.Namespace is null)
-                return true;
-
-            return type.FullName?.StartsWith("Microsoft.Graph.", StringComparison.OrdinalIgnoreCase) == true;
         }
 
         /// <summary>

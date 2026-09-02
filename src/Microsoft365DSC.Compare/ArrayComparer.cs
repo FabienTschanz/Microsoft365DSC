@@ -15,8 +15,8 @@ namespace Microsoft365DSC.Compare
                 throw new ArgumentException("Both currentValue and desiredValue must be of type Array and cannot be null.");
             }
 
-            object[] currentObjects = Utilities.Utilities.UnwrapArray(currentArray).Cast<object>().ToArray();
-            object[] desiredObjects = Utilities.Utilities.UnwrapArray(desiredArray).Cast<object>().ToArray();
+            object[] currentObjects = (object[])Utilities.Utilities.UnwrapArray(currentArray);
+            object[] desiredObjects = (object[])Utilities.Utilities.UnwrapArray(desiredArray);
 
             if (currentObjects.Length == 0 && desiredObjects.Length == 0)
             {
@@ -53,6 +53,16 @@ namespace Microsoft365DSC.Compare
             }
 
             return compareResults;
+        }
+
+        public static string FormatValues(Array values)
+        {
+            return string.Join(", ", Utilities.Utilities.UnwrapArrayToStrings(values));
+        }
+
+        public static string FormatDelta(List<CompareObjectModel> differences)
+        {
+            return string.Join("; ", differences.Select(difference => $"{difference.SideIndicator} {difference.InputObject}"));
         }
 
         private static HashSet<string> ToKeySet(object[] items)

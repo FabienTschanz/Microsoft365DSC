@@ -26,10 +26,10 @@ namespace Microsoft365DSC.Compare
         /// <returns>The key property names, or an empty array when the resource declares none.</returns>
         public static string[] Resolve(Hashtable resource, IEnumerable<object> schema)
         {
-            return Resolve(resource, SchemaIndex.Create(schema));
+            return Resolve(resource, SchemaIndex.For(schema), new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase));
         }
 
-        internal static string[] Resolve(Hashtable resource, SchemaIndex schema)
+        internal static string[] Resolve(Hashtable resource, SchemaIndex schema, Dictionary<string, string[]> keysByResource)
         {
             string? resourceName = resource["ResourceName"]?.ToString();
             if (string.IsNullOrEmpty(resourceName))
@@ -37,7 +37,13 @@ namespace Microsoft365DSC.Compare
                 return [];
             }
 
-            return schema.GetKeys(resourceName!, () => ResolveUncached(resource, resourceName!, schema));
+            if (!keysByResource.TryGetValue(resourceName!, out string[] keys))
+            {
+                keys = ResolveUncached(resource, resourceName!, schema);
+                keysByResource[resourceName!] = keys;
+            }
+
+            return keys;
         }
 
         private static string[] ResolveUncached(Hashtable resource, string resourceName, SchemaIndex schema)
@@ -122,7 +128,6 @@ namespace Microsoft365DSC.Compare
 
             if (resourceName == "EXOTenantAllowBlockListItems")
             {
-                // Mandatory but not identifying, the same list entry exists per action.
                 List<string> names = [];
                 foreach (string name in mandatory.Names)
                 {
@@ -148,7 +153,6 @@ namespace Microsoft365DSC.Compare
                 case "IntuneDeviceEnrollmentPlatformRestriction" when HasKeyLike(resource, "Restriction"):
                     return ["ResourceInstanceName"];
 
-                // A channel display name is unique within its team, not within the tenant.
                 case "TeamsChannel" when HasValue(resource, "TeamName"):
                     return ["TeamName", "DisplayName"];
 

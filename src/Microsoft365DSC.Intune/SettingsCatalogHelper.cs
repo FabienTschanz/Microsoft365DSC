@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Microsoft365DSC.Intune
@@ -387,12 +389,15 @@ namespace Microsoft365DSC.Intune
         /// </summary>
         public static string GetSettingName(SettingDefinitionInfo settingDefinition, List<SettingDefinitionInfo> allSettingDefinitions)
         {
-            // Remove invalid characters and replace spaces with underscores
-            string settingName = Regex.Replace(settingDefinition.Name, @"[\{\}\$]", "");
-            settingName = settingName.Replace(' ', '_');
-            settingName = settingName.Replace("/", "_");
+            DefinitionLookups lookups = DefinitionLookups.For(allSettingDefinitions);
+            return lookups.ResolveName(settingDefinition, definition => ResolveSettingName(definition, allSettingDefinitions, lookups));
+        }
 
-            var settingsWithSameName = DefinitionLookups.For(allSettingDefinitions).ByName(settingName);
+        private static string ResolveSettingName(SettingDefinitionInfo settingDefinition, List<SettingDefinitionInfo> allSettingDefinitions, DefinitionLookups lookups)
+        {
+            string settingName = SanitizeSettingName(settingDefinition.Name);
+
+            var settingsWithSameName = lookups.ByName(settingName);
 
             // Edge case where the same setting is defined twice with identical name and id
             // Example is RDVAllowBDE_Name from the IntuneDiskEncryptionWindows10 resource
@@ -481,11 +486,33 @@ namespace Microsoft365DSC.Intune
                 }
             }
 
-            // Apply name simplification rules
-            // Simplify names from the OffsetUri. This is done to make the names more readable, especially in case of long and complex OffsetUris.
             settingName = ApplyNameSimplification(settingName);
 
             return settingName;
+        }
+
+        private static string SanitizeSettingName(string name)
+        {
+            StringBuilder builder = new(name.Length);
+            foreach (char current in name)
+            {
+                switch (current)
+                {
+                    case '{':
+                    case '}':
+                    case '$':
+                        break;
+                    case ' ':
+                    case '/':
+                        builder.Append('_');
+                        break;
+                    default:
+                        builder.Append(current);
+                        break;
+                }
+            }
+
+            return builder.ToString();
         }
 
         /// <summary>
@@ -515,13 +542,15 @@ namespace Microsoft365DSC.Intune
         /// of its setting names against the same list, so without an index each resolution is a full
         /// scan and naming a policy is quadratic in the number of definitions.
         /// </summary>
-        private sealed class DefinitionLookups
+        internal sealed class DefinitionLookups
         {
             private static readonly ConditionalWeakTable<List<SettingDefinitionInfo>, DefinitionLookups> _cache = new();
             private static readonly List<SettingDefinitionInfo> _empty = [];
 
             private readonly Dictionary<string, List<SettingDefinitionInfo>> _byName = new(StringComparer.OrdinalIgnoreCase);
             private readonly Dictionary<string, SettingDefinitionInfo> _byId = new(StringComparer.Ordinal);
+            private readonly Dictionary<string, List<SettingDefinitionInfo>> _childrenByParent = new(StringComparer.Ordinal);
+            private readonly ConcurrentDictionary<string, string> _resolvedNames = new(StringComparer.Ordinal);
             private readonly int _sourceCount;
 
             private DefinitionLookups(List<SettingDefinitionInfo> definitions)
@@ -543,7 +572,32 @@ namespace Microsoft365DSC.Intune
                     {
                         _byId[definition.Id] = definition;
                     }
+
+                    foreach (string parentId in definition.DependentOnParentSettingIds.Concat(definition.OptionsDependentOnParentSettingIds).Distinct())
+                    {
+                        if (!_childrenByParent.TryGetValue(parentId, out var children))
+                        {
+                            children = [];
+                            _childrenByParent[parentId] = children;
+                        }
+                        children.Add(definition);
+                    }
                 }
+            }
+
+            public string ResolveName(SettingDefinitionInfo definition, Func<SettingDefinitionInfo, string> resolve)
+            {
+                if (definition.Id is null)
+                {
+                    return resolve(definition);
+                }
+
+                return _resolvedNames.GetOrAdd(definition.Id, _ => resolve(definition));
+            }
+
+            public List<SettingDefinitionInfo> ChildrenOf(string parentSettingId)
+            {
+                return _childrenByParent.TryGetValue(parentSettingId, out var children) ? children : _empty;
             }
 
             public static DefinitionLookups For(List<SettingDefinitionInfo> definitions)
