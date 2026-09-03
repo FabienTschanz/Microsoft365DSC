@@ -48,7 +48,7 @@
             "name": "User.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           }
         ],
         "update": []
@@ -59,7 +59,7 @@
             "name": "User.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           }
         ],
         "update": []

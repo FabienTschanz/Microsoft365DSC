@@ -234,7 +234,7 @@
       "delegated": {
         "read": [
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagementPolicy.Read.Directory"
@@ -245,7 +245,7 @@
         ],
         "update": [
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagement.ReadWrite.Directory"
@@ -261,7 +261,7 @@
       "application": {
         "read": [
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagement.Read.Directory"
@@ -275,7 +275,7 @@
         ],
         "update": [
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagement.ReadWrite.Directory"

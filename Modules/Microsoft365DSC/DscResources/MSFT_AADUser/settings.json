@@ -48,9 +48,6 @@
             "name": "User.Read.All"
           },
           {
-            "name": "Group.Read.All"
-          },
-          {
             "name": "GroupMember.Read.All"
           },
           {
@@ -91,6 +88,9 @@
           },
           {
             "name": "User.Read.All"
+          },
+          {
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "CustomSecAttributeAssignment.Read.All"

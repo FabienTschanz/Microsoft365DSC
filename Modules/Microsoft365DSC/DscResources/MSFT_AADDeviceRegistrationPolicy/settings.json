@@ -54,7 +54,7 @@
             "name": "Policy.Read.DeviceConfiguration"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           }
         ],
         "update": [
@@ -62,7 +62,7 @@
             "name": "Policy.ReadWrite.DeviceConfiguration"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           }
         ]
       },

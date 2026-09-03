@@ -94,7 +94,7 @@
             "name": "Agreement.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "Policy.Read.All"
@@ -114,7 +114,7 @@
             "name": "Agreement.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "Policy.Read.All"
@@ -142,7 +142,7 @@
             "name": "Application.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "Policy.Read.All"
@@ -165,7 +165,7 @@
             "name": "Application.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "Policy.Read.All"

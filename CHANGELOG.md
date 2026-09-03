@@ -306,6 +306,9 @@
   * Updated `Get-CompareParameters` to class method and replaced all usages with class method calls.
   * Updated module to invoke PowerShell 7 for all resources if not already running under it.
   * Updated all DSC resources from script-based to class-based.
+  * Replaced the `Group.Read.All` Graph permission with `GroupMember.Read.All` in every
+    resource that only resolves a group display name, id or membership and never modifies
+    the group.
 
 # UNRELEASED
 

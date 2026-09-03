@@ -138,7 +138,7 @@ class TeamsChannelTab : M365DSCResourceBase
                 {
                     $this.LogError($_, 'Error retrieving data:')
 
-                    Write-Verbose "The specified Service Principal doesn't have access to read Group information. Permission Required: Group.Read.All & Team.ReadBasic.All"
+                    Write-Verbose "The specified Service Principal doesn't have access to read Group information. Permission Required: GroupMember.Read.All & Team.ReadBasic.All"
                 }
 
                 if ($null -eq $teamInstance)

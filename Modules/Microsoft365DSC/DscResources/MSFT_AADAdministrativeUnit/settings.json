@@ -42,7 +42,7 @@
             "name": "Device.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagement.Read.Directory"
@@ -72,7 +72,7 @@
             "name": "Device.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagement.Read.Directory"

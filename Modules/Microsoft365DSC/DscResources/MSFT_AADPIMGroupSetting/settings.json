@@ -242,7 +242,7 @@
             "name": "AuthenticationContext.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagementPolicy.Read.Directory"
@@ -256,7 +256,7 @@
             "name": "AuthenticationContext.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagementPolicy.ReadWrite.Directory"
@@ -272,7 +272,7 @@
             "name": "AuthenticationContext.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagementPolicy.Read.Directory"
@@ -286,7 +286,7 @@
             "name": "AuthenticationContext.Read.All"
           },
           {
-            "name": "Group.Read.All"
+            "name": "GroupMember.Read.All"
           },
           {
             "name": "RoleManagementPolicy.ReadWrite.Directory"
