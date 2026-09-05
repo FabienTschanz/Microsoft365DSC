@@ -30,15 +30,22 @@ jobs:
             Install-PSResource -Name $dependency.ModuleName -Version $dependency.RequiredVersion -Scope AllUsers -TrustRepository
           }
 
+          Install-PSResource -Name DscResource.Authoring -Version '0.2.0-preview0006' -Prerelease -Scope AllUsers -TrustRepository
+
       - name: Build Class Modules
         shell: pwsh
         run: |
-          & ./Utilities/Build-Microsoft365DSC.ps1 -SkipSchemaCache
+          & ./Utilities/Build-Microsoft365DSC.ps1 -SkipSchemaCache -SkipAdaptedManifests
 
       - name: Build Dll Files
         shell: pwsh
         run: |
           & ./Utilities/Build-DllFiles.ps1 -Configuration Release
+
+      - name: Generate Adapted Resource Manifests
+        shell: pwsh
+        run: |
+          & ./Utilities/New-M365DSCAdaptedResourceManifest.ps1
 
       - name: Trim Build-Only Sources
         shell: pwsh
