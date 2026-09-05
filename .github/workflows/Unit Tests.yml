@@ -31,6 +31,7 @@ jobs:
 
           Install-PSResource -Name ReverseDSC -Scope AllUsers -TrustRepository
           Install-PSResource -Name Pester -Scope AllUsers -TrustRepository -Version 6.0.0
+          Install-PSResource -Name DscResource.Authoring -Version '0.2.0-preview0006' -Prerelease -Scope AllUsers -TrustRepository
           [System.Environment]::SetEnvironmentVariable('M365DSCTelemetryEnabled', $false, [System.EnvironmentVariableTarget]::Machine);
 
       - name: Build Class Modules
@@ -99,6 +100,7 @@ jobs:
 
           Install-PSResource -Name ReverseDSC -Scope AllUsers -TrustRepository
           Install-PSResource -Name Pester -Scope AllUsers -TrustRepository -Version 6.0.0
+          Install-PSResource -Name DscResource.Authoring -Version '0.2.0-preview0006' -Prerelease -Scope AllUsers -TrustRepository
           [System.Environment]::SetEnvironmentVariable('M365DSCTelemetryEnabled', $false, [System.EnvironmentVariableTarget]::Machine);
 
       - name: Build Class Modules
