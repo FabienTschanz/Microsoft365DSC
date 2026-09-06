@@ -103,9 +103,9 @@ A few things worth knowing:
 - The build also writes one `Microsoft365DSC.<Resource>.dsc.adaptedResource.json` per resource
   next to `Microsoft365DSC.psd1`. These are the DSC v3 adapted resource manifests that let
   `dsc.exe` discover the resources, and they ship in the package. They are generated with the
-  `DscResource.Authoring` module through PowerShell 7, so install it once with
-  `Install-PSResource -Name DscResource.Authoring -Prerelease`. Without it the build warns and
-  skips this step. The files are not in version control.
+  `DscResource.Authoring` module (0.3.0 or later) through PowerShell 7, so install it
+  once with `Install-PSResource -Name DscResource.Authoring`. Without it the build
+  warns and skips this step. The files are not in version control.
 - Use `-SkipValidation` to skip the post-build import and discovery check when iterating,
   `-SkipSchema` to leave `SchemaDefinition.json` alone, and `-SkipAdaptedManifests` to skip the
   adapted resource manifests.
