@@ -1026,6 +1026,7 @@ class M365DSCResourceBase
             $this.AddTelemetry('Test')
 
             $compareParameters = $this.GetCompareParameters()
+            $compareParameters.Remove('ReportPostProcessing')
             return (Test-M365DSCTargetResource -DesiredValues $this.GetBoundParameters() `
                     -ResourceName $this.GetResourceName() `
                     @compareParameters `

@@ -2,11 +2,20 @@
 
 # UNRELEASED
 
-* DEPENDENCIES
-  * Updated MSCloudLoginAssistant to version 1.2.10.
+* AADPermissionGrantPolicy
+  * Moved the report-time condition set normalization into compare rules.
+* IntuneDeviceEnrollmentStatusPageWindows10
+  * Updated the delta report to compare without the PostProcessing scriptblock.
+* M365DSCResourceBase
+  * Added the `ReportPostProcessing` compare parameter for report-time post-processing.
 * M365DSCReverse
   * Updated the export with the `-WithStatistics` parameter to also return failed
     resources with their error messages.
+* DEPENDENCIES
+  * Updated MSCloudLoginAssistant to version 1.2.10.
+* MISC
+  * Added the `ScalarAsArray` compare rule.
+  * Updated the schema to set `HasPostProcessing` only for `ReportPostProcessing`.
 
 # 2.26.1028.1
 
