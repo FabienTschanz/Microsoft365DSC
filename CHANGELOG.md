@@ -1,5 +1,13 @@
 ﻿# Change log for Microsoft365DSC
 
+# UNRELEASED
+
+* DEPENDENCIES
+  * Updated MSCloudLoginAssistant to version 1.2.10.
+* M365DSCReverse
+  * Updated the export with the `-WithStatistics` parameter to also return failed
+    resources with their error messages.
+
 # 2.26.1028.1
 
 * AADDomain
