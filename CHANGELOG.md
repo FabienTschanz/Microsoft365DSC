@@ -4,6 +4,8 @@
 
 * AADAuthenticationRequirement
   * Added an export `Filter` that passes an OData filter on member users.
+* AADGroupEligibilitySchedule, AADPIMGroupSetting
+  * Fixed an export `Filter` with `or` also returning dynamic groups.
 * EXOCASMailboxSettings, EXOCalendarProcessing, EXODistributionGroup, EXOFocusedInbox,
   EXOGroupSettings, EXOMailContact, EXOMailboxAutoReplyConfiguration,
   EXOMailboxCalendarConfiguration, EXOMailboxCalendarFolder, EXOMailboxIRMAccess,

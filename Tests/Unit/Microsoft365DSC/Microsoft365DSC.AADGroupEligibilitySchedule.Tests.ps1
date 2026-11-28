@@ -635,6 +635,15 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 Should -Invoke -CommandName Get-MgBetaIdentityGovernancePrivilegedAccessGroupEligibilitySchedule -Exactly 0
             }
 
+            It 'Should wrap the filter in parentheses before the dynamic group exclusion' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "displayName eq 'FakeStringValue' or displayName eq 'OtherGroup'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'AADGroupEligibilitySchedule' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-MgGroup -Exactly 1 -ParameterFilter {
+                    $Filter -eq "(displayName eq 'FakeStringValue' or displayName eq 'OtherGroup') and NOT(groupTypes/any(x:x eq 'DynamicMembership')) and not(mailEnabled eq true and securityEnabled eq true)"
+                }
+            }
+
             It 'Should skip groups that are not enabled in PIM' {
                 Mock -CommandName Get-M365DSCExportCachedCollection -ParameterFilter { $Collection -eq 'pimGroups' } -MockWith {
                     return @()

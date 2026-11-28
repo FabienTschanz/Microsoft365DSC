@@ -670,9 +670,11 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
             }
 
             It 'Should reverse engineer resource from the export method with a filter' {
-                $testParams.Filter = "displayName eq 'FakeGroup'"
+                $testParams.Filter = "displayName eq 'FakeGroup' or displayName eq 'OtherGroup'"
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'AADPIMGroupSetting' -MethodName 'Export' -Parameters $testParams
-                Should -Invoke -CommandName Get-MgGroup -Exactly 1
+                Should -Invoke -CommandName Get-MgGroup -Exactly 1 -ParameterFilter {
+                    $Filter -eq "(displayName eq 'FakeGroup' or displayName eq 'OtherGroup') and NOT(groupTypes/any(x:x eq 'DynamicMembership'))"
+                }
                 if ($isM365DSCAvailable)
                 {
                     Should -Invoke -CommandName Invoke-M365DSCGraphBatchRequest -Exactly 1

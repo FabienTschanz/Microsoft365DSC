@@ -999,7 +999,7 @@ class AADPIMGroupSetting : M365DSCResourceBase
         {
             if (-not [string]::IsNullOrEmpty($this.Filter))
             {
-                $mergedFilter = "$($this.Filter) and"
+                $mergedFilter = "($($this.Filter)) and"
             }
             $mergedFilter = "$mergedFilter NOT(groupTypes/any(x:x eq 'DynamicMembership'))"
         }
