@@ -199,6 +199,9 @@ class EXOCalendarProcessing : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOCalendarProcessing] Get()
     {
         $OrgWideAccount = $null
@@ -395,7 +398,7 @@ class EXOCalendarProcessing : M365DSCResourceBase
         try
         {
             $dscContent = [System.Text.StringBuilder]::new()
-            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter $this.Filter
 
             if ($null -eq $mailboxes)
             {

@@ -717,6 +717,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'EXOSharedMailbox' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the shared mailboxes without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOSharedMailbox' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-Mailbox -Times 1 -ParameterFilter { $RecipientTypeDetails -eq 'SharedMailbox' }
+                Should -Invoke -CommandName Get-Mailbox -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to Get-Mailbox' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "Name -eq 'Test Shared Mailbox'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOSharedMailbox' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-Mailbox -Times 1 -Exactly -ParameterFilter { $RecipientTypeDetails -eq 'SharedMailbox' -and $Filter -eq "Name -eq 'Test Shared Mailbox'" }
+            }
         }
 
         Context -Name 'Export with empty mailbox list' -Fixture {

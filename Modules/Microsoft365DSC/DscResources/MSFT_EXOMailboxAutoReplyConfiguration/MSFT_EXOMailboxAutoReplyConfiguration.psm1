@@ -102,6 +102,9 @@ class EXOMailboxAutoReplyConfiguration : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOMailboxAutoReplyConfiguration] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -229,7 +232,7 @@ class EXOMailboxAutoReplyConfiguration : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter $this.Filter
             $dscContent = [System.Text.StringBuilder]::new()
             $i = 1
 

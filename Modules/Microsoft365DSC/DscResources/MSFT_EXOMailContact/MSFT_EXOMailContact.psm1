@@ -196,6 +196,9 @@ class EXOMailContact : M365DSCResourceBase
                           'UsePreferMessageFormat', 'UserCertificate', 'UserSMimeCertificate', 'WindowsEmailAddress')
     }
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOMailContact] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -395,9 +398,14 @@ class EXOMailContact : M365DSCResourceBase
         try
         {
             $dscContent = [System.Text.StringBuilder]::new()
-            [array]$contactList = Get-MailContact -ResultSize 'Unlimited' -ErrorAction Stop
+            $filterSplat = @{}
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $filterSplat.Add('Filter', $this.Filter)
+            }
+            [array]$contactList = Get-MailContact -ResultSize 'Unlimited' @filterSplat -ErrorAction Stop
             $this.ResourceCache['ContactDetails'] = @{}
-            foreach ($contactDetails in (Get-Contact -RecipientTypeDetails 'MailContact' -ResultSize 'Unlimited' -ErrorAction Stop))
+            foreach ($contactDetails in (Get-Contact -RecipientTypeDetails 'MailContact' -ResultSize 'Unlimited' @filterSplat -ErrorAction Stop))
             {
                 $this.ResourceCache['ContactDetails'][[System.String]$contactDetails.Identity] = $contactDetails
             }

@@ -72,6 +72,9 @@ class EXOSharedMailbox : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOSharedMailbox] Get()
     {
         $mailbox = $null
@@ -373,9 +376,16 @@ class EXOSharedMailbox : M365DSCResourceBase
 
         try
         {
-            [array] $exportedInstances = Get-Mailbox -RecipientTypeDetails 'SharedMailbox' `
-                -ResultSize Unlimited `
-                -ErrorAction Stop
+            $splat = @{
+                RecipientTypeDetails = 'SharedMailbox'
+                ResultSize           = 'Unlimited'
+                ErrorAction          = 'Stop'
+            }
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $splat.Add('Filter', $this.Filter)
+            }
+            [array] $exportedInstances = Get-Mailbox @splat
             $dscContent = [System.Text.StringBuilder]::new()
             $i = 1
             if ($exportedInstances.Length -eq 0)

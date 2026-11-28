@@ -209,6 +209,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'EXOGroupSettings' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the unified groups without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOGroupSettings' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-UnifiedGroup -Times 1 -ParameterFilter { $ResultSize -eq 'Unlimited' }
+                Should -Invoke -CommandName Get-UnifiedGroup -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to Get-UnifiedGroup' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "DisplayName -eq 'Test Group'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOGroupSettings' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-UnifiedGroup -Times 1 -Exactly -ParameterFilter { $ResultSize -eq 'Unlimited' -and $Filter -eq "DisplayName -eq 'Test Group'" }
+            }
         }
     }
 }

@@ -255,6 +255,9 @@ class EXOGroupSettings : M365DSCResourceBase
         }
     }
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOGroupSettings] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -513,7 +516,12 @@ class EXOGroupSettings : M365DSCResourceBase
         try
         {
             $displayNameProperties = $this.ResourceCache['displayNameProperties']
-            [array] $exportedInstances = Get-UnifiedGroup -ResultSize Unlimited @displayNameProperties -ErrorAction SilentlyContinue
+            $filterSplat = @{}
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $filterSplat.Add('Filter', $this.Filter)
+            }
+            [array] $exportedInstances = Get-UnifiedGroup -ResultSize Unlimited @displayNameProperties @filterSplat -ErrorAction SilentlyContinue
 
             $i = 1
             if ($exportedInstances.Length -eq 0)

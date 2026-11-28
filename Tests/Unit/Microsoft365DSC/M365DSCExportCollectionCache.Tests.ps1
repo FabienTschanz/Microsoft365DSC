@@ -33,6 +33,18 @@ BeforeAll {
         param ([switch] $All)
     }
 
+    function global:Get-Mailbox
+    {
+        [CmdletBinding()]
+        param ($Filter, $ResultSize)
+    }
+
+    function global:Get-User
+    {
+        [CmdletBinding()]
+        param ($Filter, $ResultSize)
+    }
+
     $Script:Cache = [Microsoft365DSC.Cache.ExportCollectionCache]
 }
 
@@ -191,6 +203,41 @@ Describe 'M365DSCExportCollectionCache' {
             Mock -ModuleName M365DSCExportUtil -CommandName Get-MgBetaDeviceManagementDeviceConfiguration -MockWith { }
             $result = Get-M365DSCExportCachedCollection -Collection 'deviceConfigurations' -ODataType 'microsoft.graph.windowsKioskConfiguration'
             $result.Length | Should -Be 0
+        }
+
+        It 'lists the mailboxes once per export without a filter' {
+            [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
+            Mock -ModuleName M365DSCExportUtil -CommandName Get-Mailbox -MockWith {
+                return @(@{ Name = 'John' }, @{ Name = 'Jane' })
+            }
+            $null = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            $second = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-Mailbox -Times 1 -Exactly -ParameterFilter {
+                $null -eq $Filter -and $ResultSize -eq 'Unlimited'
+            }
+            $second.Count | Should -Be 2
+        }
+
+        It 'passes an OPATH filter to Get-Mailbox and Get-User and bypasses the cache' {
+            [Microsoft365DSC.Cache.ExportCollectionCache]::Enable()
+            Mock -ModuleName M365DSCExportUtil -CommandName Get-Mailbox -MockWith {
+                return @(@{ Name = 'John' })
+            }
+            Mock -ModuleName M365DSCExportUtil -CommandName Get-User -MockWith {
+                return @(@{ UserPrincipalName = 'john@contoso.com' })
+            }
+            $mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter "Name -eq 'John'"
+            $users = Get-M365DSCExportCachedCollection -Collection 'exoUsers' -Filter "Name -eq 'John'"
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-Mailbox -Times 1 -Exactly -ParameterFilter {
+                $Filter -eq "Name -eq 'John'" -and $ResultSize -eq 'Unlimited'
+            }
+            Should -Invoke -ModuleName M365DSCExportUtil -CommandName Get-User -Times 1 -Exactly -ParameterFilter {
+                $Filter -eq "Name -eq 'John'" -and $ResultSize -eq 'Unlimited'
+            }
+            $mailboxes.Count | Should -Be 1
+            $users.Count | Should -Be 1
+            [Microsoft365DSC.Cache.ExportCollectionCache]::ShouldPopulate('exoMailboxes') | Should -BeTrue
+            [Microsoft365DSC.Cache.ExportCollectionCache]::ShouldPopulate('exoUsers') | Should -BeTrue
         }
     }
 

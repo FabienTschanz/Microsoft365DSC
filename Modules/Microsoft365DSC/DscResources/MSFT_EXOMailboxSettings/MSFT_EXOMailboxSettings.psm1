@@ -72,6 +72,9 @@ class EXOMailboxSettings : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOMailboxSettings] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -209,7 +212,7 @@ class EXOMailboxSettings : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter $this.Filter
 
             $i = 1
             if ($mailboxes.Length -eq 0)

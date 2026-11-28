@@ -229,6 +229,9 @@ class EXODistributionGroup : M365DSCResourceBase
         }
     }
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXODistributionGroup] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -541,7 +544,12 @@ class EXODistributionGroup : M365DSCResourceBase
         try
         {
             $displayNameProperties = $this.ResourceCache['displayNameProperties']
-            [array] $exportedInstances = Get-DistributionGroup @displayNameProperties -ResultSize 'Unlimited' -ErrorAction Stop
+            $filterSplat = @{}
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $filterSplat.Add('Filter', $this.Filter)
+            }
+            [array] $exportedInstances = Get-DistributionGroup @displayNameProperties @filterSplat -ResultSize 'Unlimited' -ErrorAction Stop
 
             $i = 1
             if ($exportedInstances.Length -eq 0)

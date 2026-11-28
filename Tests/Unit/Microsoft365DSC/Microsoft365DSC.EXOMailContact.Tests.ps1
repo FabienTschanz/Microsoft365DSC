@@ -260,6 +260,22 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'EXOMailContact' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the mail contacts without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOMailContact' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-MailContact -Times 1 -ParameterFilter { $ResultSize -eq 'Unlimited' }
+                Should -Invoke -CommandName Get-MailContact -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+                Should -Invoke -CommandName Get-Contact -Times 1 -ParameterFilter { $RecipientTypeDetails -eq 'MailContact' }
+                Should -Invoke -CommandName Get-Contact -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to Get-MailContact and Get-Contact' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "Name -eq 'John'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOMailContact' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-MailContact -Times 1 -Exactly -ParameterFilter { $ResultSize -eq 'Unlimited' -and $Filter -eq "Name -eq 'John'" }
+                Should -Invoke -CommandName Get-Contact -Times 1 -Exactly -ParameterFilter { $RecipientTypeDetails -eq 'MailContact' -and $Filter -eq "Name -eq 'John'" }
+            }
         }
     }
 }

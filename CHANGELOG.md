@@ -2,6 +2,11 @@
 
 # UNRELEASED
 
+* EXOCASMailboxSettings, EXOCalendarProcessing, EXODistributionGroup, EXOFocusedInbox,
+  EXOGroupSettings, EXOMailContact, EXOMailboxAutoReplyConfiguration,
+  EXOMailboxCalendarConfiguration, EXOMailboxCalendarFolder, EXOMailboxIRMAccess,
+  EXOMailboxPermission, EXOMailboxSettings, EXOSharedMailbox, EXOSweepRule
+  * Added an export `Filter` that passes an OPATH filter to Exchange Online.
 * EXOManagementRoleEntry
   * Added a `Filter` property that applies a scriptblock to role entries after retrieval,
     allowing built-in entries to be excluded from the export.
@@ -32,6 +37,7 @@
     of the generated class files to the resource source files.
   * Added the `-Dev` switch to `Build-Microsoft365DSC.ps1`.
   * Added filter lists to `Export-M365DSCConfiguration -Filters`, one export per entry.
+  * Added OPATH filters to the `exoMailboxes` and `exoUsers` export collections.
   * Updated the unit test code coverage to report the resource source files.
 
 # 2.26.1125.1

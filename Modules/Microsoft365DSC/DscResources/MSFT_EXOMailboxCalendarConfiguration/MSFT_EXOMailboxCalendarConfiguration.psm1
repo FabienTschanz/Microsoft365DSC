@@ -214,6 +214,9 @@ class EXOMailboxCalendarConfiguration : M365DSCResourceBase
     # Export-only. Not part of the resource schema.
     [System.Management.Automation.PSCredential] $ApplicationSecret
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOMailboxCalendarConfiguration] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -349,7 +352,7 @@ class EXOMailboxCalendarConfiguration : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter $this.Filter
 
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()

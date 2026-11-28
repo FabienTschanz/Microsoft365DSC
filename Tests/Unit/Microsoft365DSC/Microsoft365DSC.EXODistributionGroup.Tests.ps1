@@ -270,6 +270,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'EXODistributionGroup' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the distribution groups without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXODistributionGroup' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-DistributionGroup -Times 1 -ParameterFilter { $ResultSize -eq 'Unlimited' }
+                Should -Invoke -CommandName Get-DistributionGroup -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to Get-DistributionGroup' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "Name -eq 'DemoDG'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXODistributionGroup' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-DistributionGroup -Times 1 -Exactly -ParameterFilter { $ResultSize -eq 'Unlimited' -and $Filter -eq "Name -eq 'DemoDG'" }
+            }
         }
     }
 }

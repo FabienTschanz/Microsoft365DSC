@@ -65,6 +65,9 @@ class EXOMailboxPermission : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOMailboxPermission] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -178,7 +181,7 @@ class EXOMailboxPermission : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter $this.Filter
             if ($mailboxes.Count -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite

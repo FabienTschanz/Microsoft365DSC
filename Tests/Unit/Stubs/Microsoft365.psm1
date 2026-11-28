@@ -3909,6 +3909,10 @@ function Get-Contact
     [CmdletBinding()]
     param(
         [Parameter()]
+        [System.String]
+        $Filter,
+
+        [Parameter()]
         [System.Object]
         $Identity,
 

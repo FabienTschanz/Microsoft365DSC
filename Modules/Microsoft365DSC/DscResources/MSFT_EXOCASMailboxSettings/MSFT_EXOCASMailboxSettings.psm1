@@ -180,6 +180,9 @@ class EXOCASMailboxSettings : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOCASMailboxSettings] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -311,7 +314,12 @@ class EXOCASMailboxSettings : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-CASMailbox -ResultSize 'Unlimited'
+            $filterSplat = @{}
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $filterSplat.Add('Filter', $this.Filter)
+            }
+            [array]$mailboxes = Get-CASMailbox -ResultSize 'Unlimited' @filterSplat
 
             $i = 1
             if ($mailboxes.Count -eq 0)

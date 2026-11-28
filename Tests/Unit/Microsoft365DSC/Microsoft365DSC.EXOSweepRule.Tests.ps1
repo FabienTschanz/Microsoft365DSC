@@ -220,6 +220,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'EXOSweepRule' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the mailboxes without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOSweepRule' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-M365DSCExportCachedCollection -Times 1 -ParameterFilter { $Collection -eq 'exoMailboxes' }
+                Should -Invoke -CommandName Get-M365DSCExportCachedCollection -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to the mailbox collection' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "UserPrincipalName -eq 'john@contoso.com'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOSweepRule' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-M365DSCExportCachedCollection -Times 1 -Exactly -ParameterFilter { $Collection -eq 'exoMailboxes' -and $Filter -eq "UserPrincipalName -eq 'john@contoso.com'" }
+            }
         }
     }
 }

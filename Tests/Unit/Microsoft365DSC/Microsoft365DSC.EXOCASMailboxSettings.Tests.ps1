@@ -113,6 +113,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'EXOCASMailboxSettings' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the CAS mailboxes without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOCASMailboxSettings' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-CASMailbox -Times 1 -ParameterFilter { $ResultSize -eq 'Unlimited' }
+                Should -Invoke -CommandName Get-CASMailbox -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to Get-CASMailbox' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "Name -eq 'John'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'EXOCASMailboxSettings' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-CASMailbox -Times 1 -Exactly -ParameterFilter { $ResultSize -eq 'Unlimited' -and $Filter -eq "Name -eq 'John'" }
+            }
         }
     }
 }

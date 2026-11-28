@@ -2033,7 +2033,8 @@ function Complete-M365DSCExportCollectionConsumer
     Specifies the values the property must match. Returns every item when omitted.
 
 .PARAMETER Filter
-    Specifies the user-supplied OData filter. A non-empty filter bypasses the cache.
+    Specifies the user-supplied filter, OData for the Graph collections and OPATH for 'exoMailboxes'
+    and 'exoUsers'. A non-empty filter bypasses the cache.
 
 .OUTPUTS
     System.Object[]
@@ -2074,14 +2075,25 @@ function Get-M365DSCExportCachedCollection
         deviceCompliancePolicies       = @{ Expand = @('scheduledActionsForRule($expand=scheduledActionConfigurations)', 'assignments'); ServerSideTypeFilter = $true }
         deviceEnrollmentConfigurations = @{ Expand = @('assignments'); ServerSideTypeFilter = $false }
         reusablePolicySettings         = @{ Expand = @(); ServerSideTypeFilter = $false; Select = @('id', 'displayName', 'description', 'settingDefinitionId', 'settingInstance') }
-        exoMailboxes                   = @{ Fetch = { Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop } }
-        exoUsers                       = @{ Fetch = { Get-User -ResultSize 'Unlimited' -ErrorAction Stop } }
+        exoMailboxes                   = @{
+            Fetch         = { Get-Mailbox -ResultSize 'Unlimited' -ErrorAction Stop }
+            FilteredFetch = { param($OpathFilter) Get-Mailbox -Filter $OpathFilter -ResultSize 'Unlimited' -ErrorAction Stop }
+        }
+        exoUsers                       = @{
+            Fetch         = { Get-User -ResultSize 'Unlimited' -ErrorAction Stop }
+            FilteredFetch = { param($OpathFilter) Get-User -Filter $OpathFilter -ResultSize 'Unlimited' -ErrorAction Stop }
+        }
         pimGroups                      = @{ Fetch = { Get-M365DSCPIMEnabledGroup } }
     }
     $descriptor = $descriptors[$Collection]
 
     $cacheAvailable = $null -ne ('Microsoft365DSC.Cache.ExportCollectionCache' -as [System.Type]) -and
         [Microsoft365DSC.Cache.ExportCollectionCache]::IsEnabled
+
+    if ($null -ne $descriptor -and $null -ne $descriptor.FilteredFetch -and -not [System.String]::IsNullOrEmpty($Filter))
+    {
+        return , [System.Object[]]@(& $descriptor.FilteredFetch $Filter)
+    }
 
     if ($null -ne $descriptor -and $null -ne $descriptor.Fetch)
     {

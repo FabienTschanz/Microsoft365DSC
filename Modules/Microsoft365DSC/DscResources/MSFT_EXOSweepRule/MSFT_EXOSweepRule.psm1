@@ -83,6 +83,9 @@ class EXOSweepRule : M365DSCResourceBase
     # Export-only. Not part of the resource schema.
     [System.Management.Automation.PSCredential] $ApplicationSecret
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [EXOSweepRule] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -222,7 +225,7 @@ class EXOSweepRule : M365DSCResourceBase
 
         try
         {
-            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes'
+            [array]$mailboxes = Get-M365DSCExportCachedCollection -Collection 'exoMailboxes' -Filter $this.Filter
             $j = 1
             if ($mailboxes.Count -eq 0)
             {
