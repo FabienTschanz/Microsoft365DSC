@@ -2,6 +2,8 @@
 
 # UNRELEASED
 
+* AADAuthenticationRequirement
+  * Added an export `Filter` that passes an OData filter on member users.
 * EXOCASMailboxSettings, EXOCalendarProcessing, EXODistributionGroup, EXOFocusedInbox,
   EXOGroupSettings, EXOMailContact, EXOMailboxAutoReplyConfiguration,
   EXOMailboxCalendarConfiguration, EXOMailboxCalendarFolder, EXOMailboxIRMAccess,
@@ -31,6 +33,10 @@
     `IsFilePreviewDomainRestrictionEnabled`, `MassDeleteNotificationDisabledForSPO`,
     `SiteOwnersCanAccessMissingContent` and `StopAlerts`.
   * Fixed `IsSharePointAddInsDisabled` never returning the tenant value.
+* TeamsChannelTab, TeamsTeam
+  * Added an export `Filter` that passes an OData filter on team groups.
+* TeamsUserCallingSettings, TeamsUserPolicyAssignment
+  * Added an export `Filter` that passes an OData filter on users.
 * MISC
   * Added the resource source file and line to the stack traces of error log entries.
   * Added `Resolve-M365DSCSourceLocation` and `Set-M365DSCSourceBreakpoint` to map lines

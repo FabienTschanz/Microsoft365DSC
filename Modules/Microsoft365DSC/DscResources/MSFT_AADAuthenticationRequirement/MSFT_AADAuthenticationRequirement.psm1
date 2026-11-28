@@ -48,6 +48,9 @@ class AADAuthenticationRequirement : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [AADAuthenticationRequirement] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -161,7 +164,12 @@ class AADAuthenticationRequirement : M365DSCResourceBase
 
         try
         {
-            [array]$getValue = Get-MgUser -Filter "userType eq 'member'" -All -Property 'id', 'userPrincipalName', 'displayName' -ErrorAction Stop | Where-Object -FilterScript {
+            $userFilter = "userType eq 'member'"
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $userFilter = "($userFilter) and ($($this.Filter))"
+            }
+            [array]$getValue = Get-MgUser -Filter $userFilter -All -Property 'id', 'userPrincipalName', 'displayName' -ErrorAction Stop | Where-Object -FilterScript {
                 $null -ne $_.Id -and $_.UserPrincipalName -notlike '*#EXT#*'
             }
 

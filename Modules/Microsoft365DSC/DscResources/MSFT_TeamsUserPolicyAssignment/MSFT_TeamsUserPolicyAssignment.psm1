@@ -131,6 +131,9 @@ class TeamsUserPolicyAssignment : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [TeamsUserPolicyAssignment] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -618,7 +621,12 @@ class TeamsUserPolicyAssignment : M365DSCResourceBase
 
         try
         {
-            [array]$users = Get-MgUser -All
+            $filterSplat = @{}
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $filterSplat.Add('Filter', $this.Filter)
+            }
+            [array]$users = Get-MgUser -All @filterSplat
             if ($users.Length -eq 0)
             {
                 Write-M365DSCHost -Message $Global:M365DSCEmojiGreenCheckMark -CommitWrite

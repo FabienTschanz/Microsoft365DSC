@@ -178,6 +178,19 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'TeamsUserCallingSettings' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the users without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'TeamsUserCallingSettings' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-MgUser -Times 1 -ParameterFilter { $All }
+                Should -Invoke -CommandName Get-MgUser -Times 0 -Exactly -ParameterFilter { -not [System.String]::IsNullOrEmpty($Filter) }
+            }
+
+            It 'Should pass the filter to Get-MgUser' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "userPrincipalName eq 'John.Smith@contoso.onmicrosoft.com'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'TeamsUserCallingSettings' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-MgUser -Times 1 -Exactly -ParameterFilter { $All -and $Filter -eq "userPrincipalName eq 'John.Smith@contoso.onmicrosoft.com'" }
+            }
         }
     }
 }

@@ -156,6 +156,18 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'AADAuthenticationRequirement' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the member users without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'AADAuthenticationRequirement' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-MgUser -Times 1 -ParameterFilter { $All -and $Filter -eq "userType eq 'member'" }
+            }
+
+            It 'Should pass the filter to the member user list' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "userPrincipalName eq 'john@contoso.com'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'AADAuthenticationRequirement' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-MgUser -Times 1 -Exactly -ParameterFilter { $All -and $Filter -eq "(userType eq 'member') and (userPrincipalName eq 'john@contoso.com')" }
+            }
         }
     }
 }

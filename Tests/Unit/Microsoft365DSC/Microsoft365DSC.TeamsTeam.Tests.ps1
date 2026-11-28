@@ -322,6 +322,35 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'TeamsTeam' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should not read the team groups without a filter when none is given' {
+                Mock -CommandName Get-MgGroup -MockWith {
+                }
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'TeamsTeam' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-MgGroup -Times 0 -Exactly -ParameterFilter { $Filter -like '*resourceProvisioningOptions*' }
+            }
+
+            It 'Should export the teams whose group matches the filter' {
+                Mock -CommandName Get-MgGroup -MockWith {
+                    return @(@{ Id = '1234-1234-1234-1234' })
+                }
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "displayName eq 'TestTeam'"
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'TeamsTeam' -MethodName 'Export' -Parameters $filterParams
+                $result | Should -Match 'TestTeam'
+                Should -Invoke -CommandName Get-MgGroup -Times 1 -Exactly -ParameterFilter {
+                    $All -and $Filter -eq "(resourceProvisioningOptions/Any(x:x eq 'Team')) and (displayName eq 'TestTeam')"
+                }
+            }
+
+            It 'Should export no team when no group matches the filter' {
+                Mock -CommandName Get-MgGroup -MockWith {
+                }
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "displayName eq 'OtherTeam'"
+                $result = Invoke-M365DSCResourceMethod -ResourceName 'TeamsTeam' -MethodName 'Export' -Parameters $filterParams
+                $result | Should -BeNullOrEmpty
+            }
         }
     }
 }

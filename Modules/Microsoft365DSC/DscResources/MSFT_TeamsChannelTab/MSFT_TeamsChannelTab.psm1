@@ -71,6 +71,9 @@ class TeamsChannelTab : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [TeamsChannelTab] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -298,7 +301,12 @@ class TeamsChannelTab : M365DSCResourceBase
 
         try
         {
-            [array]$teams = Get-MgGroup -Filter "resourceProvisioningOptions/Any(x:x eq 'Team')" -All
+            $teamFilter = "resourceProvisioningOptions/Any(x:x eq 'Team')"
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $teamFilter = "($teamFilter) and ($($this.Filter))"
+            }
+            [array]$teams = Get-MgGroup -Filter $teamFilter -All
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             Write-M365DSCHost -Message "`r`n" -DeferWrite

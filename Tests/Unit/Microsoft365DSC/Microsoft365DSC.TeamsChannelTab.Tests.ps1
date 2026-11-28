@@ -242,6 +242,18 @@ Describe -Name $Global:DscHelper.DescribeHeader -Fixture {
                 $result = Invoke-M365DSCResourceMethod -ResourceName 'TeamsChannelTab' -MethodName 'Export' -Parameters $testParams
                 $result | Should -Not -BeNullOrEmpty
             }
+
+            It 'Should list the teams without a filter when none is given' {
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'TeamsChannelTab' -MethodName 'Export' -Parameters $testParams
+                Should -Invoke -CommandName Get-MgGroup -Times 1 -ParameterFilter { $All -and $Filter -eq "resourceProvisioningOptions/Any(x:x eq 'Team')" }
+            }
+
+            It 'Should pass the filter to the team list' {
+                $filterParams = $testParams.Clone()
+                $filterParams.Filter = "displayName eq 'Contoso Team'"
+                $null = Invoke-M365DSCResourceMethod -ResourceName 'TeamsChannelTab' -MethodName 'Export' -Parameters $filterParams
+                Should -Invoke -CommandName Get-MgGroup -Times 1 -Exactly -ParameterFilter { $All -and $Filter -eq "(resourceProvisioningOptions/Any(x:x eq 'Team')) and (displayName eq 'Contoso Team')" }
+            }
         }
     }
 }

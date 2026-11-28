@@ -140,6 +140,9 @@ class TeamsTeam : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [TeamsTeam] Get()
     {
         if ($this.RequiresPowerShellCore())
@@ -431,6 +434,13 @@ class TeamsTeam : M365DSCResourceBase
         try
         {
             $teams = Get-Team | Sort-Object -Property GroupId
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $null = $this.Connect('MicrosoftGraph')
+                $teamFilter = "(resourceProvisioningOptions/Any(x:x eq 'Team')) and ($($this.Filter))"
+                [array]$matchingGroupIds = (Get-MgGroup -Filter $teamFilter -All -Property 'Id' -ErrorAction Stop).Id
+                $teams = @($teams | Where-Object -FilterScript { $matchingGroupIds -contains $_.GroupId })
+            }
             $i = 1
             $dscContent = [System.Text.StringBuilder]::new()
             Write-M365DSCHost -Message "`r`n" -DeferWrite

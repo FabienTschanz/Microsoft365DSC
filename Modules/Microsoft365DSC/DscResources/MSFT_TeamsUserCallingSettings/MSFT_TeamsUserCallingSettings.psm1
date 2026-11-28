@@ -101,6 +101,9 @@ class TeamsUserCallingSettings : M365DSCResourceBase
     [System.ComponentModel.Description('Access token used for authentication.')]
     [System.String[]] $AccessTokens
 
+    # Export-only. Not part of the resource schema.
+    [System.String] $Filter
+
     [TeamsUserCallingSettings] Get()
     {
         ${$Identity} = $null
@@ -314,7 +317,12 @@ class TeamsUserCallingSettings : M365DSCResourceBase
 
         try
         {
-            $allUsers = Get-MgUser -All -Property 'UserPrincipalName'
+            $filterSplat = @{}
+            if (-not [System.String]::IsNullOrEmpty($this.Filter))
+            {
+                $filterSplat.Add('Filter', $this.Filter)
+            }
+            $allUsers = Get-MgUser -All -Property 'UserPrincipalName' @filterSplat
             $i = 1
             Write-M365DSCHost -Message "`r`n" -DeferWrite
             $dscContent = [System.Text.StringBuilder]::new()
