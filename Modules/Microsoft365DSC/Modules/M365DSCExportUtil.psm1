@@ -97,7 +97,8 @@ Register-ArgumentCompleter -CommandName Export-M365DSCConfiguration -ParameterNa
     Indicates whether informational metadata should be generated in export output.
 
 .PARAMETER Filters
-    Specifies resource-level filters used during export.
+    Specifies resource-level filters used during export. A value is one filter string or a list of
+    filter strings, and the resource exports once per list entry.
 
 .PARAMETER ApplicationId
     Specifies the application id used for app-based authentication.

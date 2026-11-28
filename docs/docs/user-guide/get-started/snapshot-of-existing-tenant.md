@@ -144,6 +144,17 @@ $Filters = @{
 }
 ```
 
+A resource also accepts a list of filters. The export then runs once per filter and joins the instances it captures. Use disjoint filters to avoid capturing an instance twice.
+
+```powershell
+$Filters = @{
+    AADUser = @(
+        "userPrincipalName eq 'john@contoso.com' or userPrincipalName eq 'jane@contoso.com'",
+        "userPrincipalName eq 'bob@contoso.com'"
+    )
+}
+```
+
 <figure markdown>
   ![Example of using Filters to export resources](../../Images/FilteringExport.png)
   <figcaption>Example of using Filters to export resources</figcaption>

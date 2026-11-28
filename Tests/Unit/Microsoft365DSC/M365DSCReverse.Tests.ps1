@@ -182,6 +182,38 @@ Describe 'Start-M365DSCConfigurationExtract' {
             }
         }
 
+        It 'passes a single filter string to one export call' {
+            Mock -ModuleName M365DSCReverse -CommandName Test-M365DSCResourceProperty -MockWith { $PropertyName -eq 'Filter' }
+
+            Start-M365DSCConfigurationExtract -Components @('AADUser') -Credential $Script:Credential `
+                -Filters @{ AADUser = "userPrincipalName eq 'john@contoso.com'" } -Path $Script:OutputPath -WarningAction SilentlyContinue
+
+            Should -Invoke -ModuleName M365DSCReverse -CommandName Invoke-M365DSCResourceMethod -Times 1 -Exactly
+            Should -Invoke -ModuleName M365DSCReverse -CommandName Invoke-M365DSCResourceMethod -Times 1 -Exactly -ParameterFilter {
+                $Parameters.Filter -eq "userPrincipalName eq 'john@contoso.com'"
+            }
+        }
+
+        It 'runs the export once per filter in a list and joins the output' {
+            Mock -ModuleName M365DSCReverse -CommandName Test-M365DSCResourceProperty -MockWith { $PropertyName -eq 'Filter' }
+            Mock -ModuleName M365DSCReverse -CommandName Invoke-M365DSCResourceMethod -MockWith {
+                $userName = $Parameters.Filter.Split("'")[1]
+                "        AADUser '$userName'`r`n        {`r`n            UserPrincipalName = '$userName'`r`n        }`r`n"
+            }
+
+            Start-M365DSCConfigurationExtract -Components @('AADUser') -Credential $Script:Credential `
+                -Filters @{ AADUser = @("userPrincipalName eq 'john@contoso.com'", "userPrincipalName eq 'jane@contoso.com'") } `
+                -Path $Script:OutputPath -WarningAction SilentlyContinue
+
+            Should -Invoke -ModuleName M365DSCReverse -CommandName Invoke-M365DSCResourceMethod -Times 2 -Exactly
+            Should -Invoke -ModuleName M365DSCReverse -CommandName Invoke-M365DSCResourceMethod -Times 1 -Exactly -ParameterFilter {
+                $Parameters.Filter -eq "userPrincipalName eq 'jane@contoso.com'"
+            }
+            $content = Get-Content -Path (Join-Path -Path $Script:OutputPath -ChildPath 'M365TenantConfig.ps1') -Raw
+            $content | Should -Match "AADUser 'john@contoso.com'"
+            $content | Should -Match "AADUser 'jane@contoso.com'"
+        }
+
         It 'writes the configuration even when the validation and the certificate export fail' {
             Mock -ModuleName M365DSCReverse -CommandName Get-M365DSCConfigurationConflict -MockWith { throw 'validation broke' }
             Mock -ModuleName M365DSCReverse -CommandName Test-M365DSCCurrentUserIsAdministrator -MockWith { $true }

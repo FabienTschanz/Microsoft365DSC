@@ -37,7 +37,8 @@
     Indicates whether additional resource information should be generated.
 
 .PARAMETER Filters
-    Specifies resource-level filters used to limit exported instances.
+    Specifies resource-level filters used to limit exported instances. A value is one filter string
+    or a list of filter strings, and the resource exports once per list entry.
 
 .PARAMETER ApplicationId
     Specifies the application id used for app-based authentication.
@@ -896,13 +897,17 @@ function Start-M365DSCConfigurationExtract
 
                     # Check if filters for the current resource were specified.
                     $resourceFilter = $null
+                    $resourceFilters = @($null)
                     if ($null -ne $using:Filters -and ($using:Filters).Keys.Where({ $_ -eq $resourceName }))
                     {
                         $filterExists = Test-M365DSCResourceProperty -ResourceName $resourceName -PropertyName 'Filter'
                         $resourceFilter = ($using:Filters).$resourceName
                         if ($filterExists)
                         {
-                            $parameters.Add('Filter', $resourceFilter)
+                            if (@($resourceFilter).Count -gt 0)
+                            {
+                                $resourceFilters = @($resourceFilter)
+                            }
                         }
                         elseif ($null -ne $resourceFilter)
                         {
@@ -924,8 +929,16 @@ function Start-M365DSCConfigurationExtract
                     $Global:M365DSCExportResourceSkipReason = $null
                     try
                     {
-                        $exportOutput = Invoke-M365DSCResourceMethod -ResourceName $resourceName -MethodName 'Export' -Parameters $parameters
-                        $exportString.Append($exportOutput) | Out-Null
+                        foreach ($filterEntry in $resourceFilters)
+                        {
+                            $exportParameters = $parameters.Clone()
+                            if ($null -ne $filterEntry)
+                            {
+                                $exportParameters['Filter'] = [System.String] $filterEntry
+                            }
+                            $exportOutput = Invoke-M365DSCResourceMethod -ResourceName $resourceName -MethodName 'Export' -Parameters $exportParameters
+                            $exportString.Append($exportOutput) | Out-Null
+                        }
                         [void]$sharedState.ResourcesResult.TryAdd($resourceName, $exportString.ToString())
                         $resourceStatus = 'Succeeded'
                         if ($Global:M365DSCExportInstanceErrors.Count -gt 0)

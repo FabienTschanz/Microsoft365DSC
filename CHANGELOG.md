@@ -31,6 +31,7 @@
   * Added `Resolve-M365DSCSourceLocation` and `Set-M365DSCSourceBreakpoint` to map lines
     of the generated class files to the resource source files.
   * Added the `-Dev` switch to `Build-Microsoft365DSC.ps1`.
+  * Added filter lists to `Export-M365DSCConfiguration -Filters`, one export per entry.
   * Updated the unit test code coverage to report the resource source files.
 
 # 2.26.1125.1
